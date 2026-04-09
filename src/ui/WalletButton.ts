@@ -72,6 +72,7 @@ export class WalletButton {
 
   private async onConnected(address: string): Promise<void> {
     const balance = await getZeroBalance(address as `0x${string}`);
+    if (!this.label?.active) return; // Scene may have changed during async
     this.label.setText(`${truncateAddress(address)} | ${balance} $ZERO`);
     this.resizeBg();
 
@@ -85,9 +86,12 @@ export class WalletButton {
 
       // Check for AdrianLAB Floppy Box tokens (10000-10010)
       try {
+        console.log('Checking floppy box tokens for', address);
         const hasFloppy = await hasFloppyBoxTokens(address as `0x${string}`);
-        if (hasFloppy && !this.inventory.hasItem('floppy_box')) {
+        console.log('Floppy box result:', hasFloppy);
+        if (hasFloppy && this.inventory && !this.inventory.hasItem('floppy_box')) {
           this.inventory.addItem('floppy_box', 'Floppy Disc Box');
+          console.log('Floppy Disc Box added to inventory');
         }
       } catch (err) { console.error('Floppy box check failed:', err); }
     }
@@ -181,17 +185,22 @@ export class WalletButton {
   }
 
   private updateDisplay(connected: boolean, address: string | null): void {
-    if (connected && address) {
-      this.label.setText(truncateAddress(address));
-      this.bg.setStrokeStyle(1, TWP.WALLET_BORDER_ON, 0.8);
-    } else {
-      this.label.setText('Connect');
-      this.bg.setStrokeStyle(1, TWP.WALLET_BORDER, 0.6);
-    }
-    this.resizeBg();
+    // Guard: skip if Phaser objects have been destroyed
+    if (!this.label?.active || !this.bg?.active) return;
+    try {
+      if (connected && address) {
+        this.label.setText(truncateAddress(address));
+        this.bg.setStrokeStyle(1, TWP.WALLET_BORDER_ON, 0.8);
+      } else {
+        this.label.setText('Connect');
+        this.bg.setStrokeStyle(1, TWP.WALLET_BORDER, 0.6);
+      }
+      this.resizeBg();
+    } catch { /* Phaser text canvas destroyed — safe to ignore */ }
   }
 
   private resizeBg(): void {
+    if (!this.bg?.active || !this.label?.active) return;
     this.bg.setSize(Math.max(80, this.label.width + 16), 24);
   }
 

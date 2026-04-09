@@ -189,17 +189,20 @@ export async function getZeroBalance(address: Address): Promise<string> {
 export async function hasFloppyBoxTokens(address: Address): Promise<boolean> {
   const FLOPPY_IDS = [10000, 10001, 10002, 10003, 10004, 10005, 10006, 10007, 10008, 10009, 10010];
   try {
-    const results = await Promise.all(
-      FLOPPY_IDS.map((id) =>
-        publicClient.readContract({
-          address: CONTRACTS.ADRIAN_LAB as Address,
-          abi: ERC1155_BALANCE_ABI,
-          functionName: 'balanceOf',
-          args: [address, BigInt(id)],
-        })
-      )
-    );
-    return results.some((balance) => balance > 0n);
+    // Check one at a time to avoid rate limiting
+    for (const id of FLOPPY_IDS) {
+      const balance = await publicClient.readContract({
+        address: CONTRACTS.ADRIAN_LAB as Address,
+        abi: ERC1155_BALANCE_ABI,
+        functionName: 'balanceOf',
+        args: [address, BigInt(id)],
+      });
+      if (balance > 0n) {
+        console.log(`Floppy box token found: ID ${id}, balance ${balance}`);
+        return true;
+      }
+    }
+    return false;
   } catch (err) {
     console.error('Floppy box token check failed:', err);
     return false;
