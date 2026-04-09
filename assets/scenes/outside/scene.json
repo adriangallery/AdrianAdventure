@@ -1,0 +1,1400 @@
+{
+  "version": 3,
+  "id": "outside",
+  "title": "Outside AdrianLAB",
+  "assets": {
+    "background": "background.png",
+    "walkmask": null,
+    "atlas": null
+  },
+  "render": {
+    "world": {
+      "width": 3712,
+      "height": 1152
+    },
+    "camera": {
+      "start": {
+        "x": 50,
+        "y": 50
+      },
+      "followPlayer": true,
+      "lerp": 0.1,
+      "clampToWorld": true
+    }
+  },
+  "player": {
+    "spawn": {
+      "x": 71.9,
+      "y": 97.9
+    },
+    "speed": 140,
+    "sprite": null,
+    "playerScale": 3.95
+  },
+  "ui": {
+    "verbs": [
+      "LOOK",
+      "USE",
+      "TALK",
+      "PICK",
+      "OPEN",
+      "CLOSE"
+    ],
+    "mobileDrawerDefault": "collapsed"
+  },
+  "maskMapping": null,
+  "regions": {
+    "hotspots": [
+      {
+        "id": "hs_front_door",
+        "name": "Front Door",
+        "bounds": {
+          "x": 31.6,
+          "y": 54.1,
+          "w": 5,
+          "h": 26.2
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "A solid wooden door with a keypad. The display shows 4 empty digits waiting for a code."
+            }
+          ],
+          "USE": [
+            {
+              "op": "ifFlag",
+              "flag": "has_code",
+              "then": [
+                {
+                  "op": "setFlag",
+                  "flag": "door_unlocked",
+                  "value": true
+                },
+                {
+                  "op": "sayBrief",
+                  "text": "7-3-1-4... *beep* Green light!",
+                  "duration": 1200
+                },
+                {
+                  "op": "sayBrief",
+                  "text": "Chapter 1 — objective: Enter the laboratory",
+                  "duration": 2000
+                },
+                {
+                  "op": "fadeToScene",
+                  "sceneId": "lobby",
+                  "spawn": {
+                    "x": 50,
+                    "y": 85
+                  },
+                  "duration": 600
+                }
+              ],
+              "else": [
+                {
+                  "op": "say",
+                  "text": "Locked. The keypad blinks red. I need a 4-digit code."
+                }
+              ]
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "ifFlag",
+              "flag": "has_code",
+              "then": [
+                {
+                  "op": "setFlag",
+                  "flag": "door_unlocked",
+                  "value": true
+                },
+                {
+                  "op": "sayBrief",
+                  "text": "7-3-1-4... *beep* The door opens!",
+                  "duration": 1200
+                },
+                {
+                  "op": "sayBrief",
+                  "text": "Chapter 1 — objective: Enter the laboratory",
+                  "duration": 2000
+                },
+                {
+                  "op": "fadeToScene",
+                  "sceneId": "lobby",
+                  "spawn": {
+                    "x": 50,
+                    "y": 85
+                  },
+                  "duration": 600
+                }
+              ],
+              "else": [
+                {
+                  "op": "say",
+                  "text": "I need the access code first. Must be a clue around here somewhere."
+                }
+              ]
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "The keypad beeps impatiently."
+            }
+          ],
+          "PICK": [
+            {
+              "op": "say",
+              "text": "I can't pick up a door."
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "Already closed and locked."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I push the door. It's locked, not stuck."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "I pull the handle. Still locked. The keypad judges me."
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "I'm not giving anything to a door."
+            }
+          ]
+        }
+      },
+      {
+        "id": "hs_porch_light",
+        "name": "Porch Light",
+        "bounds": {
+          "x": 34.5,
+          "y": 45.4,
+          "w": 3,
+          "h": 8
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "A warm porch light. Something small is wedged behind the lamp bracket."
+            }
+          ],
+          "USE": [
+            {
+              "op": "say",
+              "text": "Click. The moths scatter."
+            }
+          ],
+          "PICK": [
+            {
+              "op": "ifFlag",
+              "flag": "found_code_note",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "Nothing else behind the lamp."
+                }
+              ],
+              "else": [
+                {
+                  "op": "setFlag",
+                  "flag": "found_code_note",
+                  "value": true
+                },
+                {
+                  "op": "setFlag",
+                  "flag": "has_code",
+                  "value": true
+                },
+                {
+                  "op": "addItem",
+                  "id": "code_note",
+                  "name": "Code Note (7314)"
+                },
+                {
+                  "op": "say",
+                  "text": "I reach behind the lamp... a crumpled note! It reads: 'ACCESS CODE: 7314'"
+                }
+              ]
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "The light flickers. Morse code for 'hello'?"
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "ifFlag",
+              "flag": "found_code_note",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "Nothing else behind the lamp."
+                }
+              ],
+              "else": [
+                {
+                  "op": "setFlag",
+                  "flag": "found_code_note",
+                  "value": true
+                },
+                {
+                  "op": "setFlag",
+                  "flag": "has_code",
+                  "value": true
+                },
+                {
+                  "op": "addItem",
+                  "id": "code_note",
+                  "name": "Code Note (7314)"
+                },
+                {
+                  "op": "say",
+                  "text": "I pry open the lamp bracket... a crumpled note falls out! It reads: 'ACCESS CODE: 7314'"
+                }
+              ]
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "It stays on."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I push the lamp. It swings and creaks back."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "I pull the lamp bracket. Something might be behind it..."
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "The moths don't want anything from me."
+            }
+          ]
+        }
+      },
+      {
+        "id": "hs_main_window",
+        "name": "Main Window",
+        "bounds": {
+          "x": 25.6,
+          "y": 51,
+          "w": 2.9,
+          "h": 21
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "Warm light inside. I can see monitor screens glowing — someone's been running code."
+            }
+          ],
+          "USE": [
+            {
+              "op": "say",
+              "text": "I tap on the glass. No response."
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "'Anyone mining in there?!' ...silence."
+            }
+          ],
+          "PICK": [
+            {
+              "op": "say",
+              "text": "Can't pick up a window."
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "say",
+              "text": "Sealed shut from inside. Keeps the private keys safe."
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "Already closed."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I push on the glass. Fingerprints everywhere now."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "I pull the window frame. Sealed tight."
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "Windows don't accept donations."
+            }
+          ]
+        }
+      },
+      {
+        "id": "hs_left_window",
+        "name": "Side Window",
+        "bounds": {
+          "x": 16.1,
+          "y": 53.1,
+          "w": 2.6,
+          "h": 18.3
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "A small window glowing orange. Cozy inside... or maybe something's on fire."
+            }
+          ],
+          "USE": [
+            {
+              "op": "say",
+              "text": "Can't reach it through the bushes."
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "The curtain moves... wind or someone watching?"
+            }
+          ],
+          "PICK": [
+            {
+              "op": "say",
+              "text": "Windows are non-fungible and non-portable."
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "say",
+              "text": "Too far through the bushes."
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "Already closed."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I push through the bushes toward the window. Ouch."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "I can't reach it through these thorns."
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "The curtain twitcher doesn't want visitors."
+            }
+          ]
+        }
+      },
+      {
+        "id": "hs_chimney",
+        "name": "Chimney",
+        "bounds": {
+          "x": 43.2,
+          "y": 4.1,
+          "w": 4,
+          "h": 30
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "Brick chimney. No smoke — upgraded to a more efficient consensus mechanism."
+            }
+          ],
+          "USE": [
+            {
+              "op": "say",
+              "text": "I'm not Santa. I'll use the door."
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "My voice echoes: '...not your keys, not your coins...'"
+            },
+            {
+              "op": "setFlag",
+              "flag": "debug_look_3",
+              "value": true
+            }
+          ],
+          "PICK": [
+            {
+              "op": "say",
+              "text": "Firmly attached to the building."
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "say",
+              "text": "Open at the top. That's how chimneys work."
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "No chimney controls from here."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I push the bricks. Still solid after all these years."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "I pull on the drainpipe. A bird's nest falls out."
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "Santa's not home."
+            }
+          ]
+        }
+      },
+      {
+        "id": "hs_mailbox",
+        "name": "Mailbox",
+        "bounds": {
+          "x": 58.8,
+          "y": 67.6,
+          "w": 3.7,
+          "h": 11.3
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "ifFlag",
+              "flag": "found_envelope",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "A rusty mailbox. Empty now."
+                }
+              ],
+              "else": [
+                {
+                  "op": "say",
+                  "text": "A rusty mailbox overflowing with letters. Electric bills, mostly."
+                }
+              ]
+            }
+          ],
+          "USE": [
+            {
+              "op": "say",
+              "text": "I open the mailbox flap. Junk mail and... something else?"
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "The mailbox creaks. It's been waiting for someone to check it."
+            }
+          ],
+          "PICK": [
+            {
+              "op": "ifFlag",
+              "flag": "found_envelope",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "Nothing else in the mailbox. Just old bills."
+                }
+              ],
+              "else": [
+                {
+                  "op": "say",
+                  "text": "I sift through the junk mail... wait. A sealed envelope marked 'CONFIDENTIAL — PATIENT ZERO'. This looks important."
+                },
+                {
+                  "op": "addItem",
+                  "id": "mystery_envelope",
+                  "name": "Mystery Envelope"
+                },
+                {
+                  "op": "setFlag",
+                  "flag": "found_envelope",
+                  "value": true
+                }
+              ]
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "ifFlag",
+              "flag": "found_envelope",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "Nothing else in the mailbox. Just old bills."
+                }
+              ],
+              "else": [
+                {
+                  "op": "say",
+                  "text": "I swing open the mailbox flap. Junk mail cascades out... and a sealed envelope marked 'CONFIDENTIAL — PATIENT ZERO' slides into view."
+                },
+                {
+                  "op": "addItem",
+                  "id": "mystery_envelope",
+                  "name": "Mystery Envelope"
+                },
+                {
+                  "op": "setFlag",
+                  "flag": "found_envelope",
+                  "value": true
+                }
+              ]
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "I close the mailbox. The flap doesn't stay shut."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I push the mailbox post. It wobbles — years of neglect."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "I pull on the mailbox door. Rusty hinges protest."
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "I'm not mailing anything right now."
+            }
+          ]
+        }
+      },
+      {
+        "id": "hs_bushes",
+        "name": "Bushes",
+        "bounds": {
+          "x": 13.2,
+          "y": 74.1,
+          "w": 11.1,
+          "h": 23.5
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "ifWalletConnected",
+              "then": [
+                {
+                  "op": "web3Require",
+                  "contract": "AdrianZERO",
+                  "method": "balanceOf",
+                  "args": [
+                    "$wallet"
+                  ],
+                  "compare": ">0",
+                  "then": [
+                    {
+                      "op": "say",
+                      "text": "Overgrown bushes in front of the house. Wait... someone spray-painted 'ZERO WAS HERE' on the wall behind them."
+                    }
+                  ],
+                  "else": [
+                    {
+                      "op": "say",
+                      "text": "Overgrown bushes in front of the house."
+                    }
+                  ]
+                }
+              ],
+              "else": [
+                {
+                  "op": "say",
+                  "text": "Overgrown bushes in front of the house."
+                }
+              ]
+            }
+          ],
+          "USE": [
+            {
+              "op": "say",
+              "text": "I rummage through. Ouch! Thorns. Nothing useful."
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "They rustle back. Nature's protocol."
+            }
+          ],
+          "PICK": [
+            {
+              "op": "say",
+              "text": "Just leaves."
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "say",
+              "text": "More branches inside. Recursion."
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "They snap back naturally."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I push through the bushes. Thorns grab my jacket."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "I pull branches aside. More branches behind them."
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "The bushes don't want my problems."
+            }
+          ]
+        }
+      },
+      {
+        "id": "hs_doormat",
+        "name": "Doormat",
+        "bounds": {
+          "x": 31.9,
+          "y": 81.6,
+          "w": 7.7,
+          "h": 5.3
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "A worn doormat. Says 'HODL'."
+            }
+          ],
+          "USE": [
+            {
+              "op": "say",
+              "text": "I wipe my feet."
+            }
+          ],
+          "PICK": [
+            {
+              "op": "ifFlag",
+              "flag": "found_ledger",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "Nothing else under the mat."
+                }
+              ],
+              "else": [
+                {
+                  "op": "setFlag",
+                  "flag": "found_ledger",
+                  "value": true
+                },
+                {
+                  "op": "addItem",
+                  "id": "ledger",
+                  "name": "Adrian's Ledger"
+                },
+                {
+                  "op": "say",
+                  "text": "Under the mat... Adrian's Ledger! Someone hid it here."
+                }
+              ]
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "Mats are notoriously quiet."
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "ifFlag",
+              "flag": "found_ledger",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "Nothing else under the mat."
+                }
+              ],
+              "else": [
+                {
+                  "op": "setFlag",
+                  "flag": "found_ledger",
+                  "value": true
+                },
+                {
+                  "op": "addItem",
+                  "id": "ledger",
+                  "name": "Adrian's Ledger"
+                },
+                {
+                  "op": "say",
+                  "text": "I lift the doormat. Underneath: Adrian's hardware wallet. Hidden in the most obvious place possible."
+                }
+              ]
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "I put it back."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I push the mat aside with my foot."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "I pull the mat. Heavy for a doormat."
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "Nobody gives things TO a doormat."
+            }
+          ]
+        }
+      },
+      {
+        "id": "hs_path",
+        "name": "Sidewalk",
+        "bounds": {
+          "x": 43.9,
+          "y": 88.1,
+          "w": 9.5,
+          "h": 5
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "Concrete path to the door. Cracks form blockchain diagrams."
+            }
+          ],
+          "USE": [
+            {
+              "op": "say",
+              "text": "Walking on it. Left, right. Decentralized movement."
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "No response. Hardened by years of foot traffic."
+            }
+          ],
+          "PICK": [
+            {
+              "op": "say",
+              "text": "A pebble. Could be useful... probably not."
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "say",
+              "text": "Can't open a sidewalk."
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "Sidewalks don't close."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I push against the concrete. It pushes back. Newton wins."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "I can't pull a sidewalk."
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "Concrete doesn't need charity."
+            }
+          ]
+        }
+      },
+      {
+        "id": "hs_power_pole",
+        "name": "Power Pole",
+        "bounds": {
+          "x": 55.7,
+          "y": 6.9,
+          "w": 3,
+          "h": 60
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "Wooden power pole. The original Layer 1 — electrical infrastructure."
+            }
+          ],
+          "USE": [
+            {
+              "op": "say",
+              "text": "I'd rather not touch live power lines."
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "The wires hum. Multi-chain technology."
+            }
+          ],
+          "PICK": [
+            {
+              "op": "say",
+              "text": "Not an NFT."
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "say",
+              "text": "Maintenance panel is locked."
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "Permanent fixture."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I push the pole. It doesn't budge. 50 years of infrastructure."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "I pull on a low cable. Bad idea. I let go immediately."
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "The power company doesn't accept hand deliveries."
+            }
+          ]
+        }
+      },
+      {
+        "id": "hs_trees",
+        "name": "Trees",
+        "bounds": {
+          "x": 91.6,
+          "y": 17.4,
+          "w": 8.2,
+          "h": 55
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "Dense trees. Leaves rustle in the evening breeze."
+            }
+          ],
+          "USE": [
+            {
+              "op": "say",
+              "text": "I lean against a tree. Nature's proof-of-stake."
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "They've been here longer than any blockchain. Wise validators."
+            },
+            {
+              "op": "setFlag",
+              "flag": "debug_look_2",
+              "value": true
+            }
+          ],
+          "PICK": [
+            {
+              "op": "say",
+              "text": "A leaf. Already turning orange. Like my portfolio."
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "say",
+              "text": "Behind the trees: more trees. And darkness."
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "Nature's auto-close."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I push against a tree trunk. It's been doing this longer than me."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "I pull a low branch. It snaps back. Ow."
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "Trees accept only carbon dioxide."
+            }
+          ]
+        }
+      },
+      {
+        "id": "hs_roof",
+        "name": "Roof",
+        "bounds": {
+          "x": 31.5,
+          "y": 0,
+          "w": 11.4,
+          "h": 7.6
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "Red-brown tiles. Solid like a well-written smart contract."
+            }
+          ],
+          "USE": [
+            {
+              "op": "say",
+              "text": "Can't reach from here. Need a ladder."
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "A bird takes flight, startled. Sorry."
+            }
+          ],
+          "PICK": [
+            {
+              "op": "say",
+              "text": "Way too high."
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "say",
+              "text": "No attic access from outside."
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "Good roof. Doing its job."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I can't reach the roof from here."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "I'm not pulling tiles off a roof."
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "The pigeons up there don't want anything."
+            }
+          ]
+        }
+      },
+      {
+        "id": "hs_carport",
+        "name": "Carport",
+        "bounds": {
+          "x": 69.3,
+          "y": 57.4,
+          "w": 15,
+          "h": 30
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "Empty carport. Oil stains but no car. Someone left in a hurry."
+            }
+          ],
+          "USE": [
+            {
+              "op": "say",
+              "text": "Nothing to use. Eerily empty."
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "Footsteps echo. Ghost of a Lambo."
+            }
+          ],
+          "PICK": [
+            {
+              "op": "say",
+              "text": "Oil stains. Not useful."
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "say",
+              "text": "Already open. More suggestion than shelter."
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "Open-source parking doesn't close."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I push the carport beam. It wobbles slightly."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "I pull on the roof edge. Dust falls."
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "The ghost Lambo doesn't need fuel."
+            }
+          ]
+        }
+      },
+      {
+        "id": "hs_keypad",
+        "name": "keypad",
+        "bounds": {
+          "x": 37.3,
+          "y": 61.1,
+          "w": 1.9,
+          "h": 9
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "Looking at keypag."
+            }
+          ],
+          "USE": [
+            {
+              "op": "say",
+              "text": "Can't use keypag."
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "keypag doesn't respond."
+            }
+          ],
+          "PICK": [
+            {
+              "op": "say",
+              "text": "Can't pick up keypag."
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "say",
+              "text": "Can't open keypag."
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "Can't close keypag."
+            }
+          ]
+        }
+      },
+      {
+        "id": "hs_sunset_sky",
+        "name": "Sunset Sky",
+        "bounds": { "x": 0, "y": 0, "w": 30, "h": 10 },
+        "scripts": {
+          "LOOK": [{ "op": "say", "text": "A blazing pink and orange sunset. Like watching a candlestick chart go parabolic across the entire sky." }],
+          "USE": [{ "op": "say", "text": "I try to screenshot the sunset. My phone camera does NOT do it justice. Some things can't be minted." }],
+          "TALK": [{ "op": "say", "text": "'Hey sky, when moon?' The clouds drift silently. Even the atmosphere won't give me alpha." }],
+          "PICK": [{ "op": "say", "text": "I reach for the sunset. My arm isn't long enough. Story of my trading career." }],
+          "OPEN": [{ "op": "say", "text": "Can't open the sky. It's already the most permissionless thing in existence." }],
+          "CLOSE": [{ "op": "say", "text": "The sun is closing on its own. Give it twenty minutes." }],
+          "PUSH": [{ "op": "say", "text": "I push against the fading light. Physics remains unimpressed." }],
+          "PULL": [{ "op": "say", "text": "I try to pull the sunset back. Time only moves in one direction. Like my portfolio." }],
+          "GIVE": [{ "op": "say", "text": "The sky doesn't accept offerings. Not even gas fees." }]
+        }
+      },
+      {
+        "id": "hs_fence",
+        "name": "Wooden Fence",
+        "bounds": { "x": 0, "y": 45, "w": 5, "h": 30 },
+        "scripts": {
+          "LOOK": [{ "op": "say", "text": "A weathered wooden fence marking the property line. Some planks are missing. Like gaps in a liquidity pool." }],
+          "USE": [{ "op": "say", "text": "I lean on the fence. It creaks but holds. More reliable than most DeFi protocols." }],
+          "TALK": [{ "op": "say", "text": "'Good fences make good neighbors.' The fence says nothing. It's a fence." }],
+          "PICK": [{ "op": "say", "text": "I pull a loose splinter off. Ouch. Not worth the gas fees." }],
+          "OPEN": [{ "op": "say", "text": "No gate here. Just fence all the way. Permissioned access only." }],
+          "CLOSE": [{ "op": "say", "text": "The fence is already doing its best impression of a closed position." }],
+          "PUSH": [{ "op": "say", "text": "I push the fence. It leans. One more push and Adrian's property value drops 3%." }],
+          "PULL": [{ "op": "say", "text": "I pull a plank. It comes loose. Now there's an exploit in the perimeter." }],
+          "GIVE": [{ "op": "say", "text": "The fence doesn't want anything. It just wants to be left alone. Relatable." }]
+        }
+      },
+      {
+        "id": "hs_upper_windows",
+        "name": "Upper Floor Windows",
+        "bounds": { "x": 21, "y": 18, "w": 18, "h": 20 },
+        "scripts": {
+          "LOOK": [{ "op": "say", "text": "Four windows glow warmly on the second floor. Multiple monitor screens visible inside. Someone was running serious operations up there." }],
+          "USE": [{ "op": "say", "text": "Too high to reach from here. I'd need to get inside first." }],
+          "TALK": [{ "op": "say", "text": "'Anyone trading up there?!' The glow of the screens is the only answer. The bots never sleep." }],
+          "PICK": [{ "op": "say", "text": "Can't reach the second floor. I'm not Spider-Man. I'm more of a rug-pull survivor." }],
+          "OPEN": [{ "op": "say", "text": "Way too high. I'd need a ladder or a very optimistic leverage position." }],
+          "CLOSE": [{ "op": "say", "text": "The curtains are already half-drawn. Privacy mode: on." }],
+          "PUSH": [{ "op": "say", "text": "I push against the wall below the windows. The house doesn't budge. Solid foundation." }],
+          "PULL": [{ "op": "say", "text": "I try to pull myself up toward the windows. Gravity says no. Hard no." }],
+          "GIVE": [{ "op": "say", "text": "I can't give anything to windows I can't reach. Story of every failed airdrop claim." }]
+        }
+      }
+    ],
+    "triggers": [
+      {
+        "id": "tr_game_opening",
+        "once": true,
+        "bounds": {
+          "x": 60,
+          "y": 88,
+          "w": 25,
+          "h": 12
+        },
+        "onEnter": [
+          {
+            "op": "ifFlag",
+            "flag": "premise_shown",
+            "then": [],
+            "else": [
+              {
+                "op": "narrative",
+                "lines": [
+                  "Somewhere on Base chain, block 18,247,391...",
+                  "",
+                  "The ZERO ecosystem thrives. Tokens flow.",
+                  "NFTs trade. The FloorEngine sweeps.",
+                  "",
+                  "But its creator has vanished.",
+                  "",
+                  "They call the missing person \"Patient Zero\" —",
+                  "the first crypto addict, the original degen.",
+                  "",
+                  "A message arrives in your wallet:",
+                  "\"Find Patient Zero. Save the ecosystem.\"",
+                  "",
+                  "You trace the signal to a house on the outskirts of town..."
+                ]
+              },
+              {
+                "op": "setFlag",
+                "flag": "premise_shown",
+                "value": true
+              },
+              {
+                "op": "titleCard",
+                "chapter": "CHAPTER 1",
+                "title": "Breaking & Entering",
+                "subtitle": "Someone left in a hurry..."
+              },
+              {
+                "op": "setFlag",
+                "flag": "chapter_1_intro_shown",
+                "value": true
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "tr_mountain",
+        "once": false,
+        "bounds": {
+          "x": 0,
+          "y": 54.7,
+          "w": 3,
+          "h": 45.3
+        },
+        "onEnter": [
+          {
+            "op": "gotoScene",
+            "sceneId": "mountain",
+            "spawn": {
+              "x": 90,
+              "y": 88
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "items": {
+    "sceneItems": []
+  },
+  "combos": [],
+  "audio": {
+    "music": "retro-adventure",
+    "ambience": null,
+    "sfx": {}
+  },
+  "transitions": {
+    "goto": []
+  },
+  "walkableAreas": [
+    {
+      "x": 0,
+      "y": 75,
+      "w": 100,
+      "h": 25
+    }
+  ],
+  "onEnter": [
+    {
+      "op": "ifFlag",
+      "flag": "premise_shown",
+      "then": [],
+      "else": [
+        {
+          "op": "narrative",
+          "lines": [
+            "Somewhere on Base chain, block 18,247,391...",
+            "",
+            "The ZERO ecosystem thrives. Tokens flow.",
+            "NFTs trade. The FloorEngine sweeps.",
+            "",
+            "But its creator has vanished.",
+            "",
+            "They call the missing person \"Patient Zero\" —",
+            "the first crypto addict, the original degen.",
+            "",
+            "A message arrives in your wallet:",
+            "\"Find Patient Zero. Save the ecosystem.\"",
+            "",
+            "You trace the signal to a house on the outskirts of town..."
+          ]
+        },
+        {
+          "op": "setFlag",
+          "flag": "premise_shown",
+          "value": true
+        },
+        {
+          "op": "titleCard",
+          "chapter": "CHAPTER 1",
+          "title": "Breaking & Entering",
+          "subtitle": "Someone left in a hurry..."
+        },
+        {
+          "op": "setFlag",
+          "flag": "chapter_1_intro_shown",
+          "value": true
+        }
+      ]
+    }
+  ]
+}

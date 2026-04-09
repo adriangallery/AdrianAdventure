@@ -1,0 +1,988 @@
+{
+  "version": 1,
+  "id": "lobby",
+  "title": "AdrianLAB Lobby",
+  "assets": {
+    "background": "background.png",
+    "walkmask": "walkmask.png",
+    "atlas": null
+  },
+  "render": {
+    "world": {
+      "width": 3712,
+      "height": 1152
+    },
+    "camera": {
+      "start": {
+        "x": 1856,
+        "y": 576
+      },
+      "followPlayer": true,
+      "lerp": 0.12,
+      "clampToWorld": true
+    }
+  },
+  "player": {
+    "spawn": {
+      "x": 76.3,
+      "y": 97.7
+    },
+    "speed": 140,
+    "sprite": {
+      "sheet": null,
+      "idle": null,
+      "walk": null
+    },
+    "playerScale": 6
+  },
+  "ui": {
+    "verbs": [
+      "LOOK",
+      "USE",
+      "TALK",
+      "PICK",
+      "OPEN",
+      "CLOSE"
+    ],
+    "mobileDrawerDefault": "collapsed"
+  },
+  "maskMapping": {
+    "walkableColor": "#0000FF",
+    "hotspotColor": "#FFFF00",
+    "triggerColor": "#FF00FF",
+    "regionIdStrategy": "manual"
+  },
+  "regions": {
+    "hotspots": [
+      {
+        "id": "hs_stairs_up",
+        "name": "Stairs to Upstairs",
+        "bounds": {
+          "x": 65.5,
+          "y": 2.6,
+          "w": 19.7,
+          "h": 33.5
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "Stairs leading to the upper floor. Elegantly designed with smart lighting."
+            }
+          ],
+          "USE": [
+            {
+              "op": "sayBrief",
+              "text": "Heading upstairs.",
+              "duration": 1000
+            },
+            {
+              "op": "fadeToScene",
+              "sceneId": "upstairs",
+              "spawn": {
+                "x": 30,
+                "y": 76
+              },
+              "duration": 600
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "The stairs creak: 'Level up, anon...'"
+            }
+          ],
+          "PICK": [
+            {
+              "op": "say",
+              "text": "I find a small LED light on the railing. Cute but useless."
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "say",
+              "text": "I notice a hidden compartment under one step. Empty though."
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "The stairs are always open for access between floors."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I push the handrail. Sturdy."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "I pull the railing. A loose bolt falls."
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "Stairs don't accept tips."
+            }
+          ]
+        }
+      },
+      {
+        "id": "hs_plant",
+        "name": "Lobby Plant",
+        "bounds": {
+          "x": 39.9,
+          "y": 44,
+          "w": 5,
+          "h": 20
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "A tall plant in a ceramic pot. It looks thirsty. Really thirsty."
+            }
+          ],
+          "USE": [
+            {
+              "op": "say",
+              "text": "I have nothing to water it with. The plant droops judgmentally."
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "The plant hums photosynthetically. 'Water... me...'"
+            }
+          ],
+          "PICK": [
+            {
+              "op": "say",
+              "text": "I can't carry a plant this big."
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "say",
+              "text": "I dig in the soil. Just dirt and roots."
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "I pat the soil back."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I push the pot. It scrapes the floor."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "I pull a leaf. The plant recoils."
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "The plant accepts water. I don't have any."
+            }
+          ]
+        }
+      },
+      {
+        "id": "hs_frontdoor",
+        "name": "Main Entrance",
+        "bounds": {
+          "x": 90.5,
+          "y": 22.2,
+          "w": 6.2,
+          "h": 68.2
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "The front door from the inside. Through the frosted glass I can see the porch. The lock mechanism is impressively complex."
+            }
+          ],
+          "USE": [
+            {
+              "op": "sayBrief",
+              "text": "Back to the entrance.",
+              "duration": 1000
+            },
+            {
+              "op": "fadeToScene",
+              "sceneId": "outside",
+              "spawn": {
+                "x": 50,
+                "y": 80
+              },
+              "duration": 500
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "sayBrief",
+              "text": "Back to the entrance.",
+              "duration": 1000
+            },
+            {
+              "op": "fadeToScene",
+              "sceneId": "outside",
+              "spawn": {
+                "x": 50,
+                "y": 80
+              },
+              "duration": 500
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "The door creaks. In door language, that means 'please oil me'."
+            }
+          ],
+          "PICK": [
+            {
+              "op": "say",
+              "text": "I can't pick up a door. I've tried before in other games."
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "It's already closed."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "sayBrief",
+              "text": "Back to the entrance.",
+              "duration": 1000
+            },
+            {
+              "op": "fadeToScene",
+              "sceneId": "outside",
+              "spawn": {
+                "x": 50,
+                "y": 80
+              },
+              "duration": 500
+            }
+          ],
+          "PULL": [
+            {
+              "op": "sayBrief",
+              "text": "Back to the entrance.",
+              "duration": 1000
+            },
+            {
+              "op": "fadeToScene",
+              "sceneId": "outside",
+              "spawn": {
+                "x": 50,
+                "y": 80
+              },
+              "duration": 500
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "I have nothing to give a door."
+            }
+          ]
+        }
+      },
+      {
+        "id": "hs_coat",
+        "name": "Wool Coat",
+        "bounds": {
+          "x": 53.3,
+          "y": 32.4,
+          "w": 4.8,
+          "h": 36.1
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "A heavy wool overcoat. Multiple pockets, each containing a different defunct exchange's branded pen. The lining is stitched with the words 'DYOR' in tiny letters."
+            }
+          ],
+          "USE": [
+            {
+              "op": "say",
+              "text": "I check the pockets. Pens from FTX, Celsius, BlockFi... a graveyard of exchanges."
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "The coat rustles. Ghosts of bear markets past."
+            }
+          ],
+          "PICK": [
+            {
+              "op": "ifFlag",
+              "flag": "found_keycard",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "I already took the keycard. Just dead exchange pens left."
+                }
+              ],
+              "else": [
+                {
+                  "op": "setFlag",
+                  "flag": "found_keycard",
+                  "value": true
+                },
+                {
+                  "op": "setFlag",
+                  "flag": "has_keycard",
+                  "value": true
+                },
+                {
+                  "op": "addItem",
+                  "id": "keycard",
+                  "name": "Adrian's Keycard"
+                },
+                {
+                  "op": "say",
+                  "text": "I search the deep pockets... buried under pens and receipts, I find a keycard! It says 'ADMIN ACCESS — AdrianLAB'."
+                }
+              ]
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "ifFlag",
+              "flag": "found_keycard",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "I already took the keycard. Just dead exchange pens left."
+                }
+              ],
+              "else": [
+                {
+                  "op": "setFlag",
+                  "flag": "found_keycard",
+                  "value": true
+                },
+                {
+                  "op": "setFlag",
+                  "flag": "has_keycard",
+                  "value": true
+                },
+                {
+                  "op": "addItem",
+                  "id": "keycard",
+                  "name": "Adrian's Keycard"
+                },
+                {
+                  "op": "say",
+                  "text": "I open the coat pockets. Inside the breast pocket: an admin keycard with Adrian's face."
+                }
+              ]
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "I button the coat. It looks dignified on its hook."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I push the coat aside. Just the wall behind it."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "I pull the coat off the hook. Heavy. I put it back — I have enough baggage."
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "Nobody wants a coat full of dead exchange pens."
+            }
+          ]
+        }
+      },
+      {
+        "id": "hs_bucket",
+        "name": "Cleaning Bucket",
+        "bounds": {
+          "x": 3,
+          "y": 78,
+          "w": 6,
+          "h": 12
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "ifFlag",
+              "flag": "found_rubber_duck",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "An empty cleaning bucket. It looks lonely without its rubber duck."
+                }
+              ],
+              "else": [
+                {
+                  "op": "say",
+                  "text": "A janitor's cleaning bucket. Something yellow is floating in the murky water."
+                }
+              ]
+            }
+          ],
+          "USE": [
+            {
+              "op": "say",
+              "text": "I'm not cleaning anything. I'm investigating."
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "I address the bucket. The water ripples. Coincidence? Probably."
+            }
+          ],
+          "PICK": [
+            {
+              "op": "ifFlag",
+              "flag": "found_rubber_duck",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "Nothing else in the bucket. Just dirty water."
+                }
+              ],
+              "else": [
+                {
+                  "op": "say",
+                  "text": "I fish around in the murky water and pull out... a rubber duck? Who brings a rubber duck to a crypto lab?"
+                },
+                {
+                  "op": "addItem",
+                  "id": "rubber_duck",
+                  "name": "Rubber Duck"
+                },
+                {
+                  "op": "setFlag",
+                  "flag": "found_rubber_duck",
+                  "value": true
+                }
+              ]
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "say",
+              "text": "Buckets don't open. They're already open. That's their whole design philosophy."
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "No lid. This bucket lives life on the edge."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I kick the bucket. Wait — poor choice of words. The water sloshes."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "I drag the bucket. It leaves a wet trail. The janitor won't be happy."
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "Nobody wants a dirty bucket. I don't blame them."
+            }
+          ]
+        }
+      },
+      {
+        "id": "hs_monitor_desk",
+        "name": "Monitor Desk",
+        "bounds": {
+          "x": 3,
+          "y": 22,
+          "w": 33,
+          "h": 42
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "Five CRT monitors showing trading charts, terminal windows, and what appears to be a live blockchain explorer. The 90s hardware running 2020s defi. Retro-futurism at its finest."
+            }
+          ],
+          "USE": [
+            {
+              "op": "say",
+              "text": "I wiggle the mouse. All five screens wake up. One shows a yield farm dashboard. Another shows the mempool. The third... is that Minesweeper?"
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "'Show me the money!' The monitors hum louder. A chart goes green for a second. Then red. Classic."
+            }
+          ],
+          "PICK": [
+            {
+              "op": "say",
+              "text": "These CRTs weigh about 40 pounds each. My back says absolutely not."
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "say",
+              "text": "I open a desk drawer. Floppy disks labeled 'SEED PHRASE BACKUP - DO NOT LOSE'. In a desk drawer. In a lobby. Adrian..."
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "I close the drawer. Some secrets are better left undiscovered. For now."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I push the desk. A CRT wobbles dangerously. The trading bot onscreen panics: 'EARTHQUAKE DETECTED — SELLING EVERYTHING!'"
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "I pull open the keyboard tray. Crumbs everywhere. The snack history of a true degen."
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "The monitors don't accept deposits. Only the smart contracts do."
+            }
+          ]
+        }
+      },
+      {
+        "id": "hs_ceiling_light",
+        "name": "Ceiling Light",
+        "bounds": {
+          "x": 47,
+          "y": 5,
+          "w": 6,
+          "h": 15
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "A vintage pendant lamp casting a warm cone of light. It flickers every few seconds. Proof-of-work lighting — uses way more energy than it should."
+            }
+          ],
+          "USE": [
+            {
+              "op": "say",
+              "text": "I pull the chain. The light dims. I pull again. Bright. Dim. Bright. I'm basically a human light switch now."
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "The bulb buzzes. In Morse code, that translates to 'replace me, I'm dying.' Noted."
+            }
+          ],
+          "PICK": [
+            {
+              "op": "say",
+              "text": "Too high to reach without a ladder. Even on my tiptoes. Especially on my tiptoes."
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "say",
+              "text": "I can't open a ceiling light. That's not how lighting works."
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "Lights don't close. They turn off. Different verb, same disappointment."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I push the air beneath the lamp. The lamp is unaffected by my pathetic display."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "I jump and grab the chain. The light swings wildly. Shadows dance on the walls like a bear market panic."
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "I offer the lamp a new bulb. Oh wait, I don't have one. Just empty promises, like every roadmap."
+            }
+          ]
+        }
+      },
+      {
+        "id": "hs_floor_tiles",
+        "name": "Checkered Floor",
+        "bounds": {
+          "x": 10,
+          "y": 84,
+          "w": 75,
+          "h": 10
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "Checkered brown and tan tiles. Classic. Like a chessboard where every move is 'buy high, sell low.'"
+            }
+          ],
+          "USE": [
+            {
+              "op": "say",
+              "text": "I tap-dance on the tiles. The acoustics are surprisingly good. The receptionist stares."
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "I kneel and whisper to the floor. 'Any secret basements down there?' The tiles remain tight-lipped."
+            }
+          ],
+          "PICK": [
+            {
+              "op": "say",
+              "text": "I try to pry up a tile. It's cemented. Immutable, like a good blockchain."
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "say",
+              "text": "One tile seems slightly loose but I can't lift it. Need better tools. Or worse morals."
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "The floor is already as closed as it gets."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I stomp on the floor. Solid. No hollow sounds. No secret passages. Yet."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "I scratch at the grout between tiles. Nothing gives. Whoever laid these tiles was not messing around."
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "The floor accepts only footsteps. And the occasional dropped coin that rolls under the desk forever."
+            }
+          ]
+        }
+      }
+    ],
+    "triggers": [
+      {
+        "id": "tr_lobby_first_visit",
+        "once": true,
+        "bounds": {
+          "x": 70,
+          "y": 86,
+          "w": 12.5,
+          "h": 14
+        },
+        "onEnter": [
+          {
+            "op": "titleCard",
+            "chapter": "CHAPTER 2",
+            "title": "The Receptionist"
+          },
+          {
+            "op": "wait",
+            "ms": 2000
+          },
+          {
+            "op": "sayBrief",
+            "text": "The lobby hums with residual energy. Someone was here recently.",
+            "duration": 2500
+          }
+        ]
+      },
+      {
+        "id": "tr_to_frontdoor",
+        "once": false,
+        "bounds": {
+          "x": 96,
+          "y": 60,
+          "w": 4,
+          "h": 30
+        },
+        "onEnter": [
+          {
+            "op": "gotoScene",
+            "sceneId": "outside",
+            "spawn": {
+              "x": 26,
+              "y": 87.9
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "npcs": [
+    {
+      "id": "npc_receptionist",
+      "name": "Receptionist",
+      "position": {
+        "x": 23.9,
+        "y": 63.2
+      },
+      "color": "0xff6600",
+      "dialogueTreeId": "receptionist_intro"
+    }
+  ],
+  "dialogues": {
+    "receptionist_intro": {
+      "id": "receptionist_intro",
+      "start": "greeting",
+      "nodes": {
+        "greeting": {
+          "speaker": "Receptionist",
+          "text": "Welcome to AdrianLAB! Are you here for the tour or the experiments?",
+          "choices": [
+            {
+              "text": "The tour, please.",
+              "next": "tour"
+            },
+            {
+              "text": "What experiments?",
+              "next": "experiments"
+            },
+            {
+              "text": "What about Patient Zero?",
+              "next": "patient_zero"
+            },
+            {
+              "text": "[Requires AdrianZERO] Show my badge.",
+              "next": "vip",
+              "gate": {
+                "type": "ERC721",
+                "contract": "0x6e369bf0e4e0c106192d606fb6d85836d684da75",
+                "minBalance": 1
+              }
+            }
+          ]
+        },
+        "tour": {
+          "speaker": "Receptionist",
+          "text": "The lobby connects to all areas. Upstairs is the trading floor. The entrance leads outside. Oh, and whoever left their coat on the rack should really clean out their pockets.",
+          "end": true
+        },
+        "experiments": {
+          "speaker": "Receptionist",
+          "text": "Oh, you know... turning pixels into tokens, tokens into dreams, dreams into... well, mostly gas fees. But sometimes magic!",
+          "choices": [
+            {
+              "text": "Does 'Patient Zero' ring a bell?",
+              "next": "patient_zero"
+            },
+            {
+              "text": "Interesting. Thanks.",
+              "next": "experiments_end"
+            }
+          ]
+        },
+        "experiments_end": {
+          "speaker": "Receptionist",
+          "text": "Anytime! Let me know if you need anything else.",
+          "end": true
+        },
+        "patient_zero": {
+          "speaker": "Receptionist",
+          "text": "Patient Zero? I... I don't know what you're talking about. That's a basement-level clearance topic.",
+          "onEnter": [
+            {
+              "op": "setFlag",
+              "flag": "receptionist_mentioned_pz",
+              "value": true
+            }
+          ],
+          "choices": [
+            {
+              "text": "You seem nervous about it.",
+              "next": "pz_nervous"
+            },
+            {
+              "text": "Forget I asked.",
+              "next": "pz_forget"
+            }
+          ]
+        },
+        "pz_nervous": {
+          "speaker": "Receptionist",
+          "text": "Nervous? Me? Ha! I just... look, some things in this building are above my pay grade. WAY above. If you want answers about... that... you'd need to go deeper. Literally.",
+          "end": true
+        },
+        "pz_forget": {
+          "speaker": "Receptionist",
+          "text": "Already forgotten! Ha ha... ha. Please don't mention that name again. Especially not near the basement.",
+          "end": true
+        },
+        "vip": {
+          "speaker": "Receptionist",
+          "text": "An AdrianZERO holder! VIP access granted. The basement has a special terminal for holders. The rug under the entrance hides the way down.",
+          "end": true
+        }
+      }
+    }
+  },
+  "items": {
+    "sceneItems": []
+  },
+  "combos": [
+    {
+      "items": [
+        "water_bottle",
+        "hs_plant"
+      ],
+      "result": "golden_token",
+      "script": [
+        {
+          "op": "ifFlag",
+          "flag": "plant_watered",
+          "then": [
+            {
+              "op": "say",
+              "text": "The plant is already blooming. It doesn't need more water."
+            }
+          ],
+          "else": [
+            {
+              "op": "say",
+              "text": "I pour the spring water on the crypto-plant. It erupts with growth! Leaves unfurl, a golden pod emerges from the soil..."
+            },
+            {
+              "op": "setFlag",
+              "flag": "plant_watered",
+              "value": true
+            },
+            {
+              "op": "removeItem",
+              "id": "water_bottle"
+            },
+            {
+              "op": "wait",
+              "ms": 600
+            },
+            {
+              "op": "addItem",
+              "id": "golden_token",
+              "name": "Golden ZERO Token"
+            },
+            {
+              "op": "say",
+              "text": "Inside the pod: a golden token engraved with 'ZERO'. The plant whisperer's reward."
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "audio": {
+    "music": "retro-adventure",
+    "variation": {
+      "filterType": "lowpass",
+      "filterFrequency": 3000,
+      "volume": 0.9
+    },
+    "ambience": null,
+    "sfx": {}
+  },
+  "transitions": {
+    "goto": []
+  },
+  "walkableAreas": [
+    {
+      "x": 0,
+      "y": 79.1,
+      "w": 69.7,
+      "h": 20.9
+    },
+    {
+      "x": 69.7,
+      "y": 90.4,
+      "w": 29.8,
+      "h": 9.5
+    }
+  ],
+  "onEnter": [
+    {
+      "op": "ifFlag",
+      "flag": "chapter_2_intro_shown",
+      "then": [],
+      "else": [
+        {
+          "op": "narrative",
+          "lines": [
+            "Inside the lab, the air smells of burnt circuits and ambition.",
+            "Only the receptionist remains at her post.",
+            "Adrian's empire stretches upward — trading floors, antennas, dreams.",
+            "But something downstairs keeps blinking..."
+          ]
+        },
+        {
+          "op": "titleCard",
+          "chapter": "CHAPTER 2",
+          "title": "The Receptionist",
+          "subtitle": "Trust is earned, not minted."
+        },
+        {
+          "op": "setFlag",
+          "flag": "chapter_2_intro_shown",
+          "value": true
+        }
+      ]
+    }
+  ]
+}

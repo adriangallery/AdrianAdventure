@@ -1,0 +1,891 @@
+{
+  "version": 1,
+  "id": "mountain",
+  "title": "Patient Zero Rehabilitation Clinic",
+  "assets": {
+    "background": "background.png",
+    "walkmask": "walkmask.png",
+    "atlas": null
+  },
+  "render": {
+    "world": {
+      "width": 3712,
+      "height": 1152
+    },
+    "camera": {
+      "start": {
+        "x": 768,
+        "y": 576
+      },
+      "followPlayer": true,
+      "lerp": 0.12,
+      "clampToWorld": true
+    }
+  },
+  "player": {
+    "spawn": {
+      "x": 20,
+      "y": 88
+    },
+    "speed": 140,
+    "sprite": {
+      "sheet": null,
+      "idle": null,
+      "walk": null
+    },
+    "playerScale": 4.85
+  },
+  "ui": {
+    "verbs": [
+      "LOOK",
+      "USE",
+      "TALK",
+      "PICK",
+      "OPEN",
+      "CLOSE"
+    ],
+    "mobileDrawerDefault": "collapsed"
+  },
+  "maskMapping": {
+    "walkableColor": "#0000FF",
+    "hotspotColor": "#FFFF00",
+    "triggerColor": "#FF00FF",
+    "regionIdStrategy": "manual"
+  },
+  "regions": {
+    "hotspots": [
+      {
+        "id": "hs_sign",
+        "name": "Clinic Sign",
+        "bounds": {
+          "x": 35.7,
+          "y": 49.5,
+          "w": 10.1,
+          "h": 15.1
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "'Patient Zero Rehabilitation Clinic'. Where they send wallets that went too deep into memecoin season."
+            }
+          ],
+          "USE": [
+            {
+              "op": "say",
+              "text": "The fine print mentions 'No refunds, no regrets, only recovery'."
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "The sign doesn't talk. But it judges silently."
+            }
+          ],
+          "PICK": [
+            {
+              "op": "say",
+              "text": "I can't take the sign, but I screenshot it for my portfolio losses."
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "say",
+              "text": "The sign doesn't open, but it opens my eyes to crypto addiction."
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "I can't close the sign, but I can close my trading app."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I push the sign. It wobbles but holds. Built to last, unlike most DeFi protocols."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "I pull the sign. The post is deep in the ground. Someone meant for this to stay."
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "The sign doesn't accept patients anymore. Or gifts."
+            }
+          ]
+        }
+      },
+      {
+        "id": "hs_winding_path",
+        "name": "Winding Path",
+        "bounds": {
+          "x": 64.6,
+          "y": 45.2,
+          "w": 10.1,
+          "h": 37.6
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "A long winding path leads to the clinic. Hope I've got stamina... and a decent gas allowance."
+            }
+          ],
+          "USE": [
+            {
+              "op": "ifHasItem",
+              "id": "printout",
+              "then": [
+                {
+                  "op": "fadeToScene",
+                  "sceneId": "clinic_interior",
+                  "spawn": {
+                    "x": 80,
+                    "y": 70
+                  }
+                }
+              ],
+              "else": [
+                {
+                  "op": "ifFlag",
+                  "flag": "chapter_3_complete",
+                  "then": [
+                    {
+                      "op": "fadeToScene",
+                      "sceneId": "clinic_interior",
+                      "spawn": {
+                        "x": 80,
+                        "y": 70
+                      }
+                    }
+                  ],
+                  "else": [
+                    {
+                      "op": "say",
+                      "text": "The mountain path forks. Without directions, I could get lost up here for days."
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "The path echoes my footsteps back. Sounds like liquidation alerts."
+            }
+          ],
+          "PICK": [
+            {
+              "op": "say",
+              "text": "I can't take the path, but I can follow it to recovery... or more losses."
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "say",
+              "text": "The path is always open. A one-way road to financial therapy."
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "I can't close the path, but I can close my positions."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I push forward on the path. Each step feels heavier. Like gas fees on a congested chain."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "I pull back from the path. Maybe I'm not ready for recovery yet."
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "The path doesn't want anything. It just wants me to walk it."
+            }
+          ]
+        }
+      },
+      {
+        "id": "hs_sky",
+        "name": "Mountain Sky",
+        "bounds": {
+          "x": 30,
+          "y": 2.4,
+          "w": 44.1,
+          "h": 14.2
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "Clouds shift like unstable protocols. Reality here is barely forked."
+            },
+            {
+              "op": "setFlag",
+              "flag": "debug_look_4",
+              "value": true
+            }
+          ],
+          "USE": [
+            {
+              "op": "say",
+              "text": "The clouds form patterns that look like candlestick charts."
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "The wind whispers: 'Not your keys, not your clouds...'"
+            }
+          ],
+          "PICK": [
+            {
+              "op": "say",
+              "text": "I try to grab a cloud. It turns into vaporware."
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "say",
+              "text": "The sky is always open. The ultimate open source."
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "The sky can't be closed. It's censorship-resistant."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I push against the sky. Surprisingly, nothing happens."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "I try to pull the clouds closer. They're on a different protocol."
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "I throw my hopes at the sky. They come back down."
+            }
+          ]
+        }
+      },
+      {
+        "id": "hs_trees",
+        "name": "Tree Line",
+        "bounds": {
+          "x": 30.2,
+          "y": 17.2,
+          "w": 19.5,
+          "h": 19.2
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "Something's moving in the shadows... could be a dev debugging or just my paranoia."
+            }
+          ],
+          "USE": [
+            {
+              "op": "say",
+              "text": "I use the trees for cover. Maybe the clinic staff won't see me coming."
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "The trees whisper forgotten secrets about patients who never returned."
+            }
+          ],
+          "PICK": [
+            {
+              "op": "say",
+              "text": "I can't take the trees. They're rooted. Unlike most crypto projects."
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "say",
+              "text": "The trees provide a natural barrier. No key required."
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "I close my eyes under the trees. Pretend this is all a bad dream."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I push through the tree line. Branches scratch my face. Worth it? No."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "I pull a branch. It snaps back. The forest has a no-return policy."
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "The trees accept only CO2. I'm not qualified."
+            }
+          ]
+        }
+      },
+      {
+        "id": "hs_spring",
+        "name": "Mountain Spring",
+        "bounds": {
+          "x": 16.1,
+          "y": 19.7,
+          "w": 12,
+          "h": 15
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "Crystal clear water trickling from the rocks. Decentralized hydration."
+            }
+          ],
+          "USE": [
+            {
+              "op": "say",
+              "text": "I splash some water on my face. Refreshing. Nature's cooldown function."
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "The water babbles. It's the original proof-of-flow."
+            }
+          ],
+          "PICK": [
+            {
+              "op": "ifFlag",
+              "flag": "has_water",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "I already filled a bottle."
+                }
+              ],
+              "else": [
+                {
+                  "op": "setFlag",
+                  "flag": "has_water",
+                  "value": true
+                },
+                {
+                  "op": "addItem",
+                  "id": "water_bottle",
+                  "name": "Spring Water"
+                },
+                {
+                  "op": "say",
+                  "text": "I fill an empty bottle with spring water. H2O — the original proof-of-work."
+                }
+              ]
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "say",
+              "text": "I can't open a spring. It's already open-source."
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "I can't close a mountain spring. That's censorship."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I push against the rock. The water keeps flowing. Nature doesn't pause."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "I can't pull water uphill. Gravity is Layer 0."
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "The spring gives ME water. Not the other way around."
+            }
+          ]
+        }
+      },
+      {
+        "id": "hs_building",
+        "name": "Clinic Cabin",
+        "bounds": {
+          "x": 70.8,
+          "y": 15,
+          "w": 16,
+          "h": 20
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "A cabin perched on the hillside, warm light glowing from inside. Smoke curls from the chimney. Someone is home. Or something."
+            }
+          ],
+          "USE": [
+            {
+              "op": "say",
+              "text": "Too far away. I need to follow the winding path up there."
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "I shout toward the cabin. The mountains echo back: '...NGMI...NGMI...NGMI...'"
+            }
+          ],
+          "PICK": [
+            {
+              "op": "say",
+              "text": "I can't pick up a building. That's not how real estate works, even on-chain."
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "say",
+              "text": "I need to get up there first. The path is the only way."
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "I can't close a building from down here. I can barely close browser tabs."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I push toward the clinic in my mind. My body stays put. Visualization doesn't work on buildings."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "I try to will the cabin closer. Gravity doesn't support pull requests."
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "I'd give anything to be up there already. But the mountain demands the journey."
+            }
+          ]
+        }
+      },
+      {
+        "id": "hs_warning_signs",
+        "name": "Warning Signs",
+        "bounds": {
+          "x": 31.5,
+          "y": 52.9,
+          "w": 3.4,
+          "h": 12.7
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "Signs along the path: 'TURN BACK — PORTFOLIO AHEAD'. 'LAST CHANCE TO TAKE PROFIT'. 'NO FINANCIAL ADVICE BEYOND THIS POINT'."
+            }
+          ],
+          "USE": [
+            {
+              "op": "say",
+              "text": "The signs are bolted down. Like a smart contract — immutable."
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "The wind whistles through the signs. It sounds like 'HODL'."
+            }
+          ]
+        }
+      },
+      {
+        "id": "hs_boulders",
+        "name": "Boulders",
+        "bounds": {
+          "x": 82,
+          "y": 55,
+          "w": 14,
+          "h": 25
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "Massive boulders covered in lichen. They've been here since before Bitcoin. Since before money, even. The OG store of value."
+            }
+          ],
+          "USE": [
+            {
+              "op": "say",
+              "text": "I lean against a boulder. It's warm from the sunset. Like a hardware wallet that's been mining too long."
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "I address the boulder: 'You've been HODLing this spot for millennia. Respect.' The boulder says nothing. Diamond hands."
+            }
+          ],
+          "PICK": [
+            {
+              "op": "say",
+              "text": "These boulders weigh several tons each. My inventory has a strict carry limit. And a gas limit."
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "say",
+              "text": "I check for cracks. One boulder has a fissure with quartz crystals inside. Nature's own proof-of-work."
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "I can't close a boulder. They're permanently open-source. Geologically speaking."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I push the boulder. It doesn't move. Sisyphus had the same problem, but at least his boulder didn't have a market cap."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "I try to pull a small rock free. It tumbles down the slope. Hope nobody was down there. Not my liability."
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "The boulders accept nothing. They are the original cold storage."
+            }
+          ]
+        }
+      },
+      {
+        "id": "hs_mountain_range",
+        "name": "Purple Mountains",
+        "bounds": {
+          "x": 0,
+          "y": 8,
+          "w": 15,
+          "h": 18
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "Jagged purple peaks piercing the sunset sky. Each mountain looks like a different candlestick pattern. That one's a doji. That one's a shooting star."
+            }
+          ],
+          "USE": [
+            {
+              "op": "say",
+              "text": "I can't use mountains. They use ME. For scale."
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "I yodel into the void. The mountains echo back something that sounds suspiciously like 'BUY THE DIP.'"
+            }
+          ],
+          "PICK": [
+            {
+              "op": "say",
+              "text": "I try to pick a mountain. Even God needed six days to make these. I have maybe six minutes."
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "say",
+              "text": "If I could open a mountain, I'd probably find a dragon sitting on a pile of ETH."
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "Mountains don't close. They're the original 24/7 market."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I push toward the mountains. They get no closer. Like reaching profitability."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "I can't pull mountains. Tectonic plates already tried. Takes millions of years. No gas optimization for that."
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "The mountains demand nothing. They're the only thing in crypto that doesn't ask for your seed phrase."
+            }
+          ]
+        }
+      },
+      {
+        "id": "hs_wildflowers",
+        "name": "Mountain Wildflowers",
+        "bounds": {
+          "x": 0,
+          "y": 78,
+          "w": 18,
+          "h": 12
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "Wild alpine flowers blooming in golden and white. They thrive without governance, without tokenomics, without a roadmap. True decentralization."
+            }
+          ],
+          "USE": [
+            {
+              "op": "say",
+              "text": "I smell the flowers. For a moment, I forget about gas fees and impermanent loss. Then the moment passes."
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "I whisper to the flowers: 'How do you grow without venture capital?' They don't answer. Trade secret."
+            }
+          ],
+          "PICK": [
+            {
+              "op": "say",
+              "text": "I pick a wildflower. It wilts immediately. Off-chain flowers don't survive inventory transfer."
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "say",
+              "text": "I open a flower bud. A tiny bee flies out, annoyed. Decentralized pollination disrupted."
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "Flowers close at night. It's their version of market hours. I should respect that."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I push through the flowers. They bounce right back. More resilient than most L2s."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "I pull a flower. Its roots hold firm. It's been staking in this soil for years."
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "The flowers give ME oxygen. Best yield I've seen all year."
+            }
+          ]
+        }
+      }
+    ],
+    "triggers": [
+      {
+        "id": "tr_chapter4_intro",
+        "once": true,
+        "bounds": {
+          "x": 48.3,
+          "y": 80.4,
+          "w": 25,
+          "h": 11.6
+        },
+        "onEnter": [
+          {
+            "op": "ifFlag",
+            "flag": "chapter_4_intro_shown",
+            "then": [],
+            "else": [
+              {
+                "op": "ifFlag",
+                "flag": "chapter_3_complete",
+                "then": [
+                  {
+                    "op": "narrative",
+                    "lines": [
+                      "The printout shows coordinates. A clinic in the mountains.",
+                      "\"Patient Zero Rehabilitation Clinic — Est. Block 0\"",
+                      "Dr. Satoshi runs the operation. Treats on-chain addiction.",
+                      "Patient Zero escaped. And you're getting closer to finding out why."
+                    ]
+                  },
+                  {
+                    "op": "titleCard",
+                    "chapter": "CHAPTER 4",
+                    "title": "The Mountain Path",
+                    "subtitle": "The clinic is always open."
+                  },
+                  {
+                    "op": "setFlag",
+                    "flag": "chapter_4_intro_shown",
+                    "value": true
+                  }
+                ],
+                "else": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "tr_to_outside",
+        "once": false,
+        "bounds": {
+          "x": 97.7,
+          "y": 59,
+          "w": 1.6,
+          "h": 35
+        },
+        "onEnter": [
+          {
+            "op": "gotoScene",
+            "sceneId": "outside",
+            "spawn": {
+              "x": 58,
+              "y": 93
+            }
+          }
+        ]
+      },
+      {
+        "id": "tr_to_clinic",
+        "once": false,
+        "bounds": {
+          "x": 68.7,
+          "y": 37.1,
+          "w": 9.7,
+          "h": 12.3
+        },
+        "onEnter": [
+          {
+            "op": "fadeToScene",
+            "sceneId": "clinic_exterior",
+            "spawn": {
+              "x": 75,
+              "y": 85
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "items": {
+    "sceneItems": []
+  },
+  "combos": [],
+  "audio": {
+    "music": "retro-adventure",
+    "variation": {
+      "filterType": "lowpass",
+      "filterFrequency": 1200,
+      "volume": 0.35
+    },
+    "ambience": null,
+    "sfx": {}
+  },
+  "transitions": {
+    "goto": []
+  },
+  "walkableAreas": [
+    {
+      "x": 0,
+      "y": 86.5,
+      "w": 100,
+      "h": 7.5
+    }
+  ],
+  "onEnter": [
+    {
+      "op": "ifFlag",
+      "flag": "chapter_4_intro_shown",
+      "then": [],
+      "else": [
+        {
+          "op": "ifFlag",
+          "flag": "chapter_3_complete",
+          "then": [
+            {
+              "op": "narrative",
+              "lines": [
+                "The printout shows coordinates. A clinic in the mountains.",
+                "\"Patient Zero Rehabilitation Clinic — Est. Block 0\"",
+                "Dr. Satoshi runs the operation. Treats on-chain addiction.",
+                "Patient Zero escaped. And you're getting closer to finding out why."
+              ]
+            },
+            {
+              "op": "titleCard",
+              "chapter": "CHAPTER 4",
+              "title": "The Mountain Path",
+              "subtitle": "The clinic is always open."
+            },
+            {
+              "op": "setFlag",
+              "flag": "chapter_4_intro_shown",
+              "value": true
+            }
+          ],
+          "else": []
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scene Editor — AdrianAdventure</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #1a1a2e; color: #e0e0e0; font-family: 'Courier New', monospace; overflow: hidden; height: 100vh; display: flex; flex-direction: column; }
+
+  /* ─── Toolbar ─── */
+  #toolbar {
+    display: flex; align-items: center; gap: 8px; padding: 6px 12px;
+    background: #16213e; border-bottom: 2px solid #0f3460; flex-shrink: 0; flex-wrap: wrap;
+  }
+  .tb-group { display: flex; align-items: center; gap: 6px; }
+  .tb-sep { width: 1px; height: 24px; background: #333; margin: 0 4px; }
+  #toolbar label { font-size: 11px; color: #888; }
+  #toolbar select, #toolbar button {
+    font-family: inherit; font-size: 12px; padding: 3px 8px;
+    background: #0f3460; color: #e0e0e0; border: 1px solid #444; border-radius: 3px; cursor: pointer;
+  }
+  #toolbar button:hover { background: #1a4a8a; }
+  #toolbar button.active { background: #e94560; border-color: #e94560; }
+  .mode-btn { min-width: 70px; text-align: center; }
+  .mode-btn.active-hs { background: #b8860b !important; border-color: #daa520 !important; }
+  .mode-btn.active-wa { background: #228b22 !important; border-color: #32cd32 !important; }
+  #toolbar button.export { background: #0a8a3e; border-color: #0a8a3e; }
+  #toolbar button.export:hover { background: #0ca84a; }
+
+  /* ─── Player scale slider ─── */
+  #player-scale-wrap {
+    display: flex; align-items: center; gap: 6px;
+  }
+  #player-scale-slider {
+    width: 100px; accent-color: #e94560; cursor: pointer;
+  }
+  #player-scale-val { font-size: 12px; color: #0f0; min-width: 36px; }
+
+  /* ─── Editor area ─── */
+  #editor-wrap {
+    flex: 1; overflow: auto; position: relative; display: flex;
+    align-items: center; justify-content: center; background: #111;
+  }
+  #canvas-container { position: relative; display: inline-block; }
+  #bg-img { display: block; image-rendering: pixelated; }
+
+  /* ─── Player preview ─── */
+  #player-preview {
+    position: absolute; pointer-events: none; image-rendering: pixelated;
+    transform-origin: bottom center; z-index: 15; opacity: 0.85;
+  }
+  #player-preview.hidden-player { display: none !important; }
+
+  /* ─── Spawn marker (draggable) ─── */
+  #spawn-marker {
+    position: absolute; width: 16px; height: 16px; z-index: 20;
+    border: 2px solid #ff0000; border-radius: 50%; background: rgba(255, 0, 0, 0.4);
+    cursor: grab; transform: translate(-50%, -50%);
+    box-shadow: 0 0 8px rgba(255, 0, 0, 0.6);
+  }
+  #spawn-marker:active { cursor: grabbing; }
+  #spawn-marker .spawn-label {
+    position: absolute; top: -18px; left: 50%; transform: translateX(-50%);
+    font-size: 9px; color: #ff4444; background: rgba(0,0,0,0.7); padding: 1px 4px;
+    white-space: nowrap; pointer-events: none;
+  }
+
+  /* ─── Overlay rects (hotspots + walk areas) ─── */
+  .overlay-rect {
+    position: absolute; cursor: move; user-select: none;
+  }
+  /* Hotspot style */
+  .overlay-rect.hs { border: 2px solid rgba(255, 255, 0, 0.8); background: rgba(255, 255, 0, 0.08); }
+  .overlay-rect.hs.selected { border-color: #00ffff; background: rgba(0, 255, 255, 0.12); z-index: 10; }
+  .overlay-rect.hs .label { color: #ffff00; }
+  .overlay-rect.hs.selected .label { color: #00ffff; }
+
+  /* Walk area style */
+  .overlay-rect.wa { border: 2px solid rgba(0, 255, 0, 0.7); background: rgba(0, 255, 0, 0.1); }
+  .overlay-rect.wa.selected { border-color: #7fff00; background: rgba(127, 255, 0, 0.18); z-index: 10; }
+  .overlay-rect.wa .label { color: #00ff00; }
+  .overlay-rect.wa.selected .label { color: #7fff00; }
+
+  /* Trigger style */
+  .overlay-rect.tr { border: 2px solid rgba(255, 0, 255, 0.7); background: rgba(255, 0, 255, 0.1); }
+  .overlay-rect.tr.selected { border-color: #ff80ff; background: rgba(255, 128, 255, 0.18); z-index: 10; }
+  .overlay-rect.tr .label { color: #ff00ff; }
+  .overlay-rect.tr.selected .label { color: #ff80ff; }
+  .overlay-rect.tr .handle { background: #ff80ff; }
+
+  /* NPC marker style */
+  .npc-marker {
+    position: absolute; cursor: move; user-select: none;
+    image-rendering: pixelated; z-index: 12;
+  }
+  .npc-marker img {
+    display: block; image-rendering: pixelated; pointer-events: none;
+  }
+  .npc-marker .npc-fallback {
+    border: 2px solid rgba(255, 102, 0, 0.8);
+    background: rgba(255, 102, 0, 0.3);
+    pointer-events: none;
+  }
+  .npc-marker .label {
+    position: absolute; top: -16px; left: 50%; transform: translateX(-50%);
+    font-size: 10px; padding: 1px 4px; color: #ff8800;
+    background: rgba(0, 0, 0, 0.7); white-space: nowrap; pointer-events: none;
+  }
+  .npc-marker .coords {
+    position: absolute; bottom: -14px; left: 50%; transform: translateX(-50%);
+    font-size: 9px; padding: 1px 3px; color: #0f0;
+    background: rgba(0, 0, 0, 0.7); white-space: nowrap; pointer-events: none;
+  }
+  .npc-marker.selected { outline: 2px dashed #00ffff; outline-offset: 2px; }
+  .npc-marker.dimmed { opacity: 0.25; pointer-events: none; }
+  .npc-marker .anchor-dot {
+    position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+    width: 6px; height: 6px; background: #ff0000; border-radius: 50%; pointer-events: none;
+    box-shadow: 0 0 4px rgba(255, 0, 0, 0.8);
+  }
+
+  /* NPC button */
+  .mode-btn.active-npc { background: #cc6600 !important; border-color: #ff8800 !important; }
+
+  /* Dimmed when not active layer */
+  .overlay-rect.dimmed { opacity: 0.3; pointer-events: none; }
+
+  .overlay-rect .label {
+    position: absolute; top: -16px; left: 0; font-size: 10px; padding: 1px 4px;
+    background: rgba(0, 0, 0, 0.7); white-space: nowrap; pointer-events: none;
+  }
+  .overlay-rect .coords {
+    position: absolute; bottom: -14px; left: 0; font-size: 9px; padding: 1px 3px;
+    background: rgba(0, 0, 0, 0.7); color: #0f0; white-space: nowrap; pointer-events: none;
+  }
+
+  /* Resize handles */
+  .overlay-rect .handle {
+    position: absolute; width: 8px; height: 8px; background: #00ffff;
+    border: 1px solid #000; display: none;
+  }
+  .overlay-rect.wa .handle { background: #7fff00; }
+  .overlay-rect.selected .handle { display: block; }
+  .handle.tl { top: -4px; left: -4px; cursor: nw-resize; }
+  .handle.tr { top: -4px; right: -4px; cursor: ne-resize; }
+  .handle.bl { bottom: -4px; left: -4px; cursor: sw-resize; }
+  .handle.br { bottom: -4px; right: -4px; cursor: se-resize; }
+  .handle.tm { top: -4px; left: 50%; transform: translateX(-50%); cursor: n-resize; }
+  .handle.bm { bottom: -4px; left: 50%; transform: translateX(-50%); cursor: s-resize; }
+  .handle.ml { top: 50%; left: -4px; transform: translateY(-50%); cursor: w-resize; }
+  .handle.mr { top: 50%; right: -4px; transform: translateY(-50%); cursor: e-resize; }
+
+  /* ─── Drawing rect ─── */
+  .draw-rect {
+    position: absolute; pointer-events: none;
+  }
+  .draw-rect.hs-draw { border: 2px dashed #e94560; background: rgba(233, 69, 96, 0.15); }
+  .draw-rect.wa-draw { border: 2px dashed #32cd32; background: rgba(50, 205, 50, 0.15); }
+  .draw-rect.tr-draw { border: 2px dashed #ff00ff; background: rgba(255, 0, 255, 0.15); }
+
+  /* ─── Info panel ─── */
+  #info-panel {
+    position: fixed; bottom: 0; left: 0; right: 0; display: flex; gap: 16px;
+    padding: 5px 12px; background: rgba(22, 33, 62, 0.95); border-top: 2px solid #0f3460;
+    font-size: 11px; z-index: 100; align-items: center;
+  }
+  #info-panel .section { display: flex; gap: 4px; align-items: center; }
+  #info-panel .val { color: #0f0; }
+  #mouse-coords { color: #888; }
+
+  /* ─── Modal ─── */
+  #modal-overlay {
+    display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6);
+    z-index: 200; align-items: center; justify-content: center;
+  }
+  #modal-overlay.show { display: flex; }
+  #modal {
+    background: #16213e; border: 2px solid #0f3460; border-radius: 8px;
+    padding: 20px; min-width: 300px;
+  }
+  #modal h3 { margin-bottom: 12px; color: #e94560; }
+  #modal input[type="text"] {
+    width: 100%; padding: 6px 10px; font-family: inherit; font-size: 14px;
+    background: #0f3460; color: #e0e0e0; border: 1px solid #444; border-radius: 4px;
+    margin-bottom: 12px;
+  }
+  #modal .modal-btns { display: flex; gap: 8px; justify-content: flex-end; }
+  #modal button {
+    padding: 6px 16px; font-family: inherit; cursor: pointer;
+    background: #0f3460; color: #e0e0e0; border: 1px solid #444; border-radius: 4px;
+  }
+  #modal button.primary { background: #e94560; border-color: #e94560; }
+
+  /* ─── Toast ─── */
+  #toast {
+    display: none; position: fixed; top: 16px; right: 16px; padding: 8px 16px;
+    background: #0a8a3e; color: #fff; border-radius: 6px; z-index: 300; font-size: 13px;
+  }
+  #toast.show { display: block; animation: fadeOut 2.5s forwards; }
+  @keyframes fadeOut { 0%,70% { opacity: 1; } 100% { opacity: 0; } }
+</style>
+</head>
+<body>
+
+<div id="toolbar">
+  <!-- Scene -->
+  <div class="tb-group">
+    <label>Scene:</label>
+    <select id="scene-select"></select>
+  </div>
+  <div class="tb-sep"></div>
+
+  <!-- Edit mode -->
+  <div class="tb-group">
+    <label>Layer:</label>
+    <button id="btn-mode-hs" class="mode-btn active-hs" title="Edit hotspots (1)">Hotspots</button>
+    <button id="btn-mode-wa" class="mode-btn" title="Edit walk areas (2)">Walk</button>
+    <button id="btn-mode-tr" class="mode-btn" title="Edit triggers (3)">Triggers</button>
+    <button id="btn-mode-npc" class="mode-btn" title="Edit NPCs (4)">NPCs</button>
+  </div>
+  <div class="tb-sep"></div>
+
+  <!-- Actions -->
+  <div class="tb-group">
+    <button id="btn-draw" title="Draw new rect (D)">+ Draw</button>
+    <button id="btn-delete" title="Delete selected (Del)">Delete</button>
+  </div>
+  <div class="tb-sep"></div>
+
+  <!-- Player scale -->
+  <div class="tb-group" id="player-scale-wrap">
+    <label>Player:</label>
+    <input type="range" id="player-scale-slider" min="0.3" max="6" step="0.05" value="1">
+    <span id="player-scale-val">1.0x</span>
+    <button id="btn-save-scale" class="export" title="Save player scale globally">Global</button>
+    <button id="btn-save-scene-scale" class="export" title="Save player scale for this scene only">Scene</button>
+    <button id="btn-hide-player" title="Toggle player visibility for closeup scenes (H)">Hide</button>
+  </div>
+  <div class="tb-sep"></div>
+
+  <!-- Zoom -->
+  <div class="tb-group">
+    <label>Zoom:</label>
+    <select id="zoom-select">
+      <option value="0.1">10%</option>
+      <option value="0.25">25%</option>
+      <option value="0.5">50%</option>
+      <option value="0.75">75%</option>
+      <option value="1" selected>100%</option>
+      <option value="1.5">150%</option>
+      <option value="2">200%</option>
+    </select>
+  </div>
+
+  <span style="flex:1"></span>
+  <button id="btn-export" class="export">Export JSON</button>
+  <button id="btn-save" class="export">Save File</button>
+</div>
+
+<div id="editor-wrap">
+  <div id="canvas-container">
+    <img id="bg-img">
+    <img id="player-preview" src="" style="display:none">
+    <div id="spawn-marker"><div class="spawn-label">SPAWN</div></div>
+    <div id="draw-rect" style="display:none"></div>
+  </div>
+</div>
+
+<div id="info-panel">
+  <div id="mouse-coords">Mouse: --</div>
+  <div class="section"><span>Mode:</span> <span id="info-mode" class="val">Hotspots</span></div>
+  <div class="section"><span>Selected:</span> <span id="sel-name" class="val">none</span></div>
+  <div class="section"><span>Bounds:</span> <span id="sel-bounds" class="val">--</span></div>
+  <div class="section"><span>HS:</span> <span id="hs-count" class="val">0</span></div>
+  <div class="section"><span>WA:</span> <span id="wa-count" class="val">0</span></div>
+  <div class="section"><span>TR:</span> <span id="tr-count" class="val">0</span></div>
+  <div class="section"><span>NPC:</span> <span id="npc-count" class="val">0</span></div>
+</div>
+
+<div id="modal-overlay">
+  <div id="modal">
+    <h3 id="modal-title">New Hotspot</h3>
+    <div id="modal-fields-hs">
+      <label style="font-size:12px;color:#aaa;">ID:</label>
+      <input type="text" id="modal-id" placeholder="hs_">
+      <label style="font-size:12px;color:#aaa;">Name:</label>
+      <input type="text" id="modal-name" placeholder="Name">
+    </div>
+    <div id="modal-fields-tr" style="display:none">
+      <label style="font-size:12px;color:#aaa;">Trigger ID:</label>
+      <input type="text" id="modal-tr-id" placeholder="tr_to_">
+      <label style="font-size:12px;color:#aaa;">Target Scene:</label>
+      <select id="modal-tr-target" style="width:100%;padding:6px 10px;font-family:inherit;font-size:14px;background:#0f3460;color:#e0e0e0;border:1px solid #444;border-radius:4px;margin-bottom:12px;"></select>
+      <label style="font-size:12px;color:#aaa;">Spawn X (%):</label>
+      <input type="text" id="modal-tr-sx" placeholder="50" style="width:45%;display:inline-block;">
+      <label style="font-size:12px;color:#aaa;margin-left:8px;">Y (%):</label>
+      <input type="text" id="modal-tr-sy" placeholder="85" style="width:45%;display:inline-block;margin-bottom:12px;">
+      <label style="font-size:12px;color:#aaa;display:block;margin-top:4px;"><input type="checkbox" id="modal-tr-once"> Fire once only</label>
+    </div>
+    <div class="modal-btns">
+      <button id="modal-cancel">Cancel</button>
+      <button id="modal-ok" class="primary">Create</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ─── State ───
+let sceneData = null;
+let globalConfig = { playerScale: 1.0 };
+let hotspots = [];
+let walkAreas = [];
+let triggers = [];
+let npcList = [];
+let selectedIdx = -1;
+let selectedNpcIdx = -1;
+let editMode = 'hs'; // 'hs' | 'wa' | 'tr' | 'npc'
+let drawMode = false;
+let zoom = 1;
+let imgNatW = 0, imgNatH = 0;
+
+// Drag state
+let dragging = null;
+let drawStart = null;
+
+const scenes = ['outside', 'frontdoor', 'lobby', 'upstairs', 'rooftop', 'basement', 'server_room', 'mountain', 'clinic_exterior', 'clinic_interior', 'treatment_room', 'epilogue_outside'];
+
+// ─── DOM refs ───
+const $ = id => document.getElementById(id);
+const sceneSelect = $('scene-select');
+const bgImg = $('bg-img');
+const container = $('canvas-container');
+const drawRectEl = $('draw-rect');
+const playerPreview = $('player-preview');
+const btnModeHS = $('btn-mode-hs');
+const btnModeWA = $('btn-mode-wa');
+const btnModeTR = $('btn-mode-tr');
+const trCountEl = $('tr-count');
+const modalFieldsTR = $('modal-fields-tr');
+const modalTrId = $('modal-tr-id');
+const modalTrTarget = $('modal-tr-target');
+const modalTrSX = $('modal-tr-sx');
+const modalTrSY = $('modal-tr-sy');
+const modalTrOnce = $('modal-tr-once');
+const btnModeNPC = $('btn-mode-npc');
+const npcCountEl = $('npc-count');
+const btnDraw = $('btn-draw');
+const btnDelete = $('btn-delete');
+const btnExport = $('btn-export');
+const btnSave = $('btn-save');
+const btnSaveScale = $('btn-save-scale');
+const scaleSlider = $('player-scale-slider');
+const scaleVal = $('player-scale-val');
+const zoomSelect = $('zoom-select');
+const mouseCoords = $('mouse-coords');
+const infoMode = $('info-mode');
+const selName = $('sel-name');
+const selBounds = $('sel-bounds');
+const hsCountEl = $('hs-count');
+const waCountEl = $('wa-count');
+const modalOverlay = $('modal-overlay');
+const modalTitle = $('modal-title');
+const modalFieldsHS = $('modal-fields-hs');
+const modalId = $('modal-id');
+const modalName = $('modal-name');
+const modalOk = $('modal-ok');
+const modalCancel = $('modal-cancel');
+const toast = $('toast');
+
+// ─── Init ───
+scenes.forEach(s => {
+  const opt = document.createElement('option');
+  opt.value = s; opt.textContent = s;
+  sceneSelect.appendChild(opt);
+});
+sceneSelect.value = 'outside';
+sceneSelect.addEventListener('change', () => loadScene(sceneSelect.value));
+
+zoomSelect.addEventListener('change', () => { zoom = parseFloat(zoomSelect.value); applyZoom(); renderAll(); });
+btnModeHS.addEventListener('click', () => setEditMode('hs'));
+btnModeWA.addEventListener('click', () => setEditMode('wa'));
+btnModeTR.addEventListener('click', () => setEditMode('tr'));
+btnModeNPC.addEventListener('click', () => setEditMode('npc'));
+btnDraw.addEventListener('click', toggleDrawMode);
+btnDelete.addEventListener('click', deleteSelected);
+btnExport.addEventListener('click', exportJSON);
+btnSave.addEventListener('click', saveFile);
+btnSaveScale.addEventListener('click', saveGlobalConfig);
+document.getElementById('btn-save-scene-scale').addEventListener('click', saveSceneScale);
+
+scaleSlider.addEventListener('input', () => {
+  globalConfig.playerScale = parseFloat(scaleSlider.value);
+  scaleVal.textContent = globalConfig.playerScale.toFixed(2) + 'x';
+  updatePlayerPreview();
+});
+
+// ─── Spawn marker drag ───
+const spawnMarker = $('spawn-marker');
+let draggingSpawn = false;
+const btnHidePlayer = $('btn-hide-player');
+
+spawnMarker.addEventListener('mousedown', (e) => {
+  draggingSpawn = true;
+  e.preventDefault();
+  e.stopPropagation();
+});
+
+document.addEventListener('mousemove', (e) => {
+  if (!draggingSpawn || !sceneData) return;
+  const rect = container.getBoundingClientRect();
+  const mx = e.clientX - rect.left;
+  const my = e.clientY - rect.top;
+  const dispW = imgNatW * zoom;
+  const dispH = imgNatH * zoom;
+  const pctX = clamp((mx / dispW) * 100, 0, 100);
+  const pctY = clamp((my / dispH) * 100, 0, 100);
+  sceneData.player.spawn = { x: r(pctX), y: r(pctY) };
+  updateSpawnMarker();
+  updatePlayerPreview();
+});
+
+document.addEventListener('mouseup', () => {
+  if (draggingSpawn) {
+    draggingSpawn = false;
+    showToast(`Spawn: ${sceneData.player.spawn.x}%, ${sceneData.player.spawn.y}%`);
+  }
+});
+
+function updateSpawnMarker() {
+  if (!sceneData || !imgNatW) { spawnMarker.style.display = 'none'; return; }
+  const spawn = sceneData.player.spawn;
+  const dispW = imgNatW * zoom;
+  const dispH = imgNatH * zoom;
+  spawnMarker.style.display = 'block';
+  spawnMarker.style.left = (spawn.x / 100 * dispW) + 'px';
+  spawnMarker.style.top = (spawn.y / 100 * dispH) + 'px';
+  spawnMarker.querySelector('.spawn-label').textContent = `SPAWN (${r(spawn.x)}, ${r(spawn.y)})`;
+}
+
+// ─── Hide player toggle ───
+btnHidePlayer.addEventListener('click', toggleHidePlayer);
+
+function toggleHidePlayer() {
+  if (!sceneData) return;
+  const current = sceneData.player.hidePlayer ?? false;
+  sceneData.player.hidePlayer = !current;
+  btnHidePlayer.classList.toggle('active', sceneData.player.hidePlayer);
+  playerPreview.classList.toggle('hidden-player', sceneData.player.hidePlayer);
+  showToast(sceneData.player.hidePlayer ? 'Player hidden (closeup mode)' : 'Player visible');
+}
+
+document.addEventListener('keydown', (e) => {
+  if (e.target.tagName === 'INPUT') return;
+  if (e.key === '1') setEditMode('hs');
+  if (e.key === '2') setEditMode('wa');
+  if (e.key === '3') setEditMode('tr');
+  if (e.key === '4') setEditMode('npc');
+  if (e.key === 'd' || e.key === 'D') toggleDrawMode();
+  if (e.key === 'h' || e.key === 'H') toggleHidePlayer();
+  if (e.key === 'Delete' || e.key === 'Backspace') deleteSelected();
+  if (e.key === 'Escape') { selectedIdx = -1; selectedNpcIdx = -1; exitDrawMode(); renderAll(); }
+  if (e.key === 's' && (e.metaKey || e.ctrlKey)) { e.preventDefault(); saveFile(); }
+  // Arrow keys for fine-tuning (rects)
+  if (editMode !== 'npc' && selectedIdx >= 0 && ['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key)) {
+    e.preventDefault();
+    const step = e.shiftKey ? 0.1 : 0.5;
+    const list = activeList();
+    const item = list[selectedIdx];
+    if (!item) return;
+    const b = item.bounds;
+    if (e.key === 'ArrowLeft')  b.x = Math.max(0, b.x - step);
+    if (e.key === 'ArrowRight') b.x = Math.min(100 - b.w, b.x + step);
+    if (e.key === 'ArrowUp')    b.y = Math.max(0, b.y - step);
+    if (e.key === 'ArrowDown')  b.y = Math.min(100 - b.h, b.y + step);
+    renderAll();
+    updateInfoPanel();
+  }
+  // Arrow keys for fine-tuning (NPCs)
+  if (editMode === 'npc' && selectedNpcIdx >= 0 && ['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key)) {
+    e.preventDefault();
+    const step = e.shiftKey ? 0.1 : 0.5;
+    const npc = npcList[selectedNpcIdx];
+    if (!npc) return;
+    if (e.key === 'ArrowLeft')  npc.position.x = Math.max(0, npc.position.x - step);
+    if (e.key === 'ArrowRight') npc.position.x = Math.min(100, npc.position.x + step);
+    if (e.key === 'ArrowUp')    npc.position.y = Math.max(0, npc.position.y - step);
+    if (e.key === 'ArrowDown')  npc.position.y = Math.min(100, npc.position.y + step);
+    renderAll();
+    updateInfoPanel();
+  }
+});
+
+// ─── Edit mode ───
+function setEditMode(mode) {
+  editMode = mode;
+  selectedIdx = -1;
+  selectedNpcIdx = -1;
+  exitDrawMode();
+  btnModeHS.className = 'mode-btn' + (mode === 'hs' ? ' active-hs' : '');
+  btnModeWA.className = 'mode-btn' + (mode === 'wa' ? ' active-wa' : '');
+  btnModeTR.className = 'mode-btn' + (mode === 'tr' ? ' active' : '');
+  btnModeNPC.className = 'mode-btn' + (mode === 'npc' ? ' active-npc' : '');
+  if (mode === 'tr') btnModeTR.style.background = '#8b008b';
+  else btnModeTR.style.background = '';
+  infoMode.textContent = mode === 'hs' ? 'Hotspots' : mode === 'wa' ? 'Walk Areas' : mode === 'tr' ? 'Triggers' : 'NPCs';
+  renderAll();
+}
+
+function activeList() { return editMode === 'hs' ? hotspots : editMode === 'wa' ? walkAreas : triggers; }
+
+// ─── Load scene ───
+async function loadScene(sceneId) {
+  try {
+    const [sceneResp, configResp] = await Promise.all([
+      fetch(`/assets/scenes/${sceneId}/scene.json`),
+      fetch('/assets/config/global.json'),
+    ]);
+    sceneData = await sceneResp.json();
+    try { globalConfig = await configResp.json(); } catch { globalConfig = { playerScale: 1.0 }; }
+
+    hotspots = sceneData.regions.hotspots.map(h => ({
+      id: h.id, name: h.name, bounds: { ...h.bounds }, scripts: h.scripts,
+    }));
+    walkAreas = (sceneData.walkableAreas ?? []).map((a, i) => ({
+      id: `walk_${i}`, name: `Walk ${i + 1}`, bounds: { ...a },
+    }));
+    triggers = (sceneData.regions.triggers ?? []).map(t => {
+      // Extract target scene from onEnter ops
+      let targetScene = ''; let spawnX = 50; let spawnY = 85;
+      const findTarget = (ops) => {
+        for (const op of (ops || [])) {
+          if ((op.op === 'gotoScene' || op.op === 'fadeToScene') && op.sceneId) {
+            targetScene = op.sceneId;
+            if (op.spawn) { spawnX = op.spawn.x; spawnY = op.spawn.y; }
+          }
+          // Check inside then/else branches
+          if (op.then) findTarget(op.then);
+          if (op.else) findTarget(op.else);
+        }
+      };
+      findTarget(t.onEnter);
+      return {
+        id: t.id, name: targetScene ? `→ ${targetScene}` : t.id,
+        bounds: { ...(t.bounds || {x:0,y:0,w:10,h:10}) },
+        targetScene, spawnX, spawnY, once: t.once ?? false,
+        onEnter: t.onEnter, // preserve full script
+      };
+    });
+
+    // Parse NPCs
+    npcList = (sceneData.npcs ?? []).map(n => ({
+      id: n.id, name: n.name,
+      position: { x: n.position.x, y: n.position.y },
+      color: n.color ?? '0xff6600',
+      dialogueTreeId: n.dialogueTreeId ?? null,
+      spriteImg: null,
+    }));
+    // Load NPC sprites
+    npcList.forEach(n => {
+      const shortId = n.id.replace(/^npc_/, '');
+      const img = new Image();
+      img.src = `/assets/sprites/npcs/${shortId}.png`;
+      img.onload = () => { n.spriteImg = img; renderAll(); };
+      img.onerror = () => { n.spriteImg = null; };
+    });
+
+    selectedIdx = -1;
+    selectedNpcIdx = -1;
+    // Per-scene scale takes priority over global
+    const effectiveScale = sceneData.player.playerScale ?? globalConfig.playerScale ?? 1;
+    scaleSlider.value = effectiveScale;
+    scaleVal.textContent = effectiveScale.toFixed(2) + 'x';
+    globalConfig.playerScale = globalConfig.playerScale ?? 1;
+
+    // Restore hide-player state
+    const isHidden = sceneData.player.hidePlayer ?? false;
+    btnHidePlayer.classList.toggle('active', isHidden);
+    playerPreview.classList.toggle('hidden-player', isHidden);
+
+    bgImg.onload = () => {
+      imgNatW = bgImg.naturalWidth;
+      imgNatH = bgImg.naturalHeight;
+      applyZoom();
+      renderAll();
+      loadPlayerSprite();
+    };
+    bgImg.src = `/assets/scenes/${sceneId}/background.png`;
+  } catch (err) {
+    showToast('Failed to load scene: ' + err.message);
+  }
+}
+
+function loadPlayerSprite() {
+  playerPreview.onload = () => updatePlayerPreview();
+  playerPreview.src = '/assets/sprites/player/Idle-1.png';
+}
+
+function updatePlayerPreview() {
+  if (!sceneData || !imgNatW) return;
+  const spawn = sceneData.player.spawn;
+  const dispW = imgNatW * zoom;
+  const dispH = imgNatH * zoom;
+  const sx = (spawn.x / 100) * dispW;
+  const sy = (spawn.y / 100) * dispH;
+
+  const baseScale = zoom; // 1:1 at 100% zoom
+  const finalScale = baseScale * globalConfig.playerScale;
+
+  playerPreview.style.display = 'block';
+  playerPreview.style.transform = `scale(${finalScale})`;
+  playerPreview.style.left = (sx - playerPreview.naturalWidth / 2 * finalScale) + 'px';
+  playerPreview.style.top = (sy - playerPreview.naturalHeight * finalScale) + 'px';
+}
+
+function applyZoom() {
+  bgImg.style.width = (imgNatW * zoom) + 'px';
+  bgImg.style.height = (imgNatH * zoom) + 'px';
+  container.style.width = (imgNatW * zoom) + 'px';
+  container.style.height = (imgNatH * zoom) + 'px';
+}
+
+// ─── Render all overlays ───
+function renderAll() {
+  container.querySelectorAll('.overlay-rect').forEach(el => el.remove());
+  const dispW = imgNatW * zoom;
+  const dispH = imgNatH * zoom;
+
+  // Render walk areas (behind hotspots)
+  walkAreas.forEach((wa, idx) => {
+    const isActive = editMode === 'wa';
+    const isSel = isActive && idx === selectedIdx;
+    renderRect(wa, idx, 'wa', isSel, !isActive);
+  });
+
+  // Render triggers (behind hotspots)
+  triggers.forEach((tr, idx) => {
+    const isActive = editMode === 'tr';
+    const isSel = isActive && idx === selectedIdx;
+    renderRect(tr, idx, 'tr', isSel, !isActive);
+  });
+
+  // Render hotspots
+  hotspots.forEach((hs, idx) => {
+    const isActive = editMode === 'hs';
+    const isSel = isActive && idx === selectedIdx;
+    renderRect(hs, idx, 'hs', isSel, !isActive);
+  });
+
+  // Render NPCs
+  container.querySelectorAll('.npc-marker').forEach(el => el.remove());
+  npcList.forEach((npc, idx) => {
+    const isActive = editMode === 'npc';
+    const isSel = isActive && idx === selectedNpcIdx;
+    renderNPC(npc, idx, isSel, !isActive);
+  });
+
+  hsCountEl.textContent = hotspots.length;
+  waCountEl.textContent = walkAreas.length;
+  trCountEl.textContent = triggers.length;
+  npcCountEl.textContent = npcList.length;
+  updateInfoPanel();
+  updatePlayerPreview();
+  updateSpawnMarker();
+}
+
+function renderRect(item, idx, type, isSelected, isDimmed) {
+  const dispW = imgNatW * zoom;
+  const dispH = imgNatH * zoom;
+  const b = item.bounds;
+
+  const div = document.createElement('div');
+  div.className = `overlay-rect ${type}` + (isSelected ? ' selected' : '') + (isDimmed ? ' dimmed' : '');
+  div.dataset.idx = idx;
+  div.dataset.type = type;
+
+  div.style.left = (b.x / 100 * dispW) + 'px';
+  div.style.top = (b.y / 100 * dispH) + 'px';
+  div.style.width = (b.w / 100 * dispW) + 'px';
+  div.style.height = (b.h / 100 * dispH) + 'px';
+
+  // Label
+  const label = document.createElement('div');
+  label.className = 'label';
+  label.textContent = item.name;
+  div.appendChild(label);
+
+  // Coords
+  const coords = document.createElement('div');
+  coords.className = 'coords';
+  coords.textContent = `x:${r(b.x)} y:${r(b.y)} w:${r(b.w)} h:${r(b.h)}`;
+  div.appendChild(coords);
+
+  // Handles
+  ['tl','tr','bl','br','tm','bm','ml','mr'].forEach(pos => {
+    const handle = document.createElement('div');
+    handle.className = 'handle ' + pos;
+    handle.dataset.handle = pos;
+    div.appendChild(handle);
+  });
+
+  container.appendChild(div);
+}
+
+function renderNPC(npc, idx, isSelected, isDimmed) {
+  const dispW = imgNatW * zoom;
+  const dispH = imgNatH * zoom;
+  const px = (npc.position.x / 100) * dispW;
+  const py = (npc.position.y / 100) * dispH;
+
+  const div = document.createElement('div');
+  div.className = 'npc-marker' + (isSelected ? ' selected' : '') + (isDimmed ? ' dimmed' : '');
+  div.dataset.npcIdx = idx;
+
+  if (npc.spriteImg) {
+    const img = document.createElement('img');
+    img.src = npc.spriteImg.src;
+    const sw = npc.spriteImg.naturalWidth * zoom;
+    const sh = npc.spriteImg.naturalHeight * zoom;
+    img.style.width = sw + 'px';
+    img.style.height = sh + 'px';
+    div.appendChild(img);
+    // Anchor: bottom-center (feet at position) — matches game sprite origin (0.5, 1)
+    div.style.left = (px - sw / 2) + 'px';
+    div.style.top = (py - sh) + 'px';
+  } else {
+    // Colored rectangle fallback
+    const rectW = 28 * zoom;
+    const rectH = 42 * zoom;
+    const rect = document.createElement('div');
+    rect.className = 'npc-fallback';
+    const hex = npc.color.replace('0x', '');
+    rect.style.borderColor = '#' + hex;
+    const c = parseInt(hex, 16);
+    rect.style.backgroundColor = `rgba(${(c>>16)&255},${(c>>8)&255},${c&255},0.3)`;
+    rect.style.width = rectW + 'px';
+    rect.style.height = rectH + 'px';
+    div.appendChild(rect);
+    div.style.left = (px - rectW / 2) + 'px';
+    div.style.top = (py - rectH) + 'px';
+  }
+
+  // Anchor dot (shows exact position point)
+  const dot = document.createElement('div');
+  dot.className = 'anchor-dot';
+  div.appendChild(dot);
+
+  // Label
+  const label = document.createElement('div');
+  label.className = 'label';
+  label.textContent = npc.name;
+  div.appendChild(label);
+
+  // Coords
+  const coords = document.createElement('div');
+  coords.className = 'coords';
+  coords.textContent = `x:${r(npc.position.x)} y:${r(npc.position.y)}`;
+  div.appendChild(coords);
+
+  container.appendChild(div);
+}
+
+function r(n) { return Math.round(n * 10) / 10; }
+
+function updateInfoPanel() {
+  // NPC mode
+  if (editMode === 'npc') {
+    if (selectedNpcIdx >= 0 && selectedNpcIdx < npcList.length) {
+      const npc = npcList[selectedNpcIdx];
+      selName.textContent = npc.name + ' (' + npc.id + ')';
+      selBounds.textContent = `x:${r(npc.position.x)} y:${r(npc.position.y)}`;
+    } else {
+      selName.textContent = 'none';
+      selBounds.textContent = '--';
+    }
+    return;
+  }
+  const list = activeList();
+  if (selectedIdx >= 0 && selectedIdx < list.length) {
+    const item = list[selectedIdx];
+    selName.textContent = item.name + (item.id ? ' (' + item.id + ')' : '');
+    const b = item.bounds;
+    selBounds.textContent = `x:${r(b.x)} y:${r(b.y)} w:${r(b.w)} h:${r(b.h)}`;
+  } else {
+    selName.textContent = 'none';
+    selBounds.textContent = '--';
+  }
+}
+
+// ─── Mouse events ───
+// ─── Double-click to rename (via click counter, since mousedown intercepts native dblclick) ───
+let renameIdx = -1;
+let lastClickTime = 0;
+let lastClickIdx = -1;
+
+function openRenameModal(idx) {
+  const list = activeList();
+  const item = list[idx];
+  if (!item) return;
+  selectedIdx = idx;
+  renameIdx = idx;
+  pendingBounds = null;
+  dragging = null;
+
+  if (editMode === 'tr') {
+    modalTitle.textContent = 'Edit Trigger';
+    modalFieldsHS.style.display = 'none';
+    modalFieldsTR.style.display = 'block';
+    modalTrId.value = item.id;
+    modalTrTarget.innerHTML = '';
+    scenes.forEach(s => { const o = document.createElement('option'); o.value = s; o.textContent = s; modalTrTarget.appendChild(o); });
+    modalTrTarget.value = item.targetScene || '';
+    modalTrSX.value = item.spawnX ?? 50;
+    modalTrSY.value = item.spawnY ?? 85;
+    modalTrOnce.checked = item.once ?? false;
+    modalOverlay.classList.add('show');
+    modalTrId.focus();
+  } else {
+    modalTitle.textContent = 'Rename ' + (editMode === 'hs' ? 'Hotspot' : 'Walk Area');
+    modalFieldsHS.style.display = 'block';
+    modalFieldsTR.style.display = 'none';
+    modalId.value = item.id;
+    modalName.value = item.name;
+    modalOverlay.classList.add('show');
+    modalName.focus();
+    modalName.select();
+  }
+}
+
+container.addEventListener('mousedown', (e) => {
+  if (e.target === playerPreview) return;
+  const rect = container.getBoundingClientRect();
+  const mx = e.clientX - rect.left;
+  const my = e.clientY - rect.top;
+
+  // Drawing mode
+  if (drawMode) {
+    drawStart = { x: mx, y: my };
+    drawRectEl.style.display = 'block';
+    drawRectEl.className = editMode === 'hs' ? 'draw-rect hs-draw' : editMode === 'wa' ? 'draw-rect wa-draw' : 'draw-rect tr-draw';
+    drawRectEl.style.left = mx + 'px';
+    drawRectEl.style.top = my + 'px';
+    drawRectEl.style.width = '0';
+    drawRectEl.style.height = '0';
+    e.preventDefault();
+    return;
+  }
+
+  // Handle click
+  if (e.target.classList.contains('handle')) {
+    const parent = e.target.parentElement;
+    if (parent.dataset.type !== editMode) return;
+    const handlePos = e.target.dataset.handle;
+    const idx = parseInt(parent.dataset.idx);
+    const list = activeList();
+    dragging = {
+      type: 'resize', idx, handle: handlePos,
+      startX: e.clientX, startY: e.clientY,
+      origBounds: { ...list[idx].bounds },
+    };
+    e.preventDefault();
+    return;
+  }
+
+  // NPC click — drag to reposition
+  const npcEl = e.target.closest('.npc-marker');
+  if (npcEl && editMode === 'npc') {
+    const idx = parseInt(npcEl.dataset.npcIdx);
+    selectedNpcIdx = idx;
+    selectedIdx = -1;
+    dragging = {
+      type: 'npc-move', idx,
+      startX: e.clientX, startY: e.clientY,
+      origPosition: { ...npcList[idx].position },
+    };
+    renderAll();
+    e.preventDefault();
+    return;
+  }
+
+  // Rect click — with double-click detection for rename
+  const rectEl = e.target.closest('.overlay-rect');
+  if (rectEl && rectEl.dataset.type === editMode) {
+    const idx = parseInt(rectEl.dataset.idx);
+    const now = Date.now();
+    if (idx === lastClickIdx && now - lastClickTime < 400) {
+      // Double-click → rename
+      lastClickTime = 0;
+      lastClickIdx = -1;
+      openRenameModal(idx);
+      e.preventDefault();
+      return;
+    }
+    lastClickTime = now;
+    lastClickIdx = idx;
+
+    selectedIdx = idx;
+    const list = activeList();
+    dragging = {
+      type: 'move', idx,
+      startX: e.clientX, startY: e.clientY,
+      origBounds: { ...list[idx].bounds },
+    };
+    renderAll();
+    e.preventDefault();
+    return;
+  }
+
+  selectedIdx = -1;
+  selectedNpcIdx = -1;
+  renderAll();
+});
+
+document.addEventListener('mousemove', (e) => {
+  const rect = container.getBoundingClientRect();
+  const mx = e.clientX - rect.left;
+  const my = e.clientY - rect.top;
+  const dispW = imgNatW * zoom;
+  const dispH = imgNatH * zoom;
+  const pctX = (mx / dispW) * 100;
+  const pctY = (my / dispH) * 100;
+  if (pctX >= 0 && pctX <= 100 && pctY >= 0 && pctY <= 100) {
+    mouseCoords.textContent = `Mouse: ${r(pctX)}%, ${r(pctY)}%  |  px: ${Math.round(mx/zoom)}, ${Math.round(my/zoom)}`;
+  }
+
+  // Drawing
+  if (drawStart) {
+    const x1 = Math.min(drawStart.x, mx);
+    const y1 = Math.min(drawStart.y, my);
+    drawRectEl.style.left = x1 + 'px';
+    drawRectEl.style.top = y1 + 'px';
+    drawRectEl.style.width = Math.abs(mx - drawStart.x) + 'px';
+    drawRectEl.style.height = Math.abs(my - drawStart.y) + 'px';
+    return;
+  }
+
+  if (!dragging) return;
+
+  const dx = e.clientX - dragging.startX;
+  const dy = e.clientY - dragging.startY;
+  const dPctX = (dx / dispW) * 100;
+  const dPctY = (dy / dispH) * 100;
+
+  // NPC move
+  if (dragging.type === 'npc-move') {
+    const npc = npcList[dragging.idx];
+    npc.position.x = clamp(dragging.origPosition.x + dPctX, 0, 100);
+    npc.position.y = clamp(dragging.origPosition.y + dPctY, 0, 100);
+    renderAll();
+    return;
+  }
+
+  const list = activeList();
+  const item = list[dragging.idx];
+  const ob = dragging.origBounds;
+
+  if (dragging.type === 'move') {
+    item.bounds.x = clamp(ob.x + dPctX, 0, 100 - item.bounds.w);
+    item.bounds.y = clamp(ob.y + dPctY, 0, 100 - item.bounds.h);
+  } else {
+    const h = dragging.handle;
+    let nx = ob.x, ny = ob.y, nw = ob.w, nh = ob.h;
+    if (h.includes('l')) { nx = ob.x + dPctX; nw = ob.w - dPctX; }
+    if (h.includes('r') || h === 'mr') { nw = ob.w + dPctX; }
+    if (h.includes('t') && h !== 'tr') { ny = ob.y + dPctY; nh = ob.h - dPctY; }
+    if (h === 'tr') { ny = ob.y + dPctY; nh = ob.h - dPctY; nw = ob.w + dPctX; }
+    if (h.includes('b') || h === 'bm') { nh = ob.h + dPctY; }
+    if (nw < 1) { nw = 1; nx = ob.x + ob.w - 1; }
+    if (nh < 1) { nh = 1; ny = ob.y + ob.h - 1; }
+    nx = clamp(nx, 0, 99); ny = clamp(ny, 0, 99);
+    nw = clamp(nw, 1, 100 - nx); nh = clamp(nh, 1, 100 - ny);
+    item.bounds = { x: nx, y: ny, w: nw, h: nh };
+  }
+  renderAll();
+});
+
+document.addEventListener('mouseup', (e) => {
+  if (drawStart) {
+    const rect = container.getBoundingClientRect();
+    const mx = e.clientX - rect.left;
+    const my = e.clientY - rect.top;
+    const dispW = imgNatW * zoom;
+    const dispH = imgNatH * zoom;
+
+    const x1 = Math.min(drawStart.x, mx) / dispW * 100;
+    const y1 = Math.min(drawStart.y, my) / dispH * 100;
+    const w = Math.abs(mx - drawStart.x) / dispW * 100;
+    const h = Math.abs(my - drawStart.y) / dispH * 100;
+
+    drawRectEl.style.display = 'none';
+    drawStart = null;
+
+    if (w > 0.5 && h > 0.5) {
+      const bounds = { x: r(x1), y: r(y1), w: r(w), h: r(h) };
+      if (editMode === 'hs') {
+        pendingBounds = bounds;
+        modalTitle.textContent = 'New Hotspot';
+        modalFieldsHS.style.display = 'block';
+        modalFieldsTR.style.display = 'none';
+        modalId.value = 'hs_';
+        modalName.value = '';
+        modalOverlay.classList.add('show');
+        modalId.focus();
+      } else if (editMode === 'tr') {
+        pendingBounds = bounds;
+        modalTitle.textContent = 'New Trigger';
+        modalFieldsHS.style.display = 'none';
+        modalFieldsTR.style.display = 'block';
+        modalTrId.value = 'tr_to_';
+        // Populate target scene dropdown
+        modalTrTarget.innerHTML = '';
+        scenes.forEach(s => { const o = document.createElement('option'); o.value = s; o.textContent = s; modalTrTarget.appendChild(o); });
+        modalTrSX.value = '50';
+        modalTrSY.value = '85';
+        modalTrOnce.checked = false;
+        modalOverlay.classList.add('show');
+        modalTrId.focus();
+      } else {
+        // Walk area — no modal needed, just add
+        const idx = walkAreas.length;
+        walkAreas.push({
+          id: `walk_${idx}`, name: `Walk ${idx + 1}`, bounds,
+        });
+        selectedIdx = walkAreas.length - 1;
+        exitDrawMode();
+        renderAll();
+        showToast(`Walk area ${idx + 1} created`);
+      }
+    }
+    return;
+  }
+  if (dragging && dragging.type === 'npc-move') {
+    const npc = npcList[dragging.idx];
+    showToast(`${npc.name}: x:${r(npc.position.x)} y:${r(npc.position.y)}`);
+  }
+  dragging = null;
+});
+
+let pendingBounds = null;
+
+modalOk.addEventListener('click', createHotspot);
+modalCancel.addEventListener('click', () => { modalOverlay.classList.remove('show'); pendingBounds = null; renameIdx = -1; });
+modalName.addEventListener('keydown', (e) => { if (e.key === 'Enter') createHotspot(); });
+
+function createHotspot() {
+  // Trigger create/rename
+  if (editMode === 'tr' || (renameIdx >= 0 && triggers[renameIdx] !== undefined && editMode === 'tr')) {
+    if (renameIdx >= 0 && editMode === 'tr') {
+      // Rename/edit trigger
+      const t = triggers[renameIdx];
+      t.id = modalTrId.value.trim() || t.id;
+      t.targetScene = modalTrTarget.value;
+      t.spawnX = parseFloat(modalTrSX.value) || 50;
+      t.spawnY = parseFloat(modalTrSY.value) || 85;
+      t.once = modalTrOnce.checked;
+      t.name = `→ ${t.targetScene}`;
+      // Rebuild onEnter with new target
+      t.onEnter = [{ op: 'fadeToScene', sceneId: t.targetScene, spawn: { x: t.spawnX, y: t.spawnY } }];
+      showToast(`Updated trigger: ${t.id} → ${t.targetScene}`);
+      renameIdx = -1;
+      modalOverlay.classList.remove('show');
+      renderAll();
+      return;
+    }
+    // New trigger
+    if (!pendingBounds) return;
+    const tid = modalTrId.value.trim() || 'tr_new_' + Date.now();
+    const target = modalTrTarget.value;
+    const sx = parseFloat(modalTrSX.value) || 50;
+    const sy = parseFloat(modalTrSY.value) || 85;
+    triggers.push({
+      id: tid, name: `→ ${target}`, bounds: pendingBounds,
+      targetScene: target, spawnX: sx, spawnY: sy, once: modalTrOnce.checked,
+      onEnter: [{ op: 'fadeToScene', sceneId: target, spawn: { x: sx, y: sy } }],
+    });
+    selectedIdx = triggers.length - 1;
+    pendingBounds = null;
+    modalOverlay.classList.remove('show');
+    exitDrawMode();
+    renderAll();
+    showToast(`Created trigger: ${tid} → ${target}`);
+    return;
+  }
+
+  const id = modalId.value.trim() || 'hs_new_' + Date.now();
+  const name = modalName.value.trim() || 'New Hotspot';
+
+  // Rename mode (hotspot/walk)
+  if (renameIdx >= 0) {
+    const list = activeList();
+    if (renameIdx < list.length) {
+      list[renameIdx].id = id;
+      list[renameIdx].name = name;
+      showToast(`Renamed to: ${name} (${id})`);
+    }
+    renameIdx = -1;
+    modalOverlay.classList.remove('show');
+    renderAll();
+    return;
+  }
+
+  // Create mode
+  if (!pendingBounds) return;
+
+  hotspots.push({
+    id, name, bounds: pendingBounds,
+    scripts: {
+      LOOK: [{ op: 'say', text: `Looking at ${name}.` }],
+      USE: [{ op: 'say', text: `Can't use ${name}.` }],
+      TALK: [{ op: 'say', text: `${name} doesn't respond.` }],
+      PICK: [{ op: 'say', text: `Can't pick up ${name}.` }],
+      OPEN: [{ op: 'say', text: `Can't open ${name}.` }],
+      CLOSE: [{ op: 'say', text: `Can't close ${name}.` }],
+    },
+  });
+
+  selectedIdx = hotspots.length - 1;
+  pendingBounds = null;
+  modalOverlay.classList.remove('show');
+  exitDrawMode();
+  renderAll();
+  showToast(`Created hotspot: ${name}`);
+}
+
+// ─── Actions ───
+function toggleDrawMode() {
+  drawMode = !drawMode;
+  btnDraw.classList.toggle('active', drawMode);
+  container.style.cursor = drawMode ? 'crosshair' : '';
+}
+function exitDrawMode() {
+  drawMode = false;
+  btnDraw.classList.remove('active');
+  container.style.cursor = '';
+}
+
+function deleteSelected() {
+  const list = activeList();
+  if (selectedIdx < 0 || selectedIdx >= list.length) return;
+  const name = list[selectedIdx].name;
+  list.splice(selectedIdx, 1);
+  // Re-index walk areas
+  if (editMode === 'wa') walkAreas.forEach((wa, i) => { wa.id = `walk_${i}`; wa.name = `Walk ${i + 1}`; });
+  selectedIdx = -1;
+  renderAll();
+  showToast(`Deleted: ${name}`);
+}
+
+function exportJSON() {
+  const output = buildSceneOutput();
+  const json = JSON.stringify(output, null, 2);
+  navigator.clipboard.writeText(json).then(() => {
+    showToast('Scene JSON copied to clipboard!');
+  }).catch(() => {
+    console.log(json);
+    showToast('JSON logged to console');
+  });
+}
+
+function buildSceneOutput() {
+  const updated = JSON.parse(JSON.stringify(sceneData));
+  // Save spawn point (always synced from spawn marker drag)
+  updated.player.spawn = { x: r(sceneData.player.spawn.x), y: r(sceneData.player.spawn.y) };
+  // Save hidePlayer flag
+  if (sceneData.player.hidePlayer) updated.player.hidePlayer = true;
+  else delete updated.player.hidePlayer;
+  updated.regions.hotspots = hotspots.map(hs => ({
+    id: hs.id, name: hs.name,
+    bounds: { x: r(hs.bounds.x), y: r(hs.bounds.y), w: r(hs.bounds.w), h: r(hs.bounds.h) },
+    scripts: hs.scripts,
+  }));
+  updated.regions.triggers = triggers.map(t => ({
+    id: t.id,
+    once: t.once ?? false,
+    bounds: { x: r(t.bounds.x), y: r(t.bounds.y), w: r(t.bounds.w), h: r(t.bounds.h) },
+    onEnter: t.onEnter,
+  }));
+  updated.walkableAreas = walkAreas.map(wa => ({
+    x: r(wa.bounds.x), y: r(wa.bounds.y), w: r(wa.bounds.w), h: r(wa.bounds.h),
+  }));
+  // Save NPC positions
+  if (npcList.length > 0) {
+    updated.npcs = npcList.map(n => {
+      // Find original NPC data to preserve scripts/dialogue
+      const orig = (sceneData.npcs ?? []).find(o => o.id === n.id) || {};
+      return {
+        ...orig,
+        id: n.id, name: n.name,
+        position: { x: r(n.position.x), y: r(n.position.y) },
+        color: n.color,
+        dialogueTreeId: n.dialogueTreeId,
+      };
+    });
+  }
+  return updated;
+}
+
+async function saveFile() {
+  if (!sceneData) return;
+  const json = JSON.stringify(buildSceneOutput(), null, 2);
+  const sceneId = sceneSelect.value;
+  try {
+    const resp = await fetch(`/__editor_save?scene=${sceneId}`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: json,
+    });
+    if (resp.ok) showToast('Saved scene.json!');
+    else throw new Error();
+  } catch {
+    navigator.clipboard.writeText(json).then(() => {
+      showToast('scene.json copied to clipboard (save endpoint unavailable)');
+    });
+  }
+}
+
+async function saveGlobalConfig() {
+  const json = JSON.stringify(globalConfig, null, 2);
+  try {
+    const resp = await fetch('/__editor_save_global', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: json,
+    });
+    if (resp.ok) showToast(`Player scale ${globalConfig.playerScale.toFixed(2)}x saved globally!`);
+    else throw new Error();
+  } catch {
+    navigator.clipboard.writeText(json).then(() => {
+      showToast('global.json copied to clipboard');
+    });
+  }
+}
+
+function saveSceneScale() {
+  const val = parseFloat(scaleSlider.value);
+  sceneData.player.playerScale = val;
+  showToast(`Player scale ${val.toFixed(2)}x saved for scene "${sceneData.id}"! Click Save File to persist.`);
+}
+
+function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
+
+function showToast(msg) {
+  toast.textContent = msg;
+  toast.classList.remove('show');
+  void toast.offsetWidth;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2500);
+}
+
+// ─── Boot ───
+loadScene('outside');
+</script>
+</body>
+</html>

@@ -1,0 +1,19 @@
+{
+  "name": "adrian-adventure",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Point-and-click adventure game with Web3 integration on Base",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build && cp -r assets dist/",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "phaser": "^3.80.0",
+    "viem": "^2.21.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.0",
+    "vite": "^5.4.0"
+  }
+}

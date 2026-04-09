@@ -1,0 +1,349 @@
+{
+  "version": 3,
+  "id": "epilogue_outside",
+  "title": "A New Dawn",
+  "assets": {
+    "background": "background.png",
+    "walkmask": null,
+    "atlas": null
+  },
+  "render": {
+    "world": {
+      "width": 2816,
+      "height": 1536
+    },
+    "camera": {
+      "start": {
+        "x": 1408,
+        "y": 768
+      },
+      "followPlayer": false,
+      "lerp": 0.1,
+      "clampToWorld": true
+    }
+  },
+  "player": {
+    "spawn": {
+      "x": 23.7,
+      "y": 97.7
+    },
+    "speed": 120,
+    "sprite": null,
+    "playerScale": 2
+  },
+  "ui": {
+    "verbs": [
+      "LOOK",
+      "USE",
+      "TALK",
+      "PICK"
+    ],
+    "mobileDrawerDefault": "collapsed"
+  },
+  "maskMapping": null,
+  "regions": {
+    "hotspots": [
+      {
+        "id": "hs_sunrise",
+        "name": "Sunrise",
+        "bounds": {
+          "x": 10,
+          "y": 5,
+          "w": 36,
+          "h": 30
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "Dawn breaks over the mountains. The first block of a new day."
+            },
+            {
+              "op": "say",
+              "text": "Everything looks different now. The pixels are the same, but I see them differently."
+            },
+            {
+              "op": "say",
+              "text": "Maybe that's what recovery looks like."
+            }
+          ]
+        }
+      },
+      {
+        "id": "hs_clinic_door",
+        "name": "Clinic Door",
+        "bounds": {
+          "x": 72.9,
+          "y": 47.2,
+          "w": 7.7,
+          "h": 8.3
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "The clinic door behind me. I don't need to go back in."
+            },
+            {
+              "op": "say",
+              "text": "A new sign hangs on the door: 'PATIENT ZERO REHABILITATION CLINIC — NOW HIRING'."
+            },
+            {
+              "op": "say",
+              "text": "Hiring? Maybe Adrian's note was more literal than I thought."
+            }
+          ],
+          "USE": [
+            {
+              "op": "say",
+              "text": "No. Forward, not back. The ecosystem needs builders, not patients."
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "say",
+              "text": "I've seen what's inside. Time to see what's outside."
+            }
+          ]
+        }
+      },
+      {
+        "id": "hs_mountain_view",
+        "name": "Mountain Vista",
+        "bounds": {
+          "x": 10.7,
+          "y": 35.6,
+          "w": 34.6,
+          "h": 19.6
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "The world stretches out below. Somewhere down there, the FloorEngine sweeps. TraitLab creates. SweepBot runs."
+            },
+            {
+              "op": "say",
+              "text": "Adrian's ecosystem doesn't need Adrian. It runs on code, community, and stubborn optimism."
+            },
+            {
+              "op": "say",
+              "text": "Maybe that's the real cure."
+            }
+          ]
+        }
+      },
+      {
+        "id": "hs_path_forward",
+        "name": "Path Down the Mountain",
+        "bounds": {
+          "x": 0,
+          "y": 93.6,
+          "w": 25,
+          "h": 6.4
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "The path leads back down. To the lab. To the world. To whatever comes next."
+            }
+          ],
+          "USE": [
+            {
+              "op": "ifFlag",
+              "flag": "game_complete",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "I take the first step down the mountain. The adventure continues... on-chain."
+                },
+                {
+                  "op": "narrative",
+                  "lines": [
+                    "ZEROADVENTURE II",
+                    "",
+                    "You found Patient Zero.",
+                    "You found yourself.",
+                    "",
+                    "The ecosystem continues.",
+                    "The FloorEngine sweeps.",
+                    "The community builds.",
+                    "",
+                    "Thank you for playing.",
+                    "",
+                    "— Adrian & the ZERO community"
+                  ]
+                }
+              ],
+              "else": [
+                {
+                  "op": "say",
+                  "text": "Not yet. I should take in the view first."
+                }
+              ]
+            }
+          ],
+          "WALK": [
+            {
+              "op": "ifFlag",
+              "flag": "game_complete",
+              "then": [
+                {
+                  "op": "narrative",
+                  "lines": [
+                    "ZEROADVENTURE II",
+                    "",
+                    "You found Patient Zero.",
+                    "You found yourself.",
+                    "",
+                    "Thank you for playing.",
+                    "",
+                    "— Adrian & the ZERO community"
+                  ]
+                }
+              ],
+              "else": []
+            }
+          ]
+        }
+      },
+      {
+        "id": "hs_now_hiring_sign",
+        "name": "NOW HIRING Sign",
+        "bounds": {
+          "x": 72,
+          "y": 56,
+          "w": 8,
+          "h": 6
+        },
+        "scripts": {
+          "LOOK": [{ "op": "say", "text": "A wooden sign: 'NOW HIRING.' The paint is fresh. They need new staff. After my visit, I'm not surprised. I left that treatment room looking like I'd seen my own liquidation history." }],
+          "USE": [{ "op": "say", "text": "I straighten the sign. It's surprisingly well-built. Better craftsmanship than most DApp front-ends." }],
+          "TALK": [{ "op": "say", "text": "'I'd apply, but my resume just says HODL in increasingly desperate font sizes.'" }],
+          "PICK": [{ "op": "say", "text": "I consider taking the sign. No. The clinic needs staff more than I need a souvenir. Besides, it won't fit in my inventory next to all this emotional baggage." }],
+          "OPEN": [{ "op": "say", "text": "The sign doesn't open. It's a sign, not a mystery box. Though in crypto, everything's a mystery box if you squint." }],
+          "CLOSE": [{ "op": "say", "text": "Can't close a sign. It's permanently open for business. 24/7, 365 blocks a year." }],
+          "PUSH": [{ "op": "say", "text": "I push the sign. It wobbles but holds firm. Staked into the ground properly. Unlike my staking positions." }],
+          "PULL": [{ "op": "say", "text": "I pull the sign toward me. It resists. It's been planted here with conviction. More conviction than most CT influencers." }],
+          "GIVE": [{ "op": "say", "text": "The sign needs applicants, not gifts. Maybe I'll send my resume. Skills: 'Surviving rug pulls, advanced copium inhalation.'" }]
+        }
+      },
+      {
+        "id": "hs_birds",
+        "name": "Birds in the Sky",
+        "bounds": {
+          "x": 42,
+          "y": 12,
+          "w": 12,
+          "h": 8
+        },
+        "scripts": {
+          "LOOK": [{ "op": "say", "text": "Birds circling in the dawn sky. Free. No gas fees. No slippage. Just vibes. They're the only creatures that truly understand what 'to the moon' means." }],
+          "USE": [{ "op": "say", "text": "I wave at the birds. One of them dips lower as if acknowledging me. A decentralized greeting protocol." }],
+          "TALK": [{ "op": "say", "text": "I call out to the birds: 'WAGMI!' They fly higher. Even birds know that's not financial advice." }],
+          "PICK": [{ "op": "say", "text": "I can't pick up birds. They're non-custodial. Self-sovereign flight. True decentralization." }],
+          "OPEN": [{ "op": "say", "text": "I open my arms to the sky. For a moment, I feel like I could fly too. Then gravity reminds me I'm not an L2." }],
+          "CLOSE": [{ "op": "say", "text": "I close my eyes and listen to the birds. Their song is the only algorithm I trust right now." }],
+          "PUSH": [{ "op": "say", "text": "Can't push birds. They're already moving. Velocity like a meme coin on launch day." }],
+          "PULL": [{ "op": "say", "text": "The birds are beyond my reach. Like most airdrops I've qualified for." }],
+          "GIVE": [{ "op": "say", "text": "I have nothing to give the birds. They already have freedom. The ultimate NFT that can't be minted." }]
+        }
+      },
+      {
+        "id": "hs_pine_trees",
+        "name": "Pine Trees",
+        "bounds": {
+          "x": 0,
+          "y": 40,
+          "w": 12,
+          "h": 50
+        },
+        "scripts": {
+          "LOOK": [{ "op": "say", "text": "Tall evergreen pines line the mountainside. They've been here longer than any blockchain. Patient, silent, and completely immune to market volatility. The original diamond hands." }],
+          "USE": [{ "op": "say", "text": "I lean against a pine tree. The bark is rough and real. No smart contract can replicate this. Though someone is probably trying." }],
+          "TALK": [{ "op": "say", "text": "'You trees have been HODLing this mountain since before Bitcoin's genesis block. Respect.' A pinecone falls. Bullish signal." }],
+          "PICK": [{ "op": "say", "text": "I grab a pinecone from the ground. Nature's airdrop. Zero gas fees, 100% organic, and it actually has utility." }],
+          "OPEN": [{ "op": "say", "text": "I peel open a pinecone. Seeds inside. The original seed phrase, if you think about it." }],
+          "CLOSE": [{ "op": "say", "text": "I set the pinecone down. It closes in the cold air. Even nature knows when to lock up its assets." }],
+          "PUSH": [{ "op": "say", "text": "I push a tree. It doesn't budge. This tree has more TVL (Total Vertical Lumber) than most DeFi protocols." }],
+          "PULL": [{ "op": "say", "text": "I pull a low branch. It snaps back and slaps me. The tree just performed an automatic liquidation on my face." }],
+          "GIVE": [{ "op": "say", "text": "These trees give me oxygen. The least I can do is not try to tokenize them. Though... no. Recovery starts now." }]
+        }
+      }
+    ],
+    "triggers": [
+      {
+        "id": "tr_epilogue_start",
+        "once": true,
+        "bounds": {
+          "x": 25,
+          "y": 65,
+          "w": 40,
+          "h": 25
+        },
+        "onEnter": [
+          {
+            "op": "wait",
+            "ms": 2000
+          },
+          {
+            "op": "say",
+            "text": "..."
+          },
+          {
+            "op": "wait",
+            "ms": 1000
+          },
+          {
+            "op": "say",
+            "text": "Fresh air. Real sunlight. When was the last time I looked up from a screen?"
+          },
+          {
+            "op": "say",
+            "text": "Patient Zero. It was me all along. But maybe knowing is the cure."
+          },
+          {
+            "op": "ifFlag",
+            "flag": "game_complete",
+            "then": [],
+            "else": [
+              {
+                "op": "setFlag",
+                "flag": "game_complete",
+                "value": true
+              },
+              {
+                "op": "achievement",
+                "text": "GAME COMPLETE: ZEROadventure II"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "items": {
+    "sceneItems": []
+  },
+  "combos": [],
+  "audio": {
+    "music": "retro-adventure",
+    "variation": {
+      "volume": 0.5
+    },
+    "ambience": null,
+    "sfx": {}
+  },
+  "transitions": {
+    "goto": []
+  },
+  "walkableAreas": [
+    {
+      "x": 21.6,
+      "y": 81.1,
+      "w": 32.9,
+      "h": 18.9
+    }
+  ]
+}

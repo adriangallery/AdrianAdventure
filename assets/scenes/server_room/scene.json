@@ -1,0 +1,812 @@
+{
+  "version": 2,
+  "id": "server_room",
+  "title": "AdrianLAB Server Room",
+  "assets": {
+    "background": "background.png",
+    "walkmask": "walkmask.png",
+    "atlas": null
+  },
+  "render": {
+    "world": {
+      "width": 1536,
+      "height": 1024
+    },
+    "camera": {
+      "start": {
+        "x": 768,
+        "y": 512
+      },
+      "followPlayer": true,
+      "lerp": 0.1,
+      "clampToWorld": true
+    }
+  },
+  "player": {
+    "spawn": {
+      "x": 15,
+      "y": 85
+    },
+    "speed": 180,
+    "sprite": {
+      "sheet": null,
+      "idle": null,
+      "walk": null
+    },
+    "hidePlayer": true
+  },
+  "ui": {
+    "verbs": [
+      "LOOK",
+      "USE",
+      "TALK",
+      "PICK",
+      "OPEN",
+      "CLOSE"
+    ],
+    "mobileDrawerDefault": "collapsed"
+  },
+  "maskMapping": {
+    "walkableColor": "#0000FF",
+    "hotspotColor": "#FFFF00",
+    "triggerColor": "#FF00FF",
+    "regionIdStrategy": "manual"
+  },
+  "regions": {
+    "hotspots": [
+      {
+        "id": "hs_server_rack_a",
+        "name": "Active Server Rack",
+        "bounds": {
+          "x": 7.7,
+          "y": 14.6,
+          "w": 20,
+          "h": 55
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "Each server has a label: 'FloorEngine', 'TraitLab', 'SweepBot'. LEDs blink furiously. These servers are running Adrian's entire ecosystem. Every NFT render, every floor sweep, every trait swap flows through here."
+            }
+          ],
+          "USE": [
+            {
+              "op": "say",
+              "text": "I touch a server. It's warm. Really warm. Like holding a phone that's been running a DEX aggregator for 6 hours."
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "The servers hum in unison. A low drone. The sound of thousands of transactions being indexed. It's almost... musical."
+            }
+          ],
+          "PICK": [
+            {
+              "op": "say",
+              "text": "I can't take a server rack. That would literally rug the entire ecosystem."
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "say",
+              "text": "I pop open a server panel. Cables, dust, and a sticky note: 'DO NOT REBOOT ON TUESDAYS.' No explanation given."
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "I close the panel. The servers keep running. Uptime is everything."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I push a server blade back into its slot. The rack shudders. A monitoring alert fires somewhere. Oops."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "I pull a server blade slightly out. The 'SweepBot' LED goes red. I shove it back in immediately. Crisis averted."
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "The servers demand electricity, not gifts. Although more RAM wouldn't hurt."
+            }
+          ]
+        }
+      },
+      {
+        "id": "hs_server_rack_b",
+        "name": "Dead Server Rack",
+        "bounds": {
+          "x": 28.1,
+          "y": 15,
+          "w": 20,
+          "h": 42.5
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "This rack is completely dead. No lights, no hum. The label reads 'AdrianAuctions'. A burn mark on the chassis tells the story. Overheated during a bidding war. Never recovered."
+            }
+          ],
+          "USE": [
+            {
+              "op": "say",
+              "text": "I flip the power switch. Nothing. Not even a spark. This server gave its life during the great auction frenzy of '24."
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "Silence. The dead rack speaks no more. A moment of silence for fallen infrastructure."
+            }
+          ],
+          "PICK": [
+            {
+              "op": "ifFlag",
+              "flag": "found_burned_chip",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "Nothing else salvageable."
+                }
+              ],
+              "else": [
+                {
+                  "op": "setFlag",
+                  "flag": "found_burned_chip",
+                  "value": true
+                },
+                {
+                  "op": "addItem",
+                  "id": "burned_chip",
+                  "name": "Burned AdrianAuctions Chip"
+                },
+                {
+                  "op": "say",
+                  "text": "I pry out a fused processor. The heat from that bidding war literally melted it. A relic of unchecked on-chain ambition."
+                }
+              ]
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "say",
+              "text": "I open the panel. Charred components, a melted SSD, and the faint smell of burnt silicon. The hard drives are fused together."
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "I close the panel. Rest in peace, AdrianAuctions server. You burned bright. Too bright."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I push the dead rack. It tips slightly. Empty inside. All the data is gone. Like tears in rain."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "I pull open the backup drive bay. Empty. Whoever ran this server believed in living dangerously. No backups."
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "This server is beyond saving. Not even a full hardware refresh could bring it back. Like most projects after a bear market."
+            }
+          ]
+        }
+      },
+      {
+        "id": "hs_terminal",
+        "name": "Server Terminal",
+        "bounds": {
+          "x": 54.4,
+          "y": 27.2,
+          "w": 14.9,
+          "h": 15.9
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "Active monitoring logs. FloorEngine, TraitLab, SweepBot — all Adrian's infrastructure, running autonomously."
+            }
+          ],
+          "USE": [
+            {
+              "op": "ifFlag",
+              "flag": "found_server_log",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "I already downloaded the logs."
+                }
+              ],
+              "else": [
+                {
+                  "op": "setFlag",
+                  "flag": "found_server_log",
+                  "value": true
+                },
+                {
+                  "op": "addItem",
+                  "id": "server_log",
+                  "name": "Server Log Extract"
+                },
+                {
+                  "op": "say",
+                  "text": "Downloaded. The last entry reads: 'PZ discharge protocol initiated. All records moved to treatment room.'"
+                }
+              ]
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "The terminal beeps. In Morse code it spells: 'GET OUT OF MY SERVER ROOM.' Rude."
+            }
+          ],
+          "PICK": [
+            {
+              "op": "ifFlag",
+              "flag": "found_server_log",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "I already downloaded the logs."
+                }
+              ],
+              "else": [
+                {
+                  "op": "setFlag",
+                  "flag": "found_server_log",
+                  "value": true
+                },
+                {
+                  "op": "addItem",
+                  "id": "server_log",
+                  "name": "Server Log Extract"
+                },
+                {
+                  "op": "say",
+                  "text": "Downloaded. The last entry reads: 'PZ discharge protocol initiated. All records moved to treatment room.'"
+                }
+              ]
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "say",
+              "text": "I type 'open sesame'. The terminal responds: 'This is a production server, not a fairy tale. Try sudo.' I don't have sudo."
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "I type 'exit'. The terminal responds: 'Goodbye. Please close the door on your way out. Actually, don't. There is no door.'"
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I push Enter repeatedly. The terminal fills with error messages. Classic sysadmin move."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "I pull up the command history. Someone typed 'git push --force' at 3 AM. That explains a lot."
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "The terminal only accepts valid commands. And occasionally profanity, which it ignores silently."
+            }
+          ]
+        }
+      },
+      {
+        "id": "hs_cooling_system",
+        "name": "Cooling System",
+        "bounds": {
+          "x": 76.3,
+          "y": 16.9,
+          "w": 15,
+          "h": 40
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "An industrial cooling unit rattling against the wall. Water drips from a pipe joint. This must be the source of the stains on the basement ceiling upstairs."
+            }
+          ],
+          "USE": [
+            {
+              "op": "say",
+              "text": "I turn the temperature dial. The unit groans louder. The servers seem happier. Like overclocked GPUs with a water cooler."
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "The cooling system speaks in rattles and drips. The language of entropy. Of heat death. Of servers running too hot for too long."
+            }
+          ],
+          "PICK": [
+            {
+              "op": "say",
+              "text": "I catch a drop of water from the leak. Cold as a bear market winter. Refreshing."
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "say",
+              "text": "I open the maintenance panel. Coolant pipes, a filter that hasn't been changed in years, and a family of spiders who've made this their DeFi protocol."
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "I close the panel. The rattling continues. Some things just can't be fixed."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I push the unit. More water leaks. That's probably not good. Like pushing a button in production."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "I pull the drip tray out. It's full. I empty it into... the floor. Where else? There's no drain down here."
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "The cooling system needs a plumber, not a player character. But I appreciate the sentiment."
+            }
+          ]
+        }
+      },
+      {
+        "id": "hs_emergency_switch",
+        "name": "Emergency Switch",
+        "bounds": {
+          "x": 41.9,
+          "y": 60.3,
+          "w": 10,
+          "h": 12
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "ifFlag",
+              "flag": "emergency_switch_flipped",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "The switch is flipped. The hidden screen still glows with coordinates: 47.6062N, 122.3321W. Patient Zero Rehabilitation Clinic."
+                }
+              ],
+              "else": [
+                {
+                  "op": "say",
+                  "text": "A big red switch behind a glass panel mounted low on the wall. The label reads: 'EMERGENCY SHUTOFF - DO NOT TOUCH.' ...but it's right there. Taunting me."
+                }
+              ]
+            }
+          ],
+          "USE": [
+            {
+              "op": "ifFlag",
+              "flag": "emergency_glass_broken",
+              "then": [
+                {
+                  "op": "ifFlag",
+                  "flag": "emergency_switch_flipped",
+                  "then": [
+                    {
+                      "op": "say",
+                      "text": "The switch is already flipped. The hidden screen on the wall still shows those coordinates. Whatever they mean."
+                    }
+                  ],
+                  "else": [
+                    {
+                      "op": "say",
+                      "text": "I flip the switch. Everything goes dark for a moment... The servers die. Then emergency generators kick in with a deep rumble."
+                    },
+                    {
+                      "op": "wait",
+                      "ms": 800
+                    },
+                    {
+                      "op": "say",
+                      "text": "Behind the glass: an emergency kill switch. But someone repurposed it."
+                    },
+                    {
+                      "op": "say",
+                      "text": "A hidden screen flickers on. Coordinates. A name: 'Patient Zero Rehabilitation Clinic'."
+                    },
+                    {
+                      "op": "say",
+                      "text": "Adrian didn't just build infrastructure. He built an escape route."
+                    },
+                    {
+                      "op": "wait",
+                      "ms": 600
+                    },
+                    {
+                      "op": "say",
+                      "text": "Coordinates: 47.6062N, 122.3321W. Seattle? What's in Seattle?"
+                    },
+                    {
+                      "op": "setFlag",
+                      "flag": "emergency_switch_flipped",
+                      "value": true
+                    },
+                    {
+                      "op": "ifFlag",
+                      "flag": "chapter_3_complete",
+                      "then": [],
+                      "else": [
+                        {
+                          "op": "setFlag",
+                          "flag": "chapter_3_complete",
+                          "value": true
+                        },
+                        {
+                          "op": "achievement",
+                          "text": "Chapter 3 Complete: Below the Surface"
+                        },
+                        {
+                          "op": "wait",
+                          "ms": 3500
+                        },
+                        {
+                          "op": "say",
+                          "text": "Coordinates: 47.6062N, 122.3321W. The clinic. That's where I need to go."
+                        },
+                        {
+                          "op": "say",
+                          "text": "The mountain path from outside the lab... it must lead there."
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "else": [
+                {
+                  "op": "say",
+                  "text": "The switch is behind glass. I'd need to break it first. The glass, I mean. Not the switch. Or the servers."
+                }
+              ]
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "I lean close to the switch. 'Should I?' The switch doesn't answer. Switches never do. They just flip."
+            }
+          ],
+          "PICK": [
+            {
+              "op": "say",
+              "text": "The switch is mounted to the wall. I can't take it. I can only flip it. If I dare."
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "say",
+              "text": "The glass panel is sealed. No hinge, no latch. Break it or leave it. Like most smart contracts."
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "Nothing to close here. The glass is either intact or broken. There is no in-between."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "ifFlag",
+              "flag": "emergency_glass_broken",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "The glass is already broken. The switch is exposed. Just USE it if I dare."
+                }
+              ],
+              "else": [
+                {
+                  "op": "say",
+                  "text": "I push the glass panel. *CRACK* It shatters. Glass everywhere. The red switch is exposed now, practically begging to be flipped. Do I dare?"
+                },
+                {
+                  "op": "setFlag",
+                  "flag": "emergency_glass_broken",
+                  "value": true
+                }
+              ]
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "I pull at the glass frame. It doesn't budge. Pushing might work better. Or a good punch."
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "The emergency switch doesn't accept gifts. It only accepts reckless decisions."
+            }
+          ]
+        }
+      },
+      {
+        "id": "hs_cable_conduit",
+        "name": "Cable Conduit",
+        "bounds": {
+          "x": 49,
+          "y": 0,
+          "w": 5,
+          "h": 14
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "A thick cable conduit drops from the ceiling. Fiber optic, copper, and something that glows faintly blue. The blockchain's umbilical cord."
+            }
+          ],
+          "USE": [
+            {
+              "op": "say",
+              "text": "I trace the cables. They come from the lab above and feed every server in this room. Cut this and the whole ecosystem goes dark."
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "The cables hum with data. Millions of transactions per second, reduced to a gentle vibration. The sound of DeFi sleeping."
+            }
+          ],
+          "PICK": [
+            {
+              "op": "say",
+              "text": "I'm not yanking cables out of a live server room. I may be reckless, but I'm not an ISP technician."
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "say",
+              "text": "I peel back the conduit sheath. Inside: a rainbow of Cat6, fiber optic, and one wire labeled 'DO NOT TOUCH - BOB.' Who's Bob?"
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "I wrap the sheath back. The conduit looks as good as new. Which is to say, terrible."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I push the conduit. It sways gently. Somewhere, a transaction probably just timed out."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "I tug a loose cable. The terminal screen flickers. I let go VERY quickly."
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "The conduit doesn't want gifts. It wants bandwidth. Always more bandwidth."
+            }
+          ]
+        }
+      },
+      {
+        "id": "hs_raised_floor",
+        "name": "Raised Floor Tiles",
+        "bounds": {
+          "x": 5,
+          "y": 82,
+          "w": 88,
+          "h": 8
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "Standard raised server room floor. Perforated tiles for airflow. Under them: more cables than a DeFi protocol has dependencies."
+            }
+          ],
+          "USE": [
+            {
+              "op": "say",
+              "text": "I stomp on a tile. It shifts slightly. Cold air rushes up from below. Nature's air conditioning, funded by electricity bills."
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "My footsteps echo on the raised floor. Each step sounds like a block confirmation. Tap. Tap. Finalized."
+            }
+          ],
+          "PICK": [
+            {
+              "op": "say",
+              "text": "I lift a floor tile. Below: a rat's nest of cables, a forgotten USB drive, and what appears to be a half-eaten sandwich from 2023."
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "say",
+              "text": "I pry open a tile. The underfloor is like Ethereum's mempool — chaotic, congested, and full of things waiting to be processed."
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "I put the tile back. It clicks into place with satisfying finality. Like closing a position in profit. Rare but satisfying."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I push a tile sideways. It grinds against its neighbor. The floor was not designed for this kind of interaction."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "I pull up a floor tile. A cold wind blows from below. The server room's own liquidity undercurrent."
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "The floor tiles accept only gravity. And the occasional dropped screw."
+            }
+          ]
+        }
+      },
+      {
+        "id": "hs_wall_schematics",
+        "name": "Wall Schematics",
+        "bounds": {
+          "x": 76,
+          "y": 58,
+          "w": 16,
+          "h": 20
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "Faded blueprints etched into the wall. Network diagrams, IP ranges, and a hand-drawn map labeled 'ADRIAN INFRASTRUCTURE v0.1'. This is where it all began."
+            }
+          ],
+          "USE": [
+            {
+              "op": "say",
+              "text": "I trace the diagram with my finger. Every server, every bot, every contract — all mapped out. Adrian was meticulous. Obsessively so."
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "The schematics don't talk. But they tell a story. One of scale, ambition, and way too many server processes running at once."
+            }
+          ],
+          "PICK": [
+            {
+              "op": "say",
+              "text": "They're etched into the wall. Like on-chain data — permanent and impossible to take with you."
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "say",
+              "text": "I look closer. One section is labeled 'PHASE 2: PATIENT ZERO.' It's circled three times. Whatever that phase is, it mattered."
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "I step back from the schematics. Some things are better viewed from a distance. Like my portfolio."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I push on the wall panel. It's solid. These schematics aren't going anywhere. Literally immutable."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "I try to peel the blueprint off. It's bonded to the wall. Permanent deployment, no rollback possible."
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "The wall schematics are read-only. No write access for visitors."
+            }
+          ]
+        }
+      }
+    ],
+    "triggers": [
+      {
+        "id": "tr_to_basement",
+        "once": false,
+        "bounds": {
+          "x": 93,
+          "y": 0,
+          "w": 7,
+          "h": 100
+        },
+        "onEnter": [
+          {
+            "op": "gotoScene",
+            "sceneId": "basement",
+            "spawn": {
+              "x": 80,
+              "y": 82
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "npcs": [],
+  "dialogues": {},
+  "items": {
+    "sceneItems": []
+  },
+  "combos": [],
+  "audio": {
+    "music": "retro-adventure",
+    "variation": {
+      "filterType": "lowpass",
+      "filterFrequency": 400,
+      "volume": 0.15
+    },
+    "ambience": null,
+    "sfx": {}
+  },
+  "transitions": {
+    "goto": []
+  },
+  "walkableAreas": [
+    {
+      "x": 5,
+      "y": 78,
+      "w": 90,
+      "h": 22
+    }
+  ]
+}

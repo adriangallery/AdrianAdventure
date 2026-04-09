@@ -1,0 +1,961 @@
+{
+  "version": 2,
+  "id": "clinic_interior",
+  "title": "Patient Zero Rehabilitation Clinic Reception",
+  "assets": {
+    "background": "background.png",
+    "walkmask": "walkmask.png",
+    "atlas": null
+  },
+  "render": {
+    "world": {
+      "width": 3712,
+      "height": 1152
+    },
+    "camera": {
+      "start": {
+        "x": 3264,
+        "y": 576
+      },
+      "followPlayer": true,
+      "lerp": 0.12,
+      "clampToWorld": true
+    }
+  },
+  "player": {
+    "spawn": {
+      "x": 89.3,
+      "y": 100
+    },
+    "speed": 140,
+    "sprite": {
+      "sheet": null,
+      "idle": null,
+      "walk": null
+    },
+    "playerScale": 2.2
+  },
+  "ui": {
+    "verbs": [
+      "LOOK",
+      "USE",
+      "TALK",
+      "PICK",
+      "OPEN",
+      "CLOSE"
+    ],
+    "mobileDrawerDefault": "collapsed"
+  },
+  "maskMapping": {
+    "walkableColor": "#0000FF",
+    "hotspotColor": "#FFFF00",
+    "triggerColor": "#FF00FF",
+    "regionIdStrategy": "manual"
+  },
+  "regions": {
+    "hotspots": [
+      {
+        "id": "hs_reception_desk",
+        "name": "Reception Desk",
+        "bounds": {
+          "x": 72.4,
+          "y": 75,
+          "w": 18.1,
+          "h": 13.5
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "A sterile white reception desk. A sign-in sheet sits on the counter. The names... 'Ser Rug M.', 'HODLer Anonymous', 'Diamond H.', 'Ser Liquidated III'. These people need help."
+            }
+          ],
+          "USE": [
+            {
+              "op": "say",
+              "text": "I ring the bell on the desk. A hollow ding echoes through the empty reception. Nobody comes. Par for the course in healthcare AND crypto."
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "I lean over the desk and whisper: 'Hello?' The echo comes back: 'NGMI...'"
+            }
+          ],
+          "PICK": [
+            {
+              "op": "ifFlag",
+              "flag": "has_sign_in_sheet",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "I already took the sign-in sheet. The desk looks naked without it."
+                }
+              ],
+              "else": [
+                {
+                  "op": "say",
+                  "text": "I grab the sign-in sheet. Patient names, admission dates, diagnoses... 'Chronic Airdrop Dependency', 'Acute Rug Pull Trauma', 'Terminal FOMO'. This is gold."
+                },
+                {
+                  "op": "setFlag",
+                  "flag": "has_sign_in_sheet",
+                  "value": true
+                },
+                {
+                  "op": "addItem",
+                  "id": "sign_in_sheet",
+                  "name": "Sign-In Sheet"
+                }
+              ]
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "say",
+              "text": "I try the desk drawers. Locked. A small sign says: 'Patient confidentiality is our top priority. Also we lost the key.'"
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "The drawers are already closed. Probably for the best."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I push the bell again. Ding. Still nobody. This place has worse response times than Ethereum mainnet on a mint day."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "I pull the sign-in sheet closer. The last entry is dated today. Someone checked in recently."
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "The reception desk doesn't accept walk-in donations. Only scheduled appointments and insurance co-pays in ETH."
+            }
+          ]
+        }
+      },
+      {
+        "id": "hs_posters",
+        "name": "Motivational Posters",
+        "bounds": {
+          "x": 45.4,
+          "y": 36.7,
+          "w": 20,
+          "h": 15
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "Motivational posters line the wall. 'ONE DAY AT A BLOCK.' 'SERENITY PRAYER: Grant me the serenity to accept the trades I cannot reverse, the courage to HODL the ones I can, and the wisdom to know the difference.' Powerful stuff."
+            }
+          ],
+          "USE": [
+            {
+              "op": "say",
+              "text": "I straighten one of the posters. Behind it, someone scratched into the wall: 'WAGMI was a lie.' Dark."
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "I read the posters aloud. 'THE 12 STEPS OF CRYPTO RECOVERY: Step 1 - Admit you are powerless over leverage.' I stop at Step 2. It just says 'There is no Step 2.'"
+            }
+          ],
+          "PICK": [
+            {
+              "op": "say",
+              "text": "I try to peel a poster off. It's glued on tight. The clinic takes its motivational content seriously."
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "say",
+              "text": "I look behind a poster. Just the wall. And the faint scent of broken dreams."
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "I smooth the poster back. 'KEEP CALM AND STOP MARKET BUYING.' Words to live by."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I push on the poster. The wall behind it is solid. Unlike most token whitepapers."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "I pull the corner of a poster. It tears slightly, revealing another poster underneath: 'BUY THE DIP.' Old habits die hard."
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "The posters give ME motivation. I don't need to give them anything except my attention."
+            }
+          ]
+        }
+      },
+      {
+        "id": "hs_waiting_chairs",
+        "name": "Waiting Chairs",
+        "bounds": {
+          "x": 50.2,
+          "y": 65.1,
+          "w": 12.3,
+          "h": 20
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "Uncomfortable plastic chairs. Old magazines scattered on a side table: 'CoinDesk, March 2022: Everything is Fine', 'Degen Weekly: Top 10 Rugs of the Year', and a well-worn copy of 'Blockchain for Dummies' with all the pages torn out."
+            }
+          ],
+          "USE": [
+            {
+              "op": "say",
+              "text": "I sit down. The chair squeaks. I flip through 'CoinDesk March 2022'. Every headline aged like milk. Beautiful."
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "I mutter to the empty chairs: 'So... come here often?' Silence. Toughest crowd since my last Twitter Space."
+            }
+          ],
+          "PICK": [
+            {
+              "op": "say",
+              "text": "I check under the chair cushions. A crumpled receipt for 10,000 LUNA. Oh no."
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "say",
+              "text": "I open one of the magazines. An article titled 'Why This Bull Market Will Never End' from November 2021. Narrator: It ended."
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "I close the magazine. Some articles are better left unfinished. Like most ICO roadmaps."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I push a chair aside. It scrapes the floor with a sound that could wake the dead. Or at least a sleeping night nurse."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "I pull a chair closer. Might as well get comfortable. The wait times here are probably denominated in blocks."
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "The chairs have received enough. Mostly butts and bad news. Same as my portfolio."
+            }
+          ]
+        }
+      },
+      {
+        "id": "hs_filing_cabinet",
+        "name": "Filing Cabinet",
+        "bounds": {
+          "x": 68.4,
+          "y": 38.3,
+          "w": 8,
+          "h": 30
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "A tall metal filing cabinet. A lock keeps it sealed. The label reads 'PATIENT RECORDS - CONFIDENTIAL'. The files inside could explain everything about Patient Zero."
+            }
+          ],
+          "USE": [
+            {
+              "op": "say",
+              "text": "The cabinet is locked. I'd need a key to access these files. HIPAA compliance meets private key security."
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "I whisper to the cabinet: 'What secrets do you hold?' It says nothing. Better at keeping secrets than most Discord mods."
+            }
+          ],
+          "PICK": [
+            {
+              "op": "say",
+              "text": "The cabinet weighs a ton. Full of records. And probably full of stories I'm not ready to hear."
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "say",
+              "text": "Locked. Needs a key. The files inside could explain everything about Patient Zero's condition. And maybe... my own."
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "It's already closed. And locked. Fort Knox has nothing on this filing cabinet."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I push the cabinet. It doesn't budge. It's either bolted down or full of every bad trade ever recorded."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "I pull on the drawer handle. Locked tight. The rattle echoes through the empty reception."
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "The cabinet only accepts keys. And judging by the lock, very specific keys."
+            }
+          ]
+        }
+      },
+      {
+        "id": "hs_treatment_door",
+        "name": "Treatment Room Door",
+        "bounds": {
+          "x": 25.4,
+          "y": 37.2,
+          "w": 8.2,
+          "h": 48.5
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "A heavy door labeled 'TREATMENT ROOM - AUTHORIZED PERSONNEL ONLY'. A card reader blinks red beside it. Whatever's inside, they don't want visitors."
+            }
+          ],
+          "USE": [
+            {
+              "op": "ifFlag",
+              "flag": "treatment_room_unlocked",
+              "then": [
+                {
+                  "op": "sayBrief",
+                  "text": "The door opens...",
+                  "duration": 1000
+                },
+                {
+                  "op": "ifFlag",
+                  "flag": "chapter_5_intro_shown",
+                  "then": [],
+                  "else": [
+                    {
+                      "op": "narrative",
+                      "lines": [
+                        "The treatment room. One chair. One monitor.",
+                        "Dr. Satoshi said not everyone is ready for what's inside.",
+                        "The truth about Patient Zero...",
+                        "...has been in your wallet all along."
+                      ]
+                    },
+                    {
+                      "op": "titleCard",
+                      "chapter": "CHAPTER 5",
+                      "title": "Patient Zero",
+                      "subtitle": "The blockchain doesn't lie."
+                    },
+                    {
+                      "op": "setFlag",
+                      "flag": "chapter_5_intro_shown",
+                      "value": true
+                    }
+                  ]
+                },
+                {
+                  "op": "fadeToScene",
+                  "sceneId": "treatment_room",
+                  "spawn": {
+                    "x": 50,
+                    "y": 80
+                  },
+                  "duration": 800
+                }
+              ],
+              "else": [
+                {
+                  "op": "say",
+                  "text": "The door is sealed. The card reader blinks red. I need proper authorization to get through here."
+                }
+              ]
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "I press my ear against the door. Faint beeping from the other side. Like a heart monitor. Or a liquidation alert."
+            }
+          ],
+          "PICK": [
+            {
+              "op": "say",
+              "text": "I can't pick up a door. Especially one this reinforced. It's like trying to move a whale wallet."
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "ifFlag",
+              "flag": "treatment_room_unlocked",
+              "then": [
+                {
+                  "op": "sayBrief",
+                  "text": "The door opens...",
+                  "duration": 1000
+                },
+                {
+                  "op": "ifFlag",
+                  "flag": "chapter_5_intro_shown",
+                  "then": [],
+                  "else": [
+                    {
+                      "op": "narrative",
+                      "lines": [
+                        "The treatment room. One chair. One monitor.",
+                        "Dr. Satoshi said not everyone is ready for what's inside.",
+                        "The truth about Patient Zero...",
+                        "...has been in your wallet all along."
+                      ]
+                    },
+                    {
+                      "op": "titleCard",
+                      "chapter": "CHAPTER 5",
+                      "title": "Patient Zero",
+                      "subtitle": "The blockchain doesn't lie."
+                    },
+                    {
+                      "op": "setFlag",
+                      "flag": "chapter_5_intro_shown",
+                      "value": true
+                    }
+                  ]
+                },
+                {
+                  "op": "fadeToScene",
+                  "sceneId": "treatment_room",
+                  "spawn": {
+                    "x": 50,
+                    "y": 80
+                  },
+                  "duration": 800
+                }
+              ],
+              "else": [
+                {
+                  "op": "say",
+                  "text": "Locked. The card reader demands authorization. No brute force attacks allowed."
+                }
+              ]
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "The door is already closed. And very much wants to stay that way."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I push on the door. Solid steel. It laughs at my attempt. Not literally. That would be terrifying."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "I pull the handle. The card reader buzzes angrily. 'ACCESS DENIED.' Story of my DeFi career."
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "The door only accepts authorized keycards. Not bribes. This isn't a governance vote."
+            }
+          ]
+        }
+      },
+      {
+        "id": "hs_water_dispenser",
+        "name": "Water Dispenser",
+        "bounds": {
+          "x": 13.3,
+          "y": 40.6,
+          "w": 6,
+          "h": 43.2
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "The water cooler bubbles rhythmically. Someone taped a sign to it: 'This water is NOT tokenized. Do NOT try to fractionalize it. Management.'"
+            }
+          ],
+          "USE": [
+            {
+              "op": "say",
+              "text": "I pour myself a cup. Cold, refreshing, and completely free. A concept foreign to the crypto space."
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "The water cooler gurgles. Classic water cooler talk. The original social protocol."
+            }
+          ],
+          "PICK": [
+            {
+              "op": "say",
+              "text": "I grab a paper cup. It has the clinic's logo: a wallet with a band-aid on it."
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "say",
+              "text": "I open the spigot. Water flows. No gas fees required."
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "I close the spigot. The cooler continues its eternal bubbling. Proof-of-hydration."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I push the cold water button. A satisfying gurgle. If only yield farming was this straightforward."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "I pull the hot water lever. Steam rises. Someone labeled it 'ALTSEASON.' Appropriate."
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "The water cooler provides. It doesn't receive. The purest form of decentralized hydration."
+            }
+          ]
+        }
+      },
+      {
+        "id": "hs_clinic_photo",
+        "name": "Old Photograph",
+        "bounds": {
+          "x": 46.5,
+          "y": 73.6,
+          "w": 2.8,
+          "h": 9.9
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "A faded photograph. A group of people at a ribbon cutting. 'PZRC Opening Day — Block Genesis'. One face is scratched out."
+            }
+          ],
+          "PICK": [
+            {
+              "op": "ifFlag",
+              "flag": "found_clinic_photo",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "I already have a copy."
+                }
+              ],
+              "else": [
+                {
+                  "op": "setFlag",
+                  "flag": "found_clinic_photo",
+                  "value": true
+                },
+                {
+                  "op": "addItem",
+                  "id": "clinic_photo",
+                  "name": "Clinic Photograph"
+                },
+                {
+                  "op": "say",
+                  "text": "I carefully remove the photo from the frame. The scratched-out face... who was it? And why erase them?"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": "hs_dr_coat",
+        "name": "Dr. Satoshi's Coat",
+        "bounds": {
+          "x": 77.3,
+          "y": 61.3,
+          "w": 5,
+          "h": 6.9
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "ifFlag",
+              "flag": "examined_coat_3",
+              "then": [
+                {
+                  "op": "ifFlag",
+                  "flag": "found_dr_badge",
+                  "then": [
+                    {
+                      "op": "say",
+                      "text": "Already took the badge."
+                    }
+                  ],
+                  "else": [
+                    {
+                      "op": "setFlag",
+                      "flag": "found_dr_badge",
+                      "value": true
+                    },
+                    {
+                      "op": "addItem",
+                      "id": "dr_satoshi_badge",
+                      "name": "Dr. Satoshi's Badge"
+                    },
+                    {
+                      "op": "say",
+                      "text": "His coat's inner pocket... a vintage badge: 'Dr. S. Nakamoto — Chief of Rehabilitation, Block 0'. This is a collector's item."
+                    }
+                  ]
+                }
+              ],
+              "else": [
+                {
+                  "op": "ifFlag",
+                  "flag": "examined_coat_2",
+                  "then": [
+                    {
+                      "op": "setFlag",
+                      "flag": "examined_coat_3",
+                      "value": true
+                    },
+                    {
+                      "op": "say",
+                      "text": "Wait... there's something in the inner pocket. A glint of metal."
+                    }
+                  ],
+                  "else": [
+                    {
+                      "op": "ifFlag",
+                      "flag": "examined_coat_1",
+                      "then": [
+                        {
+                          "op": "setFlag",
+                          "flag": "examined_coat_2",
+                          "value": true
+                        },
+                        {
+                          "op": "say",
+                          "text": "The coat has an embroidered name tag: 'S. Nakamoto'. The stitching is impeccable."
+                        }
+                      ],
+                      "else": [
+                        {
+                          "op": "setFlag",
+                          "flag": "examined_coat_1",
+                          "value": true
+                        },
+                        {
+                          "op": "say",
+                          "text": "A pristine white coat. Dr. Satoshi takes his role seriously."
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "USE": [
+            {
+              "op": "say",
+              "text": "I shouldn't mess with the doctor's coat while he's wearing it."
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "I'm not going to talk to a coat. I have standards. Low ones, but still."
+            }
+          ]
+        }
+      },
+      {
+        "id": "hs_fluorescent_lights",
+        "name": "Fluorescent Lights",
+        "bounds": {
+          "x": 30,
+          "y": 25,
+          "w": 35,
+          "h": 7
+        },
+        "scripts": {
+          "LOOK": [{ "op": "say", "text": "Flickering fluorescent tubes. One of them buzzes like a failing validator node. The harsh light makes everything look sickly, which is on-brand for a rehab clinic." }],
+          "USE": [{ "op": "say", "text": "I flick the switch. Nothing changes. These lights have one mode: soul-crushing institutional glow." }],
+          "TALK": [{ "op": "say", "text": "I address the buzzing light: 'You sound like my GPU mining rig in 2021.' It flickers in solidarity." }],
+          "PICK": [{ "op": "say", "text": "I'm not tall enough to reach them. And even if I were, stealing lights from a rehab clinic is a new low. Even for a degen." }],
+          "OPEN": [{ "op": "say", "text": "The light fixture is sealed shut. Tamper-proof, like a properly audited smart contract." }],
+          "CLOSE": [{ "op": "say", "text": "The lights don't have an off switch I can reach. Always on. Like the blockchain." }],
+          "PUSH": [{ "op": "say", "text": "I push up toward the lights. My hands wave uselessly in the air. This is how I look trying to time the market." }],
+          "PULL": [{ "op": "say", "text": "I jump and try to pull the fixture. I miss by a mile. My vertical is as weak as my exit strategy." }],
+          "GIVE": [{ "op": "say", "text": "The lights don't need anything from me. They're already burning through electricity like an Ethereum PoW miner." }]
+        }
+      },
+      {
+        "id": "hs_lightbulb_poster",
+        "name": "Red Glowing Poster",
+        "bounds": {
+          "x": 33.5,
+          "y": 43,
+          "w": 5.5,
+          "h": 14
+        },
+        "scripts": {
+          "LOOK": [{ "op": "say", "text": "A poster with a glowing red lightbulb. Below it reads: 'BRIGHT IDEAS START WITH UNPLUGGING.' The irony of a clinic for screen addicts using a lightbulb metaphor is not lost on me." }],
+          "USE": [{ "op": "say", "text": "I tap the poster. The red glow is just a trick of the lighting. Or maybe the clinic is running on Optimism. The L2, not the emotion." }],
+          "TALK": [{ "op": "say", "text": "I read the fine print aloud: 'Side effects of bright ideas may include seed phrase generation, whitepaper writing, and spontaneous DAO formation.'" }],
+          "PICK": [{ "op": "say", "text": "I try to peel it off. It's laminated AND glued. The clinic protects its motivational content like whales protect their wallets." }],
+          "OPEN": [{ "op": "say", "text": "There's nothing behind it. Just a wall. Disappointing, like opening a mystery box NFT and getting a JPEG of a rock." }],
+          "CLOSE": [{ "op": "say", "text": "I smooth the poster back flat. The red lightbulb glows ominously. Like a liquidation warning." }],
+          "PUSH": [{ "op": "say", "text": "I push the poster. The wall behind it is solid concrete. More reliable than any stablecoin." }],
+          "PULL": [{ "op": "say", "text": "I peel back a corner. Someone wrote in pencil behind it: 'The real rug was the friends we made along the way.'" }],
+          "GIVE": [{ "op": "say", "text": "I have nothing to offer a poster. My portfolio is flatter than this wall." }]
+        }
+      },
+      {
+        "id": "hs_reception_computer",
+        "name": "Reception Computer",
+        "bounds": {
+          "x": 82,
+          "y": 53,
+          "w": 8,
+          "h": 15
+        },
+        "scripts": {
+          "LOOK": [{ "op": "say", "text": "An old CRT monitor showing a green line chart trending upward. The eternal hopium machine. Even the clinic's screensaver is bullish." }],
+          "USE": [{ "op": "say", "text": "I jiggle the mouse. The screen shows a patient management system. All fields say 'ENCRYPTED'. Even their software has trust issues." }],
+          "TALK": [{ "op": "say", "text": "'Hey computer, show me the patient records.' It responds: 'INSUFFICIENT PERMISSIONS. Try being a doctor or at least a whale.' Rude." }],
+          "PICK": [{ "op": "say", "text": "I'm not stealing a whole computer. I'm a crypto detective, not a hardware wallet thief." }],
+          "OPEN": [{ "op": "say", "text": "The computer case is screwed shut. Last person who opened it probably voided the warranty AND their position." }],
+          "CLOSE": [{ "op": "say", "text": "I close the browser tab. It reopens immediately. Classic popup behavior. The computer is basically a DeFi protocol." }],
+          "PUSH": [{ "op": "say", "text": "I push the monitor. The chart wobbles but the green line stays up. Bullish even under physical duress." }],
+          "PULL": [{ "op": "say", "text": "I pull the keyboard closer. The spacebar is worn smooth. Someone has been hitting 'CONFIRM TRANSACTION' a LOT." }],
+          "GIVE": [{ "op": "say", "text": "The computer runs on electricity, not donations. Unlike most crypto projects." }]
+        }
+      }
+    ],
+    "triggers": [
+      {
+        "id": "tr_to_mountain",
+        "once": false,
+        "bounds": {
+          "x": 93,
+          "y": 55,
+          "w": 7,
+          "h": 38
+        },
+        "onEnter": [
+          {
+            "op": "gotoScene",
+            "sceneId": "mountain",
+            "spawn": {
+              "x": 15,
+              "y": 88
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "npcs": [
+    {
+      "id": "npc_dr_satoshi",
+      "name": "Dr. Satoshi",
+      "position": {
+        "x": 62,
+        "y": 65
+      },
+      "color": "0x00cc88",
+      "dialogueTreeId": "dr_satoshi_intro"
+    }
+  ],
+  "dialogues": {
+    "dr_satoshi_intro": {
+      "id": "dr_satoshi_intro",
+      "start": "greeting",
+      "nodes": {
+        "greeting": {
+          "speaker": "Dr. Satoshi",
+          "text": "I'm Dr. Satoshi. No, not THAT Satoshi. I run this clinic. We treat all forms of on-chain addiction here.",
+          "choices": [
+            {
+              "text": "What happened to Patient Zero?",
+              "next": "patient_zero"
+            },
+            {
+              "text": "Can I see the treatment room?",
+              "next": "treatment_room"
+            },
+            {
+              "text": "[Requires AdrianZERO] I have VIP access.",
+              "next": "vip_access",
+              "gate": {
+                "type": "ERC721",
+                "contract": "0x6e369bf0e4e0c106192d606fb6d85836d684da75",
+                "minBalance": 1
+              }
+            },
+            {
+              "text": "Goodbye, doctor.",
+              "next": "goodbye"
+            }
+          ]
+        },
+        "patient_zero": {
+          "speaker": "Dr. Satoshi",
+          "text": "Patient Zero... addicted to minting. Every block, another transaction. Cold wallet detox didn't work. Hardware wallet rehab failed. They escaped through a smart contract exploit in our own admission system. Ironic, really.",
+          "choices": [
+            {
+              "text": "Where did they go?",
+              "next": "where_patient_zero"
+            },
+            {
+              "text": "Can I see the treatment room?",
+              "next": "treatment_room"
+            },
+            {
+              "text": "Goodbye, doctor.",
+              "next": "goodbye"
+            }
+          ]
+        },
+        "where_patient_zero": {
+          "speaker": "Dr. Satoshi",
+          "text": "If I knew that, I wouldn't need visitors poking around. But the treatment room... that's where we kept their records. Everything about their condition. Their wallet history. Their... descent.",
+          "choices": [
+            {
+              "text": "Can I see the treatment room?",
+              "next": "treatment_room"
+            },
+            {
+              "text": "Goodbye, doctor.",
+              "next": "goodbye"
+            }
+          ]
+        },
+        "treatment_room": {
+          "speaker": "Dr. Satoshi",
+          "text": "Not without proper authorization. That room holds answers you might not want. Trust me. Some patients who went in there... never saw their portfolios the same way again.",
+          "choices": [
+            {
+              "text": "What happened to Patient Zero?",
+              "next": "patient_zero"
+            },
+            {
+              "text": "Goodbye, doctor.",
+              "next": "goodbye"
+            }
+          ]
+        },
+        "vip_access": {
+          "speaker": "Dr. Satoshi",
+          "text": "Ah, a holder. The blockchain doesn't lie. VIP access granted. The treatment room is yours. Be careful what you find in there. Not everyone is ready to face... themselves.",
+          "end": true,
+          "onComplete": [
+            {
+              "op": "setFlag",
+              "flag": "treatment_room_unlocked",
+              "value": true
+            },
+            {
+              "op": "say",
+              "text": "I hear a click from the treatment room door. The card reader turns green."
+            },
+            {
+              "op": "setFlag",
+              "flag": "chapter_4_complete",
+              "value": true
+            },
+            {
+              "op": "achievement",
+              "text": "Chapter 4 Complete: The Mountain Path"
+            },
+            {
+              "op": "wait",
+              "ms": 3500
+            }
+          ]
+        },
+        "goodbye": {
+          "speaker": "Dr. Satoshi",
+          "text": "Take your time. The clinic is always open. Unlike most exchanges during a bank run.",
+          "end": true
+        }
+      }
+    }
+  },
+  "items": {
+    "sceneItems": []
+  },
+  "combos": [],
+  "audio": {
+    "music": "retroadrian",
+    "variation": {
+      "filterType": "lowpass",
+      "filterFrequency": 1500,
+      "volume": 0.6
+    },
+    "ambience": null,
+    "sfx": {}
+  },
+  "transitions": {
+    "goto": []
+  },
+  "walkableAreas": [
+    {
+      "x": 8.9,
+      "y": 86,
+      "w": 91.1,
+      "h": 14
+    }
+  ]
+}

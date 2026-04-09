@@ -1,0 +1,563 @@
+{
+  "version": 2,
+  "id": "rooftop",
+  "title": "AdrianLAB Rooftop",
+  "assets": {
+    "background": "background.png",
+    "walkmask": "walkmask.png",
+    "atlas": null
+  },
+  "render": {
+    "world": {
+      "width": 3712,
+      "height": 1152
+    },
+    "camera": {
+      "start": {
+        "x": 1856,
+        "y": 576
+      },
+      "followPlayer": true,
+      "lerp": 0.12,
+      "clampToWorld": true
+    }
+  },
+  "player": {
+    "spawn": {
+      "x": 50,
+      "y": 85
+    },
+    "speed": 140,
+    "sprite": {
+      "sheet": null,
+      "idle": null,
+      "walk": null
+    },
+    "playerScale": 2.2
+  },
+  "ui": {
+    "verbs": [
+      "LOOK",
+      "USE",
+      "TALK",
+      "PICK",
+      "OPEN",
+      "CLOSE"
+    ],
+    "mobileDrawerDefault": "collapsed"
+  },
+  "maskMapping": {
+    "walkableColor": "#0000FF",
+    "hotspotColor": "#FFFF00",
+    "triggerColor": "#FF00FF",
+    "regionIdStrategy": "manual"
+  },
+  "regions": {
+    "hotspots": [
+      {
+        "id": "hs_satellite_dish",
+        "name": "Satellite Dish",
+        "bounds": {
+          "x": 28.9,
+          "y": 16,
+          "w": 15.1,
+          "h": 44
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "A massive satellite dish pointed at the sky. This isn't for TV. It's running a full Base node via satellite. Decentralization taken literally."
+            },
+            {
+              "op": "say",
+              "text": "The dish points toward a geostationary orbit. Someone configured this to maintain connection even if all ground infrastructure fails. Adrian was preparing for something."
+            }
+          ],
+          "USE": [
+            {
+              "op": "say",
+              "text": "I adjust the dish angle slightly. A burst of static erupts from a nearby speaker, then resolves into... block confirmations? This thing is receiving blockchain data directly from orbit."
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "I speak into the dish. My voice echoes off the concave surface and bounces skyward. Somewhere in orbit, a satellite ignores me completely."
+            }
+          ],
+          "PICK": [
+            {
+              "op": "say",
+              "text": "The dish is bolted to concrete. It would take industrial equipment to move this. Or a really motivated degen."
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "say",
+              "text": "I open the access panel at the base. Coaxial cables, a signal amplifier, and a label: 'Block height sync: ACTIVE. Uptime: 847 days.' Impressive."
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "I close the panel. The dish continues its silent vigil, tracking satellites across the night sky."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I push the dish. It rotates slightly on its mount. For a moment, the block sync drops. I push it back. Don't touch production equipment."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "I pull a loose cable. The dish hums louder. I plug it back in before something important disconnects."
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "The dish doesn't want anything except a clear view of the sky. And maybe a firmware update."
+            }
+          ]
+        }
+      },
+      {
+        "id": "hs_antenna_array",
+        "name": "Antenna Array",
+        "bounds": {
+          "x": 19.8,
+          "y": 34.2,
+          "w": 8.4,
+          "h": 40
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "Telescoping antennas of various heights. Most are firmly mounted, but one looks loose. It wobbles in the wind like a crypto chart on a Monday morning."
+            }
+          ],
+          "USE": [
+            {
+              "op": "say",
+              "text": "I extend one of the antennas to full height. It picks up more signal. And also FM radio. Is that... 'Never Gonna Give You Up'? Even the antennas are rickrolling me."
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "The antennas crackle with static. Somewhere in the noise, I swear I hear 'buy the dip.' Radio ghosts from bull markets past."
+            }
+          ],
+          "PICK": [
+            {
+              "op": "ifFlag",
+              "flag": "has_antenna",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "I already grabbed the loose antenna. The array looks a bit lopsided now."
+                }
+              ],
+              "else": [
+                {
+                  "op": "say",
+                  "text": "I grab the loose antenna and wiggle it free. Still gets two bars. Could be useful."
+                },
+                {
+                  "op": "setFlag",
+                  "flag": "has_antenna",
+                  "value": true
+                },
+                {
+                  "op": "addItem",
+                  "id": "antenna",
+                  "name": "Loose Antenna"
+                }
+              ]
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "say",
+              "text": "I open the junction box at the base of the array. A rat's nest of cables and splitters. Someone wired this in the dark. Probably literally."
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "I close the junction box. The antennas keep receiving. Ignorance is bliss."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I push one of the tall antennas. It sways, then springs back. Resilient. Like a true believer after the fifth bear market."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "ifFlag",
+              "flag": "has_antenna",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "I already pulled the loose one free. The rest are firmly mounted."
+                }
+              ],
+              "else": [
+                {
+                  "op": "say",
+                  "text": "I pull the loose antenna free. Still gets two bars. Not bad for salvage."
+                },
+                {
+                  "op": "setFlag",
+                  "flag": "has_antenna",
+                  "value": true
+                },
+                {
+                  "op": "addItem",
+                  "id": "antenna",
+                  "name": "Loose Antenna"
+                }
+              ]
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "The antenna array runs on electromagnetic waves, not generosity."
+            }
+          ]
+        }
+      },
+      {
+        "id": "hs_night_sky",
+        "name": "Night Sky",
+        "bounds": {
+          "x": 10,
+          "y": 0,
+          "w": 80,
+          "h": 12.7
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "Stars above, city lights below. The Milky Way stretches like an infinite ledger of light. Somewhere out there, someone is aping into a memecoin at 3 AM. Godspeed, degen. Godspeed."
+            }
+          ],
+          "USE": [
+            {
+              "op": "say",
+              "text": "I use my phone to take a picture of the stars. The camera can't capture what I see. Some things exist only in the moment. Like a good entry price."
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "I whisper to the stars: 'When moon?' The stars say nothing. They've been holding their position for billions of years. The ultimate diamond hands."
+            }
+          ],
+          "PICK": [
+            {
+              "op": "say",
+              "text": "I reach for a star. My hand grasps only cold night air. Like reaching for a green candle that already closed."
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "say",
+              "text": "The sky is already open. The most permissionless system in existence."
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "I can't close the sky. It's the original open-source project."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I push my hand toward the sky. The wind pushes back. Nature's slippage."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "I try to pull the stars closer. Light-years of distance laugh at my attempt. Like trying to pull liquidity from an empty pool."
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "I give the night sky a moment of silence. For every portfolio that didn't make it. For every wallet drained at dawn. The stars blink in acknowledgment."
+            }
+          ]
+        }
+      },
+      {
+        "id": "hs_weather_vane",
+        "name": "Weather Vane",
+        "bounds": {
+          "x": 66.8,
+          "y": 19.9,
+          "w": 10,
+          "h": 45
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "A weather vane shaped like the Bitcoin logo. It spins slowly, but not with the wind... it seems to respond to market sentiment? Right now it points northwest. Or bearish. Hard to tell."
+            }
+          ],
+          "USE": [
+            {
+              "op": "say",
+              "text": "I spin the weather vane manually. It whirls, then settles pointing... straight down. That can't be a good sign for the market."
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "I ask the weather vane: 'Bull or bear?' It creaks and points sideways. Crab market it is."
+            }
+          ],
+          "PICK": [
+            {
+              "op": "say",
+              "text": "The weather vane is mounted on a pole. I'd need tools to remove it. And a reason. Which I don't have. Yet."
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "say",
+              "text": "The base of the weather vane has a small compartment. Empty. Someone already took whatever was hidden here."
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "I close the compartment. The weather vane spins in what I choose to interpret as approval."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I push the weather vane north. It fights back and returns to its sentiment-driven position. The market decides, not me."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "I pull the weather vane toward me. The pole bends slightly. I let go before I break Adrian's market sentiment detector."
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "The weather vane doesn't accept bribes. It reports market sentiment as it sees it. Incorruptible. Unlike most analysts."
+            }
+          ]
+        }
+      },
+      {
+        "id": "hs_basement_light",
+        "name": "Blinking Light Below",
+        "bounds": {
+          "x": 83.7,
+          "y": 65.3,
+          "w": 8,
+          "h": 8
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "A light blinks rhythmically from below the building. The basement. Something is still running down there."
+            },
+            {
+              "op": "ifFlag",
+              "flag": "chapter_2_complete",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "I need to find a way down there."
+                }
+              ],
+              "else": [
+                {
+                  "op": "setFlag",
+                  "flag": "chapter_2_complete",
+                  "value": true
+                },
+                {
+                  "op": "achievement",
+                  "text": "Chapter 2 Complete: The Receptionist"
+                },
+                {
+                  "op": "wait",
+                  "ms": 3500
+                },
+                {
+                  "op": "say",
+                  "text": "That blinking... it's a server heartbeat. Something below needs attention. I should find the basement."
+                }
+              ]
+            }
+          ],
+          "USE": [
+            {
+              "op": "say",
+              "text": "The light is far below, at ground level. I can't reach it from up here."
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "I shout toward the light. The wind carries my voice away. But for a moment, the blinking seems to pause. Coincidence?"
+            }
+          ],
+          "PICK": [
+            {
+              "op": "say",
+              "text": "It's not something I can pick up. It's a light source several floors below."
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "say",
+              "text": "There's nothing to open here. The light comes from inside the building's foundation."
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "I can't close something that far away. And I'm not sure I'd want to."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I lean over the edge toward the light. Vertigo hits. I step back."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "I can't pull a light from several floors away. But it pulls my attention."
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "The blinking light doesn't need anything from me. It just needs me to come find it."
+            }
+          ]
+        }
+      },
+      {
+        "id": "hs_city_skyline",
+        "name": "City Skyline",
+        "bounds": { "x": 0, "y": 50, "w": 18, "h": 25 },
+        "scripts": {
+          "LOOK": [{ "op": "say", "text": "The city glimmers below. Thousands of lights, each one a potential node operator, a degen, or just someone leaving the bathroom light on. The crypto never sleeps." }],
+          "USE": [{ "op": "say", "text": "I use my phone to zoom in on the skyline. A building has a neon sign: 'EXCHANGES OPEN 24/7.' That's not a feature, that's a warning." }],
+          "TALK": [{ "op": "say", "text": "'Hey city! How's the mempool tonight?' A distant car horn honks. Close enough to a response." }],
+          "PICK": [{ "op": "say", "text": "I can't pick up a city. Though some DAOs have tried to buy one." }],
+          "OPEN": [{ "op": "say", "text": "The city is always open. Permissionless, 24/7, like every good blockchain." }],
+          "CLOSE": [{ "op": "say", "text": "Cities don't close. Not even on holidays. Validators don't take vacation." }],
+          "PUSH": [{ "op": "say", "text": "I push the air toward the city. A breeze carries my gesture into the void." }],
+          "PULL": [{ "op": "say", "text": "I beckon the city closer. It stays exactly where it is. Unlike token prices." }],
+          "GIVE": [{ "op": "say", "text": "The city takes enough already. Rent, taxes, gas fees... the original rug pull." }]
+        }
+      },
+      {
+        "id": "hs_roof_access_panel",
+        "name": "Roof Access Panel",
+        "bounds": { "x": 39, "y": 75, "w": 7, "h": 8 },
+        "scripts": {
+          "LOOK": [{ "op": "say", "text": "A metal access panel flush with the roof surface. It has a keycard slot. A faint red LED blinks: 'LOCKED.' The basement must connect through here somehow." }],
+          "USE": [{ "op": "say", "text": "I try the panel. Locked. The keycard slot glows red. I need proper credentials. Story of my life on every whitelist." }],
+          "TALK": [{ "op": "say", "text": "I knock on the panel. A hollow echo returns from below. Something is definitely down there." }],
+          "PICK": [{ "op": "say", "text": "Bolted to the roof. I'd need a wrench, a crowbar, and a complete disregard for structural integrity." }],
+          "OPEN": [{ "op": "say", "text": "The keycard slot blinks red. ACCESS DENIED. I need Adrian's keycard to open this." }],
+          "CLOSE": [{ "op": "say", "text": "Already closed and locked. Fort Knox wishes it had this security." }],
+          "PUSH": [{ "op": "say", "text": "I push the panel. It doesn't budge. Solid metal. Whatever's below, Adrian didn't want casual visitors." }],
+          "PULL": [{ "op": "say", "text": "I pull the panel edge. My fingers slip. Smooth metal, no grip. Like trying to catch a falling knife." }],
+          "GIVE": [{ "op": "say", "text": "The panel's keycard slot waits patiently. It only accepts one thing: the right credentials." }]
+        }
+      },
+      {
+        "id": "hs_parapet",
+        "name": "Roof Railing",
+        "bounds": { "x": 15, "y": 65, "w": 85, "h": 6 },
+        "scripts": {
+          "LOOK": [{ "op": "say", "text": "A concrete parapet runs along the roof edge. Low enough to lean on, high enough to prevent accidental portfolio reviews from the wrong angle." }],
+          "USE": [{ "op": "say", "text": "I lean on the railing and survey the city below. Wind in my hair. Very dramatic. Very protagonist energy." }],
+          "TALK": [{ "op": "say", "text": "'What have you seen from up here?' The concrete stays silent. It's seen bull runs and bear markets from the best seat in the house." }],
+          "PICK": [{ "op": "say", "text": "I chip off a piece of concrete. It crumbles. Like my resolve during a flash crash." }],
+          "OPEN": [{ "op": "say", "text": "Parapets don't open. They're the last line of defense between me and a very short flight." }],
+          "CLOSE": [{ "op": "say", "text": "The parapet is always on duty. 24/7 fall prevention. Better uptime than most L2s." }],
+          "PUSH": [{ "op": "say", "text": "I push against the railing. Solid. Whoever built this understood the importance of not falling." }],
+          "PULL": [{ "op": "say", "text": "I pull the railing toward me. A tiny crack appears. I stop immediately. Safety first, YOLO second." }],
+          "GIVE": [{ "op": "say", "text": "The parapet doesn't want anything. It just wants me to stay on this side of it. Fair enough." }]
+        }
+      }
+    ],
+    "triggers": [
+      {
+        "id": "tr_to_upstairs",
+        "once": false,
+        "bounds": {
+          "x": 57.9,
+          "y": 79.7,
+          "w": 12,
+          "h": 14
+        },
+        "onEnter": [
+          {
+            "op": "gotoScene",
+            "sceneId": "upstairs",
+            "spawn": {
+              "x": 85,
+              "y": 80
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "npcs": [],
+  "dialogues": {},
+  "items": {
+    "sceneItems": []
+  },
+  "combos": [],
+  "audio": {
+    "music": "retro-adventure",
+    "variation": {
+      "filterType": "lowpass",
+      "filterFrequency": 800,
+      "volume": 0.2
+    },
+    "ambience": null,
+    "sfx": {}
+  },
+  "transitions": {
+    "goto": []
+  },
+  "walkableAreas": [
+    {
+      "x": 15.7,
+      "y": 87,
+      "w": 84.3,
+      "h": 13
+    }
+  ]
+}

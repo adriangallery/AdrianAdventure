@@ -1,0 +1,632 @@
+{
+  "version": 3,
+  "id": "clinic_exterior",
+  "title": "Patient Zero Rehabilitation Clinic",
+  "assets": {
+    "background": "background.png",
+    "walkmask": null,
+    "atlas": null
+  },
+  "render": {
+    "world": {
+      "width": 3712,
+      "height": 1152
+    },
+    "camera": {
+      "start": {
+        "x": 2784,
+        "y": 576
+      },
+      "followPlayer": true,
+      "lerp": 0.1,
+      "clampToWorld": true
+    }
+  },
+  "player": {
+    "spawn": {
+      "x": 7.4,
+      "y": 97.2
+    },
+    "speed": 140,
+    "sprite": null,
+    "playerScale": 2.2
+  },
+  "ui": {
+    "verbs": [
+      "LOOK",
+      "USE",
+      "TALK",
+      "PICK",
+      "OPEN",
+      "CLOSE"
+    ],
+    "mobileDrawerDefault": "collapsed"
+  },
+  "maskMapping": null,
+  "regions": {
+    "hotspots": [
+      {
+        "id": "hs_clinic_sign",
+        "name": "Clinic Sign",
+        "bounds": {
+          "x": 41.9,
+          "y": 22.5,
+          "w": 15.9,
+          "h": 12
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "\"PATIENT ZERO REHABILITATION CLINIC\""
+            },
+            {
+              "op": "say",
+              "text": "\"Treating On-Chain Addiction Since Block 0\""
+            },
+            {
+              "op": "say",
+              "text": "Below, in smaller print: 'Accepting patients 24/7. No appointment needed. Your wallet is your referral.'"
+            }
+          ],
+          "USE": [
+            {
+              "op": "say",
+              "text": "It's a sign, not a terminal."
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "The sign doesn't respond. Like customer support during a rug pull."
+            }
+          ]
+        }
+      },
+      {
+        "id": "hs_main_entrance",
+        "name": "Clinic Entrance",
+        "bounds": {
+          "x": 44.8,
+          "y": 43.9,
+          "w": 9.4,
+          "h": 37.4
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "Heavy reinforced doors with a biometric scanner. Built to keep patients in, not visitors out."
+            }
+          ],
+          "USE": [
+            {
+              "op": "ifHasItem",
+              "id": "keycard",
+              "then": [
+                {
+                  "op": "sayBrief",
+                  "text": "Keycard accepted. The scanner turns green.",
+                  "duration": 1500
+                },
+                {
+                  "op": "fadeToScene",
+                  "sceneId": "clinic_interior",
+                  "spawn": {
+                    "x": 80,
+                    "y": 70
+                  }
+                }
+              ],
+              "else": [
+                {
+                  "op": "ifHasItem",
+                  "id": "sign_in_sheet",
+                  "then": [
+                    {
+                      "op": "say",
+                      "text": "The scanner reads the sign-in sheet's barcode. Visitor access granted."
+                    },
+                    {
+                      "op": "setFlag",
+                      "flag": "clinic_unlocked",
+                      "value": true
+                    },
+                    {
+                      "op": "fadeToScene",
+                      "sceneId": "clinic_interior",
+                      "spawn": {
+                        "x": 80,
+                        "y": 70
+                      }
+                    }
+                  ],
+                  "else": [
+                    {
+                      "op": "say",
+                      "text": "The scanner blinks: 'PROOF OF STAKE REQUIRED'. I need some form of identification or authorization."
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "ifFlag",
+              "flag": "clinic_unlocked",
+              "then": [
+                {
+                  "op": "fadeToScene",
+                  "sceneId": "clinic_interior",
+                  "spawn": {
+                    "x": 80,
+                    "y": 70
+                  }
+                }
+              ],
+              "else": [
+                {
+                  "op": "say",
+                  "text": "Locked. The biometric scanner needs something from me first."
+                }
+              ]
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "An intercom crackles: 'Visiting hours are... always. Please authenticate.'"
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "Reinforced steel. This door doesn't budge."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "I pull the handle. The scanner beeps angrily."
+            }
+          ]
+        }
+      },
+      {
+        "id": "hs_visitor_box",
+        "name": "Visitor Drop Box",
+        "bounds": {
+          "x": 71.8,
+          "y": 69.6,
+          "w": 5.2,
+          "h": 15
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "A weathered drop box labeled 'VISITOR SIGN-IN'. There's a clipboard inside."
+            }
+          ],
+          "PICK": [
+            {
+              "op": "ifFlag",
+              "flag": "found_sign_in_sheet",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "Empty now."
+                }
+              ],
+              "else": [
+                {
+                  "op": "setFlag",
+                  "flag": "found_sign_in_sheet",
+                  "value": true
+                },
+                {
+                  "op": "addItem",
+                  "id": "sign_in_sheet",
+                  "name": "Visitor Sign-In Sheet"
+                },
+                {
+                  "op": "say",
+                  "text": "A sign-in sheet with a barcode at the bottom. Names on the list: 'V. Buterin (discharged)', 'S. Bankman (transferred)', 'D. Kwon (escaped)'."
+                },
+                {
+                  "op": "say",
+                  "text": "At the very bottom: 'Patient Zero — [REDACTED]'. The barcode might work on the scanner."
+                }
+              ]
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "say",
+              "text": "I open the drop box lid. The sign-in sheet is right there."
+            }
+          ],
+          "USE": [
+            {
+              "op": "say",
+              "text": "It's a drop box. I should check what's inside."
+            }
+          ]
+        }
+      },
+      {
+        "id": "hs_building",
+        "name": "Clinic Building",
+        "bounds": {
+          "x": 77.2,
+          "y": 0,
+          "w": 11.9,
+          "h": 53.6
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "Brutalist architecture. Concrete and steel. The kind of building where hope goes to get a reality check."
+            },
+            {
+              "op": "say",
+              "text": "No windows on the ground floor. Privacy for the patients... or containment?"
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "The building absorbs sound. Designed for isolation."
+            }
+          ]
+        }
+      },
+      {
+        "id": "hs_security_camera",
+        "name": "Security Camera",
+        "bounds": {
+          "x": 65.1,
+          "y": 15.6,
+          "w": 5,
+          "h": 8
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "A camera tracks my movement. Red LED blinks steadily. Someone is watching."
+            },
+            {
+              "op": "say",
+              "text": "Or something. Automated surveillance. On-chain, everything is watched."
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "'Smile, you're on-chain.' The camera doesn't laugh."
+            }
+          ],
+          "USE": [
+            {
+              "op": "say",
+              "text": "I wave at the camera. The LED blinks faster for a moment."
+            }
+          ]
+        }
+      },
+      {
+        "id": "hs_bench",
+        "name": "Waiting Bench",
+        "bounds": {
+          "x": 59.7,
+          "y": 75.9,
+          "w": 10,
+          "h": 10
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "A bench for visitors. Carved into the armrest: 'WAGMI' crossed out, replaced with 'NGMI', crossed out, replaced with '???'."
+            }
+          ],
+          "USE": [
+            {
+              "op": "say",
+              "text": "I sit for a moment. The mountain air is cold but the bench is colder."
+            },
+            {
+              "op": "say",
+              "text": "Someone scratched a wallet address into the seat. Too worn to read. A ghost of a transaction."
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "The bench has heard every sad portfolio story. It's not impressed by mine."
+            }
+          ]
+        }
+      },
+      {
+        "id": "hs_posters",
+        "name": "Rehabilitation Posters",
+        "bounds": {
+          "x": 63.2,
+          "y": 45.4,
+          "w": 10,
+          "h": 20
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "Posters on the clinic wall:"
+            },
+            {
+              "op": "say",
+              "text": "\"ONE DAY AT A BLOCK\""
+            },
+            {
+              "op": "say",
+              "text": "\"SERENITY PRAYER: Grant me serenity to accept trades I cannot reverse, courage to HODL the ones I can, and wisdom to know the difference.\""
+            },
+            {
+              "op": "say",
+              "text": "\"12 STEPS TO RECOVERY: Step 1 — Disconnect your wallet. Steps 2-12 — See Step 1.\""
+            }
+          ],
+          "USE": [
+            {
+              "op": "say",
+              "text": "The posters are laminated. Professionally done. This clinic has budget."
+            }
+          ]
+        }
+      },
+      {
+        "id": "hs_trash_can",
+        "name": "Trash Can",
+        "bounds": {
+          "x": 38.5,
+          "y": 66,
+          "w": 3.5,
+          "h": 14
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "A metal trash can. Overflowing with crumpled papers, empty energy drink cans, and what appears to be a torn-up whitepaper titled 'SafeMoon v3.'"
+            }
+          ],
+          "USE": [
+            {
+              "op": "say",
+              "text": "I dig through the trash. Among the garbage: a receipt for '500 ETH worth of JPEGs' dated 2021. Yikes."
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "I peer into the trash can. It stares back. We are kindred spirits — both full of other people's bad decisions."
+            }
+          ],
+          "PICK": [
+            {
+              "op": "say",
+              "text": "I fish out a crumpled note: 'Day 47: Still believe in the tech.' Heartbreaking."
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "say",
+              "text": "I lift the lid. The smell hits like a failed rebase — unexpected and overwhelming."
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "I slam the lid shut. Some portfolios are better left uninspected."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I push the trash can. It scrapes across concrete. The sound of metal on stone — or paper hands on sell buttons."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "I pull the trash can closer. Why am I investigating garbage? Because every good detective checks the bins."
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "The trash can accepts everything. No KYC, no slippage, no minimum deposit. The most inclusive protocol I've ever seen."
+            }
+          ]
+        }
+      },
+      {
+        "id": "hs_graffiti_gwei",
+        "name": "Wall Graffiti",
+        "bounds": {
+          "x": 42,
+          "y": 82,
+          "w": 5,
+          "h": 6
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "Someone spray-painted 'Gwei' on the wall near the entrance, and 'Degen' further down. The patients were tagging the clinic. Proof-of-vandalism."
+            }
+          ],
+          "USE": [
+            {
+              "op": "say",
+              "text": "I trace the letters. Still fresh. Whoever tagged this was here recently. And clearly not rehabilitated."
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "I read the graffiti aloud: 'Gwei.' It's a unit of gas, a cry for help, and a tag — all at once."
+            }
+          ],
+          "PICK": [
+            {
+              "op": "say",
+              "text": "I can't peel graffiti off concrete. It's as permanent as a transaction on the blockchain. No rollbacks."
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "say",
+              "text": "There's nothing to open. Graffiti is already the most open form of expression."
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "I can't close graffiti. It's open-source art. Permissionless and uncensorable."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I push against the tagged wall. The paint doesn't smudge. Committed to the surface forever."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "I scratch at the graffiti. Under 'Gwei' someone wrote 'was here' in pencil. Under THAT: 'we are all here.'"
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "The graffiti has already been given to the world. A public good, like Ethereum. Or litter. Depends on your perspective."
+            }
+          ]
+        }
+      },
+      {
+        "id": "hs_pathway",
+        "name": "Clinic Pathway",
+        "bounds": {
+          "x": 20,
+          "y": 73,
+          "w": 15,
+          "h": 20
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "A cracked concrete walkway leading to the clinic entrance. Weeds push through the seams. Nature's own fork of the pavement."
+            }
+          ],
+          "USE": [
+            {
+              "op": "say",
+              "text": "I follow the path toward the entrance. Each crack in the pavement feels intentional, like breadcrumbs for the lost."
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "My footsteps echo on the walkway. The path has heard a thousand desperate shuffles toward recovery."
+            }
+          ],
+          "PICK": [
+            {
+              "op": "say",
+              "text": "I pick up a pebble from a crack. It's been here longer than most crypto projects will ever last."
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "say",
+              "text": "The path is already open. It's always been open. The hard part is choosing to walk it."
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "I can't close a path. That's the urban planning department's job. And they don't do weekends."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I push forward on the path. Each step closer to the truth about Patient Zero."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "Something about this place pulls me forward and pushes me back at the same time. Like a market at equilibrium."
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "The path gives direction. That's more than any financial advisor ever gave me."
+            }
+          ]
+        }
+      }
+    ],
+    "triggers": [
+      {
+        "id": "tr_back_to_mountain",
+        "once": false,
+        "bounds": {
+          "x": 11.1,
+          "y": 34.8,
+          "w": 8,
+          "h": 38
+        },
+        "onEnter": [
+          {
+            "op": "fadeToScene",
+            "sceneId": "mountain",
+            "spawn": {
+              "x": 15,
+              "y": 85
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "items": {
+    "sceneItems": []
+  },
+  "combos": [],
+  "audio": {
+    "music": "retroadrian",
+    "ambience": null,
+    "sfx": {}
+  },
+  "transitions": {
+    "goto": []
+  },
+  "walkableAreas": [
+    {
+      "x": 0,
+      "y": 91.2,
+      "w": 100,
+      "h": 8.8
+    }
+  ]
+}

@@ -1,0 +1,1211 @@
+{
+  "version": 2,
+  "id": "basement",
+  "title": "AdrianLAB Basement",
+  "assets": {
+    "background": "background.png",
+    "walkmask": "walkmask.png",
+    "atlas": null
+  },
+  "render": {
+    "world": {
+      "width": 3712,
+      "height": 1152
+    },
+    "camera": {
+      "start": {
+        "x": 1856,
+        "y": 576
+      },
+      "followPlayer": true,
+      "lerp": 0.1,
+      "clampToWorld": true
+    }
+  },
+  "player": {
+    "spawn": {
+      "x": 12,
+      "y": 89.9
+    },
+    "playerScale": 2.2,
+    "speed": 140,
+    "sprite": {
+      "sheet": null,
+      "idle": null,
+      "walk": null
+    }
+  },
+  "ui": {
+    "verbs": [
+      "LOOK",
+      "USE",
+      "TALK",
+      "PICK",
+      "OPEN",
+      "CLOSE"
+    ],
+    "mobileDrawerDefault": "collapsed"
+  },
+  "maskMapping": {
+    "walkableColor": "#0000FF",
+    "hotspotColor": "#FFFF00",
+    "triggerColor": "#FF00FF",
+    "regionIdStrategy": "manual"
+  },
+  "regions": {
+    "hotspots": [
+      {
+        "id": "hs_main_computer",
+        "name": "CRT Computer",
+        "bounds": {
+          "x": 52.6,
+          "y": 30.7,
+          "w": 9,
+          "h": 16.7
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "An ancient CRT monitor with a green phosphor glow. The screen shows a blinking cursor: 'INSERT ADRIAN'S LEDGER TO CONTINUE...'"
+            }
+          ],
+          "USE": [
+            {
+              "op": "ifFlag",
+              "flag": "found_ledger",
+              "then": [
+                {
+                  "op": "ifFlag",
+                  "flag": "computer_unlocked",
+                  "then": [
+                    {
+                      "op": "ifFlag",
+                      "flag": "floppy_inserted",
+                      "then": [
+                        {
+                          "op": "say",
+                          "text": "The computer shows the patient roster. 'PATIENT ZERO — STATUS: ESCAPED' blinks in red at the bottom."
+                        }
+                      ],
+                      "else": [
+                        {
+                          "op": "ifFlag",
+                          "flag": "found_floppy",
+                          "then": [
+                            {
+                              "op": "setFlag",
+                              "flag": "floppy_inserted",
+                              "value": true
+                            },
+                            {
+                              "op": "removeItem",
+                              "id": "floppy_disk"
+                            },
+                            {
+                              "op": "addItem",
+                              "id": "printout",
+                              "name": "CRT Printout"
+                            },
+                            {
+                              "op": "setFlag",
+                              "flag": "has_printout",
+                              "value": true
+                            },
+                            {
+                              "op": "say",
+                              "text": "I insert the floppy disk... *KRRRTTT*... The drive spins up. Data flooding the screen."
+                            },
+                            {
+                              "op": "wait",
+                              "ms": 600
+                            },
+                            {
+                              "op": "say",
+                              "text": "The roster lists patients. Conditions read like a crypto obituary:"
+                            },
+                            {
+                              "op": "say",
+                              "text": "Chronic Airdrop Dependency... Acute Rug Pull Trauma... Terminal FOMO..."
+                            },
+                            {
+                              "op": "wait",
+                              "ms": 800
+                            },
+                            {
+                              "op": "say",
+                              "text": "At the bottom, in red ink: PATIENT ZERO — STATUS: ESCAPED"
+                            },
+                            {
+                              "op": "say",
+                              "text": "Escaped? Through what? And to where?"
+                            },
+                            {
+                              "op": "wait",
+                              "ms": 400
+                            },
+                            {
+                              "op": "say",
+                              "text": "The printer spits out a map. This could lead somewhere."
+                            }
+                          ],
+                          "else": [
+                            {
+                              "op": "say",
+                              "text": "The computer is already unlocked. The screen shows Adrian's private vault dashboard. The disk drive blinks, waiting for something to read."
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ],
+                  "else": [
+                    {
+                      "op": "say",
+                      "text": "I plug in Adrian's Ledger... The screen flashes: 'WALLET RECOGNIZED. VAULT ACCESS GRANTED.'"
+                    },
+                    {
+                      "op": "wait",
+                      "ms": 800
+                    },
+                    {
+                      "op": "say",
+                      "text": "The monitor reveals a dashboard: portfolio tracker, NFT collection, and... a map to something called 'Patient Zero Clinic'."
+                    },
+                    {
+                      "op": "setFlag",
+                      "flag": "computer_unlocked",
+                      "value": true
+                    }
+                  ]
+                }
+              ],
+              "else": [
+                {
+                  "op": "say",
+                  "text": "The screen says 'INSERT ADRIAN'S LEDGER'. I need to find it somewhere."
+                }
+              ]
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "The CRT buzzes: 'Been mining since block zero... still waiting for my moment.'"
+            }
+          ],
+          "PICK": [
+            {
+              "op": "say",
+              "text": "The computer is bolted to the desk. It's not going anywhere, just like my unrealized gains."
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "say",
+              "text": "I open the disk drive. Empty. This machine is waiting for something to read."
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "I close the disk drive. The CRT continues its eternal green glow."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I push a key on the keyboard. The CRT flickers. 'DO NOT MASH KEYS' appears on screen."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "I pull the keyboard closer. A cockroach scurries out. Even bugs live on-chain now."
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "The CRT doesn't accept gifts. It only accepts Adrian's Ledger and floppy disks."
+            }
+          ]
+        }
+      },
+      {
+        "id": "hs_stairs",
+        "name": "Basement Stairs",
+        "bounds": {
+          "x": 5.3,
+          "y": 9.8,
+          "w": 7.1,
+          "h": 23.2
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "Wooden stairs leading back up. They creak ominously with each step."
+            }
+          ],
+          "USE": [
+            {
+              "op": "sayBrief",
+              "text": "Climbing back up.",
+              "duration": 1000
+            },
+            {
+              "op": "fadeToScene",
+              "sceneId": "lobby",
+              "spawn": {
+                "x": 50,
+                "y": 83
+              },
+              "duration": 600
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "sayBrief",
+              "text": "Climbing back up.",
+              "duration": 1000
+            },
+            {
+              "op": "fadeToScene",
+              "sceneId": "lobby",
+              "spawn": {
+                "x": 50,
+                "y": 83
+              },
+              "duration": 600
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "The stairs creak. I interpret that as 'careful, these are old'."
+            }
+          ],
+          "PICK": [
+            {
+              "op": "say",
+              "text": "I find a loose nail on one of the steps. Not useful, but tetanus is always an adventure."
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "Stairs don't close. They're always open for business."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I push the banister. It wobbles. This whole place is held together by hope and duct tape."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "I pull a loose board. Splinters. That's what I get for interacting with legacy infrastructure."
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "Stairs don't accept offerings. They're not a gas fee."
+            }
+          ]
+        }
+      },
+      {
+        "id": "hs_left_desk",
+        "name": "Small Desk",
+        "bounds": {
+          "x": 47.8,
+          "y": 53,
+          "w": 20,
+          "h": 14.1
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "A small desk with a tiny monitor and some chairs. Papers scattered everywhere. Someone was working late."
+            }
+          ],
+          "USE": [
+            {
+              "op": "say",
+              "text": "I sit down and look at the papers. Mostly scribbled calculations and the word 'WAGMI' circled repeatedly."
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "I talk to the desk lamp. It flickers sympathetically."
+            }
+          ],
+          "PICK": [
+            {
+              "op": "ifFlag",
+              "flag": "found_floppy",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "I already grabbed everything useful from this desk."
+                }
+              ],
+              "else": [
+                {
+                  "op": "setFlag",
+                  "flag": "found_floppy",
+                  "value": true
+                },
+                {
+                  "op": "addItem",
+                  "id": "floppy_disk",
+                  "name": "Floppy Disk"
+                },
+                {
+                  "op": "say",
+                  "text": "I find a floppy disk hidden under the papers! The label reads: 'BACKUP - DO NOT LOSE'"
+                }
+              ]
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "ifFlag",
+              "flag": "found_floppy",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "I already grabbed everything useful from this desk."
+                }
+              ],
+              "else": [
+                {
+                  "op": "setFlag",
+                  "flag": "found_floppy",
+                  "value": true
+                },
+                {
+                  "op": "addItem",
+                  "id": "floppy_disk",
+                  "name": "Floppy Disk"
+                },
+                {
+                  "op": "say",
+                  "text": "I open the desk drawer. Under old receipts and dust... a 3.5 inch floppy labeled 'BACKUP'."
+                }
+              ]
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "I close the drawer. The dust settles back."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I push the desk. Papers fly everywhere. WAGMI notes scatter like failed transactions."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "I pull the desk drawer out completely. Just a dead spider and a mint condition 'Buy Bitcoin' sticker."
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "The desk doesn't want anything. It already has too much on its plate. Literally."
+            }
+          ]
+        }
+      },
+      {
+        "id": "hs_hanging_light",
+        "name": "Hanging Light",
+        "bounds": {
+          "x": 29.3,
+          "y": 23.2,
+          "w": 5,
+          "h": 15
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "A single light bulb hanging from a wire. It swings slightly, casting dancing shadows. Very noir."
+            }
+          ],
+          "USE": [
+            {
+              "op": "say",
+              "text": "I pull the chain. The light flickers but stays on. Persistent, like a good miner."
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "I stare into the light. It stares back. We have an understanding."
+            }
+          ],
+          "PICK": [
+            {
+              "op": "say",
+              "text": "I'm not touching a bare light bulb. I've made bad decisions but not THAT bad."
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "say",
+              "text": "I can't open a light bulb. Well, I could, but it would cease to be a light bulb."
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "I pull the chain again. Darkness. Then I pull it again. Light! Fun."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I push the bulb. It swings like a pendulum. The shadows dance. Spooky proof-of-swing."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "I pull the wire. The light drops an inch. Now it's a slightly lower hanging light."
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "I can't give energy to a light bulb. That's the electrician's job."
+            }
+          ]
+        }
+      },
+      {
+        "id": "hs_equipment",
+        "name": "Equipment Rack",
+        "bounds": {
+          "x": 75.6,
+          "y": 24.5,
+          "w": 8.4,
+          "h": 51
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "Speakers, an old amp, and various electronic equipment. The early days of the lab's setup."
+            }
+          ],
+          "USE": [
+            {
+              "op": "say",
+              "text": "I flip a switch on the amp. A low hum fills the basement. Vintage vibes."
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "I talk into a microphone connected to the amp. My voice echoes: 'Hello? Is this thing on?'"
+            }
+          ],
+          "PICK": [
+            {
+              "op": "say",
+              "text": "The equipment is all wired together. I'd need hours to untangle it."
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "say",
+              "text": "I open the equipment cabinet. Cables, adapters, and a lone AUX cable. The holy grail."
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "I close the cabinet. The cables spill out again. Entropy wins."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "ifFlag",
+              "flag": "server_room_open",
+              "then": [
+                {
+                  "op": "sayBrief",
+                  "text": "Back to the server room.",
+                  "duration": 1000
+                },
+                {
+                  "op": "fadeToScene",
+                  "sceneId": "server_room",
+                  "spawn": {
+                    "x": 15,
+                    "y": 85
+                  },
+                  "duration": 500
+                }
+              ],
+              "else": [
+                {
+                  "op": "say",
+                  "text": "The rack slides aside with a groan. Behind it — a hidden door. Still warm from the servers."
+                },
+                {
+                  "op": "sayBrief",
+                  "text": "Someone didn't want this room found.",
+                  "duration": 2000
+                },
+                {
+                  "op": "setFlag",
+                  "flag": "server_room_open",
+                  "value": true
+                },
+                {
+                  "op": "wait",
+                  "ms": 400
+                },
+                {
+                  "op": "fadeToScene",
+                  "sceneId": "server_room",
+                  "spawn": {
+                    "x": 15,
+                    "y": 85
+                  },
+                  "duration": 600
+                }
+              ]
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "I pull an AUX cable. The entire rack shifts. Everything's connected, like a blockchain."
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "The amp doesn't accept donations. It only accepts sick guitar riffs."
+            }
+          ]
+        }
+      },
+      {
+        "id": "hs_armchair",
+        "name": "Old Armchair",
+        "bounds": {
+          "x": 39.7,
+          "y": 48.6,
+          "w": 3.7,
+          "h": 19
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "A worn leather armchair. It's seen better days. And worse trades."
+            }
+          ],
+          "USE": [
+            {
+              "op": "say",
+              "text": "I sit down. The cushion sighs under my weight. We share a moment of mutual exhaustion."
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "I whisper to the armchair: 'What secrets have you heard?' It creaks in response."
+            },
+            {
+              "op": "setFlag",
+              "flag": "debug_look_5",
+              "value": true
+            },
+            {
+              "op": "ifFlag",
+              "flag": "debug_look_1",
+              "then": [
+                {
+                  "op": "ifFlag",
+                  "flag": "debug_look_2",
+                  "then": [
+                    {
+                      "op": "ifFlag",
+                      "flag": "debug_look_3",
+                      "then": [
+                        {
+                          "op": "ifFlag",
+                          "flag": "debug_look_4",
+                          "then": [
+                            {
+                              "op": "ifFlag",
+                              "flag": "monkey_sticker_found",
+                              "then": [],
+                              "else": [
+                                {
+                                  "op": "setFlag",
+                                  "flag": "monkey_sticker_found",
+                                  "value": true
+                                },
+                                {
+                                  "op": "addItem",
+                                  "id": "monkey_sticker",
+                                  "name": "Three-Headed Monkey Sticker"
+                                },
+                                {
+                                  "op": "say",
+                                  "text": "Wait... something just appeared in my pocket. A sticker? It shows a three-headed monkey. 'LOOK BEHIND YOU!' it says. Where did this come from?!"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "PICK": [
+            {
+              "op": "say",
+              "text": "I check between the cushions... a coin! Just a regular quarter though. 0.25 USD. Off-chain."
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "say",
+              "text": "I flip the cushion. Nothing but crumbs and regret."
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "I put the cushion back. The chair returns to its default state."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I push the armchair. It slides, revealing years of dust bunnies. The original NFTs — Non-Fungible Tumbleweeds."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "I pull the armrest. It comes off. I put it back. Pretend that didn't happen."
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "The armchair has received enough. Mostly butts and bad news."
+            }
+          ]
+        }
+      },
+      {
+        "id": "hs_floor",
+        "name": "Tiled Floor",
+        "bounds": {
+          "x": 69.8,
+          "y": 80,
+          "w": 25,
+          "h": 10
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "Old checkered tile floor. Some tiles are cracked. Each crack tells a story of a late-night coding session."
+            }
+          ],
+          "USE": [
+            {
+              "op": "say",
+              "text": "I stomp on a loose tile. It wobbles. Just a wobbly tile, nothing hidden."
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "My footsteps echo on the tiles. The basement acknowledges my presence."
+            }
+          ],
+          "PICK": [
+            {
+              "op": "say",
+              "text": "I pry at a loose tile. Just dirt underneath. No secret passages."
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "say",
+              "text": "I check for trapdoors. Nothing. This is the bottom level."
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "The floor is as closed as it gets."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I push a tile with my foot. It clicks. Nothing happens. Anticlimactic."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "I pull up a loose tile. Dirt, worms, and a bottle cap. The original Layer 0."
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "I can't give the floor anything it doesn't already have. Mostly dust and footprints."
+            }
+          ]
+        }
+      },
+      {
+        "id": "hs_dead_mouse",
+        "name": "Old Mouse",
+        "bounds": {
+          "x": 85,
+          "y": 58,
+          "w": 5,
+          "h": 12
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "ifFlag",
+              "flag": "found_broken_mouse",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "The mouse cable still dangles from the desk. A reminder of its sacrifice."
+                }
+              ],
+              "else": [
+                {
+                  "op": "say",
+                  "text": "A computer mouse dangling off the edge of the desk by its severed cable. It has seen better days."
+                }
+              ]
+            }
+          ],
+          "USE": [
+            {
+              "op": "say",
+              "text": "I try to click it. The left button barely responds. This mouse is beyond repair."
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "'Click?' Nothing. 'Double-click?' Silence. This mouse has clicked its last."
+            }
+          ],
+          "PICK": [
+            {
+              "op": "ifFlag",
+              "flag": "found_broken_mouse",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "Just a dangling cable left. The mouse has moved on to a better inventory."
+                }
+              ],
+              "else": [
+                {
+                  "op": "say",
+                  "text": "I grab the mouse. The cable snaps. Well, it was already broken. Now it's portable-broken."
+                },
+                {
+                  "op": "addItem",
+                  "id": "broken_mouse",
+                  "name": "Broken Mouse"
+                },
+                {
+                  "op": "setFlag",
+                  "flag": "found_broken_mouse",
+                  "value": true
+                }
+              ]
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "say",
+              "text": "I pop open the mouse shell. Inside: a dusty scroll wheel and shattered dreams."
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "I snap the shell back. It doesn't click shut anymore. Ironic for a mouse."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I push the mouse across the desk. It slides without resistance. No friction pad left."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "I pull the dangling cable. The mouse swings like a sad pendulum."
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "I wouldn't give this mouse to my worst enemy. Actually, maybe to that one guy in the Telegram chat."
+            }
+          ]
+        }
+      },
+      {
+        "id": "hs_wall_notes",
+        "name": "Pinned Notes",
+        "bounds": {
+          "x": 86,
+          "y": 25,
+          "w": 5,
+          "h": 18
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "Scraps of paper pinned to the wall. Scrawled diagrams, wallet addresses, and one note that just says 'TRUST NO ONE' in red marker."
+            }
+          ],
+          "USE": [
+            {
+              "op": "say",
+              "text": "I try to decode the diagrams. It's either a smart contract architecture or a conspiracy board. Hard to tell the difference."
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "The notes rustle in the draft. They're whispering alpha. Or just whispering."
+            }
+          ],
+          "PICK": [
+            {
+              "op": "say",
+              "text": "I pull one off the wall. It reads: 'If you're reading this, check block 4,206,969.' I put it back."
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "say",
+              "text": "I unfold one note. Inside: a seed phrase. Just kidding. It's a grocery list. Ramen, energy drinks, more ramen."
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "I fold the note back up. Some secrets are better left crumpled."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I push the thumbtack deeper. The note holds firm. Unlike most stablecoins."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "I pull a note off. Underneath is another note that says 'STOP PULLING NOTES OFF THE WALL.'"
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "These notes belong to the wall. It's a decentralized bulletin board."
+            }
+          ]
+        }
+      },
+      {
+        "id": "hs_ceiling_pipes",
+        "name": "Ceiling Pipes",
+        "bounds": {
+          "x": 15,
+          "y": 5,
+          "w": 70,
+          "h": 8
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "Rusty pipes and wooden beams run across the ceiling. They drip occasionally. The basement's own liquidity pool."
+            }
+          ],
+          "USE": [
+            {
+              "op": "say",
+              "text": "I tap a pipe. It clangs and echoes through the basement. Somewhere above, someone probably thinks there's a ghost."
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "The pipes gurgle. In plumber Morse code, that means 'maintenance overdue since 2019.'"
+            }
+          ],
+          "PICK": [
+            {
+              "op": "say",
+              "text": "I'm not ripping pipes out of the ceiling. I've seen what happens when you break infrastructure. It's called 'a bridge exploit.'"
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "say",
+              "text": "I twist a valve. Water spurts out, then stops. The pipe wheezes. That was close."
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "I close the valve tighter. The dripping stops. First thing I've successfully closed since my leveraged position."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I push on a pipe. It bows slightly. These pipes have load-bearing anxiety, just like me."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "I pull a loose pipe fitting. Rust flakes rain down. Proof-of-decay."
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "The pipes want a plumber, not an adventurer. But they'll take what they can get."
+            }
+          ]
+        }
+      },
+      {
+        "id": "hs_stone_walls",
+        "name": "Stone Walls",
+        "bounds": {
+          "x": 92,
+          "y": 10,
+          "w": 8,
+          "h": 70
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "Rough stone walls. Old, solid, unyielding. Like a whale's conviction during a market crash."
+            }
+          ],
+          "USE": [
+            {
+              "op": "say",
+              "text": "I run my hand along the stone. Cold and damp. This basement predates the internet, let alone the blockchain."
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "I talk to the wall. It's more responsive than most Discord mods."
+            }
+          ],
+          "PICK": [
+            {
+              "op": "say",
+              "text": "I pry at a loose stone. It doesn't budge. These walls were built to last, like a proper Layer 1."
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "say",
+              "text": "No hidden passages here. Real life isn't Monkey Island. ...or is it?"
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "The walls are already closed. That's kind of their whole thing."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I push the wall. The wall wins. Immutability: 1, Me: 0."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "I pull at a stone. My fingernails disagree with this plan. Strongly."
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "The walls don't accept bribes. Truly decentralized governance."
+            }
+          ]
+        }
+      }
+    ],
+    "triggers": [
+      {
+        "id": "tr_chapter3_intro",
+        "once": true,
+        "bounds": {
+          "x": 10,
+          "y": 60,
+          "w": 30,
+          "h": 30
+        },
+        "onEnter": [
+          {
+            "op": "ifFlag",
+            "flag": "chapter_3_intro_shown",
+            "then": [],
+            "else": [
+              {
+                "op": "narrative",
+                "lines": [
+                  "Beneath the lab, forgotten machines still process blocks.",
+                  "A CRT monitor flickers with data from another era.",
+                  "The patient roster... the escape... Patient Zero.",
+                  "The answers are down here. Buried in code."
+                ]
+              },
+              {
+                "op": "titleCard",
+                "chapter": "CHAPTER 3",
+                "title": "Below the Surface",
+                "subtitle": "Every server has secrets."
+              },
+              {
+                "op": "setFlag",
+                "flag": "chapter_3_intro_shown",
+                "value": true
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "tr_to_stairs",
+        "once": false,
+        "bounds": {
+          "x": 0,
+          "y": 40,
+          "w": 5,
+          "h": 45
+        },
+        "onEnter": [
+          {
+            "op": "sayBrief",
+            "text": "Climbing back up.",
+            "duration": 1000
+          },
+          {
+            "op": "fadeToScene",
+            "sceneId": "lobby",
+            "spawn": {
+              "x": 50,
+              "y": 83
+            },
+            "duration": 600
+          }
+        ]
+      }
+    ]
+  },
+  "items": {
+    "sceneItems": []
+  },
+  "combos": [],
+  "audio": {
+    "music": "retro-adventure",
+    "variation": {
+      "filterType": "lowpass",
+      "filterFrequency": 600,
+      "volume": 0.25
+    },
+    "ambience": null,
+    "sfx": {}
+  },
+  "transitions": {
+    "goto": []
+  },
+  "walkableAreas": [
+    {
+      "x": 5,
+      "y": 78,
+      "w": 85,
+      "h": 14
+    }
+  ],
+  "onEnter": [
+    {
+      "op": "ifFlag",
+      "flag": "chapter_3_intro_shown",
+      "then": [],
+      "else": [
+        {
+          "op": "narrative",
+          "lines": [
+            "Beneath the lab, forgotten machines still process blocks.",
+            "A CRT monitor flickers with data from another era.",
+            "The patient roster... the escape... Patient Zero.",
+            "The answers are down here. Buried in code."
+          ]
+        },
+        {
+          "op": "titleCard",
+          "chapter": "CHAPTER 3",
+          "title": "Below the Surface",
+          "subtitle": "Every server has secrets."
+        },
+        {
+          "op": "setFlag",
+          "flag": "chapter_3_intro_shown",
+          "value": true
+        }
+      ]
+    }
+  ]
+}

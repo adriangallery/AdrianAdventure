@@ -1,0 +1,706 @@
+{
+  "version": 2,
+  "id": "treatment_room",
+  "title": "The Treatment Room",
+  "assets": {
+    "background": "background.png",
+    "walkmask": "walkmask.png",
+    "atlas": null
+  },
+  "render": {
+    "world": {
+      "width": 2816,
+      "height": 1536
+    },
+    "camera": {
+      "start": {
+        "x": 1408,
+        "y": 768
+      },
+      "followPlayer": false,
+      "lerp": 0.08,
+      "clampToWorld": true
+    }
+  },
+  "player": {
+    "spawn": {
+      "x": 50,
+      "y": 85
+    },
+    "speed": 120,
+    "sprite": {
+      "sheet": null,
+      "idle": null,
+      "walk": null
+    },
+    "playerScale": 2,
+    "hidePlayer": true
+  },
+  "ui": {
+    "verbs": [
+      "LOOK",
+      "USE",
+      "TALK",
+      "PICK",
+      "OPEN",
+      "CLOSE"
+    ],
+    "mobileDrawerDefault": "collapsed"
+  },
+  "maskMapping": {
+    "walkableColor": "#0000FF",
+    "hotspotColor": "#FFFF00",
+    "triggerColor": "#FF00FF",
+    "regionIdStrategy": "manual"
+  },
+  "regions": {
+    "hotspots": [
+      {
+        "id": "hs_chair",
+        "name": "The Chair",
+        "bounds": {
+          "x": 39.8,
+          "y": 52.6,
+          "w": 15,
+          "h": 25
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "A single reclining chair facing the monitor. Clinical. Cold. The armrests are worn smooth by anxious hands. The seat cushion is still warm. How long ago did Patient Zero leave? Minutes? Hours?"
+            }
+          ],
+          "USE": [
+            {
+              "op": "say",
+              "text": "I sit down in the chair. It adjusts to my weight automatically. The monitor's glow washes over me. For a moment, I feel like I've been here before. Like I've always been here."
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "I whisper to the empty chair: 'Who sat here before me?' The leather creaks. Not an answer. Just old material settling. Or is it?"
+            }
+          ],
+          "PICK": [
+            {
+              "op": "say",
+              "text": "I check the crevices of the chair. A single hair. A crumb. And a folded note that reads: 'You'll understand when you see the screen.' Cryptic. Literally."
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "say",
+              "text": "I recline the chair to its fully flat position. Staring at the ceiling. Fluorescent lights buzz. This is what therapy looks like in the metaverse."
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "I return the chair to upright. It faces the monitor. Everything in this room faces the monitor. By design."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I push the chair. It rolls on its wheels, stopping directly in front of the monitor. As if drawn to it magnetically. Or programmatically."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "I pull the chair away from the monitor. It feels wrong. Like the room itself resists. The chair belongs in front of that screen."
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "The chair has received enough patients. Their weight. Their fears. Their wallet histories. It doesn't need more."
+            }
+          ]
+        }
+      },
+      {
+        "id": "hs_monitor",
+        "name": "The Monitor",
+        "bounds": {
+          "x": 38.9,
+          "y": 30.9,
+          "w": 21.6,
+          "h": 20.4
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "The monitor shows wallet transaction history. Wait... those are MY transactions. The mints, the swaps, the failed transactions. Every gas fee, every approval. The charts on the wall... they're MY portfolio. Patient Zero... is ME?"
+            }
+          ],
+          "USE": [
+            {
+              "op": "ifFlag",
+              "flag": "monitor_revealed",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "The monitor still shows my complete history. Every trade. Every mistake. Every moment of hope. It's all here. It was always here."
+                }
+              ],
+              "else": [
+                {
+                  "op": "wait",
+                  "ms": 1500
+                },
+                {
+                  "op": "say",
+                  "text": "The monitor hums to life. Green text on black screen..."
+                },
+                {
+                  "op": "wait",
+                  "ms": 1000
+                },
+                {
+                  "op": "say",
+                  "text": "It shows... a wallet address. Wait."
+                },
+                {
+                  "op": "wait",
+                  "ms": 800
+                },
+                {
+                  "op": "say",
+                  "text": "Those are MY transactions."
+                },
+                {
+                  "op": "wait",
+                  "ms": 1000
+                },
+                {
+                  "op": "say",
+                  "text": "The charts on the wall... they're MY portfolio. Every trade. Every mint. Every mistake."
+                },
+                {
+                  "op": "wait",
+                  "ms": 1200
+                },
+                {
+                  "op": "say",
+                  "text": "Patient Zero... is ME?"
+                },
+                {
+                  "op": "wait",
+                  "ms": 2000
+                },
+                {
+                  "op": "say",
+                  "text": "\"Congratulations. You found yourself.\""
+                },
+                {
+                  "op": "say",
+                  "text": "\"The first step to recovery is admitting you have a problem.\""
+                },
+                {
+                  "op": "say",
+                  "text": "\"The second step? ...There is no second step in crypto.\""
+                },
+                {
+                  "op": "setFlag",
+                  "flag": "monitor_revealed",
+                  "value": true
+                },
+                {
+                  "op": "setFlag",
+                  "flag": "patient_zero_revealed",
+                  "value": true
+                },
+                {
+                  "op": "setFlag",
+                  "flag": "patient_zero_found",
+                  "value": true
+                }
+              ]
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "I talk to the monitor. It displays: 'VOICE RECOGNIZED. WELCOME BACK.' Back? I've never been here. ...have I?"
+            }
+          ],
+          "PICK": [
+            {
+              "op": "say",
+              "text": "The monitor is mounted to the wall with industrial bolts. It's not going anywhere. Neither is the truth it displays."
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "say",
+              "text": "I try to access the system files. The monitor shows: 'ADMIN ACCESS REQUIRED. Nice try, Patient Zero.'"
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "I try to turn off the monitor. It flickers but stays on. It's been on this whole time. Waiting for me to arrive. It won't stop now."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I push the monitor. It doesn't budge. It's part of the wall. Part of the room. Part of the answer."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "I pull at the monitor's edge. Behind it, wires run into the wall and deep into the building. This room is the heart of the clinic."
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "The monitor has already been given everything. My data. My history. My identity. It doesn't need anything else from me."
+            }
+          ]
+        }
+      },
+      {
+        "id": "hs_charts",
+        "name": "Wall Charts",
+        "bounds": {
+          "x": 72.4,
+          "y": 24.9,
+          "w": 9.9,
+          "h": 43.3
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "Charts everywhere. Pinned, taped, nailed to every inch of wall. Every candle, every rug, every pump and dump. A complete history of someone's crypto journey. Annotations in frantic handwriting: 'THIS IS THE BOTTOM' written seven times at different price points. Someone who looks a lot like... me."
+            }
+          ],
+          "USE": [
+            {
+              "op": "say",
+              "text": "I trace the charts with my finger. The timeline starts optimistic. 'FIRST NFT MINT!' Then it gets darker. 'WHY DID I APPROVE THAT CONTRACT.' The last entry just says: 'Again.'"
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "I read the annotations aloud. 'Buy here.' 'Sell here.' 'Why didn't I sell here.' 'LIQUIDATED.' It's like reading my own diary. Because it is."
+            }
+          ],
+          "PICK": [
+            {
+              "op": "say",
+              "text": "I pull one chart off the wall. Behind it, another chart. Behind that, another. It's charts all the way down. Like layers of regret."
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "say",
+              "text": "I unfold a rolled-up chart in the corner. A complete map of DeFi protocols I've interacted with. Red Xs on the ones that rugged. It's mostly red Xs."
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "I pin the chart back. The wall stares at me with a thousand data points. All mine."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I push a stack of charts aside. They cascade to the floor like falling dominoes. Like falling prices. Like falling hopes."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "I pull a chart free from the wall. A sticky note falls: 'This is not financial advice. This is a cry for help.'"
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "The walls have enough charts. Enough data. Enough pain. They don't need more."
+            }
+          ]
+        }
+      },
+      {
+        "id": "hs_mirror",
+        "name": "Mirror",
+        "bounds": {
+          "x": 19.2,
+          "y": 37,
+          "w": 5,
+          "h": 25
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "The door back to the reception. Simple. Unassuming. Do I leave? Or do I stay and face the music? The monitor hums behind me. The charts watch from the walls. The chair waits."
+            }
+          ],
+          "USE": [
+            {
+              "op": "sayBrief",
+              "text": "Leaving the treatment room.",
+              "duration": 1000
+            },
+            {
+              "op": "fadeToScene",
+              "sceneId": "clinic_interior",
+              "spawn": {
+                "x": 15,
+                "y": 82
+              },
+              "duration": 800
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "I whisper to the door: 'I'll be back.' The door says nothing. Doors are good at that."
+            }
+          ],
+          "PICK": [
+            {
+              "op": "say",
+              "text": "I can't take the door. But I can take what I've learned. Maybe. Probably not. I'll definitely make the same mistakes."
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "sayBrief",
+              "text": "Leaving the treatment room.",
+              "duration": 1000
+            },
+            {
+              "op": "fadeToScene",
+              "sceneId": "clinic_interior",
+              "spawn": {
+                "x": 15,
+                "y": 82
+              },
+              "duration": 800
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "The door is already closed. Keeping the treatment room's secrets contained. For now."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "sayBrief",
+              "text": "Leaving the treatment room.",
+              "duration": 1000
+            },
+            {
+              "op": "fadeToScene",
+              "sceneId": "clinic_interior",
+              "spawn": {
+                "x": 15,
+                "y": 82
+              },
+              "duration": 800
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "I pull the door toward me. A draft of cold air from the reception. Reality waiting on the other side."
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "The door doesn't need anything. It just needs me to decide: stay or go."
+            }
+          ]
+        }
+      },
+      {
+        "id": "hs_adrian_note",
+        "name": "Note on Table",
+        "bounds": {
+          "x": 57.9,
+          "y": 59.2,
+          "w": 10,
+          "h": 5.6
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "ifFlag",
+              "flag": "patient_zero_revealed",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "A handwritten note on the table. Adrian's handwriting."
+                }
+              ],
+              "else": [
+                {
+                  "op": "say",
+                  "text": "A small table with papers. I should look at the monitor first."
+                }
+              ]
+            }
+          ],
+          "PICK": [
+            {
+              "op": "ifFlag",
+              "flag": "patient_zero_revealed",
+              "then": [
+                {
+                  "op": "ifFlag",
+                  "flag": "found_adrian_note",
+                  "then": [
+                    {
+                      "op": "say",
+                      "text": "I've already read it. Words that changed everything."
+                    }
+                  ],
+                  "else": [
+                    {
+                      "op": "setFlag",
+                      "flag": "found_adrian_note",
+                      "value": true
+                    },
+                    {
+                      "op": "addItem",
+                      "id": "adrian_note",
+                      "name": "Adrian's Note"
+                    },
+                    {
+                      "op": "say",
+                      "text": "The note reads:"
+                    },
+                    {
+                      "op": "wait",
+                      "ms": 500
+                    },
+                    {
+                      "op": "say",
+                      "text": "\"If you're reading this, the game worked.\""
+                    },
+                    {
+                      "op": "say",
+                      "text": "\"You're not a patient. You're a builder.\""
+                    },
+                    {
+                      "op": "say",
+                      "text": "\"The patients never make it this far — they stay in the lobby refreshing charts.\""
+                    },
+                    {
+                      "op": "say",
+                      "text": "\"You explored. You solved puzzles. You made it to the end.\""
+                    },
+                    {
+                      "op": "say",
+                      "text": "\"That makes you different. Welcome to the team.\""
+                    },
+                    {
+                      "op": "say",
+                      "text": "\"— Adrian\""
+                    }
+                  ]
+                }
+              ],
+              "else": [
+                {
+                  "op": "say",
+                  "text": "I should check the monitor first."
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": "hs_dark_floor",
+        "name": "Treatment Room Floor",
+        "bounds": {
+          "x": 25,
+          "y": 75,
+          "w": 50,
+          "h": 10
+        },
+        "scripts": {
+          "LOOK": [{ "op": "say", "text": "Dark, sterile flooring. Scuff marks everywhere, like someone paced back and forth for hours. Or days. The marks form a pattern... is that a candlestick chart worn into the floor?" }],
+          "USE": [{ "op": "say", "text": "I kneel and touch the floor. Cold. Clinical. Like the moment you realize your 'diamond hands' are actually just frozen from fear." }],
+          "TALK": [{ "op": "say", "text": "I whisper to the floor: 'How many patients have you held up?' The silence is deafening. The floor has seen things. Terrible, terrible portfolios." }],
+          "PICK": [{ "op": "say", "text": "I find a tiny screw on the floor. From the chair? The monitor? Or from whoever was here last, slowly coming unscrewed." }],
+          "OPEN": [{ "op": "say", "text": "There's no trapdoor. This isn't that kind of adventure game. Though a secret exit would explain how Patient Zero escaped." }],
+          "CLOSE": [{ "op": "say", "text": "You can't close a floor. Trust me, I've tried closing positions that were just as impossible." }],
+          "PUSH": [{ "op": "say", "text": "I push against the floor with my foot. Solid. Unlike the floor price of most NFT collections I've invested in." }],
+          "PULL": [{ "op": "say", "text": "I try to pull up a floor tile. Nope. This floor is more firmly committed than any liquidity provider I've ever met." }],
+          "GIVE": [{ "op": "say", "text": "The floor already has my footprints. And my tears. And probably some spilled coffee. It doesn't need more." }]
+        }
+      },
+      {
+        "id": "hs_ceiling_pipes",
+        "name": "Exposed Pipes and Cables",
+        "bounds": {
+          "x": 15,
+          "y": 5,
+          "w": 70,
+          "h": 12
+        },
+        "scripts": {
+          "LOOK": [{ "op": "say", "text": "Exposed pipes and cables snake across the ceiling like a messy dependency graph. Some are wrapped in tape. The infrastructure here is held together by hope and duct tape. Just like Layer 2 scaling solutions." }],
+          "USE": [{ "op": "say", "text": "I reach for a dangling cable. Probably not a good idea. Last time I touched something I didn't understand, I approved an unlimited token allowance." }],
+          "TALK": [{ "op": "say", "text": "I address the tangle of wires: 'You look like my transaction history on Etherscan.' The cables say nothing. They're better organized than my DeFi positions." }],
+          "PICK": [{ "op": "say", "text": "I tug on a loose cable. The lights flicker. Maybe I should leave the infrastructure alone. I'm a detective, not a plumber." }],
+          "OPEN": [{ "op": "say", "text": "I pry open a junction box. Inside: wires labeled 'DATA IN', 'DATA OUT', and one labeled 'PATIENT ZERO MONITORING'. Ominous." }],
+          "CLOSE": [{ "op": "say", "text": "I snap the junction box shut. Some things are better left sealed. Like that Uniswap LP position from 2021." }],
+          "PUSH": [{ "op": "say", "text": "I push a pipe. It groans. The whole ceiling shudders. Infrastructure this old should be migrated to a new protocol." }],
+          "PULL": [{ "op": "say", "text": "I pull a cable gently. Somewhere in the building, something beeps. I let go immediately. Not today, unexpected consequences." }],
+          "GIVE": [{ "op": "say", "text": "The pipes need a plumber, not a crypto detective with a hero complex." }]
+        }
+      },
+      {
+        "id": "hs_side_table",
+        "name": "Metal Side Table",
+        "bounds": {
+          "x": 56,
+          "y": 52,
+          "w": 8,
+          "h": 8
+        },
+        "scripts": {
+          "LOOK": [{ "op": "say", "text": "A cold metal side table. Medical grade. A half-empty glass of water sits on it, still sweating. Whoever was here last didn't finish their drink. They left in a hurry. Or got liquidated mid-sip." }],
+          "USE": [{ "op": "say", "text": "I take a sip of the water. Stale. Tastes like regret and fluoride. Two things I'm very familiar with." }],
+          "TALK": [{ "op": "say", "text": "'Table, tell me your secrets.' It remains silent. Tables are the strong, silent type. Like validators during network congestion." }],
+          "PICK": [{ "op": "say", "text": "I grab the glass of water. Fingerprints on it. Patient Zero's? Mine? In this room, they might be the same thing." }],
+          "OPEN": [{ "op": "say", "text": "The table has a small drawer. Inside: a pen, a paperclip, and a sticky note that says 'REMEMBER: YOU ARE THE PATIENT.' Helpful." }],
+          "CLOSE": [{ "op": "say", "text": "I close the tiny drawer. Click. The sound of finality. Like closing a leveraged position at a loss." }],
+          "PUSH": [{ "op": "say", "text": "I push the table. It scrapes across the floor with a screech that could wake dead protocols." }],
+          "PULL": [{ "op": "say", "text": "I pull the table toward the chair. Now it's within arm's reach. Convenience. The one thing DeFi has never offered." }],
+          "GIVE": [{ "op": "say", "text": "The table holds things. That's its entire purpose. It's the cold storage of furniture." }]
+        }
+      }
+    ],
+    "triggers": [
+      {
+        "id": "tr_game_complete",
+        "once": true,
+        "bounds": {
+          "x": 15,
+          "y": 78,
+          "w": 70,
+          "h": 15
+        },
+        "onEnter": [
+          {
+            "op": "ifFlag",
+            "flag": "patient_zero_revealed",
+            "then": [
+              {
+                "op": "ifFlag",
+                "flag": "chapter_5_complete",
+                "then": [],
+                "else": [
+                  {
+                    "op": "setFlag",
+                    "flag": "chapter_5_complete",
+                    "value": true
+                  },
+                  {
+                    "op": "achievement",
+                    "text": "PATIENT ZERO — Identity Revealed"
+                  },
+                  {
+                    "op": "wait",
+                    "ms": 4000
+                  },
+                  {
+                    "op": "narrative",
+                    "lines": [
+                      "You were never looking for someone else.",
+                      "You were looking for yourself.",
+                      "",
+                      "The clinic is always open.",
+                      "Unlike most exchanges during a bank run.",
+                      "",
+                      "PATIENT ZERO STATUS: FOUND"
+                    ]
+                  },
+                  {
+                    "op": "achievement",
+                    "text": "GAME COMPLETE: ZEROadventure II"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "npcs": [],
+  "dialogues": {},
+  "items": {
+    "sceneItems": []
+  },
+  "combos": [],
+  "audio": {
+    "music": "retroadrian",
+    "variation": {
+      "filterType": "lowpass",
+      "filterFrequency": 800,
+      "volume": 0.3
+    },
+    "ambience": null,
+    "sfx": {}
+  },
+  "transitions": {
+    "goto": []
+  },
+  "walkableAreas": [
+    {
+      "x": 15,
+      "y": 78,
+      "w": 70,
+      "h": 15
+    }
+  ],
+  "onEnter": [
+    {
+      "op": "ifFlag",
+      "flag": "chapter_5_intro_shown",
+      "then": [],
+      "else": [
+        {
+          "op": "narrative",
+          "lines": [
+            "The treatment room. One chair. One monitor.",
+            "Dr. Satoshi said not everyone is ready for what's inside.",
+            "The truth about Patient Zero...",
+            "...has been in your wallet all along."
+          ]
+        },
+        {
+          "op": "titleCard",
+          "chapter": "CHAPTER 5",
+          "title": "Patient Zero",
+          "subtitle": "The blockchain doesn't lie."
+        },
+        {
+          "op": "setFlag",
+          "flag": "chapter_5_intro_shown",
+          "value": true
+        }
+      ]
+    }
+  ]
+}

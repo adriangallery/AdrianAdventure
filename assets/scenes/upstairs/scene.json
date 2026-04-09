@@ -1,0 +1,723 @@
+{
+  "version": 1,
+  "id": "upstairs",
+  "title": "Upstairs — Trading Floor",
+  "assets": {
+    "background": "background.png",
+    "walkmask": "walkmask.png",
+    "atlas": null
+  },
+  "render": {
+    "world": {
+      "width": 3712,
+      "height": 1152
+    },
+    "camera": {
+      "start": {
+        "x": 1856,
+        "y": 576
+      },
+      "followPlayer": true,
+      "lerp": 0.12,
+      "clampToWorld": true
+    }
+  },
+  "player": {
+    "spawn": {
+      "x": 50,
+      "y": 82
+    },
+    "speed": 140,
+    "sprite": {
+      "sheet": null,
+      "idle": null,
+      "walk": null
+    },
+    "playerScale": 2.2
+  },
+  "ui": {
+    "verbs": [
+      "LOOK",
+      "USE",
+      "TALK",
+      "PICK",
+      "OPEN",
+      "CLOSE"
+    ],
+    "mobileDrawerDefault": "collapsed"
+  },
+  "maskMapping": {
+    "walkableColor": "#0000FF",
+    "hotspotColor": "#FFFF00",
+    "triggerColor": "#FF00FF",
+    "regionIdStrategy": "manual"
+  },
+  "regions": {
+    "hotspots": [
+      {
+        "id": "hs_desk",
+        "name": "Trading Desk",
+        "bounds": {
+          "x": 41.7,
+          "y": 44.6,
+          "w": 20.9,
+          "h": 15.6
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "Three monitors: portfolio performance, yield farming stats, and NFT marketplace analytics."
+            }
+          ],
+          "USE": [
+            {
+              "op": "say",
+              "text": "The terminal runs a sophisticated trading bot with AI algorithms."
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "The AI bot says: 'I've been outperforming humans since 2024.'"
+            }
+          ],
+          "PICK": [
+            {
+              "op": "say",
+              "text": "I find a smartphone with crypto trading apps open."
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "ifFlag",
+              "flag": "found_hw_wallet",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "The drawer is empty. I already took the trading terminal key."
+                }
+              ],
+              "else": [
+                {
+                  "op": "setFlag",
+                  "flag": "found_hw_wallet",
+                  "value": true
+                },
+                {
+                  "op": "addItem",
+                  "id": "terminal_key",
+                  "name": "Trading Terminal Key"
+                },
+                {
+                  "op": "say",
+                  "text": "I open the desk drawer and find a trading terminal key with significant access!"
+                },
+                {
+                  "op": "wait",
+                  "ms": 600
+                },
+                {
+                  "op": "say",
+                  "text": "There's a sticky note inside: 'PZ escaped via contract exploit — check server logs'"
+                },
+                {
+                  "op": "setFlag",
+                  "flag": "found_pz_note",
+                  "value": true
+                }
+              ]
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "I close the desk drawer. The trading terminal key is safely stored."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I push the desk. The monitors wobble. The trading bot panics: 'VOLATILITY DETECTED!'"
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "I pull open a side panel. Just cable management. Immaculate cable management."
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "The trading desk doesn't accept deposits. Only the smart contracts do."
+            }
+          ]
+        }
+      },
+      {
+        "id": "hs_boxes",
+        "name": "Success Boxes",
+        "bounds": {
+          "x": 65.1,
+          "y": 53.8,
+          "w": 9.2,
+          "h": 33.8
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "Boxes labeled 'Moon Mission', 'Diamond Hands', 'Lambo Dreams'. All successful!"
+            }
+          ],
+          "USE": [
+            {
+              "op": "say",
+              "text": "I open one. It contains a limited edition AdrianPunk NFT!"
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "The boxes hum with positive vibes: 'WAGMI...'"
+            }
+          ],
+          "PICK": [
+            {
+              "op": "say",
+              "text": "I find a rare NFT trading card inside one."
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "say",
+              "text": "I find a collection of rare memecoins and governance tokens."
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "I close the box. The valuable NFTs are safely stored."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I push the boxes. They're heavier than my bags. And my bags are heavy."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "I pull a box off the stack. 'Moon Mission' falls and spills confetti. Bullish confetti."
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "I can't give away someone else's moon missions. That's not how airdrops work."
+            }
+          ]
+        }
+      },
+      {
+        "id": "hs_computer",
+        "name": "Mining Rig",
+        "bounds": {
+          "x": 10.6,
+          "y": 31.6,
+          "w": 12,
+          "h": 45
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "A high-end setup with multiple GPUs. Mining and trading powerhouse."
+            }
+          ],
+          "USE": [
+            {
+              "op": "web3Require",
+              "rule": {
+                "type": "ZERO_BALANCE",
+                "minBalance": "1000"
+              },
+              "then": [
+                {
+                  "op": "say",
+                  "text": "The rig recognizes my $ZERO balance! It shows me the secret TraitLab dashboard."
+                }
+              ],
+              "else": [
+                {
+                  "op": "say",
+                  "text": "The computer runs TraitLab and the openPack program. Needs 1000 $ZERO for full access."
+                }
+              ]
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "The GPUs hum in harmony: 'Hash... hash... hash...'"
+            }
+          ],
+          "PICK": [
+            {
+              "op": "say",
+              "text": "I find a USB drive with profitable trading strategies."
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "say",
+              "text": "I open the case. High-end GPUs and cooling systems inside."
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "I close the case. The mining continues uninterrupted."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I push the power button. The rig reboots. Hash rate: temporarily zero. Like my portfolio in 2022."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "I pull out a GPU. It's warm. Like holding a small sun that turns electricity into disappointment."
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "I'm not giving away GPUs. Do you know what these cost during the shortage?"
+            }
+          ]
+        }
+      },
+      {
+        "id": "hs_armchair",
+        "name": "Premium Armchair",
+        "bounds": {
+          "x": 77,
+          "y": 49.7,
+          "w": 12,
+          "h": 39
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "Where successful traders sit and watch portfolios grow. Built-in massage features."
+            }
+          ],
+          "USE": [
+            {
+              "op": "say",
+              "text": "I sit in the armchair. Incredibly comfortable. This is what making it feels like."
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "The chair purrs: 'You deserve this, diamond hands.'"
+            }
+          ],
+          "PICK": [
+            {
+              "op": "say",
+              "text": "I find a luxury watch worth several ETH under the cushion."
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "say",
+              "text": "Hidden compartments for storing valuables."
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "The compartments are already closed and secure."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I push the armchair. It reclines automatically. Luxury is heavy."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "I pull the lever underneath. Full recline mode. I could watch charts from here all day."
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "This chair is non-transferable. Soulbound furniture."
+            }
+          ]
+        }
+      },
+      {
+        "id": "hs_roof_hatch",
+        "name": "Roof Hatch",
+        "bounds": {
+          "x": 24.1,
+          "y": 5,
+          "w": 14.8,
+          "h": 13.1
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "A ceiling hatch with a pull-down ladder. It leads to the rooftop. Stars peek through the gap."
+            }
+          ],
+          "USE": [
+            {
+              "op": "sayBrief",
+              "text": "Cool night air rushes in.",
+              "duration": 1200
+            },
+            {
+              "op": "fadeToScene",
+              "sceneId": "rooftop",
+              "spawn": {
+                "x": 80,
+                "y": 85
+              },
+              "duration": 500
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "sayBrief",
+              "text": "Cool night air rushes in.",
+              "duration": 1200
+            },
+            {
+              "op": "fadeToScene",
+              "sceneId": "rooftop",
+              "spawn": {
+                "x": 80,
+                "y": 85
+              },
+              "duration": 500
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "The hatch creaks. Wind whistles through the gap."
+            }
+          ],
+          "PICK": [
+            {
+              "op": "say",
+              "text": "I can't pick up a ceiling hatch. Gravity disagrees."
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "I close the hatch. The stars disappear."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I push the hatch upward. It opens easily."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "sayBrief",
+              "text": "Cool night air rushes in.",
+              "duration": 1200
+            },
+            {
+              "op": "fadeToScene",
+              "sceneId": "rooftop",
+              "spawn": {
+                "x": 80,
+                "y": 85
+              },
+              "duration": 500
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "The hatch doesn't want gifts. It wants to be climbed."
+            }
+          ]
+        }
+      },
+      {
+        "id": "hs_paper_tray",
+        "name": "Paper Tray",
+        "bounds": {
+          "x": 36,
+          "y": 55,
+          "w": 5,
+          "h": 10
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "ifFlag",
+              "flag": "found_receipt",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "The paper tray. Empty now. The receipt was the only interesting thing in it."
+                }
+              ],
+              "else": [
+                {
+                  "op": "say",
+                  "text": "A paper tray overflowing with old trading confirmations. One receipt sticks out from the pile."
+                }
+              ]
+            }
+          ],
+          "USE": [
+            {
+              "op": "say",
+              "text": "I shuffle through the papers. Mostly margin call notifications. Yikes."
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "I whisper 'buy the dip' to the paper tray. The market does not respond."
+            }
+          ],
+          "PICK": [
+            {
+              "op": "ifFlag",
+              "flag": "found_receipt",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "Just boring trade confirmations left. Nothing as historically painful as that receipt."
+                }
+              ],
+              "else": [
+                {
+                  "op": "say",
+                  "text": "I grab the receipt that caught my eye. '1 BTC @ $3.50 — Thank you for your purchase!' Oh. Oh no. Someone didn't hold."
+                },
+                {
+                  "op": "addItem",
+                  "id": "receipt",
+                  "name": "Receipt"
+                },
+                {
+                  "op": "setFlag",
+                  "flag": "found_receipt",
+                  "value": true
+                }
+              ]
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "say",
+              "text": "It's an open tray. The papers are right there, mocking anyone who reads them."
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "I try to close the tray. It doesn't close. Like my margin positions."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I push the tray. Papers slide off the edge. Someone's P&L statement lands face-up. I look away."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "I pull the tray towards me. More paper than I expected. Trees died for these losses."
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "Nobody wants a pile of losing trade confirmations."
+            }
+          ]
+        }
+      },
+      {
+        "id": "hs_desk_lamp",
+        "name": "Desk Lamp",
+        "bounds": { "x": 33, "y": 20, "w": 8, "h": 25 },
+        "scripts": {
+          "LOOK": [{ "op": "say", "text": "An articulated desk lamp. The only source of light in this cave of a trading floor. It's seen some late-night liquidations." }],
+          "USE": [{ "op": "say", "text": "I angle the lamp toward the desk. The charts look even more terrifying in direct light." }],
+          "TALK": [{ "op": "say", "text": "'Shine a light on these losses, will you?' The lamp obliges. I immediately regret asking." }],
+          "PICK": [{ "op": "say", "text": "I grab the lamp. It's plugged in and warm. Like holding a tiny sun that judges my financial decisions." }],
+          "OPEN": [{ "op": "say", "text": "I open the lampshade. A dead moth falls out. It died doing what it loved: chasing the light." }],
+          "CLOSE": [{ "op": "say", "text": "I fold the lamp down. Darkness returns. The green glow of monitors is somehow more ominous now." }],
+          "PUSH": [{ "op": "say", "text": "I push the lamp arm. It springs back. Resilient, like a true HODLer." }],
+          "PULL": [{ "op": "say", "text": "I pull the lamp closer. My shadow looms over the trading screens like a bearish engulfing pattern." }],
+          "GIVE": [{ "op": "say", "text": "The lamp doesn't want gifts. It just wants someone to change its bulb once in a while." }]
+        }
+      },
+      {
+        "id": "hs_pizza_box",
+        "name": "Pizza Box",
+        "bounds": { "x": 25, "y": 65, "w": 8, "h": 8 },
+        "scripts": {
+          "LOOK": [{ "op": "say", "text": "An open pizza box on the floor. Two slices remain, petrified. The receipt says '10,000 BTC'. Just kidding. But someone definitely ate here for days." }],
+          "USE": [{ "op": "say", "text": "I consider eating the ancient pizza. My survival instincts kick in just in time. This pizza predates the last halving." }],
+          "TALK": [{ "op": "say", "text": "'How long have you been here?' The pizza doesn't answer. It's transcended the concept of freshness." }],
+          "PICK": [{ "op": "say", "text": "I pick up a petrified slice. It could be used as a weapon. Or a coaster. I put it back." }],
+          "OPEN": [{ "op": "say", "text": "Already open. The pizza box has been in this state longer than most DeFi protocols." }],
+          "CLOSE": [{ "op": "say", "text": "I close the box. A small mercy for anyone else who enters this room." }],
+          "PUSH": [{ "op": "say", "text": "I push the box under the desk. Out of sight, out of mind. Like unrealized losses." }],
+          "PULL": [{ "op": "say", "text": "I pull the box toward me. The smell hits. That's not pizza anymore. That's a biohazard." }],
+          "GIVE": [{ "op": "say", "text": "Nobody wants week-old pizza. Not even the rats. And rats eat literally anything." }]
+        }
+      },
+      {
+        "id": "hs_energy_drink",
+        "name": "Energy Drink",
+        "bounds": { "x": 42, "y": 62, "w": 3, "h": 7 },
+        "scripts": {
+          "LOOK": [{ "op": "say", "text": "A half-empty energy drink can. The label says 'BULL RUN: 500mg Caffeine.' The fuel of every 3 AM trading session." }],
+          "USE": [{ "op": "say", "text": "I take a sip. It's flat and warm. Like the market after a hype cycle. My heart rate increases anyway." }],
+          "TALK": [{ "op": "say", "text": "'Give me energy!' The can is silent. It already gave everything it had. Respect." }],
+          "PICK": [{ "op": "say", "text": "I pick up the can. It's surprisingly light. Almost empty. The degen drank deep." }],
+          "OPEN": [{ "op": "say", "text": "Already open. The tab was pulled with the same urgency as a margin call notification." }],
+          "CLOSE": [{ "op": "say", "text": "You can't un-open a can. Like you can't un-send a transaction. Irreversible." }],
+          "PUSH": [{ "op": "say", "text": "I push the can. It rolls across the floor leaving a sticky trail. Like slippage on a DEX." }],
+          "PULL": [{ "op": "say", "text": "I pull the can toward me. The last drops of BULL RUN slosh around sadly." }],
+          "GIVE": [{ "op": "say", "text": "Nobody wants a half-empty energy drink. It's the NFT of beverages — unique but valueless." }]
+        }
+      }
+    ],
+    "triggers": [
+      {
+        "id": "tr_to_lobby",
+        "once": false,
+        "bounds": {
+          "x": 0,
+          "y": 50,
+          "w": 5,
+          "h": 45
+        },
+        "onEnter": [
+          {
+            "op": "gotoScene",
+            "sceneId": "lobby",
+            "spawn": {
+              "x": 45.6,
+              "y": 87.9
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "items": {
+    "sceneItems": []
+  },
+  "combos": [
+    {
+      "items": [
+        "golden_token",
+        "hs_computer"
+      ],
+      "result": "founder_mode",
+      "script": [
+        {
+          "op": "ifFlag",
+          "flag": "founder_mode",
+          "then": [
+            {
+              "op": "say",
+              "text": "Founder mode is already active. The mining rig hums contentedly."
+            }
+          ],
+          "else": [
+            {
+              "op": "say",
+              "text": "I insert the Golden ZERO Token into a slot on the mining rig. The screens flash: 'GOLDEN KEY ACCEPTED — FOUNDER MODE UNLOCKED.'"
+            },
+            {
+              "op": "setFlag",
+              "flag": "founder_mode",
+              "value": true
+            },
+            {
+              "op": "removeItem",
+              "id": "golden_token"
+            },
+            {
+              "op": "wait",
+              "ms": 500
+            },
+            {
+              "op": "say",
+              "text": "An admin panel appears. Adrian's full ecosystem dashboard."
+            },
+            {
+              "op": "wait",
+              "ms": 800
+            },
+            {
+              "op": "say",
+              "text": "The admin dashboard lights up. FloorEngine: 847 sweeps. TraitLab: 12,459 traits minted. SweepBot: running 24/7 for 403 days."
+            },
+            {
+              "op": "wait",
+              "ms": 600
+            },
+            {
+              "op": "say",
+              "text": "Adrian built all of this... and then disappeared. Why?"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "audio": {
+    "music": "retro-adventure",
+    "variation": {
+      "filterType": "lowpass",
+      "filterFrequency": 2500,
+      "volume": 0.8
+    },
+    "ambience": null,
+    "sfx": {}
+  },
+  "transitions": {
+    "goto": []
+  },
+  "walkableAreas": [
+    {
+      "x": 0,
+      "y": 92.3,
+      "w": 100,
+      "h": 7.8
+    }
+  ]
+}

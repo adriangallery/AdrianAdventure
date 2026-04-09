@@ -1,0 +1,69 @@
+{
+  "playerScale": 5,
+  "itemCombos": [
+    {
+      "item1": "mystery_envelope",
+      "item2": "terminal_key",
+      "result": null,
+      "script": [
+        { "op": "say", "text": "I try to use the terminal key to pry open the envelope. The key scratches the wax seal but doesn't break it. I need something sharper... or just my hands." }
+      ]
+    },
+    {
+      "item1": "rubber_duck",
+      "item2": "broken_mouse",
+      "result": null,
+      "script": [
+        { "op": "say", "text": "I attach the rubber duck to the broken mouse. It squeaks when I click. I've invented the world's worst ergonomic mouse. Patent pending." }
+      ]
+    },
+    {
+      "item1": "rubber_duck",
+      "item2": "water_bottle",
+      "result": null,
+      "script": [
+        { "op": "say", "text": "I put the duck in the water bottle. It floats! ...I don't know what I expected. This is neither useful nor a bathtub." }
+      ]
+    },
+    {
+      "item1": "receipt",
+      "item2": "golden_token",
+      "result": null,
+      "script": [
+        { "op": "say", "text": "I hold the receipt next to the golden token. '1 BTC @ $3.50' vs a golden ZERO token. The irony of crypto in two objects." }
+      ]
+    },
+    {
+      "item1": "printout",
+      "item2": "sign_in_sheet",
+      "result": null,
+      "script": [
+        { "op": "say", "text": "I compare the transaction hashes on the printout with the patient records. Wait... some of these wallet addresses match. The patients ARE the traders." }
+      ]
+    },
+    {
+      "item1": "antenna",
+      "item2": "broken_mouse",
+      "result": null,
+      "script": [
+        { "op": "say", "text": "I attach the antenna to the mouse. Congratulations, I've built a wireless mouse. That doesn't work. Because it's broken. And that's not how wireless works." }
+      ]
+    },
+    {
+      "item1": "floppy_disk",
+      "item2": "burned_chip",
+      "result": null,
+      "script": [
+        { "op": "say", "text": "The floppy disk and the burnt chip. One holds data, the other lost it forever. A cautionary tale about backups." }
+      ]
+    },
+    {
+      "item1": "code_note",
+      "item2": "ledger",
+      "result": null,
+      "script": [
+        { "op": "say", "text": "I type 7314 into the Ledger. 'Invalid PIN.' Of course — the code is for the door, not the wallet. Different kind of security." }
+      ]
+    }
+  ]
+}
