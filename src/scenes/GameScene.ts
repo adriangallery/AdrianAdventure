@@ -34,7 +34,6 @@ export class GameScene extends Phaser.Scene {
   private bgFill!: Phaser.GameObjects.Image;
   private bg!: Phaser.GameObjects.Image;
   private fg?: Phaser.GameObjects.Image;
-  private badge?: Phaser.GameObjects.Image;
   private debugContainer?: Phaser.GameObjects.Container;
   private static DEBUG = import.meta.env.DEV;
   private pendingHotspot: HotspotData | null = null;
@@ -131,19 +130,6 @@ export class GameScene extends Phaser.Scene {
       this.fg.setDepth(15);
     }
 
-    // Game badge — covers watermark in bottom-right of background
-    if (this.textures.exists('game_badge')) {
-      const bt = this.coordSystem.getBgTransform();
-      const badgeX = bt.x + this.coordSystem.bgW - 8;
-      const badgeY = bt.y + this.coordSystem.bgH - 8;
-      this.badge = this.add.image(badgeX, badgeY, 'game_badge')
-        .setOrigin(1, 1)
-        .setDepth(1)
-        .setAlpha(0.9);
-      // Scale badge to ~3% of background width
-      const targetW = this.coordSystem.bgW * 0.03;
-      this.badge.setScale(targetW / this.badge.width);
-    }
 
     // Camera setup based on orientation
     this.setupCamera();
@@ -441,15 +427,6 @@ export class GameScene extends Phaser.Scene {
     // Foreground layer follows background transform
     if (this.fg) {
       this.fg.setPosition(t.x, t.y).setScale(t.scaleX, t.scaleY);
-    }
-
-    // Reposition watermark badge
-    if (this.badge) {
-      const badgeX = t.x + this.coordSystem.bgW - 8;
-      const badgeY = t.y + this.coordSystem.bgH - 8;
-      this.badge.setPosition(badgeX, badgeY);
-      const targetW = this.coordSystem.bgW * 0.03;
-      this.badge.setScale(targetW / this.badge.width);
     }
 
     this.player.onResize(this.coordSystem);

@@ -70,10 +70,6 @@ export class PreloadScene extends Phaser.Scene {
       }
     }
 
-    // Game badge (covers watermark)
-    if (!this.textures.exists('game_badge')) {
-      this.load.image('game_badge', `assets/sprites/game_badge.png${v}`);
-    }
 
     // Audio
     if (!this.cache.audio.has('retro-adventure')) {
