@@ -1,4 +1,4 @@
-import { CHAIN_ID } from '@/config/blockchain.config';
+import { CHAIN_ID, getRpcUrl } from '@/config/blockchain.config';
 
 /**
  * Lazy-loaded WalletConnect EIP-1193 provider factory.
@@ -15,9 +15,27 @@ export async function createWalletConnectProvider(): Promise<any> {
   const provider = await EthereumProvider.init({
     projectId,
     chains: [CHAIN_ID],
+    optionalChains: [1], // Ethereum mainnet as fallback
     showQrModal: true,
+    optionalMethods: [
+      'eth_sendTransaction',
+      'eth_sign',
+      'personal_sign',
+      'eth_signTypedData',
+      'eth_signTypedData_v4',
+      'wallet_switchEthereumChain',
+      'wallet_addEthereumChain',
+    ],
+    optionalEvents: [
+      'chainChanged',
+      'accountsChanged',
+    ],
+    rpcMap: {
+      [CHAIN_ID]: getRpcUrl(),
+      1: 'https://eth.llamarpc.com',
+    },
     metadata: {
-      name: 'AdrianAdventure',
+      name: 'ZEROadventure II',
       description: 'Point-and-click adventure game on Base',
       url: window.location.origin,
       icons: [`${window.location.origin}/assets/sprites/game_badge.png`],

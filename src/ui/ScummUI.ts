@@ -127,19 +127,39 @@ export class ScummUI {
   }
 
   private buildContent(width: number, verbFontSize: number, actionFontSize: number): void {
-    // ─── Verb grid (3×3) — wider on narrow screens to prevent overlap ───
+    // ─── Verb grid (3×3) — proportional columns based on text width ───
     const verbStartY = 6 + actionFontSize + 10; // below action line
-    const verbPadLeft = Math.max(4, width * 0.01);
-    const verbAreaRatio = width < 500 ? 0.52 : 0.42;
-    const verbAreaW = width * verbAreaRatio;
-    const verbColW = verbAreaW / LAYOUT.VERB_COLS;
+    const verbPadLeft = Math.max(6, width * 0.015);
     const mobileVerbSize = width < 500 ? Math.max(10, Math.min(14, Math.floor(width * 0.028))) : verbFontSize;
     const verbRowH = Math.max(22, mobileVerbSize + 8);
+    const verbGap = Math.max(8, Math.floor(width * 0.012)); // consistent gap between columns
+
+    // Measure max width per column to position evenly
+    const cols = LAYOUT.VERB_COLS;
+    const colMaxW: number[] = new Array(cols).fill(0);
+    const tempTexts: Phaser.GameObjects.Text[] = [];
+    PANEL_VERBS.forEach((verb, i) => {
+      const t = this.scene.add.text(0, 0, VERB_LABELS[verb], {
+        fontFamily: FONT.FAMILY, fontSize: `${mobileVerbSize}px`,
+      }).setPadding(2, 3);
+      tempTexts.push(t);
+      const col = i % cols;
+      colMaxW[col] = Math.max(colMaxW[col], t.width);
+    });
+    tempTexts.forEach(t => t.destroy());
+
+    // Calculate column X positions from measured widths
+    const colX: number[] = [];
+    let cx = verbPadLeft;
+    for (let c = 0; c < cols; c++) {
+      colX.push(cx);
+      cx += colMaxW[c] + verbGap;
+    }
 
     PANEL_VERBS.forEach((verb, i) => {
-      const col = i % LAYOUT.VERB_COLS;
-      const row = Math.floor(i / LAYOUT.VERB_COLS);
-      const x = verbPadLeft + col * verbColW;
+      const col = i % cols;
+      const row = Math.floor(i / cols);
+      const x = colX[col];
       const y = verbStartY + row * verbRowH;
       const isActive = verb === this.selectedVerb;
 
@@ -165,8 +185,11 @@ export class ScummUI {
       this.container.add(text);
     });
 
+    // Total verb area width (for positioning arrows/inventory after)
+    const verbAreaW = colX[cols - 1] + colMaxW[cols - 1];
+
     // ─── Scroll arrows column (between verbs and inventory) ───
-    const arrowX = verbPadLeft + verbAreaW + 8;
+    const arrowX = verbAreaW + verbGap;
     const arrowSize = Math.max(12, Math.min(20, Math.floor(width * 0.016)));
     const arrowTopY = verbStartY + 4;
     const arrowBotY = verbStartY + verbRowH * 3 - arrowSize - 4;
