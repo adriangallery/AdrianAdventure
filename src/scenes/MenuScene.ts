@@ -6,6 +6,8 @@ import { TWP, FONT } from '@/config/theme';
  * Title/Menu screen — Thimbleweed Park noir atmosphere.
  */
 export class MenuScene extends Phaser.Scene {
+  private resizeHandler: (() => void) | null = null;
+
   constructor() {
     super({ key: 'MenuScene' });
   }
@@ -18,35 +20,45 @@ export class MenuScene extends Phaser.Scene {
 
   create(): void {
     this.buildMenu();
-    this.scale.on('resize', () => {
+    this.resizeHandler = () => {
       if (!this.scene.isActive('MenuScene')) return;
-      this.children.removeAll();
+      if (!this.cameras?.main) return;
+      this.children.removeAll(true);
+      this.tweens.killAll();
       this.buildMenu();
-    });
+    };
+    this.scale.on('resize', this.resizeHandler);
+  }
+
+  shutdown(): void {
+    if (this.resizeHandler) {
+      this.scale.off('resize', this.resizeHandler);
+      this.resizeHandler = null;
+    }
   }
 
   private buildMenu(): void {
     if (!this.cameras?.main) return;
     const { width, height } = this.scale;
     const isPortrait = height > width;
+    const refSize = isPortrait ? Math.max(width, height * 0.45) : width;
 
     this.cameras.main.setBackgroundColor(TWP.MENU_BG);
 
     // Intro image
     if (this.textures.exists('intro')) {
-      const img = this.add.image(width / 2, height * (isPortrait ? 0.3 : 0.38), 'intro');
-      const maxW = width * (isPortrait ? 0.9 : 0.7);
-      const maxH = height * (isPortrait ? 0.35 : 0.5);
+      const imgY = isPortrait ? height * 0.28 : height * 0.35;
+      const img = this.add.image(width / 2, imgY, 'intro');
+      const maxW = width * (isPortrait ? 0.85 : 0.55);
+      const maxH = height * (isPortrait ? 0.3 : 0.45);
       const scale = Math.min(maxW / img.width, maxH / img.height);
       img.setScale(scale).setAlpha(0.85);
     }
 
-    // Use the larger dimension for sizing so portrait phones get readable text
-    const refSize = isPortrait ? Math.max(width, height * 0.45) : width;
-
-    // Title — yellow TWP style, large and readable
+    // Title — yellow TWP style
     const titleSize = Math.max(18, Math.min(36, Math.floor(refSize * 0.04)));
-    const title = this.add.text(width / 2, height * (isPortrait ? 0.50 : 0.72), 'ZEROadventure II', {
+    const titleY = isPortrait ? height * 0.50 : height * 0.68;
+    const title = this.add.text(width / 2, titleY, 'ZEROadventure II', {
       fontFamily: FONT.FAMILY,
       fontSize: `${titleSize}px`,
       color: TWP.MENU_TITLE,
@@ -64,7 +76,7 @@ export class MenuScene extends Phaser.Scene {
 
     // Subtitle
     const subSize = Math.max(10, Math.min(16, Math.floor(refSize * 0.016)));
-    this.add.text(width / 2, title.y + titleSize + 16, 'A Point & Click Web3 Adventure on Base', {
+    this.add.text(width / 2, title.y + titleSize + 12, 'A Point & Click Web3 Adventure on Base', {
       fontFamily: FONT.FAMILY,
       fontSize: `${subSize}px`,
       color: TWP.MENU_SUBTITLE,
@@ -72,12 +84,12 @@ export class MenuScene extends Phaser.Scene {
       align: 'center',
     }).setOrigin(0.5);
 
-    // Buttons — generous sizing for touch targets
+    // Buttons
     const saveSystem = new SaveLoadSystem();
     const hasSave = saveSystem.hasSave();
     const btnSize = Math.max(14, Math.min(22, Math.floor(refSize * 0.024)));
-    const btnSpacing = Math.max(btnSize * 4, 60);
-    const btnY = height * (isPortrait ? 0.72 : 0.88);
+    const btnSpacing = Math.max(btnSize * 3, 50);
+    const btnY = isPortrait ? height * 0.72 : height * 0.86;
 
     this.createButton(width / 2, btnY, 'New Game', btnSize, () => {
       this.cameras.main.fadeOut(400, 0, 0, 0);
@@ -120,7 +132,7 @@ export class MenuScene extends Phaser.Scene {
     })
       .setOrigin(0.5)
       .setInteractive({ useHandCursor: true })
-      .setPadding(16, 12); // generous touch padding
+      .setPadding(16, 12);
 
     text.on('pointerover', () => text.setColor(TWP.MENU_BTN_HOVER));
     text.on('pointerout', () => text.setColor(TWP.MENU_BTN));

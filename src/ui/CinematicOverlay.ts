@@ -59,10 +59,11 @@ export class CinematicOverlay {
     return new Promise<void>((resolve) => {
       const { width, height } = this.scene.scale;
 
-      const chapterSize = Math.max(10, Math.min(16, Math.floor(width * 0.014)));
-      const titleSize = Math.max(14, Math.min(24, Math.floor(width * 0.022)));
-      const subtitleSize = Math.max(8, Math.min(12, Math.floor(width * 0.01)));
-      const continueSize = Math.max(7, Math.min(10, Math.floor(width * 0.008)));
+      const refDim = Math.max(width, height * 0.6); // Use larger ref for portrait phones
+      const chapterSize = Math.max(12, Math.min(18, Math.floor(refDim * 0.016)));
+      const titleSize = Math.max(16, Math.min(28, Math.floor(refDim * 0.026)));
+      const subtitleSize = Math.max(10, Math.min(14, Math.floor(refDim * 0.012)));
+      const continueSize = Math.max(8, Math.min(11, Math.floor(refDim * 0.009)));
 
       const container = this.scene.add.container(0, 0).setDepth(DEPTH).setAlpha(1).setScrollFactor(0);
 
@@ -138,9 +139,10 @@ export class CinematicOverlay {
       if (lines.length === 0) { resolve(); return; }
 
       const { width, height } = this.scene.scale;
-      const fontSize = Math.max(9, Math.min(14, Math.floor(width * 0.012)));
-      const lineHeight = fontSize * 2.5;
-      const continueSize = Math.max(7, Math.min(10, Math.floor(width * 0.008)));
+      const refDim = Math.max(width, height * 0.6);
+      const fontSize = Math.max(11, Math.min(16, Math.floor(refDim * 0.014)));
+      const lineHeight = fontSize * 2.8;
+      const continueSize = Math.max(8, Math.min(11, Math.floor(refDim * 0.009)));
 
       const container = this.scene.add.container(0, 0).setDepth(DEPTH).setAlpha(1).setScrollFactor(0);
 

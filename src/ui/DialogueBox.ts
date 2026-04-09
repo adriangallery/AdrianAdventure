@@ -24,9 +24,11 @@ export class DialogueBox {
     this.scene = scene;
     const { width } = scene.scale;
 
-    // Responsive font sizes — always readable
-    const speakerSize = Math.max(12, Math.min(18, Math.floor(width * 0.016)));
-    const bodySize = Math.max(11, Math.min(16, Math.floor(width * 0.014)));
+    // Responsive font sizes — use larger ref on portrait for readability
+    const { height } = scene.scale;
+    const refDim = height > width ? Math.max(width, height * 0.5) : width;
+    const speakerSize = Math.max(13, Math.min(20, Math.floor(refDim * 0.018)));
+    const bodySize = Math.max(12, Math.min(18, Math.floor(refDim * 0.016)));
 
     // Speaker name — yellow (TWP character name style)
     this.speakerText = scene.add.text(width / 2, 0, '', {

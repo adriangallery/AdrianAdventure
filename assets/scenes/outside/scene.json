@@ -1179,15 +1179,72 @@
           "h": 9
         },
         "scripts": {
-          "LOOK": [{ "op": "say", "text": "A numeric keypad with backlit buttons. The display reads '_ _ _ _'. Four digits stand between me and whatever Adrian's hiding." }],
-          "USE": [{ "op": "ifFlag", "flag": "has_code", "then": [{ "op": "say", "text": "I could type the code here... but the front door keypad is the one that matters." }], "else": [{ "op": "say", "text": "I tap random buttons. *BZZZ* 'INVALID CODE.' Better find the real code first." }] }],
-          "TALK": [{ "op": "say", "text": "I lean in and whisper 'password123'. The keypad blinks red. It's not amused." }],
-          "PICK": [{ "op": "say", "text": "It's screwed into the doorframe. I'd need tools and questionable morals." }],
-          "OPEN": [{ "op": "say", "text": "I pry at the faceplate. A tiny sticker warns: 'TAMPERING TRIGGERS SILENT ALARM. And Adrian's disappointment.'" }],
-          "CLOSE": [{ "op": "say", "text": "The keypad is always on. Always waiting. Like a limit order I forgot about." }],
-          "PUSH": [{ "op": "say", "text": "I press all the buttons at once. *BZZZ BZZZ BZZZ* That's not how keypads work." }],
-          "PULL": [{ "op": "say", "text": "I tug at the keypad. It's firmly mounted. Security by stubbornness." }],
-          "GIVE": [{ "op": "say", "text": "I'm not giving a keypad anything. It hasn't earned my trust." }]
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "A numeric keypad with backlit buttons. The display reads '_ _ _ _'. Four digits stand between me and whatever Adrian's hiding."
+            }
+          ],
+          "USE": [
+            {
+              "op": "ifFlag",
+              "flag": "has_code",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "I could type the code here... but the front door keypad is the one that matters."
+                }
+              ],
+              "else": [
+                {
+                  "op": "say",
+                  "text": "I tap random buttons. *BZZZ* 'INVALID CODE.' Better find the real code first."
+                }
+              ]
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "I lean in and whisper 'password123'. The keypad blinks red. It's not amused."
+            }
+          ],
+          "PICK": [
+            {
+              "op": "say",
+              "text": "It's screwed into the doorframe. I'd need tools and questionable morals."
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "say",
+              "text": "I pry at the faceplate. A tiny sticker warns: 'TAMPERING TRIGGERS SILENT ALARM. And Adrian's disappointment.'"
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "The keypad is always on. Always waiting. Like a limit order I forgot about."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I press all the buttons at once. *BZZZ BZZZ BZZZ* That's not how keypads work."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "I tug at the keypad. It's firmly mounted. Security by stubbornness."
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "I'm not giving a keypad anything. It hasn't earned my trust."
+            }
+          ]
         }
       },
       {
@@ -1481,9 +1538,9 @@
   "walkableAreas": [
     {
       "x": 0,
-      "y": 75,
+      "y": 84.7,
       "w": 100,
-      "h": 25
+      "h": 15.3
     }
   ],
   "onEnter": [

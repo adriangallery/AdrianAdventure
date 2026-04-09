@@ -64,9 +64,9 @@ export class ScummUI {
     // Panel height — compact on mobile, standard on desktop
     const isLandscape = width > height;
     const panelRatio = this.isMobile
-      ? (isLandscape ? 0.22 : 0.15)
+      ? (isLandscape ? 0.28 : 0.18)
       : 0.25;
-    const minH = this.isMobile && isLandscape ? 100 : LAYOUT.PANEL_MIN_HEIGHT;
+    const minH = this.isMobile && isLandscape ? 120 : LAYOUT.PANEL_MIN_HEIGHT;
     this.fullPanelHeight = Math.max(minH, Math.floor(height * panelRatio));
 
     // Effective height depends on collapsed state
@@ -81,10 +81,10 @@ export class ScummUI {
       this.scene.add.rectangle(width / 2, this.panelHeight / 2, width, this.panelHeight, TWP.PANEL_BG, TWP.PANEL_BG_ALPHA)
     );
 
-    // ─── Font sizing — TWP verbs are BIG ───
-    const refDim = width; // always use width for consistent sizing
-    const verbFontSize = Math.max(14, Math.min(26, Math.floor(refDim * 0.02)));
-    const actionFontSize = Math.max(12, Math.min(20, Math.floor(refDim * 0.016)));
+    // ─── Font sizing — TWP verbs are BIG, use larger ref on portrait phones ───
+    const refDim = this.isMobile && !isLandscape ? Math.max(width, height * 0.5) : width;
+    const verbFontSize = Math.max(14, Math.min(26, Math.floor(refDim * 0.022)));
+    const actionFontSize = Math.max(12, Math.min(20, Math.floor(refDim * 0.018)));
 
     // ─── Action / sentence line — top of panel ───
     const actionY = (this.isMobile && this.collapsed) ? (COLLAPSED_HEIGHT / 2 - actionFontSize / 2) : 6;
@@ -129,8 +129,8 @@ export class ScummUI {
   private buildContent(width: number, verbFontSize: number, actionFontSize: number): void {
     // ─── Verb grid (3×3) — wider on narrow screens to prevent overlap ───
     const verbStartY = 6 + actionFontSize + 10; // below action line
-    const verbPadLeft = Math.max(6, width * 0.015);
-    const verbAreaRatio = width < 500 ? 0.62 : 0.50;
+    const verbPadLeft = Math.max(4, width * 0.01);
+    const verbAreaRatio = width < 500 ? 0.52 : 0.42;
     const verbAreaW = width * verbAreaRatio;
     const verbColW = verbAreaW / LAYOUT.VERB_COLS;
     const mobileVerbSize = width < 500 ? Math.max(10, Math.min(14, Math.floor(width * 0.028))) : verbFontSize;
