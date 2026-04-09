@@ -611,6 +611,7 @@ async function loadScene(sceneId) {
       position: { x: n.position.x, y: n.position.y },
       color: n.color ?? '0xff6600',
       dialogueTreeId: n.dialogueTreeId ?? null,
+      scale: n.scale ?? 1,
       spriteImg: null,
     }));
     // Load NPC sprites
@@ -789,8 +790,9 @@ function renderNPC(npc, idx, isSelected, isDimmed) {
   if (npc.spriteImg) {
     const img = document.createElement('img');
     img.src = npc.spriteImg.src;
-    const sw = npc.spriteImg.naturalWidth * zoom;
-    const sh = npc.spriteImg.naturalHeight * zoom;
+    const npcScale = npc.scale ?? 1;
+    const sw = npc.spriteImg.naturalWidth * zoom * npcScale;
+    const sh = npc.spriteImg.naturalHeight * zoom * npcScale;
     img.style.width = sw + 'px';
     img.style.height = sh + 'px';
     div.appendChild(img);
@@ -944,10 +946,25 @@ function updateInfoPanel() {
   }
   // NPC mode
   if (editMode === 'npc') {
+    // Remove old NPC scale slider if any
+    document.getElementById('npc-scale-ctrl')?.remove();
     if (selectedNpcIdx >= 0 && selectedNpcIdx < npcList.length) {
       const npc = npcList[selectedNpcIdx];
       selName.textContent = npc.name + ' (' + npc.id + ')';
-      selBounds.textContent = `x:${r(npc.position.x)} y:${r(npc.position.y)}`;
+      selBounds.textContent = `x:${r(npc.position.x)} y:${r(npc.position.y)} scale:${(npc.scale ?? 1).toFixed(2)}`;
+      // Add scale slider below info panel
+      const ctrl = document.createElement('div');
+      ctrl.id = 'npc-scale-ctrl';
+      ctrl.style.cssText = 'display:flex;align-items:center;gap:6px;padding:2px 12px;background:#16213e;font-size:11px;';
+      ctrl.innerHTML = `<label style="color:#888">NPC Scale:</label><input type="range" min="0.01" max="5" step="0.01" value="${npc.scale ?? 1}" style="width:120px" id="npc-scale-slider"><span id="npc-scale-val" style="color:#0f0;min-width:40px">${(npc.scale ?? 1).toFixed(2)}x</span>`;
+      document.getElementById('toolbar').after(ctrl);
+      document.getElementById('npc-scale-slider').addEventListener('input', (e) => {
+        const val = parseFloat(e.target.value);
+        npc.scale = val;
+        document.getElementById('npc-scale-val').textContent = val.toFixed(2) + 'x';
+        selBounds.textContent = `x:${r(npc.position.x)} y:${r(npc.position.y)} scale:${val.toFixed(2)}`;
+        renderAll();
+      });
     } else {
       selName.textContent = 'none';
       selBounds.textContent = '--';
@@ -1394,13 +1411,15 @@ function buildSceneOutput() {
     updated.npcs = npcList.map(n => {
       // Find original NPC data to preserve scripts/dialogue
       const orig = (sceneData.npcs ?? []).find(o => o.id === n.id) || {};
-      return {
+      const out = {
         ...orig,
         id: n.id, name: n.name,
         position: { x: r(n.position.x), y: r(n.position.y) },
-        color: n.color,
         dialogueTreeId: n.dialogueTreeId,
       };
+      if (n.scale && n.scale !== 1) out.scale = parseFloat(n.scale.toFixed(2));
+      if (n.color && !n.spriteImg) out.color = n.color;
+      return out;
     });
   }
   return updated;
