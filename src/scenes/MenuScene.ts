@@ -19,12 +19,14 @@ export class MenuScene extends Phaser.Scene {
   create(): void {
     this.buildMenu();
     this.scale.on('resize', () => {
+      if (!this.scene.isActive('MenuScene')) return;
       this.children.removeAll();
       this.buildMenu();
     });
   }
 
   private buildMenu(): void {
+    if (!this.cameras?.main) return;
     const { width, height } = this.scale;
     const isPortrait = height > width;
 
