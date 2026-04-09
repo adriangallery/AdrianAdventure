@@ -58,7 +58,8 @@ export class NPC extends Phaser.GameObjects.Container {
         backgroundColor: 'rgba(0,0,0,0.5)',
         padding: { x: 3, y: 1 },
       })
-      .setOrigin(0.5);
+      .setOrigin(0.5)
+      .setVisible(false);
 
     this.add([this.npcBody, this.label]);
     this.setDepth(9);
