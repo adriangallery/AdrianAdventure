@@ -5,8 +5,7 @@
   "assets": {
     "background": "background.png",
     "walkmask": "walkmask.png",
-    "atlas": null,
-    "foreground": "foreground.png"
+    "atlas": null
   },
   "render": {
     "world": {
@@ -26,7 +25,7 @@
   "player": {
     "spawn": {
       "x": 89.7,
-      "y": 91.4
+      "y": 95.2
     },
     "speed": 140,
     "sprite": {
@@ -847,10 +846,10 @@
   },
   "walkableAreas": [
     {
-      "x": 0,
+      "x": 14.8,
       "y": 86.5,
-      "w": 100,
-      "h": 7.5
+      "w": 85.2,
+      "h": 12
     },
     {
       "x": 15.7,
