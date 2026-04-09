@@ -13,7 +13,7 @@ Point-and-click adventure game (Monkey Island style) with full Web3 integration 
 - Chain: Base mainnet (chainId 8453)
 - AdrianZERO (ERC721): `0x6e369bf0e4e0c106192d606fb6d85836d684da75`
 - AdrianLAB (ERC1155): `0x90546848474fb3c9fda3fdad887969bb244e7e58`
-- $ZERO (Diamond EIP-2535): `0x062EF009be3Fb978E6b8cD540Dc20f6960Db21aD`
+- $ZERO (Diamond EIP-2535): `0x542b2B96E9c944260722a86C2ee76166A8e3D0A0`
 
 ## Scene System
 - Scenes defined as JSON in `assets/scenes/<sceneId>/scene.json`

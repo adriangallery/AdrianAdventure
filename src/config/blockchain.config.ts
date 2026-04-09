@@ -27,7 +27,7 @@ export const CONTRACTS = {
   ADRIAN_LAB: '0x90546848474fb3c9fda3fdad887969bb244e7e58' as const,
 
   /** $ZERO Diamond (EIP-2535) — token, staking, governance, shop, minting */
-  ZERO_DIAMOND: '0x062EF009be3Fb978E6b8cD540Dc20f6960Db21aD' as const,
+  ZERO_DIAMOND: '0x542b2B96E9c944260722a86C2ee76166A8e3D0A0' as const,
 } as const;
 
 // ─── Minimal ABIs (only what we need for reads) ──────────────
