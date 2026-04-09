@@ -117,9 +117,13 @@ export class UIScene extends Phaser.Scene {
       this.scummUI.setHoveredObject(name);
     });
 
-    // NPC tapped → start dialogue
-    gameScene.events.on('npc:tapped', (_npcId: string, treeId: string) => {
-      this.startDialogueFromScene(treeId);
+    // NPC tapped → start dialogue with talk animation
+    gameScene.events.on('npc:tapped', (npcId: string, treeId: string) => {
+      // Find the NPC and start talk animation
+      const npcs = (gameScene as any).npcs as import('@/objects/NPC').NPC[] | undefined;
+      const npc = npcs?.find((n) => n.npcId === npcId);
+      npc?.startTalking();
+      this.startDialogueFromScene(treeId).then(() => npc?.stopTalking());
     });
 
     // Say requests from ScriptEngine

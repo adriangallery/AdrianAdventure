@@ -3,6 +3,7 @@ import { FONT } from '@/config/theme';
 
 /**
  * NPC game object — uses a sprite if available, otherwise a colored rectangle.
+ * Supports talk animation: alternates between idle and talk sprite.
  */
 export class NPC extends Phaser.GameObjects.Container {
   public npcId: string;
@@ -10,6 +11,9 @@ export class NPC extends Phaser.GameObjects.Container {
   public dialogueTreeId: string | null;
   private npcBody: Phaser.GameObjects.Rectangle | Phaser.GameObjects.Image;
   private label: Phaser.GameObjects.Text;
+  private talkSpriteKey: string | null = null;
+  private idleSpriteKey: string | null = null;
+  private talkTimer: Phaser.Time.TimerEvent | null = null;
 
   constructor(
     scene: Phaser.Scene,
@@ -28,12 +32,16 @@ export class NPC extends Phaser.GameObjects.Container {
 
     const spriteKey = npcId;
     if (scene.textures.exists(spriteKey)) {
-      // Use sprite
       const sprite = scene.add.image(0, 0, spriteKey).setOrigin(0.5, 1);
       this.npcBody = sprite;
+      this.idleSpriteKey = spriteKey;
       this.setSize(sprite.width, sprite.height);
+      // Check for talk sprite (e.g., npc_receptionist_talk)
+      const talkKey = spriteKey + '_talk';
+      if (scene.textures.exists(talkKey)) {
+        this.talkSpriteKey = talkKey;
+      }
     } else {
-      // Fallback: colored rectangle
       this.npcBody = scene.add.rectangle(0, 0, 28, 42, color).setStrokeStyle(1, 0xffffff, 0.6);
       this.setSize(28, 42);
     }
@@ -67,5 +75,32 @@ export class NPC extends Phaser.GameObjects.Container {
       repeat: -1,
       ease: 'Sine.easeInOut',
     });
+  }
+
+  /** Start talk animation — alternate between idle and talk sprites */
+  startTalking(): void {
+    if (!this.talkSpriteKey || !(this.npcBody instanceof Phaser.GameObjects.Image)) return;
+    this.stopTalking();
+    let open = false;
+    this.talkTimer = this.scene.time.addEvent({
+      delay: 200,
+      loop: true,
+      callback: () => {
+        if (!(this.npcBody instanceof Phaser.GameObjects.Image)) return;
+        open = !open;
+        this.npcBody.setTexture(open ? this.talkSpriteKey! : this.idleSpriteKey!);
+      },
+    });
+  }
+
+  /** Stop talk animation — return to idle sprite */
+  stopTalking(): void {
+    if (this.talkTimer) {
+      this.talkTimer.destroy();
+      this.talkTimer = null;
+    }
+    if (this.idleSpriteKey && this.npcBody instanceof Phaser.GameObjects.Image) {
+      this.npcBody.setTexture(this.idleSpriteKey);
+    }
   }
 }

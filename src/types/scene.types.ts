@@ -91,6 +91,8 @@ export interface NPCData {
   position: { x: number; y: number };
   color?: string;
   dialogueTreeId?: string;
+  /** Custom scale multiplier for this NPC (default: 1.0) */
+  scale?: number;
 }
 
 export interface DialogueTreeData {

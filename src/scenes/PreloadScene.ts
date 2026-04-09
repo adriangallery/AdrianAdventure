@@ -62,7 +62,7 @@ export class PreloadScene extends Phaser.Scene {
     }
 
     // NPC sprites (load once)
-    const npcIds = ['receptionist', 'dr_satoshi'];
+    const npcIds = ['receptionist', 'receptionist_talk', 'dr_satoshi'];
     for (const id of npcIds) {
       const key = `npc_${id}`;
       if (!this.textures.exists(key)) {

@@ -783,8 +783,8 @@
         "x": 23.9,
         "y": 63.2
       },
-      "color": "0xff6600",
-      "dialogueTreeId": "receptionist_intro"
+      "dialogueTreeId": "receptionist_intro",
+      "scale": 2.5
     }
   ],
   "dialogues": {

@@ -33,7 +33,7 @@
       "idle": null,
       "walk": null
     },
-    "playerScale": 2.2
+    "playerScale": 4.85
   },
   "ui": {
     "verbs": [
@@ -1027,8 +1027,8 @@
         "x": 79.6,
         "y": 66.7
       },
-      "color": "0x00cc88",
-      "dialogueTreeId": "dr_satoshi_intro"
+      "dialogueTreeId": "dr_satoshi_intro",
+      "scale": 0.04
     }
   ],
   "dialogues": {
@@ -1151,19 +1151,54 @@
   },
   "combos": [
     {
-      "items": ["floppy_box", "hs_reception_computer"],
+      "items": [
+        "floppy_box",
+        "hs_reception_computer"
+      ],
       "result": "floppy_clinic_secret",
       "script": [
-        { "op": "say", "text": "I slide a floppy into the reception CRT's drive. The green line chart on screen flatlines. Then..." },
-        { "op": "wait", "ms": 1000 },
-        { "op": "say", "text": "'ADRIANLAB FLOPPY RECOGNIZED. PATIENT DATABASE DECRYPTION: AUTHORIZED.' Wait — my floppy collection is a decryption key?" },
-        { "op": "wait", "ms": 800 },
-        { "op": "say", "text": "Patient records scroll by. 'Patient #0042: Chronic Airdrop Dependency. Treatment: forced HODL for 90 days. Status: Relapsed after 6 hours.'" },
-        { "op": "say", "text": "'Patient #0069: Acute Governance Proposal Addiction. Voted on 847 proposals in one week. Treatment: touch grass. Status: Grass has been tokenized. Treatment failed.'" },
-        { "op": "say", "text": "At the end of the list: 'Patient #0000 — REDACTED. See Treatment Room.' The cursor blinks. The computer knows more than it's showing." },
-        { "op": "setFlag", "flag": "floppy_clinic_revealed", "value": true },
-        { "op": "setFlag", "flag": "patient_records_unlocked", "value": true },
-        { "op": "achievement", "text": "MEDICAL RECORDS — Decrypted the patient database" }
+        {
+          "op": "say",
+          "text": "I slide a floppy into the reception CRT's drive. The green line chart on screen flatlines. Then..."
+        },
+        {
+          "op": "wait",
+          "ms": 1000
+        },
+        {
+          "op": "say",
+          "text": "'ADRIANLAB FLOPPY RECOGNIZED. PATIENT DATABASE DECRYPTION: AUTHORIZED.' Wait — my floppy collection is a decryption key?"
+        },
+        {
+          "op": "wait",
+          "ms": 800
+        },
+        {
+          "op": "say",
+          "text": "Patient records scroll by. 'Patient #0042: Chronic Airdrop Dependency. Treatment: forced HODL for 90 days. Status: Relapsed after 6 hours.'"
+        },
+        {
+          "op": "say",
+          "text": "'Patient #0069: Acute Governance Proposal Addiction. Voted on 847 proposals in one week. Treatment: touch grass. Status: Grass has been tokenized. Treatment failed.'"
+        },
+        {
+          "op": "say",
+          "text": "At the end of the list: 'Patient #0000 — REDACTED. See Treatment Room.' The cursor blinks. The computer knows more than it's showing."
+        },
+        {
+          "op": "setFlag",
+          "flag": "floppy_clinic_revealed",
+          "value": true
+        },
+        {
+          "op": "setFlag",
+          "flag": "patient_records_unlocked",
+          "value": true
+        },
+        {
+          "op": "achievement",
+          "text": "MEDICAL RECORDS — Decrypted the patient database"
+        }
       ]
     }
   ],

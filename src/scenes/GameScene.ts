@@ -170,7 +170,9 @@ export class GameScene extends Phaser.Scene {
       for (const nd of sceneData.npcs) {
         const npcScreen = this.coordSystem.pctToScreen(nd.position.x, nd.position.y);
         const npc = new NPC(this, npcScreen.x, npcScreen.y, nd.id, nd.name, nd.dialogueTreeId, nd.color ? parseInt(nd.color, 16) : undefined);
-        npc.setScale(this.coordSystem.getScale());
+        const npcScale = this.coordSystem.getScale() * (nd.scale ?? 1);
+        npc.setScale(npcScale);
+        (npc as any)._npcDataScale = nd.scale ?? 1; // store for resize
         npc.startIdle();
         this.npcs.push(npc);
       }
@@ -432,7 +434,8 @@ export class GameScene extends Phaser.Scene {
     this.player.onResize(this.coordSystem);
 
     for (const npc of this.npcs) {
-      npc.setScale(this.coordSystem.getScale());
+      const npcDataScale = (npc as any)._npcDataScale ?? 1;
+      npc.setScale(this.coordSystem.getScale() * npcDataScale);
     }
 
     this.web3VisualSystem?.onResize(this.coordSystem);
