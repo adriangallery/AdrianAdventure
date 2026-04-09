@@ -381,6 +381,7 @@ export class ScummUI {
   }
 
   private static readonly ITEM_DESCS: Record<string, string> = {
+    clinic_note: "A crumpled note from the clinic trash: 'Day 47: Still believe in the tech. Patient Zero was right about everything. — Dr. S'. Dr. Satoshi wrote this. And threw it away. Why?",
     mystery_envelope_opened: "The torn envelope. Inside was a note with coordinates and a warning: 'Find Patient Zero before they find you.' The handwriting is familiar... is that Adrian's?",
     floppy_box: "A box of AdrianLAB Floppy Discs. Each disc shimmers with holographic labels — token IDs 10000 through 10010. They feel warm, like freshly minted blocks. The box says 'PROPERTY OF ADRIANLAB — HOLDER EXCLUSIVE'. Not everyone can see these. I should try using them with any computer I find.",
     code_note: "A crumpled note with '7314' scrawled in shaky handwriting. Someone was in a hurry. Or panicking. Or both.",

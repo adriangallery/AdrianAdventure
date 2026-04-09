@@ -639,14 +639,30 @@
           ],
           "PICK": [
             {
-              "op": "say",
-              "text": "I fish out a crumpled note: 'Day 47: Still believe in the tech.' Heartbreaking."
+              "op": "ifFlag",
+              "flag": "found_clinic_note",
+              "then": [
+                { "op": "say", "text": "Nothing else worth saving in there. Just regret and empty cans." }
+              ],
+              "else": [
+                { "op": "say", "text": "I fish through the trash... under the energy drink cans and torn whitepapers, I find a crumpled note: 'Day 47: Still believe in the tech. Patient Zero was right about everything. — Dr. S'" },
+                { "op": "addItem", "id": "clinic_note", "name": "Crumpled Note" },
+                { "op": "setFlag", "flag": "found_clinic_note", "value": true }
+              ]
             }
           ],
           "OPEN": [
             {
-              "op": "say",
-              "text": "I lift the lid. The smell hits like a failed rebase — unexpected and overwhelming."
+              "op": "ifFlag",
+              "flag": "found_clinic_note",
+              "then": [
+                { "op": "say", "text": "I lift the lid. Just empty cans and broken dreams." }
+              ],
+              "else": [
+                { "op": "say", "text": "I lift the lid. The smell hits like a failed rebase. But there's something crumpled at the bottom..." },
+                { "op": "addItem", "id": "clinic_note", "name": "Crumpled Note" },
+                { "op": "setFlag", "flag": "found_clinic_note", "value": true }
+              ]
             }
           ],
           "CLOSE": [
@@ -813,8 +829,8 @@
         "id": "tr_back_to_mountain",
         "once": false,
         "bounds": {
-          "x": 0,
-          "y": 91.2,
+          "x": 10.3,
+          "y": 65.9,
           "w": 8,
           "h": 8.8
         },
@@ -845,10 +861,16 @@
   },
   "walkableAreas": [
     {
-      "x": 0,
+      "x": 5.5,
       "y": 91.2,
-      "w": 100,
+      "w": 94.5,
       "h": 8.8
+    },
+    {
+      "x": 10.2,
+      "y": 71.6,
+      "w": 8,
+      "h": 19.8
     }
   ]
 }
