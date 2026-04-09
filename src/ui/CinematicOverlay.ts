@@ -139,10 +139,11 @@ export class CinematicOverlay {
       if (lines.length === 0) { resolve(); return; }
 
       const { width, height } = this.scene.scale;
-      const refDim = Math.max(width, height * 0.6);
-      const fontSize = Math.max(11, Math.min(16, Math.floor(refDim * 0.014)));
-      const lineHeight = fontSize * 2.8;
-      const continueSize = Math.max(8, Math.min(11, Math.floor(refDim * 0.009)));
+      const isLandscape = width > height;
+      const refDim = isLandscape ? Math.max(width, height * 1.5) : Math.max(width, height * 0.6);
+      const fontSize = Math.max(11, Math.min(16, Math.floor(refDim * 0.012)));
+      const lineHeight = fontSize * (isLandscape ? 2.2 : 2.8);
+      const continueSize = Math.max(8, Math.min(11, Math.floor(refDim * 0.008)));
 
       const container = this.scene.add.container(0, 0).setDepth(DEPTH).setAlpha(1).setScrollFactor(0);
 

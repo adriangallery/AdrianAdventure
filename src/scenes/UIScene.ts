@@ -3,6 +3,7 @@ import { ScummUI, SCUMM_PANEL_MIN_HEIGHT } from '@/ui/ScummUI';
 import { DialogueBox } from '@/ui/DialogueBox';
 import { ChoicePanel } from '@/ui/ChoicePanel';
 import { WalletButton } from '@/ui/WalletButton';
+import { SaveButton } from '@/ui/SaveButton';
 import { VerbWheel } from '@/ui/VerbWheel';
 import { CinematicOverlay } from '@/ui/CinematicOverlay';
 import { DialogueSystem, type DialogueTree } from '@/systems/DialogueSystem';
@@ -23,6 +24,7 @@ export class UIScene extends Phaser.Scene {
   private dialogueBox!: DialogueBox;
   private choicePanel!: ChoicePanel;
   private walletButton!: WalletButton;
+  private saveButton!: SaveButton;
   private dialogueSystem!: DialogueSystem;
   private cinematicOverlay!: CinematicOverlay;
   private isMobile = false;
@@ -52,6 +54,9 @@ export class UIScene extends Phaser.Scene {
     // Wallet button (top-right, small)
     this.walletButton = new WalletButton(this);
     this.walletButton.setInventory(inventorySystem);
+
+    // Save button (top-right, next to wallet)
+    this.saveButton = new SaveButton(this);
 
     // Dialogue system
     this.dialogueSystem = new DialogueSystem({

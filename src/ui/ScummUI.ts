@@ -1,10 +1,7 @@
 import Phaser from 'phaser';
 import { Verb, PANEL_VERBS, VERB_LABELS } from '@/types/game.types';
 import type { InventorySystem } from '@/systems/InventorySystem';
-import type { InventoryItem, GameState } from '@/types/game.types';
-import { SaveLoadSystem } from '@/systems/SaveLoadSystem';
-import { getWalletState } from '@/web3/wallet';
-import { hasWalletSave, loadForWallet, exportSignedWalletSave } from '@/web3/cloud-save';
+import type { InventoryItem } from '@/types/game.types';
 import { TWP, FONT, LAYOUT } from '@/config/theme';
 
 export const SCUMM_PANEL_MIN_HEIGHT: number = LAYOUT.PANEL_MIN_HEIGHT;
@@ -223,17 +220,6 @@ export class ScummUI {
     this.container.add(this.invContainer);
     this.renderInventory();
 
-    // ─── Save/Load menu button (top-right of panel) ───
-    const menuBtnSize = Math.max(10, Math.min(14, Math.floor(width * 0.012)));
-    const menuBtn = this.scene.add.text(width - 12, 6, '\u2630', {
-      fontFamily: FONT.FAMILY,
-      fontSize: `${menuBtnSize}px`,
-      color: TWP.VERB_NORMAL,
-    }).setOrigin(1, 0).setInteractive({ useHandCursor: true }).setPadding(8, 4);
-    menuBtn.on('pointerover', () => menuBtn.setColor(TWP.VERB_HOVER));
-    menuBtn.on('pointerout', () => menuBtn.setColor(TWP.VERB_NORMAL));
-    menuBtn.on('pointerdown', () => this.showSaveLoadMenu());
-    this.container.add(menuBtn);
   }
 
   private rebuild(): void {
@@ -657,194 +643,7 @@ export class ScummUI {
   getPanelHeight(): number { return this.panelHeight; }
   isExpanded(): boolean { return !this.collapsed; }
 
-  /** Show DOM overlay save/load menu */
-  private showSaveLoadMenu(): void {
-    const overlay = document.createElement('div');
-    overlay.id = 'save-load-overlay';
-    overlay.style.cssText = `
-      position: fixed; inset: 0; z-index: 10000;
-      background: rgba(6,6,12,0.9);
-      display: flex; align-items: center; justify-content: center;
-      font-family: 'Press Start 2P', monospace;
-    `;
-
-    const modal = document.createElement('div');
-    modal.style.cssText = `
-      background: #1a1a2e; border: 2px solid #5b3a8c;
-      border-radius: 8px; padding: 24px; text-align: center;
-      max-width: 360px; width: 90%;
-    `;
-
-    const title = document.createElement('div');
-    title.textContent = 'Game Menu';
-    title.style.cssText = 'color: #f8e848; font-size: 12px; margin-bottom: 20px;';
-    modal.appendChild(title);
-
-    const cleanup = () => overlay.remove();
-
-    const saveSystem = new SaveLoadSystem();
-    const gameState = this.scene.registry.get('gameState') as GameState | undefined;
-    const sceneData = this.scene.registry.get('sceneData') as { title?: string } | undefined;
-    const sceneName = sceneData?.title ?? 'Unknown';
-
-    const makeBtn = (text: string, enabled: boolean, onClick: () => void) => {
-      const btn = document.createElement('button');
-      btn.textContent = text;
-      btn.disabled = !enabled;
-      btn.style.cssText = `
-        display: block; width: 100%; padding: 10px 16px; margin-bottom: 10px;
-        background: ${enabled ? '#2a2a4e' : '#1a1a2e'}; border: 1px solid ${enabled ? '#5b3a8c' : '#333'};
-        border-radius: 6px; color: ${enabled ? '#e8d5f5' : '#555'};
-        font-family: 'Press Start 2P', monospace; font-size: 9px;
-        cursor: ${enabled ? 'pointer' : 'not-allowed'};
-      `;
-      if (enabled) {
-        btn.onmouseenter = () => { btn.style.background = '#3a3a6e'; };
-        btn.onmouseleave = () => { btn.style.background = '#2a2a4e'; };
-        btn.onclick = onClick;
-      }
-      return btn;
-    };
-
-    // Save to Slot 1
-    const slot1 = saveSystem.loadFromSlot(1);
-    const save1Label = slot1
-      ? `Save Slot 1 (${slot1.sceneName} - ${new Date(slot1.timestamp).toLocaleDateString()})`
-      : 'Save Slot 1 (Empty)';
-    modal.appendChild(makeBtn(`\u{1F4BE} ${save1Label}`, !!gameState, () => {
-      if (gameState) {
-        saveSystem.autoSave(gameState, sceneName);
-        saveSystem.saveToSlot(1, gameState, sceneName);
-        cleanup();
-        this.scene.events.emit('say', 'Game saved to Slot 1.');
-      }
-    }));
-
-    // Save to Slot 2
-    const slot2 = saveSystem.loadFromSlot(2);
-    const save2Label = slot2
-      ? `Save Slot 2 (${slot2.sceneName} - ${new Date(slot2.timestamp).toLocaleDateString()})`
-      : 'Save Slot 2 (Empty)';
-    modal.appendChild(makeBtn(`\u{1F4BE} ${save2Label}`, !!gameState, () => {
-      if (gameState) {
-        saveSystem.autoSave(gameState, sceneName);
-        saveSystem.saveToSlot(2, gameState, sceneName);
-        cleanup();
-        this.scene.events.emit('say', 'Game saved to Slot 2.');
-      }
-    }));
-
-    // Separator
-    const sep = document.createElement('hr');
-    sep.style.cssText = 'border: none; border-top: 1px solid #333; margin: 14px 0;';
-    modal.appendChild(sep);
-
-    // Load Slot 1
-    modal.appendChild(makeBtn('\u{1F4C2} Load Slot 1', !!slot1, () => {
-      if (slot1) {
-        if (!slot1.state.firedTriggers) slot1.state.firedTriggers = [];
-        if (!slot1.state.dialogueProgress) slot1.state.dialogueProgress = {};
-        this.scene.registry.set('gameState', slot1.state);
-        this.scene.registry.set('currentSceneId', slot1.state.currentScene);
-        cleanup();
-        this.scene.scene.stop('UIScene');
-        this.scene.scene.stop('GameScene');
-        this.scene.scene.start('PreloadScene');
-      }
-    }));
-
-    // Load Slot 2
-    modal.appendChild(makeBtn('\u{1F4C2} Load Slot 2', !!slot2, () => {
-      if (slot2) {
-        if (!slot2.state.firedTriggers) slot2.state.firedTriggers = [];
-        if (!slot2.state.dialogueProgress) slot2.state.dialogueProgress = {};
-        this.scene.registry.set('gameState', slot2.state);
-        this.scene.registry.set('currentSceneId', slot2.state.currentScene);
-        cleanup();
-        this.scene.scene.stop('UIScene');
-        this.scene.scene.stop('GameScene');
-        this.scene.scene.start('PreloadScene');
-      }
-    }));
-
-    // Wallet save section
-    const { address } = getWalletState();
-    if (address) {
-      const wsep = document.createElement('hr');
-      wsep.style.cssText = 'border: none; border-top: 1px solid #3396ff44; margin: 14px 0;';
-      modal.appendChild(wsep);
-
-      const wLabel = document.createElement('div');
-      wLabel.textContent = '\u{1F517} Wallet Save';
-      wLabel.style.cssText = 'color: #3396ff; font-size: 8px; margin-bottom: 10px;';
-      modal.appendChild(wLabel);
-
-      const hasWS = hasWalletSave(address);
-      const walletSave = hasWS ? loadForWallet(address) : null;
-
-      modal.appendChild(makeBtn('\u{1F4BE} Save to Wallet', !!gameState, () => {
-        if (gameState) {
-          saveSystem.setWalletAddress(address);
-          saveSystem.autoSave(gameState, sceneName);
-          cleanup();
-          this.scene.events.emit('say', 'Game saved to wallet.');
-        }
-      }));
-
-      modal.appendChild(makeBtn(
-        walletSave ? `\u{1F4C2} Load Wallet Save (${walletSave.sceneName})` : '\u{1F4C2} No Wallet Save',
-        !!walletSave,
-        () => {
-          if (walletSave) {
-            if (!walletSave.state.firedTriggers) walletSave.state.firedTriggers = [];
-            if (!walletSave.state.dialogueProgress) walletSave.state.dialogueProgress = {};
-            this.scene.registry.set('gameState', walletSave.state);
-            this.scene.registry.set('currentSceneId', walletSave.state.currentScene);
-            cleanup();
-            this.scene.scene.stop('UIScene');
-            this.scene.scene.stop('GameScene');
-            this.scene.scene.start('PreloadScene');
-          }
-        }
-      ));
-
-      // Export signed save
-      modal.appendChild(makeBtn('\u{1F4E4} Export Signed Save', !!gameState, async () => {
-        if (gameState) {
-          const json = await exportSignedWalletSave(gameState, sceneName);
-          if (json) {
-            const blob = new Blob([json], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `zeroadventure_save_${address.slice(0, 8)}.json`;
-            a.click();
-            URL.revokeObjectURL(url);
-          }
-          cleanup();
-        }
-      }));
-    }
-
-    // Cancel
-    const cancelBtn = document.createElement('button');
-    cancelBtn.textContent = 'Close';
-    cancelBtn.style.cssText = `
-      display: block; width: 100%; padding: 8px 16px; margin-top: 14px;
-      background: transparent; border: 1px solid #444; border-radius: 6px;
-      color: #888; font-family: 'Press Start 2P', monospace; font-size: 8px;
-      cursor: pointer;
-    `;
-    cancelBtn.onclick = cleanup;
-    modal.appendChild(cancelBtn);
-
-    overlay.onclick = (e) => { if (e.target === overlay) cleanup(); };
-    overlay.appendChild(modal);
-    document.body.appendChild(overlay);
-  }
-
   destroy(): void {
     this.container.destroy();
-    document.getElementById('save-load-overlay')?.remove();
   }
 }

@@ -1526,7 +1526,38 @@
   "items": {
     "sceneItems": []
   },
-  "combos": [],
+  "combos": [
+    {
+      "items": ["code_note", "hs_keypad"],
+      "result": "unlock_door",
+      "script": [
+        { "op": "say", "text": "I hold the note up to the keypad. 7... 3... 1... 4..." },
+        { "op": "wait", "ms": 800 },
+        { "op": "say", "text": "*BEEP* Green light! The front door clicks open." },
+        { "op": "setFlag", "flag": "has_code", "value": true },
+        { "op": "setFlag", "flag": "door_unlocked", "value": true },
+        { "op": "setFlag", "flag": "chapter_1_complete", "value": true },
+        { "op": "achievement", "text": "CHAPTER 1 COMPLETE — Breaking & Entering" },
+        { "op": "wait", "ms": 1500 },
+        { "op": "fadeToScene", "sceneId": "lobby", "spawn": { "x": 86.1, "y": 93.2 }, "duration": 600 }
+      ]
+    },
+    {
+      "items": ["code_note", "hs_front_door"],
+      "result": "unlock_door",
+      "script": [
+        { "op": "say", "text": "I punch in the code from the note: 7-3-1-4..." },
+        { "op": "wait", "ms": 800 },
+        { "op": "say", "text": "*BEEP* The door clicks open!" },
+        { "op": "setFlag", "flag": "has_code", "value": true },
+        { "op": "setFlag", "flag": "door_unlocked", "value": true },
+        { "op": "setFlag", "flag": "chapter_1_complete", "value": true },
+        { "op": "achievement", "text": "CHAPTER 1 COMPLETE — Breaking & Entering" },
+        { "op": "wait", "ms": 1500 },
+        { "op": "fadeToScene", "sceneId": "lobby", "spawn": { "x": 86.1, "y": 93.2 }, "duration": 600 }
+      ]
+    }
+  ],
   "audio": {
     "music": "retro-adventure",
     "ambience": null,
