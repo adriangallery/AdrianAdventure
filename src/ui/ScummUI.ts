@@ -371,7 +371,7 @@ export class ScummUI {
   }
 
   private static readonly ITEM_DESCS: Record<string, string> = {
-    floppy_box: "A box of AdrianLAB floppy discs from the #10000 series. Each one labeled, catalogued, preserved. These aren't just collectibles — they're encoded artifacts from the ecosystem's earliest days. I should try using them with any computer I find.",
+    floppy_box: "A box of AdrianLAB Floppy Discs. Each disc shimmers with holographic labels — token IDs 10000 through 10010. They feel warm, like freshly minted blocks. The box says 'PROPERTY OF ADRIANLAB — HOLDER EXCLUSIVE'. Not everyone can see these. I should try using them with any computer I find.",
     code_note: "A crumpled note with '7314' scrawled in shaky handwriting. Someone was in a hurry. Or panicking. Or both.",
     ledger: "Adrian's hardware wallet. The screen shows a balance that would make a whale blush. Or maybe it's just dust on the display.",
     keycard: "An admin keycard with Adrian's photo. He looks younger. And less concerned about gas fees.",

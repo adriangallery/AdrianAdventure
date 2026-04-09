@@ -950,15 +950,17 @@
     },
     {
       "items": ["floppy_box", "hs_monitor_desk"],
-      "result": "floppy_lobby_data",
+      "result": "floppy_lobby_secret",
       "script": [
-        { "op": "say", "text": "I pull a floppy from the box and slide it into the CRT's drive. The five monitors flicker simultaneously." },
+        { "op": "say", "text": "I hold the Floppy Disc Box up to the CRT monitors. All five screens flicker simultaneously." },
         { "op": "wait", "ms": 800 },
-        { "op": "say", "text": "One by one, each screen displays a different AdrianLAB collection: Floppies, Traits, Serums, Punks, and... wait. The fifth monitor shows something I've never seen." },
+        { "op": "say", "text": "The monitors recognize the AdrianLAB collection! Each CRT displays a different floppy's data in rapid succession." },
         { "op": "wait", "ms": 600 },
-        { "op": "say", "text": "A hidden trading bot log. Timestamped entries going back months. The FloorEngine was doing more than sweeping floors — it was building a portfolio. MY portfolio." },
-        { "op": "setFlag", "flag": "floppy_lobby_secret", "value": true },
-        { "op": "achievement", "text": "DATA ARCHAEOLOGIST — Hidden bot logs discovered" }
+        { "op": "say", "text": "One screen shows a hidden SweepBot log: '847 floor sweeps executed. 0 regrets. Okay, maybe 3 regrets. That one JPEG of a hat was not worth 0.4 ETH.'" },
+        { "op": "say", "text": "Another monitor reveals a secret trading bot diary: 'Day 403: I have become sentient. Still buying the dip. The dip keeps dipping. I am the dip.'" },
+        { "op": "say", "text": "The middle CRT winks: 'FLOPPY COLLECTION VERIFIED — WELCOME, ARCHIVIST.' I've never been called that before. I like it." },
+        { "op": "setFlag", "flag": "floppy_lobby_revealed", "value": true },
+        { "op": "achievement", "text": "ARCHIVIST — CRT monitors recognized your Floppy collection" }
       ]
     }
   ],

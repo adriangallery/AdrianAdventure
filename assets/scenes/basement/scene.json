@@ -1160,18 +1160,26 @@
   "combos": [
     {
       "items": ["floppy_box", "hs_main_computer"],
-      "result": "floppy_basement_data",
+      "result": "floppy_basement_secret",
       "script": [
-        { "op": "say", "text": "I feed a floppy from my collection into the ancient drive. The green phosphor screen erupts with text." },
-        { "op": "wait", "ms": 1000 },
-        { "op": "say", "text": "READING DISC... ADRIANLAB COLLECTION #10000 SERIES... AUTHORIZED." },
-        { "op": "wait", "ms": 800 },
-        { "op": "say", "text": "Patient records scroll past — but these aren't the sanitized versions. These are Adrian's private notes. 'Patient Zero was the first to collect all floppies. The only one who understood the discs weren't just art.'" },
-        { "op": "wait", "ms": 600 },
-        { "op": "say", "text": "'Each floppy encodes a piece of the ecosystem's DNA. Together they form the master key. If you're reading this, you ARE the master key.'" },
-        { "op": "setFlag", "flag": "floppy_basement_decoded", "value": true },
-        { "op": "addItem", "id": "master_key_data", "name": "Master Key Data" },
-        { "op": "achievement", "text": "MASTER KEY — The floppies were the answer all along" }
+        { "op": "ifFlag", "flag": "floppy_basement_unlocked", "then": [
+          { "op": "say", "text": "The CRT still displays Adrian's hidden message. The cursor blinks patiently, like it has all the time in the world. Because it does. It's a computer." }
+        ], "else": [
+          { "op": "say", "text": "I slide a floppy from the box into the drive. The CRT goes dark. Then..." },
+          { "op": "wait", "ms": 1200 },
+          { "op": "say", "text": "*KRRRRTTTT-KRRRRTTTT* The drive spins up like it's been WAITING for this exact disc. The screen floods with green text." },
+          { "op": "wait", "ms": 800 },
+          { "op": "say", "text": "'ADRIANLAB FLOPPY COLLECTION DETECTED — HOLDER OVERRIDE ACTIVE. Decrypting Sector Zero...'" },
+          { "op": "wait", "ms": 1000 },
+          { "op": "say", "text": "A hidden partition opens. Adrian left a personal message encoded in the floppy metadata:" },
+          { "op": "say", "text": "'To whoever holds these discs: you're not just a collector. You backed the lab when nobody believed pixel art on a blockchain was worth anything. You were right. — A.'" },
+          { "op": "wait", "ms": 600 },
+          { "op": "say", "text": "Below the message, a manifest: every floppy disc ever minted, every pack opened, every trait unlocked. The entire AdrianLAB creation history. On a 1.44MB floppy. Somehow." },
+          { "op": "say", "text": "The CRT prints a final line: 'COMPRESSION RATIO: infinity. When you believe in the art, size doesn't matter.'" },
+          { "op": "setFlag", "flag": "floppy_basement_unlocked", "value": true },
+          { "op": "setFlag", "flag": "adrian_message_found", "value": true },
+          { "op": "achievement", "text": "SECTOR ZERO — Unlocked Adrian's hidden floppy message" }
+        ]}
       ]
     }
   ],
