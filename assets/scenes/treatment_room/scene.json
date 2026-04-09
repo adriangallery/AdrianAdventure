@@ -593,6 +593,26 @@
         }
       },
       {
+        "id": "hs_founders_plaque",
+        "name": "Founder's Plaque",
+        "bounds": { "x": 82, "y": 40, "w": 8, "h": 10 },
+        "gate": { "type": "ZERO_BALANCE", "minBalance": "1000" },
+        "gateFallback": [
+          { "op": "say", "text": "There's something on the wall here but I can't quite see it. Like a hidden message only certain people can read." }
+        ],
+        "scripts": {
+          "LOOK": [
+            { "op": "say", "text": "A golden plaque reads: 'To the Founders who believed before anyone else. The clinic remembers.' Below it, your wallet address is engraved. How long has this been here?" }
+          ],
+          "USE": [
+            { "op": "say", "text": "I touch the plaque. It's warm. The engraving shifts — showing my $ZERO balance, my first transaction, my time in the ecosystem. Patient Zero was always a founder." }
+          ],
+          "TALK": [
+            { "op": "say", "text": "I whisper to the plaque: 'Was it worth it?' The golden letters rearrange: 'You're still here, aren't you?'" }
+          ]
+        }
+      },
+      {
         "id": "hs_ceiling_pipes",
         "name": "Exposed Pipes and Cables",
         "bounds": {
@@ -807,6 +827,22 @@
       "y": 78,
       "w": 70,
       "h": 15
+    }
+  ],
+  "web3Visuals": [
+    {
+      "id": "founders_plaque",
+      "position": { "x": 85, "y": 45 },
+      "size": { "w": 6, "h": 4 },
+      "defaultSprite": "plaque_empty",
+      "variants": [
+        {
+          "gate": { "type": "ZERO_BALANCE", "minBalance": "1000" },
+          "sprite": "plaque_founder",
+          "effect": "shimmer"
+        }
+      ],
+      "depth": 5
     }
   ],
   "onEnter": [

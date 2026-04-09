@@ -121,6 +121,19 @@ export async function checkAnyRule(address: Address, rules: GatingRule[]): Promi
   return results.some(Boolean);
 }
 
+/**
+ * Synchronous cache reader for use in hot paths (e.g., update loop).
+ * Returns cached result or null if not cached. Kicks off async check in background.
+ */
+export function checkGatingRuleCached(address: Address, rule: GatingRule): boolean | null {
+  const key = cacheKey(address, rule);
+  const cached = getCached(key);
+  if (cached !== null) return cached;
+  // Fire async check to populate cache for next frame
+  checkGatingRule(address, rule).catch(() => {});
+  return null;
+}
+
 /** Clear the gating cache */
 export function clearGatingCache(): void {
   cache.clear();

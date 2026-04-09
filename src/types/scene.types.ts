@@ -56,6 +56,33 @@ export interface SceneData {
   dialogues?: Record<string, DialogueTreeData>;
   /** Scripts that run automatically when the scene loads */
   onEnter?: ScriptOp[];
+  /** Conditional visual overlays based on wallet/NFT state */
+  web3Visuals?: Web3Visual[];
+}
+
+// ─── Web3 Visual Elements ───────────────────────────────────
+
+export interface Web3Visual {
+  id: string;
+  /** Position in percentage coordinates (0-100) */
+  position: { x: number; y: number };
+  /** Size in percentage (optional — if omitted, uses natural sprite size) */
+  size?: { w: number; h: number };
+  /** Default sprite key shown to all players */
+  defaultSprite: string;
+  /** Variant sprites shown when gating rules pass */
+  variants: Web3VisualVariant[];
+  /** Depth layer (default: 5, between bg at 0 and player at 10) */
+  depth?: number;
+}
+
+export interface Web3VisualVariant {
+  /** Gating rule that must pass for this variant */
+  gate: { type: string; contract?: string; tokenId?: number; minBalance?: number | string };
+  /** Sprite key to show when gate passes */
+  sprite: string;
+  /** Optional visual effect */
+  effect?: 'glow' | 'shimmer' | 'none';
 }
 
 export interface NPCData {
@@ -104,6 +131,10 @@ export interface HotspotData {
   /** Bounds in PERCENTAGE coordinates (0-100) relative to background */
   bounds?: { x: number; y: number; w: number; h: number };
   scripts: Record<string, ScriptOp[]>;
+  /** If set, hotspot is only interactive when gate passes */
+  gate?: { type: string; contract?: string; tokenId?: number; minBalance?: number | string };
+  /** Script to run when gate fails (default: generic locked message) */
+  gateFallback?: ScriptOp[];
 }
 
 export interface TriggerData {
@@ -113,6 +144,8 @@ export interface TriggerData {
   /** Bounds in PERCENTAGE coordinates (0-100) relative to background */
   bounds?: { x: number; y: number; w: number; h: number };
   onEnter: ScriptOp[];
+  /** If set, trigger only fires when gate passes */
+  gate?: { type: string; contract?: string; tokenId?: number; minBalance?: number | string };
 }
 
 export interface SceneItemData {
@@ -121,6 +154,10 @@ export interface SceneItemData {
   position: { x: number; y: number };
   sprite: string | null;
   pickupScript: ScriptOp[];
+  /** If set, item only visible/pickable when gate passes */
+  gate?: { type: string; contract?: string; tokenId?: number; minBalance?: number | string };
+  /** Visual indicator for gated items: 'hidden' = invisible, 'lock' = lock overlay, 'glow' = glow for holders */
+  gateIndicator?: 'lock' | 'glow' | 'hidden';
 }
 
 export interface ComboData {

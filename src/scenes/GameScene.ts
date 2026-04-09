@@ -7,13 +7,15 @@ import { InventorySystem } from '@/systems/InventorySystem';
 import { SaveLoadSystem } from '@/systems/SaveLoadSystem';
 import type { MusicManager } from '@/systems/MusicManager';
 import { CinematicOverlay } from '@/ui/CinematicOverlay';
+import { Web3VisualSystem } from '@/systems/Web3VisualSystem';
 import { NPC } from '@/objects/NPC';
 import type { SceneData, HotspotData } from '@/types/scene.types';
 import { type GameState, Verb, createInitialState } from '@/types/game.types';
 import { TWP, FONT, LAYOUT } from '@/config/theme';
-import { getWalletState } from '@/web3/wallet';
-import { checkGatingRule, type GatingRule } from '@/web3/gating';
-import { mintItem } from '@/web3/contracts';
+import { getWalletState, onWalletChange } from '@/web3/wallet';
+import { checkGatingRule, checkGatingRuleCached, type GatingRule } from '@/web3/gating';
+import { mintItem, mintAchievement, type MintResult } from '@/web3/contracts';
+import { TransactionToast } from '@/ui/TransactionToast';
 import type { Address } from 'viem';
 
 export class GameScene extends Phaser.Scene {
@@ -25,6 +27,8 @@ export class GameScene extends Phaser.Scene {
   private saveSystem!: SaveLoadSystem;
   private musicManager!: MusicManager;
   private cinematicOverlay!: CinematicOverlay;
+  private transactionToast!: TransactionToast;
+  private web3VisualSystem?: Web3VisualSystem;
   private npcs: NPC[] = [];
   private gameState!: GameState;
   private bgFill!: Phaser.GameObjects.Image;
@@ -34,9 +38,11 @@ export class GameScene extends Phaser.Scene {
   private debugContainer?: Phaser.GameObjects.Container;
   private static DEBUG = import.meta.env.DEV;
   private pendingHotspot: HotspotData | null = null;
+  /** Persisted across sessions via gameState.firedTriggers */
   private firedTriggers: Set<string> = new Set();
   /** Frame-based cooldown: ignore clicks for 1 frame after script finishes */
   private inputCooldownFrames = 0;
+  private walletUnsub: (() => void) | null = null;
 
   constructor() { super({ key: 'GameScene' }); }
 
@@ -51,10 +57,22 @@ export class GameScene extends Phaser.Scene {
     this.sceneDataLoader = new SceneDataLoader(sceneData);
     this.saveSystem = new SaveLoadSystem();
 
+    // Sync save system with wallet state
+    const { address: currentAddr } = getWalletState();
+    if (currentAddr) this.saveSystem.setWalletAddress(currentAddr);
+    this.walletUnsub = onWalletChange((ws) => {
+      this.saveSystem.setWalletAddress(ws.address);
+    });
+
     // Game state
     this.gameState = (this.registry.get('gameState') as GameState) ?? createInitialState(sceneId);
     this.gameState.currentScene = sceneId;
     if (!this.gameState.visited.includes(sceneId)) this.gameState.visited.push(sceneId);
+    // Ensure new fields exist (backward compat with old saves)
+    if (!this.gameState.firedTriggers) this.gameState.firedTriggers = [];
+    if (!this.gameState.dialogueProgress) this.gameState.dialogueProgress = {};
+    // Restore persisted fired triggers
+    this.firedTriggers = new Set(this.gameState.firedTriggers);
     this.registry.set('gameState', this.gameState);
 
     // Inventory
@@ -133,6 +151,7 @@ export class GameScene extends Phaser.Scene {
 
     // Cinematic overlay (full-screen story moments)
     this.cinematicOverlay = new CinematicOverlay(this);
+    this.transactionToast = new TransactionToast(this);
 
     // If scene has onEnter scripts, show black cover immediately to prevent scene flash
     if (sceneData.onEnter?.length) {
@@ -171,6 +190,11 @@ export class GameScene extends Phaser.Scene {
       }
     }
 
+    // Web3 dynamic visuals (conditional sprites based on wallet/NFT state)
+    if (sceneData.web3Visuals?.length) {
+      this.web3VisualSystem = new Web3VisualSystem(this, this.coordSystem, sceneData.web3Visuals);
+    }
+
     // Debug overlays
     this.drawDebugBounds(sceneData);
 
@@ -188,6 +212,8 @@ export class GameScene extends Phaser.Scene {
     this.scene.get('UIScene').events.on('panel:toggled', () => this.handleResize());
 
     this.showSceneTitle(sceneData.title);
+    this.gameState.playerPosition = { pctX: spawn.x, pctY: spawn.y };
+    this.gameState.savedAt = Date.now();
     this.saveSystem.autoSave(this.gameState, sceneData.title);
 
     // Run scene onEnter scripts (chapter intros, premise, etc.)
@@ -253,10 +279,18 @@ export class GameScene extends Phaser.Scene {
         for (const tr of sceneData.regions.triggers) {
           if (!tr.bounds) continue;
           if (tr.once && this.firedTriggers.has(tr.id)) continue;
+          // Check trigger gate synchronously (uses cache, skips if not cached yet)
+          if (tr.gate) {
+            const { address } = getWalletState();
+            if (!address) continue;
+            const gateResult = checkGatingRuleCached(address as Address, tr.gate as GatingRule);
+            if (gateResult === null || gateResult === false) continue;
+          }
           const b = tr.bounds;
           if (this.player.pctX >= b.x && this.player.pctX <= b.x + b.w &&
               this.player.pctY >= b.y && this.player.pctY <= b.y + b.h) {
             this.firedTriggers.add(tr.id);
+            this.persistFiredTriggers();
             this.player.halt();
             this.scriptEngine.execute(tr.onEnter);
             break;
@@ -424,6 +458,8 @@ export class GameScene extends Phaser.Scene {
       npc.setScale(this.coordSystem.getScale());
     }
 
+    this.web3VisualSystem?.onResize(this.coordSystem);
+
     // Update camera for new orientation
     this.setupCamera();
 
@@ -472,7 +508,25 @@ export class GameScene extends Phaser.Scene {
     });
   }
 
-  executeHotspotVerb(hotspot: HotspotData, verb: Verb): void {
+  async executeHotspotVerb(hotspot: HotspotData, verb: Verb): Promise<void> {
+    // Check hotspot-level gate if present
+    if (hotspot.gate) {
+      const { address } = getWalletState();
+      let gatePassed = false;
+      if (address) {
+        gatePassed = await checkGatingRule(address as Address, hotspot.gate as GatingRule);
+      }
+      if (!gatePassed) {
+        this.scriptEngine.updateContext(this.buildScriptContext());
+        if (hotspot.gateFallback?.length) {
+          this.scriptEngine.execute(hotspot.gateFallback).then(() => { this.inputCooldownFrames = 2; });
+        } else {
+          this.scene.get('UIScene').events.emit('say', 'Something about this feels locked away...');
+        }
+        return;
+      }
+    }
+
     const scripts = hotspot.scripts[verb];
     if (scripts?.length) {
       this.scriptEngine.updateContext(this.buildScriptContext());
@@ -498,6 +552,8 @@ export class GameScene extends Phaser.Scene {
         this.scene.get('UIScene').events.emit('sayBrief', text, durationMs, speaker, resolve);
       }),
       gotoScene: (sceneId, spawn) => {
+        // Clear player position on scene transition (new scene uses its own spawn)
+        this.gameState.playerPosition = undefined;
         this.saveSystem.autoSave(this.gameState, this.sceneDataLoader.getSceneData().title);
         this.cameras.main.fadeOut(400, 0, 0, 0);
         this.cameras.main.once('camerafadeoutcomplete', () => {
@@ -514,7 +570,8 @@ export class GameScene extends Phaser.Scene {
         const { address } = getWalletState();
         return address ? checkGatingRule(address as Address, rule) : false;
       },
-      mintItem: async (tokenId) => (await mintItem({ tokenId })) !== null,
+      mintItem: async (tokenId): Promise<MintResult> => mintItem({ tokenId }),
+      mintAchievement: async (achievementId): Promise<MintResult> => mintAchievement(achievementId),
       playSound: (key) => {
         if (this.cache.audio.has(key)) this.sound.play(key, { volume: 0.7 });
       },
@@ -526,6 +583,7 @@ export class GameScene extends Phaser.Scene {
       showTitleCard: (chapter, title, subtitle) => this.cinematicOverlay.showTitleCard(chapter, title, subtitle),
       showNarrative: (lines) => this.cinematicOverlay.showNarrative(lines),
       showAchievement: (text) => { this.cinematicOverlay.showAchievement(text); },
+      showToast: (status, message) => { this.transactionToast.show(status, message); },
     };
   }
 
@@ -591,6 +649,7 @@ export class GameScene extends Phaser.Scene {
       if (this.player.pctX >= b.x && this.player.pctX <= b.x + b.w &&
           this.player.pctY >= b.y && this.player.pctY <= b.y + b.h) {
         this.firedTriggers.add(tr.id);
+        this.persistFiredTriggers();
         this.scriptEngine.updateContext(this.buildScriptContext());
         this.scriptEngine.execute(tr.onEnter);
         break;
@@ -598,5 +657,16 @@ export class GameScene extends Phaser.Scene {
     }
   }
 
-  shutdown(): void { this.cinematicOverlay?.destroy(); }
+  /** Sync firedTriggers Set back to gameState for persistence */
+  private persistFiredTriggers(): void {
+    this.gameState.firedTriggers = [...this.firedTriggers];
+    this.registry.set('gameState', this.gameState);
+  }
+
+  shutdown(): void {
+    this.cinematicOverlay?.destroy();
+    this.transactionToast?.destroy();
+    this.web3VisualSystem?.destroy();
+    this.walletUnsub?.();
+  }
 }

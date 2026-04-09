@@ -1,4 +1,5 @@
 import type { GameState } from '@/types/game.types';
+import { saveForWallet, loadForWallet, hasWalletSave, type WalletSave } from '@/web3/cloud-save';
 
 const SAVE_KEY = 'adrian_adventure_save';
 const MAX_SLOTS = 3;
@@ -14,13 +15,26 @@ export interface SaveSlot {
  * Save/Load system using localStorage.
  * Auto-save on scene transitions (slot 0 = autosave).
  * Manual save/load to slots 1-2.
+ * Wallet-linked saves separate per address.
  */
 export class SaveLoadSystem {
+  private walletAddress: string | null = null;
+
+  /** Set the active wallet address for wallet-linked saves */
+  setWalletAddress(address: string | null): void {
+    this.walletAddress = address;
+  }
+
   /**
-   * Auto-save the current state (slot 0).
+   * Auto-save the current state (slot 0 + wallet save if connected).
    */
   autoSave(state: GameState, sceneName: string): void {
+    // Always save to anonymous slot 0
     this.saveToSlot(0, state, sceneName);
+    // Also save to wallet-linked storage if connected
+    if (this.walletAddress) {
+      saveForWallet(this.walletAddress, state, sceneName);
+    }
   }
 
   /**
@@ -98,5 +112,17 @@ export class SaveLoadSystem {
    */
   clearAll(): void {
     localStorage.removeItem(SAVE_KEY);
+  }
+
+  // ─── Wallet-linked saves ──────────────────────────────────
+
+  /** Check if the connected wallet has a save */
+  hasWalletSave(address: string): boolean {
+    return hasWalletSave(address);
+  }
+
+  /** Load the wallet-linked save */
+  loadWalletSave(address: string): WalletSave | null {
+    return loadForWallet(address);
   }
 }

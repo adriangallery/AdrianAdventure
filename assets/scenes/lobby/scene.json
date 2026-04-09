@@ -883,7 +883,22 @@
     }
   },
   "items": {
-    "sceneItems": []
+    "sceneItems": [
+      {
+        "id": "vip_floppy",
+        "name": "VIP Floppy Disc",
+        "position": { "x": 62, "y": 68 },
+        "sprite": null,
+        "gate": { "type": "ERC721", "contract": "0x6e369bf0e4e0c106192d606fb6d85836d684da75", "minBalance": 1 },
+        "gateIndicator": "glow",
+        "pickupScript": [
+          { "op": "say", "text": "A holographic floppy disc shimmers into view. The label reads 'ZERO — VIP ACCESS'. Only visible to true holders." },
+          { "op": "addItem", "id": "vip_floppy", "name": "VIP Floppy Disc" },
+          { "op": "setFlag", "flag": "has_vip_floppy", "value": true },
+          { "op": "achievement", "text": "HOLDER REWARD: VIP Floppy Disc" }
+        ]
+      }
+    ]
   },
   "combos": [
     {
@@ -959,6 +974,22 @@
       "y": 90.4,
       "w": 29.8,
       "h": 9.5
+    }
+  ],
+  "web3Visuals": [
+    {
+      "id": "vip_poster",
+      "position": { "x": 48, "y": 35 },
+      "size": { "w": 4, "h": 8 },
+      "defaultSprite": "poster_generic",
+      "variants": [
+        {
+          "gate": { "type": "ERC721", "contract": "0x6e369bf0e4e0c106192d606fb6d85836d684da75", "minBalance": 1 },
+          "sprite": "poster_adrianzero",
+          "effect": "glow"
+        }
+      ],
+      "depth": 5
     }
   ],
   "onEnter": [

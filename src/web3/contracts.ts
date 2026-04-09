@@ -1,17 +1,14 @@
 import type { Address } from 'viem';
 import { publicClient, getWalletState } from './wallet';
-import { CONTRACTS } from '@/config/blockchain.config';
+import { CONTRACTS, DIAMOND_MINT_ABI, DIAMOND_ACHIEVEMENT_ABI } from '@/config/blockchain.config';
 
-/**
- * Contract interaction helpers for the $ZERO Diamond.
- *
- * SCAFFOLDED — the actual facet ABIs and function names need to be filled in
- * once we review which Diamond facets handle adventure game mints/achievements.
- *
- * The pattern is ready: read via publicClient, write via walletClient.
- */
+// ─── Mint result type ───────────────────────────────────────
 
-// ─── Mint (via Diamond ShopFacet or dedicated MintFacet) ─────
+export interface MintResult {
+  status: 'success' | 'pending' | 'failed' | 'not-configured';
+  txHash?: string;
+  error?: string;
+}
 
 export interface MintParams {
   tokenId: number;
@@ -19,24 +16,61 @@ export interface MintParams {
   value?: bigint;
 }
 
+/** Check if Diamond mint ABI is configured (not just an empty placeholder) */
+export function isMintConfigured(): boolean {
+  return DIAMOND_MINT_ABI.length > 0;
+}
+
+/** Check if achievement mint ABI is configured */
+export function isAchievementMintConfigured(): boolean {
+  return DIAMOND_ACHIEVEMENT_ABI.length > 0;
+}
+
+// ─── Mint (via Diamond ShopFacet or dedicated MintFacet) ─────
+
 /**
  * Mint an in-game item as an on-chain token via the Diamond.
- * Returns tx hash on success, null on failure.
+ * Returns MintResult with status.
  *
  * TODO: Wire to actual Diamond facet once we review:
  * - Which facet handles adventure mints (ShopFacet? A new AdventureFacet?)
  * - Function signature
  * - Payment: free / ETH / $ZERO
  */
-export async function mintItem(_params: MintParams): Promise<string | null> {
+export async function mintItem(params: MintParams): Promise<MintResult> {
   const { walletClient, address } = getWalletState();
   if (!walletClient || !address) {
-    throw new Error('Wallet not connected');
+    return { status: 'failed', error: 'Wallet not connected' };
   }
 
-  // TODO: Replace with actual Diamond facet call when ABI is ready
-  console.warn('contracts.mintItem: Diamond mint ABI not configured yet — skipping');
-  return null;
+  if (!isMintConfigured()) {
+    return { status: 'not-configured' };
+  }
+
+  try {
+    // ShopFacet.purchaseItems — pay with $ZERO (payWith = 0)
+    const txHash = await walletClient.writeContract({
+      address: CONTRACTS.ZERO_DIAMOND as Address,
+      abi: DIAMOND_MINT_ABI,
+      functionName: 'purchaseItems',
+      args: [
+        [{ assetId: BigInt(params.tokenId), quantity: BigInt(params.amount ?? 1), useFree: false }],
+        0, // PaymentToken.ZERO
+      ],
+      chain: undefined,
+      account: address,
+    });
+
+    // Wait for confirmation
+    const receipt = await publicClient.waitForTransactionReceipt({ hash: txHash });
+    if (receipt.status === 'success') {
+      return { status: 'success', txHash };
+    }
+    return { status: 'failed', txHash, error: 'Transaction reverted' };
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : 'Unknown error';
+    return { status: 'failed', error: msg };
+  }
 }
 
 // ─── Achievements (via Diamond or separate ERC1155) ──────────
@@ -46,15 +80,39 @@ export async function mintItem(_params: MintParams): Promise<string | null> {
  *
  * TODO: Define achievement token IDs range and which contract/facet mints them.
  */
-export async function mintAchievement(_achievementId: number): Promise<string | null> {
+export async function mintAchievement(achievementId: number): Promise<MintResult> {
   const { walletClient, address } = getWalletState();
   if (!walletClient || !address) {
-    throw new Error('Wallet not connected');
+    return { status: 'failed', error: 'Wallet not connected' };
   }
 
-  // TODO: Replace with actual facet call
-  console.warn('contracts.mintAchievement: Achievement ABI not configured yet — skipping');
-  return null;
+  if (!isAchievementMintConfigured()) {
+    return { status: 'not-configured' };
+  }
+
+  try {
+    // Achievements are free-claim items via ShopFacet.purchaseItems with useFree: true
+    const txHash = await walletClient.writeContract({
+      address: CONTRACTS.ZERO_DIAMOND as Address,
+      abi: DIAMOND_ACHIEVEMENT_ABI,
+      functionName: 'purchaseItems',
+      args: [
+        [{ assetId: BigInt(achievementId), quantity: 1n, useFree: true }],
+        0, // PaymentToken.ZERO
+      ],
+      chain: undefined,
+      account: address,
+    });
+
+    const receipt = await publicClient.waitForTransactionReceipt({ hash: txHash });
+    if (receipt.status === 'success') {
+      return { status: 'success', txHash };
+    }
+    return { status: 'failed', txHash, error: 'Transaction reverted' };
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : 'Unknown error';
+    return { status: 'failed', error: msg };
+  }
 }
 
 // ─── Read helpers (these work now) ───────────────────────────

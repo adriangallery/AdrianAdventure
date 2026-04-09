@@ -1,14 +1,19 @@
 import { createPublicClient, createWalletClient, custom, http, type WalletClient, type Address } from 'viem';
 import { CHAIN, CHAIN_ID, getRpcUrl } from '@/config/blockchain.config';
 
+export type WalletProviderType = 'injected' | 'walletconnect';
+
 export interface WalletState {
   connected: boolean;
   address: Address | null;
   walletClient: WalletClient | null;
+  providerType: WalletProviderType | null;
 }
 
-let state: WalletState = { connected: false, address: null, walletClient: null };
+let state: WalletState = { connected: false, address: null, walletClient: null, providerType: null };
 let onChangeCallbacks: Array<(s: WalletState) => void> = [];
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let activeProvider: any = null;
 
 /** Public client — always available for reads (no wallet needed) */
 export const publicClient = createPublicClient({
@@ -33,15 +38,43 @@ function notifyChange(): void {
   for (const cb of onChangeCallbacks) cb(state);
 }
 
-/** Connect to injected wallet (MetaMask, Coinbase, Rabby, etc.) */
-export async function connectWallet(): Promise<WalletState> {
+/** Check if injected wallet (MetaMask, Coinbase, etc.) is available */
+export function hasInjectedWallet(): boolean {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const ethereum = (window as any).ethereum;
-  if (!ethereum) {
-    throw new Error('No wallet detected. Install MetaMask or another wallet.');
+  return !!(window as any).ethereum;
+}
+
+/** Check if WalletConnect is configured */
+export function hasWalletConnectConfig(): boolean {
+  return !!import.meta.env.VITE_WALLETCONNECT_PROJECT_ID;
+}
+
+/** Connect wallet — supports injected or WalletConnect */
+export async function connectWallet(
+  providerType: WalletProviderType = 'injected',
+): Promise<WalletState> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let provider: any;
+
+  if (providerType === 'walletconnect') {
+    const { createWalletConnectProvider } = await import('./walletconnect-provider');
+    provider = await createWalletConnectProvider();
+  } else {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    provider = (window as any).ethereum;
+    if (!provider) {
+      throw new Error('No wallet detected. Install MetaMask or another wallet.');
+    }
+    const accounts = (await provider.request({ method: 'eth_requestAccounts' })) as string[];
+    if (!accounts || accounts.length === 0) {
+      throw new Error('No accounts returned');
+    }
   }
 
-  const accounts = (await ethereum.request({ method: 'eth_requestAccounts' })) as string[];
+  activeProvider = provider;
+
+  // Get accounts (WalletConnect already enabled, injected already requested)
+  const accounts = (await provider.request({ method: 'eth_accounts' })) as string[];
   if (!accounts || accounts.length === 0) {
     throw new Error('No accounts returned');
   }
@@ -50,7 +83,7 @@ export async function connectWallet(): Promise<WalletState> {
 
   const walletClient = createWalletClient({
     chain: CHAIN,
-    transport: custom(ethereum),
+    transport: custom(provider),
     account: address,
   });
 
@@ -58,7 +91,7 @@ export async function connectWallet(): Promise<WalletState> {
   const chainId = await walletClient.getChainId();
   if (chainId !== CHAIN_ID) {
     try {
-      await ethereum.request({
+      await provider.request({
         method: 'wallet_switchEthereumChain',
         params: [{ chainId: `0x${CHAIN_ID.toString(16)}` }],
       });
@@ -67,11 +100,11 @@ export async function connectWallet(): Promise<WalletState> {
     }
   }
 
-  state = { connected: true, address, walletClient };
+  state = { connected: true, address, walletClient, providerType };
   notifyChange();
 
   // Listen for account/chain changes
-  ethereum.on?.('accountsChanged', (accs: string[]) => {
+  provider.on?.('accountsChanged', (accs: string[]) => {
     if (accs.length === 0) {
       disconnectWallet();
     } else {
@@ -80,16 +113,28 @@ export async function connectWallet(): Promise<WalletState> {
     }
   });
 
-  ethereum.on?.('chainChanged', () => {
+  provider.on?.('chainChanged', () => {
     window.location.reload();
   });
+
+  // WalletConnect-specific: listen for session disconnect
+  if (providerType === 'walletconnect') {
+    provider.on?.('disconnect', () => {
+      disconnectWallet();
+    });
+  }
 
   return state;
 }
 
 /** Disconnect wallet */
 export function disconnectWallet(): void {
-  state = { connected: false, address: null, walletClient: null };
+  // For WalletConnect, properly disconnect the session
+  if (state.providerType === 'walletconnect' && activeProvider?.disconnect) {
+    try { activeProvider.disconnect(); } catch { /* ignore */ }
+  }
+  activeProvider = null;
+  state = { connected: false, address: null, walletClient: null, providerType: null };
   notifyChange();
 }
 

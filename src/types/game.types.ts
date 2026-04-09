@@ -53,6 +53,14 @@ export interface GameState {
   flags: Record<string, boolean>;
   inventory: InventoryItem[];
   visited: string[];
+  /** Player position within current scene (percentage coords) */
+  playerPosition?: { pctX: number; pctY: number };
+  /** IDs of "once" triggers that have already fired (persisted across sessions) */
+  firedTriggers: string[];
+  /** Dialogue trees completed per NPC: npcId → completedTreeIds */
+  dialogueProgress: Record<string, string[]>;
+  /** Timestamp of last save */
+  savedAt?: number;
 }
 
 export interface InventoryItem {
@@ -68,5 +76,7 @@ export function createInitialState(sceneId: string): GameState {
     flags: {},
     inventory: [],
     visited: [sceneId],
+    firedTriggers: [],
+    dialogueProgress: {},
   };
 }

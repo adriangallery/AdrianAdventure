@@ -46,20 +46,73 @@ export const ERC20_ABI = [
   { inputs: [], name: 'decimals', outputs: [{ type: 'uint8' }], stateMutability: 'view', type: 'function' },
 ] as const;
 
-// ─── Diamond facet ABIs (scaffolded — fill in when we review) ─
+// ─── Diamond facet ABIs ─────────────────────────────────────
 
 /**
- * TODO: Add real facet ABIs when reviewing Diamond integration.
- * These will cover: ShopFacet.mint(), AchievementFacet, SaveFacet, etc.
+ * ShopFacet — purchaseItems for minting game items via AdrianLAB ERC1155.
+ * PaymentToken enum: 0 = ZERO, 1 = ADRIAN
+ * PurchaseRequest: { assetId, quantity, useFree }
  */
 export const DIAMOND_MINT_ABI = [
-  // Placeholder — replace with actual ShopFacet or MintFacet ABI
-  // { inputs: [...], name: 'mint', outputs: [...], stateMutability: 'payable', type: 'function' },
+  {
+    type: 'function',
+    name: 'purchaseItems',
+    inputs: [
+      {
+        name: 'requests',
+        type: 'tuple[]',
+        components: [
+          { name: 'assetId', type: 'uint256' },
+          { name: 'quantity', type: 'uint256' },
+          { name: 'useFree', type: 'bool' },
+        ],
+      },
+      { name: 'payWith', type: 'uint8' },
+    ],
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    name: 'getShopItemView',
+    inputs: [
+      { name: 'assetId', type: 'uint256' },
+      { name: 'user', type: 'address' },
+    ],
+    outputs: [
+      {
+        name: '',
+        type: 'tuple',
+        components: [
+          { name: 'assetId', type: 'uint256' },
+          { name: 'priceZero', type: 'uint256' },
+          { name: 'priceAdrian', type: 'uint256' },
+          { name: 'quantityAvailable', type: 'uint128' },
+          { name: 'sold', type: 'uint128' },
+          { name: 'startTime', type: 'uint48' },
+          { name: 'endTime', type: 'uint48' },
+          { name: 'active', type: 'bool' },
+          { name: 'maxPerWallet', type: 'uint32' },
+          { name: 'hasAllowlist', type: 'bool' },
+          { name: 'freePerWallet', type: 'uint32' },
+          { name: 'freeUsedByUser', type: 'uint256' },
+          { name: 'freeRemaining', type: 'uint256' },
+          { name: 'isAllowlisted', type: 'bool' },
+          { name: 'userPurchases', type: 'uint256' },
+          { name: 'effectiveBurnBps', type: 'uint16' },
+          { name: 'revenueRecipient', type: 'address' },
+        ],
+      },
+    ],
+    stateMutability: 'view',
+  },
 ] as const;
 
-export const DIAMOND_ACHIEVEMENT_ABI = [
-  // Placeholder — replace with actual AchievementFacet ABI
-] as const;
+/**
+ * Achievement minting also uses ShopFacet.purchaseItems with useFree: true.
+ * Same ABI — achievements are free-claim ERC1155 tokens configured in the shop.
+ */
+export const DIAMOND_ACHIEVEMENT_ABI = DIAMOND_MINT_ABI;
 
 // ─── NFT filter config ───────────────────────────────────────
 

@@ -97,5 +97,33 @@ export class PreloadScene extends Phaser.Scene {
     this.load.on('complete', () => { bg.destroy(); fill.destroy(); });
   }
 
-  create(): void { this.scene.start('GameScene'); }
+  create(): void {
+    // Load web3Visual sprites from scene JSON (requires scene data to be parsed first)
+    const sceneId = this.registry.get('currentSceneId') as string;
+    const sceneData = this.cache.json.get(`scene_${sceneId}`) as any;
+    if (sceneData?.web3Visuals?.length) {
+      const basePath = `assets/scenes/${sceneId}`;
+      let needsLoad = false;
+      for (const visual of sceneData.web3Visuals) {
+        // Load default sprite
+        if (!this.textures.exists(visual.defaultSprite)) {
+          this.load.image(visual.defaultSprite, `${basePath}/${visual.defaultSprite}.png${v}`);
+          needsLoad = true;
+        }
+        // Load variant sprites
+        for (const variant of visual.variants ?? []) {
+          if (!this.textures.exists(variant.sprite)) {
+            this.load.image(variant.sprite, `${basePath}/${variant.sprite}.png${v}`);
+            needsLoad = true;
+          }
+        }
+      }
+      if (needsLoad) {
+        this.load.once('complete', () => this.scene.start('GameScene'));
+        this.load.start();
+        return;
+      }
+    }
+    this.scene.start('GameScene');
+  }
 }

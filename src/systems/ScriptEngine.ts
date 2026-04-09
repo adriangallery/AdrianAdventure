@@ -2,6 +2,12 @@ import type { ScriptOp } from '@/types/scene.types';
 import type { GameState } from '@/types/game.types';
 import type { GatingRule } from '@/web3/gating';
 
+export interface MintResult {
+  status: 'success' | 'pending' | 'failed' | 'not-configured';
+  txHash?: string;
+  error?: string;
+}
+
 export interface ScriptContext {
   state: GameState;
   setState: (updater: (s: GameState) => GameState) => void;
@@ -14,13 +20,16 @@ export interface ScriptContext {
   // Web3 callbacks (optional — only available when wallet connected)
   isWalletConnected?: () => boolean;
   checkGating?: (rule: GatingRule) => Promise<boolean>;
-  mintItem?: (tokenId: number) => Promise<boolean>;
+  mintItem?: (tokenId: number) => Promise<MintResult>;
+  mintAchievement?: (achievementId: number) => Promise<MintResult>;
   // Dialogue callback
   startDialogue?: (npcId: string, treeId: string) => Promise<void>;
   // Cinematic callbacks
   showTitleCard?: (chapter: string, title: string, subtitle?: string) => Promise<void>;
   showNarrative?: (lines: string[]) => Promise<void>;
   showAchievement?: (text: string) => void;
+  // Transaction toast
+  showToast?: (status: 'pending' | 'success' | 'failed', message: string) => void;
 }
 
 export class ScriptEngine {
@@ -150,12 +159,37 @@ export class ScriptEngine {
           if (op.onFail) await this.runOps(op.onFail as ScriptOp[]);
           break;
         }
-        await this.ctx.say('Minting...');
-        const success = await this.ctx.mintItem(op.tokenId as number);
-        if (success && op.onSuccess) {
-          await this.runOps(op.onSuccess as ScriptOp[]);
-        } else if (!success && op.onFail) {
-          await this.runOps(op.onFail as ScriptOp[]);
+        this.ctx.showToast?.('pending', 'Minting... (confirm in wallet)');
+        const mintResult = await this.ctx.mintItem(op.tokenId as number);
+        if (mintResult.status === 'success') {
+          this.ctx.showToast?.('success', 'Minted successfully!');
+          if (op.onSuccess) await this.runOps(op.onSuccess as ScriptOp[]);
+        } else if (mintResult.status === 'not-configured') {
+          this.ctx.showToast?.('failed', 'Minting not available yet');
+          if (op.onFail) await this.runOps(op.onFail as ScriptOp[]);
+        } else {
+          this.ctx.showToast?.('failed', mintResult.error ?? 'Mint failed');
+          if (op.onFail) await this.runOps(op.onFail as ScriptOp[]);
+        }
+        break;
+      }
+
+      case 'mintAchievement': {
+        // { op: "mintAchievement", achievementId: 1, text: "Chapter 1 Complete", onSuccess: [...], onFail: [...] }
+        // Always show visual achievement first
+        if (op.text) this.ctx.showAchievement?.(op.text as string);
+        // Then attempt on-chain mint if wallet connected and configured
+        if (this.ctx.mintAchievement) {
+          const result = await this.ctx.mintAchievement(op.achievementId as number);
+          if (result.status === 'success') {
+            this.ctx.showToast?.('success', `Achievement minted on-chain!`);
+            if (op.onSuccess) await this.runOps(op.onSuccess as ScriptOp[]);
+          } else if (result.status === 'not-configured') {
+            // Silently skip — visual achievement still shown
+          } else if (result.status === 'failed') {
+            // Don't interrupt gameplay for a failed achievement mint
+            console.warn('Achievement mint failed:', result.error);
+          }
         }
         break;
       }
