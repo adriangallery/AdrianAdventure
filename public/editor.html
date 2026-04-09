@@ -956,7 +956,7 @@ function updateInfoPanel() {
       const ctrl = document.createElement('div');
       ctrl.id = 'npc-scale-ctrl';
       ctrl.style.cssText = 'display:flex;align-items:center;gap:6px;padding:2px 12px;background:#16213e;font-size:11px;';
-      ctrl.innerHTML = `<label style="color:#888">NPC Scale:</label><input type="range" min="0.01" max="5" step="0.01" value="${npc.scale ?? 1}" style="width:120px" id="npc-scale-slider"><span id="npc-scale-val" style="color:#0f0;min-width:40px">${(npc.scale ?? 1).toFixed(2)}x</span>`;
+      ctrl.innerHTML = `<label style="color:#888">NPC Scale:</label><input type="range" min="0.01" max="10" step="0.01" value="${npc.scale ?? 1}" style="width:120px" id="npc-scale-slider"><span id="npc-scale-val" style="color:#0f0;min-width:40px">${(npc.scale ?? 1).toFixed(2)}x</span>`;
       document.getElementById('toolbar').after(ctrl);
       document.getElementById('npc-scale-slider').addEventListener('input', (e) => {
         const val = parseFloat(e.target.value);
