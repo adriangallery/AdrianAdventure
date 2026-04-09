@@ -674,6 +674,36 @@
             }
           ]
         }
+      },
+      {
+        "id": "hs_roof_door",
+        "name": "Roof Door",
+        "bounds": {
+          "x": 88,
+          "y": 60,
+          "w": 10,
+          "h": 30
+        },
+        "scripts": {
+          "LOOK": [{ "op": "say", "text": "The door back down to the trading floor. A warm glow leaks from underneath." }],
+          "USE": [
+            { "op": "sayBrief", "text": "I head back downstairs.", "duration": 800 },
+            { "op": "fadeToScene", "sceneId": "upstairs", "spawn": { "x": 29.6, "y": 97 } }
+          ],
+          "OPEN": [
+            { "op": "sayBrief", "text": "Back to the trading floor.", "duration": 800 },
+            { "op": "fadeToScene", "sceneId": "upstairs", "spawn": { "x": 29.6, "y": 97 } }
+          ],
+          "TALK": [{ "op": "say", "text": "The door creaks in the wind. It misses being indoors." }],
+          "PICK": [{ "op": "say", "text": "It's a door, not a doorstop." }],
+          "CLOSE": [{ "op": "say", "text": "It's already closed. The wind up here would slam it shut anyway." }],
+          "PUSH": [
+            { "op": "sayBrief", "text": "I push through the door and head back down.", "duration": 800 },
+            { "op": "fadeToScene", "sceneId": "upstairs", "spawn": { "x": 29.6, "y": 97 } }
+          ],
+          "PULL": [{ "op": "say", "text": "I pull the door. It opens towards me, letting warm air rush out." }],
+          "GIVE": [{ "op": "say", "text": "Doors don't accept gifts. They accept keys. And sometimes kicks." }]
+        }
       }
     ],
     "triggers": [
@@ -681,10 +711,10 @@
         "id": "tr_to_upstairs",
         "once": false,
         "bounds": {
-          "x": 57.9,
-          "y": 79.7,
-          "w": 12,
-          "h": 14
+          "x": 85,
+          "y": 87,
+          "w": 15,
+          "h": 13
         },
         "onEnter": [
           {
