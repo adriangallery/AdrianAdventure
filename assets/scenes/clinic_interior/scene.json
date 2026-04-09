@@ -24,8 +24,8 @@
   },
   "player": {
     "spawn": {
-      "x": 89.3,
-      "y": 100
+      "x": 89.5,
+      "y": 94.2
     },
     "speed": 140,
     "sprite": {
@@ -613,6 +613,48 @@
                 }
               ]
             }
+          ],
+          "USE": [
+            {
+              "op": "say",
+              "text": "I hold the photo up to the light. The scratched-out face is too damaged to identify. Whoever did this really committed to the delete."
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "'Who are you?' I ask the scratched-out face. The photo says nothing. It's been holding this secret since Block 0."
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "say",
+              "text": "I flip the photo over. On the back: 'Grand Opening — The future of recovery starts here.' Someone crossed out 'future' and wrote 'end.'"
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "I put the photo face-down. Some faces are better left scratched out. Especially in crypto."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I push the photo frame straight. It tilts back immediately. Even the decor here refuses to stay aligned."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "I pull the frame off the wall. Behind it: a small nail hole and a faint rectangle of unfaded paint. This photo has been here a long time."
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "The photo has already given me more questions than answers. The worst kind of airdrop."
+            }
           ]
         }
       },
@@ -716,6 +758,42 @@
               "op": "say",
               "text": "I'm not going to talk to a coat. I have standards. Low ones, but still."
             }
+          ],
+          "PICK": [
+            {
+              "op": "say",
+              "text": "I consider stealing the doctor's coat. Then I remember the Hippocratic Oath probably covers theft of medical apparel."
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "say",
+              "text": "I open the coat pockets one by one. A pen, a stethoscope, and a sticky note that says 'Remember: we're all Patient Zero.'"
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "I button up the coat. It looks better closed. Like a short position before earnings."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I push the coat aside on its hook. It swings back. The coat has better rebalancing than my portfolio."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "I pull the coat toward me. It smells like antiseptic and regret. The official scent of crypto rehabilitation."
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "I'm not giving anything to a coat. It already has more pockets than my wallet has tokens."
+            }
           ]
         }
       },
@@ -729,15 +807,60 @@
           "h": 7
         },
         "scripts": {
-          "LOOK": [{ "op": "say", "text": "Flickering fluorescent tubes. One of them buzzes like a failing validator node. The harsh light makes everything look sickly, which is on-brand for a rehab clinic." }],
-          "USE": [{ "op": "say", "text": "I flick the switch. Nothing changes. These lights have one mode: soul-crushing institutional glow." }],
-          "TALK": [{ "op": "say", "text": "I address the buzzing light: 'You sound like my GPU mining rig in 2021.' It flickers in solidarity." }],
-          "PICK": [{ "op": "say", "text": "I'm not tall enough to reach them. And even if I were, stealing lights from a rehab clinic is a new low. Even for a degen." }],
-          "OPEN": [{ "op": "say", "text": "The light fixture is sealed shut. Tamper-proof, like a properly audited smart contract." }],
-          "CLOSE": [{ "op": "say", "text": "The lights don't have an off switch I can reach. Always on. Like the blockchain." }],
-          "PUSH": [{ "op": "say", "text": "I push up toward the lights. My hands wave uselessly in the air. This is how I look trying to time the market." }],
-          "PULL": [{ "op": "say", "text": "I jump and try to pull the fixture. I miss by a mile. My vertical is as weak as my exit strategy." }],
-          "GIVE": [{ "op": "say", "text": "The lights don't need anything from me. They're already burning through electricity like an Ethereum PoW miner." }]
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "Flickering fluorescent tubes. One of them buzzes like a failing validator node. The harsh light makes everything look sickly, which is on-brand for a rehab clinic."
+            }
+          ],
+          "USE": [
+            {
+              "op": "say",
+              "text": "I flick the switch. Nothing changes. These lights have one mode: soul-crushing institutional glow."
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "I address the buzzing light: 'You sound like my GPU mining rig in 2021.' It flickers in solidarity."
+            }
+          ],
+          "PICK": [
+            {
+              "op": "say",
+              "text": "I'm not tall enough to reach them. And even if I were, stealing lights from a rehab clinic is a new low. Even for a degen."
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "say",
+              "text": "The light fixture is sealed shut. Tamper-proof, like a properly audited smart contract."
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "The lights don't have an off switch I can reach. Always on. Like the blockchain."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I push up toward the lights. My hands wave uselessly in the air. This is how I look trying to time the market."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "I jump and try to pull the fixture. I miss by a mile. My vertical is as weak as my exit strategy."
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "The lights don't need anything from me. They're already burning through electricity like an Ethereum PoW miner."
+            }
+          ]
         }
       },
       {
@@ -750,15 +873,60 @@
           "h": 14
         },
         "scripts": {
-          "LOOK": [{ "op": "say", "text": "A poster with a glowing red lightbulb. Below it reads: 'BRIGHT IDEAS START WITH UNPLUGGING.' The irony of a clinic for screen addicts using a lightbulb metaphor is not lost on me." }],
-          "USE": [{ "op": "say", "text": "I tap the poster. The red glow is just a trick of the lighting. Or maybe the clinic is running on Optimism. The L2, not the emotion." }],
-          "TALK": [{ "op": "say", "text": "I read the fine print aloud: 'Side effects of bright ideas may include seed phrase generation, whitepaper writing, and spontaneous DAO formation.'" }],
-          "PICK": [{ "op": "say", "text": "I try to peel it off. It's laminated AND glued. The clinic protects its motivational content like whales protect their wallets." }],
-          "OPEN": [{ "op": "say", "text": "There's nothing behind it. Just a wall. Disappointing, like opening a mystery box NFT and getting a JPEG of a rock." }],
-          "CLOSE": [{ "op": "say", "text": "I smooth the poster back flat. The red lightbulb glows ominously. Like a liquidation warning." }],
-          "PUSH": [{ "op": "say", "text": "I push the poster. The wall behind it is solid concrete. More reliable than any stablecoin." }],
-          "PULL": [{ "op": "say", "text": "I peel back a corner. Someone wrote in pencil behind it: 'The real rug was the friends we made along the way.'" }],
-          "GIVE": [{ "op": "say", "text": "I have nothing to offer a poster. My portfolio is flatter than this wall." }]
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "A poster with a glowing red lightbulb. Below it reads: 'BRIGHT IDEAS START WITH UNPLUGGING.' The irony of a clinic for screen addicts using a lightbulb metaphor is not lost on me."
+            }
+          ],
+          "USE": [
+            {
+              "op": "say",
+              "text": "I tap the poster. The red glow is just a trick of the lighting. Or maybe the clinic is running on Optimism. The L2, not the emotion."
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "I read the fine print aloud: 'Side effects of bright ideas may include seed phrase generation, whitepaper writing, and spontaneous DAO formation.'"
+            }
+          ],
+          "PICK": [
+            {
+              "op": "say",
+              "text": "I try to peel it off. It's laminated AND glued. The clinic protects its motivational content like whales protect their wallets."
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "say",
+              "text": "There's nothing behind it. Just a wall. Disappointing, like opening a mystery box NFT and getting a JPEG of a rock."
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "I smooth the poster back flat. The red lightbulb glows ominously. Like a liquidation warning."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I push the poster. The wall behind it is solid concrete. More reliable than any stablecoin."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "I peel back a corner. Someone wrote in pencil behind it: 'The real rug was the friends we made along the way.'"
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "I have nothing to offer a poster. My portfolio is flatter than this wall."
+            }
+          ]
         }
       },
       {
@@ -771,15 +939,60 @@
           "h": 15
         },
         "scripts": {
-          "LOOK": [{ "op": "say", "text": "An old CRT monitor showing a green line chart trending upward. The eternal hopium machine. Even the clinic's screensaver is bullish." }],
-          "USE": [{ "op": "say", "text": "I jiggle the mouse. The screen shows a patient management system. All fields say 'ENCRYPTED'. Even their software has trust issues." }],
-          "TALK": [{ "op": "say", "text": "'Hey computer, show me the patient records.' It responds: 'INSUFFICIENT PERMISSIONS. Try being a doctor or at least a whale.' Rude." }],
-          "PICK": [{ "op": "say", "text": "I'm not stealing a whole computer. I'm a crypto detective, not a hardware wallet thief." }],
-          "OPEN": [{ "op": "say", "text": "The computer case is screwed shut. Last person who opened it probably voided the warranty AND their position." }],
-          "CLOSE": [{ "op": "say", "text": "I close the browser tab. It reopens immediately. Classic popup behavior. The computer is basically a DeFi protocol." }],
-          "PUSH": [{ "op": "say", "text": "I push the monitor. The chart wobbles but the green line stays up. Bullish even under physical duress." }],
-          "PULL": [{ "op": "say", "text": "I pull the keyboard closer. The spacebar is worn smooth. Someone has been hitting 'CONFIRM TRANSACTION' a LOT." }],
-          "GIVE": [{ "op": "say", "text": "The computer runs on electricity, not donations. Unlike most crypto projects." }]
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "An old CRT monitor showing a green line chart trending upward. The eternal hopium machine. Even the clinic's screensaver is bullish."
+            }
+          ],
+          "USE": [
+            {
+              "op": "say",
+              "text": "I jiggle the mouse. The screen shows a patient management system. All fields say 'ENCRYPTED'. Even their software has trust issues."
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "'Hey computer, show me the patient records.' It responds: 'INSUFFICIENT PERMISSIONS. Try being a doctor or at least a whale.' Rude."
+            }
+          ],
+          "PICK": [
+            {
+              "op": "say",
+              "text": "I'm not stealing a whole computer. I'm a crypto detective, not a hardware wallet thief."
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "say",
+              "text": "The computer case is screwed shut. Last person who opened it probably voided the warranty AND their position."
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "I close the browser tab. It reopens immediately. Classic popup behavior. The computer is basically a DeFi protocol."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I push the monitor. The chart wobbles but the green line stays up. Bullish even under physical duress."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "I pull the keyboard closer. The spacebar is worn smooth. Someone has been hitting 'CONFIRM TRANSACTION' a LOT."
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "The computer runs on electricity, not donations. Unlike most crypto projects."
+            }
+          ]
         }
       }
     ],
@@ -798,8 +1011,8 @@
             "op": "gotoScene",
             "sceneId": "mountain",
             "spawn": {
-              "x": 15,
-              "y": 88
+              "x": 56.8,
+              "y": 90.8
             }
           }
         ]
@@ -811,8 +1024,8 @@
       "id": "npc_dr_satoshi",
       "name": "Dr. Satoshi",
       "position": {
-        "x": 62,
-        "y": 65
+        "x": 79.6,
+        "y": 66.7
       },
       "color": "0x00cc88",
       "dialogueTreeId": "dr_satoshi_intro"

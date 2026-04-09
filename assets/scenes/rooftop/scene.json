@@ -24,8 +24,8 @@
   },
   "player": {
     "spawn": {
-      "x": 50,
-      "y": 85
+      "x": 50.3,
+      "y": 94.2
     },
     "speed": 140,
     "sprite": {
@@ -370,9 +370,9 @@
         "id": "hs_basement_light",
         "name": "Blinking Light Below",
         "bounds": {
-          "x": 83.7,
-          "y": 65.3,
-          "w": 8,
+          "x": 77.3,
+          "y": 79.5,
+          "w": 3.9,
           "h": 8
         },
         "scripts": {
@@ -464,49 +464,215 @@
       {
         "id": "hs_city_skyline",
         "name": "City Skyline",
-        "bounds": { "x": 0, "y": 50, "w": 18, "h": 25 },
+        "bounds": {
+          "x": 0,
+          "y": 50,
+          "w": 18,
+          "h": 25
+        },
         "scripts": {
-          "LOOK": [{ "op": "say", "text": "The city glimmers below. Thousands of lights, each one a potential node operator, a degen, or just someone leaving the bathroom light on. The crypto never sleeps." }],
-          "USE": [{ "op": "say", "text": "I use my phone to zoom in on the skyline. A building has a neon sign: 'EXCHANGES OPEN 24/7.' That's not a feature, that's a warning." }],
-          "TALK": [{ "op": "say", "text": "'Hey city! How's the mempool tonight?' A distant car horn honks. Close enough to a response." }],
-          "PICK": [{ "op": "say", "text": "I can't pick up a city. Though some DAOs have tried to buy one." }],
-          "OPEN": [{ "op": "say", "text": "The city is always open. Permissionless, 24/7, like every good blockchain." }],
-          "CLOSE": [{ "op": "say", "text": "Cities don't close. Not even on holidays. Validators don't take vacation." }],
-          "PUSH": [{ "op": "say", "text": "I push the air toward the city. A breeze carries my gesture into the void." }],
-          "PULL": [{ "op": "say", "text": "I beckon the city closer. It stays exactly where it is. Unlike token prices." }],
-          "GIVE": [{ "op": "say", "text": "The city takes enough already. Rent, taxes, gas fees... the original rug pull." }]
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "The city glimmers below. Thousands of lights, each one a potential node operator, a degen, or just someone leaving the bathroom light on. The crypto never sleeps."
+            }
+          ],
+          "USE": [
+            {
+              "op": "say",
+              "text": "I use my phone to zoom in on the skyline. A building has a neon sign: 'EXCHANGES OPEN 24/7.' That's not a feature, that's a warning."
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "'Hey city! How's the mempool tonight?' A distant car horn honks. Close enough to a response."
+            }
+          ],
+          "PICK": [
+            {
+              "op": "say",
+              "text": "I can't pick up a city. Though some DAOs have tried to buy one."
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "say",
+              "text": "The city is always open. Permissionless, 24/7, like every good blockchain."
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "Cities don't close. Not even on holidays. Validators don't take vacation."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I push the air toward the city. A breeze carries my gesture into the void."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "I beckon the city closer. It stays exactly where it is. Unlike token prices."
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "The city takes enough already. Rent, taxes, gas fees... the original rug pull."
+            }
+          ]
         }
       },
       {
         "id": "hs_roof_access_panel",
         "name": "Roof Access Panel",
-        "bounds": { "x": 39, "y": 75, "w": 7, "h": 8 },
+        "bounds": {
+          "x": 58.4,
+          "y": 82.3,
+          "w": 14,
+          "h": 11.8
+        },
         "scripts": {
-          "LOOK": [{ "op": "say", "text": "A metal access panel flush with the roof surface. It has a keycard slot. A faint red LED blinks: 'LOCKED.' The basement must connect through here somehow." }],
-          "USE": [{ "op": "say", "text": "I try the panel. Locked. The keycard slot glows red. I need proper credentials. Story of my life on every whitelist." }],
-          "TALK": [{ "op": "say", "text": "I knock on the panel. A hollow echo returns from below. Something is definitely down there." }],
-          "PICK": [{ "op": "say", "text": "Bolted to the roof. I'd need a wrench, a crowbar, and a complete disregard for structural integrity." }],
-          "OPEN": [{ "op": "say", "text": "The keycard slot blinks red. ACCESS DENIED. I need Adrian's keycard to open this." }],
-          "CLOSE": [{ "op": "say", "text": "Already closed and locked. Fort Knox wishes it had this security." }],
-          "PUSH": [{ "op": "say", "text": "I push the panel. It doesn't budge. Solid metal. Whatever's below, Adrian didn't want casual visitors." }],
-          "PULL": [{ "op": "say", "text": "I pull the panel edge. My fingers slip. Smooth metal, no grip. Like trying to catch a falling knife." }],
-          "GIVE": [{ "op": "say", "text": "The panel's keycard slot waits patiently. It only accepts one thing: the right credentials." }]
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "A metal access panel flush with the roof surface. It has a keycard slot. A faint red LED blinks: 'LOCKED.' The basement must connect through here somehow."
+            }
+          ],
+          "USE": [
+            {
+              "op": "ifFlag",
+              "flag": "has_keycard",
+              "then": [
+                { "op": "sayBrief", "text": "The keycard beeps. Green light. The hatch clicks open.", "duration": 1500 },
+                { "op": "setFlag", "flag": "basement_unlocked", "value": true },
+                { "op": "fadeToScene", "sceneId": "basement", "spawn": { "x": 50, "y": 90 } }
+              ],
+              "else": [
+                { "op": "say", "text": "A metal access hatch with a keycard reader. The LED blinks red. I need proper authorization to get through." }
+              ]
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "I knock on the panel. A hollow echo returns from below. Something is definitely down there."
+            }
+          ],
+          "PICK": [
+            {
+              "op": "say",
+              "text": "Bolted to the roof. I'd need a wrench, a crowbar, and a complete disregard for structural integrity."
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "ifFlag",
+              "flag": "has_keycard",
+              "then": [
+                { "op": "sayBrief", "text": "The keycard beeps. Green light. The hatch clicks open.", "duration": 1500 },
+                { "op": "setFlag", "flag": "basement_unlocked", "value": true },
+                { "op": "fadeToScene", "sceneId": "basement", "spawn": { "x": 50, "y": 90 } }
+              ],
+              "else": [
+                { "op": "say", "text": "The keycard slot blinks red. ACCESS DENIED. I need Adrian's keycard to open this." }
+              ]
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "Already closed and locked. Fort Knox wishes it had this security."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I push the panel. It doesn't budge. Solid metal. Whatever's below, Adrian didn't want casual visitors."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "I pull the panel edge. My fingers slip. Smooth metal, no grip. Like trying to catch a falling knife."
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "The panel's keycard slot waits patiently. It only accepts one thing: the right credentials."
+            }
+          ]
         }
       },
       {
         "id": "hs_parapet",
         "name": "Roof Railing",
-        "bounds": { "x": 15, "y": 65, "w": 85, "h": 6 },
+        "bounds": {
+          "x": 25.6,
+          "y": 67.1,
+          "w": 51.5,
+          "h": 6
+        },
         "scripts": {
-          "LOOK": [{ "op": "say", "text": "A concrete parapet runs along the roof edge. Low enough to lean on, high enough to prevent accidental portfolio reviews from the wrong angle." }],
-          "USE": [{ "op": "say", "text": "I lean on the railing and survey the city below. Wind in my hair. Very dramatic. Very protagonist energy." }],
-          "TALK": [{ "op": "say", "text": "'What have you seen from up here?' The concrete stays silent. It's seen bull runs and bear markets from the best seat in the house." }],
-          "PICK": [{ "op": "say", "text": "I chip off a piece of concrete. It crumbles. Like my resolve during a flash crash." }],
-          "OPEN": [{ "op": "say", "text": "Parapets don't open. They're the last line of defense between me and a very short flight." }],
-          "CLOSE": [{ "op": "say", "text": "The parapet is always on duty. 24/7 fall prevention. Better uptime than most L2s." }],
-          "PUSH": [{ "op": "say", "text": "I push against the railing. Solid. Whoever built this understood the importance of not falling." }],
-          "PULL": [{ "op": "say", "text": "I pull the railing toward me. A tiny crack appears. I stop immediately. Safety first, YOLO second." }],
-          "GIVE": [{ "op": "say", "text": "The parapet doesn't want anything. It just wants me to stay on this side of it. Fair enough." }]
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "A concrete parapet runs along the roof edge. Low enough to lean on, high enough to prevent accidental portfolio reviews from the wrong angle."
+            }
+          ],
+          "USE": [
+            {
+              "op": "say",
+              "text": "I lean on the railing and survey the city below. Wind in my hair. Very dramatic. Very protagonist energy."
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "'What have you seen from up here?' The concrete stays silent. It's seen bull runs and bear markets from the best seat in the house."
+            }
+          ],
+          "PICK": [
+            {
+              "op": "say",
+              "text": "I chip off a piece of concrete. It crumbles. Like my resolve during a flash crash."
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "say",
+              "text": "Parapets don't open. They're the last line of defense between me and a very short flight."
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "The parapet is always on duty. 24/7 fall prevention. Better uptime than most L2s."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I push against the railing. Solid. Whoever built this understood the importance of not falling."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "I pull the railing toward me. A tiny crack appears. I stop immediately. Safety first, YOLO second."
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "The parapet doesn't want anything. It just wants me to stay on this side of it. Fair enough."
+            }
+          ]
         }
       }
     ],
@@ -525,8 +691,8 @@
             "op": "gotoScene",
             "sceneId": "upstairs",
             "spawn": {
-              "x": 85,
-              "y": 80
+              "x": 29.6,
+              "y": 97
             }
           }
         ]
@@ -538,7 +704,17 @@
   "items": {
     "sceneItems": []
   },
-  "combos": [],
+  "combos": [
+    {
+      "items": ["keycard", "hs_roof_access_panel"],
+      "result": null,
+      "script": [
+        { "op": "sayBrief", "text": "The keycard beeps. Green light. The hatch clicks open.", "duration": 1500 },
+        { "op": "setFlag", "flag": "basement_unlocked", "value": true },
+        { "op": "fadeToScene", "sceneId": "basement", "spawn": { "x": 50, "y": 90 } }
+      ]
+    }
+  ],
   "audio": {
     "music": "retro-adventure",
     "variation": {

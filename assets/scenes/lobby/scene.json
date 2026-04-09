@@ -80,8 +80,8 @@
               "op": "fadeToScene",
               "sceneId": "upstairs",
               "spawn": {
-                "x": 30,
-                "y": 76
+                "x": 8.8,
+                "y": 97.9
               },
               "duration": 600
             }
@@ -222,8 +222,8 @@
               "op": "fadeToScene",
               "sceneId": "outside",
               "spawn": {
-                "x": 50,
-                "y": 80
+                "x": 41.3,
+                "y": 90.6
               },
               "duration": 500
             }
@@ -238,8 +238,8 @@
               "op": "fadeToScene",
               "sceneId": "outside",
               "spawn": {
-                "x": 50,
-                "y": 80
+                "x": 41.3,
+                "y": 90.6
               },
               "duration": 500
             }
@@ -272,8 +272,8 @@
               "op": "fadeToScene",
               "sceneId": "outside",
               "spawn": {
-                "x": 50,
-                "y": 80
+                "x": 41.3,
+                "y": 90.6
               },
               "duration": 500
             }
@@ -288,8 +288,8 @@
               "op": "fadeToScene",
               "sceneId": "outside",
               "spawn": {
-                "x": 50,
-                "y": 80
+                "x": 41.3,
+                "y": 90.6
               },
               "duration": 500
             }
@@ -548,6 +548,11 @@
             {
               "op": "say",
               "text": "'Show me the money!' The monitors hum louder. A chart goes green for a second. Then red. Classic."
+            },
+            {
+              "op": "setFlag",
+              "flag": "debug_look_1",
+              "value": true
             }
           ],
           "PICK": [
@@ -762,8 +767,8 @@
             "op": "gotoScene",
             "sceneId": "outside",
             "spawn": {
-              "x": 26,
-              "y": 87.9
+              "x": 41.3,
+              "y": 88.9
             }
           }
         ]

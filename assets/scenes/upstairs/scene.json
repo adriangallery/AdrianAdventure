@@ -24,8 +24,8 @@
   },
   "player": {
     "spawn": {
-      "x": 50,
-      "y": 82
+      "x": 11.9,
+      "y": 100
     },
     "speed": 140,
     "sprite": {
@@ -394,8 +394,8 @@
               "op": "fadeToScene",
               "sceneId": "rooftop",
               "spawn": {
-                "x": 80,
-                "y": 85
+                "x": 80.3,
+                "y": 90.9
               },
               "duration": 500
             }
@@ -410,8 +410,8 @@
               "op": "fadeToScene",
               "sceneId": "rooftop",
               "spawn": {
-                "x": 80,
-                "y": 85
+                "x": 80.3,
+                "y": 90.9
               },
               "duration": 500
             }
@@ -450,8 +450,8 @@
               "op": "fadeToScene",
               "sceneId": "rooftop",
               "spawn": {
-                "x": 80,
-                "y": 85
+                "x": 80.3,
+                "y": 90.9
               },
               "duration": 500
             }
@@ -465,43 +465,229 @@
         }
       },
       {
-        "id": "hs_paper_tray",
-        "name": "Paper Tray",
+        "id": "hs_desk_lamp",
+        "name": "Desk Lamp",
         "bounds": {
-          "x": 36,
-          "y": 55,
-          "w": 5,
-          "h": 10
+          "x": 33,
+          "y": 20,
+          "w": 8,
+          "h": 25
         },
         "scripts": {
           "LOOK": [
             {
-              "op": "ifFlag",
-              "flag": "found_receipt",
-              "then": [
-                {
-                  "op": "say",
-                  "text": "The paper tray. Empty now. The receipt was the only interesting thing in it."
-                }
-              ],
-              "else": [
-                {
-                  "op": "say",
-                  "text": "A paper tray overflowing with old trading confirmations. One receipt sticks out from the pile."
-                }
-              ]
+              "op": "say",
+              "text": "An articulated desk lamp. The only source of light in this cave of a trading floor. It's seen some late-night liquidations."
             }
           ],
           "USE": [
             {
               "op": "say",
-              "text": "I shuffle through the papers. Mostly margin call notifications. Yikes."
+              "text": "I angle the lamp toward the desk. The charts look even more terrifying in direct light."
             }
           ],
           "TALK": [
             {
               "op": "say",
-              "text": "I whisper 'buy the dip' to the paper tray. The market does not respond."
+              "text": "'Shine a light on these losses, will you?' The lamp obliges. I immediately regret asking."
+            }
+          ],
+          "PICK": [
+            {
+              "op": "say",
+              "text": "I grab the lamp. It's plugged in and warm. Like holding a tiny sun that judges my financial decisions."
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "say",
+              "text": "I open the lampshade. A dead moth falls out. It died doing what it loved: chasing the light."
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "I fold the lamp down. Darkness returns. The green glow of monitors is somehow more ominous now."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I push the lamp arm. It springs back. Resilient, like a true HODLer."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "I pull the lamp closer. My shadow looms over the trading screens like a bearish engulfing pattern."
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "The lamp doesn't want gifts. It just wants someone to change its bulb once in a while."
+            }
+          ]
+        }
+      },
+      {
+        "id": "hs_pizza_box",
+        "name": "Pizza Box",
+        "bounds": {
+          "x": 34.8,
+          "y": 87.9,
+          "w": 8,
+          "h": 8
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "An open pizza box on the floor. Two slices remain, petrified. The receipt says '10,000 BTC'. Just kidding. But someone definitely ate here for days."
+            }
+          ],
+          "USE": [
+            {
+              "op": "say",
+              "text": "I consider eating the ancient pizza. My survival instincts kick in just in time. This pizza predates the last halving."
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "'How long have you been here?' The pizza doesn't answer. It's transcended the concept of freshness."
+            }
+          ],
+          "PICK": [
+            {
+              "op": "say",
+              "text": "I pick up a petrified slice. It could be used as a weapon. Or a coaster. I put it back."
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "say",
+              "text": "Already open. The pizza box has been in this state longer than most DeFi protocols."
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "I close the box. A small mercy for anyone else who enters this room."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I push the box under the desk. Out of sight, out of mind. Like unrealized losses."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "I pull the box toward me. The smell hits. That's not pizza anymore. That's a biohazard."
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "Nobody wants week-old pizza. Not even the rats. And rats eat literally anything."
+            }
+          ]
+        }
+      },
+      {
+        "id": "hs_energy_drink",
+        "name": "Energy Drink",
+        "bounds": {
+          "x": 60.8,
+          "y": 58.9,
+          "w": 3,
+          "h": 7
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "A half-empty energy drink can. The label says 'BULL RUN: 500mg Caffeine.' The fuel of every 3 AM trading session."
+            }
+          ],
+          "USE": [
+            {
+              "op": "say",
+              "text": "I take a sip. It's flat and warm. Like the market after a hype cycle. My heart rate increases anyway."
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "'Give me energy!' The can is silent. It already gave everything it had. Respect."
+            }
+          ],
+          "PICK": [
+            {
+              "op": "say",
+              "text": "I pick up the can. It's surprisingly light. Almost empty. The degen drank deep."
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "say",
+              "text": "Already open. The tab was pulled with the same urgency as a margin call notification."
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "You can't un-open a can. Like you can't un-send a transaction. Irreversible."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I push the can. It rolls across the floor leaving a sticky trail. Like slippage on a DEX."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "I pull the can toward me. The last drops of BULL RUN slosh around sadly."
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "Nobody wants a half-empty energy drink. It's the NFT of beverages — unique but valueless."
+            }
+          ]
+        }
+      },
+      {
+        "id": "hs_paper_tray",
+        "name": "Paper Tray",
+        "bounds": {
+          "x": 44,
+          "y": 55,
+          "w": 6,
+          "h": 6
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "A paper tray on the desk. There's a crumpled receipt sitting on top, half-buried under printouts of failed transactions."
+            }
+          ],
+          "USE": [
+            {
+              "op": "say",
+              "text": "I shuffle through the papers. Mostly gas fee receipts and 'Transaction Failed' confirmations."
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "The paper tray rustles in the draft. Even the paperwork is trying to escape this place."
             }
           ],
           "PICK": [
@@ -511,13 +697,14 @@
               "then": [
                 {
                   "op": "say",
-                  "text": "Just boring trade confirmations left. Nothing as historically painful as that receipt."
+                  "text": "I already grabbed the receipt. The tray is just sad printouts now."
                 }
               ],
               "else": [
                 {
-                  "op": "say",
-                  "text": "I grab the receipt that caught my eye. '1 BTC @ $3.50 — Thank you for your purchase!' Oh. Oh no. Someone didn't hold."
+                  "op": "setFlag",
+                  "flag": "found_receipt",
+                  "value": true
                 },
                 {
                   "op": "addItem",
@@ -525,9 +712,8 @@
                   "name": "Receipt"
                 },
                 {
-                  "op": "setFlag",
-                  "flag": "found_receipt",
-                  "value": true
+                  "op": "say",
+                  "text": "I grab the receipt. It's a printout of a massive transaction — coordinates to a clinic in the mountains. Someone was tracking Patient Zero."
                 }
               ]
             }
@@ -535,81 +721,33 @@
           "OPEN": [
             {
               "op": "say",
-              "text": "It's an open tray. The papers are right there, mocking anyone who reads them."
+              "text": "It's an open tray. Nothing to open. Like my positions — always exposed."
             }
           ],
           "CLOSE": [
             {
               "op": "say",
-              "text": "I try to close the tray. It doesn't close. Like my margin positions."
+              "text": "Paper trays don't close. They just accumulate regret in paper form."
             }
           ],
           "PUSH": [
             {
               "op": "say",
-              "text": "I push the tray. Papers slide off the edge. Someone's P&L statement lands face-up. I look away."
+              "text": "I push the tray aside. Papers scatter like panicked traders during a flash crash."
             }
           ],
           "PULL": [
             {
               "op": "say",
-              "text": "I pull the tray towards me. More paper than I expected. Trees died for these losses."
+              "text": "I pull the tray closer. The papers whisper tales of failed swaps and missed airdrops."
             }
           ],
           "GIVE": [
             {
               "op": "say",
-              "text": "Nobody wants a pile of losing trade confirmations."
+              "text": "The paper tray has enough bad news. It doesn't need more from me."
             }
           ]
-        }
-      },
-      {
-        "id": "hs_desk_lamp",
-        "name": "Desk Lamp",
-        "bounds": { "x": 33, "y": 20, "w": 8, "h": 25 },
-        "scripts": {
-          "LOOK": [{ "op": "say", "text": "An articulated desk lamp. The only source of light in this cave of a trading floor. It's seen some late-night liquidations." }],
-          "USE": [{ "op": "say", "text": "I angle the lamp toward the desk. The charts look even more terrifying in direct light." }],
-          "TALK": [{ "op": "say", "text": "'Shine a light on these losses, will you?' The lamp obliges. I immediately regret asking." }],
-          "PICK": [{ "op": "say", "text": "I grab the lamp. It's plugged in and warm. Like holding a tiny sun that judges my financial decisions." }],
-          "OPEN": [{ "op": "say", "text": "I open the lampshade. A dead moth falls out. It died doing what it loved: chasing the light." }],
-          "CLOSE": [{ "op": "say", "text": "I fold the lamp down. Darkness returns. The green glow of monitors is somehow more ominous now." }],
-          "PUSH": [{ "op": "say", "text": "I push the lamp arm. It springs back. Resilient, like a true HODLer." }],
-          "PULL": [{ "op": "say", "text": "I pull the lamp closer. My shadow looms over the trading screens like a bearish engulfing pattern." }],
-          "GIVE": [{ "op": "say", "text": "The lamp doesn't want gifts. It just wants someone to change its bulb once in a while." }]
-        }
-      },
-      {
-        "id": "hs_pizza_box",
-        "name": "Pizza Box",
-        "bounds": { "x": 25, "y": 65, "w": 8, "h": 8 },
-        "scripts": {
-          "LOOK": [{ "op": "say", "text": "An open pizza box on the floor. Two slices remain, petrified. The receipt says '10,000 BTC'. Just kidding. But someone definitely ate here for days." }],
-          "USE": [{ "op": "say", "text": "I consider eating the ancient pizza. My survival instincts kick in just in time. This pizza predates the last halving." }],
-          "TALK": [{ "op": "say", "text": "'How long have you been here?' The pizza doesn't answer. It's transcended the concept of freshness." }],
-          "PICK": [{ "op": "say", "text": "I pick up a petrified slice. It could be used as a weapon. Or a coaster. I put it back." }],
-          "OPEN": [{ "op": "say", "text": "Already open. The pizza box has been in this state longer than most DeFi protocols." }],
-          "CLOSE": [{ "op": "say", "text": "I close the box. A small mercy for anyone else who enters this room." }],
-          "PUSH": [{ "op": "say", "text": "I push the box under the desk. Out of sight, out of mind. Like unrealized losses." }],
-          "PULL": [{ "op": "say", "text": "I pull the box toward me. The smell hits. That's not pizza anymore. That's a biohazard." }],
-          "GIVE": [{ "op": "say", "text": "Nobody wants week-old pizza. Not even the rats. And rats eat literally anything." }]
-        }
-      },
-      {
-        "id": "hs_energy_drink",
-        "name": "Energy Drink",
-        "bounds": { "x": 42, "y": 62, "w": 3, "h": 7 },
-        "scripts": {
-          "LOOK": [{ "op": "say", "text": "A half-empty energy drink can. The label says 'BULL RUN: 500mg Caffeine.' The fuel of every 3 AM trading session." }],
-          "USE": [{ "op": "say", "text": "I take a sip. It's flat and warm. Like the market after a hype cycle. My heart rate increases anyway." }],
-          "TALK": [{ "op": "say", "text": "'Give me energy!' The can is silent. It already gave everything it had. Respect." }],
-          "PICK": [{ "op": "say", "text": "I pick up the can. It's surprisingly light. Almost empty. The degen drank deep." }],
-          "OPEN": [{ "op": "say", "text": "Already open. The tab was pulled with the same urgency as a margin call notification." }],
-          "CLOSE": [{ "op": "say", "text": "You can't un-open a can. Like you can't un-send a transaction. Irreversible." }],
-          "PUSH": [{ "op": "say", "text": "I push the can. It rolls across the floor leaving a sticky trail. Like slippage on a DEX." }],
-          "PULL": [{ "op": "say", "text": "I pull the can toward me. The last drops of BULL RUN slosh around sadly." }],
-          "GIVE": [{ "op": "say", "text": "Nobody wants a half-empty energy drink. It's the NFT of beverages — unique but valueless." }]
         }
       }
     ],
@@ -628,8 +766,8 @@
             "op": "gotoScene",
             "sceneId": "lobby",
             "spawn": {
-              "x": 45.6,
-              "y": 87.9
+              "x": 59,
+              "y": 82.7
             }
           }
         ]

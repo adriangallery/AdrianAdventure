@@ -82,11 +82,16 @@
                   "duration": 2000
                 },
                 {
+                  "op": "setFlag",
+                  "flag": "chapter_1_complete",
+                  "value": true
+                },
+                {
                   "op": "fadeToScene",
                   "sceneId": "lobby",
                   "spawn": {
-                    "x": 50,
-                    "y": 85
+                    "x": 86.1,
+                    "y": 93.2
                   },
                   "duration": 600
                 }
@@ -120,11 +125,16 @@
                   "duration": 2000
                 },
                 {
+                  "op": "setFlag",
+                  "flag": "chapter_1_complete",
+                  "value": true
+                },
+                {
                   "op": "fadeToScene",
                   "sceneId": "lobby",
                   "spawn": {
-                    "x": 50,
-                    "y": 85
+                    "x": 86.1,
+                    "y": 93.2
                   },
                   "duration": 600
                 }
@@ -1161,7 +1171,7 @@
       },
       {
         "id": "hs_keypad",
-        "name": "keypad",
+        "name": "Keypad",
         "bounds": {
           "x": 37.3,
           "y": 61.1,
@@ -1169,90 +1179,213 @@
           "h": 9
         },
         "scripts": {
-          "LOOK": [
-            {
-              "op": "say",
-              "text": "Looking at keypag."
-            }
-          ],
-          "USE": [
-            {
-              "op": "say",
-              "text": "Can't use keypag."
-            }
-          ],
-          "TALK": [
-            {
-              "op": "say",
-              "text": "keypag doesn't respond."
-            }
-          ],
-          "PICK": [
-            {
-              "op": "say",
-              "text": "Can't pick up keypag."
-            }
-          ],
-          "OPEN": [
-            {
-              "op": "say",
-              "text": "Can't open keypag."
-            }
-          ],
-          "CLOSE": [
-            {
-              "op": "say",
-              "text": "Can't close keypag."
-            }
-          ]
+          "LOOK": [{ "op": "say", "text": "A numeric keypad with backlit buttons. The display reads '_ _ _ _'. Four digits stand between me and whatever Adrian's hiding." }],
+          "USE": [{ "op": "ifFlag", "flag": "has_code", "then": [{ "op": "say", "text": "I could type the code here... but the front door keypad is the one that matters." }], "else": [{ "op": "say", "text": "I tap random buttons. *BZZZ* 'INVALID CODE.' Better find the real code first." }] }],
+          "TALK": [{ "op": "say", "text": "I lean in and whisper 'password123'. The keypad blinks red. It's not amused." }],
+          "PICK": [{ "op": "say", "text": "It's screwed into the doorframe. I'd need tools and questionable morals." }],
+          "OPEN": [{ "op": "say", "text": "I pry at the faceplate. A tiny sticker warns: 'TAMPERING TRIGGERS SILENT ALARM. And Adrian's disappointment.'" }],
+          "CLOSE": [{ "op": "say", "text": "The keypad is always on. Always waiting. Like a limit order I forgot about." }],
+          "PUSH": [{ "op": "say", "text": "I press all the buttons at once. *BZZZ BZZZ BZZZ* That's not how keypads work." }],
+          "PULL": [{ "op": "say", "text": "I tug at the keypad. It's firmly mounted. Security by stubbornness." }],
+          "GIVE": [{ "op": "say", "text": "I'm not giving a keypad anything. It hasn't earned my trust." }]
         }
       },
       {
         "id": "hs_sunset_sky",
         "name": "Sunset Sky",
-        "bounds": { "x": 0, "y": 0, "w": 30, "h": 10 },
+        "bounds": {
+          "x": 0,
+          "y": 0,
+          "w": 30,
+          "h": 10
+        },
         "scripts": {
-          "LOOK": [{ "op": "say", "text": "A blazing pink and orange sunset. Like watching a candlestick chart go parabolic across the entire sky." }],
-          "USE": [{ "op": "say", "text": "I try to screenshot the sunset. My phone camera does NOT do it justice. Some things can't be minted." }],
-          "TALK": [{ "op": "say", "text": "'Hey sky, when moon?' The clouds drift silently. Even the atmosphere won't give me alpha." }],
-          "PICK": [{ "op": "say", "text": "I reach for the sunset. My arm isn't long enough. Story of my trading career." }],
-          "OPEN": [{ "op": "say", "text": "Can't open the sky. It's already the most permissionless thing in existence." }],
-          "CLOSE": [{ "op": "say", "text": "The sun is closing on its own. Give it twenty minutes." }],
-          "PUSH": [{ "op": "say", "text": "I push against the fading light. Physics remains unimpressed." }],
-          "PULL": [{ "op": "say", "text": "I try to pull the sunset back. Time only moves in one direction. Like my portfolio." }],
-          "GIVE": [{ "op": "say", "text": "The sky doesn't accept offerings. Not even gas fees." }]
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "A blazing pink and orange sunset. Like watching a candlestick chart go parabolic across the entire sky."
+            }
+          ],
+          "USE": [
+            {
+              "op": "say",
+              "text": "I try to screenshot the sunset. My phone camera does NOT do it justice. Some things can't be minted."
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "'Hey sky, when moon?' The clouds drift silently. Even the atmosphere won't give me alpha."
+            }
+          ],
+          "PICK": [
+            {
+              "op": "say",
+              "text": "I reach for the sunset. My arm isn't long enough. Story of my trading career."
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "say",
+              "text": "Can't open the sky. It's already the most permissionless thing in existence."
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "The sun is closing on its own. Give it twenty minutes."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I push against the fading light. Physics remains unimpressed."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "I try to pull the sunset back. Time only moves in one direction. Like my portfolio."
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "The sky doesn't accept offerings. Not even gas fees."
+            }
+          ]
         }
       },
       {
         "id": "hs_fence",
         "name": "Wooden Fence",
-        "bounds": { "x": 0, "y": 45, "w": 5, "h": 30 },
+        "bounds": {
+          "x": 0,
+          "y": 45,
+          "w": 5,
+          "h": 30
+        },
         "scripts": {
-          "LOOK": [{ "op": "say", "text": "A weathered wooden fence marking the property line. Some planks are missing. Like gaps in a liquidity pool." }],
-          "USE": [{ "op": "say", "text": "I lean on the fence. It creaks but holds. More reliable than most DeFi protocols." }],
-          "TALK": [{ "op": "say", "text": "'Good fences make good neighbors.' The fence says nothing. It's a fence." }],
-          "PICK": [{ "op": "say", "text": "I pull a loose splinter off. Ouch. Not worth the gas fees." }],
-          "OPEN": [{ "op": "say", "text": "No gate here. Just fence all the way. Permissioned access only." }],
-          "CLOSE": [{ "op": "say", "text": "The fence is already doing its best impression of a closed position." }],
-          "PUSH": [{ "op": "say", "text": "I push the fence. It leans. One more push and Adrian's property value drops 3%." }],
-          "PULL": [{ "op": "say", "text": "I pull a plank. It comes loose. Now there's an exploit in the perimeter." }],
-          "GIVE": [{ "op": "say", "text": "The fence doesn't want anything. It just wants to be left alone. Relatable." }]
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "A weathered wooden fence marking the property line. Some planks are missing. Like gaps in a liquidity pool."
+            }
+          ],
+          "USE": [
+            {
+              "op": "say",
+              "text": "I lean on the fence. It creaks but holds. More reliable than most DeFi protocols."
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "'Good fences make good neighbors.' The fence says nothing. It's a fence."
+            }
+          ],
+          "PICK": [
+            {
+              "op": "say",
+              "text": "I pull a loose splinter off. Ouch. Not worth the gas fees."
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "say",
+              "text": "No gate here. Just fence all the way. Permissioned access only."
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "The fence is already doing its best impression of a closed position."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I push the fence. It leans. One more push and Adrian's property value drops 3%."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "I pull a plank. It comes loose. Now there's an exploit in the perimeter."
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "The fence doesn't want anything. It just wants to be left alone. Relatable."
+            }
+          ]
         }
       },
       {
         "id": "hs_upper_windows",
         "name": "Upper Floor Windows",
-        "bounds": { "x": 21, "y": 18, "w": 18, "h": 20 },
+        "bounds": {
+          "x": 21,
+          "y": 18,
+          "w": 18,
+          "h": 20
+        },
         "scripts": {
-          "LOOK": [{ "op": "say", "text": "Four windows glow warmly on the second floor. Multiple monitor screens visible inside. Someone was running serious operations up there." }],
-          "USE": [{ "op": "say", "text": "Too high to reach from here. I'd need to get inside first." }],
-          "TALK": [{ "op": "say", "text": "'Anyone trading up there?!' The glow of the screens is the only answer. The bots never sleep." }],
-          "PICK": [{ "op": "say", "text": "Can't reach the second floor. I'm not Spider-Man. I'm more of a rug-pull survivor." }],
-          "OPEN": [{ "op": "say", "text": "Way too high. I'd need a ladder or a very optimistic leverage position." }],
-          "CLOSE": [{ "op": "say", "text": "The curtains are already half-drawn. Privacy mode: on." }],
-          "PUSH": [{ "op": "say", "text": "I push against the wall below the windows. The house doesn't budge. Solid foundation." }],
-          "PULL": [{ "op": "say", "text": "I try to pull myself up toward the windows. Gravity says no. Hard no." }],
-          "GIVE": [{ "op": "say", "text": "I can't give anything to windows I can't reach. Story of every failed airdrop claim." }]
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "Four windows glow warmly on the second floor. Multiple monitor screens visible inside. Someone was running serious operations up there."
+            }
+          ],
+          "USE": [
+            {
+              "op": "say",
+              "text": "Too high to reach from here. I'd need to get inside first."
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "'Anyone trading up there?!' The glow of the screens is the only answer. The bots never sleep."
+            }
+          ],
+          "PICK": [
+            {
+              "op": "say",
+              "text": "Can't reach the second floor. I'm not Spider-Man. I'm more of a rug-pull survivor."
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "say",
+              "text": "Way too high. I'd need a ladder or a very optimistic leverage position."
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "The curtains are already half-drawn. Privacy mode: on."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I push against the wall below the windows. The house doesn't budge. Solid foundation."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "I try to pull myself up toward the windows. Gravity says no. Hard no."
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "I can't give anything to windows I can't reach. Story of every failed airdrop claim."
+            }
+          ]
         }
       }
     ],
@@ -1325,8 +1458,8 @@
             "op": "gotoScene",
             "sceneId": "mountain",
             "spawn": {
-              "x": 90,
-              "y": 88
+              "x": 96.8,
+              "y": 91.5
             }
           }
         ]

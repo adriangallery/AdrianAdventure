@@ -24,8 +24,8 @@
   },
   "player": {
     "spawn": {
-      "x": 20,
-      "y": 88
+      "x": 89.7,
+      "y": 91.4
     },
     "speed": 140,
     "sprite": {
@@ -143,10 +143,10 @@
               "then": [
                 {
                   "op": "fadeToScene",
-                  "sceneId": "clinic_interior",
+                  "sceneId": "clinic_exterior",
                   "spawn": {
-                    "x": 80,
-                    "y": 70
+                    "x": 13.8,
+                    "y": 95.8
                   }
                 }
               ],
@@ -157,10 +157,10 @@
                   "then": [
                     {
                       "op": "fadeToScene",
-                      "sceneId": "clinic_interior",
+                      "sceneId": "clinic_exterior",
                       "spawn": {
-                        "x": 80,
-                        "y": 70
+                        "x": 13.8,
+                        "y": 95.8
                       }
                     }
                   ],
@@ -799,8 +799,8 @@
             "op": "gotoScene",
             "sceneId": "outside",
             "spawn": {
-              "x": 58,
-              "y": 93
+              "x": 11.8,
+              "y": 91.3
             }
           }
         ]
@@ -809,18 +809,18 @@
         "id": "tr_to_clinic",
         "once": false,
         "bounds": {
-          "x": 68.7,
-          "y": 37.1,
-          "w": 9.7,
-          "h": 12.3
+          "x": 0,
+          "y": 86.5,
+          "w": 15,
+          "h": 7.5
         },
         "onEnter": [
           {
             "op": "fadeToScene",
             "sceneId": "clinic_exterior",
             "spawn": {
-              "x": 75,
-              "y": 85
+              "x": 13.8,
+              "y": 95.8
             }
           }
         ]

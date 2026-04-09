@@ -66,6 +66,54 @@
               "op": "say",
               "text": "Maybe that's what recovery looks like."
             }
+          ],
+          "USE": [
+            {
+              "op": "say",
+              "text": "I let the sunrise wash over me. No screen, no charts, no candles. Just light. The original proof-of-work."
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "I whisper to the dawn: 'Good morning.' For the first time in months, I mean it."
+            }
+          ],
+          "PICK": [
+            {
+              "op": "say",
+              "text": "I can't pick up a sunrise. But I can carry this moment with me. Lighter than any bag I've held."
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "say",
+              "text": "The sky opens itself every morning. No key required. No gas fee. Just patience and rotation."
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "I close my eyes against the light. The warmth stays. Some things persist without a blockchain."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I can't push the sun. But I can push forward. One block at a time."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "The sunrise pulls me toward it. Gentle gravity. The kind of pull that doesn't liquidate you."
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "The sunrise gives freely. Warmth, light, hope. The most generous protocol in existence."
+            }
           ]
         }
       },
@@ -104,6 +152,42 @@
               "op": "say",
               "text": "I've seen what's inside. Time to see what's outside."
             }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "I whisper goodbye to the clinic. It gave me answers I wasn't looking for. The best kind."
+            }
+          ],
+          "PICK": [
+            {
+              "op": "say",
+              "text": "I don't need to take anything from the clinic. I've already taken the truth. That's heavy enough."
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "I close the chapter on the clinic. The door stays shut. Some rooms only need to be visited once."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I push the door firmly closed. It latches with a quiet click. Goodbye, Patient Zero."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "Something pulls me back toward the door. Nostalgia? Fear? No. Just the wind. Keep walking."
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "The clinic gave me everything I needed. There's nothing left to give back except gratitude."
+            }
           ]
         }
       },
@@ -129,6 +213,54 @@
             {
               "op": "say",
               "text": "Maybe that's the real cure."
+            }
+          ],
+          "USE": [
+            {
+              "op": "say",
+              "text": "I breathe in the mountain air. It tastes like freedom. And pine needles. Mostly pine needles."
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "I address the mountains: 'Thank you for keeping the clinic's secrets.' They say nothing. Mountains are the original cold storage."
+            }
+          ],
+          "PICK": [
+            {
+              "op": "say",
+              "text": "I can't take the view with me. But the memory will stay. Immutable, like the best kind of data."
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "say",
+              "text": "The vista is already open. Infinitely wide. No paywall. The best things in life are truly free-to-play."
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "I close my eyes and listen to the silence. No notifications. No alerts. Just the mountain breathing."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I push against the railing. The world below is vast and waiting. One step at a time."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "The mountain vista pulls at something deep inside. A longing for simplicity. For code that just works. For honest transactions."
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "The mountains have given me perspective. The rarest token of all."
             }
           ]
         }
@@ -184,26 +316,46 @@
               ]
             }
           ],
-          "WALK": [
+          "TALK": [
             {
-              "op": "ifFlag",
-              "flag": "game_complete",
-              "then": [
-                {
-                  "op": "narrative",
-                  "lines": [
-                    "ZEROADVENTURE II",
-                    "",
-                    "You found Patient Zero.",
-                    "You found yourself.",
-                    "",
-                    "Thank you for playing.",
-                    "",
-                    "— Adrian & the ZERO community"
-                  ]
-                }
-              ],
-              "else": []
+              "op": "say",
+              "text": "I talk to the path ahead. It doesn't answer. But it doesn't need to. The direction is clear."
+            }
+          ],
+          "PICK": [
+            {
+              "op": "say",
+              "text": "I pick up a stone from the path. Smooth from countless footsteps. I'll carry it as a reminder."
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "say",
+              "text": "The path is open. It always was. The only lock was in my mind."
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "I don't want to close this path. It leads somewhere new. Somewhere without charts."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I push forward in my mind. The first step is always the hardest. The rest is just walking."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "The path pulls me forward gently. Downhill is easier than uphill. Recovery works the same way."
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "I give the mountain one last look before heading down. Some journeys end where they begin. This one ends where I choose."
             }
           ]
         }
@@ -212,21 +364,66 @@
         "id": "hs_now_hiring_sign",
         "name": "NOW HIRING Sign",
         "bounds": {
-          "x": 72,
-          "y": 56,
+          "x": 72.3,
+          "y": 59.1,
           "w": 8,
           "h": 6
         },
         "scripts": {
-          "LOOK": [{ "op": "say", "text": "A wooden sign: 'NOW HIRING.' The paint is fresh. They need new staff. After my visit, I'm not surprised. I left that treatment room looking like I'd seen my own liquidation history." }],
-          "USE": [{ "op": "say", "text": "I straighten the sign. It's surprisingly well-built. Better craftsmanship than most DApp front-ends." }],
-          "TALK": [{ "op": "say", "text": "'I'd apply, but my resume just says HODL in increasingly desperate font sizes.'" }],
-          "PICK": [{ "op": "say", "text": "I consider taking the sign. No. The clinic needs staff more than I need a souvenir. Besides, it won't fit in my inventory next to all this emotional baggage." }],
-          "OPEN": [{ "op": "say", "text": "The sign doesn't open. It's a sign, not a mystery box. Though in crypto, everything's a mystery box if you squint." }],
-          "CLOSE": [{ "op": "say", "text": "Can't close a sign. It's permanently open for business. 24/7, 365 blocks a year." }],
-          "PUSH": [{ "op": "say", "text": "I push the sign. It wobbles but holds firm. Staked into the ground properly. Unlike my staking positions." }],
-          "PULL": [{ "op": "say", "text": "I pull the sign toward me. It resists. It's been planted here with conviction. More conviction than most CT influencers." }],
-          "GIVE": [{ "op": "say", "text": "The sign needs applicants, not gifts. Maybe I'll send my resume. Skills: 'Surviving rug pulls, advanced copium inhalation.'" }]
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "A wooden sign: 'NOW HIRING.' The paint is fresh. They need new staff. After my visit, I'm not surprised. I left that treatment room looking like I'd seen my own liquidation history."
+            }
+          ],
+          "USE": [
+            {
+              "op": "say",
+              "text": "I straighten the sign. It's surprisingly well-built. Better craftsmanship than most DApp front-ends."
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "'I'd apply, but my resume just says HODL in increasingly desperate font sizes.'"
+            }
+          ],
+          "PICK": [
+            {
+              "op": "say",
+              "text": "I consider taking the sign. No. The clinic needs staff more than I need a souvenir. Besides, it won't fit in my inventory next to all this emotional baggage."
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "say",
+              "text": "The sign doesn't open. It's a sign, not a mystery box. Though in crypto, everything's a mystery box if you squint."
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "Can't close a sign. It's permanently open for business. 24/7, 365 blocks a year."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I push the sign. It wobbles but holds firm. Staked into the ground properly. Unlike my staking positions."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "I pull the sign toward me. It resists. It's been planted here with conviction. More conviction than most CT influencers."
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "The sign needs applicants, not gifts. Maybe I'll send my resume. Skills: 'Surviving rug pulls, advanced copium inhalation.'"
+            }
+          ]
         }
       },
       {
@@ -239,15 +436,60 @@
           "h": 8
         },
         "scripts": {
-          "LOOK": [{ "op": "say", "text": "Birds circling in the dawn sky. Free. No gas fees. No slippage. Just vibes. They're the only creatures that truly understand what 'to the moon' means." }],
-          "USE": [{ "op": "say", "text": "I wave at the birds. One of them dips lower as if acknowledging me. A decentralized greeting protocol." }],
-          "TALK": [{ "op": "say", "text": "I call out to the birds: 'WAGMI!' They fly higher. Even birds know that's not financial advice." }],
-          "PICK": [{ "op": "say", "text": "I can't pick up birds. They're non-custodial. Self-sovereign flight. True decentralization." }],
-          "OPEN": [{ "op": "say", "text": "I open my arms to the sky. For a moment, I feel like I could fly too. Then gravity reminds me I'm not an L2." }],
-          "CLOSE": [{ "op": "say", "text": "I close my eyes and listen to the birds. Their song is the only algorithm I trust right now." }],
-          "PUSH": [{ "op": "say", "text": "Can't push birds. They're already moving. Velocity like a meme coin on launch day." }],
-          "PULL": [{ "op": "say", "text": "The birds are beyond my reach. Like most airdrops I've qualified for." }],
-          "GIVE": [{ "op": "say", "text": "I have nothing to give the birds. They already have freedom. The ultimate NFT that can't be minted." }]
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "Birds circling in the dawn sky. Free. No gas fees. No slippage. Just vibes. They're the only creatures that truly understand what 'to the moon' means."
+            }
+          ],
+          "USE": [
+            {
+              "op": "say",
+              "text": "I wave at the birds. One of them dips lower as if acknowledging me. A decentralized greeting protocol."
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "I call out to the birds: 'WAGMI!' They fly higher. Even birds know that's not financial advice."
+            }
+          ],
+          "PICK": [
+            {
+              "op": "say",
+              "text": "I can't pick up birds. They're non-custodial. Self-sovereign flight. True decentralization."
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "say",
+              "text": "I open my arms to the sky. For a moment, I feel like I could fly too. Then gravity reminds me I'm not an L2."
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "I close my eyes and listen to the birds. Their song is the only algorithm I trust right now."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "Can't push birds. They're already moving. Velocity like a meme coin on launch day."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "The birds are beyond my reach. Like most airdrops I've qualified for."
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "I have nothing to give the birds. They already have freedom. The ultimate NFT that can't be minted."
+            }
+          ]
         }
       },
       {
@@ -260,15 +502,60 @@
           "h": 50
         },
         "scripts": {
-          "LOOK": [{ "op": "say", "text": "Tall evergreen pines line the mountainside. They've been here longer than any blockchain. Patient, silent, and completely immune to market volatility. The original diamond hands." }],
-          "USE": [{ "op": "say", "text": "I lean against a pine tree. The bark is rough and real. No smart contract can replicate this. Though someone is probably trying." }],
-          "TALK": [{ "op": "say", "text": "'You trees have been HODLing this mountain since before Bitcoin's genesis block. Respect.' A pinecone falls. Bullish signal." }],
-          "PICK": [{ "op": "say", "text": "I grab a pinecone from the ground. Nature's airdrop. Zero gas fees, 100% organic, and it actually has utility." }],
-          "OPEN": [{ "op": "say", "text": "I peel open a pinecone. Seeds inside. The original seed phrase, if you think about it." }],
-          "CLOSE": [{ "op": "say", "text": "I set the pinecone down. It closes in the cold air. Even nature knows when to lock up its assets." }],
-          "PUSH": [{ "op": "say", "text": "I push a tree. It doesn't budge. This tree has more TVL (Total Vertical Lumber) than most DeFi protocols." }],
-          "PULL": [{ "op": "say", "text": "I pull a low branch. It snaps back and slaps me. The tree just performed an automatic liquidation on my face." }],
-          "GIVE": [{ "op": "say", "text": "These trees give me oxygen. The least I can do is not try to tokenize them. Though... no. Recovery starts now." }]
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "Tall evergreen pines line the mountainside. They've been here longer than any blockchain. Patient, silent, and completely immune to market volatility. The original diamond hands."
+            }
+          ],
+          "USE": [
+            {
+              "op": "say",
+              "text": "I lean against a pine tree. The bark is rough and real. No smart contract can replicate this. Though someone is probably trying."
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "'You trees have been HODLing this mountain since before Bitcoin's genesis block. Respect.' A pinecone falls. Bullish signal."
+            }
+          ],
+          "PICK": [
+            {
+              "op": "say",
+              "text": "I grab a pinecone from the ground. Nature's airdrop. Zero gas fees, 100% organic, and it actually has utility."
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "say",
+              "text": "I peel open a pinecone. Seeds inside. The original seed phrase, if you think about it."
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "I set the pinecone down. It closes in the cold air. Even nature knows when to lock up its assets."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I push a tree. It doesn't budge. This tree has more TVL (Total Vertical Lumber) than most DeFi protocols."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "I pull a low branch. It snaps back and slaps me. The tree just performed an automatic liquidation on my face."
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "These trees give me oxygen. The least I can do is not try to tokenize them. Though... no. Recovery starts now."
+            }
+          ]
         }
       }
     ],

@@ -218,6 +218,15 @@
                   "op": "setFlag",
                   "flag": "patient_zero_found",
                   "value": true
+                },
+                {
+                  "op": "setFlag",
+                  "flag": "chapter_5_complete",
+                  "value": true
+                },
+                {
+                  "op": "achievement",
+                  "text": "PATIENT ZERO — Identity Revealed"
                 }
               ]
             }
@@ -334,7 +343,7 @@
       },
       {
         "id": "hs_mirror",
-        "name": "Mirror",
+        "name": "Exit Door",
         "bounds": {
           "x": 19.2,
           "y": 37,
@@ -350,18 +359,15 @@
           ],
           "USE": [
             {
-              "op": "sayBrief",
-              "text": "Leaving the treatment room.",
-              "duration": 1000
-            },
-            {
-              "op": "fadeToScene",
-              "sceneId": "clinic_interior",
-              "spawn": {
-                "x": 15,
-                "y": 82
-              },
-              "duration": 800
+              "op": "ifFlag",
+              "flag": "patient_zero_revealed",
+              "then": [
+                { "op": "say", "text": "Time to face the world. With the truth." },
+                { "op": "fadeToScene", "sceneId": "epilogue_outside", "spawn": { "x": 50, "y": 80 } }
+              ],
+              "else": [
+                { "op": "say", "text": "Not yet. There's still something I need to see in this room." }
+              ]
             }
           ],
           "TALK": [
@@ -378,18 +384,15 @@
           ],
           "OPEN": [
             {
-              "op": "sayBrief",
-              "text": "Leaving the treatment room.",
-              "duration": 1000
-            },
-            {
-              "op": "fadeToScene",
-              "sceneId": "clinic_interior",
-              "spawn": {
-                "x": 15,
-                "y": 82
-              },
-              "duration": 800
+              "op": "ifFlag",
+              "flag": "patient_zero_revealed",
+              "then": [
+                { "op": "say", "text": "Time to face the world. With the truth." },
+                { "op": "fadeToScene", "sceneId": "epilogue_outside", "spawn": { "x": 50, "y": 80 } }
+              ],
+              "else": [
+                { "op": "say", "text": "Not yet. There's still something I need to see in this room." }
+              ]
             }
           ],
           "CLOSE": [
@@ -400,18 +403,15 @@
           ],
           "PUSH": [
             {
-              "op": "sayBrief",
-              "text": "Leaving the treatment room.",
-              "duration": 1000
-            },
-            {
-              "op": "fadeToScene",
-              "sceneId": "clinic_interior",
-              "spawn": {
-                "x": 15,
-                "y": 82
-              },
-              "duration": 800
+              "op": "ifFlag",
+              "flag": "patient_zero_revealed",
+              "then": [
+                { "op": "say", "text": "Time to face the world. With the truth." },
+                { "op": "fadeToScene", "sceneId": "epilogue_outside", "spawn": { "x": 50, "y": 80 } }
+              ],
+              "else": [
+                { "op": "say", "text": "Not yet. There's still something I need to see in this room." }
+              ]
             }
           ],
           "PULL": [
@@ -536,15 +536,60 @@
           "h": 10
         },
         "scripts": {
-          "LOOK": [{ "op": "say", "text": "Dark, sterile flooring. Scuff marks everywhere, like someone paced back and forth for hours. Or days. The marks form a pattern... is that a candlestick chart worn into the floor?" }],
-          "USE": [{ "op": "say", "text": "I kneel and touch the floor. Cold. Clinical. Like the moment you realize your 'diamond hands' are actually just frozen from fear." }],
-          "TALK": [{ "op": "say", "text": "I whisper to the floor: 'How many patients have you held up?' The silence is deafening. The floor has seen things. Terrible, terrible portfolios." }],
-          "PICK": [{ "op": "say", "text": "I find a tiny screw on the floor. From the chair? The monitor? Or from whoever was here last, slowly coming unscrewed." }],
-          "OPEN": [{ "op": "say", "text": "There's no trapdoor. This isn't that kind of adventure game. Though a secret exit would explain how Patient Zero escaped." }],
-          "CLOSE": [{ "op": "say", "text": "You can't close a floor. Trust me, I've tried closing positions that were just as impossible." }],
-          "PUSH": [{ "op": "say", "text": "I push against the floor with my foot. Solid. Unlike the floor price of most NFT collections I've invested in." }],
-          "PULL": [{ "op": "say", "text": "I try to pull up a floor tile. Nope. This floor is more firmly committed than any liquidity provider I've ever met." }],
-          "GIVE": [{ "op": "say", "text": "The floor already has my footprints. And my tears. And probably some spilled coffee. It doesn't need more." }]
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "Dark, sterile flooring. Scuff marks everywhere, like someone paced back and forth for hours. Or days. The marks form a pattern... is that a candlestick chart worn into the floor?"
+            }
+          ],
+          "USE": [
+            {
+              "op": "say",
+              "text": "I kneel and touch the floor. Cold. Clinical. Like the moment you realize your 'diamond hands' are actually just frozen from fear."
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "I whisper to the floor: 'How many patients have you held up?' The silence is deafening. The floor has seen things. Terrible, terrible portfolios."
+            }
+          ],
+          "PICK": [
+            {
+              "op": "say",
+              "text": "I find a tiny screw on the floor. From the chair? The monitor? Or from whoever was here last, slowly coming unscrewed."
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "say",
+              "text": "There's no trapdoor. This isn't that kind of adventure game. Though a secret exit would explain how Patient Zero escaped."
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "You can't close a floor. Trust me, I've tried closing positions that were just as impossible."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I push against the floor with my foot. Solid. Unlike the floor price of most NFT collections I've invested in."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "I try to pull up a floor tile. Nope. This floor is more firmly committed than any liquidity provider I've ever met."
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "The floor already has my footprints. And my tears. And probably some spilled coffee. It doesn't need more."
+            }
+          ]
         }
       },
       {
@@ -557,15 +602,60 @@
           "h": 12
         },
         "scripts": {
-          "LOOK": [{ "op": "say", "text": "Exposed pipes and cables snake across the ceiling like a messy dependency graph. Some are wrapped in tape. The infrastructure here is held together by hope and duct tape. Just like Layer 2 scaling solutions." }],
-          "USE": [{ "op": "say", "text": "I reach for a dangling cable. Probably not a good idea. Last time I touched something I didn't understand, I approved an unlimited token allowance." }],
-          "TALK": [{ "op": "say", "text": "I address the tangle of wires: 'You look like my transaction history on Etherscan.' The cables say nothing. They're better organized than my DeFi positions." }],
-          "PICK": [{ "op": "say", "text": "I tug on a loose cable. The lights flicker. Maybe I should leave the infrastructure alone. I'm a detective, not a plumber." }],
-          "OPEN": [{ "op": "say", "text": "I pry open a junction box. Inside: wires labeled 'DATA IN', 'DATA OUT', and one labeled 'PATIENT ZERO MONITORING'. Ominous." }],
-          "CLOSE": [{ "op": "say", "text": "I snap the junction box shut. Some things are better left sealed. Like that Uniswap LP position from 2021." }],
-          "PUSH": [{ "op": "say", "text": "I push a pipe. It groans. The whole ceiling shudders. Infrastructure this old should be migrated to a new protocol." }],
-          "PULL": [{ "op": "say", "text": "I pull a cable gently. Somewhere in the building, something beeps. I let go immediately. Not today, unexpected consequences." }],
-          "GIVE": [{ "op": "say", "text": "The pipes need a plumber, not a crypto detective with a hero complex." }]
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "Exposed pipes and cables snake across the ceiling like a messy dependency graph. Some are wrapped in tape. The infrastructure here is held together by hope and duct tape. Just like Layer 2 scaling solutions."
+            }
+          ],
+          "USE": [
+            {
+              "op": "say",
+              "text": "I reach for a dangling cable. Probably not a good idea. Last time I touched something I didn't understand, I approved an unlimited token allowance."
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "I address the tangle of wires: 'You look like my transaction history on Etherscan.' The cables say nothing. They're better organized than my DeFi positions."
+            }
+          ],
+          "PICK": [
+            {
+              "op": "say",
+              "text": "I tug on a loose cable. The lights flicker. Maybe I should leave the infrastructure alone. I'm a detective, not a plumber."
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "say",
+              "text": "I pry open a junction box. Inside: wires labeled 'DATA IN', 'DATA OUT', and one labeled 'PATIENT ZERO MONITORING'. Ominous."
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "I snap the junction box shut. Some things are better left sealed. Like that Uniswap LP position from 2021."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I push a pipe. It groans. The whole ceiling shudders. Infrastructure this old should be migrated to a new protocol."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "I pull a cable gently. Somewhere in the building, something beeps. I let go immediately. Not today, unexpected consequences."
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "The pipes need a plumber, not a crypto detective with a hero complex."
+            }
+          ]
         }
       },
       {
@@ -578,22 +668,67 @@
           "h": 8
         },
         "scripts": {
-          "LOOK": [{ "op": "say", "text": "A cold metal side table. Medical grade. A half-empty glass of water sits on it, still sweating. Whoever was here last didn't finish their drink. They left in a hurry. Or got liquidated mid-sip." }],
-          "USE": [{ "op": "say", "text": "I take a sip of the water. Stale. Tastes like regret and fluoride. Two things I'm very familiar with." }],
-          "TALK": [{ "op": "say", "text": "'Table, tell me your secrets.' It remains silent. Tables are the strong, silent type. Like validators during network congestion." }],
-          "PICK": [{ "op": "say", "text": "I grab the glass of water. Fingerprints on it. Patient Zero's? Mine? In this room, they might be the same thing." }],
-          "OPEN": [{ "op": "say", "text": "The table has a small drawer. Inside: a pen, a paperclip, and a sticky note that says 'REMEMBER: YOU ARE THE PATIENT.' Helpful." }],
-          "CLOSE": [{ "op": "say", "text": "I close the tiny drawer. Click. The sound of finality. Like closing a leveraged position at a loss." }],
-          "PUSH": [{ "op": "say", "text": "I push the table. It scrapes across the floor with a screech that could wake dead protocols." }],
-          "PULL": [{ "op": "say", "text": "I pull the table toward the chair. Now it's within arm's reach. Convenience. The one thing DeFi has never offered." }],
-          "GIVE": [{ "op": "say", "text": "The table holds things. That's its entire purpose. It's the cold storage of furniture." }]
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "A cold metal side table. Medical grade. A half-empty glass of water sits on it, still sweating. Whoever was here last didn't finish their drink. They left in a hurry. Or got liquidated mid-sip."
+            }
+          ],
+          "USE": [
+            {
+              "op": "say",
+              "text": "I take a sip of the water. Stale. Tastes like regret and fluoride. Two things I'm very familiar with."
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "'Table, tell me your secrets.' It remains silent. Tables are the strong, silent type. Like validators during network congestion."
+            }
+          ],
+          "PICK": [
+            {
+              "op": "say",
+              "text": "I grab the glass of water. Fingerprints on it. Patient Zero's? Mine? In this room, they might be the same thing."
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "say",
+              "text": "The table has a small drawer. Inside: a pen, a paperclip, and a sticky note that says 'REMEMBER: YOU ARE THE PATIENT.' Helpful."
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "I close the tiny drawer. Click. The sound of finality. Like closing a leveraged position at a loss."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I push the table. It scrapes across the floor with a screech that could wake dead protocols."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "I pull the table toward the chair. Now it's within arm's reach. Convenience. The one thing DeFi has never offered."
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "The table holds things. That's its entire purpose. It's the cold storage of furniture."
+            }
+          ]
         }
       }
     ],
     "triggers": [
       {
         "id": "tr_game_complete",
-        "once": true,
+        "once": false,
         "bounds": {
           "x": 15,
           "y": 78,

@@ -89,6 +89,32 @@
   .overlay-rect.tr.selected .label { color: #ff80ff; }
   .overlay-rect.tr .handle { background: #ff80ff; }
 
+  /* Incoming spawn markers (entry points from other scenes) */
+  .entry-marker {
+    position: absolute; z-index: 19; cursor: grab;
+    transform: translate(-50%, -50%);
+  }
+  .entry-marker:active { cursor: grabbing; }
+  .entry-marker .entry-dot {
+    width: 14px; height: 14px; border-radius: 50%;
+    border: 2px solid #00dddd; background: rgba(0, 221, 221, 0.45);
+    box-shadow: 0 0 8px rgba(0, 221, 221, 0.6);
+  }
+  .entry-marker .entry-label {
+    position: absolute; top: -20px; left: 50%; transform: translateX(-50%);
+    font-size: 9px; color: #00dddd; background: rgba(0,0,0,0.75); padding: 1px 5px;
+    white-space: nowrap; pointer-events: none; border-radius: 2px;
+  }
+  .entry-marker .entry-coords {
+    position: absolute; top: 16px; left: 50%; transform: translateX(-50%);
+    font-size: 8px; color: #0f0; background: rgba(0,0,0,0.7); padding: 1px 3px;
+    white-space: nowrap; pointer-events: none;
+  }
+  .entry-marker.selected .entry-dot {
+    border-color: #ffffff; box-shadow: 0 0 12px rgba(255, 255, 255, 0.8);
+  }
+  .entry-marker.dimmed { opacity: 0.2; pointer-events: none; }
+
   /* NPC marker style */
   .npc-marker {
     position: absolute; cursor: move; user-select: none;
@@ -218,6 +244,7 @@
     <button id="btn-mode-wa" class="mode-btn" title="Edit walk areas (2)">Walk</button>
     <button id="btn-mode-tr" class="mode-btn" title="Edit triggers (3)">Triggers</button>
     <button id="btn-mode-npc" class="mode-btn" title="Edit NPCs (4)">NPCs</button>
+    <button id="btn-mode-entry" class="mode-btn" title="Entry points from other scenes (5)">Entries</button>
   </div>
   <div class="tb-sep"></div>
 
@@ -276,6 +303,7 @@
   <div class="section"><span>WA:</span> <span id="wa-count" class="val">0</span></div>
   <div class="section"><span>TR:</span> <span id="tr-count" class="val">0</span></div>
   <div class="section"><span>NPC:</span> <span id="npc-count" class="val">0</span></div>
+  <div class="section"><span>Entry:</span> <span id="entry-count" class="val">0</span></div>
 </div>
 
 <div id="modal-overlay">
@@ -315,9 +343,13 @@ let hotspots = [];
 let walkAreas = [];
 let triggers = [];
 let npcList = [];
+let incomingSpawns = [];   // entry points from other scenes
+let sourceSceneCache = {}; // source scene JSON cache for save-back
+let modifiedSources = new Set();
 let selectedIdx = -1;
 let selectedNpcIdx = -1;
-let editMode = 'hs'; // 'hs' | 'wa' | 'tr' | 'npc'
+let selectedEntryIdx = -1;
+let editMode = 'hs'; // 'hs' | 'wa' | 'tr' | 'npc' | 'entry'
 let drawMode = false;
 let zoom = 1;
 let imgNatW = 0, imgNatH = 0;
@@ -346,7 +378,9 @@ const modalTrSX = $('modal-tr-sx');
 const modalTrSY = $('modal-tr-sy');
 const modalTrOnce = $('modal-tr-once');
 const btnModeNPC = $('btn-mode-npc');
+const btnModeEntry = $('btn-mode-entry');
 const npcCountEl = $('npc-count');
+const entryCountEl = $('entry-count');
 const btnDraw = $('btn-draw');
 const btnDelete = $('btn-delete');
 const btnExport = $('btn-export');
@@ -384,6 +418,7 @@ btnModeHS.addEventListener('click', () => setEditMode('hs'));
 btnModeWA.addEventListener('click', () => setEditMode('wa'));
 btnModeTR.addEventListener('click', () => setEditMode('tr'));
 btnModeNPC.addEventListener('click', () => setEditMode('npc'));
+btnModeEntry.addEventListener('click', () => setEditMode('entry'));
 btnDraw.addEventListener('click', toggleDrawMode);
 btnDelete.addEventListener('click', deleteSelected);
 btnExport.addEventListener('click', exportJSON);
@@ -458,10 +493,11 @@ document.addEventListener('keydown', (e) => {
   if (e.key === '2') setEditMode('wa');
   if (e.key === '3') setEditMode('tr');
   if (e.key === '4') setEditMode('npc');
+  if (e.key === '5') setEditMode('entry');
   if (e.key === 'd' || e.key === 'D') toggleDrawMode();
   if (e.key === 'h' || e.key === 'H') toggleHidePlayer();
   if (e.key === 'Delete' || e.key === 'Backspace') deleteSelected();
-  if (e.key === 'Escape') { selectedIdx = -1; selectedNpcIdx = -1; exitDrawMode(); renderAll(); }
+  if (e.key === 'Escape') { selectedIdx = -1; selectedNpcIdx = -1; selectedEntryIdx = -1; exitDrawMode(); renderAll(); }
   if (e.key === 's' && (e.metaKey || e.ctrlKey)) { e.preventDefault(); saveFile(); }
   // Arrow keys for fine-tuning (rects)
   if (editMode !== 'npc' && selectedIdx >= 0 && ['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key)) {
@@ -491,6 +527,20 @@ document.addEventListener('keydown', (e) => {
     renderAll();
     updateInfoPanel();
   }
+  // Arrow keys for fine-tuning (Entry points)
+  if (editMode === 'entry' && selectedEntryIdx >= 0 && ['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key)) {
+    e.preventDefault();
+    const step = e.shiftKey ? 0.1 : 0.5;
+    const entry = incomingSpawns[selectedEntryIdx];
+    if (!entry) return;
+    if (e.key === 'ArrowLeft')  entry.position.x = Math.max(0, entry.position.x - step);
+    if (e.key === 'ArrowRight') entry.position.x = Math.min(100, entry.position.x + step);
+    if (e.key === 'ArrowUp')    entry.position.y = Math.max(0, entry.position.y - step);
+    if (e.key === 'ArrowDown')  entry.position.y = Math.min(100, entry.position.y + step);
+    syncEntryToSource(entry);
+    renderAll();
+    updateInfoPanel();
+  }
 });
 
 // ─── Edit mode ───
@@ -498,14 +548,19 @@ function setEditMode(mode) {
   editMode = mode;
   selectedIdx = -1;
   selectedNpcIdx = -1;
+  selectedEntryIdx = -1;
   exitDrawMode();
   btnModeHS.className = 'mode-btn' + (mode === 'hs' ? ' active-hs' : '');
   btnModeWA.className = 'mode-btn' + (mode === 'wa' ? ' active-wa' : '');
   btnModeTR.className = 'mode-btn' + (mode === 'tr' ? ' active' : '');
   btnModeNPC.className = 'mode-btn' + (mode === 'npc' ? ' active-npc' : '');
+  btnModeEntry.className = 'mode-btn' + (mode === 'entry' ? ' active' : '');
   if (mode === 'tr') btnModeTR.style.background = '#8b008b';
   else btnModeTR.style.background = '';
-  infoMode.textContent = mode === 'hs' ? 'Hotspots' : mode === 'wa' ? 'Walk Areas' : mode === 'tr' ? 'Triggers' : 'NPCs';
+  if (mode === 'entry') btnModeEntry.style.background = '#008888';
+  else btnModeEntry.style.background = '';
+  const modeNames = { hs: 'Hotspots', wa: 'Walk Areas', tr: 'Triggers', npc: 'NPCs', entry: 'Entry Points' };
+  infoMode.textContent = modeNames[mode] || mode;
   renderAll();
 }
 
@@ -569,6 +624,14 @@ async function loadScene(sceneId) {
 
     selectedIdx = -1;
     selectedNpcIdx = -1;
+    selectedEntryIdx = -1;
+
+    // Scan other scenes for transitions targeting this scene (entry points)
+    incomingSpawns = [];
+    sourceSceneCache = {};
+    modifiedSources = new Set();
+    scanIncomingSpawns(sceneId);
+
     // Per-scene scale takes priority over global
     const effectiveScale = sceneData.player.playerScale ?? globalConfig.playerScale ?? 1;
     scaleSlider.value = effectiveScale;
@@ -657,10 +720,19 @@ function renderAll() {
     renderNPC(npc, idx, isSel, !isActive);
   });
 
+  // Render entry point markers
+  container.querySelectorAll('.entry-marker').forEach(el => el.remove());
+  incomingSpawns.forEach((entry, idx) => {
+    const isActive = editMode === 'entry';
+    const isSel = isActive && idx === selectedEntryIdx;
+    renderEntry(entry, idx, isSel, !isActive);
+  });
+
   hsCountEl.textContent = hotspots.length;
   waCountEl.textContent = walkAreas.length;
   trCountEl.textContent = triggers.length;
   npcCountEl.textContent = npcList.length;
+  entryCountEl.textContent = incomingSpawns.length;
   updateInfoPanel();
   updatePlayerPreview();
   updateSpawnMarker();
@@ -762,9 +834,114 @@ function renderNPC(npc, idx, isSelected, isDimmed) {
   container.appendChild(div);
 }
 
+// ─── Entry points (incoming spawns from other scenes) ───
+
+async function scanIncomingSpawns(targetSceneId) {
+  // Collect all raw spawn ops first
+  const raw = [];
+  for (const sid of scenes) {
+    if (sid === targetSceneId) continue;
+    try {
+      const resp = await fetch(`/assets/scenes/${sid}/scene.json`);
+      if (!resp.ok) continue;
+      const sd = await resp.json();
+      sourceSceneCache[sid] = sd;
+
+      // Scan triggers
+      for (const tr of (sd.regions?.triggers || [])) {
+        collectSpawnOps(raw, tr.onEnter, targetSceneId, sid, tr.id);
+      }
+      // Scan hotspots
+      for (const hs of (sd.regions?.hotspots || [])) {
+        for (const [verb, scripts] of Object.entries(hs.scripts || {})) {
+          collectSpawnOps(raw, scripts, targetSceneId, sid, hs.id);
+        }
+      }
+    } catch {}
+  }
+
+  // Deduplicate: group by sourceScene + spawn position → one marker per unique position
+  const seen = new Map();
+  for (const sp of raw) {
+    const key = `${sp.sourceScene}_${r(sp.position.x)}_${r(sp.position.y)}`;
+    if (seen.has(key)) {
+      seen.get(key).opRefs.push(sp.opRef);
+    } else {
+      const entry = { sourceScene: sp.sourceScene, sourceId: sp.sourceId,
+        position: { ...sp.position }, opRefs: [sp.opRef] };
+      seen.set(key, entry);
+    }
+  }
+  incomingSpawns = [...seen.values()];
+  renderAll();
+}
+
+function collectSpawnOps(out, ops, targetId, sourceScene, sourceId) {
+  if (!ops) return;
+  for (const op of ops) {
+    if ((op.op === 'gotoScene' || op.op === 'fadeToScene') && op.sceneId === targetId && op.spawn) {
+      out.push({ sourceScene, sourceId, position: { x: op.spawn.x, y: op.spawn.y }, opRef: op });
+    }
+    if (op.then) collectSpawnOps(out, op.then, targetId, sourceScene, sourceId);
+    if (op.else) collectSpawnOps(out, op.else, targetId, sourceScene, sourceId);
+  }
+}
+
+function renderEntry(entry, idx, isSelected, isDimmed) {
+  const dispW = imgNatW * zoom;
+  const dispH = imgNatH * zoom;
+  const px = (entry.position.x / 100) * dispW;
+  const py = (entry.position.y / 100) * dispH;
+
+  const div = document.createElement('div');
+  div.className = 'entry-marker' + (isSelected ? ' selected' : '') + (isDimmed ? ' dimmed' : '');
+  div.dataset.entryIdx = idx;
+
+  const dot = document.createElement('div');
+  dot.className = 'entry-dot';
+  div.appendChild(dot);
+
+  const label = document.createElement('div');
+  label.className = 'entry-label';
+  const count = entry.opRefs.length > 1 ? ` (×${entry.opRefs.length})` : '';
+  label.textContent = `← ${entry.sourceScene}${count}`;
+  div.appendChild(label);
+
+  const coords = document.createElement('div');
+  coords.className = 'entry-coords';
+  coords.textContent = `x:${r(entry.position.x)} y:${r(entry.position.y)}`;
+  div.appendChild(coords);
+
+  div.style.left = px + 'px';
+  div.style.top = py + 'px';
+
+  container.appendChild(div);
+}
+
+function syncEntryToSource(entry) {
+  // Update ALL op references that share this position
+  for (const opRef of entry.opRefs) {
+    opRef.spawn.x = r(entry.position.x);
+    opRef.spawn.y = r(entry.position.y);
+  }
+  modifiedSources.add(entry.sourceScene);
+}
+
 function r(n) { return Math.round(n * 10) / 10; }
 
 function updateInfoPanel() {
+  // Entry mode
+  if (editMode === 'entry') {
+    if (selectedEntryIdx >= 0 && selectedEntryIdx < incomingSpawns.length) {
+      const e = incomingSpawns[selectedEntryIdx];
+      selName.textContent = `← ${e.sourceScene} (${e.sourceId})`;
+      selBounds.textContent = `x:${r(e.position.x)} y:${r(e.position.y)}`;
+    } else {
+      selName.textContent = 'none';
+      selBounds.textContent = '--';
+    }
+    return;
+  }
   // NPC mode
   if (editMode === 'npc') {
     if (selectedNpcIdx >= 0 && selectedNpcIdx < npcList.length) {
@@ -864,6 +1041,23 @@ container.addEventListener('mousedown', (e) => {
     return;
   }
 
+  // Entry point click — drag to reposition
+  const entryEl = e.target.closest('.entry-marker');
+  if (entryEl && editMode === 'entry') {
+    const idx = parseInt(entryEl.dataset.entryIdx);
+    selectedEntryIdx = idx;
+    selectedIdx = -1;
+    selectedNpcIdx = -1;
+    dragging = {
+      type: 'entry-move', idx,
+      startX: e.clientX, startY: e.clientY,
+      origPosition: { ...incomingSpawns[idx].position },
+    };
+    renderAll();
+    e.preventDefault();
+    return;
+  }
+
   // NPC click — drag to reposition
   const npcEl = e.target.closest('.npc-marker');
   if (npcEl && editMode === 'npc') {
@@ -910,6 +1104,7 @@ container.addEventListener('mousedown', (e) => {
 
   selectedIdx = -1;
   selectedNpcIdx = -1;
+  selectedEntryIdx = -1;
   renderAll();
 });
 
@@ -942,6 +1137,16 @@ document.addEventListener('mousemove', (e) => {
   const dy = e.clientY - dragging.startY;
   const dPctX = (dx / dispW) * 100;
   const dPctY = (dy / dispH) * 100;
+
+  // Entry point move
+  if (dragging.type === 'entry-move') {
+    const entry = incomingSpawns[dragging.idx];
+    entry.position.x = clamp(dragging.origPosition.x + dPctX, 0, 100);
+    entry.position.y = clamp(dragging.origPosition.y + dPctY, 0, 100);
+    syncEntryToSource(entry);
+    renderAll();
+    return;
+  }
 
   // NPC move
   if (dragging.type === 'npc-move') {
@@ -1030,6 +1235,10 @@ document.addEventListener('mouseup', (e) => {
       }
     }
     return;
+  }
+  if (dragging && dragging.type === 'entry-move') {
+    const entry = incomingSpawns[dragging.idx];
+    showToast(`← ${entry.sourceScene}: x:${r(entry.position.x)} y:${r(entry.position.y)}`);
   }
   if (dragging && dragging.type === 'npc-move') {
     const npc = npcList[dragging.idx];
@@ -1201,12 +1410,27 @@ async function saveFile() {
   if (!sceneData) return;
   const json = JSON.stringify(buildSceneOutput(), null, 2);
   const sceneId = sceneSelect.value;
+  let savedCount = 0;
   try {
     const resp = await fetch(`/__editor_save?scene=${sceneId}`, {
       method: 'POST', headers: { 'Content-Type': 'application/json' }, body: json,
     });
-    if (resp.ok) showToast('Saved scene.json!');
+    if (resp.ok) savedCount++;
     else throw new Error();
+
+    // Save modified source scenes (entry point changes)
+    for (const srcId of modifiedSources) {
+      const srcData = sourceSceneCache[srcId];
+      if (!srcData) continue;
+      const srcJson = JSON.stringify(srcData, null, 2);
+      const srcResp = await fetch(`/__editor_save?scene=${srcId}`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: srcJson,
+      });
+      if (srcResp.ok) savedCount++;
+    }
+    const extra = modifiedSources.size > 0 ? ` + ${modifiedSources.size} source scene(s)` : '';
+    showToast(`Saved scene.json${extra}!`);
+    modifiedSources.clear();
   } catch {
     navigator.clipboard.writeText(json).then(() => {
       showToast('scene.json copied to clipboard (save endpoint unavailable)');

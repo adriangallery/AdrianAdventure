@@ -258,8 +258,8 @@
               "op": "fadeToScene",
               "sceneId": "lobby",
               "spawn": {
-                "x": 50,
-                "y": 83
+                "x": 13.6,
+                "y": 92.4
               },
               "duration": 600
             }
@@ -274,8 +274,8 @@
               "op": "fadeToScene",
               "sceneId": "lobby",
               "spawn": {
-                "x": 50,
-                "y": 83
+                "x": 13.6,
+                "y": 92.4
               },
               "duration": 600
             }
@@ -1145,8 +1145,8 @@
             "op": "fadeToScene",
             "sceneId": "lobby",
             "spawn": {
-              "x": 50,
-              "y": 83
+              "x": 13.6,
+              "y": 92.4
             },
             "duration": 600
           }

@@ -80,6 +80,42 @@
               "op": "say",
               "text": "The sign doesn't respond. Like customer support during a rug pull."
             }
+          ],
+          "PICK": [
+            {
+              "op": "say",
+              "text": "I try to yank the sign down. It's bolted to the wall with institutional-grade screws. This clinic takes signage seriously."
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "say",
+              "text": "Signs don't open. Though this one could open your eyes to your on-chain addiction."
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "The clinic is 'always open,' according to the sign. Closing is not in its vocabulary."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I push the sign. It doesn't budge. More immutable than a deployed smart contract."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "I pull on the sign. A screw loosens slightly. The clinic's maintenance budget is clearly all on-chain."
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "The sign doesn't accept donations. Try the drop box instead."
+            }
           ]
         }
       },
@@ -113,8 +149,8 @@
                   "op": "fadeToScene",
                   "sceneId": "clinic_interior",
                   "spawn": {
-                    "x": 80,
-                    "y": 70
+                    "x": 18.1,
+                    "y": 95
                   }
                 }
               ],
@@ -136,8 +172,8 @@
                       "op": "fadeToScene",
                       "sceneId": "clinic_interior",
                       "spawn": {
-                        "x": 80,
-                        "y": 70
+                        "x": 18.1,
+                        "y": 95
                       }
                     }
                   ],
@@ -160,8 +196,8 @@
                   "op": "fadeToScene",
                   "sceneId": "clinic_interior",
                   "spawn": {
-                    "x": 80,
-                    "y": 70
+                    "x": 18.1,
+                    "y": 95
                   }
                 }
               ],
@@ -252,6 +288,36 @@
               "op": "say",
               "text": "It's a drop box. I should check what's inside."
             }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "I whisper into the drop box slot: 'Hello?' My voice echoes inside. Just me and the clipboards. A metaphor for my social life."
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "I close the drop box lid. It clicks shut with the finality of a confirmed transaction."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I push the drop box. It's bolted to the wall. Tamper-proof, like a properly deployed contract."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "I pull on the drop box. The mounting screws hold firm. Nobody's running away with the visitor logs."
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "The drop box accepts sign-in sheets, not gifts. It has a very specific deposit function."
+            }
           ]
         }
       },
@@ -279,6 +345,48 @@
             {
               "op": "say",
               "text": "The building absorbs sound. Designed for isolation."
+            }
+          ],
+          "USE": [
+            {
+              "op": "say",
+              "text": "I can't use an entire building. I can barely use a DEX without losing money."
+            }
+          ],
+          "PICK": [
+            {
+              "op": "say",
+              "text": "I can't pick up a building. My inventory has a size limit and a gas limit."
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "say",
+              "text": "The building has a front entrance. I should try the main door instead of attempting to open the whole structure."
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "I can't close a building. The clinic is open 24/7, like the blockchain itself."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I push against the concrete wall. It doesn't move. Built different. Literally."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "I try to pull the building toward me. Civil engineering doesn't work that way. Neither does market manipulation, but people keep trying."
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "The building doesn't accept gifts. It only accepts patients with depleted wallets and broken dreams."
             }
           ]
         }
@@ -314,6 +422,42 @@
               "op": "say",
               "text": "I wave at the camera. The LED blinks faster for a moment."
             }
+          ],
+          "PICK": [
+            {
+              "op": "say",
+              "text": "I reach for the camera. The LED turns red and starts blinking rapidly. I think I just triggered an alert. Smooth."
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "say",
+              "text": "I pry open the camera housing. Inside: a lens, a circuit board, and a tiny sticker that says 'Big Brother is watching your wallet.'"
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "I try to cover the lens. The camera rotates away from my hand. It's been programmed to resist censorship."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I push the camera upward. Now it's filming the sky. Cloud surveillance. The most expensive kind."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "I pull the camera toward me. The mounting bracket groans. This thing has been recording since the genesis block."
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "The camera already has my face. That's more than I've given most KYC forms."
+            }
           ]
         }
       },
@@ -347,6 +491,42 @@
             {
               "op": "say",
               "text": "The bench has heard every sad portfolio story. It's not impressed by mine."
+            }
+          ],
+          "PICK": [
+            {
+              "op": "say",
+              "text": "I try to lift the bench. It's cemented to the ground. Even the furniture here is staked."
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "say",
+              "text": "I check under the bench seat. Gum, a lost coin, and a tiny note: 'DYOR before sitting.'"
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "Benches don't close. They're always open for business. Like a 24/7 liquidity pool."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I push the bench. Cemented in place. More committed to its position than any day trader I know."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "I pull on the armrest. The carved 'WAGMI' catches my finger. Even graffiti has sharp edges."
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "The bench has been given enough butts and bad vibes. It's reached its deposit limit."
             }
           ]
         }
@@ -384,6 +564,48 @@
               "op": "say",
               "text": "The posters are laminated. Professionally done. This clinic has budget."
             }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "I read the serenity prayer aloud. For a moment, I actually feel serene. Then I remember my open leveraged positions."
+            }
+          ],
+          "PICK": [
+            {
+              "op": "say",
+              "text": "I try to peel a poster off. Laminated AND glued. The clinic treats its motivational content like a cold wallet — untouchable."
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "say",
+              "text": "I lift a poster corner. Behind it: a faded older poster that just says 'JUST HODL.' The OG recovery program."
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "I smooth the poster back against the wall. The 12 Steps stare back at me. Judgmentally."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I push on the poster. The wall behind is solid. More solid than any stablecoin backing I've ever audited."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "I pull at the edge. It peels slightly, revealing handwritten text: 'Step 13: Buy the dip anyway.' Someone relapsed."
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "The posters are free to read. The real cost is admitting they apply to you."
+            }
           ]
         }
       },
@@ -391,8 +613,8 @@
         "id": "hs_trash_can",
         "name": "Trash Can",
         "bounds": {
-          "x": 38.5,
-          "y": 66,
+          "x": 29.7,
+          "y": 67,
           "w": 3.5,
           "h": 14
         },
@@ -457,8 +679,8 @@
         "id": "hs_graffiti_gwei",
         "name": "Wall Graffiti",
         "bounds": {
-          "x": 42,
-          "y": 82,
+          "x": 39.4,
+          "y": 68.5,
           "w": 5,
           "h": 6
         },
@@ -523,10 +745,10 @@
         "id": "hs_pathway",
         "name": "Clinic Pathway",
         "bounds": {
-          "x": 20,
-          "y": 73,
-          "w": 15,
-          "h": 20
+          "x": 10.6,
+          "y": 65.7,
+          "w": 7.1,
+          "h": 13.8
         },
         "scripts": {
           "LOOK": [
@@ -591,18 +813,18 @@
         "id": "tr_back_to_mountain",
         "once": false,
         "bounds": {
-          "x": 11.1,
-          "y": 34.8,
+          "x": 0,
+          "y": 91.2,
           "w": 8,
-          "h": 38
+          "h": 8.8
         },
         "onEnter": [
           {
             "op": "fadeToScene",
             "sceneId": "mountain",
             "spawn": {
-              "x": 15,
-              "y": 85
+              "x": 56.7,
+              "y": 89.9
             }
           }
         ]
