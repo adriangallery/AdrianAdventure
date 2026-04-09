@@ -49,9 +49,10 @@ export class PreloadScene extends Phaser.Scene {
       'code_note', 'ledger', 'keycard', 'floppy_disk', 'printout',
       'water_bottle', 'golden_token', 'terminal_key', 'antenna',
       'sign_in_sheet', 'monkey_sticker',
-      'mystery_envelope', 'server_log', 'burned_chip', 'dr_satoshi_badge',
+      'mystery_envelope', 'mystery_envelope_opened', 'server_log', 'burned_chip', 'dr_satoshi_badge',
       'clinic_photo', 'adrian_note',
       'rubber_duck', 'receipt', 'broken_mouse',
+      'floppy_box', 'master_key_data',
     ];
     for (const id of itemIds) {
       const key = `item_${id}`;

@@ -835,6 +835,29 @@
           ]
         }
       ]
+    },
+    {
+      "items": ["floppy_box", "hs_desk"],
+      "result": "floppy_trading_data",
+      "script": [
+        { "op": "say", "text": "I slot a floppy into the trading desk's USB adapter. The three monitors synchronize." },
+        { "op": "wait", "ms": 800 },
+        { "op": "say", "text": "Old trading algorithms appear. Mean reversion strategies, liquidity curves, DCA ladders... all dated months before the ecosystem launched." },
+        { "op": "say", "text": "Adrian was backtesting strategies using the floppy collection as seed data. Each floppy's token ID maps to a specific trading parameter." },
+        { "op": "setFlag", "flag": "floppy_trading_secret", "value": true },
+        { "op": "achievement", "text": "ALPHA LEAK — Trading algorithms found on floppy" }
+      ]
+    },
+    {
+      "items": ["floppy_box", "hs_computer"],
+      "result": "floppy_mining_data",
+      "script": [
+        { "op": "say", "text": "I insert a floppy into the mining rig's only remaining drive slot. The GPUs spin up." },
+        { "op": "wait", "ms": 600 },
+        { "op": "say", "text": "The screen shows early FloorEngine configs. Before it was a public tool, it ran privately — funded by floppy disc sales. The original bootstrap mechanism." },
+        { "op": "say", "text": "A note in the config: 'If the floppies sell out, the engine lives forever. If they don't, it dies with me. — A'" },
+        { "op": "setFlag", "flag": "floppy_mining_lore", "value": true }
+      ]
     }
   ],
   "audio": {

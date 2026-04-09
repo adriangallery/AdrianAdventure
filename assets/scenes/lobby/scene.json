@@ -947,6 +947,19 @@
           ]
         }
       ]
+    },
+    {
+      "items": ["floppy_box", "hs_monitor_desk"],
+      "result": "floppy_lobby_data",
+      "script": [
+        { "op": "say", "text": "I pull a floppy from the box and slide it into the CRT's drive. The five monitors flicker simultaneously." },
+        { "op": "wait", "ms": 800 },
+        { "op": "say", "text": "One by one, each screen displays a different AdrianLAB collection: Floppies, Traits, Serums, Punks, and... wait. The fifth monitor shows something I've never seen." },
+        { "op": "wait", "ms": 600 },
+        { "op": "say", "text": "A hidden trading bot log. Timestamped entries going back months. The FloorEngine was doing more than sweeping floors — it was building a portfolio. MY portfolio." },
+        { "op": "setFlag", "flag": "floppy_lobby_secret", "value": true },
+        { "op": "achievement", "text": "DATA ARCHAEOLOGIST — Hidden bot logs discovered" }
+      ]
     }
   ],
   "audio": {

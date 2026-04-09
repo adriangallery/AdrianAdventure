@@ -6,7 +6,7 @@ import { hasWalletSave, loadForWallet, exportSignedWalletSave } from '@/web3/clo
 import { TWP, FONT } from '@/config/theme';
 
 /**
- * Floppy disk save button — top-right, next to wallet button.
+ * Floppy disk save button — top-left corner, always visible.
  */
 export class SaveButton {
   private scene: Phaser.Scene;
@@ -14,28 +14,21 @@ export class SaveButton {
 
   constructor(scene: Phaser.Scene) {
     this.scene = scene;
-    const { width } = scene.scale;
-    const fontSize = Math.max(10, Math.min(14, Math.floor(width * 0.012)));
 
-    // Position to the left of wallet button
-    this.container = scene.add.container(width - 140, 8).setDepth(600);
+    // Position top-left (independent of wallet button)
+    this.container = scene.add.container(8, 8).setDepth(600);
 
-    const bg = scene.add.rectangle(0, 0, 28, 24, TWP.WALLET_BG, 0.85)
+    const bg = scene.add.rectangle(0, 0, 30, 24, TWP.WALLET_BG, 0.85)
       .setStrokeStyle(1, TWP.WALLET_BORDER, 0.6)
-      .setOrigin(1, 0)
+      .setOrigin(0, 0)
       .setInteractive({ useHandCursor: true });
 
-    const label = scene.add.text(-6, 4, '\u{1F4BE}', {
-      fontFamily: FONT.FAMILY,
-      fontSize: `${fontSize}px`,
-    }).setOrigin(1, 0);
+    const label = scene.add.text(15, 12, '\u{1F4BE}', {
+      fontSize: '14px',
+    }).setOrigin(0.5, 0.5);
 
     this.container.add([bg, label]);
     bg.on('pointerdown', () => this.showMenu());
-
-    scene.scale.on('resize', (gs: Phaser.Structs.Size) => {
-      this.container.setPosition(gs.width - 140, 8);
-    });
   }
 
   private showMenu(): void {

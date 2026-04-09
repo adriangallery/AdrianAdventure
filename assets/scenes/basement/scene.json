@@ -1157,7 +1157,24 @@
   "items": {
     "sceneItems": []
   },
-  "combos": [],
+  "combos": [
+    {
+      "items": ["floppy_box", "hs_main_computer"],
+      "result": "floppy_basement_data",
+      "script": [
+        { "op": "say", "text": "I feed a floppy from my collection into the ancient drive. The green phosphor screen erupts with text." },
+        { "op": "wait", "ms": 1000 },
+        { "op": "say", "text": "READING DISC... ADRIANLAB COLLECTION #10000 SERIES... AUTHORIZED." },
+        { "op": "wait", "ms": 800 },
+        { "op": "say", "text": "Patient records scroll past — but these aren't the sanitized versions. These are Adrian's private notes. 'Patient Zero was the first to collect all floppies. The only one who understood the discs weren't just art.'" },
+        { "op": "wait", "ms": 600 },
+        { "op": "say", "text": "'Each floppy encodes a piece of the ecosystem's DNA. Together they form the master key. If you're reading this, you ARE the master key.'" },
+        { "op": "setFlag", "flag": "floppy_basement_decoded", "value": true },
+        { "op": "addItem", "id": "master_key_data", "name": "Master Key Data" },
+        { "op": "achievement", "text": "MASTER KEY — The floppies were the answer all along" }
+      ]
+    }
+  ],
   "audio": {
     "music": "retro-adventure",
     "variation": {

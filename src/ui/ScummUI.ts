@@ -371,6 +371,7 @@ export class ScummUI {
   }
 
   private static readonly ITEM_DESCS: Record<string, string> = {
+    floppy_box: "A box of AdrianLAB floppy discs from the #10000 series. Each one labeled, catalogued, preserved. These aren't just collectibles — they're encoded artifacts from the ecosystem's earliest days. I should try using them with any computer I find.",
     code_note: "A crumpled note with '7314' scrawled in shaky handwriting. Someone was in a hurry. Or panicking. Or both.",
     ledger: "Adrian's hardware wallet. The screen shows a balance that would make a whale blush. Or maybe it's just dust on the display.",
     keycard: "An admin keycard with Adrian's photo. He looks younger. And less concerned about gas fees.",
@@ -404,6 +405,14 @@ export class ScummUI {
   };
 
   private static readonly ITEM_VERB_RESPONSES: Record<string, Partial<Record<Verb, string>>> = {
+    floppy_box: {
+      [Verb.OPEN]: "I open the box. Inside: 11 floppy discs, each with a holographic AdrianLAB seal. #10000 through #10010. They're beautiful.",
+      [Verb.TALK]: "'Tell me your secrets.' The floppies remain magnetically silent. But I swear one of them vibrated.",
+      [Verb.PUSH]: "I push the box lid down. The discs rattle. Each one sounds slightly different. Like they're encoded with different data.",
+      [Verb.PULL]: "I pull out disc #10000. The first in the series. The label reads: 'GENESIS — Do not format.'",
+      [Verb.CLOSE]: "I close the box carefully. These floppies are worth more than most NFTs I've owned. And they actually store data.",
+      [Verb.GIVE]: "These floppies are soulbound to my wallet. Even if I wanted to give them away, the blockchain wouldn't let me. Probably.",
+    },
     code_note: {
       [Verb.OPEN]: "I unfold it completely. Still just 7314. No hidden message on the back either.",
       [Verb.TALK]: "*clears throat* 'Seven-three-one-four!' ...nothing happened. Was worth a try.",

@@ -115,7 +115,7 @@ export async function mintAchievement(achievementId: number): Promise<MintResult
   }
 }
 
-// ─── Read helpers (these work now) ───────────────────────────
+// ─── Read helpers ───────────────────────────────────────────
 
 const ERC1155_BALANCE_ABI = [
   {
@@ -158,7 +158,7 @@ export async function hasLabToken(address: Address, tokenId: number): Promise<bo
 }
 
 /**
- * Get $ZERO token balance (human readable).
+ * Get $ZERO token balance (compact human readable: 1.2K, 3.5M, etc.).
  */
 export async function getZeroBalance(address: Address): Promise<string> {
   try {
@@ -168,9 +168,40 @@ export async function getZeroBalance(address: Address): Promise<string> {
       functionName: 'balanceOf',
       args: [address],
     });
-    const formatted = Number(balance) / 1e18;
-    return formatted.toLocaleString('en-US', { maximumFractionDigits: 2 });
-  } catch {
+    const num = Number(balance) / 1e18;
+    if (num === 0) return '0';
+    if (num >= 1_000_000) return `${(num / 1_000_000).toFixed(1)}M`;
+    if (num >= 1_000) return `${(num / 1_000).toFixed(1)}K`;
+    if (num >= 1) return num.toFixed(1);
+    return num.toFixed(4);
+  } catch (err) {
+    console.error('getZeroBalance failed:', err);
     return '0';
+  }
+}
+
+// ─── AdrianLAB Floppy Box check (token IDs 10000-10010) ─────
+
+/**
+ * Check if address owns any AdrianLAB ERC1155 token in range 10000-10010.
+ * Returns true if they hold at least one.
+ */
+export async function hasFloppyBoxTokens(address: Address): Promise<boolean> {
+  const FLOPPY_IDS = [10000, 10001, 10002, 10003, 10004, 10005, 10006, 10007, 10008, 10009, 10010];
+  try {
+    const results = await Promise.all(
+      FLOPPY_IDS.map((id) =>
+        publicClient.readContract({
+          address: CONTRACTS.ADRIAN_LAB as Address,
+          abi: ERC1155_BALANCE_ABI,
+          functionName: 'balanceOf',
+          args: [address, BigInt(id)],
+        })
+      )
+    );
+    return results.some((balance) => balance > 0n);
+  } catch (err) {
+    console.error('Floppy box token check failed:', err);
+    return false;
   }
 }

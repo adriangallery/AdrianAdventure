@@ -807,7 +807,30 @@
   "items": {
     "sceneItems": []
   },
-  "combos": [],
+  "combos": [
+    {
+      "items": ["floppy_box", "hs_monitor"],
+      "result": "floppy_endgame",
+      "script": [
+        { "op": "ifFlag", "flag": "floppy_endgame_complete", "then": [
+          { "op": "say", "text": "The monitor still shows my floppy data alongside my wallet history. Two collections. One story." }
+        ], "else": [
+          { "op": "say", "text": "I hold the Floppy Disc Box up to the monitor. My hands are shaking." },
+          { "op": "wait", "ms": 1200 },
+          { "op": "say", "text": "The display splits. On the left: my wallet history. On the right: the floppy collection's on-chain data. The timestamps match." },
+          { "op": "wait", "ms": 1000 },
+          { "op": "say", "text": "Every floppy I minted corresponds to a moment in my crypto journey. Each one a snapshot. A backup of who I was at every turning point." },
+          { "op": "wait", "ms": 800 },
+          { "op": "say", "text": "'Patient Zero's treatment was never about curing crypto addiction. It was about preserving the story. YOUR story. And you kept the floppies. You kept the proof.'" },
+          { "op": "wait", "ms": 600 },
+          { "op": "say", "text": "The screen fades to a single word in golden text: 'PRESERVED.'" },
+          { "op": "setFlag", "flag": "floppy_endgame_complete", "value": true },
+          { "op": "setFlag", "flag": "floppy_lore_discovered", "value": true },
+          { "op": "achievement", "text": "PRESERVED — Your floppies hold the story of Patient Zero" }
+        ]}
+      ]
+    }
+  ],
   "audio": {
     "music": "retroadrian",
     "variation": {

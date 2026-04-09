@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import { connectWallet, disconnectWallet, getWalletState, onWalletChange, truncateAddress, hasInjectedWallet, hasWalletConnectConfig, type WalletProviderType } from '@/web3/wallet';
-import { getZeroBalance } from '@/web3/contracts';
+import { getZeroBalance, hasFloppyBoxTokens } from '@/web3/contracts';
 import { loadNFTs, type GameNFT } from '@/web3/nft-loader';
 import { hasWalletSave, loadForWallet } from '@/web3/cloud-save';
 import type { InventorySystem } from '@/systems/InventorySystem';
@@ -82,6 +82,14 @@ export class WalletButton {
           this.inventory.addNFTItem(`nft_${nft.contract}_${nft.tokenId}`, `${nft.filter}: ${nft.name}`, nft.image);
         }
       } catch (err) { console.error('NFT load failed:', err); }
+
+      // Check for AdrianLAB Floppy Box tokens (10000-10010)
+      try {
+        const hasFloppy = await hasFloppyBoxTokens(address as `0x${string}`);
+        if (hasFloppy && !this.inventory.hasItem('floppy_box')) {
+          this.inventory.addItem('floppy_box', 'Floppy Disc Box');
+        }
+      } catch (err) { console.error('Floppy box check failed:', err); }
     }
 
     // Check for existing wallet save and offer to load
