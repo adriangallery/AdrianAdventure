@@ -104,9 +104,13 @@ export class SaveButton {
         : 'Empty';
       modal.appendChild(makeBtn(`\u{1F4BE} Save Slot ${slotId}: ${slotLabel}`, !!gameState, async () => {
         if (gameState) {
+          // Warn if slot already has data
+          if (slot) {
+            const confirmed = confirm(`Overwrite Slot ${slotId}?\n\n"${slot.sceneName}" saved on ${new Date(slot.timestamp).toLocaleString()}\n\nThis cannot be undone.`);
+            if (!confirmed) return;
+          }
           gameState.savedAt = Date.now();
           saveSystem.saveToSlot(slotId, gameState, sceneName);
-          // Also sync to Railway if wallet connected
           if (isWallet) {
             saveForWalletRemote(address!, gameState, sceneName).catch(() => {});
           }
