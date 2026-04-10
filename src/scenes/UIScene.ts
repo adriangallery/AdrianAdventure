@@ -147,11 +147,17 @@ export class UIScene extends Phaser.Scene {
 
     // NPC tapped → start dialogue with talk animation
     gameScene.events.on('npc:tapped', (npcId: string, treeId: string) => {
+      // Prevent double-triggering while dialogue is active
+      if (this.registry.get('dialogueActive')) return;
       // Find the NPC and start talk animation
       const npcs = (gameScene as any).npcs as import('@/objects/NPC').NPC[] | undefined;
       const npc = npcs?.find((n) => n.npcId === npcId);
       npc?.startTalking();
-      this.startDialogueFromScene(treeId).then(() => npc?.stopTalking());
+      this.registry.set('dialogueActive', true);
+      this.startDialogueFromScene(treeId).then(() => {
+        npc?.stopTalking();
+        this.registry.set('dialogueActive', false);
+      });
     });
 
     // Say requests from ScriptEngine
@@ -164,9 +170,12 @@ export class UIScene extends Phaser.Scene {
       this.dialogueBox.sayBrief(text, durationMs, speaker).then(() => resolve?.());
     });
 
-    // Dialogue requests
+    // Dialogue requests (from ScriptEngine opcode)
     this.events.on('startDialogue', (_npcId: string, treeId: string) => {
-      this.startDialogueFromScene(treeId);
+      this.registry.set('dialogueActive', true);
+      this.startDialogueFromScene(treeId).then(() => {
+        this.registry.set('dialogueActive', false);
+      });
     });
 
     // Cinematic events (so scripts running from UIScene context can trigger them)
@@ -210,6 +219,7 @@ export class UIScene extends Phaser.Scene {
         text: nodeData.text,
         next: nodeData.next,
         end: nodeData.end,
+        onEnter: nodeData.onEnter,
         choices: nodeData.choices?.map((c) => ({
           text: c.text,
           next: c.next,

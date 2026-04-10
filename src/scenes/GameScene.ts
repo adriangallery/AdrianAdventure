@@ -319,6 +319,8 @@ export class GameScene extends Phaser.Scene {
   private handlePointerDown(pointer: Phaser.Input.Pointer): void {
     if (this.scriptEngine.isRunning()) return;
     if (this.inputCooldownFrames > 0) return;
+    // Block all game input while dialogue tree is running (choices, etc.)
+    if (this.registry.get('dialogueActive')) return;
 
     // Ignore the click that just dismissed a dialogue (same frame / same tick)
     const dismissedAt = this.registry.get('dialogueDismissedAt') as number | undefined;
