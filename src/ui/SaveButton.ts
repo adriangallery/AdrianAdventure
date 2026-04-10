@@ -2,7 +2,7 @@ import Phaser from 'phaser';
 import type { GameState } from '@/types/game.types';
 import { SaveLoadSystem } from '@/systems/SaveLoadSystem';
 import { getWalletState } from '@/web3/wallet';
-import { exportSignedWalletSave, importWalletSave } from '@/web3/wallet-save';
+import { exportSignedWalletSave, importWalletSave, saveForWalletRemote, loadForWallet } from '@/web3/wallet-save';
 import type { GameScene } from '@/scenes/GameScene';
 import { TWP, FONT } from '@/config/theme';
 
@@ -102,10 +102,14 @@ export class SaveButton {
       const slotLabel = slot
         ? `${slot.sceneName} — ${new Date(slot.timestamp).toLocaleDateString()}`
         : 'Empty';
-      modal.appendChild(makeBtn(`\u{1F4BE} Save Slot ${slotId}: ${slotLabel}`, !!gameState, () => {
+      modal.appendChild(makeBtn(`\u{1F4BE} Save Slot ${slotId}: ${slotLabel}`, !!gameState, async () => {
         if (gameState) {
           gameState.savedAt = Date.now();
           saveSystem.saveToSlot(slotId, gameState, sceneName);
+          // Also sync to Railway if wallet connected
+          if (isWallet) {
+            saveForWalletRemote(address!, gameState, sceneName).catch(() => {});
+          }
           cleanup();
         }
       }));

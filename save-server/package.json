@@ -1,0 +1,13 @@
+{
+  "name": "zeroadventure-save-server",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "hono": "^4.0.0",
+    "@hono/node-server": "^1.8.0",
+    "viem": "^2.21.0"
+  }
+}

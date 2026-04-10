@@ -2,7 +2,7 @@ import Phaser from 'phaser';
 import { connectWallet, disconnectWallet, getWalletState, onWalletChange, truncateAddress, hasInjectedWallet, hasWalletConnectConfig, type WalletProviderType } from '@/web3/wallet';
 import { getZeroBalance, hasFloppyBoxTokens } from '@/web3/contracts';
 import { loadNFTs, type GameNFT } from '@/web3/nft-loader';
-import { hasWalletSave, loadForWallet } from '@/web3/wallet-save';
+import { loadForWallet } from '@/web3/wallet-save';
 import type { InventorySystem } from '@/systems/InventorySystem';
 import { TWP, FONT } from '@/config/theme';
 
@@ -96,10 +96,10 @@ export class WalletButton {
       } catch (err) { console.error('Floppy box check failed:', err); }
     }
 
-    // Check for existing wallet save and offer to load
-    if (hasWalletSave(address)) {
-      const walletSave = loadForWallet(address);
-      if (walletSave) {
+    // Check for existing wallet save and offer to load (tries remote first)
+    const walletSave = await loadForWallet(address);
+    if (walletSave) {
+      {
         const shouldLoad = await this.showLoadSavePrompt(walletSave.sceneName, walletSave.timestamp);
         if (shouldLoad) {
           // Restore saved game state
@@ -122,6 +122,7 @@ export class WalletButton {
     }
 
     // Notify external systems
+    // (also remove unused hasWalletSave import if needed)
     this.onConnectedCallback?.(address);
   }
 

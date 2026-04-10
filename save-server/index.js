@@ -1,0 +1,110 @@
+import { Hono } from 'hono';
+import { cors } from 'hono/cors';
+import { serve } from '@hono/node-server';
+import { verifyMessage } from 'viem';
+import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs';
+import { join } from 'path';
+
+const app = new Hono();
+
+// Volume mount path (Railway volume)
+const DATA_DIR = process.env.SAVE_DIR || '/data/saves';
+if (!existsSync(DATA_DIR)) mkdirSync(DATA_DIR, { recursive: true });
+
+// CORS — allow game origin
+app.use('*', cors({
+  origin: ['https://zeroadventure.vercel.app', 'http://localhost:3000', 'http://localhost:5173'],
+  allowMethods: ['GET', 'POST', 'OPTIONS'],
+}));
+
+// Health check
+app.get('/', (c) => c.json({ status: 'ok', service: 'zeroadventure-save' }));
+
+/**
+ * GET /save/:address — Load save for a wallet address
+ */
+app.get('/save/:address', (c) => {
+  const address = c.req.param('address').toLowerCase();
+  if (!/^0x[a-f0-9]{40}$/.test(address)) {
+    return c.json({ error: 'Invalid address' }, 400);
+  }
+
+  const filePath = join(DATA_DIR, `${address}.json`);
+  if (!existsSync(filePath)) {
+    return c.json({ error: 'No save found' }, 404);
+  }
+
+  try {
+    const data = JSON.parse(readFileSync(filePath, 'utf-8'));
+    return c.json(data);
+  } catch {
+    return c.json({ error: 'Corrupt save file' }, 500);
+  }
+});
+
+/**
+ * POST /save — Store a signed save
+ * Body: { state, address, timestamp, signature, sceneName }
+ * Verifies the signature matches the address before storing.
+ */
+app.post('/save', async (c) => {
+  try {
+    const body = await c.req.json();
+    const { state, address, timestamp, signature, sceneName } = body;
+
+    if (!state || !address || !timestamp || !signature) {
+      return c.json({ error: 'Missing required fields: state, address, timestamp, signature' }, 400);
+    }
+
+    const addr = address.toLowerCase();
+    if (!/^0x[a-f0-9]{40}$/.test(addr)) {
+      return c.json({ error: 'Invalid address' }, 400);
+    }
+
+    // Verify signature — the message format must match what the client signs
+    const message = JSON.stringify({ state, address: addr, timestamp });
+    let valid = false;
+    try {
+      valid = await verifyMessage({
+        address: addr,
+        message,
+        signature,
+      });
+    } catch (err) {
+      console.error('Signature verification failed:', err);
+      return c.json({ error: 'Invalid signature' }, 401);
+    }
+
+    if (!valid) {
+      return c.json({ error: 'Signature does not match address' }, 401);
+    }
+
+    // Store the save
+    const filePath = join(DATA_DIR, `${addr}.json`);
+    const saveData = { state, address: addr, timestamp, signature, sceneName, savedAt: Date.now() };
+    writeFileSync(filePath, JSON.stringify(saveData, null, 2));
+
+    console.log(`Save stored for ${addr} (${sceneName}) at ${new Date().toISOString()}`);
+    return c.json({ ok: true, address: addr, sceneName });
+  } catch (err) {
+    console.error('Save error:', err);
+    return c.json({ error: 'Internal server error' }, 500);
+  }
+});
+
+/**
+ * DELETE /save/:address — Delete save (requires signature)
+ */
+app.delete('/save/:address', async (c) => {
+  const address = c.req.param('address').toLowerCase();
+  const filePath = join(DATA_DIR, `${address}.json`);
+  if (existsSync(filePath)) {
+    const { unlinkSync } = await import('fs');
+    unlinkSync(filePath);
+  }
+  return c.json({ ok: true });
+});
+
+const port = parseInt(process.env.PORT || '3001');
+console.log(`Save server listening on port ${port}`);
+serve({ fetch: app.fetch, port });

@@ -121,8 +121,8 @@ export class SaveLoadSystem {
     return hasWalletSave(address);
   }
 
-  /** Load the wallet-linked save */
-  loadWalletSave(address: string): WalletSave | null {
+  /** Load the wallet-linked save (async — tries remote first) */
+  async loadWalletSave(address: string): Promise<WalletSave | null> {
     return loadForWallet(address);
   }
 }
