@@ -245,6 +245,7 @@
     <button id="btn-mode-tr" class="mode-btn" title="Edit triggers (3)">Triggers</button>
     <button id="btn-mode-npc" class="mode-btn" title="Edit NPCs (4)">NPCs</button>
     <button id="btn-mode-entry" class="mode-btn" title="Entry points from other scenes (5)">Entries</button>
+    <button id="btn-mode-w3v" class="mode-btn" title="Web3 Visuals — posters, gated sprites (6)">W3V</button>
   </div>
   <div class="tb-sep"></div>
 
@@ -304,6 +305,7 @@
   <div class="section"><span>TR:</span> <span id="tr-count" class="val">0</span></div>
   <div class="section"><span>NPC:</span> <span id="npc-count" class="val">0</span></div>
   <div class="section"><span>Entry:</span> <span id="entry-count" class="val">0</span></div>
+  <div class="section"><span>W3V:</span> <span id="w3v-count" class="val">0</span></div>
 </div>
 
 <div id="modal-overlay">
@@ -349,7 +351,9 @@ let modifiedSources = new Set();
 let selectedIdx = -1;
 let selectedNpcIdx = -1;
 let selectedEntryIdx = -1;
-let editMode = 'hs'; // 'hs' | 'wa' | 'tr' | 'npc' | 'entry'
+let selectedW3vIdx = -1;
+let w3vList = [];
+let editMode = 'hs'; // 'hs' | 'wa' | 'tr' | 'npc' | 'entry' | 'w3v'
 let drawMode = false;
 let zoom = 1;
 let imgNatW = 0, imgNatH = 0;
@@ -379,8 +383,10 @@ const modalTrSY = $('modal-tr-sy');
 const modalTrOnce = $('modal-tr-once');
 const btnModeNPC = $('btn-mode-npc');
 const btnModeEntry = $('btn-mode-entry');
+const btnModeW3V = $('btn-mode-w3v');
 const npcCountEl = $('npc-count');
 const entryCountEl = $('entry-count');
+const w3vCountEl = $('w3v-count');
 const btnDraw = $('btn-draw');
 const btnDelete = $('btn-delete');
 const btnExport = $('btn-export');
@@ -419,6 +425,7 @@ btnModeWA.addEventListener('click', () => setEditMode('wa'));
 btnModeTR.addEventListener('click', () => setEditMode('tr'));
 btnModeNPC.addEventListener('click', () => setEditMode('npc'));
 btnModeEntry.addEventListener('click', () => setEditMode('entry'));
+btnModeW3V.addEventListener('click', () => setEditMode('w3v'));
 btnDraw.addEventListener('click', toggleDrawMode);
 btnDelete.addEventListener('click', deleteSelected);
 btnExport.addEventListener('click', exportJSON);
@@ -555,11 +562,15 @@ function setEditMode(mode) {
   btnModeTR.className = 'mode-btn' + (mode === 'tr' ? ' active' : '');
   btnModeNPC.className = 'mode-btn' + (mode === 'npc' ? ' active-npc' : '');
   btnModeEntry.className = 'mode-btn' + (mode === 'entry' ? ' active' : '');
+  btnModeW3V.className = 'mode-btn' + (mode === 'w3v' ? ' active' : '');
   if (mode === 'tr') btnModeTR.style.background = '#8b008b';
   else btnModeTR.style.background = '';
   if (mode === 'entry') btnModeEntry.style.background = '#008888';
   else btnModeEntry.style.background = '';
-  const modeNames = { hs: 'Hotspots', wa: 'Walk Areas', tr: 'Triggers', npc: 'NPCs', entry: 'Entry Points' };
+  if (mode === 'w3v') btnModeW3V.style.background = '#8844aa';
+  else btnModeW3V.style.background = '';
+  selectedW3vIdx = -1;
+  const modeNames = { hs: 'Hotspots', wa: 'Walk Areas', tr: 'Triggers', npc: 'NPCs', entry: 'Entry Points', w3v: 'Web3 Visuals' };
   infoMode.textContent = modeNames[mode] || mode;
   renderAll();
 }
@@ -623,9 +634,33 @@ async function loadScene(sceneId) {
       img.onerror = () => { n.spriteImg = null; };
     });
 
+    // Parse web3Visuals
+    w3vList = (sceneData.web3Visuals ?? []).map(v => ({
+      id: v.id,
+      position: { x: v.position.x, y: v.position.y },
+      size: { w: v.size?.w ?? 5, h: v.size?.h ?? 10 },
+      defaultSprite: v.defaultSprite,
+      variants: v.variants ?? [],
+      depth: v.depth ?? 5,
+      spriteImg: null,
+    }));
+    // Load default sprites for preview
+    w3vList.forEach(v => {
+      const img = new Image();
+      img.src = `/assets/scenes/${sceneId}/${v.defaultSprite}.png`;
+      img.onload = () => { v.spriteImg = img; renderAll(); };
+      // Try variant sprites too
+      for (const vr of v.variants) {
+        const vImg = new Image();
+        vImg.src = `/assets/scenes/${sceneId}/${vr.sprite}.png`;
+        vImg.onload = () => { if (!v.spriteImg) { v.spriteImg = vImg; renderAll(); } };
+      }
+    });
+
     selectedIdx = -1;
     selectedNpcIdx = -1;
     selectedEntryIdx = -1;
+    selectedW3vIdx = -1;
 
     // Scan other scenes for transitions targeting this scene (entry points)
     incomingSpawns = [];
@@ -721,6 +756,33 @@ function renderAll() {
     renderNPC(npc, idx, isSel, !isActive);
   });
 
+  // Render web3Visuals
+  container.querySelectorAll('.w3v-marker').forEach(el => el.remove());
+  w3vList.forEach((v, idx) => {
+    const isActive = editMode === 'w3v';
+    const isSel = isActive && idx === selectedW3vIdx;
+    const px = v.position.x / 100 * imgNatW * zoom;
+    const py = v.position.y / 100 * imgNatH * zoom;
+    const pw = v.size.w / 100 * imgNatW * zoom;
+    const ph = v.size.h / 100 * imgNatH * zoom;
+    const el = document.createElement('div');
+    el.className = 'w3v-marker';
+    el.style.cssText = `position:absolute;left:${px - pw/2}px;top:${py - ph/2}px;width:${pw}px;height:${ph}px;` +
+      `border:2px solid ${isSel ? '#ff00ff' : '#aa44cc'};background:rgba(170,68,204,${isActive ? 0.15 : 0.05});` +
+      `opacity:${isActive ? 1 : 0.4};cursor:${isActive ? 'move' : 'default'};z-index:${isSel ? 12 : 6};`;
+    if (v.spriteImg) {
+      const img = document.createElement('img');
+      img.src = v.spriteImg.src;
+      img.style.cssText = 'width:100%;height:100%;object-fit:contain;image-rendering:pixelated;opacity:0.8;pointer-events:none;';
+      el.appendChild(img);
+    }
+    const lbl = document.createElement('div');
+    lbl.style.cssText = 'position:absolute;top:-16px;left:0;font-size:9px;color:#cc66ff;white-space:nowrap;pointer-events:none;';
+    lbl.textContent = v.id;
+    el.appendChild(lbl);
+    container.appendChild(el);
+  });
+
   // Render entry point markers
   container.querySelectorAll('.entry-marker').forEach(el => el.remove());
   incomingSpawns.forEach((entry, idx) => {
@@ -734,6 +796,7 @@ function renderAll() {
   trCountEl.textContent = triggers.length;
   npcCountEl.textContent = npcList.length;
   entryCountEl.textContent = incomingSpawns.length;
+  w3vCountEl.textContent = w3vList.length;
   updateInfoPanel();
   updatePlayerPreview();
   updateSpawnMarker();
@@ -971,6 +1034,39 @@ function updateInfoPanel() {
     }
     return;
   }
+  // W3V mode
+  if (editMode === 'w3v') {
+    document.getElementById('w3v-size-ctrl')?.remove();
+    if (selectedW3vIdx >= 0 && selectedW3vIdx < w3vList.length) {
+      const v = w3vList[selectedW3vIdx];
+      selName.textContent = v.id;
+      selBounds.textContent = `x:${r(v.position.x)} y:${r(v.position.y)} w:${r(v.size.w)} h:${r(v.size.h)}`;
+      const ctrl = document.createElement('div');
+      ctrl.id = 'w3v-size-ctrl';
+      ctrl.style.cssText = 'display:flex;align-items:center;gap:8px;padding:4px 12px;background:#16213e;font-size:11px;flex-wrap:wrap;';
+      ctrl.innerHTML = `
+        <label style="color:#888">W:</label><input type="range" min="0.5" max="20" step="0.1" value="${v.size.w}" style="width:100px" id="w3v-w-slider"><span id="w3v-w-val" style="color:#cc66ff;min-width:36px">${v.size.w.toFixed(1)}%</span>
+        <label style="color:#888">H:</label><input type="range" min="0.5" max="40" step="0.1" value="${v.size.h}" style="width:100px" id="w3v-h-slider"><span id="w3v-h-val" style="color:#cc66ff;min-width:36px">${v.size.h.toFixed(1)}%</span>
+      `;
+      document.getElementById('toolbar').after(ctrl);
+      document.getElementById('w3v-w-slider').addEventListener('input', (e) => {
+        v.size.w = parseFloat(e.target.value);
+        document.getElementById('w3v-w-val').textContent = v.size.w.toFixed(1) + '%';
+        selBounds.textContent = `x:${r(v.position.x)} y:${r(v.position.y)} w:${r(v.size.w)} h:${r(v.size.h)}`;
+        renderAll();
+      });
+      document.getElementById('w3v-h-slider').addEventListener('input', (e) => {
+        v.size.h = parseFloat(e.target.value);
+        document.getElementById('w3v-h-val').textContent = v.size.h.toFixed(1) + '%';
+        selBounds.textContent = `x:${r(v.position.x)} y:${r(v.position.y)} w:${r(v.size.w)} h:${r(v.size.h)}`;
+        renderAll();
+      });
+    } else {
+      selName.textContent = 'none';
+      selBounds.textContent = '--';
+    }
+    return;
+  }
   const list = activeList();
   if (selectedIdx >= 0 && selectedIdx < list.length) {
     const item = list[selectedIdx];
@@ -1075,6 +1171,25 @@ container.addEventListener('mousedown', (e) => {
     return;
   }
 
+  // W3V click — drag to reposition
+  const w3vEl = e.target.closest('.w3v-marker');
+  if (w3vEl && editMode === 'w3v') {
+    const idx = [...container.querySelectorAll('.w3v-marker')].indexOf(w3vEl);
+    if (idx >= 0) {
+      selectedW3vIdx = idx;
+      selectedIdx = -1;
+      dragging = {
+        type: 'w3v-move', idx,
+        startX: e.clientX, startY: e.clientY,
+        origPosition: { ...w3vList[idx].position },
+      };
+      updateInfoPanel();
+      renderAll();
+      e.preventDefault();
+      return;
+    }
+  }
+
   // NPC click — drag to reposition
   const npcEl = e.target.closest('.npc-marker');
   if (npcEl && editMode === 'npc') {
@@ -1161,6 +1276,16 @@ document.addEventListener('mousemove', (e) => {
     entry.position.x = clamp(dragging.origPosition.x + dPctX, 0, 100);
     entry.position.y = clamp(dragging.origPosition.y + dPctY, 0, 100);
     syncEntryToSource(entry);
+    renderAll();
+    return;
+  }
+
+  // W3V move
+  if (dragging.type === 'w3v-move') {
+    const v = w3vList[dragging.idx];
+    v.position.x = clamp(dragging.origPosition.x + dPctX, 0, 100);
+    v.position.y = clamp(dragging.origPosition.y + dPctY, 0, 100);
+    updateInfoPanel();
     renderAll();
     return;
   }
@@ -1406,6 +1531,22 @@ function buildSceneOutput() {
   updated.walkableAreas = walkAreas.map(wa => ({
     x: r(wa.bounds.x), y: r(wa.bounds.y), w: r(wa.bounds.w), h: r(wa.bounds.h),
   }));
+  // Save web3Visuals positions/sizes
+  if (w3vList.length > 0) {
+    updated.web3Visuals = w3vList.map(v => {
+      const orig = (sceneData.web3Visuals ?? []).find(o => o.id === v.id) || {};
+      return {
+        ...orig,
+        id: v.id,
+        position: { x: r(v.position.x), y: r(v.position.y) },
+        size: { w: r(v.size.w), h: r(v.size.h) },
+        defaultSprite: v.defaultSprite,
+        variants: v.variants,
+        depth: v.depth,
+      };
+    });
+  }
+
   // Save NPC positions
   if (npcList.length > 0) {
     updated.npcs = npcList.map(n => {
