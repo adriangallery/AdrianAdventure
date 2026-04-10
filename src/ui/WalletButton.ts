@@ -96,8 +96,10 @@ export class WalletButton {
       } catch (err) { console.error('Floppy box check failed:', err); }
     }
 
-    // Check for existing wallet save and offer to load (tries remote first)
-    const walletSave = await loadForWallet(address);
+    // Only offer to load wallet save if no game is actively in progress
+    const currentState = this.scene.registry.get('gameState');
+    const isPlaying = currentState && currentState.visited && currentState.visited.length > 1;
+    const walletSave = !isPlaying ? await loadForWallet(address) : null;
     if (walletSave) {
       {
         const shouldLoad = await this.showLoadSavePrompt(walletSave.sceneName, walletSave.timestamp);
