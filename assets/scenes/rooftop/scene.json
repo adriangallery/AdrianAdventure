@@ -33,7 +33,7 @@
       "idle": null,
       "walk": null
     },
-    "playerScale": 2.2
+    "playerScale": 6
   },
   "ui": {
     "verbs": [
@@ -548,12 +548,30 @@
               "op": "ifFlag",
               "flag": "has_keycard",
               "then": [
-                { "op": "sayBrief", "text": "The keycard beeps. Green light. The hatch swings open — a service ladder descends into darkness.", "duration": 1500 },
-                { "op": "setFlag", "flag": "basement_unlocked", "value": true },
-                { "op": "fadeToScene", "sceneId": "basement", "spawn": { "x": 50, "y": 90 } }
+                {
+                  "op": "sayBrief",
+                  "text": "The keycard beeps. Green light. The hatch swings open — a service ladder descends into darkness.",
+                  "duration": 1500
+                },
+                {
+                  "op": "setFlag",
+                  "flag": "basement_unlocked",
+                  "value": true
+                },
+                {
+                  "op": "fadeToScene",
+                  "sceneId": "basement",
+                  "spawn": {
+                    "x": 50,
+                    "y": 90
+                  }
+                }
               ],
               "else": [
-                { "op": "say", "text": "The hatch is sealed. A keycard reader blinks red next to the handle. Whatever's at the bottom of this shaft, Adrian kept it locked down." }
+                {
+                  "op": "say",
+                  "text": "The hatch is sealed. A keycard reader blinks red next to the handle. Whatever's at the bottom of this shaft, Adrian kept it locked down."
+                }
               ]
             }
           ],
@@ -574,12 +592,30 @@
               "op": "ifFlag",
               "flag": "has_keycard",
               "then": [
-                { "op": "sayBrief", "text": "The keycard beeps. Green light. The hatch swings open — a service ladder descends into darkness.", "duration": 1500 },
-                { "op": "setFlag", "flag": "basement_unlocked", "value": true },
-                { "op": "fadeToScene", "sceneId": "basement", "spawn": { "x": 50, "y": 90 } }
+                {
+                  "op": "sayBrief",
+                  "text": "The keycard beeps. Green light. The hatch swings open — a service ladder descends into darkness.",
+                  "duration": 1500
+                },
+                {
+                  "op": "setFlag",
+                  "flag": "basement_unlocked",
+                  "value": true
+                },
+                {
+                  "op": "fadeToScene",
+                  "sceneId": "basement",
+                  "spawn": {
+                    "x": 50,
+                    "y": 90
+                  }
+                }
               ],
               "else": [
-                { "op": "say", "text": "The keycard slot blinks red. ACCESS DENIED. I need proper credentials to open this shaft." }
+                {
+                  "op": "say",
+                  "text": "The keycard slot blinks red. ACCESS DENIED. I need proper credentials to open this shaft."
+                }
               ]
             }
           ],
@@ -685,24 +721,87 @@
           "h": 30
         },
         "scripts": {
-          "LOOK": [{ "op": "say", "text": "The door back down to the trading floor. A warm glow leaks from underneath." }],
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "The door back down to the trading floor. A warm glow leaks from underneath."
+            }
+          ],
           "USE": [
-            { "op": "sayBrief", "text": "I head back downstairs.", "duration": 800 },
-            { "op": "fadeToScene", "sceneId": "upstairs", "spawn": { "x": 29.6, "y": 97 } }
+            {
+              "op": "sayBrief",
+              "text": "I head back downstairs.",
+              "duration": 800
+            },
+            {
+              "op": "fadeToScene",
+              "sceneId": "upstairs",
+              "spawn": {
+                "x": 29.6,
+                "y": 97
+              }
+            }
           ],
           "OPEN": [
-            { "op": "sayBrief", "text": "Back to the trading floor.", "duration": 800 },
-            { "op": "fadeToScene", "sceneId": "upstairs", "spawn": { "x": 29.6, "y": 97 } }
+            {
+              "op": "sayBrief",
+              "text": "Back to the trading floor.",
+              "duration": 800
+            },
+            {
+              "op": "fadeToScene",
+              "sceneId": "upstairs",
+              "spawn": {
+                "x": 29.6,
+                "y": 97
+              }
+            }
           ],
-          "TALK": [{ "op": "say", "text": "The door creaks in the wind. It misses being indoors." }],
-          "PICK": [{ "op": "say", "text": "It's a door, not a doorstop." }],
-          "CLOSE": [{ "op": "say", "text": "It's already closed. The wind up here would slam it shut anyway." }],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "The door creaks in the wind. It misses being indoors."
+            }
+          ],
+          "PICK": [
+            {
+              "op": "say",
+              "text": "It's a door, not a doorstop."
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "It's already closed. The wind up here would slam it shut anyway."
+            }
+          ],
           "PUSH": [
-            { "op": "sayBrief", "text": "I push through the door and head back down.", "duration": 800 },
-            { "op": "fadeToScene", "sceneId": "upstairs", "spawn": { "x": 29.6, "y": 97 } }
+            {
+              "op": "sayBrief",
+              "text": "I push through the door and head back down.",
+              "duration": 800
+            },
+            {
+              "op": "fadeToScene",
+              "sceneId": "upstairs",
+              "spawn": {
+                "x": 29.6,
+                "y": 97
+              }
+            }
           ],
-          "PULL": [{ "op": "say", "text": "I pull the door. It opens towards me, letting warm air rush out." }],
-          "GIVE": [{ "op": "say", "text": "Doors don't accept gifts. They accept keys. And sometimes kicks." }]
+          "PULL": [
+            {
+              "op": "say",
+              "text": "I pull the door. It opens towards me, letting warm air rush out."
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "Doors don't accept gifts. They accept keys. And sometimes kicks."
+            }
+          ]
         }
       }
     ],
@@ -736,12 +835,30 @@
   },
   "combos": [
     {
-      "items": ["keycard", "hs_roof_access_panel"],
+      "items": [
+        "keycard",
+        "hs_roof_access_panel"
+      ],
       "result": null,
       "script": [
-        { "op": "sayBrief", "text": "The keycard beeps. Green light. The hatch swings open — a service ladder descends into darkness.", "duration": 1500 },
-        { "op": "setFlag", "flag": "basement_unlocked", "value": true },
-        { "op": "fadeToScene", "sceneId": "basement", "spawn": { "x": 50, "y": 90 } }
+        {
+          "op": "sayBrief",
+          "text": "The keycard beeps. Green light. The hatch swings open — a service ladder descends into darkness.",
+          "duration": 1500
+        },
+        {
+          "op": "setFlag",
+          "flag": "basement_unlocked",
+          "value": true
+        },
+        {
+          "op": "fadeToScene",
+          "sceneId": "basement",
+          "spawn": {
+            "x": 50,
+            "y": 90
+          }
+        }
       ]
     }
   ],
@@ -764,6 +881,12 @@
       "y": 87,
       "w": 84.3,
       "h": 13
+    },
+    {
+      "x": 41.1,
+      "y": 78.5,
+      "w": 26.4,
+      "h": 13.9
     }
   ]
 }

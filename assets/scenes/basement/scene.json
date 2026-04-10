@@ -27,7 +27,7 @@
       "x": 12,
       "y": 89.9
     },
-    "playerScale": 2.2,
+    "playerScale": 5.95,
     "speed": 140,
     "sprite": {
       "sheet": null,
@@ -1159,27 +1159,82 @@
   },
   "combos": [
     {
-      "items": ["floppy_box", "hs_main_computer"],
+      "items": [
+        "floppy_box",
+        "hs_main_computer"
+      ],
       "result": "floppy_basement_secret",
       "script": [
-        { "op": "ifFlag", "flag": "floppy_basement_unlocked", "then": [
-          { "op": "say", "text": "The CRT still displays Adrian's hidden message. The cursor blinks patiently, like it has all the time in the world. Because it does. It's a computer." }
-        ], "else": [
-          { "op": "say", "text": "I slide a floppy from the box into the drive. The CRT goes dark. Then..." },
-          { "op": "wait", "ms": 1200 },
-          { "op": "say", "text": "*KRRRRTTTT-KRRRRTTTT* The drive spins up like it's been WAITING for this exact disc. The screen floods with green text." },
-          { "op": "wait", "ms": 800 },
-          { "op": "say", "text": "'ADRIANLAB FLOPPY COLLECTION DETECTED — HOLDER OVERRIDE ACTIVE. Decrypting Sector Zero...'" },
-          { "op": "wait", "ms": 1000 },
-          { "op": "say", "text": "A hidden partition opens. Adrian left a personal message encoded in the floppy metadata:" },
-          { "op": "say", "text": "'To whoever holds these discs: you're not just a collector. You backed the lab when nobody believed pixel art on a blockchain was worth anything. You were right. — A.'" },
-          { "op": "wait", "ms": 600 },
-          { "op": "say", "text": "Below the message, a manifest: every floppy disc ever minted, every pack opened, every trait unlocked. The entire AdrianLAB creation history. On a 1.44MB floppy. Somehow." },
-          { "op": "say", "text": "The CRT prints a final line: 'COMPRESSION RATIO: infinity. When you believe in the art, size doesn't matter.'" },
-          { "op": "setFlag", "flag": "floppy_basement_unlocked", "value": true },
-          { "op": "setFlag", "flag": "adrian_message_found", "value": true },
-          { "op": "achievement", "text": "SECTOR ZERO — Unlocked Adrian's hidden floppy message" }
-        ]}
+        {
+          "op": "ifFlag",
+          "flag": "floppy_basement_unlocked",
+          "then": [
+            {
+              "op": "say",
+              "text": "The CRT still displays Adrian's hidden message. The cursor blinks patiently, like it has all the time in the world. Because it does. It's a computer."
+            }
+          ],
+          "else": [
+            {
+              "op": "say",
+              "text": "I slide a floppy from the box into the drive. The CRT goes dark. Then..."
+            },
+            {
+              "op": "wait",
+              "ms": 1200
+            },
+            {
+              "op": "say",
+              "text": "*KRRRRTTTT-KRRRRTTTT* The drive spins up like it's been WAITING for this exact disc. The screen floods with green text."
+            },
+            {
+              "op": "wait",
+              "ms": 800
+            },
+            {
+              "op": "say",
+              "text": "'ADRIANLAB FLOPPY COLLECTION DETECTED — HOLDER OVERRIDE ACTIVE. Decrypting Sector Zero...'"
+            },
+            {
+              "op": "wait",
+              "ms": 1000
+            },
+            {
+              "op": "say",
+              "text": "A hidden partition opens. Adrian left a personal message encoded in the floppy metadata:"
+            },
+            {
+              "op": "say",
+              "text": "'To whoever holds these discs: you're not just a collector. You backed the lab when nobody believed pixel art on a blockchain was worth anything. You were right. — A.'"
+            },
+            {
+              "op": "wait",
+              "ms": 600
+            },
+            {
+              "op": "say",
+              "text": "Below the message, a manifest: every floppy disc ever minted, every pack opened, every trait unlocked. The entire AdrianLAB creation history. On a 1.44MB floppy. Somehow."
+            },
+            {
+              "op": "say",
+              "text": "The CRT prints a final line: 'COMPRESSION RATIO: infinity. When you believe in the art, size doesn't matter.'"
+            },
+            {
+              "op": "setFlag",
+              "flag": "floppy_basement_unlocked",
+              "value": true
+            },
+            {
+              "op": "setFlag",
+              "flag": "adrian_message_found",
+              "value": true
+            },
+            {
+              "op": "achievement",
+              "text": "SECTOR ZERO — Unlocked Adrian's hidden floppy message"
+            }
+          ]
+        }
       ]
     }
   ],
@@ -1198,10 +1253,22 @@
   },
   "walkableAreas": [
     {
-      "x": 5,
-      "y": 78,
+      "x": 3.5,
+      "y": 86,
       "w": 85,
-      "h": 14
+      "h": 6
+    },
+    {
+      "x": 2.8,
+      "y": 75.4,
+      "w": 4.5,
+      "h": 13.2
+    },
+    {
+      "x": 28,
+      "y": 78.2,
+      "w": 11.2,
+      "h": 11.1
     }
   ],
   "onEnter": [
