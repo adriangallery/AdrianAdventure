@@ -870,8 +870,12 @@ function renderNPC(npc, idx, isSelected, isDimmed) {
     const img = document.createElement('img');
     img.src = npc.spriteImg.src;
     const npcScale = npc.scale ?? 1;
-    const sw = npc.spriteImg.naturalWidth * zoom * npcScale;
-    const sh = npc.spriteImg.naturalHeight * zoom * npcScale;
+    const rawW = npc.spriteImg.naturalWidth * zoom * npcScale;
+    const rawH = npc.spriteImg.naturalHeight * zoom * npcScale;
+    // Enforce minimum size so tiny-scaled NPCs are still clickable in editor
+    const minEditorSize = 30 * zoom;
+    const sw = Math.max(rawW, minEditorSize);
+    const sh = Math.max(rawH, minEditorSize);
     img.style.width = sw + 'px';
     img.style.height = sh + 'px';
     div.appendChild(img);
