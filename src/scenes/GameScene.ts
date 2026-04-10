@@ -337,19 +337,38 @@ export class GameScene extends Phaser.Scene {
 
     const pct = this.coordSystem.screenToPct(wx, wy);
 
+    // Get current verb and selected item from UI (needed for NPC item interactions)
+    const uiScene = this.scene.get('UIScene') as Phaser.Scene;
+    const scummUI = (uiScene as any).scummUI;
+    const verb: Verb = scummUI?.getSelectedVerb?.() ?? Verb.WALK;
+    const selectedItem = scummUI?.getSelectedItem?.() ?? null;
+
     // NPC click detection — use actual sprite bounds for accurate hit testing
     for (const npc of this.npcs) {
       if (!npc.dialogueTreeId) continue;
       const npcScreen = npc.getWorldTransformMatrix();
       const npcScale = npc.scale;
-      // NPC sprite has origin (0.5, 1) so position is at feet
-      // Calculate hitbox from the visible sprite size
       const bodyW = (npc.width * npcScale) / 2;
       const bodyH = npc.height * npcScale;
       const dx = wx - npcScreen.tx;
       const dy = wy - npcScreen.ty;
-      // Hit area: full sprite width, full sprite height above feet
       if (Math.abs(dx) < bodyW && dy > -bodyH && dy < 10 * npcScale) {
+        // GIVE/USE item on NPC — show fun response instead of dialogue
+        if (selectedItem && (verb === Verb.USE || verb === Verb.GIVE)) {
+          scummUI?.clearSelectedItem?.();
+          const sceneData = this.registry.get('sceneData') as SceneData;
+          const npcData = sceneData.npcs?.find(n => n.id === npc.npcId);
+          const responseMap = verb === Verb.GIVE
+            ? (npcData as any)?.giveResponses
+            : (npcData as any)?.useResponses;
+          const response = responseMap?.[selectedItem.id]
+            ?? responseMap?._default?.replace('{item}', selectedItem.name)
+            ?? (verb === Verb.GIVE
+              ? `${npc.npcName} doesn't want ${selectedItem.name}.`
+              : `I can't use ${selectedItem.name} on ${npc.npcName}.`);
+          this.scene.get('UIScene').events.emit('say', response, npc.npcName);
+          return;
+        }
         this.events.emit('npc:tapped', npc.npcId, npc.dialogueTreeId);
         return;
       }
@@ -357,12 +376,6 @@ export class GameScene extends Phaser.Scene {
 
     // Check hotspot
     const hotspot = this.sceneDataLoader.getHotspotAtPct(pct.x, pct.y);
-
-    // Get current verb and selected item from UI
-    const uiScene = this.scene.get('UIScene') as Phaser.Scene;
-    const scummUI = (uiScene as any).scummUI;
-    const verb: Verb = scummUI?.getSelectedVerb?.() ?? Verb.WALK;
-    const selectedItem = scummUI?.getSelectedItem?.() ?? null;
 
     // Item combo mode: USE [item] with [hotspot]
     if (selectedItem && hotspot) {

@@ -1028,7 +1028,42 @@
         "y": 66.7
       },
       "dialogueTreeId": "dr_satoshi_intro",
-      "scale": 0.04
+      "scale": 0.04,
+      "giveResponses": {
+        "_default": "'I appreciate the gesture, but I can't accept {item}. Medical ethics. Also, I don't have pockets.'",
+        "code_note": "'A code? I deal in diagnoses, not digits. Well... both are digits, technically.'",
+        "mystery_envelope": "'Confidential mail? In MY clinic? I have enough secrets to manage, thank you.'",
+        "ledger": "'A hardware wallet? The last patient who showed me one cried for forty minutes about gas fees.'",
+        "keycard": "'Adrian's keycard... He was here, you know. Before the... incident. Keep it. You'll need it more than I do.'",
+        "rubber_duck": "'Ah, rubber duck debugging. A valid therapeutic technique. I prescribe it to all my patients. Most ignore me.'",
+        "water_bottle": "'Spring water? From the mountain? That's actually the only clean water source left. The clinic's supply tastes like regret.'",
+        "golden_token": "'A golden token? I've seen what these do to people. The dopamine, the obsession, the 3 AM chart-checking. I treat that condition.'",
+        "floppy_box": "'Floppy discs in a medical facility? That's either genius archival practice or a HIPAA violation. Possibly both.'",
+        "printout": "'Transaction logs? I see these in therapy sessions. Patients bring them like medical records. Technically, they ARE their medical records.'",
+        "antenna": "'An antenna? Are you trying to intercept my patient communications? That's... actually quite paranoid. Have a seat.'",
+        "sign_in_sheet": "He reads it carefully. '...These diagnoses are accurate. Disturbingly accurate. Who wrote these?'",
+        "clinic_sign_in_sheet": "'That's my own sign-in sheet. I know what it says. I wrote it. The handwriting gets worse with each patient.'",
+        "monkey_sticker": "'A three-headed monkey? Fascinating. In crypto-psychology, that represents the three stages of FOMO. I should write a paper.'",
+        "broken_mouse": "'A broken mouse? I see the metaphor. The input device is damaged, so the user can't interact with the system. Deep. Very deep.'",
+        "burned_chip": "'A burned AdrianAuctions chip... This is what happens when you run smart contracts at maximum gas. The silicon can't take it.'",
+        "server_log": "'Server logs from the basement? I... I thought those were destroyed. Who else knows about these?'",
+        "clinic_note": "He freezes. 'Where did you find that? That was supposed to stay in the trash. Some things are discarded for a reason.'",
+        "clinic_photo": "'That photo... happier times. Before Patient Zero's case changed everything.'",
+        "dr_satoshi_badge": "'My own badge? I've been looking for that everywhere! I had to use a sticky note that said DOCTOR on it. Very professional.'",
+        "adrian_note": "He reads it silently. A long pause. 'He knew. He always knew. The game, the patients, the cure... it was all connected.'",
+        "receipt": "'A receipt? Every transaction tells a story. This one says... someone bought too many energy drinks at 2 AM. Relatable.'"
+      },
+      "useResponses": {
+        "_default": "I try using {item} on Dr. Satoshi. He adjusts his glasses. 'That's not how medicine works.'",
+        "rubber_duck": "I squeeze the duck at the doctor. 'Interesting. And how does that make you FEEL?' He's turned the session on me.",
+        "water_bottle": "'Hydration is important. But using water ON a doctor isn't therapy. It's assault.'",
+        "golden_token": "I wave the token at him. 'Ah yes, the classic crypto-hypnosis technique. Doesn't work on me. I'm vaccinated.'",
+        "keycard": "'Please don't swipe that near my equipment. The last time someone did, it reformatted the patient database.'",
+        "antenna": "'Are you trying to improve my bedside manner signal? It's already at maximum. This IS my maximum.'",
+        "clinic_note": "I hold up his own crumpled note. He looks away. 'Some days I believe in the tech. Some days the tech doesn't believe in me.'",
+        "burned_chip": "'Using a burned chip on a doctor. Are you trying to give me a diagnosis, or are you the one who needs help?'",
+        "floppy_box": "'Inserting floppies into a doctor is NOT a medical procedure. Despite what the internet says.'"
+      }
     }
   ],
   "dialogues": {

@@ -782,7 +782,41 @@
         "y": 65.3
       },
       "dialogueTreeId": "receptionist_intro",
-      "scale": 6.29
+      "scale": 6.29,
+      "giveResponses": {
+        "_default": "She politely declines {item}. 'I have a strict no-gifts policy. HR was very clear about that.'",
+        "code_note": "'I didn't see that code. I DEFINITELY didn't see that. This conversation never happened.'",
+        "mystery_envelope": "'CONFIDENTIAL? Oh no no no. Last time I opened something confidential, I found out my salary was public on the blockchain.'",
+        "ledger": "'Adrian's ledger?! Put that away! If the auditors see that, we're ALL going to on-chain jail.'",
+        "keycard": "'That's Adrian's keycard! I didn't see it. You didn't show it. We never spoke.'",
+        "rubber_duck": "She squeezes the duck, puts it on her desk, then gives it back. 'It judged me.'",
+        "water_bottle": "'Spring water? That's actually thoughtful.' She takes a sip. 'Tastes like decentralization.'",
+        "golden_token": "Her eyes widen. 'A GOLDEN ZERO TOKEN?! I can't accept bribes. Even shiny, beautiful, valuable bribes.'",
+        "floppy_box": "'Floppy discs? What year is it? ...Wait, are those holographic? Still can't accept them.'",
+        "printout": "'Transaction hashes? I don't know what any of this means and I'd like to keep it that way.'",
+        "antenna": "'An antenna? What am I supposed to do, improve my reception? My reception DESK? Is that the joke?'",
+        "sign_in_sheet": "'That's OUR sign-in sheet! Where did you... you know what, I don't want to know.'",
+        "monkey_sticker": "'A three-headed monkey sticker? I'll pretend I didn't see it. Like the monkey behind you.'",
+        "broken_mouse": "'A dead mouse?! Oh... a computer mouse. Still gross. Broken, like my dreams of a corner office.'",
+        "burned_chip": "'A burned circuit? It smells like ambition and regret. Get it away from my monitors.'",
+        "server_log": "'Server logs? Way above my clearance. I just answer phones and judge people.'",
+        "receipt": "'A receipt? I'm not accounting. The spreadsheet upstairs is more responsive than me before coffee.'",
+        "clinic_note": "'A note from the clinic? I don't know anything about any clinic. Or any patients. Or anything.'",
+        "clinic_photo": "'Is that a photo from... THAT place? Please. I've spent years pretending it doesn't exist.'",
+        "dr_satoshi_badge": "'Dr. Satoshi's badge?! How did you... I'm going to pretend you're not holding that.'",
+        "adrian_note": "She reads it and tears up slightly. 'He always did believe in the builders. Even the ones who break things.'"
+      },
+      "useResponses": {
+        "_default": "I try using {item} on the receptionist. She gives me a look that could liquidate a portfolio.",
+        "code_note": "I wave the code at her. 'Is this a tip? Because I don't do crypto tips. Only coffee tips.'",
+        "rubber_duck": "I squeeze the duck in her face. She doesn't flinch. 'I've seen worse. You should see traders on a red day.'",
+        "water_bottle": "'Is this a bribe? Because it's working. ...No wait, HR training kicked in. Sorry.'",
+        "golden_token": "I flash the golden token. Her pupils dilate. 'You can't buy my loyalty. My silence, maybe.'",
+        "keycard": "'Stop swiping that near me! It triggers security logs! Do you WANT a lockdown?!'",
+        "floppy_box": "I try to insert a floppy into her keyboard. 'That's not how computers work anymore. Please stop.'",
+        "mystery_envelope": "She recoils. 'Nope. Keep your confidential mysteries. I like my ignorance comfortable.'",
+        "antenna": "'Are you trying to improve my signal? I'm already at full bars of sarcasm.'"
+      }
     }
   ],
   "dialogues": {
