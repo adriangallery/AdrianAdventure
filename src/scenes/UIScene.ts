@@ -82,17 +82,19 @@ export class UIScene extends Phaser.Scene {
         }
       },
       runScripts: async (ops) => {
-        const gs = this.scene.get('GameScene') as GameScene;
-        gs.executeItemComboScript(ops as import('@/types/scene.types').ScriptOp[]);
-        // Wait for script engine to finish
-        await new Promise<void>((resolve) => {
-          const check = () => {
-            const engine = (gs as any).scriptEngine;
-            if (!engine?.isRunning()) resolve();
-            else setTimeout(check, 50);
-          };
-          setTimeout(check, 50);
-        });
+        // Execute simple ops (setFlag, addItem) directly to avoid ScriptEngine deadlock
+        // when dialogue is initiated from within a running script
+        for (const op of ops as any[]) {
+          if (op.op === 'setFlag') {
+            const state = this.registry.get('gameState') as GameState | undefined;
+            if (state) { state.flags[op.flag] = op.value; this.registry.set('gameState', state); }
+          } else if (op.op === 'say') {
+            await this.dialogueBox.say(op.text, op.speaker);
+          } else if (op.op === 'addItem') {
+            const inv = this.registry.get('inventorySystem') as InventorySystem | undefined;
+            inv?.addItem(op.id, op.name);
+          }
+        }
       },
       onDialogueComplete: (treeId) => {
         const state = this.registry.get('gameState') as import('@/types/game.types').GameState | undefined;

@@ -1184,21 +1184,23 @@
         "vip_access": {
           "speaker": "Dr. Satoshi",
           "text": "Ah, a holder. The blockchain doesn't lie. VIP access granted. The treatment room is yours. Be careful what you find in there. Not everyone is ready to face... themselves.",
-          "end": true,
-          "onComplete": [
+          "onEnter": [
             {
               "op": "setFlag",
               "flag": "treatment_room_unlocked",
               "value": true
             },
             {
-              "op": "say",
-              "text": "I hear a click from the treatment room door. The card reader turns green."
-            },
-            {
               "op": "setFlag",
               "flag": "chapter_4_complete",
               "value": true
+            }
+          ],
+          "end": true,
+          "onComplete_DISABLED": [
+            {
+              "op": "say",
+              "text": "I hear a click from the treatment room door. The card reader turns green."
             },
             {
               "op": "achievement",

@@ -269,10 +269,10 @@
         "id": "hs_bar",
         "name": "Bar Counter",
         "bounds": {
-          "x": 76.1,
-          "y": 43.7,
-          "w": 8.2,
-          "h": 26.5
+          "x": 91.8,
+          "y": 15.2,
+          "w": 6.2,
+          "h": 42.3
         },
         "scripts": {
           "LOOK": [
@@ -729,7 +729,8 @@
             },
             {
               "text": "Have you seen Patient Zero?",
-              "next": "patient_zero"
+              "next": "patient_zero",
+              "setFlag": "bot_mentioned_pz"
             },
             {
               "text": "I'll have a drink.",
@@ -778,13 +779,6 @@
         "patient_zero": {
           "speaker": "B.O.T.",
           "text": "Patient Zero... *servos whir* My data logs show someone matching that description. They were here before the pool was a pool. When this was still a server room. They left something behind — a message in my memory banks I can't delete.",
-          "onEnter": [
-            {
-              "op": "setFlag",
-              "flag": "bot_mentioned_pz",
-              "value": true
-            }
-          ],
           "choices": [
             {
               "text": "What message?",
