@@ -1,7 +1,7 @@
 {
   "version": 3,
   "id": "recovery_pool",
-  "title": "The Recovery Pool",
+  "title": "The Liquidity Pool",
   "assets": {
     "background": "background.png",
     "walkmask": null,
@@ -63,7 +63,7 @@
           "TALK": [
             {
               "op": "say",
-              "text": "'Bro, we're in a recovery program.' 'For what?' 'Paper hands. I sold ETH at $400.' The other apes nod solemnly. That IS a medical condition."
+              "text": "'Bro, we're providing liquidity.' 'To what?' 'To this pool. We're literally IN the liquidity pool.' The other apes nod. One adds: 'I sold ETH at $400.' Solemnly, they all pour one out. Into the pool. Where they're standing."
             }
           ],
           "USE": [
@@ -111,7 +111,7 @@
           "TALK": [
             {
               "op": "say",
-              "text": "'Welcome to the recovery pool! The water is green because it's backed by liquidity.' I don't think that's how pools work. 'We don't think that's how DeFi works either, but here we are.'"
+              "text": "'Welcome to the liquidity pool! We ARE the liquidity.' I look around. Apes floating in green water. 'So THIS is what happens to liquidity providers.' 'We don't leave. Ever. That's the impermanent part.'"
             }
           ],
           "USE": [
@@ -413,37 +413,74 @@
       {
         "id": "hs_trash_pile",
         "name": "Pile of Junk",
-        "bounds": { "x": 5, "y": 60, "w": 8, "h": 20 },
+        "bounds": {
+          "x": 0.7,
+          "y": 80,
+          "w": 12,
+          "h": 20
+        },
         "scripts": {
           "LOOK": [
-            { "op": "say", "text": "A pile of discarded items near the stairs: empty energy drink cans, torn whitepapers, a broken phone with 'WAGMI' as the wallpaper. Looks like the apes have been using this corner as a landfill. There might be something worth salvaging in there." }
+            {
+              "op": "say",
+              "text": "A pile of discarded items near the stairs: empty energy drink cans, torn whitepapers, a broken phone with 'WAGMI' as the wallpaper. Looks like the apes have been using this corner as a landfill. There might be something worth salvaging in there."
+            }
           ],
           "TALK": [
-            { "op": "say", "text": "I address the pile. 'What treasures do you hold?' A can falls off the top. That's either a sign or gravity." }
+            {
+              "op": "say",
+              "text": "I address the pile. 'What treasures do you hold?' A can falls off the top. That's either a sign or gravity."
+            }
           ],
           "USE": [
-            { "op": "say", "text": "I rummage through the junk. Mostly worthless. Like an altcoin portfolio in January." }
+            {
+              "op": "say",
+              "text": "I rummage through the junk. Mostly worthless. Like an altcoin portfolio in January."
+            }
           ],
           "PICK": [
             {
               "op": "ifFlag",
               "flag": "found_rubber_duck",
               "then": [
-                { "op": "say", "text": "Nothing else worth salvaging. Just broken dreams and banana peels." }
+                {
+                  "op": "say",
+                  "text": "Nothing else worth salvaging. Just broken dreams and banana peels."
+                }
               ],
               "else": [
-                { "op": "say", "text": "I dig through the pile and push aside some crumpled whitepapers and an alarming number of banana peels. Wait. There's a rubber duck in here? How did this survive the carnage?" },
-                { "op": "setFlag", "flag": "found_rubber_duck", "value": true },
-                { "op": "addItem", "id": "rubber_duck", "name": "Rubber Duck" },
-                { "op": "say", "text": "It squeaks when I pick it up. The apes look up from their phones. 'Is that... a duck?' one whispers reverently. 'Gerald will want to meet it.'" }
+                {
+                  "op": "say",
+                  "text": "I dig through the pile and push aside some crumpled whitepapers and an alarming number of banana peels. Wait. There's a rubber duck in here? How did this survive the carnage?"
+                },
+                {
+                  "op": "setFlag",
+                  "flag": "found_rubber_duck",
+                  "value": true
+                },
+                {
+                  "op": "addItem",
+                  "id": "rubber_duck",
+                  "name": "Rubber Duck"
+                },
+                {
+                  "op": "say",
+                  "text": "It squeaks when I pick it up. The apes look up from their phones. 'Is that... a duck?' one whispers reverently. 'Gerald will want to meet it.'"
+                }
               ]
             }
           ],
           "OPEN": [
-            { "op": "say", "text": "I open a crumpled paper from the pile. It reads: 'TO DO: 1. Buy the dip. 2. Buy the dip again. 3. Realize there is no bottom.' Motivational." }
+            {
+              "op": "say",
+              "text": "I open a crumpled paper from the pile. It reads: 'TO DO: 1. Buy the dip. 2. Buy the dip again. 3. Realize there is no bottom.' Motivational."
+            }
           ],
           "CLOSE": [
-            { "op": "say", "text": "I push the trash back together. An ape nods approvingly. 'Composability,' he says. I don't think he knows what that word means." }
+            {
+              "op": "say",
+              "text": "I push the trash back together. An ape nods approvingly. 'Composability,' he says. I don't think he knows what that word means."
+            }
           ]
         }
       },
@@ -460,7 +497,7 @@
           "LOOK": [
             {
               "op": "say",
-              "text": "Stairs leading back up to the clinic reception. The sound of splashing and bad financial advice fades behind me."
+              "text": "Stairs leading back up to the clinic reception. The sound of splashing and impermanent loss fades behind me."
             }
           ],
           "USE": [
@@ -593,7 +630,7 @@
       "nodes": {
         "greeting": {
           "speaker": "B.O.T.",
-          "text": "Welcome to the Recovery Pool. I'm B.O.T. — Beverage Operations Terminal. Formerly a high-frequency trading algorithm. Now I mix drinks. It's... a lateral move.",
+          "text": "Welcome to the Liquidity Pool. I'm B.O.T. — Beverage Operations Terminal. Formerly a high-frequency trading algorithm. Now I mix drinks and watch apes provide liquidity. With their bodies. It's... a lateral move.",
           "choices": [
             {
               "text": "What is this place?",
@@ -615,7 +652,7 @@
         },
         "what_is_this": {
           "speaker": "B.O.T.",
-          "text": "Dr. Satoshi's experimental therapy program. Immersive liquid rehabilitation. The apes soak in green water infused with 'decentralized minerals'. It's just pool water with food coloring. But the placebo effect is remarkably effective on degens.",
+          "text": "Dr. Satoshi's experimental DeFi therapy. Literal liquidity provision. The apes believe being IN the pool makes them liquidity providers. The green water is infused with 'decentralized minerals'. It's just food coloring. But the APY on their delusions is remarkable.",
           "choices": [
             {
               "text": "Does the therapy work?",
@@ -676,24 +713,42 @@
           "speaker": "B.O.T.",
           "text": "'The cure isn't in the code. It's in the community.' That's all. Encrypted with a key I don't have. Whoever Patient Zero was, they understood something the rest of us are still trying to compute.",
           "choices": [
-            { "text": "Tell me something else.", "next": "greeting" },
-            { "text": "Thanks, B.O.T.", "next": "farewell" }
+            {
+              "text": "Tell me something else.",
+              "next": "greeting"
+            },
+            {
+              "text": "Thanks, B.O.T.",
+              "next": "farewell"
+            }
           ]
         },
         "when": {
           "speaker": "B.O.T.",
           "text": "Block 1. Not block 1 of Base. Block 1 of this building. Before AdrianLAB was AdrianLAB. Before the trading floors and the diamond protocol. When it was just... someone's dream in a basement. Like all the best things.",
           "choices": [
-            { "text": "Tell me something else.", "next": "greeting" },
-            { "text": "Thanks, B.O.T.", "next": "farewell" }
+            {
+              "text": "Tell me something else.",
+              "next": "greeting"
+            },
+            {
+              "text": "Thanks, B.O.T.",
+              "next": "farewell"
+            }
           ]
         },
         "drink": {
           "speaker": "B.O.T.",
           "text": "The house special: 'The Liquidation'. It's green, it burns, and you'll question your life choices afterward. Just like real trading. Cheers.",
           "choices": [
-            { "text": "Tell me something else.", "next": "greeting" },
-            { "text": "Thanks, B.O.T.", "next": "farewell" }
+            {
+              "text": "Tell me something else.",
+              "next": "greeting"
+            },
+            {
+              "text": "Thanks, B.O.T.",
+              "next": "farewell"
+            }
           ]
         },
         "farewell": {

@@ -1120,7 +1120,7 @@
         },
         "other_patients": {
           "speaker": "Dr. Satoshi",
-          "text": "The... other patients? They're in the recovery program. Downstairs. It's an experimental approach. Immersive, you could say. The way down isn't obvious. Nothing in this clinic is where it seems. But that's not for visitors.",
+          "text": "The... other patients? They're providing liquidity. Downstairs. It's an experimental approach. Very... immersive. The way down isn't obvious. Nothing in this clinic is where it seems. But that's not for visitors.",
           "onEnter": [
             { "op": "setFlag", "flag": "satoshi_pool_hint", "value": true }
           ],
