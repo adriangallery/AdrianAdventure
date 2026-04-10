@@ -724,6 +724,88 @@
             }
           ]
         }
+      },
+      {
+        "id": "hs_poster",
+        "name": "Wall Poster",
+        "bounds": {
+          "x": 45,
+          "y": 27,
+          "w": 7,
+          "h": 16
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "ifWalletConnected",
+              "then": [
+                {
+                  "op": "web3Require",
+                  "rule": { "type": "ERC721", "contract": "0x79be8acdd339c7b92918fcc3fd3875b5aaad7566", "minBalance": 1 },
+                  "then": [
+                    { "op": "say", "text": "'BE REAL. BE ADRIAN.' — The original AdrianPunks manifesto. This poster is only visible to OG holders. You earned this view." }
+                  ],
+                  "else": [
+                    {
+                      "op": "web3Require",
+                      "rule": { "type": "ERC721", "contract": "0x6e369bf0e4e0c106192d606fb6d85836d684da75", "minBalance": 1 },
+                      "then": [
+                        { "op": "say", "text": "'TO THE MOON!' — A motivational poster for AdrianZERO holders. The rocket has pixel-perfect exhaust flames. Nice touch." }
+                      ],
+                      "else": [
+                        { "op": "say", "text": "A torn poster on the wall. Whatever was here, someone ripped most of it off. Only holders get to see the real thing. Tough luck, anon." }
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "else": [
+                { "op": "say", "text": "A sad, torn poster. The good stuff was ripped off. Something tells me you need to connect a wallet to see what was here. Or maybe you just can't afford the view." }
+              ]
+            }
+          ],
+          "USE": [
+            {
+              "op": "ifWalletConnected",
+              "then": [
+                {
+                  "op": "web3Require",
+                  "rule": { "type": "ERC721", "contract": "0x79be8acdd339c7b92918fcc3fd3875b5aaad7566", "minBalance": 1 },
+                  "then": [
+                    { "op": "say", "text": "I touch the poster reverently. OG energy radiates from it. My AdrianPunk approves." }
+                  ],
+                  "else": [
+                    {
+                      "op": "web3Require",
+                      "rule": { "type": "ERC721", "contract": "0x6e369bf0e4e0c106192d606fb6d85836d684da75", "minBalance": 1 },
+                      "then": [
+                        { "op": "say", "text": "The poster feels warm. Holder energy confirmed. But imagine how it would look with an AdrianPunk in your wallet..." }
+                      ],
+                      "else": [
+                        { "op": "say", "text": "I try to peel back the torn corner. There's clearly art underneath, but it's holder-gated. Even posters have velvet ropes now." }
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "else": [
+                { "op": "say", "text": "I poke the torn poster. Nothing happens. This wall has more credentials than I do right now." }
+              ]
+            }
+          ],
+          "TALK": [
+            { "op": "say", "text": "I whisper to the poster: 'Show me what you've got.' It remains torn and unimpressed. Posters are notoriously bad conversationalists." }
+          ],
+          "PICK": [
+            { "op": "say", "text": "The poster is glued to the wall. Not even a rug pull could separate them." }
+          ],
+          "OPEN": [
+            { "op": "say", "text": "It's a poster, not an envelope. Although in Web3, anything can be an NFT. Even disappointment." }
+          ],
+          "CLOSE": [
+            { "op": "say", "text": "You can't close a poster. That's not how posters work. That's not how any of this works." }
+          ]
+        }
       }
     ],
     "triggers": [
@@ -1089,6 +1171,15 @@
       },
       "defaultSprite": "poster_generic",
       "variants": [
+        {
+          "gate": {
+            "type": "ERC721",
+            "contract": "0x79be8acdd339c7b92918fcc3fd3875b5aaad7566",
+            "minBalance": 1
+          },
+          "sprite": "poster_adrianpunks",
+          "effect": "glow"
+        },
         {
           "gate": {
             "type": "ERC721",
