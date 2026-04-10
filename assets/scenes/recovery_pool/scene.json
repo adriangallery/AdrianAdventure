@@ -613,50 +613,96 @@
       {
         "id": "hs_brown_book",
         "name": "Brown Leather Book",
-        "bounds": { "x": 16, "y": 68, "w": 3.5, "h": 8 },
+        "bounds": {
+          "x": 61,
+          "y": 89.4,
+          "w": 3.5,
+          "h": 8
+        },
         "scripts": {
           "LOOK": [
-            { "op": "say", "text": "'The Art of the Rug: 48 Laws of DeFi Power'. Author: Anonymous. The foreword is by 'a whale who wishes to remain unnamed'. The back cover QR code leads to a rickroll." }
+            {
+              "op": "say",
+              "text": "'The Art of the Rug: 48 Laws of DeFi Power'. Author: Anonymous. The foreword is by 'a whale who wishes to remain unnamed'. The back cover QR code leads to a rickroll."
+            }
           ],
           "TALK": [
-            { "op": "say", "text": "'Has anyone read this?' An ape scoffs. 'Read it? I LIVED it. Chapter 7: How to Lose Friends and Liquidate People. That's my autobiography.'" }
+            {
+              "op": "say",
+              "text": "'Has anyone read this?' An ape scoffs. 'Read it? I LIVED it. Chapter 7: How to Lose Friends and Liquidate People. That's my autobiography.'"
+            }
           ],
           "USE": [
-            { "op": "say", "text": "I flip to a random page. 'Rule #23: If someone says trust me bro, run. If they say NFA, run faster.' Sound advice from a book found next to a pool of degens." }
+            {
+              "op": "say",
+              "text": "I flip to a random page. 'Rule #23: If someone says trust me bro, run. If they say NFA, run faster.' Sound advice from a book found next to a pool of degens."
+            }
           ],
           "PICK": [
-            { "op": "say", "text": "I pick it up. Heavier than expected. The pages are stiff with dried pool water and what I hope is just highlighter ink. I put it back." }
+            {
+              "op": "say",
+              "text": "I pick it up. Heavier than expected. The pages are stiff with dried pool water and what I hope is just highlighter ink. I put it back."
+            }
           ],
           "OPEN": [
-            { "op": "say", "text": "Chapter 1: 'Buy High, Sell Low — A Beginner's Guide'. Chapter 2: 'I Did My Own Research (On Twitter)'. Chapter 3: 'Why Your Favorite Influencer Doesn't Own What They Shill'. I slam it shut." }
+            {
+              "op": "say",
+              "text": "Chapter 1: 'Buy High, Sell Low — A Beginner's Guide'. Chapter 2: 'I Did My Own Research (On Twitter)'. Chapter 3: 'Why Your Favorite Influencer Doesn't Own What They Shill'. I slam it shut."
+            }
           ],
           "CLOSE": [
-            { "op": "say", "text": "A bookmark falls out. It's a receipt for 3 ETH worth of $SAFU. Current value: $0.00. The bookmark IS the lesson." }
+            {
+              "op": "say",
+              "text": "A bookmark falls out. It's a receipt for 3 ETH worth of $SAFU. Current value: $0.00. The bookmark IS the lesson."
+            }
           ]
         }
       },
       {
         "id": "hs_blue_book",
         "name": "Blue Notebook",
-        "bounds": { "x": 20, "y": 68, "w": 3.5, "h": 8 },
+        "bounds": {
+          "x": 66.2,
+          "y": 89.5,
+          "w": 3.5,
+          "h": 8
+        },
         "scripts": {
           "LOOK": [
-            { "op": "say", "text": "A water-damaged blue notebook. Cover reads: 'MY TRADING JOURNAL — Day 1 to Lambo'. Someone crossed out 'Lambo' and wrote 'Ramen'. Then crossed out 'Ramen' and wrote 'Foodbank'. Then circled back to 'Lambo' with a note: 'copium'." }
+            {
+              "op": "say",
+              "text": "A water-damaged blue notebook. Cover reads: 'MY TRADING JOURNAL — Day 1 to Lambo'. Someone crossed out 'Lambo' and wrote 'Ramen'. Then crossed out 'Ramen' and wrote 'Foodbank'. Then circled back to 'Lambo' with a note: 'copium'."
+            }
           ],
           "TALK": [
-            { "op": "say", "text": "'Whose journal is this?' An ape raises his hand. 'Day 47: Portfolio down 80%. Mood: bullish. Day 48: Down 95%. Mood: this is fine. Day 49: Up 2%. Mood: I'M A GENIUS.'" }
+            {
+              "op": "say",
+              "text": "'Whose journal is this?' An ape raises his hand. 'Day 47: Portfolio down 80%. Mood: bullish. Day 48: Down 95%. Mood: this is fine. Day 49: Up 2%. Mood: I'M A GENIUS.'"
+            }
           ],
           "USE": [
-            { "op": "say", "text": "I open to today's entry. It just says 'wen moon' repeated 47 times. The handwriting gets progressively more unhinged. The last one is in crayon." }
+            {
+              "op": "say",
+              "text": "I open to today's entry. It just says 'wen moon' repeated 47 times. The handwriting gets progressively more unhinged. The last one is in crayon."
+            }
           ],
           "PICK": [
-            { "op": "say", "text": "Pages fall out like autumn leaves. Each one has a different cope: 'zoom out', 'still early', 'diamond hands', 'generational wealth'. It's a scrapbook of denial." }
+            {
+              "op": "say",
+              "text": "Pages fall out like autumn leaves. Each one has a different cope: 'zoom out', 'still early', 'diamond hands', 'generational wealth'. It's a scrapbook of denial."
+            }
           ],
           "OPEN": [
-            { "op": "say", "text": "Back cover pocket has a folded chart. Every dip annotated: 'bought here', 'bought here too', 'and here', 'why did I buy here', 'I need help', 'THIS IS THE BOTTOM' (it wasn't)." }
+            {
+              "op": "say",
+              "text": "Back cover pocket has a folded chart. Every dip annotated: 'bought here', 'bought here too', 'and here', 'why did I buy here', 'I need help', 'THIS IS THE BOTTOM' (it wasn't)."
+            }
           ],
           "CLOSE": [
-            { "op": "say", "text": "The last page: 'If you're reading this, don't feel sorry for me. I'm in a pool now. Providing liquidity. Living my best life.' A single tear stains the ink." }
+            {
+              "op": "say",
+              "text": "The last page: 'If you're reading this, don't feel sorry for me. I'm in a pool now. Providing liquidity. Living my best life.' A single tear stains the ink."
+            }
           ]
         }
       }
