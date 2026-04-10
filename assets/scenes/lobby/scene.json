@@ -358,7 +358,7 @@
                 },
                 {
                   "op": "say",
-                  "text": "I search the deep pockets... buried under pens and receipts, I find a keycard! It says 'ADMIN ACCESS \u2014 AdrianLAB'."
+                  "text": "I search the deep pockets... buried under pens and receipts, I find a keycard! It says 'ADMIN ACCESS — AdrianLAB'."
                 }
               ]
             }
@@ -411,7 +411,7 @@
           "PULL": [
             {
               "op": "say",
-              "text": "I pull the coat off the hook. Heavy. I put it back \u2014 I have enough baggage."
+              "text": "I pull the coat off the hook. Heavy. I put it back — I have enough baggage."
             }
           ],
           "GIVE": [
@@ -476,7 +476,7 @@
           "PUSH": [
             {
               "op": "say",
-              "text": "I push the desk. A CRT wobbles dangerously. The trading bot onscreen panics: 'EARTHQUAKE DETECTED \u2014 SELLING EVERYTHING!'"
+              "text": "I push the desk. A CRT wobbles dangerously. The trading bot onscreen panics: 'EARTHQUAKE DETECTED — SELLING EVERYTHING!'"
             }
           ],
           "PULL": [
@@ -506,7 +506,7 @@
           "LOOK": [
             {
               "op": "say",
-              "text": "A vintage pendant lamp casting a warm cone of light. It flickers every few seconds. Proof-of-work lighting \u2014 uses way more energy than it should."
+              "text": "A vintage pendant lamp casting a warm cone of light. It flickers every few seconds. Proof-of-work lighting — uses way more energy than it should."
             }
           ],
           "USE": [
@@ -649,7 +649,7 @@
                   "then": [
                     {
                       "op": "say",
-                      "text": "'BE REAL. BE ADRIAN.' \u2014 The original AdrianPunks manifesto. This poster is only visible to OG holders. You earned this view."
+                      "text": "'BE REAL. BE ADRIAN.' — The original AdrianPunks manifesto. This poster is only visible to OG holders. You earned this view."
                     }
                   ],
                   "else": [
@@ -663,7 +663,7 @@
                       "then": [
                         {
                           "op": "say",
-                          "text": "'TO THE MOON!' \u2014 A motivational poster for AdrianZERO holders. The rocket has pixel-perfect exhaust flames. Nice touch."
+                          "text": "'TO THE MOON!' — A motivational poster for AdrianZERO holders. The rocket has pixel-perfect exhaust flames. Nice touch."
                         }
                       ],
                       "else": [
@@ -974,7 +974,7 @@
         "pickupScript": [
           {
             "op": "say",
-            "text": "A holographic floppy disc shimmers into view. The label reads 'ZERO \u2014 VIP ACCESS'. Only visible to true holders."
+            "text": "A holographic floppy disc shimmers into view. The label reads 'ZERO — VIP ACCESS'. Only visible to true holders."
           },
           {
             "op": "addItem",
@@ -1075,7 +1075,7 @@
         },
         {
           "op": "say",
-          "text": "The middle CRT winks: 'FLOPPY COLLECTION VERIFIED \u2014 WELCOME, ARCHIVIST.' I've never been called that before. I like it."
+          "text": "The middle CRT winks: 'FLOPPY COLLECTION VERIFIED — WELCOME, ARCHIVIST.' I've never been called that before. I like it."
         },
         {
           "op": "setFlag",
@@ -1084,7 +1084,7 @@
         },
         {
           "op": "achievement",
-          "text": "ARCHIVIST \u2014 CRT monitors recognized your Floppy collection"
+          "text": "ARCHIVIST — CRT monitors recognized your Floppy collection"
         }
       ]
     },
@@ -1198,7 +1198,7 @@
           "lines": [
             "Inside the lab, the air smells of burnt circuits and ambition.",
             "Only the receptionist remains at her post.",
-            "Adrian's empire stretches upward \u2014 trading floors, antennas, dreams.",
+            "Adrian's empire stretches upward — trading floors, antennas, dreams.",
             "But something downstairs keeps blinking..."
           ]
         },

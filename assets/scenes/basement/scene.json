@@ -258,8 +258,8 @@
               "op": "fadeToScene",
               "sceneId": "lobby",
               "spawn": {
-                "x": 13.6,
-                "y": 92.4
+                "x": 41.8,
+                "y": 97.1
               },
               "duration": 600
             }
@@ -274,8 +274,8 @@
               "op": "fadeToScene",
               "sceneId": "lobby",
               "spawn": {
-                "x": 13.6,
-                "y": 92.4
+                "x": 41.8,
+                "y": 97.1
               },
               "duration": 600
             }
@@ -1091,10 +1091,10 @@
         "id": "tr_chapter3_intro",
         "once": true,
         "bounds": {
-          "x": 10,
-          "y": 60,
-          "w": 30,
-          "h": 30
+          "x": 2.8,
+          "y": 61.9,
+          "w": 13,
+          "h": 8.1
         },
         "onEnter": [
           {
@@ -1145,8 +1145,8 @@
             "op": "fadeToScene",
             "sceneId": "lobby",
             "spawn": {
-              "x": 13.6,
-              "y": 92.4
+              "x": 41.8,
+              "y": 97.1
             },
             "duration": 600
           }
