@@ -95,6 +95,10 @@ export class MenuScene extends Phaser.Scene {
       });
     }
 
+    // Leaderboard button
+    const lbY = hasSave ? btnY + btnSpacing * 2 : btnY + btnSpacing;
+    this.createButton(width / 2, lbY, 'Leaderboard', btnSize, () => this.showLeaderboard());
+
     // Rotate hint in portrait
     if (isPortrait) {
       const hintSize = Math.max(9, Math.min(12, Math.floor(refSize * 0.012)));
@@ -103,6 +107,101 @@ export class MenuScene extends Phaser.Scene {
         fontSize: `${hintSize}px`,
         color: TWP.MENU_SUBTITLE,
       }).setOrigin(0.5);
+    }
+  }
+
+  private async showLeaderboard(): Promise<void> {
+    const overlay = document.createElement('div');
+    overlay.id = 'leaderboard-overlay';
+    overlay.style.cssText = `
+      position: fixed; inset: 0; z-index: 10000;
+      background: rgba(6,6,12,0.95);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Press Start 2P', monospace;
+    `;
+
+    const modal = document.createElement('div');
+    modal.style.cssText = `
+      background: #1a1a2e; border: 2px solid #f8e848;
+      border-radius: 8px; padding: 24px; text-align: center;
+      max-width: 500px; width: 95%; max-height: 80vh; overflow-y: auto;
+    `;
+
+    const title = document.createElement('div');
+    title.textContent = '\u{1F3C6} LEADERBOARD';
+    title.style.cssText = 'color: #f8e848; font-size: 14px; margin-bottom: 16px;';
+    modal.appendChild(title);
+
+    const loading = document.createElement('div');
+    loading.textContent = 'Loading...';
+    loading.style.cssText = 'color: #888; font-size: 9px; margin: 20px 0;';
+    modal.appendChild(loading);
+
+    const cleanup = () => overlay.remove();
+    overlay.onclick = (e) => { if (e.target === overlay) cleanup(); };
+
+    const closeBtn = document.createElement('button');
+    closeBtn.textContent = 'Close';
+    closeBtn.style.cssText = `
+      display: block; width: 100%; padding: 8px 16px; margin-top: 16px;
+      background: transparent; border: 1px solid #444; border-radius: 6px;
+      color: #888; font-family: 'Press Start 2P', monospace; font-size: 8px;
+      cursor: pointer;
+    `;
+    closeBtn.onclick = cleanup;
+    modal.appendChild(closeBtn);
+
+    overlay.appendChild(modal);
+    document.body.appendChild(overlay);
+
+    // Fetch leaderboard
+    try {
+      const resp = await fetch('https://enchanting-reflection-production-a838.up.railway.app/leaderboard');
+      const data = await resp.json();
+      loading.remove();
+
+      if (!data.players || data.players.length === 0) {
+        const empty = document.createElement('div');
+        empty.textContent = 'No players yet. Be the first!';
+        empty.style.cssText = 'color: #888; font-size: 9px; margin: 20px 0;';
+        modal.insertBefore(empty, closeBtn);
+        return;
+      }
+
+      const table = document.createElement('div');
+      table.style.cssText = 'text-align: left; margin-bottom: 8px;';
+
+      // Header
+      const header = document.createElement('div');
+      header.style.cssText = 'display: flex; gap: 8px; padding: 6px 4px; border-bottom: 1px solid #5b3a8c; color: #f8e848; font-size: 7px; margin-bottom: 4px;';
+      header.innerHTML = `<span style="width:24px">#</span><span style="flex:1">Player</span><span style="width:50px;text-align:right">Score</span><span style="width:30px;text-align:center">Ch</span><span style="width:60px;text-align:right">Scene</span>`;
+      table.appendChild(header);
+
+      data.players.forEach((p: any, i: number) => {
+        const row = document.createElement('div');
+        const medal = i === 0 ? '\u{1F947}' : i === 1 ? '\u{1F948}' : i === 2 ? '\u{1F949}' : `${i + 1}`;
+        const addr = p.address.slice(0, 6) + '...' + p.address.slice(-4);
+        const scene = (p.sceneName || '').replace(/^(The |AdrianLAB )/, '').slice(0, 10);
+        const complete = p.gameComplete ? ' \u{2B50}' : '';
+
+        row.style.cssText = `
+          display: flex; gap: 8px; padding: 5px 4px; font-size: 7px;
+          color: ${i < 3 ? '#e8d5f5' : '#999'};
+          border-bottom: 1px solid #222;
+        `;
+        row.innerHTML = `<span style="width:24px">${medal}</span><span style="flex:1;color:#aaa">${addr}${complete}</span><span style="width:50px;text-align:right;color:#f8e848">${p.score}</span><span style="width:30px;text-align:center">${p.chapters}/5</span><span style="width:60px;text-align:right;color:#666;overflow:hidden">${scene}</span>`;
+        table.appendChild(row);
+      });
+
+      const total = document.createElement('div');
+      total.textContent = `${data.total} player${data.total !== 1 ? 's' : ''} total`;
+      total.style.cssText = 'color: #555; font-size: 7px; margin-top: 8px;';
+      table.appendChild(total);
+
+      modal.insertBefore(table, closeBtn);
+    } catch {
+      loading.textContent = 'Failed to load leaderboard';
+      loading.style.color = '#e94560';
     }
   }
 
