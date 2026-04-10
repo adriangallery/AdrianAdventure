@@ -35,6 +35,7 @@ export class GameScene extends Phaser.Scene {
   private bgFill!: Phaser.GameObjects.Image;
   private bg!: Phaser.GameObjects.Image;
   private fg?: Phaser.GameObjects.Image;
+  private conditionalOverlays: Array<{ sprite: Phaser.GameObjects.Image; flag: string; invert?: boolean }> = [];
   private debugContainer?: Phaser.GameObjects.Container;
   private static DEBUG = import.meta.env.DEV;
   private pendingHotspot: HotspotData | null = null;
@@ -139,6 +140,23 @@ export class GameScene extends Phaser.Scene {
       this.fg.setDepth(15);
     }
 
+
+    // Conditional overlays — sprites shown/hidden based on game flags
+    this.conditionalOverlays = [];
+    const overlayConfigs = (sceneData as any).conditionalOverlays ?? [];
+    for (const co of overlayConfigs) {
+      const key = `overlay_${sceneId}_${co.id}`;
+      if (this.textures.exists(key)) {
+        const overlay = this.add.image(0, 0, key).setOrigin(0, 0);
+        const ot = this.coordSystem.getBgTransform();
+        overlay.setPosition(ot.x, ot.y).setScale(ot.scaleX, ot.scaleY);
+        overlay.setDepth(co.depth ?? 12);
+        const flagVal = this.gameState.flags[co.flag] ?? false;
+        const show = co.invert ? !flagVal : flagVal;
+        overlay.setVisible(show);
+        this.conditionalOverlays.push({ sprite: overlay, flag: co.flag, invert: co.invert });
+      }
+    }
 
     // Camera setup based on orientation
     this.setupCamera();
@@ -269,6 +287,13 @@ export class GameScene extends Phaser.Scene {
 
   update(time: number, delta: number): void {
     this.player.update(time, delta);
+
+    // Refresh conditional overlays when flags change
+    for (const co of this.conditionalOverlays) {
+      const flagVal = this.gameState.flags[co.flag] ?? false;
+      const show = co.invert ? !flagVal : flagVal;
+      if (co.sprite.visible !== show) co.sprite.setVisible(show);
+    }
 
     // Tick down input cooldown (prevents dismiss-click from triggering next action)
     if (this.inputCooldownFrames > 0) this.inputCooldownFrames--;
@@ -496,6 +521,11 @@ export class GameScene extends Phaser.Scene {
         npc.setPosition(newPos.x, newPos.y);
       }
       npc.setScale(this.coordSystem.getScale() * npcDataScale);
+    }
+
+    // Conditional overlays follow background transform
+    for (const co of this.conditionalOverlays) {
+      co.sprite.setPosition(t.x, t.y).setScale(t.scaleX, t.scaleY);
     }
 
     this.web3VisualSystem?.onResize(this.coordSystem);

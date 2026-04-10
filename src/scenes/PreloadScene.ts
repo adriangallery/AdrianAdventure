@@ -52,7 +52,7 @@ export class PreloadScene extends Phaser.Scene {
       'mystery_envelope', 'mystery_envelope_opened', 'server_log', 'burned_chip', 'dr_satoshi_badge',
       'clinic_photo', 'adrian_note',
       'rubber_duck', 'receipt', 'broken_mouse',
-      'floppy_box',
+      'floppy_box', 'energy_drink', 'clinic_sign_in_sheet',
     ];
     for (const id of itemIds) {
       const key = `item_${id}`;
@@ -121,6 +121,25 @@ export class PreloadScene extends Phaser.Scene {
         return;
       }
     }
+
+    // Load conditional overlay sprites (flag-gated visuals)
+    if (sceneData?.conditionalOverlays?.length) {
+      const basePath = `assets/scenes/${sceneId}`;
+      let needsLoad = false;
+      for (const co of sceneData.conditionalOverlays) {
+        const key = `overlay_${sceneId}_${co.id}`;
+        if (!this.textures.exists(key)) {
+          this.load.image(key, `${basePath}/${co.sprite}.png${v}`);
+          needsLoad = true;
+        }
+      }
+      if (needsLoad) {
+        this.load.once('complete', () => this.scene.start('GameScene'));
+        this.load.start();
+        return;
+      }
+    }
+
     this.scene.start('GameScene');
   }
 }

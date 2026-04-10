@@ -626,8 +626,16 @@
           ],
           "PICK": [
             {
-              "op": "say",
-              "text": "The can is almost empty. Just enough for one sip of regret."
+              "op": "ifFlag",
+              "flag": "has_energy_drink",
+              "then": [
+                { "op": "say", "text": "I already grabbed the can. One dose of regret is enough." }
+              ],
+              "else": [
+                { "op": "say", "text": "I grab the can. Still some liquid sloshing around. Could be useful for... something. Or someone. Or a dying plant." },
+                { "op": "setFlag", "flag": "has_energy_drink", "value": true },
+                { "op": "addItem", "id": "energy_drink", "name": "Energy Drink" }
+              ]
             }
           ],
           "OPEN": [

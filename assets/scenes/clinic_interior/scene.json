@@ -1308,5 +1308,13 @@
       "w": 35,
       "h": 8.3
     }
+  ],
+  "conditionalOverlays": [
+    {
+      "id": "no_photo",
+      "sprite": "overlay_no_photo",
+      "flag": "found_clinic_photo",
+      "depth": 5
+    }
   ]
 }
