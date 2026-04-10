@@ -176,6 +176,10 @@
                   "op": "addItem",
                   "id": "antenna",
                   "name": "Loose Antenna"
+                },
+                {
+                  "op": "achievement",
+                  "text": "SIGNAL BOOST — Salvaged the rooftop antenna"
                 }
               ]
             }
@@ -222,6 +226,10 @@
                   "op": "addItem",
                   "id": "antenna",
                   "name": "Loose Antenna"
+                },
+                {
+                  "op": "achievement",
+                  "text": "SIGNAL BOOST — Salvaged the rooftop antenna"
                 }
               ]
             }

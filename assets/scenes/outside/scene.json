@@ -751,6 +751,10 @@
                   "text": "I slide the doormat aside. Underneath — a hidden trapdoor with the AdrianZERO logo etched into it. The receptionist wasn't kidding."
                 },
                 {
+                  "op": "achievement",
+                  "text": "VIP ACCESS — Found the holder-only shortcut to the basement"
+                },
+                {
                   "op": "fadeToScene",
                   "sceneId": "basement",
                   "spawn": { "x": 50, "y": 90 }
