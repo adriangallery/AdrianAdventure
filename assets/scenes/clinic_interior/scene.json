@@ -323,14 +323,29 @@
           ],
           "PUSH": [
             {
-              "op": "say",
-              "text": "I push the cabinet. It doesn't budge. It's either bolted down or full of every bad trade ever recorded."
+              "op": "ifFlag",
+              "flag": "satoshi_pool_hint",
+              "then": [
+                { "op": "say", "text": "I push the cabinet sideways. It slides on hidden rails, revealing a narrow staircase descending into green-tinted darkness. The sound of splashing... and is that reggaeton?" },
+                { "op": "wait", "ms": 500 },
+                { "op": "fadeToScene", "sceneId": "recovery_pool", "spawn": { "x": 8, "y": 92 } }
+              ],
+              "else": [
+                { "op": "say", "text": "I push the cabinet. It doesn't budge. It's either bolted down or full of every bad trade ever recorded." }
+              ]
             }
           ],
           "PULL": [
             {
-              "op": "say",
-              "text": "I pull on the drawer handle. Locked tight. The rattle echoes through the empty reception."
+              "op": "ifFlag",
+              "flag": "satoshi_pool_hint",
+              "then": [
+                { "op": "say", "text": "I pull the cabinet. It slides aside, revealing the hidden staircase to the recovery pool below." },
+                { "op": "fadeToScene", "sceneId": "recovery_pool", "spawn": { "x": 8, "y": 92 } }
+              ],
+              "else": [
+                { "op": "say", "text": "I pull on the drawer handle. Locked tight. The rattle echoes through the empty reception." }
+              ]
             }
           ],
           "GIVE": [
@@ -1092,6 +1107,27 @@
                 "contract": "0x6e369bf0e4e0c106192d606fb6d85836d684da75",
                 "minBalance": 1
               }
+            },
+            {
+              "text": "Where are the other patients?",
+              "next": "other_patients"
+            },
+            {
+              "text": "Goodbye, doctor.",
+              "next": "goodbye"
+            }
+          ]
+        },
+        "other_patients": {
+          "speaker": "Dr. Satoshi",
+          "text": "The... other patients? They're in the recovery program. Downstairs. It's an experimental approach. Immersive, you could say. The filing cabinet knows the way, if you push hard enough. But that's not for visitors.",
+          "onEnter": [
+            { "op": "setFlag", "flag": "satoshi_pool_hint", "value": true }
+          ],
+          "choices": [
+            {
+              "text": "What happened to Patient Zero?",
+              "next": "patient_zero"
             },
             {
               "text": "Goodbye, doctor.",

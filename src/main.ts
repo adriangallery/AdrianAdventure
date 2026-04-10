@@ -42,7 +42,7 @@ function createSceneSelector(g: Phaser.Game): void {
   const scenes = [
     'outside', 'mountain', 'clinic_exterior', 'clinic_interior',
     'lobby', 'upstairs', 'rooftop', 'basement', 'server_room',
-    'treatment_room', 'epilogue_outside',
+    'treatment_room', 'epilogue_outside', 'recovery_pool',
   ];
 
   const btn = document.createElement('button');

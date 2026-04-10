@@ -1,0 +1,391 @@
+{
+  "version": 3,
+  "id": "recovery_pool",
+  "title": "The Recovery Pool",
+  "assets": {
+    "background": "background.png",
+    "walkmask": null,
+    "atlas": null
+  },
+  "render": {
+    "world": { "width": 3712, "height": 1152 },
+    "camera": {
+      "start": { "x": 50, "y": 50 },
+      "followPlayer": true,
+      "lerp": 0.1,
+      "clampToWorld": true
+    }
+  },
+  "player": {
+    "spawn": { "x": 8, "y": 92 },
+    "speed": 140,
+    "sprite": null,
+    "playerScale": 4.5
+  },
+  "ui": {
+    "verbs": ["LOOK", "USE", "TALK", "PICK", "OPEN", "CLOSE"]
+  },
+  "maskMapping": null,
+  "regions": {
+    "hotspots": [
+      {
+        "id": "hs_pool_group_left",
+        "name": "Pool Apes (Left Side)",
+        "bounds": { "x": 18, "y": 48, "w": 18, "h": 35 },
+        "scripts": {
+          "LOOK": [
+            { "op": "say", "text": "Three apes in the shallow end, scrolling phones in waterproof cases. Their screens all show the same chart. None of them are looking at each other." }
+          ],
+          "TALK": [
+            { "op": "say", "text": "'Bro, we're in a recovery program.' 'For what?' 'Paper hands. I sold ETH at $400.' The other apes nod solemnly. That IS a medical condition." }
+          ],
+          "USE": [
+            { "op": "say", "text": "I try to engage them. One looks up briefly. 'Are you bullish or bearish?' he asks, then goes back to his phone before I can answer." }
+          ],
+          "PICK": [
+            { "op": "say", "text": "They're in a pool. I'm not fishing out crypto influencers. That's how you get rugged." }
+          ],
+          "OPEN": [
+            { "op": "say", "text": "One of them holds up his phone. 'Check my portfolio.' I look. It's a picture of a sunset. 'That's not a portfolio.' 'It is now.'" }
+          ],
+          "CLOSE": [
+            { "op": "say", "text": "I try to end the conversation. 'NFA!' one yells as I walk away. They all say it. In unison. Like a support group mantra." }
+          ]
+        }
+      },
+      {
+        "id": "hs_pool_group_right",
+        "name": "Pool Apes (Right Side)",
+        "bounds": { "x": 42, "y": 50, "w": 18, "h": 33 },
+        "scripts": {
+          "LOOK": [
+            { "op": "say", "text": "More apes, deeper in the pool. One wears a diamond floatie. Another has a pink donut ring. They all look like they're 'making it' while literally going under." }
+          ],
+          "TALK": [
+            { "op": "say", "text": "'Welcome to the recovery pool! The water is green because it's backed by liquidity.' I don't think that's how pools work. 'We don't think that's how DeFi works either, but here we are.'" }
+          ],
+          "USE": [
+            { "op": "say", "text": "I try to hand one of them a towel. 'No thanks, I'm HODLing... the water.' He sinks a little lower." }
+          ],
+          "PICK": [
+            { "op": "say", "text": "They're slippery. In more ways than one." }
+          ],
+          "OPEN": [
+            { "op": "say", "text": "'Open your mind,' one says. 'I'll open my wallet when you show me a real roadmap,' I reply. Silence. Then: 'Fair.'" }
+          ],
+          "CLOSE": [
+            { "op": "say", "text": "'Close your positions!' I yell. They all laugh nervously. One starts crying. That escalated quickly." }
+          ]
+        }
+      },
+      {
+        "id": "hs_rubber_duck",
+        "name": "Giant Rubber Duck",
+        "bounds": { "x": 37, "y": 48, "w": 6, "h": 15 },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "ifHasItem",
+              "id": "rubber_duck",
+              "then": [
+                { "op": "say", "text": "A giant rubber duck floatie in the pool. My rubber duck vibrates in my pocket. They can sense each other. This is either cute or terrifying." }
+              ],
+              "else": [
+                { "op": "say", "text": "A massive rubber duck floatie. The apes treat it with reverence. 'That's Gerald,' one whispers. 'He's been here since the ICO era.'" }
+              ]
+            }
+          ],
+          "TALK": [
+            { "op": "say", "text": "I address the duck directly. 'Gerald, what's the alpha?' The duck says nothing. The apes gasp. 'He only speaks during bull markets,' one explains." }
+          ],
+          "USE": [
+            {
+              "op": "ifHasItem",
+              "id": "rubber_duck",
+              "then": [
+                { "op": "say", "text": "I place my rubber duck next to Gerald. They float side by side. The apes go silent. 'The prophecy...' one whispers. 'Two ducks... the merge is complete.'" },
+                { "op": "setFlag", "flag": "duck_reunion", "value": true }
+              ],
+              "else": [
+                { "op": "say", "text": "I try to ride Gerald. An ape blocks me. 'That's a sacred artifact. You need at least a rubber duck offering to approach.' A rubber duck? Where would I find one of those?" }
+              ]
+            }
+          ],
+          "PICK": [
+            { "op": "say", "text": "Gerald is too big to pick up. And the apes would riot. Never come between a degen and their inflatable." }
+          ],
+          "OPEN": [
+            { "op": "say", "text": "There's a valve on Gerald's belly. I could deflate him, but that feels like a war crime in this context." }
+          ],
+          "CLOSE": [
+            { "op": "say", "text": "Gerald's beak is sealed. Like most crypto NDAs." }
+          ]
+        }
+      },
+      {
+        "id": "hs_tv",
+        "name": "Wall TV",
+        "bounds": { "x": 59, "y": 26, "w": 8, "h": 18 },
+        "scripts": {
+          "LOOK": [
+            { "op": "say", "text": "A TV mounted on the wall showing live crypto charts. Green candles. The apes in the pool cheer. Red candle. They go underwater. It's a synchronized swimming routine driven by market sentiment." }
+          ],
+          "TALK": [
+            { "op": "say", "text": "'Change the channel!' I yell. 'There IS no other channel,' the bartender robot replies. 'Trust me, I've tried.'" }
+          ],
+          "USE": [
+            { "op": "say", "text": "I try to change the channel. The remote is at the bottom of the pool. Nobody dares dive for it. 'Last guy who tried found a liquidation notice down there,' an ape warns." }
+          ],
+          "PICK": [
+            { "op": "say", "text": "It's bolted to the wall. Like my eyes to these charts. We're all trapped." }
+          ],
+          "OPEN": [
+            { "op": "say", "text": "I open the TV settings. The only option is 'MORE CHARTS'. I close it." }
+          ],
+          "CLOSE": [
+            { "op": "say", "text": "I try to turn it off. 'NO!' scream all the apes in unison. I step back slowly." }
+          ]
+        }
+      },
+      {
+        "id": "hs_bar",
+        "name": "Bar Counter",
+        "bounds": { "x": 73, "y": 35, "w": 15, "h": 30 },
+        "scripts": {
+          "LOOK": [
+            { "op": "say", "text": "A well-stocked bar with bottles of various colors. The labels read: 'Liquid Staking', 'Proof of Drink', 'Gas Fee Gin', 'Rug Pull Rum'. A robot bartender polishes a glass that's already spotless." }
+          ],
+          "TALK": [
+            { "op": "say", "text": "I approach the bar. The robot looks up. 'What'll it be? We have everything except real financial returns.'" }
+          ],
+          "USE": [
+            { "op": "say", "text": "I sit at the bar. The robot slides me a glass of green liquid. 'On the house. It's our signature drink: The Liquidation.' It tastes like regret and lime." }
+          ],
+          "PICK": [
+            { "op": "say", "text": "I grab a bottle labeled 'Yield Farming Whiskey'. The robot snatches it back. 'That's aged 3 epochs. Not for amateurs.'" }
+          ],
+          "OPEN": [
+            { "op": "say", "text": "I open a bottle. The fizz sounds like a transaction being confirmed. 'That's the impermanent loss IPA,' the robot explains. 'The taste changes depending on when you drink it.'" }
+          ],
+          "CLOSE": [
+            { "op": "say", "text": "I close the bottle cap. 'Smart,' the robot says. 'Most people here can't close a position either.'" }
+          ]
+        }
+      },
+      {
+        "id": "hs_robot_bartender",
+        "name": "Robot Bartender",
+        "bounds": { "x": 82, "y": 30, "w": 8, "h": 35 },
+        "scripts": {
+          "LOOK": [
+            { "op": "say", "text": "A chrome robot with LED eyes and a bowtie. It moves with mechanical precision, mixing drinks with algorithmic accuracy. A nametag reads: 'B.O.T. — Beverage Operations Terminal'. Below it, scratched in: 'formerly: Trading Bot v2.3'." }
+          ],
+          "TALK": [
+            {
+              "op": "dialogue",
+              "npcId": "npc_bot_bartender",
+              "treeId": "bartender_intro"
+            }
+          ],
+          "USE": [
+            { "op": "say", "text": "I try to access the robot's control panel. 'Buy me a drink first,' it says. Even robots have boundaries." }
+          ],
+          "PICK": [
+            { "op": "say", "text": "It weighs 200kg and has a taser arm. I'll pass." }
+          ],
+          "OPEN": [
+            { "op": "say", "text": "I open the robot's chest panel. Inside: a tiny hamster wheel. 'That's my backup generator,' it says, closing the panel. 'Don't judge.'" }
+          ],
+          "CLOSE": [
+            { "op": "say", "text": "'Please don't try to shut me down. Last time someone did that, I auto-bought 10,000 DOGE.'" }
+          ]
+        }
+      },
+      {
+        "id": "hs_bananas",
+        "name": "Banana Peels",
+        "bounds": { "x": 35, "y": 72, "w": 5, "h": 8 },
+        "scripts": {
+          "LOOK": [
+            { "op": "say", "text": "Banana peels scattered around the pool edge. The apes are messy guests. Or it's performance art. Hard to tell with this crowd." }
+          ],
+          "TALK": [
+            { "op": "say", "text": "I talk to a banana peel. This is rock bottom. Or is it the pool bottom? Both, really." }
+          ],
+          "USE": [
+            { "op": "say", "text": "I slip on a banana peel. Classic. The apes rate my fall: '7/10, nice form, weak landing.'" }
+          ],
+          "PICK": [
+            { "op": "say", "text": "I pick up a banana peel. An ape looks offended. 'That's... that's organic decentralized compost.' I put it back." }
+          ],
+          "OPEN": [
+            { "op": "say", "text": "You can't open a banana peel. You can unpeel a banana, but that ship has sailed. Or slipped." }
+          ],
+          "CLOSE": [
+            { "op": "say", "text": "I try to reassemble the banana. The apes watch in fascination. 'Is that... reverse yield farming?'" }
+          ]
+        }
+      },
+      {
+        "id": "hs_stairs_up",
+        "name": "Stairs Up",
+        "bounds": { "x": 0, "y": 20, "w": 8, "h": 40 },
+        "scripts": {
+          "LOOK": [
+            { "op": "say", "text": "Stairs leading back up to the clinic reception. The sound of splashing and bad financial advice fades behind me." }
+          ],
+          "USE": [
+            { "op": "sayBrief", "text": "Back to the clinic.", "duration": 800 },
+            { "op": "fadeToScene", "sceneId": "clinic_interior", "spawn": { "x": 70, "y": 95 } }
+          ],
+          "OPEN": [
+            { "op": "sayBrief", "text": "Heading back up.", "duration": 800 },
+            { "op": "fadeToScene", "sceneId": "clinic_interior", "spawn": { "x": 70, "y": 95 } }
+          ],
+          "TALK": [
+            { "op": "say", "text": "The stairs creak as if they're disappointed in my life choices. Join the club, stairs." }
+          ],
+          "PICK": [
+            { "op": "say", "text": "I can't pick up stairs. That's not a thing. Not even in Web3." }
+          ],
+          "CLOSE": [
+            { "op": "say", "text": "There's no door to close. The apes' poor financial decisions echo freely up the stairwell." }
+          ]
+        }
+      },
+      {
+        "id": "hs_pool_books",
+        "name": "Soggy Books",
+        "bounds": { "x": 5, "y": 55, "w": 6, "h": 12 },
+        "scripts": {
+          "LOOK": [
+            { "op": "say", "text": "A pile of waterlogged books by the pool edge: 'The Intelligent Investor (Crypto Edition)', 'How to Win Friends and Influence Tokenomics', 'Rich Ape Poor Ape'. All ruined. Like most portfolios in this room." }
+          ],
+          "TALK": [
+            { "op": "say", "text": "'Has anyone actually read these?' I ask. An ape looks up. 'I read the titles. That counts as research.' It really doesn't." }
+          ],
+          "USE": [
+            { "op": "say", "text": "I try to read one. The pages are stuck together with pool water and broken dreams. The only legible passage says: 'DYOR'. Ironic." }
+          ],
+          "PICK": [
+            { "op": "say", "text": "The books disintegrate when I touch them. Like paper hands in a bear market." }
+          ],
+          "OPEN": [
+            { "op": "say", "text": "I open 'Rich Ape Poor Ape'. Every page just says 'HODL' in increasingly desperate handwriting." }
+          ],
+          "CLOSE": [
+            { "op": "say", "text": "I close the book respectfully. Some things are better left unread. Like most whitepapers." }
+          ]
+        }
+      }
+    ],
+    "triggers": [
+      {
+        "id": "tr_to_clinic",
+        "once": false,
+        "bounds": { "x": 0, "y": 30, "w": 4, "h": 50 },
+        "onEnter": [
+          { "op": "fadeToScene", "sceneId": "clinic_interior", "spawn": { "x": 70, "y": 95 } }
+        ]
+      }
+    ]
+  },
+  "npcs": [],
+  "dialogues": {
+    "bartender_intro": {
+      "id": "bartender_intro",
+      "start": "greeting",
+      "nodes": {
+        "greeting": {
+          "speaker": "B.O.T.",
+          "text": "Welcome to the Recovery Pool. I'm B.O.T. — Beverage Operations Terminal. Formerly a high-frequency trading algorithm. Now I mix drinks. It's... a lateral move.",
+          "choices": [
+            { "text": "What is this place?", "next": "what_is_this" },
+            { "text": "Tell me about the patients.", "next": "patients" },
+            { "text": "Have you seen Patient Zero?", "next": "patient_zero" },
+            { "text": "I'll have a drink.", "next": "drink" }
+          ]
+        },
+        "what_is_this": {
+          "speaker": "B.O.T.",
+          "text": "Dr. Satoshi's experimental therapy program. Immersive liquid rehabilitation. The apes soak in green water infused with 'decentralized minerals'. It's just pool water with food coloring. But the placebo effect is remarkably effective on degens.",
+          "choices": [
+            { "text": "Does the therapy work?", "next": "therapy_works" },
+            { "text": "About Patient Zero...", "next": "patient_zero" }
+          ]
+        },
+        "therapy_works": {
+          "speaker": "B.O.T.",
+          "text": "Define 'work'. They haven't checked their portfolios in 45 minutes. That's a clinic record. One of them even made eye contact with another human yesterday. Baby steps.",
+          "end": true
+        },
+        "patients": {
+          "speaker": "B.O.T.",
+          "text": "Chronic cases, all of them. That one bought the top of every cycle since 2017. That one over there? Mortgaged his house for a dog coin. And the one with the diamond floatie? He's actually profitable. He just comes for the vibes.",
+          "choices": [
+            { "text": "The profitable one comes voluntarily?", "next": "profitable" },
+            { "text": "About Patient Zero...", "next": "patient_zero" }
+          ]
+        },
+        "profitable": {
+          "speaker": "B.O.T.",
+          "text": "Survivor's guilt. He made money while his friends got liquidated. Now he floats here, pretending to be broke. It's the crypto version of a support group. 'Hi, I'm Chad, and I sold the top.' *gasps from the pool*",
+          "end": true
+        },
+        "patient_zero": {
+          "speaker": "B.O.T.",
+          "text": "Patient Zero... *servos whir* My data logs show someone matching that description. They were here before the pool was a pool. When this was still a server room. They left something behind — a message in my memory banks I can't delete.",
+          "onEnter": [
+            { "op": "setFlag", "flag": "bot_mentioned_pz", "value": true }
+          ],
+          "choices": [
+            { "text": "What message?", "next": "message" },
+            { "text": "When was this?", "next": "when" }
+          ]
+        },
+        "message": {
+          "speaker": "B.O.T.",
+          "text": "'The cure isn't in the code. It's in the community.' That's all. Encrypted with a key I don't have. Whoever Patient Zero was, they understood something the rest of us are still trying to compute.",
+          "end": true
+        },
+        "when": {
+          "speaker": "B.O.T.",
+          "text": "Block 1. Not block 1 of Base. Block 1 of this building. Before AdrianLAB was AdrianLAB. Before the trading floors and the diamond protocol. When it was just... someone's dream in a basement. Like all the best things.",
+          "end": true
+        },
+        "drink": {
+          "speaker": "B.O.T.",
+          "text": "The house special: 'The Liquidation'. It's green, it burns, and you'll question your life choices afterward. Just like real trading. Cheers.",
+          "end": true
+        }
+      }
+    }
+  },
+  "items": {
+    "sceneItems": []
+  },
+  "combos": [],
+  "audio": {
+    "music": "retro-adventure",
+    "variation": {
+      "filterType": "lowpass",
+      "filterFrequency": 1800,
+      "volume": 0.7
+    },
+    "ambience": null,
+    "sfx": {}
+  },
+  "transitions": {
+    "goto": []
+  },
+  "walkableAreas": [
+    {
+      "x": 2,
+      "y": 85,
+      "w": 96,
+      "h": 15
+    }
+  ],
+  "web3Visuals": [],
+  "onEnter": []
+}
