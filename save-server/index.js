@@ -93,6 +93,73 @@ app.post('/save', async (c) => {
 });
 
 /**
+ * GET /leaderboard — Top players ranked by game progress
+ */
+app.get('/leaderboard', (c) => {
+  try {
+    const { readdirSync } = require('fs');
+    const files = readdirSync(DATA_DIR).filter(f => f.endsWith('.json'));
+
+    const players = [];
+    for (const file of files) {
+      try {
+        const data = JSON.parse(readFileSync(join(DATA_DIR, file), 'utf-8'));
+        const state = data.state;
+        if (!state) continue;
+
+        // Calculate progress score
+        const scenesVisited = state.visited?.length ?? 0;
+        const flagCount = Object.keys(state.flags ?? {}).length;
+        const itemCount = state.inventory?.length ?? 0;
+        const triggersCount = state.firedTriggers?.length ?? 0;
+
+        // Key milestones
+        const flags = state.flags ?? {};
+        const chapter1 = !!flags.chapter_1_complete;
+        const chapter2 = !!flags.chapter_2_intro_shown;
+        const chapter5 = !!flags.chapter_5_complete;
+        const patientZero = !!flags.patient_zero_found;
+        const gameComplete = !!flags.patient_zero_revealed;
+
+        // Chapters completed (0-5)
+        let chapters = 0;
+        if (chapter1) chapters++;
+        if (chapter2) chapters++;
+        if (flags.chapter_3_intro_shown) chapters++;
+        if (flags.chapter_4_intro_shown) chapters++;
+        if (chapter5) chapters++;
+
+        // Score: weighted sum
+        const score = (chapters * 100) + (scenesVisited * 10) + (itemCount * 5) + (flagCount * 2) + triggersCount;
+
+        players.push({
+          address: data.address,
+          sceneName: data.sceneName,
+          score,
+          chapters,
+          scenesVisited,
+          items: itemCount,
+          gameComplete,
+          patientZero,
+          lastSaved: data.savedAt || data.timestamp,
+        });
+      } catch { /* skip corrupt files */ }
+    }
+
+    // Sort by score descending
+    players.sort((a, b) => b.score - a.score);
+
+    return c.json({
+      total: players.length,
+      players: players.slice(0, 50), // Top 50
+    });
+  } catch (err) {
+    console.error('Leaderboard error:', err);
+    return c.json({ error: 'Internal server error' }, 500);
+  }
+});
+
+/**
  * DELETE /save/:address — Delete save (requires signature)
  */
 app.delete('/save/:address', async (c) => {
