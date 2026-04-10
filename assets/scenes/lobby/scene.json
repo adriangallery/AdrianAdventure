@@ -731,8 +731,8 @@
         "id": "tr_lobby_first_visit",
         "once": true,
         "bounds": {
-          "x": 70,
-          "y": 86,
+          "x": 72,
+          "y": 77.3,
           "w": 12.5,
           "h": 14
         },
@@ -910,7 +910,11 @@
           "speaker": "Receptionist",
           "text": "An AdrianZERO holder! VIP access granted. The basement has a special terminal for holders. The rug under the entrance hides the way down.",
           "onEnter": [
-            { "op": "setFlag", "flag": "vip_rug_hint", "value": true }
+            {
+              "op": "setFlag",
+              "flag": "vip_rug_hint",
+              "value": true
+            }
           ],
           "end": true
         }

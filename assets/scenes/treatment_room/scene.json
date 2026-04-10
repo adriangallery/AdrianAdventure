@@ -25,8 +25,8 @@
   },
   "player": {
     "spawn": {
-      "x": 50,
-      "y": 85
+      "x": 84.2,
+      "y": 96.6
     },
     "speed": 120,
     "sprite": {
@@ -34,7 +34,7 @@
       "idle": null,
       "walk": null
     },
-    "playerScale": 2,
+    "playerScale": 4.85,
     "hidePlayer": true
   },
   "ui": {
@@ -60,10 +60,10 @@
         "id": "hs_chair",
         "name": "The Chair",
         "bounds": {
-          "x": 39.8,
-          "y": 52.6,
-          "w": 15,
-          "h": 25
+          "x": 37.5,
+          "y": 54,
+          "w": 16.2,
+          "h": 32.6
         },
         "scripts": {
           "LOOK": [
@@ -126,10 +126,10 @@
         "id": "hs_monitor",
         "name": "The Monitor",
         "bounds": {
-          "x": 38.9,
-          "y": 30.9,
-          "w": 21.6,
-          "h": 20.4
+          "x": 62.9,
+          "y": 25.7,
+          "w": 9.3,
+          "h": 25.3
         },
         "scripts": {
           "LOOK": [
@@ -227,7 +227,7 @@
                 },
                 {
                   "op": "achievement",
-                  "text": "PATIENT ZERO \u2014 Identity Revealed"
+                  "text": "PATIENT ZERO — Identity Revealed"
                 }
               ]
             }
@@ -280,10 +280,10 @@
         "id": "hs_charts",
         "name": "Wall Charts",
         "bounds": {
-          "x": 72.4,
-          "y": 24.9,
-          "w": 9.9,
-          "h": 43.3
+          "x": 40.1,
+          "y": 21.8,
+          "w": 16.4,
+          "h": 26.6
         },
         "scripts": {
           "LOOK": [
@@ -346,10 +346,10 @@
         "id": "hs_exit_door",
         "name": "Exit Door",
         "bounds": {
-          "x": 19.2,
-          "y": 37,
-          "w": 5,
-          "h": 25
+          "x": 87.6,
+          "y": 23.5,
+          "w": 7.8,
+          "h": 65.6
         },
         "scripts": {
           "LOOK": [
@@ -472,9 +472,9 @@
         "id": "hs_adrian_note",
         "name": "Note on Table",
         "bounds": {
-          "x": 57.9,
-          "y": 59.2,
-          "w": 10,
+          "x": 64,
+          "y": 64.4,
+          "w": 4.8,
           "h": 5.6
         },
         "scripts": {
@@ -539,7 +539,7 @@
                     },
                     {
                       "op": "say",
-                      "text": "\"The patients never make it this far \u2014 they stay in the lobby refreshing charts.\""
+                      "text": "\"The patients never make it this far — they stay in the lobby refreshing charts.\""
                     },
                     {
                       "op": "say",
@@ -551,7 +551,7 @@
                     },
                     {
                       "op": "say",
-                      "text": "\"\u2014 Adrian\""
+                      "text": "\"— Adrian\""
                     }
                   ]
                 }
@@ -594,10 +594,10 @@
         "id": "hs_dark_floor",
         "name": "Treatment Room Floor",
         "bounds": {
-          "x": 25,
-          "y": 75,
-          "w": 50,
-          "h": 10
+          "x": 37.1,
+          "y": 93.5,
+          "w": 39.7,
+          "h": 6.5
         },
         "scripts": {
           "LOOK": [
@@ -660,21 +660,11 @@
         "id": "hs_founders_plaque",
         "name": "Founder's Plaque",
         "bounds": {
-          "x": 82,
-          "y": 40,
-          "w": 8,
-          "h": 10
+          "x": 28.2,
+          "y": 33.4,
+          "w": 2.7,
+          "h": 9
         },
-        "gate": {
-          "type": "ZERO_BALANCE",
-          "minBalance": "1000"
-        },
-        "gateFallback": [
-          {
-            "op": "say",
-            "text": "There's something on the wall here but I can't quite see it. Like a hidden message only certain people can read."
-          }
-        ],
         "scripts": {
           "LOOK": [
             {
@@ -685,7 +675,7 @@
           "USE": [
             {
               "op": "say",
-              "text": "I touch the plaque. It's warm. The engraving shifts \u2014 showing my $ZERO balance, my first transaction, my time in the ecosystem. Patient Zero was always a founder."
+              "text": "I touch the plaque. It's warm. The engraving shifts — showing my $ZERO balance, my first transaction, my time in the ecosystem. Patient Zero was always a founder."
             }
           ],
           "TALK": [
@@ -700,10 +690,10 @@
         "id": "hs_ceiling_pipes",
         "name": "Exposed Pipes and Cables",
         "bounds": {
-          "x": 15,
-          "y": 5,
+          "x": 17.8,
+          "y": 0,
           "w": 70,
-          "h": 12
+          "h": 7.1
         },
         "scripts": {
           "LOOK": [
@@ -766,10 +756,10 @@
         "id": "hs_side_table",
         "name": "Metal Side Table",
         "bounds": {
-          "x": 56,
-          "y": 52,
-          "w": 8,
-          "h": 8
+          "x": 59.8,
+          "y": 69.7,
+          "w": 8.5,
+          "h": 8.7
         },
         "scripts": {
           "LOOK": [
@@ -827,6 +817,204 @@
             }
           ]
         }
+      },
+      {
+        "id": "hs_observation_window",
+        "name": "Observation Window",
+        "bounds": {
+          "x": 5.7,
+          "y": 18.2,
+          "w": 29,
+          "h": 58
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "A massive observation window, completely shattered. Through the spider-web of cracks I can see another room — a recliner, filing cabinets, monitors. Someone was watching from in there. Watching the patients. Watching ME. The glass broke from the inside. Whoever was observing... tried to get out."
+            }
+          ],
+          "USE": [
+            {
+              "op": "say",
+              "text": "I peer through a gap in the shattered glass. The observation room is dark now. Dusty. A coffee mug sits on the desk, still half full. Whoever was watching Patient Zero left in a hurry. Or maybe they realized they were watching themselves."
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "'Hello? Anyone still in there?' My voice echoes through the broken glass and dies in the empty room. The only answer is the hum of a monitor left on standby. Even the observers got liquidated eventually."
+            }
+          ],
+          "PICK": [
+            {
+              "op": "say",
+              "text": "I carefully pull a shard of glass from the frame. It catches the light from the monitor — green text reflected in the fragment. For a second, I see my own face in it. Patient. Observer. Same person."
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "say",
+              "text": "There's no door to the observation room from this side. One-way access. Like a smart contract with no withdraw function. The observers could watch, but they were never meant to intervene."
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "Can't close a broken window. Can't undo a broken transaction. Some things just stay shattered and you learn to navigate the edges."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I push against the remaining glass. A section gives way and crashes into the observation room. The sound is obscene in this silence. Like a margin call at 3 AM."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "I pull at the window frame. It groans but holds. The frame is stronger than the glass. The system survives even when transparency is destroyed. Sound familiar?"
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "The window has already been given enough — someone's fist, apparently. Or maybe their forehead. Depends on how bad the portfolio charts looked that day."
+            }
+          ]
+        }
+      },
+      {
+        "id": "hs_floor_cables",
+        "name": "Floor Cables",
+        "bounds": {
+          "x": 20.8,
+          "y": 81.9,
+          "w": 16.2,
+          "h": 18.1
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "Thick cables and tubes snake out from under the chair and disappear into the floor through crude holes in the tile. Some carry data. Some carry... fluids? The labels are worn off. Whatever the chair was connected to, it ran deep. Deeper than the basement. Deeper than any blockchain explorer could index."
+            }
+          ],
+          "USE": [
+            {
+              "op": "say",
+              "text": "I follow a cable with my hand. It's warm. Pulsing slightly. Still active. Whatever system this chair feeds into, it hasn't been shut down. Patient Zero's session was never terminated. It's been running in the background this whole time."
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "'Where do you go?' I ask the cables. They hum in response. A low frequency, like a node syncing blocks. They know where they go. They just don't answer to patients."
+            }
+          ],
+          "PICK": [
+            {
+              "op": "say",
+              "text": "I try to pull a cable loose. It won't budge. Bolted to the floor. These aren't decorative — they're load-bearing infrastructure. Like the one validator keeping a chain alive."
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "say",
+              "text": "I pry open a floor panel where the cables converge. Beneath: a junction box labeled 'BIOMETRIC FEED — TREATMENT SUITE A.' This chair wasn't just reading wallets. It was reading bodies."
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "I push the floor panel back. Some endpoints shouldn't be exposed. I learned that the hard way with an unsecured API. And with this floor."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I step on the cables. They resist, thick and industrial. Whoever installed these expected them to last. Built to outlast the patients. Built to outlast the clinic itself."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "I yank a thinner cable free. Sparks. The monitor flickers for a second. I plug it back in immediately. Not the time to perform surgery on a system I don't understand. Again."
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "The cables are already carrying everything they need. Data, power, maybe secrets. They're the most honest things in this room. They just... transmit."
+            }
+          ]
+        }
+      },
+      {
+        "id": "hs_wall_decay",
+        "name": "Stained Wall",
+        "bounds": {
+          "x": 78,
+          "y": 20,
+          "w": 10,
+          "h": 52
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "The wall near the door is in rough shape. Paint peeling in sheets, water damage creeping down from the ceiling, dark stains that could be rust or... I'm going to say rust. This clinic has been deteriorating for a long time. Maintained just enough to function. Never enough to look healthy. Like most DeFi protocols in a bear market."
+            }
+          ],
+          "USE": [
+            {
+              "op": "say",
+              "text": "I scrape at the peeling paint with my fingernail. Layer after layer. The wall has been repainted a dozen times. Each layer a different shade of clinical white. Each renovation a fresh coat over the same rot. Remind you of any token rebrands?"
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "'How many treatments have you witnessed?' I ask the wall. It answers by dropping a flake of paint onto my shoe. Passive-aggressive. Walls in crypto clinics have attitude."
+            }
+          ],
+          "PICK": [
+            {
+              "op": "say",
+              "text": "I peel off a strip of paint. Behind it, someone scratched into the plaster: 'NGMI.' Below that, in different handwriting: 'WAGMI.' Below that: 'We didn't.'"
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "say",
+              "text": "There's a hairline crack in the wall. I widen it with my fingers. Behind the plaster: old wiring and a faded blueprint fragment. The room was originally labeled 'RECONDITIONING BAY 01.' Reconditioning. Not treatment."
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "I press the paint flap back against the wall. It holds for a second, then curls away again. Some things refuse to stay hidden once exposed. Like a rug pull's paper trail."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I push against the wall. It's solid beneath the decay. The bones of this building are strong. It's just the surface that's falling apart. Story of every crypto project with good fundamentals and terrible marketing."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "I pull a loose chunk of plaster free. Dust rains down. Behind it, the raw concrete of the original structure. Before the paint. Before the clinic. Before Patient Zero. This building has always been here, waiting."
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "The wall has been given enough abuse by time, moisture, and whoever punched that dent near the baseboard. It doesn't need my contribution."
+            }
+          ]
+        }
       }
     ],
     "triggers": [
@@ -835,7 +1023,7 @@
         "once": false,
         "bounds": {
           "x": 15,
-          "y": 78,
+          "y": 82.2,
           "w": 70,
           "h": 15
         },
@@ -856,7 +1044,7 @@
                   },
                   {
                     "op": "achievement",
-                    "text": "PATIENT ZERO \u2014 Identity Revealed"
+                    "text": "PATIENT ZERO — Identity Revealed"
                   },
                   {
                     "op": "wait",
@@ -957,7 +1145,7 @@
             },
             {
               "op": "achievement",
-              "text": "PRESERVED \u2014 Your floppies hold the story of Patient Zero"
+              "text": "PRESERVED — Your floppies hold the story of Patient Zero"
             }
           ]
         }
@@ -979,10 +1167,10 @@
   },
   "walkableAreas": [
     {
-      "x": 15,
-      "y": 78,
+      "x": 16.7,
+      "y": 93.3,
       "w": 70,
-      "h": 15
+      "h": 6.7
     }
   ],
   "web3Visuals": [

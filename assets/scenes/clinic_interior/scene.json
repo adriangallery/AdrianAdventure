@@ -397,8 +397,8 @@
                   "op": "fadeToScene",
                   "sceneId": "treatment_room",
                   "spawn": {
-                    "x": 50,
-                    "y": 80
+                    "x": 82.7,
+                    "y": 96.7
                   },
                   "duration": 800
                 }
@@ -464,8 +464,8 @@
                   "op": "fadeToScene",
                   "sceneId": "treatment_room",
                   "spawn": {
-                    "x": 50,
-                    "y": 80
+                    "x": 82.7,
+                    "y": 96.7
                   },
                   "duration": 800
                 }
