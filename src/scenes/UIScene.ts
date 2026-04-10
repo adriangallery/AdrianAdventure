@@ -78,6 +78,19 @@ export class UIScene extends Phaser.Scene {
           this.registry.set('gameState', state);
         }
       },
+      runScripts: async (ops) => {
+        const gs = this.scene.get('GameScene') as GameScene;
+        gs.executeItemComboScript(ops as import('@/types/scene.types').ScriptOp[]);
+        // Wait for script engine to finish
+        await new Promise<void>((resolve) => {
+          const check = () => {
+            const engine = (gs as any).scriptEngine;
+            if (!engine?.isRunning()) resolve();
+            else setTimeout(check, 50);
+          };
+          setTimeout(check, 50);
+        });
+      },
     });
 
     // Cinematic overlay (for scripts running from UIScene context)

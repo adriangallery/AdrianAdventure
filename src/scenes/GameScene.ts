@@ -42,6 +42,7 @@ export class GameScene extends Phaser.Scene {
   /** Frame-based cooldown: ignore clicks for 1 frame after script finishes */
   private inputCooldownFrames = 0;
   private walletUnsub: (() => void) | null = null;
+  private boundScheduleResize: (() => void) | null = null;
 
   constructor() { super({ key: 'GameScene' }); }
 
@@ -173,6 +174,7 @@ export class GameScene extends Phaser.Scene {
         const npcScale = this.coordSystem.getScale() * (nd.scale ?? 1);
         npc.setScale(npcScale);
         (npc as any)._npcDataScale = nd.scale ?? 1; // store for resize
+        (npc as any)._npcPctPosition = { x: nd.position.x, y: nd.position.y }; // store for resize repositioning
         npc.startIdle();
         this.npcs.push(npc);
       }
@@ -225,12 +227,14 @@ export class GameScene extends Phaser.Scene {
     this.scale.on('resize', () => this.handleResize());
 
     // iOS Safari: visualViewport is more reliable than Phaser's scale manager
+    // Store bound reference so we can remove listeners on shutdown
+    this.boundScheduleResize = () => this.scheduleResize();
     const vv = window.visualViewport;
     if (vv) {
-      vv.addEventListener('resize', () => this.scheduleResize());
+      vv.addEventListener('resize', this.boundScheduleResize);
     }
-    window.addEventListener('orientationchange', () => this.scheduleResize());
-    window.addEventListener('resize', () => this.scheduleResize());
+    window.addEventListener('orientationchange', this.boundScheduleResize);
+    window.addEventListener('resize', this.boundScheduleResize);
   }
 
   private resizeTimer: ReturnType<typeof setTimeout> | null = null;
@@ -376,7 +380,13 @@ export class GameScene extends Phaser.Scene {
       this.events.emit('hotspot:tapped', hotspot);
     } else {
       // USE, PICK, OPEN, CLOSE: walk to hotspot, execute on arrival
-      const b = hotspot.bounds!;
+      if (!hotspot.bounds) {
+        // No explicit bounds — execute immediately without walking
+        this.pendingHotspot = null;
+        this.events.emit('hotspot:tapped', hotspot);
+        return;
+      }
+      const b = hotspot.bounds;
       const targetX = b.x + b.w / 2;
       const targetY = Math.min(b.y + b.h, 100);
       if (this.player.canReachPct(targetX, targetY)) {
@@ -435,6 +445,11 @@ export class GameScene extends Phaser.Scene {
 
     for (const npc of this.npcs) {
       const npcDataScale = (npc as any)._npcDataScale ?? 1;
+      const npcPctPos = (npc as any)._npcPctPosition as { x: number; y: number } | undefined;
+      if (npcPctPos) {
+        const newPos = this.coordSystem.pctToScreen(npcPctPos.x, npcPctPos.y);
+        npc.setPosition(newPos.x, newPos.y);
+      }
       npc.setScale(this.coordSystem.getScale() * npcDataScale);
     }
 
@@ -644,6 +659,18 @@ export class GameScene extends Phaser.Scene {
   }
 
   shutdown(): void {
+    // Remove window listeners to prevent memory leaks
+    if (this.boundScheduleResize) {
+      window.removeEventListener('orientationchange', this.boundScheduleResize);
+      window.removeEventListener('resize', this.boundScheduleResize);
+      const vv = window.visualViewport;
+      if (vv) vv.removeEventListener('resize', this.boundScheduleResize);
+      this.boundScheduleResize = null;
+    }
+    if (this.resizeTimer) {
+      clearTimeout(this.resizeTimer);
+      this.resizeTimer = null;
+    }
     this.cinematicOverlay?.destroy();
     this.transactionToast?.destroy();
     this.web3VisualSystem?.destroy();

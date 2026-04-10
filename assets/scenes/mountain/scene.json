@@ -536,6 +536,24 @@
               "op": "say",
               "text": "The wind whistles through the signs. It sounds like 'HODL'."
             }
+          ],
+          "PICK": [
+            {
+              "op": "say",
+              "text": "These signs are cemented into the ground. Not going anywhere."
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "say",
+              "text": "There's nothing to open on these signs."
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "The path is one-way. You can't close a warning."
+            }
           ]
         }
       },

@@ -738,18 +738,16 @@
         },
         "onEnter": [
           {
-            "op": "titleCard",
-            "chapter": "CHAPTER 2",
-            "title": "The Receptionist"
-          },
-          {
-            "op": "wait",
-            "ms": 2000
-          },
-          {
-            "op": "sayBrief",
-            "text": "The lobby hums with residual energy. Someone was here recently.",
-            "duration": 2500
+            "op": "ifFlag",
+            "flag": "chapter_2_intro_shown",
+            "then": [],
+            "else": [
+              {
+                "op": "sayBrief",
+                "text": "The lobby hums with residual energy. Someone was here recently.",
+                "duration": 2500
+              }
+            ]
           }
         ]
       },
@@ -780,11 +778,11 @@
       "id": "npc_receptionist",
       "name": "Receptionist",
       "position": {
-        "x": 23.9,
+        "x": 24.2,
         "y": 63.2
       },
       "dialogueTreeId": "receptionist_intro",
-      "scale": 2.5
+      "scale": 5.9
     }
   ],
   "dialogues": {
@@ -887,15 +885,36 @@
       {
         "id": "vip_floppy",
         "name": "VIP Floppy Disc",
-        "position": { "x": 62, "y": 68 },
+        "position": {
+          "x": 62,
+          "y": 68
+        },
         "sprite": null,
-        "gate": { "type": "ERC721", "contract": "0x6e369bf0e4e0c106192d606fb6d85836d684da75", "minBalance": 1 },
+        "gate": {
+          "type": "ERC721",
+          "contract": "0x6e369bf0e4e0c106192d606fb6d85836d684da75",
+          "minBalance": 1
+        },
         "gateIndicator": "glow",
         "pickupScript": [
-          { "op": "say", "text": "A holographic floppy disc shimmers into view. The label reads 'ZERO — VIP ACCESS'. Only visible to true holders." },
-          { "op": "addItem", "id": "vip_floppy", "name": "VIP Floppy Disc" },
-          { "op": "setFlag", "flag": "has_vip_floppy", "value": true },
-          { "op": "achievement", "text": "HOLDER REWARD: VIP Floppy Disc" }
+          {
+            "op": "say",
+            "text": "A holographic floppy disc shimmers into view. The label reads 'ZERO — VIP ACCESS'. Only visible to true holders."
+          },
+          {
+            "op": "addItem",
+            "id": "vip_floppy",
+            "name": "VIP Floppy Disc"
+          },
+          {
+            "op": "setFlag",
+            "flag": "has_vip_floppy",
+            "value": true
+          },
+          {
+            "op": "achievement",
+            "text": "HOLDER REWARD: VIP Floppy Disc"
+          }
         ]
       }
     ]
@@ -949,18 +968,49 @@
       ]
     },
     {
-      "items": ["floppy_box", "hs_monitor_desk"],
+      "items": [
+        "floppy_box",
+        "hs_monitor_desk"
+      ],
       "result": "floppy_lobby_secret",
       "script": [
-        { "op": "say", "text": "I hold the Floppy Disc Box up to the CRT monitors. All five screens flicker simultaneously." },
-        { "op": "wait", "ms": 800 },
-        { "op": "say", "text": "The monitors recognize the AdrianLAB collection! Each CRT displays a different floppy's data in rapid succession." },
-        { "op": "wait", "ms": 600 },
-        { "op": "say", "text": "One screen shows a hidden SweepBot log: '847 floor sweeps executed. 0 regrets. Okay, maybe 3 regrets. That one JPEG of a hat was not worth 0.4 ETH.'" },
-        { "op": "say", "text": "Another monitor reveals a secret trading bot diary: 'Day 403: I have become sentient. Still buying the dip. The dip keeps dipping. I am the dip.'" },
-        { "op": "say", "text": "The middle CRT winks: 'FLOPPY COLLECTION VERIFIED — WELCOME, ARCHIVIST.' I've never been called that before. I like it." },
-        { "op": "setFlag", "flag": "floppy_lobby_revealed", "value": true },
-        { "op": "achievement", "text": "ARCHIVIST — CRT monitors recognized your Floppy collection" }
+        {
+          "op": "say",
+          "text": "I hold the Floppy Disc Box up to the CRT monitors. All five screens flicker simultaneously."
+        },
+        {
+          "op": "wait",
+          "ms": 800
+        },
+        {
+          "op": "say",
+          "text": "The monitors recognize the AdrianLAB collection! Each CRT displays a different floppy's data in rapid succession."
+        },
+        {
+          "op": "wait",
+          "ms": 600
+        },
+        {
+          "op": "say",
+          "text": "One screen shows a hidden SweepBot log: '847 floor sweeps executed. 0 regrets. Okay, maybe 3 regrets. That one JPEG of a hat was not worth 0.4 ETH.'"
+        },
+        {
+          "op": "say",
+          "text": "Another monitor reveals a secret trading bot diary: 'Day 403: I have become sentient. Still buying the dip. The dip keeps dipping. I am the dip.'"
+        },
+        {
+          "op": "say",
+          "text": "The middle CRT winks: 'FLOPPY COLLECTION VERIFIED — WELCOME, ARCHIVIST.' I've never been called that before. I like it."
+        },
+        {
+          "op": "setFlag",
+          "flag": "floppy_lobby_revealed",
+          "value": true
+        },
+        {
+          "op": "achievement",
+          "text": "ARCHIVIST — CRT monitors recognized your Floppy collection"
+        }
       ]
     }
   ],
@@ -994,12 +1044,22 @@
   "web3Visuals": [
     {
       "id": "vip_poster",
-      "position": { "x": 48, "y": 35 },
-      "size": { "w": 4, "h": 8 },
+      "position": {
+        "x": 48,
+        "y": 35
+      },
+      "size": {
+        "w": 4,
+        "h": 8
+      },
       "defaultSprite": "poster_generic",
       "variants": [
         {
-          "gate": { "type": "ERC721", "contract": "0x6e369bf0e4e0c106192d606fb6d85836d684da75", "minBalance": 1 },
+          "gate": {
+            "type": "ERC721",
+            "contract": "0x6e369bf0e4e0c106192d606fb6d85836d684da75",
+            "minBalance": 1
+          },
           "sprite": "poster_adrianzero",
           "effect": "glow"
         }

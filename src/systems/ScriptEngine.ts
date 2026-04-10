@@ -35,6 +35,8 @@ export interface ScriptContext {
 export class ScriptEngine {
   private ctx: ScriptContext;
   private running = false;
+  private stopped = false;
+  private pendingQueue: ScriptOp[][] = [];
 
   constructor(ctx: ScriptContext) {
     this.ctx = ctx;
@@ -49,18 +51,31 @@ export class ScriptEngine {
   }
 
   async execute(ops: ScriptOp[]): Promise<void> {
-    if (this.running) return;
+    if (this.running) {
+      // Queue instead of silently dropping — prevents once-triggers from being lost
+      this.pendingQueue.push(ops);
+      return;
+    }
     this.running = true;
+    this.stopped = false;
 
     try {
       await this.runOps(ops);
+      // Drain queued scripts (FIFO)
+      while (this.pendingQueue.length > 0) {
+        this.stopped = false;
+        const next = this.pendingQueue.shift()!;
+        await this.runOps(next);
+      }
     } finally {
       this.running = false;
+      this.stopped = false;
     }
   }
 
   private async runOps(ops: ScriptOp[]): Promise<void> {
     for (const op of ops) {
+      if (this.stopped) break;
       await this.runOp(op);
     }
   }
@@ -186,9 +201,11 @@ export class ScriptEngine {
             if (op.onSuccess) await this.runOps(op.onSuccess as ScriptOp[]);
           } else if (result.status === 'not-configured') {
             // Silently skip — visual achievement still shown
+            if (op.onFail) await this.runOps(op.onFail as ScriptOp[]);
           } else if (result.status === 'failed') {
             // Don't interrupt gameplay for a failed achievement mint
             console.warn('Achievement mint failed:', result.error);
+            if (op.onFail) await this.runOps(op.onFail as ScriptOp[]);
           }
         }
         break;
@@ -249,6 +266,7 @@ export class ScriptEngine {
       }
 
       case 'stop':
+        this.stopped = true;
         return;
 
       default:

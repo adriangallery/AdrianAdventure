@@ -343,7 +343,7 @@
         }
       },
       {
-        "id": "hs_mirror",
+        "id": "hs_exit_door",
         "name": "Exit Door",
         "bounds": {
           "x": 19.2,
@@ -372,7 +372,7 @@
                   "sceneId": "epilogue_outside",
                   "spawn": {
                     "x": 50,
-                    "y": 80
+                    "y": 83
                   }
                 }
               ],
@@ -410,7 +410,7 @@
                   "sceneId": "epilogue_outside",
                   "spawn": {
                     "x": 50,
-                    "y": 80
+                    "y": 83
                   }
                 }
               ],
@@ -442,7 +442,7 @@
                   "sceneId": "epilogue_outside",
                   "spawn": {
                     "x": 50,
-                    "y": 80
+                    "y": 83
                   }
                 }
               ],
@@ -562,6 +562,30 @@
                   "text": "I should check the monitor first."
                 }
               ]
+            }
+          ],
+          "USE": [
+            {
+              "op": "say",
+              "text": "It's a note. I should try to pick it up or look at it more closely."
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "It's a piece of paper. It's not going to talk back."
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "say",
+              "text": "The note is already unfolded."
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "I could fold it, but why? The words are what matter."
             }
           ]
         }

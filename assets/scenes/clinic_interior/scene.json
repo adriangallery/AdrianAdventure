@@ -104,8 +104,8 @@
                 },
                 {
                   "op": "addItem",
-                  "id": "sign_in_sheet",
-                  "name": "Sign-In Sheet"
+                  "id": "clinic_sign_in_sheet",
+                  "name": "Clinic Sign-In Sheet"
                 }
               ]
             }
