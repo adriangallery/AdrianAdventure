@@ -1,13 +1,10 @@
 import Phaser from 'phaser';
 import { TWP, FONT } from '@/config/theme';
 
-const PADDING = 16;
-const CHOICE_HEIGHT = 44;
-
 /**
- * Shows branching dialogue choices at the bottom of the screen.
- * Thimbleweed Park style: cyan/teal bullet-pointed options on dark panel.
- * Returns a Promise that resolves with the selected index.
+ * Dialogue choices rendered INSIDE the SCUMM panel, replacing verbs+inventory.
+ * Classic Monkey Island / Thimbleweed Park style: colored choice lines on the
+ * same dark panel background. Choices take over the full panel width.
  */
 export class ChoicePanel {
   private scene: Phaser.Scene;
@@ -16,7 +13,8 @@ export class ChoicePanel {
 
   constructor(scene: Phaser.Scene) {
     this.scene = scene;
-    this.container = scene.add.container(0, 0).setDepth(450).setVisible(false);
+    // Depth 510 = above the ScummUI panel (500) so choices overlay verbs/inventory
+    this.container = scene.add.container(0, 0).setDepth(510).setVisible(false).setScrollFactor(0);
   }
 
   show(choices: { text: string; enabled: boolean }[]): Promise<number> {
@@ -25,44 +23,48 @@ export class ChoicePanel {
       this.container.removeAll(true);
 
       const { width, height } = this.scene.scale;
-      const panelH = PADDING * 2 + choices.length * CHOICE_HEIGHT;
+
+      // Get the SCUMM panel height and position so we render inside it
+      const panelH = (this.scene.registry.get('scummPanelHeight') as number) ?? Math.floor(height * 0.25);
       const panelY = height - panelH;
 
       this.container.setPosition(0, panelY);
 
-      // Dark background — same as SCUMM panel
-      const bg = this.scene.add.rectangle(width / 2, panelH / 2, width, panelH, TWP.CHOICE_BG, 0.92);
-      const border = this.scene.add.rectangle(width / 2, 0, width, 1, TWP.CHOICE_BORDER, 0.6);
-      this.container.add([bg, border]);
+      // Full panel background — covers verbs + inventory completely
+      const bg = this.scene.add.rectangle(width / 2, panelH / 2, width, panelH, TWP.CHOICE_BG, 1);
+      this.container.add(bg);
+
+      // Layout: choices as lines, vertically centered in the panel
+      const padX = Math.max(12, width * 0.03);
+      const padTop = Math.max(8, panelH * 0.08);
+      const lineH = Math.max(28, Math.min(44, Math.floor(panelH / (choices.length + 1))));
+      const fontSize = Math.max(10, Math.min(16, Math.floor(width * 0.014)));
 
       choices.forEach((choice, i) => {
-        const y = PADDING + i * CHOICE_HEIGHT + CHOICE_HEIGHT / 2;
+        const y = padTop + i * lineH + lineH / 2;
         const color = choice.enabled ? TWP.CHOICE_ENABLED : TWP.CHOICE_DISABLED;
-        // TWP style: bullet point for enabled, lock for gated
         const prefix = choice.enabled ? '\u2022 ' : '\u{1F512} ';
 
-        const choiceFontSize = Math.max(10, Math.min(14, Math.floor(width * 0.013)));
         const text = this.scene.add
-          .text(PADDING + 8, y, `${prefix}${choice.text}`, {
+          .text(padX, y, `${prefix}${choice.text}`, {
             fontFamily: FONT.FAMILY,
-            fontSize: `${choiceFontSize}px`,
+            fontSize: `${fontSize}px`,
             color,
-            wordWrap: { width: width - PADDING * 2 - 16 },
+            wordWrap: { width: width - padX * 2 },
             lineSpacing: 4,
           })
           .setOrigin(0, 0.5);
 
         if (choice.enabled) {
+          // Hit area spans full width for easy clicking
           const hitArea = this.scene.add
-            .rectangle(width / 2, y, width - PADDING * 2, CHOICE_HEIGHT - 4, 0x000000, 0)
+            .rectangle(width / 2, y, width, lineH, 0x000000, 0)
             .setInteractive({ useHandCursor: true });
 
           hitArea.on('pointerover', () => {
-            hitArea.setFillStyle(0x102030, 0.4);
             text.setColor(TWP.CHOICE_HOVER);
           });
           hitArea.on('pointerout', () => {
-            hitArea.setFillStyle(0x000000, 0);
             text.setColor(TWP.CHOICE_ENABLED);
           });
           hitArea.on('pointerdown', () => this.selectChoice(i));
