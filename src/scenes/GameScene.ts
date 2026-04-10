@@ -408,7 +408,8 @@ export class GameScene extends Phaser.Scene {
     }
 
     // Check hotspot
-    const hotspot = this.sceneDataLoader.getHotspotAtPct(pct.x, pct.y);
+    const rawHotspot = this.sceneDataLoader.getHotspotAtPct(pct.x, pct.y);
+    const hotspot = rawHotspot && this.isHotspotVisible(rawHotspot) ? rawHotspot : null;
 
     // Item combo mode: USE [item] with [hotspot]
     if (selectedItem && hotspot) {
@@ -539,6 +540,13 @@ export class GameScene extends Phaser.Scene {
   }
 
   /** Get panel height — reads ScummUI effective height if available, falls back to formula */
+  /** Check if a hotspot should be visible (not hidden by a flag) */
+  private isHotspotVisible(hs: HotspotData): boolean {
+    const hideFlag = (hs as any).hideWhenFlag;
+    if (!hideFlag) return true;
+    return !(this.gameState.flags[hideFlag] ?? false);
+  }
+
   private getEffectivePanelHeight(): number {
     const stored = this.registry.get('scummPanelHeight') as number | undefined;
     if (stored !== undefined) return stored;

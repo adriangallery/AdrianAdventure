@@ -682,7 +682,8 @@
               "text": "Nobody wants a half-empty energy drink. It's the NFT of beverages \u2014 unique but valueless."
             }
           ]
-        }
+        },
+        "hideWhenFlag": "has_energy_drink"
       },
       {
         "id": "hs_paper_tray",

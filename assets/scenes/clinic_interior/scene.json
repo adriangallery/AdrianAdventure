@@ -326,12 +326,28 @@
               "op": "ifFlag",
               "flag": "satoshi_pool_hint",
               "then": [
-                { "op": "say", "text": "I push the cabinet sideways. It slides on hidden rails, revealing a narrow staircase descending into green-tinted darkness. The sound of splashing... and is that reggaeton?" },
-                { "op": "wait", "ms": 500 },
-                { "op": "fadeToScene", "sceneId": "recovery_pool", "spawn": { "x": 8, "y": 92 } }
+                {
+                  "op": "say",
+                  "text": "I push the cabinet sideways. It slides on hidden rails, revealing a narrow staircase descending into green-tinted darkness. The sound of splashing... and is that reggaeton?"
+                },
+                {
+                  "op": "wait",
+                  "ms": 500
+                },
+                {
+                  "op": "fadeToScene",
+                  "sceneId": "recovery_pool",
+                  "spawn": {
+                    "x": 8,
+                    "y": 92
+                  }
+                }
               ],
               "else": [
-                { "op": "say", "text": "I push the cabinet. It doesn't budge. It's either bolted down or full of every bad trade ever recorded." }
+                {
+                  "op": "say",
+                  "text": "I push the cabinet. It doesn't budge. It's either bolted down or full of every bad trade ever recorded."
+                }
               ]
             }
           ],
@@ -340,11 +356,24 @@
               "op": "ifFlag",
               "flag": "satoshi_pool_hint",
               "then": [
-                { "op": "say", "text": "I pull the cabinet toward me. It glides on hidden rails with a satisfying rumble, revealing a staircase spiraling down. Chlorine, bass music, and the unmistakable scent of bad decisions wafts up." },
-                { "op": "fadeToScene", "sceneId": "recovery_pool", "spawn": { "x": 8, "y": 92 } }
+                {
+                  "op": "say",
+                  "text": "I pull the cabinet toward me. It glides on hidden rails with a satisfying rumble, revealing a staircase spiraling down. Chlorine, bass music, and the unmistakable scent of bad decisions wafts up."
+                },
+                {
+                  "op": "fadeToScene",
+                  "sceneId": "recovery_pool",
+                  "spawn": {
+                    "x": 8,
+                    "y": 92
+                  }
+                }
               ],
               "else": [
-                { "op": "say", "text": "I pull on the drawer handle. Locked tight. The rattle echoes through the empty reception." }
+                {
+                  "op": "say",
+                  "text": "I pull on the drawer handle. Locked tight. The rattle echoes through the empty reception."
+                }
               ]
             }
           ],
@@ -599,7 +628,7 @@
           "LOOK": [
             {
               "op": "say",
-              "text": "A faded photograph. A group of people at a ribbon cutting. 'PZRC Opening Day — Block Genesis'. One face is scratched out."
+              "text": "A faded photograph. A group of people at a ribbon cutting. 'PZRC Opening Day \u2014 Block Genesis'. One face is scratched out."
             }
           ],
           "PICK": [
@@ -645,7 +674,7 @@
           "OPEN": [
             {
               "op": "say",
-              "text": "I flip the photo over. On the back: 'Grand Opening — The future of recovery starts here.' Someone crossed out 'future' and wrote 'end.'"
+              "text": "I flip the photo over. On the back: 'Grand Opening \u2014 The future of recovery starts here.' Someone crossed out 'future' and wrote 'end.'"
             }
           ],
           "CLOSE": [
@@ -672,7 +701,8 @@
               "text": "The photo has already given me more questions than answers. The worst kind of airdrop."
             }
           ]
-        }
+        },
+        "hideWhenFlag": "found_clinic_photo"
       },
       {
         "id": "hs_dr_coat",
@@ -711,7 +741,7 @@
                     },
                     {
                       "op": "say",
-                      "text": "His coat's inner pocket... a vintage badge: 'Dr. S. Nakamoto — Chief of Rehabilitation, Block 0'. This is a collector's item."
+                      "text": "His coat's inner pocket... a vintage badge: 'Dr. S. Nakamoto \u2014 Chief of Rehabilitation, Block 0'. This is a collector's item."
                     }
                   ]
                 }
@@ -1122,7 +1152,11 @@
           "speaker": "Dr. Satoshi",
           "text": "The... other patients? They're providing liquidity. Downstairs. It's an experimental approach. Very... immersive. The way down isn't obvious. Nothing in this clinic is where it seems. But that's not for visitors.",
           "onEnter": [
-            { "op": "setFlag", "flag": "satoshi_pool_hint", "value": true }
+            {
+              "op": "setFlag",
+              "flag": "satoshi_pool_hint",
+              "value": true
+            }
           ],
           "choices": [
             {
@@ -1241,7 +1275,7 @@
         },
         {
           "op": "say",
-          "text": "'ADRIANLAB FLOPPY RECOGNIZED. PATIENT DATABASE DECRYPTION: AUTHORIZED.' Wait — my floppy collection is a decryption key?"
+          "text": "'ADRIANLAB FLOPPY RECOGNIZED. PATIENT DATABASE DECRYPTION: AUTHORIZED.' Wait \u2014 my floppy collection is a decryption key?"
         },
         {
           "op": "wait",
@@ -1257,7 +1291,7 @@
         },
         {
           "op": "say",
-          "text": "At the end of the list: 'Patient #0000 — REDACTED. See Treatment Room.' The cursor blinks. The computer knows more than it's showing."
+          "text": "At the end of the list: 'Patient #0000 \u2014 REDACTED. See Treatment Room.' The cursor blinks. The computer knows more than it's showing."
         },
         {
           "op": "setFlag",
@@ -1271,7 +1305,7 @@
         },
         {
           "op": "achievement",
-          "text": "MEDICAL RECORDS — Decrypted the patient database"
+          "text": "MEDICAL RECORDS \u2014 Decrypted the patient database"
         }
       ]
     }
