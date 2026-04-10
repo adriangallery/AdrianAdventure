@@ -45,38 +45,20 @@ export class MenuScene extends Phaser.Scene {
 
     this.cameras.main.setBackgroundColor(TWP.MENU_BG);
 
-    // Intro image
+    // Logo image — contains title "ZERO ADVENTURES"
     if (this.textures.exists('intro')) {
-      const imgY = isPortrait ? height * 0.28 : height * 0.35;
+      const imgY = isPortrait ? height * 0.32 : height * 0.38;
       const img = this.add.image(width / 2, imgY, 'intro');
-      const maxW = width * (isPortrait ? 0.85 : 0.55);
-      const maxH = height * (isPortrait ? 0.3 : 0.45);
+      const maxW = width * (isPortrait ? 0.92 : 0.65);
+      const maxH = height * (isPortrait ? 0.38 : 0.55);
       const scale = Math.min(maxW / img.width, maxH / img.height);
-      img.setScale(scale).setAlpha(0.85);
+      img.setScale(scale);
     }
 
-    // Title — yellow TWP style
-    const titleSize = Math.max(18, Math.min(36, Math.floor(refSize * 0.04)));
-    const titleY = isPortrait ? height * 0.50 : height * 0.68;
-    const title = this.add.text(width / 2, titleY, 'ZEROadventure II', {
-      fontFamily: FONT.FAMILY,
-      fontSize: `${titleSize}px`,
-      color: TWP.MENU_TITLE,
-      stroke: '#000000',
-      strokeThickness: 4,
-    }).setOrigin(0.5);
-
-    this.tweens.add({
-      targets: title,
-      alpha: { from: 1, to: 0.6 },
-      duration: 2000,
-      yoyo: true,
-      repeat: -1,
-    });
-
-    // Subtitle
-    const subSize = Math.max(10, Math.min(16, Math.floor(refSize * 0.016)));
-    this.add.text(width / 2, title.y + titleSize + 12, 'A Point & Click Web3 Adventure on Base', {
+    // Subtitle — below logo
+    const subSize = Math.max(10, Math.min(14, Math.floor(refSize * 0.014)));
+    const subY = isPortrait ? height * 0.56 : height * 0.68;
+    this.add.text(width / 2, subY, 'A Point & Click Web3 Adventure on Base', {
       fontFamily: FONT.FAMILY,
       fontSize: `${subSize}px`,
       color: TWP.MENU_SUBTITLE,
@@ -87,9 +69,9 @@ export class MenuScene extends Phaser.Scene {
     // Buttons
     const saveSystem = new SaveLoadSystem();
     const hasSave = saveSystem.hasSave();
-    const btnSize = Math.max(14, Math.min(22, Math.floor(refSize * 0.024)));
-    const btnSpacing = Math.max(btnSize * 3, 50);
-    const btnY = isPortrait ? height * 0.72 : height * 0.86;
+    const btnSize = Math.max(14, Math.min(20, Math.floor(refSize * 0.022)));
+    const btnSpacing = Math.max(btnSize * 2.5, 44);
+    const btnY = isPortrait ? height * 0.68 : height * 0.80;
 
     this.createButton(width / 2, btnY, 'New Game', btnSize, () => {
       this.cameras.main.fadeOut(400, 0, 0, 0);
