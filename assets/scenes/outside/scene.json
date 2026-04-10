@@ -743,8 +743,25 @@
           ],
           "USE": [
             {
-              "op": "say",
-              "text": "I wipe my feet."
+              "op": "ifFlag",
+              "flag": "vip_rug_hint",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "I slide the doormat aside. Underneath — a hidden trapdoor with the AdrianZERO logo etched into it. The receptionist wasn't kidding."
+                },
+                {
+                  "op": "fadeToScene",
+                  "sceneId": "basement",
+                  "spawn": { "x": 50, "y": 90 }
+                }
+              ],
+              "else": [
+                {
+                  "op": "say",
+                  "text": "I wipe my feet."
+                }
+              ]
             }
           ],
           "PICK": [
@@ -787,8 +804,25 @@
               "flag": "found_ledger",
               "then": [
                 {
-                  "op": "say",
-                  "text": "Nothing else under the mat."
+                  "op": "ifFlag",
+                  "flag": "vip_rug_hint",
+                  "then": [
+                    {
+                      "op": "say",
+                      "text": "I lift the doormat again. The hidden trapdoor with the AdrianZERO logo — VIP access to the basement."
+                    },
+                    {
+                      "op": "fadeToScene",
+                      "sceneId": "basement",
+                      "spawn": { "x": 50, "y": 90 }
+                    }
+                  ],
+                  "else": [
+                    {
+                      "op": "say",
+                      "text": "Nothing else under the mat."
+                    }
+                  ]
                 }
               ],
               "else": [
@@ -817,14 +851,48 @@
           ],
           "PUSH": [
             {
-              "op": "say",
-              "text": "I push the mat aside with my foot."
+              "op": "ifFlag",
+              "flag": "vip_rug_hint",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "I shove the mat aside. There it is — a hidden hatch, VIP access to the basement. Holders only."
+                },
+                {
+                  "op": "fadeToScene",
+                  "sceneId": "basement",
+                  "spawn": { "x": 50, "y": 90 }
+                }
+              ],
+              "else": [
+                {
+                  "op": "say",
+                  "text": "I push the mat aside with my foot."
+                }
+              ]
             }
           ],
           "PULL": [
             {
-              "op": "say",
-              "text": "I pull the mat. Heavy for a doormat."
+              "op": "ifFlag",
+              "flag": "vip_rug_hint",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "I yank the mat back. The trapdoor underneath is still there. VIP shortcut to the basement."
+                },
+                {
+                  "op": "fadeToScene",
+                  "sceneId": "basement",
+                  "spawn": { "x": 50, "y": 90 }
+                }
+              ],
+              "else": [
+                {
+                  "op": "say",
+                  "text": "I pull the mat. Heavy for a doormat."
+                }
+              ]
             }
           ],
           "GIVE": [
