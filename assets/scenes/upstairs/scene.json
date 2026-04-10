@@ -977,7 +977,8 @@
       "id": "no_energy_drink",
       "sprite": "overlay_no_energy_drink",
       "flag": "has_energy_drink",
-      "depth": 5
+      "depth": 5,
+      "invert": true
     }
   ]
 }
