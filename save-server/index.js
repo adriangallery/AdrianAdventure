@@ -2,7 +2,7 @@ import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { serve } from '@hono/node-server';
 import { verifyMessage } from 'viem';
-import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs';
+import { readFileSync, writeFileSync, existsSync, mkdirSync, readdirSync, unlinkSync } from 'fs';
 import { join } from 'path';
 
 const app = new Hono();
@@ -97,7 +97,7 @@ app.post('/save', async (c) => {
  */
 app.get('/leaderboard', (c) => {
   try {
-    const { readdirSync } = require('fs');
+    // readdirSync imported at top
     const files = readdirSync(DATA_DIR).filter(f => f.endsWith('.json'));
 
     const players = [];
@@ -166,7 +166,6 @@ app.delete('/save/:address', async (c) => {
   const address = c.req.param('address').toLowerCase();
   const filePath = join(DATA_DIR, `${address}.json`);
   if (existsSync(filePath)) {
-    const { unlinkSync } = await import('fs');
     unlinkSync(filePath);
   }
   return c.json({ ok: true });
