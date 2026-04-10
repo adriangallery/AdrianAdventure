@@ -1011,6 +1011,9 @@ function syncEntryToSource(entry) {
 function r(n) { return Math.round(n * 10) / 10; }
 
 function updateInfoPanel() {
+  // Clean up mode-specific controls when not in that mode
+  if (editMode !== 'npc') document.getElementById('npc-scale-ctrl')?.remove();
+  if (editMode !== 'w3v') document.getElementById('w3v-size-ctrl')?.remove();
   // Entry mode
   if (editMode === 'entry') {
     if (selectedEntryIdx >= 0 && selectedEntryIdx < incomingSpawns.length) {
@@ -1025,8 +1028,9 @@ function updateInfoPanel() {
   }
   // NPC mode
   if (editMode === 'npc') {
-    // Remove old NPC scale slider if any
+    // Remove old controls
     document.getElementById('npc-scale-ctrl')?.remove();
+    document.getElementById('w3v-size-ctrl')?.remove();
     if (selectedNpcIdx >= 0 && selectedNpcIdx < npcList.length) {
       const npc = npcList[selectedNpcIdx];
       selName.textContent = npc.name + ' (' + npc.id + ')';
@@ -1052,6 +1056,7 @@ function updateInfoPanel() {
   }
   // W3V mode
   if (editMode === 'w3v') {
+    document.getElementById('npc-scale-ctrl')?.remove();
     document.getElementById('w3v-size-ctrl')?.remove();
     if (selectedW3vIdx >= 0 && selectedW3vIdx < w3vList.length) {
       const v = w3vList[selectedW3vIdx];
@@ -1248,6 +1253,7 @@ container.addEventListener('mousedown', (e) => {
       startX: e.clientX, startY: e.clientY,
       origPosition: { ...npcList[idx].position },
     };
+    updateInfoPanel();
     renderAll();
     e.preventDefault();
     return;
