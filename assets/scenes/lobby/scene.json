@@ -95,7 +95,7 @@
           "PICK": [
             {
               "op": "say",
-              "text": "I find a small LED light on the railing. Cute but useless."
+              "text": "A small LED light on the railing. Cute but firmly attached."
             }
           ],
           "OPEN": [

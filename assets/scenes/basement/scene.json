@@ -289,7 +289,7 @@
           "PICK": [
             {
               "op": "say",
-              "text": "I find a loose nail on one of the steps. Not useful, but tetanus is always an adventure."
+              "text": "A loose nail sticks out of one step. Tetanus is always an adventure, but I'll pass."
             }
           ],
           "CLOSE": [

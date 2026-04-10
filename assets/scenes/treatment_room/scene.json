@@ -87,7 +87,7 @@
           "PICK": [
             {
               "op": "say",
-              "text": "I check the crevices of the chair. A single hair. A crumb. And a folded note that reads: 'You'll understand when you see the screen.' Cryptic. Literally."
+              "text": "I check the crevices of the chair. A single hair. A crumb. And scratched into the armrest: 'You'll understand when you see the screen.'"
             }
           ],
           "OPEN": [
@@ -621,7 +621,7 @@
           "PICK": [
             {
               "op": "say",
-              "text": "I find a tiny screw on the floor. From the chair? The monitor? Or from whoever was here last, slowly coming unscrewed."
+              "text": "A tiny screw on the floor. From the chair, maybe. Everything in this room is falling apart."
             }
           ],
           "OPEN": [
@@ -793,7 +793,7 @@
           "PICK": [
             {
               "op": "say",
-              "text": "I grab the glass of water. Fingerprints on it. Patient Zero's? Mine? In this room, they might be the same thing."
+              "text": "A glass of water with fingerprints on it. Still half full. Or half empty, depending on your portfolio."
             }
           ],
           "OPEN": [

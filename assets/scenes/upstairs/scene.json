@@ -85,7 +85,7 @@
           "PICK": [
             {
               "op": "say",
-              "text": "I find a smartphone with crypto trading apps open."
+              "text": "There's a smartphone on the desk with crypto trading apps still open. The battery is dead. Classic."
             }
           ],
           "OPEN": [
@@ -174,7 +174,7 @@
           "USE": [
             {
               "op": "say",
-              "text": "I open one. It contains a limited edition AdrianPunk NFT!"
+              "text": "I peek inside one. A limited edition AdrianPunk NFT, sealed and catalogued. This collection isn't meant to be disturbed."
             }
           ],
           "TALK": [
@@ -186,13 +186,13 @@
           "PICK": [
             {
               "op": "say",
-              "text": "I find a rare NFT trading card inside one."
+              "text": "There's a rare NFT trading card inside one. It's sealed in a display case — look, don't touch."
             }
           ],
           "OPEN": [
             {
               "op": "say",
-              "text": "I find a collection of rare memecoins and governance tokens."
+              "text": "Inside: rare memecoins and governance tokens, all neatly organized. Adrian was a collector, not a hoarder. Well... maybe both."
             }
           ],
           "CLOSE": [
@@ -267,7 +267,7 @@
           "PICK": [
             {
               "op": "say",
-              "text": "I find a USB drive with profitable trading strategies."
+              "text": "There's a USB drive plugged in, labeled 'STRATEGIES'. It's encrypted and soldered to the rig. Not going anywhere."
             }
           ],
           "OPEN": [
@@ -333,7 +333,7 @@
           "PICK": [
             {
               "op": "say",
-              "text": "I find a luxury watch worth several ETH under the cushion."
+              "text": "Something glints under the cushion — a luxury watch worth several ETH. It's tangled in the springs. I'd need tools to get it out."
             }
           ],
           "OPEN": [
@@ -495,7 +495,7 @@
           "PICK": [
             {
               "op": "say",
-              "text": "I grab the lamp. It's plugged in and warm. Like holding a tiny sun that judges my financial decisions."
+              "text": "The lamp is bolted to the desk and still warm."
             }
           ],
           "OPEN": [
@@ -627,7 +627,7 @@
           "PICK": [
             {
               "op": "say",
-              "text": "I pick up the can. It's surprisingly light. Almost empty. The degen drank deep."
+              "text": "The can is almost empty. Just enough for one sip of regret."
             }
           ],
           "OPEN": [
@@ -767,7 +767,7 @@
             "sceneId": "lobby",
             "spawn": {
               "x": 59,
-              "y": 82.7
+              "y": 88.3
             }
           }
         ]

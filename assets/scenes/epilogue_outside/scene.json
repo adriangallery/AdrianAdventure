@@ -325,7 +325,7 @@
           "PICK": [
             {
               "op": "say",
-              "text": "I pick up a stone from the path. Smooth from countless footsteps. I'll carry it as a reminder."
+              "text": "A smooth stone on the path, worn by countless footsteps. I don't need souvenirs. The memories are enough."
             }
           ],
           "OPEN": [
@@ -523,7 +523,7 @@
           "PICK": [
             {
               "op": "say",
-              "text": "I grab a pinecone from the ground. Nature's airdrop. Zero gas fees, 100% organic, and it actually has utility."
+              "text": "Pinecones scattered on the ground. Nature's airdrop. I leave them where they are."
             }
           ],
           "OPEN": [
