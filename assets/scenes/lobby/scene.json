@@ -779,10 +779,10 @@
       "name": "Receptionist",
       "position": {
         "x": 24.2,
-        "y": 63.2
+        "y": 65.3
       },
       "dialogueTreeId": "receptionist_intro",
-      "scale": 5.9
+      "scale": 6.29
     }
   ],
   "dialogues": {
