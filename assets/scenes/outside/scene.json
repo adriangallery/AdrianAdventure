@@ -5,7 +5,8 @@
   "assets": {
     "background": "background.png",
     "walkmask": null,
-    "atlas": null
+    "atlas": null,
+    "foreground": "foreground.png"
   },
   "render": {
     "world": {
@@ -78,7 +79,7 @@
                 },
                 {
                   "op": "sayBrief",
-                  "text": "Chapter 1 — objective: Enter the laboratory",
+                  "text": "Chapter 1 \u2014 objective: Enter the laboratory",
                   "duration": 2000
                 },
                 {
@@ -121,7 +122,7 @@
                 },
                 {
                   "op": "sayBrief",
-                  "text": "Chapter 1 — objective: Enter the laboratory",
+                  "text": "Chapter 1 \u2014 objective: Enter the laboratory",
                   "duration": 2000
                 },
                 {
@@ -318,7 +319,7 @@
           "LOOK": [
             {
               "op": "say",
-              "text": "Warm light inside. I can see monitor screens glowing — someone's been running code."
+              "text": "Warm light inside. I can see monitor screens glowing \u2014 someone's been running code."
             }
           ],
           "USE": [
@@ -450,7 +451,7 @@
           "LOOK": [
             {
               "op": "say",
-              "text": "Brick chimney. No smoke — upgraded to a more efficient consensus mechanism."
+              "text": "Brick chimney. No smoke \u2014 upgraded to a more efficient consensus mechanism."
             }
           ],
           "USE": [
@@ -561,7 +562,7 @@
               "else": [
                 {
                   "op": "say",
-                  "text": "I sift through the junk mail... wait. A sealed envelope marked 'CONFIDENTIAL — PATIENT ZERO'. This looks important."
+                  "text": "I sift through the junk mail... wait. A sealed envelope marked 'CONFIDENTIAL \u2014 PATIENT ZERO'. This looks important."
                 },
                 {
                   "op": "addItem",
@@ -589,7 +590,7 @@
               "else": [
                 {
                   "op": "say",
-                  "text": "I swing open the mailbox flap. Junk mail cascades out... and a sealed envelope marked 'CONFIDENTIAL — PATIENT ZERO' slides into view."
+                  "text": "I swing open the mailbox flap. Junk mail cascades out... and a sealed envelope marked 'CONFIDENTIAL \u2014 PATIENT ZERO' slides into view."
                 },
                 {
                   "op": "addItem",
@@ -613,7 +614,7 @@
           "PUSH": [
             {
               "op": "say",
-              "text": "I push the mailbox post. It wobbles — years of neglect."
+              "text": "I push the mailbox post. It wobbles \u2014 years of neglect."
             }
           ],
           "PULL": [
@@ -913,7 +914,7 @@
           "LOOK": [
             {
               "op": "say",
-              "text": "Wooden power pole. The original Layer 1 — electrical infrastructure."
+              "text": "Wooden power pole. The original Layer 1 \u2014 electrical infrastructure."
             }
           ],
           "USE": [
@@ -1472,7 +1473,7 @@
                   "",
                   "But its creator has vanished.",
                   "",
-                  "They call the missing person \"Patient Zero\" —",
+                  "They call the missing person \"Patient Zero\" \u2014",
                   "the first crypto addict, the original degen.",
                   "",
                   "A message arrives in your wallet:",
@@ -1528,33 +1529,109 @@
   },
   "combos": [
     {
-      "items": ["code_note", "hs_keypad"],
+      "items": [
+        "code_note",
+        "hs_keypad"
+      ],
       "result": "unlock_door",
       "script": [
-        { "op": "say", "text": "I hold the note up to the keypad. 7... 3... 1... 4..." },
-        { "op": "wait", "ms": 800 },
-        { "op": "say", "text": "*BEEP* Green light! The front door clicks open." },
-        { "op": "setFlag", "flag": "has_code", "value": true },
-        { "op": "setFlag", "flag": "door_unlocked", "value": true },
-        { "op": "setFlag", "flag": "chapter_1_complete", "value": true },
-        { "op": "achievement", "text": "CHAPTER 1 COMPLETE — Breaking & Entering" },
-        { "op": "wait", "ms": 1500 },
-        { "op": "fadeToScene", "sceneId": "lobby", "spawn": { "x": 86.1, "y": 93.2 }, "duration": 600 }
+        {
+          "op": "say",
+          "text": "I hold the note up to the keypad. 7... 3... 1... 4..."
+        },
+        {
+          "op": "wait",
+          "ms": 800
+        },
+        {
+          "op": "say",
+          "text": "*BEEP* Green light! The front door clicks open."
+        },
+        {
+          "op": "setFlag",
+          "flag": "has_code",
+          "value": true
+        },
+        {
+          "op": "setFlag",
+          "flag": "door_unlocked",
+          "value": true
+        },
+        {
+          "op": "setFlag",
+          "flag": "chapter_1_complete",
+          "value": true
+        },
+        {
+          "op": "achievement",
+          "text": "CHAPTER 1 COMPLETE \u2014 Breaking & Entering"
+        },
+        {
+          "op": "wait",
+          "ms": 1500
+        },
+        {
+          "op": "fadeToScene",
+          "sceneId": "lobby",
+          "spawn": {
+            "x": 86.1,
+            "y": 93.2
+          },
+          "duration": 600
+        }
       ]
     },
     {
-      "items": ["code_note", "hs_front_door"],
+      "items": [
+        "code_note",
+        "hs_front_door"
+      ],
       "result": "unlock_door",
       "script": [
-        { "op": "say", "text": "I punch in the code from the note: 7-3-1-4..." },
-        { "op": "wait", "ms": 800 },
-        { "op": "say", "text": "*BEEP* The door clicks open!" },
-        { "op": "setFlag", "flag": "has_code", "value": true },
-        { "op": "setFlag", "flag": "door_unlocked", "value": true },
-        { "op": "setFlag", "flag": "chapter_1_complete", "value": true },
-        { "op": "achievement", "text": "CHAPTER 1 COMPLETE — Breaking & Entering" },
-        { "op": "wait", "ms": 1500 },
-        { "op": "fadeToScene", "sceneId": "lobby", "spawn": { "x": 86.1, "y": 93.2 }, "duration": 600 }
+        {
+          "op": "say",
+          "text": "I punch in the code from the note: 7-3-1-4..."
+        },
+        {
+          "op": "wait",
+          "ms": 800
+        },
+        {
+          "op": "say",
+          "text": "*BEEP* The door clicks open!"
+        },
+        {
+          "op": "setFlag",
+          "flag": "has_code",
+          "value": true
+        },
+        {
+          "op": "setFlag",
+          "flag": "door_unlocked",
+          "value": true
+        },
+        {
+          "op": "setFlag",
+          "flag": "chapter_1_complete",
+          "value": true
+        },
+        {
+          "op": "achievement",
+          "text": "CHAPTER 1 COMPLETE \u2014 Breaking & Entering"
+        },
+        {
+          "op": "wait",
+          "ms": 1500
+        },
+        {
+          "op": "fadeToScene",
+          "sceneId": "lobby",
+          "spawn": {
+            "x": 86.1,
+            "y": 93.2
+          },
+          "duration": 600
+        }
       ]
     }
   ],
@@ -1590,7 +1667,7 @@
             "",
             "But its creator has vanished.",
             "",
-            "They call the missing person \"Patient Zero\" —",
+            "They call the missing person \"Patient Zero\" \u2014",
             "the first crypto addict, the original degen.",
             "",
             "A message arrives in your wallet:",

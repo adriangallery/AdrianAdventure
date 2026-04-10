@@ -5,7 +5,8 @@
   "assets": {
     "background": "background.png",
     "walkmask": "walkmask.png",
-    "atlas": null
+    "atlas": null,
+    "foreground": "foreground.png"
   },
   "render": {
     "world": {
@@ -226,7 +227,7 @@
                 },
                 {
                   "op": "achievement",
-                  "text": "PATIENT ZERO — Identity Revealed"
+                  "text": "PATIENT ZERO \u2014 Identity Revealed"
                 }
               ]
             }
@@ -362,11 +363,24 @@
               "op": "ifFlag",
               "flag": "patient_zero_revealed",
               "then": [
-                { "op": "say", "text": "Time to face the world. With the truth." },
-                { "op": "fadeToScene", "sceneId": "epilogue_outside", "spawn": { "x": 50, "y": 80 } }
+                {
+                  "op": "say",
+                  "text": "Time to face the world. With the truth."
+                },
+                {
+                  "op": "fadeToScene",
+                  "sceneId": "epilogue_outside",
+                  "spawn": {
+                    "x": 50,
+                    "y": 80
+                  }
+                }
               ],
               "else": [
-                { "op": "say", "text": "Not yet. There's still something I need to see in this room." }
+                {
+                  "op": "say",
+                  "text": "Not yet. There's still something I need to see in this room."
+                }
               ]
             }
           ],
@@ -387,11 +401,24 @@
               "op": "ifFlag",
               "flag": "patient_zero_revealed",
               "then": [
-                { "op": "say", "text": "Time to face the world. With the truth." },
-                { "op": "fadeToScene", "sceneId": "epilogue_outside", "spawn": { "x": 50, "y": 80 } }
+                {
+                  "op": "say",
+                  "text": "Time to face the world. With the truth."
+                },
+                {
+                  "op": "fadeToScene",
+                  "sceneId": "epilogue_outside",
+                  "spawn": {
+                    "x": 50,
+                    "y": 80
+                  }
+                }
               ],
               "else": [
-                { "op": "say", "text": "Not yet. There's still something I need to see in this room." }
+                {
+                  "op": "say",
+                  "text": "Not yet. There's still something I need to see in this room."
+                }
               ]
             }
           ],
@@ -406,11 +433,24 @@
               "op": "ifFlag",
               "flag": "patient_zero_revealed",
               "then": [
-                { "op": "say", "text": "Time to face the world. With the truth." },
-                { "op": "fadeToScene", "sceneId": "epilogue_outside", "spawn": { "x": 50, "y": 80 } }
+                {
+                  "op": "say",
+                  "text": "Time to face the world. With the truth."
+                },
+                {
+                  "op": "fadeToScene",
+                  "sceneId": "epilogue_outside",
+                  "spawn": {
+                    "x": 50,
+                    "y": 80
+                  }
+                }
               ],
               "else": [
-                { "op": "say", "text": "Not yet. There's still something I need to see in this room." }
+                {
+                  "op": "say",
+                  "text": "Not yet. There's still something I need to see in this room."
+                }
               ]
             }
           ],
@@ -499,7 +539,7 @@
                     },
                     {
                       "op": "say",
-                      "text": "\"The patients never make it this far — they stay in the lobby refreshing charts.\""
+                      "text": "\"The patients never make it this far \u2014 they stay in the lobby refreshing charts.\""
                     },
                     {
                       "op": "say",
@@ -511,7 +551,7 @@
                     },
                     {
                       "op": "say",
-                      "text": "\"— Adrian\""
+                      "text": "\"\u2014 Adrian\""
                     }
                   ]
                 }
@@ -595,20 +635,40 @@
       {
         "id": "hs_founders_plaque",
         "name": "Founder's Plaque",
-        "bounds": { "x": 82, "y": 40, "w": 8, "h": 10 },
-        "gate": { "type": "ZERO_BALANCE", "minBalance": "1000" },
+        "bounds": {
+          "x": 82,
+          "y": 40,
+          "w": 8,
+          "h": 10
+        },
+        "gate": {
+          "type": "ZERO_BALANCE",
+          "minBalance": "1000"
+        },
         "gateFallback": [
-          { "op": "say", "text": "There's something on the wall here but I can't quite see it. Like a hidden message only certain people can read." }
+          {
+            "op": "say",
+            "text": "There's something on the wall here but I can't quite see it. Like a hidden message only certain people can read."
+          }
         ],
         "scripts": {
           "LOOK": [
-            { "op": "say", "text": "A golden plaque reads: 'To the Founders who believed before anyone else. The clinic remembers.' Below it, your wallet address is engraved. How long has this been here?" }
+            {
+              "op": "say",
+              "text": "A golden plaque reads: 'To the Founders who believed before anyone else. The clinic remembers.' Below it, your wallet address is engraved. How long has this been here?"
+            }
           ],
           "USE": [
-            { "op": "say", "text": "I touch the plaque. It's warm. The engraving shifts — showing my $ZERO balance, my first transaction, my time in the ecosystem. Patient Zero was always a founder." }
+            {
+              "op": "say",
+              "text": "I touch the plaque. It's warm. The engraving shifts \u2014 showing my $ZERO balance, my first transaction, my time in the ecosystem. Patient Zero was always a founder."
+            }
           ],
           "TALK": [
-            { "op": "say", "text": "I whisper to the plaque: 'Was it worth it?' The golden letters rearrange: 'You're still here, aren't you?'" }
+            {
+              "op": "say",
+              "text": "I whisper to the plaque: 'Was it worth it?' The golden letters rearrange: 'You're still here, aren't you?'"
+            }
           ]
         }
       },
@@ -772,7 +832,7 @@
                   },
                   {
                     "op": "achievement",
-                    "text": "PATIENT ZERO — Identity Revealed"
+                    "text": "PATIENT ZERO \u2014 Identity Revealed"
                   },
                   {
                     "op": "wait",
@@ -809,25 +869,74 @@
   },
   "combos": [
     {
-      "items": ["floppy_box", "hs_monitor"],
+      "items": [
+        "floppy_box",
+        "hs_monitor"
+      ],
       "result": "floppy_endgame",
       "script": [
-        { "op": "ifFlag", "flag": "floppy_endgame_complete", "then": [
-          { "op": "say", "text": "The monitor still shows my floppy data alongside my wallet history. Two collections. One story." }
-        ], "else": [
-          { "op": "say", "text": "I hold the Floppy Disc Box up to the monitor. My hands are shaking." },
-          { "op": "wait", "ms": 1200 },
-          { "op": "say", "text": "The display splits. On the left: my wallet history. On the right: the floppy collection's on-chain data. The timestamps match." },
-          { "op": "wait", "ms": 1000 },
-          { "op": "say", "text": "Every floppy I minted corresponds to a moment in my crypto journey. Each one a snapshot. A backup of who I was at every turning point." },
-          { "op": "wait", "ms": 800 },
-          { "op": "say", "text": "'Patient Zero's treatment was never about curing crypto addiction. It was about preserving the story. YOUR story. And you kept the floppies. You kept the proof.'" },
-          { "op": "wait", "ms": 600 },
-          { "op": "say", "text": "The screen fades to a single word in golden text: 'PRESERVED.'" },
-          { "op": "setFlag", "flag": "floppy_endgame_complete", "value": true },
-          { "op": "setFlag", "flag": "floppy_lore_discovered", "value": true },
-          { "op": "achievement", "text": "PRESERVED — Your floppies hold the story of Patient Zero" }
-        ]}
+        {
+          "op": "ifFlag",
+          "flag": "floppy_endgame_complete",
+          "then": [
+            {
+              "op": "say",
+              "text": "The monitor still shows my floppy data alongside my wallet history. Two collections. One story."
+            }
+          ],
+          "else": [
+            {
+              "op": "say",
+              "text": "I hold the Floppy Disc Box up to the monitor. My hands are shaking."
+            },
+            {
+              "op": "wait",
+              "ms": 1200
+            },
+            {
+              "op": "say",
+              "text": "The display splits. On the left: my wallet history. On the right: the floppy collection's on-chain data. The timestamps match."
+            },
+            {
+              "op": "wait",
+              "ms": 1000
+            },
+            {
+              "op": "say",
+              "text": "Every floppy I minted corresponds to a moment in my crypto journey. Each one a snapshot. A backup of who I was at every turning point."
+            },
+            {
+              "op": "wait",
+              "ms": 800
+            },
+            {
+              "op": "say",
+              "text": "'Patient Zero's treatment was never about curing crypto addiction. It was about preserving the story. YOUR story. And you kept the floppies. You kept the proof.'"
+            },
+            {
+              "op": "wait",
+              "ms": 600
+            },
+            {
+              "op": "say",
+              "text": "The screen fades to a single word in golden text: 'PRESERVED.'"
+            },
+            {
+              "op": "setFlag",
+              "flag": "floppy_endgame_complete",
+              "value": true
+            },
+            {
+              "op": "setFlag",
+              "flag": "floppy_lore_discovered",
+              "value": true
+            },
+            {
+              "op": "achievement",
+              "text": "PRESERVED \u2014 Your floppies hold the story of Patient Zero"
+            }
+          ]
+        }
       ]
     }
   ],
@@ -855,12 +964,21 @@
   "web3Visuals": [
     {
       "id": "founders_plaque",
-      "position": { "x": 85, "y": 45 },
-      "size": { "w": 6, "h": 4 },
+      "position": {
+        "x": 85,
+        "y": 45
+      },
+      "size": {
+        "w": 6,
+        "h": 4
+      },
       "defaultSprite": "plaque_empty",
       "variants": [
         {
-          "gate": { "type": "ZERO_BALANCE", "minBalance": "1000" },
+          "gate": {
+            "type": "ZERO_BALANCE",
+            "minBalance": "1000"
+          },
           "sprite": "plaque_founder",
           "effect": "shimmer"
         }
