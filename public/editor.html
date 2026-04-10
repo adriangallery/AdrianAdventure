@@ -353,6 +353,7 @@ let selectedNpcIdx = -1;
 let selectedEntryIdx = -1;
 let selectedW3vIdx = -1;
 let w3vList = [];
+let w3vLockRatio = true;
 let editMode = 'hs'; // 'hs' | 'wa' | 'tr' | 'npc' | 'entry' | 'w3v'
 let drawMode = false;
 let zoom = 1;
@@ -756,30 +757,45 @@ function renderAll() {
     renderNPC(npc, idx, isSel, !isActive);
   });
 
-  // Render web3Visuals
+  // Render web3Visuals (as resizable rects with handles, like walk areas)
   container.querySelectorAll('.w3v-marker').forEach(el => el.remove());
   w3vList.forEach((v, idx) => {
     const isActive = editMode === 'w3v';
     const isSel = isActive && idx === selectedW3vIdx;
-    const px = v.position.x / 100 * imgNatW * zoom;
-    const py = v.position.y / 100 * imgNatH * zoom;
+    // Position is center-based, convert to top-left for the rect
     const pw = v.size.w / 100 * imgNatW * zoom;
     const ph = v.size.h / 100 * imgNatH * zoom;
+    const px = v.position.x / 100 * imgNatW * zoom - pw / 2;
+    const py = v.position.y / 100 * imgNatH * zoom - ph / 2;
     const el = document.createElement('div');
     el.className = 'w3v-marker';
-    el.style.cssText = `position:absolute;left:${px - pw/2}px;top:${py - ph/2}px;width:${pw}px;height:${ph}px;` +
+    el.dataset.w3vIdx = idx;
+    el.style.cssText = `position:absolute;left:${px}px;top:${py}px;width:${pw}px;height:${ph}px;` +
       `border:2px solid ${isSel ? '#ff00ff' : '#aa44cc'};background:rgba(170,68,204,${isActive ? 0.15 : 0.05});` +
-      `opacity:${isActive ? 1 : 0.4};cursor:${isActive ? 'move' : 'default'};z-index:${isSel ? 12 : 6};`;
+      `opacity:${isActive ? 1 : 0.4};cursor:${isActive ? 'move' : 'default'};z-index:${isSel ? 12 : 6};user-select:none;`;
+    // Sprite preview
     if (v.spriteImg) {
       const img = document.createElement('img');
       img.src = v.spriteImg.src;
       img.style.cssText = 'width:100%;height:100%;object-fit:contain;image-rendering:pixelated;opacity:0.8;pointer-events:none;';
       el.appendChild(img);
     }
+    // Label
     const lbl = document.createElement('div');
     lbl.style.cssText = 'position:absolute;top:-16px;left:0;font-size:9px;color:#cc66ff;white-space:nowrap;pointer-events:none;';
     lbl.textContent = v.id;
     el.appendChild(lbl);
+    // Resize handles (only when selected)
+    if (isSel) {
+      for (const pos of ['tl','tr','bl','br','tm','bm','ml','mr']) {
+        const handle = document.createElement('div');
+        handle.className = 'handle ' + pos;
+        handle.dataset.handle = pos;
+        handle.style.display = 'block';
+        handle.style.background = '#cc66ff';
+        el.appendChild(handle);
+      }
+    }
     container.appendChild(el);
   });
 
@@ -1045,18 +1061,33 @@ function updateInfoPanel() {
       ctrl.id = 'w3v-size-ctrl';
       ctrl.style.cssText = 'display:flex;align-items:center;gap:8px;padding:4px 12px;background:#16213e;font-size:11px;flex-wrap:wrap;';
       ctrl.innerHTML = `
-        <label style="color:#888">W:</label><input type="range" min="0.5" max="20" step="0.1" value="${v.size.w}" style="width:100px" id="w3v-w-slider"><span id="w3v-w-val" style="color:#cc66ff;min-width:36px">${v.size.w.toFixed(1)}%</span>
-        <label style="color:#888">H:</label><input type="range" min="0.5" max="40" step="0.1" value="${v.size.h}" style="width:100px" id="w3v-h-slider"><span id="w3v-h-val" style="color:#cc66ff;min-width:36px">${v.size.h.toFixed(1)}%</span>
+        <label style="color:#888">W:</label><input type="range" min="0.5" max="20" step="0.1" value="${v.size.w}" style="width:80px" id="w3v-w-slider"><span id="w3v-w-val" style="color:#cc66ff;min-width:36px">${v.size.w.toFixed(1)}%</span>
+        <label style="color:#888">H:</label><input type="range" min="0.5" max="40" step="0.1" value="${v.size.h}" style="width:80px" id="w3v-h-slider"><span id="w3v-h-val" style="color:#cc66ff;min-width:36px">${v.size.h.toFixed(1)}%</span>
+        <label style="color:#888;margin-left:8px;cursor:pointer;" title="Lock aspect ratio"><input type="checkbox" id="w3v-lock-ratio" ${w3vLockRatio ? 'checked' : ''} style="accent-color:#cc66ff;cursor:pointer;"> Lock Ratio</label>
       `;
       document.getElementById('toolbar').after(ctrl);
+      const ratioHW = v.size.h / v.size.w;
+      document.getElementById('w3v-lock-ratio').addEventListener('change', (e) => {
+        w3vLockRatio = e.target.checked;
+      });
       document.getElementById('w3v-w-slider').addEventListener('input', (e) => {
         v.size.w = parseFloat(e.target.value);
+        if (w3vLockRatio) {
+          v.size.h = v.size.w * ratioHW;
+          document.getElementById('w3v-h-slider').value = v.size.h;
+          document.getElementById('w3v-h-val').textContent = v.size.h.toFixed(1) + '%';
+        }
         document.getElementById('w3v-w-val').textContent = v.size.w.toFixed(1) + '%';
         selBounds.textContent = `x:${r(v.position.x)} y:${r(v.position.y)} w:${r(v.size.w)} h:${r(v.size.h)}`;
         renderAll();
       });
       document.getElementById('w3v-h-slider').addEventListener('input', (e) => {
         v.size.h = parseFloat(e.target.value);
+        if (w3vLockRatio) {
+          v.size.w = v.size.h / ratioHW;
+          document.getElementById('w3v-w-slider').value = v.size.w;
+          document.getElementById('w3v-w-val').textContent = v.size.w.toFixed(1) + '%';
+        }
         document.getElementById('w3v-h-val').textContent = v.size.h.toFixed(1) + '%';
         selBounds.textContent = `x:${r(v.position.x)} y:${r(v.position.y)} w:${r(v.size.w)} h:${r(v.size.h)}`;
         renderAll();
@@ -1171,10 +1202,26 @@ container.addEventListener('mousedown', (e) => {
     return;
   }
 
+  // W3V handle resize
+  if (e.target.classList.contains('handle') && editMode === 'w3v') {
+    const w3vEl = e.target.closest('.w3v-marker');
+    const idx = parseInt(w3vEl?.dataset.w3vIdx);
+    if (idx >= 0) {
+      const handlePos = e.target.dataset.handle;
+      const v = w3vList[idx];
+      dragging = {
+        type: 'w3v-resize', idx, handle: handlePos,
+        startX: e.clientX, startY: e.clientY,
+        origPosition: { ...v.position }, origSize: { ...v.size },
+      };
+      e.preventDefault();
+      return;
+    }
+  }
   // W3V click — drag to reposition
   const w3vEl = e.target.closest('.w3v-marker');
   if (w3vEl && editMode === 'w3v') {
-    const idx = [...container.querySelectorAll('.w3v-marker')].indexOf(w3vEl);
+    const idx = parseInt(w3vEl.dataset.w3vIdx);
     if (idx >= 0) {
       selectedW3vIdx = idx;
       selectedIdx = -1;
@@ -1285,6 +1332,33 @@ document.addEventListener('mousemove', (e) => {
     const v = w3vList[dragging.idx];
     v.position.x = clamp(dragging.origPosition.x + dPctX, 0, 100);
     v.position.y = clamp(dragging.origPosition.y + dPctY, 0, 100);
+    updateInfoPanel();
+    renderAll();
+    return;
+  }
+  // W3V resize (with optional ratio lock)
+  if (dragging.type === 'w3v-resize') {
+    const v = w3vList[dragging.idx];
+    const h = dragging.handle;
+    const op = dragging.origPosition;
+    const os = dragging.origSize;
+    const lock = w3vLockRatio;
+    const ratio = os.h / os.w; // h/w ratio to preserve
+    let newW = os.w, newH = os.h, newX = op.x, newY = op.y;
+    // Adjust based on handle (position is center of the rect)
+    if (h.includes('r')) { newW = Math.max(0.5, os.w + dPctX); newX = op.x + dPctX / 2; }
+    if (h.includes('l')) { newW = Math.max(0.5, os.w - dPctX); newX = op.x + dPctX / 2; }
+    if (h.includes('b')) { newH = Math.max(0.5, os.h + dPctY); newY = op.y + dPctY / 2; }
+    if (h.includes('t') && h !== 'tr') { newH = Math.max(0.5, os.h - dPctY); newY = op.y + dPctY / 2; }
+    if (h === 'tr') { newW = Math.max(0.5, os.w + dPctX); newX = op.x + dPctX / 2; newH = Math.max(0.5, os.h - dPctY); newY = op.y + dPctY / 2; }
+    if (lock) {
+      // Maintain aspect ratio based on the dominant axis
+      if (h === 'ml' || h === 'mr') { newH = newW * ratio; }
+      else if (h === 'tm' || h === 'bm') { newW = newH / ratio; }
+      else { newH = newW * ratio; } // corner handles: width drives
+    }
+    v.size.w = newW; v.size.h = newH;
+    v.position.x = newX; v.position.y = newY;
     updateInfoPanel();
     renderAll();
     return;
