@@ -1,7 +1,7 @@
 {
   "version": 1,
   "id": "upstairs",
-  "title": "Upstairs — Trading Floor",
+  "title": "Upstairs \u2014 Trading Floor",
   "assets": {
     "background": "background.png",
     "walkmask": "walkmask.png",
@@ -119,7 +119,7 @@
                 },
                 {
                   "op": "say",
-                  "text": "There's a sticky note inside: 'PZ escaped via contract exploit — check server logs'"
+                  "text": "There's a sticky note inside: 'PZ escaped via contract exploit \u2014 check server logs'"
                 },
                 {
                   "op": "setFlag",
@@ -186,7 +186,7 @@
           "PICK": [
             {
               "op": "say",
-              "text": "There's a rare NFT trading card inside one. It's sealed in a display case — look, don't touch."
+              "text": "There's a rare NFT trading card inside one. It's sealed in a display case \u2014 look, don't touch."
             }
           ],
           "OPEN": [
@@ -333,7 +333,7 @@
           "PICK": [
             {
               "op": "say",
-              "text": "Something glints under the cushion — a luxury watch worth several ETH. It's tangled in the springs. I'd need tools to get it out."
+              "text": "Something glints under the cushion \u2014 a luxury watch worth several ETH. It's tangled in the springs. I'd need tools to get it out."
             }
           ],
           "OPEN": [
@@ -679,7 +679,7 @@
           "GIVE": [
             {
               "op": "say",
-              "text": "Nobody wants a half-empty energy drink. It's the NFT of beverages — unique but valueless."
+              "text": "Nobody wants a half-empty energy drink. It's the NFT of beverages \u2014 unique but valueless."
             }
           ]
         }
@@ -735,7 +735,7 @@
                 },
                 {
                   "op": "say",
-                  "text": "I grab the receipt. It's a printout of a massive transaction — coordinates to a clinic in the mountains. Someone was tracking Patient Zero."
+                  "text": "I grab the receipt. It's a printout of a massive transaction \u2014 coordinates to a clinic in the mountains. Someone was tracking Patient Zero."
                 }
               ]
             }
@@ -743,7 +743,7 @@
           "OPEN": [
             {
               "op": "say",
-              "text": "It's an open tray. Nothing to open. Like my positions — always exposed."
+              "text": "It's an open tray. Nothing to open. Like my positions \u2014 always exposed."
             }
           ],
           "CLOSE": [
@@ -819,7 +819,7 @@
           "else": [
             {
               "op": "say",
-              "text": "I insert the Golden ZERO Token into a slot on the mining rig. The screens flash: 'GOLDEN KEY ACCEPTED — FOUNDER MODE UNLOCKED.'"
+              "text": "I insert the Golden ZERO Token into a slot on the mining rig. The screens flash: 'GOLDEN KEY ACCEPTED \u2014 FOUNDER MODE UNLOCKED.'"
             },
             {
               "op": "setFlag",
@@ -875,7 +875,7 @@
         },
         {
           "op": "say",
-          "text": "The screens display: 'BACKUP TRADING STRATEGIES FOUND — FLOPPY ARCHIVE v1.0. Last modified: 3 AM, obviously.'"
+          "text": "The screens display: 'BACKUP TRADING STRATEGIES FOUND \u2014 FLOPPY ARCHIVE v1.0. Last modified: 3 AM, obviously.'"
         },
         {
           "op": "say",
@@ -891,7 +891,7 @@
         },
         {
           "op": "say",
-          "text": "At the bottom of the file: 'NOTE: If you own these floppies, you already understood the best strategy — collect the art, ignore the noise.' Smart."
+          "text": "At the bottom of the file: 'NOTE: If you own these floppies, you already understood the best strategy \u2014 collect the art, ignore the noise.' Smart."
         },
         {
           "op": "setFlag",
@@ -900,7 +900,7 @@
         },
         {
           "op": "achievement",
-          "text": "ALPHA LEAK — Found Adrian's backup trading strategies"
+          "text": "ALPHA LEAK \u2014 Found Adrian's backup trading strategies"
         }
       ]
     },
@@ -913,7 +913,7 @@
       "script": [
         {
           "op": "say",
-          "text": "I hold a floppy disc near the mining rig's USB port. Wait — floppy discs don't use USB. But the rig detects it anyway."
+          "text": "I hold a floppy disc near the mining rig's USB port. Wait \u2014 floppy discs don't use USB. But the rig detects it anyway."
         },
         {
           "op": "wait",
@@ -921,7 +921,7 @@
         },
         {
           "op": "say",
-          "text": "The GPUs whir louder. The screen displays: 'ADRIANLAB FLOPPY — GENESIS CONFIG DETECTED. Loading original mining parameters from 2024...'"
+          "text": "The GPUs whir louder. The screen displays: 'ADRIANLAB FLOPPY \u2014 GENESIS CONFIG DETECTED. Loading original mining parameters from 2024...'"
         },
         {
           "op": "say",
@@ -946,7 +946,7 @@
         },
         {
           "op": "achievement",
-          "text": "GENESIS MINER — Activated the rig's original config"
+          "text": "GENESIS MINER \u2014 Activated the rig's original config"
         }
       ]
     }
@@ -977,7 +977,7 @@
       "id": "no_energy_drink",
       "sprite": "overlay_no_energy_drink",
       "flag": "has_energy_drink",
-      "depth": 5,
+      "depth": 16,
       "invert": true
     }
   ]
