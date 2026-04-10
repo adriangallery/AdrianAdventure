@@ -129,12 +129,12 @@ export class MenuScene extends Phaser.Scene {
 
     const title = document.createElement('div');
     title.textContent = '\u{1F3C6} LEADERBOARD';
-    title.style.cssText = 'color: #f8e848; font-size: 14px; margin-bottom: 16px;';
+    title.style.cssText = 'color: #f8e848; font-size: 16px; margin-bottom: 20px;';
     modal.appendChild(title);
 
     const loading = document.createElement('div');
     loading.textContent = 'Loading...';
-    loading.style.cssText = 'color: #888; font-size: 9px; margin: 20px 0;';
+    loading.style.cssText = 'color: #888; font-size: 11px; margin: 20px 0;';
     modal.appendChild(loading);
 
     const cleanup = () => overlay.remove();
@@ -163,7 +163,7 @@ export class MenuScene extends Phaser.Scene {
       if (!data.players || data.players.length === 0) {
         const empty = document.createElement('div');
         empty.textContent = 'No players yet. Be the first!';
-        empty.style.cssText = 'color: #888; font-size: 9px; margin: 20px 0;';
+        empty.style.cssText = 'color: #888; font-size: 11px; margin: 20px 0;';
         modal.insertBefore(empty, closeBtn);
         return;
       }
@@ -171,31 +171,47 @@ export class MenuScene extends Phaser.Scene {
       const table = document.createElement('div');
       table.style.cssText = 'text-align: left; margin-bottom: 8px;';
 
-      // Header
-      const header = document.createElement('div');
-      header.style.cssText = 'display: flex; gap: 8px; padding: 6px 4px; border-bottom: 1px solid #5b3a8c; color: #f8e848; font-size: 7px; margin-bottom: 4px;';
-      header.innerHTML = `<span style="width:24px">#</span><span style="flex:1">Player</span><span style="width:50px;text-align:right">Score</span><span style="width:30px;text-align:center">Ch</span><span style="width:60px;text-align:right">Scene</span>`;
-      table.appendChild(header);
+      // Top 5 only
+      const top = data.players.slice(0, 5);
 
-      data.players.forEach((p: any, i: number) => {
+      top.forEach((p: any, i: number) => {
         const row = document.createElement('div');
-        const medal = i === 0 ? '\u{1F947}' : i === 1 ? '\u{1F948}' : i === 2 ? '\u{1F949}' : `${i + 1}`;
+        const medal = i === 0 ? '\u{1F947}' : i === 1 ? '\u{1F948}' : i === 2 ? '\u{1F949}' : `#${i + 1}`;
         const addr = p.address.slice(0, 6) + '...' + p.address.slice(-4);
-        const scene = (p.sceneName || '').replace(/^(The |AdrianLAB )/, '').slice(0, 10);
+        const sceneName = (p.sceneName || 'Unknown').replace(/^(The |AdrianLAB )/, '');
         const complete = p.gameComplete ? ' \u{2B50}' : '';
+        const items = p.items ?? 0;
+        const scenes = p.scenesVisited ?? 0;
+        const date = new Date(p.lastSaved).toLocaleDateString();
 
         row.style.cssText = `
-          display: flex; gap: 8px; padding: 5px 4px; font-size: 7px;
-          color: ${i < 3 ? '#e8d5f5' : '#999'};
-          border-bottom: 1px solid #222;
+          padding: 10px 8px; margin-bottom: 6px;
+          background: ${i === 0 ? '#2a2a1e' : '#1e1e2e'};
+          border: 1px solid ${i === 0 ? '#f8e848' : i < 3 ? '#5b3a8c' : '#333'};
+          border-radius: 6px;
         `;
-        row.innerHTML = `<span style="width:24px">${medal}</span><span style="flex:1;color:#aaa">${addr}${complete}</span><span style="width:50px;text-align:right;color:#f8e848">${p.score}</span><span style="width:30px;text-align:center">${p.chapters}/5</span><span style="width:60px;text-align:right;color:#666;overflow:hidden">${scene}</span>`;
+        row.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 6px;">
+            <span style="font-size:14px;">${medal}</span>
+            <span style="font-size:11px; color:#e8d5f5; flex:1; margin-left:8px;">${addr}${complete}</span>
+            <span style="font-size:13px; color:#f8e848; font-weight:bold;">${p.score} pts</span>
+          </div>
+          <div style="display:flex; gap:12px; font-size:9px; color:#888;">
+            <span>\u{1F4D6} Ch ${p.chapters}/5</span>
+            <span>\u{1F5FA} ${scenes} scenes</span>
+            <span>\u{1F392} ${items} items</span>
+          </div>
+          <div style="display:flex; justify-content:space-between; font-size:8px; color:#555; margin-top:4px;">
+            <span>\u{1F3AE} ${sceneName}</span>
+            <span>${date}</span>
+          </div>
+        `;
         table.appendChild(row);
       });
 
       const total = document.createElement('div');
-      total.textContent = `${data.total} player${data.total !== 1 ? 's' : ''} total`;
-      total.style.cssText = 'color: #555; font-size: 7px; margin-top: 8px;';
+      total.textContent = `${data.total} adventurer${data.total !== 1 ? 's' : ''} exploring`;
+      total.style.cssText = 'color: #555; font-size: 9px; margin-top: 12px;';
       table.appendChild(total);
 
       modal.insertBefore(table, closeBtn);
