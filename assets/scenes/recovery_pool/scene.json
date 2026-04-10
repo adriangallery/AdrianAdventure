@@ -485,6 +485,37 @@
         }
       },
       {
+        "id": "hs_dark_door",
+        "name": "Ominous Door",
+        "bounds": { "x": 2, "y": 30, "w": 5, "h": 35 },
+        "scripts": {
+          "LOOK": [
+            { "op": "say", "text": "A heavy metal door, pitch black behind the gap. A sign reads: 'DEEP LIQUIDITY — AUTHORIZED WHALES ONLY'. Below it, someone scratched: 'abandon all stablecoins, ye who enter here.'" }
+          ],
+          "USE": [
+            { "op": "say", "text": "I reach for the handle. A cold draft pushes back. From inside, I hear the sound of margin calls echoing in the void. Nope. Not today. Not ever." }
+          ],
+          "OPEN": [
+            { "op": "say", "text": "I try the door. It opens an inch. The darkness inside is so complete it feels like staring into an unlisted token's order book. I close it immediately." }
+          ],
+          "TALK": [
+            { "op": "say", "text": "I knock on the door. Something knocks back. Three times. Then silence. Then a faint whisper: 'What's your leverage?' I back away slowly." }
+          ],
+          "PICK": [
+            { "op": "say", "text": "I can't pick up a door that leads to the abyss. The abyss picks YOU." }
+          ],
+          "CLOSE": [
+            { "op": "say", "text": "It's already closed. Good. Whatever's behind there has more TVL than sense." }
+          ],
+          "PUSH": [
+            { "op": "say", "text": "I push the door. It groans. An ape behind me grabs my shoulder. 'Don't. That's the deep end. Nobody comes back from the deep end with their portfolio intact.'" }
+          ],
+          "PULL": [
+            { "op": "say", "text": "I pull the door. Cold air hits my face. Smells like leveraged positions and regret. A screen glows inside showing only one word: 'REKT'. I let go." }
+          ]
+        }
+      },
+      {
         "id": "hs_stairs_up",
         "name": "Stairs Up",
         "bounds": {
