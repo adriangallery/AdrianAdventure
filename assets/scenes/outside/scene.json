@@ -1791,6 +1791,12 @@
       "sprite": "overlay_mailbox_empty",
       "flag": "found_envelope",
       "depth": 5
+    },
+    {
+      "id": "lamp_empty",
+      "sprite": "overlay_lamp_empty",
+      "flag": "found_code_note",
+      "depth": 5
     }
   ]
 }
