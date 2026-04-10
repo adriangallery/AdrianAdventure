@@ -71,6 +71,7 @@ export class GameScene extends Phaser.Scene {
     // Ensure new fields exist (backward compat with old saves)
     if (!this.gameState.firedTriggers) this.gameState.firedTriggers = [];
     if (!this.gameState.dialogueProgress) this.gameState.dialogueProgress = {};
+    if (!this.gameState.achievements) this.gameState.achievements = [];
     // Restore persisted fired triggers
     this.firedTriggers = new Set(this.gameState.firedTriggers);
     this.registry.set('gameState', this.gameState);

@@ -59,6 +59,8 @@ export interface GameState {
   firedTriggers: string[];
   /** Dialogue trees completed per NPC: npcId → completedTreeIds */
   dialogueProgress: Record<string, string[]>;
+  /** Achievement IDs that have been earned */
+  achievements: string[];
   /** Timestamp of last save */
   savedAt?: number;
 }
@@ -78,5 +80,6 @@ export function createInitialState(sceneId: string): GameState {
     visited: [sceneId],
     firedTriggers: [],
     dialogueProgress: {},
+    achievements: [],
   };
 }

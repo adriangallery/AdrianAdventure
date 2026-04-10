@@ -6,11 +6,13 @@ import { WalletButton } from '@/ui/WalletButton';
 import { SaveButton } from '@/ui/SaveButton';
 import { VerbWheel } from '@/ui/VerbWheel';
 import { CinematicOverlay } from '@/ui/CinematicOverlay';
+import { BadgePanel } from '@/ui/BadgePanel';
 import { DialogueSystem, type DialogueTree } from '@/systems/DialogueSystem';
 import type { InventorySystem } from '@/systems/InventorySystem';
 import type { SceneData, HotspotData } from '@/types/scene.types';
-import type { Verb } from '@/types/game.types';
+import type { Verb, GameState } from '@/types/game.types';
 import type { GameScene } from './GameScene';
+import { getAchievementByText } from '@/config/achievements.config';
 import { getWalletState } from '@/web3/wallet';
 import { checkGatingRule, type GatingRule } from '@/web3/gating';
 import type { Address } from 'viem';
@@ -27,6 +29,7 @@ export class UIScene extends Phaser.Scene {
   private saveButton!: SaveButton;
   private dialogueSystem!: DialogueSystem;
   private cinematicOverlay!: CinematicOverlay;
+  private badgePanel!: BadgePanel;
   private isMobile = false;
 
   constructor() {
@@ -111,6 +114,9 @@ export class UIScene extends Phaser.Scene {
     // Cinematic overlay (for scripts running from UIScene context)
     this.cinematicOverlay = new CinematicOverlay(this);
 
+    // Badge panel (trophy button for viewing/minting achievements)
+    this.badgePanel = new BadgePanel(this);
+
     // Store panel height for GameScene camera adjustment
     this.registry.set('scummPanelHeight', this.scummUI.getPanelHeight());
 
@@ -190,6 +196,18 @@ export class UIScene extends Phaser.Scene {
     });
 
     this.events.on('showAchievement', (text: string) => {
+      // Track achievement in gameState
+      const achDef = getAchievementByText(text);
+      if (achDef) {
+        const state = this.registry.get('gameState') as GameState | undefined;
+        if (state) {
+          if (!state.achievements) state.achievements = [];
+          if (!state.achievements.includes(achDef.id)) {
+            state.achievements.push(achDef.id);
+            this.registry.set('gameState', state);
+          }
+        }
+      }
       this.cinematicOverlay.showAchievement(text);
     });
 
@@ -241,5 +259,6 @@ export class UIScene extends Phaser.Scene {
     this.choicePanel?.destroy();
     this.walletButton?.destroy();
     this.cinematicOverlay?.destroy();
+    this.badgePanel?.destroy();
   }
 }
