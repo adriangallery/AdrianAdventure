@@ -16,6 +16,7 @@ import { getWalletState, onWalletChange } from '@/web3/wallet';
 import { checkGatingRule, checkGatingRuleCached, type GatingRule } from '@/web3/gating';
 import { mintItem, mintAchievement, type MintResult } from '@/web3/contracts';
 import { TransactionToast } from '@/ui/TransactionToast';
+import { getAchievementByText } from '@/config/achievements.config';
 import type { Address } from 'viem';
 
 export class GameScene extends Phaser.Scene {
@@ -615,7 +616,18 @@ export class GameScene extends Phaser.Scene {
       },
       showTitleCard: (chapter, title, subtitle) => this.cinematicOverlay.showTitleCard(chapter, title, subtitle),
       showNarrative: (lines) => this.cinematicOverlay.showNarrative(lines),
-      showAchievement: (text) => { this.cinematicOverlay.showAchievement(text); },
+      showAchievement: (text) => {
+        // Track achievement in gameState
+        const achDef = getAchievementByText(text);
+        if (achDef) {
+          if (!this.gameState.achievements) this.gameState.achievements = [];
+          if (!this.gameState.achievements.includes(achDef.id)) {
+            this.gameState.achievements.push(achDef.id);
+            this.registry.set('gameState', this.gameState);
+          }
+        }
+        this.cinematicOverlay.showAchievement(text);
+      },
       showToast: (status, message) => { this.transactionToast.show(status, message); },
     };
   }
