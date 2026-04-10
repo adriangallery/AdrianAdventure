@@ -416,7 +416,7 @@
         "bounds": { "x": 5, "y": 60, "w": 8, "h": 20 },
         "scripts": {
           "LOOK": [
-            { "op": "say", "text": "A pile of discarded items near the stairs: empty energy drink cans, torn whitepapers, a broken phone with 'WAGMI' as the wallpaper, and... is that something yellow buried under a banana peel?" }
+            { "op": "say", "text": "A pile of discarded items near the stairs: empty energy drink cans, torn whitepapers, a broken phone with 'WAGMI' as the wallpaper. Looks like the apes have been using this corner as a landfill. There might be something worth salvaging in there." }
           ],
           "TALK": [
             { "op": "say", "text": "I address the pile. 'What treasures do you hold?' A can falls off the top. That's either a sign or gravity." }
@@ -432,7 +432,7 @@
                 { "op": "say", "text": "Nothing else worth salvaging. Just broken dreams and banana peels." }
               ],
               "else": [
-                { "op": "say", "text": "I dig through the pile... under a banana peel and a torn 'DYOR' poster, I find... a rubber duck? Someone must have lost it in the pool. Or sacrificed it to Gerald." },
+                { "op": "say", "text": "I dig through the pile and push aside some crumpled whitepapers and an alarming number of banana peels. Wait. There's a rubber duck in here? How did this survive the carnage?" },
                 { "op": "setFlag", "flag": "found_rubber_duck", "value": true },
                 { "op": "addItem", "id": "rubber_duck", "name": "Rubber Duck" },
                 { "op": "say", "text": "It squeaks when I pick it up. The apes look up from their phones. 'Is that... a duck?' one whispers reverently. 'Gerald will want to meet it.'" }
@@ -675,16 +675,30 @@
         "message": {
           "speaker": "B.O.T.",
           "text": "'The cure isn't in the code. It's in the community.' That's all. Encrypted with a key I don't have. Whoever Patient Zero was, they understood something the rest of us are still trying to compute.",
-          "end": true
+          "choices": [
+            { "text": "Tell me something else.", "next": "greeting" },
+            { "text": "Thanks, B.O.T.", "next": "farewell" }
+          ]
         },
         "when": {
           "speaker": "B.O.T.",
           "text": "Block 1. Not block 1 of Base. Block 1 of this building. Before AdrianLAB was AdrianLAB. Before the trading floors and the diamond protocol. When it was just... someone's dream in a basement. Like all the best things.",
-          "end": true
+          "choices": [
+            { "text": "Tell me something else.", "next": "greeting" },
+            { "text": "Thanks, B.O.T.", "next": "farewell" }
+          ]
         },
         "drink": {
           "speaker": "B.O.T.",
           "text": "The house special: 'The Liquidation'. It's green, it burns, and you'll question your life choices afterward. Just like real trading. Cheers.",
+          "choices": [
+            { "text": "Tell me something else.", "next": "greeting" },
+            { "text": "Thanks, B.O.T.", "next": "farewell" }
+          ]
+        },
+        "farewell": {
+          "speaker": "B.O.T.",
+          "text": "Come back anytime. The pool is always open. The bar is always stocked. And the charts... the charts never sleep. Neither do I. Because I'm a robot. That was the joke. I'll work on my delivery.",
           "end": true
         }
       }

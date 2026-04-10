@@ -340,7 +340,7 @@
               "op": "ifFlag",
               "flag": "satoshi_pool_hint",
               "then": [
-                { "op": "say", "text": "I pull the cabinet. It slides aside, revealing the hidden staircase to the recovery pool below." },
+                { "op": "say", "text": "I pull the cabinet toward me. It glides on hidden rails with a satisfying rumble, revealing a staircase spiraling down. Chlorine, bass music, and the unmistakable scent of bad decisions wafts up." },
                 { "op": "fadeToScene", "sceneId": "recovery_pool", "spawn": { "x": 8, "y": 92 } }
               ],
               "else": [
@@ -1120,7 +1120,7 @@
         },
         "other_patients": {
           "speaker": "Dr. Satoshi",
-          "text": "The... other patients? They're in the recovery program. Downstairs. It's an experimental approach. Immersive, you could say. The filing cabinet knows the way, if you push hard enough. But that's not for visitors.",
+          "text": "The... other patients? They're in the recovery program. Downstairs. It's an experimental approach. Immersive, you could say. The way down isn't obvious. Nothing in this clinic is where it seems. But that's not for visitors.",
           "onEnter": [
             { "op": "setFlag", "flag": "satoshi_pool_hint", "value": true }
           ],
