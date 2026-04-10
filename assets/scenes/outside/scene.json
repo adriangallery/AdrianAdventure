@@ -79,7 +79,7 @@
                 },
                 {
                   "op": "sayBrief",
-                  "text": "Chapter 1 \u2014 objective: Enter the laboratory",
+                  "text": "Chapter 1 — objective: Enter the laboratory",
                   "duration": 2000
                 },
                 {
@@ -122,7 +122,7 @@
                 },
                 {
                   "op": "sayBrief",
-                  "text": "Chapter 1 \u2014 objective: Enter the laboratory",
+                  "text": "Chapter 1 — objective: Enter the laboratory",
                   "duration": 2000
                 },
                 {
@@ -319,7 +319,7 @@
           "LOOK": [
             {
               "op": "say",
-              "text": "Warm light inside. I can see monitor screens glowing \u2014 someone's been running code."
+              "text": "Warm light inside. I can see monitor screens glowing — someone's been running code."
             }
           ],
           "USE": [
@@ -451,7 +451,7 @@
           "LOOK": [
             {
               "op": "say",
-              "text": "Brick chimney. No smoke \u2014 upgraded to a more efficient consensus mechanism."
+              "text": "Brick chimney. No smoke — upgraded to a more efficient consensus mechanism."
             }
           ],
           "USE": [
@@ -562,7 +562,7 @@
               "else": [
                 {
                   "op": "say",
-                  "text": "I sift through the junk mail... wait. A sealed envelope marked 'CONFIDENTIAL \u2014 PATIENT ZERO'. This looks important."
+                  "text": "I sift through the junk mail... wait. A sealed envelope marked 'CONFIDENTIAL — PATIENT ZERO'. This looks important."
                 },
                 {
                   "op": "addItem",
@@ -590,7 +590,7 @@
               "else": [
                 {
                   "op": "say",
-                  "text": "I swing open the mailbox flap. Junk mail cascades out... and a sealed envelope marked 'CONFIDENTIAL \u2014 PATIENT ZERO' slides into view."
+                  "text": "I swing open the mailbox flap. Junk mail cascades out... and a sealed envelope marked 'CONFIDENTIAL — PATIENT ZERO' slides into view."
                 },
                 {
                   "op": "addItem",
@@ -614,7 +614,7 @@
           "PUSH": [
             {
               "op": "say",
-              "text": "I push the mailbox post. It wobbles \u2014 years of neglect."
+              "text": "I push the mailbox post. It wobbles — years of neglect."
             }
           ],
           "PULL": [
@@ -914,7 +914,7 @@
           "LOOK": [
             {
               "op": "say",
-              "text": "Wooden power pole. The original Layer 1 \u2014 electrical infrastructure."
+              "text": "Wooden power pole. The original Layer 1 — electrical infrastructure."
             }
           ],
           "USE": [
@@ -1473,7 +1473,7 @@
                   "",
                   "But its creator has vanished.",
                   "",
-                  "They call the missing person \"Patient Zero\" \u2014",
+                  "They call the missing person \"Patient Zero\" —",
                   "the first crypto addict, the original degen.",
                   "",
                   "A message arrives in your wallet:",
@@ -1564,7 +1564,7 @@
         },
         {
           "op": "achievement",
-          "text": "CHAPTER 1 COMPLETE \u2014 Breaking & Entering"
+          "text": "CHAPTER 1 COMPLETE — Breaking & Entering"
         },
         {
           "op": "wait",
@@ -1617,7 +1617,7 @@
         },
         {
           "op": "achievement",
-          "text": "CHAPTER 1 COMPLETE \u2014 Breaking & Entering"
+          "text": "CHAPTER 1 COMPLETE — Breaking & Entering"
         },
         {
           "op": "wait",
@@ -1646,9 +1646,15 @@
   "walkableAreas": [
     {
       "x": 0,
-      "y": 84.7,
+      "y": 91,
       "w": 100,
-      "h": 15.3
+      "h": 9
+    },
+    {
+      "x": 30.9,
+      "y": 82.5,
+      "w": 16.3,
+      "h": 14.1
     }
   ],
   "onEnter": [
@@ -1667,7 +1673,7 @@
             "",
             "But its creator has vanished.",
             "",
-            "They call the missing person \"Patient Zero\" \u2014",
+            "They call the missing person \"Patient Zero\" —",
             "the first crypto addict, the original degen.",
             "",
             "A message arrives in your wallet:",
