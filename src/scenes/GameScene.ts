@@ -335,13 +335,19 @@ export class GameScene extends Phaser.Scene {
 
     const pct = this.coordSystem.screenToPct(wx, wy);
 
-    // NPC click detection — check if click is near any NPC
+    // NPC click detection — use actual sprite bounds for accurate hit testing
     for (const npc of this.npcs) {
       if (!npc.dialogueTreeId) continue;
       const npcScreen = npc.getWorldTransformMatrix();
+      const npcScale = npc.scale;
+      // NPC sprite has origin (0.5, 1) so position is at feet
+      // Calculate hitbox from the visible sprite size
+      const bodyW = (npc.width * npcScale) / 2;
+      const bodyH = npc.height * npcScale;
       const dx = wx - npcScreen.tx;
       const dy = wy - npcScreen.ty;
-      if (Math.abs(dx) < 30 * this.coordSystem.getScale() && Math.abs(dy) < 50 * this.coordSystem.getScale()) {
+      // Hit area: full sprite width, full sprite height above feet
+      if (Math.abs(dx) < bodyW && dy > -bodyH && dy < 10 * npcScale) {
         this.events.emit('npc:tapped', npc.npcId, npc.dialogueTreeId);
         return;
       }
@@ -412,6 +418,21 @@ export class GameScene extends Phaser.Scene {
     if (!this.coordSystem.isInBgArea(wx, wy)) {
       this.events.emit('hotspot:hover', null);
       return;
+    }
+
+    // Check NPC hover first (same hitbox as click detection)
+    for (const npc of this.npcs) {
+      if (!npc.dialogueTreeId) continue;
+      const npcScreen = npc.getWorldTransformMatrix();
+      const npcScale = npc.scale;
+      const bodyW = (npc.width * npcScale) / 2;
+      const bodyH = npc.height * npcScale;
+      const dx = wx - npcScreen.tx;
+      const dy = wy - npcScreen.ty;
+      if (Math.abs(dx) < bodyW && dy > -bodyH && dy < 10 * npcScale) {
+        this.events.emit('hotspot:hover', npc.npcName);
+        return;
+      }
     }
 
     const pct = this.coordSystem.screenToPct(wx, wy);
