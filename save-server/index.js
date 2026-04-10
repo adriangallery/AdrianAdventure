@@ -107,30 +107,76 @@ app.get('/leaderboard', (c) => {
         const state = data.state;
         if (!state) continue;
 
-        // Calculate progress score
-        const scenesVisited = state.visited?.length ?? 0;
-        const flagCount = Object.keys(state.flags ?? {}).length;
-        const itemCount = state.inventory?.length ?? 0;
-        const triggersCount = state.firedTriggers?.length ?? 0;
-
-        // Key milestones
         const flags = state.flags ?? {};
-        const chapter1 = !!flags.chapter_1_complete;
-        const chapter2 = !!flags.chapter_2_intro_shown;
-        const chapter5 = !!flags.chapter_5_complete;
-        const patientZero = !!flags.patient_zero_found;
-        const gameComplete = !!flags.patient_zero_revealed;
+        const scenesVisited = state.visited?.length ?? 0;
+        const itemCount = state.inventory?.length ?? 0;
 
-        // Chapters completed (0-5)
+        // ─── Chapters (200 pts each, 1000 max) ───
         let chapters = 0;
-        if (chapter1) chapters++;
-        if (chapter2) chapters++;
-        if (flags.chapter_3_intro_shown) chapters++;
-        if (flags.chapter_4_intro_shown) chapters++;
-        if (chapter5) chapters++;
+        if (flags.chapter_1_complete) chapters++;
+        if (flags.chapter_2_complete) chapters++;
+        if (flags.chapter_3_complete) chapters++;
+        if (flags.chapter_4_complete) chapters++;
+        if (flags.chapter_5_complete) chapters++;
+        const chapterPts = chapters * 200;
 
-        // Score: weighted sum
-        const score = (chapters * 100) + (scenesVisited * 10) + (itemCount * 5) + (flagCount * 2) + triggersCount;
+        // ─── Major milestones (unique points) ───
+        let milestonePts = 0;
+        if (flags.patient_zero_revealed) milestonePts += 1000;  // Game complete
+        if (flags.patient_zero_found) milestonePts += 500;      // Found PZ
+        if (flags.game_complete) milestonePts += 500;            // Endgame
+        if (flags.founder_mode) milestonePts += 300;             // Golden token + computer
+        if (flags.basement_unlocked) milestonePts += 100;
+        if (flags.server_room_open) milestonePts += 100;
+        if (flags.treatment_room_unlocked) milestonePts += 100;
+        if (flags.clinic_unlocked) milestonePts += 50;
+        if (flags.door_unlocked) milestonePts += 50;
+
+        // ─── Exploration (10 pts per scene, 110 max) ───
+        const explorePts = scenesVisited * 10;
+
+        // ─── Items discovered (15 pts each) ───
+        const discoveryFlags = [
+          'found_code_note', 'found_envelope', 'found_keycard', 'found_hw_wallet',
+          'found_floppy', 'found_rubber_duck', 'found_sign_in_sheet', 'found_clinic_note',
+          'found_clinic_photo', 'found_server_log', 'found_burned_chip', 'found_dr_badge',
+          'found_adrian_note', 'found_receipt', 'found_broken_mouse', 'found_pz_note',
+          'monkey_sticker_found', 'has_antenna', 'has_water', 'has_printout',
+        ];
+        const itemsDiscovered = discoveryFlags.filter(f => flags[f]).length;
+        const discoveryPts = itemsDiscovered * 15;
+
+        // ─── Puzzles solved (50 pts each) ───
+        let puzzlePts = 0;
+        if (flags.plant_watered) puzzlePts += 50;           // Water + plant = golden token
+        if (flags.computer_unlocked) puzzlePts += 50;       // Ledger + computer
+        if (flags.floppy_inserted) puzzlePts += 50;         // Floppy in drive
+        if (flags.emergency_switch_flipped) puzzlePts += 50; // Emergency switch
+        if (flags.duck_reunion) puzzlePts += 50;             // Easter egg
+
+        // ─── Hidden / Easter eggs (75 pts each) ───
+        let hiddenPts = 0;
+        const hiddenFlags = ['debug_look_1','debug_look_2','debug_look_3','debug_look_4','debug_look_5'];
+        hiddenPts += hiddenFlags.filter(f => flags[f]).length * 25;
+        if (flags.receptionist_mentioned_pz) hiddenPts += 50;
+        if (flags.vip_rug_hint) hiddenPts += 50;
+        if (flags.satoshi_pool_hint) hiddenPts += 50;
+
+        // ─── TOKEN GATED / Holder exclusive (100+ pts each) ───
+        let holderPts = 0;
+        const holderBadges = [];
+        if (flags.floppy_lobby_revealed)  { holderPts += 100; holderBadges.push('ARCHIVIST'); }
+        if (flags.floppy_basement_unlocked) { holderPts += 150; holderBadges.push('SECTOR ZERO'); }
+        if (flags.floppy_trading_revealed) { holderPts += 100; holderBadges.push('ALPHA LEAK'); }
+        if (flags.floppy_mining_revealed) { holderPts += 100; holderBadges.push('GENESIS MINER'); }
+        if (flags.floppy_clinic_revealed) { holderPts += 100; holderBadges.push('MEDICAL RECORDS'); }
+        if (flags.floppy_endgame_complete) { holderPts += 200; holderBadges.push('PRESERVED'); }
+        if (flags.floppy_lore_discovered) holderPts += 100;
+        if (flags.adrian_message_found) holderPts += 150;
+        if (flags.patient_records_unlocked) holderPts += 100;
+        if (flags.has_vip_floppy) { holderPts += 100; holderBadges.push('VIP ACCESS'); }
+
+        const score = chapterPts + milestonePts + explorePts + discoveryPts + puzzlePts + hiddenPts + holderPts;
 
         players.push({
           address: data.address,
@@ -138,9 +184,13 @@ app.get('/leaderboard', (c) => {
           score,
           chapters,
           scenesVisited,
-          items: itemCount,
-          gameComplete,
-          patientZero,
+          items: itemsDiscovered,
+          puzzles: Math.floor(puzzlePts / 50),
+          gameComplete: !!flags.patient_zero_revealed,
+          patientZero: !!flags.patient_zero_found,
+          holderBadges,
+          holderPts,
+          hiddenPts,
           lastSaved: data.savedAt || data.timestamp,
         });
       } catch { /* skip corrupt files */ }
@@ -151,7 +201,7 @@ app.get('/leaderboard', (c) => {
 
     return c.json({
       total: players.length,
-      players: players.slice(0, 50), // Top 50
+      players: players.slice(0, 50),
     });
   } catch (err) {
     console.error('Leaderboard error:', err);

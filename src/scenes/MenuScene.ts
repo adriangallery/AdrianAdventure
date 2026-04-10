@@ -182,29 +182,42 @@ export class MenuScene extends Phaser.Scene {
         const complete = p.gameComplete ? ' \u{2B50}' : '';
         const items = p.items ?? 0;
         const scenes = p.scenesVisited ?? 0;
+        const puzzles = p.puzzles ?? 0;
         const date = new Date(p.lastSaved).toLocaleDateString();
+        const badges = (p.holderBadges ?? []) as string[];
+        const isHolder = badges.length > 0;
 
         row.style.cssText = `
-          padding: 10px 8px; margin-bottom: 6px;
-          background: ${i === 0 ? '#2a2a1e' : '#1e1e2e'};
-          border: 1px solid ${i === 0 ? '#f8e848' : i < 3 ? '#5b3a8c' : '#333'};
+          padding: 12px 10px; margin-bottom: 8px;
+          background: ${i === 0 ? '#2a2a1e' : isHolder ? '#1e1e2e' : '#1a1a24'};
+          border: 1px solid ${i === 0 ? '#f8e848' : isHolder ? '#3396ff' : i < 3 ? '#5b3a8c' : '#333'};
           border-radius: 6px;
         `;
+
+        let badgeHtml = '';
+        if (badges.length > 0) {
+          badgeHtml = `<div style="display:flex; flex-wrap:wrap; gap:4px; margin-top:6px;">${
+            badges.map((b: string) => `<span style="font-size:7px; padding:2px 5px; background:#3396ff22; border:1px solid #3396ff44; border-radius:3px; color:#3396ff;">${b}</span>`).join('')
+          }</div>`;
+        }
+
         row.innerHTML = `
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 6px;">
-            <span style="font-size:14px;">${medal}</span>
+            <span style="font-size:16px;">${medal}</span>
             <span style="font-size:11px; color:#e8d5f5; flex:1; margin-left:8px;">${addr}${complete}</span>
-            <span style="font-size:13px; color:#f8e848; font-weight:bold;">${p.score} pts</span>
+            <span style="font-size:14px; color:#f8e848;">${p.score} pts</span>
           </div>
-          <div style="display:flex; gap:12px; font-size:9px; color:#888;">
-            <span>\u{1F4D6} Ch ${p.chapters}/5</span>
+          <div style="display:flex; gap:10px; font-size:9px; color:#999;">
+            <span>\u{1F4D6} ${p.chapters}/5 ch</span>
             <span>\u{1F5FA} ${scenes} scenes</span>
-            <span>\u{1F392} ${items} items</span>
+            <span>\u{1F50D} ${items} found</span>
+            <span>\u{1F9E9} ${puzzles} puzzles</span>
           </div>
-          <div style="display:flex; justify-content:space-between; font-size:8px; color:#555; margin-top:4px;">
+          <div style="display:flex; justify-content:space-between; font-size:8px; color:#666; margin-top:4px;">
             <span>\u{1F3AE} ${sceneName}</span>
             <span>${date}</span>
           </div>
+          ${badgeHtml}
         `;
         table.appendChild(row);
       });
