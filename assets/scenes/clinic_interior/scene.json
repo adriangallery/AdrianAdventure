@@ -33,7 +33,8 @@
       "idle": null,
       "walk": null
     },
-    "playerScale": 4.85
+    "playerScale": 4.85,
+    "playerDepth": 20
   },
   "ui": {
     "verbs": [

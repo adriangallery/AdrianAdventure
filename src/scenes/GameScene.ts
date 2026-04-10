@@ -124,6 +124,12 @@ export class GameScene extends Phaser.Scene {
       this.player.setVisible(false);
     }
 
+    // Per-scene player depth override (default 10, foreground is 15)
+    // Set > 15 to render player ABOVE the foreground layer
+    if ((sceneData.player as any).playerDepth) {
+      this.player.setDepth((sceneData.player as any).playerDepth);
+    }
+
     // Foreground layer — renders above player for depth (walk behind bushes/rocks)
     const fgKey = `fg_${sceneId}`;
     if (this.textures.exists(fgKey)) {
