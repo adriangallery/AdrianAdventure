@@ -2,7 +2,7 @@ import Phaser from 'phaser';
 import { connectWallet, disconnectWallet, getWalletState, onWalletChange, truncateAddress, hasInjectedWallet, hasWalletConnectConfig, type WalletProviderType } from '@/web3/wallet';
 import { getZeroBalance, hasFloppyBoxTokens } from '@/web3/contracts';
 import { loadNFTs, type GameNFT } from '@/web3/nft-loader';
-import { hasWalletSave, loadForWallet } from '@/web3/cloud-save';
+import { hasWalletSave, loadForWallet } from '@/web3/wallet-save';
 import type { InventorySystem } from '@/systems/InventorySystem';
 import { TWP, FONT } from '@/config/theme';
 

@@ -202,8 +202,9 @@ export class GameScene extends Phaser.Scene {
     this.scene.get('UIScene').events.on('panel:toggled', () => this.handleResize());
 
     this.showSceneTitle(sceneData.title);
-    this.gameState.playerPosition = { pctX: spawn.x, pctY: spawn.y };
     this.gameState.savedAt = Date.now();
+    // Save spawn position initially; manual saves will capture actual player position
+    this.gameState.playerPosition = { pctX: spawn.x, pctY: spawn.y };
     this.saveSystem.autoSave(this.gameState, sceneData.title);
 
     // Run scene onEnter scripts (chapter intros, premise, etc.)
@@ -649,6 +650,14 @@ export class GameScene extends Phaser.Scene {
         this.scriptEngine.execute(tr.onEnter);
         break;
       }
+    }
+  }
+
+  /** Update gameState with current player position (call before manual save) */
+  syncPlayerPosition(): void {
+    if (this.player) {
+      this.gameState.playerPosition = { pctX: this.player.pctX, pctY: this.player.pctY };
+      this.registry.set('gameState', this.gameState);
     }
   }
 

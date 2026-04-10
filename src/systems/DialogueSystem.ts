@@ -40,6 +40,8 @@ export interface DialogueCallbacks {
   setFlag?: (flag: string, value: boolean) => void;
   /** Run script ops (onEnter hooks). */
   runScripts?: (ops: unknown[]) => Promise<void>;
+  /** Track dialogue completion. */
+  onDialogueComplete?: (treeId: string) => void;
 }
 
 // ─── Engine ──────────────────────────────────────────────────
@@ -112,6 +114,9 @@ export class DialogueSystem {
 
       currentNodeId = picked.choice.next;
     }
+
+    // Track dialogue completion
+    this.callbacks.onDialogueComplete?.(tree.id);
   }
 
   private async resolveChoices(

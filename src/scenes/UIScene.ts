@@ -91,6 +91,21 @@ export class UIScene extends Phaser.Scene {
           setTimeout(check, 50);
         });
       },
+      onDialogueComplete: (treeId) => {
+        const state = this.registry.get('gameState') as import('@/types/game.types').GameState | undefined;
+        if (state) {
+          if (!state.dialogueProgress) state.dialogueProgress = {};
+          // Find which NPC this tree belongs to
+          const sceneData = this.registry.get('sceneData') as SceneData | undefined;
+          const npc = sceneData?.npcs?.find(n => n.dialogueTreeId === treeId);
+          const key = npc?.id ?? '_script';
+          if (!state.dialogueProgress[key]) state.dialogueProgress[key] = [];
+          if (!state.dialogueProgress[key].includes(treeId)) {
+            state.dialogueProgress[key].push(treeId);
+          }
+          this.registry.set('gameState', state);
+        }
+      },
     });
 
     // Cinematic overlay (for scripts running from UIScene context)

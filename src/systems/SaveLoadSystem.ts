@@ -1,5 +1,5 @@
 import type { GameState } from '@/types/game.types';
-import { saveForWallet, loadForWallet, hasWalletSave, type WalletSave } from '@/web3/cloud-save';
+import { saveForWallet, loadForWallet, hasWalletSave, type WalletSave } from '@/web3/wallet-save';
 
 const SAVE_KEY = 'adrian_adventure_save';
 const MAX_SLOTS = 3;
