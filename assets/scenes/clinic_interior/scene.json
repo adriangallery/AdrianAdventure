@@ -1024,11 +1024,11 @@
       "id": "npc_dr_satoshi",
       "name": "Dr. Satoshi",
       "position": {
-        "x": 79.6,
-        "y": 66.7
+        "x": 79.3,
+        "y": 69.9
       },
       "dialogueTreeId": "dr_satoshi_intro",
-      "scale": 0.04,
+      "scale": 5.34,
       "giveResponses": {
         "_default": "'I appreciate the gesture, but I can't accept {item}. Medical ethics. Also, I don't have pockets.'",
         "code_note": "'A code? I deal in diagnoses, not digits. Well... both are digits, technically.'",
