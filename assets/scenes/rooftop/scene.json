@@ -387,7 +387,7 @@
               "then": [
                 {
                   "op": "say",
-                  "text": "I need to find a way down there."
+                  "text": "I need to find a way down. The service shaft hatch might be my ticket."
                 }
               ],
               "else": [
@@ -406,7 +406,7 @@
                 },
                 {
                   "op": "say",
-                  "text": "That blinking... it's a server heartbeat. Something below needs attention. I should find the basement."
+                  "text": "That blinking... it's a server heartbeat. Something below needs attention. That service shaft might be the way down."
                 }
               ]
             }
@@ -529,7 +529,7 @@
       },
       {
         "id": "hs_roof_access_panel",
-        "name": "Roof Access Panel",
+        "name": "Service Shaft Hatch",
         "bounds": {
           "x": 58.4,
           "y": 82.3,
@@ -540,7 +540,7 @@
           "LOOK": [
             {
               "op": "say",
-              "text": "A metal access panel flush with the roof surface. It has a keycard slot. A faint red LED blinks: 'LOCKED.' The basement must connect through here somehow."
+              "text": "A heavy metal hatch flush with the roof. Through the grate I can see a vertical service shaft dropping straight down — past the floors, past the pipes, all the way to the basement. A maintenance ladder runs along the inside. The keycard slot blinks red: 'RESTRICTED.'"
             }
           ],
           "USE": [
@@ -548,25 +548,25 @@
               "op": "ifFlag",
               "flag": "has_keycard",
               "then": [
-                { "op": "sayBrief", "text": "The keycard beeps. Green light. The hatch clicks open.", "duration": 1500 },
+                { "op": "sayBrief", "text": "The keycard beeps. Green light. The hatch swings open — a service ladder descends into darkness.", "duration": 1500 },
                 { "op": "setFlag", "flag": "basement_unlocked", "value": true },
                 { "op": "fadeToScene", "sceneId": "basement", "spawn": { "x": 50, "y": 90 } }
               ],
               "else": [
-                { "op": "say", "text": "A metal access hatch with a keycard reader. The LED blinks red. I need proper authorization to get through." }
+                { "op": "say", "text": "The hatch is sealed. A keycard reader blinks red next to the handle. Whatever's at the bottom of this shaft, Adrian kept it locked down." }
               ]
             }
           ],
           "TALK": [
             {
               "op": "say",
-              "text": "I knock on the panel. A hollow echo returns from below. Something is definitely down there."
+              "text": "I knock on the hatch. The sound echoes down the shaft for a long time. That's... a very deep drop."
             }
           ],
           "PICK": [
             {
               "op": "say",
-              "text": "Bolted to the roof. I'd need a wrench, a crowbar, and a complete disregard for structural integrity."
+              "text": "The hatch is bolted to the roof. Industrial grade. I'd need a wrench, a crowbar, and a death wish."
             }
           ],
           "OPEN": [
@@ -574,12 +574,12 @@
               "op": "ifFlag",
               "flag": "has_keycard",
               "then": [
-                { "op": "sayBrief", "text": "The keycard beeps. Green light. The hatch clicks open.", "duration": 1500 },
+                { "op": "sayBrief", "text": "The keycard beeps. Green light. The hatch swings open — a service ladder descends into darkness.", "duration": 1500 },
                 { "op": "setFlag", "flag": "basement_unlocked", "value": true },
                 { "op": "fadeToScene", "sceneId": "basement", "spawn": { "x": 50, "y": 90 } }
               ],
               "else": [
-                { "op": "say", "text": "The keycard slot blinks red. ACCESS DENIED. I need Adrian's keycard to open this." }
+                { "op": "say", "text": "The keycard slot blinks red. ACCESS DENIED. I need proper credentials to open this shaft." }
               ]
             }
           ],
@@ -592,19 +592,19 @@
           "PUSH": [
             {
               "op": "say",
-              "text": "I push the panel. It doesn't budge. Solid metal. Whatever's below, Adrian didn't want casual visitors."
+              "text": "I push the hatch. Solid metal, won't budge. Whatever's at the bottom of this shaft, Adrian didn't want casual visitors."
             }
           ],
           "PULL": [
             {
               "op": "say",
-              "text": "I pull the panel edge. My fingers slip. Smooth metal, no grip. Like trying to catch a falling knife."
+              "text": "I pull at the hatch edge. My fingers slip on smooth metal. This thing is engineered to stay shut."
             }
           ],
           "GIVE": [
             {
               "op": "say",
-              "text": "The panel's keycard slot waits patiently. It only accepts one thing: the right credentials."
+              "text": "The shaft hatch's keycard slot waits patiently. It only accepts one thing: the right credentials."
             }
           ]
         }
@@ -739,7 +739,7 @@
       "items": ["keycard", "hs_roof_access_panel"],
       "result": null,
       "script": [
-        { "op": "sayBrief", "text": "The keycard beeps. Green light. The hatch clicks open.", "duration": 1500 },
+        { "op": "sayBrief", "text": "The keycard beeps. Green light. The hatch swings open — a service ladder descends into darkness.", "duration": 1500 },
         { "op": "setFlag", "flag": "basement_unlocked", "value": true },
         { "op": "fadeToScene", "sceneId": "basement", "spawn": { "x": 50, "y": 90 } }
       ]
