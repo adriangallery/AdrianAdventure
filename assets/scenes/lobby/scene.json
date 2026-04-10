@@ -1166,8 +1166,8 @@
         "y": 35
       },
       "size": {
-        "w": 4,
-        "h": 8
+        "w": 2.5,
+        "h": 12
       },
       "defaultSprite": "poster_generic",
       "variants": [
