@@ -7,85 +7,108 @@ import { join } from 'path';
 
 const app = new Hono();
 
-// Volume mount path (Railway volume)
 const DATA_DIR = process.env.SAVE_DIR || '/data/saves';
 if (!existsSync(DATA_DIR)) mkdirSync(DATA_DIR, { recursive: true });
 
-// CORS — allow game origin
 app.use('*', cors({
   origin: ['https://zeroadventure.vercel.app', 'http://localhost:3000', 'http://localhost:5173'],
   allowMethods: ['GET', 'POST', 'OPTIONS'],
 }));
 
-// Health check
 app.get('/', (c) => c.json({ status: 'ok', service: 'zeroadventure-save' }));
 
+// ─── Save file naming: {address}_slot{N}.json ───
+
+function saveFile(address, slot) {
+  return join(DATA_DIR, `${address.toLowerCase()}_slot${slot}.json`);
+}
+
 /**
- * GET /save/:address — Load save for a wallet address
+ * GET /save/:address — Load all slots for a wallet
  */
 app.get('/save/:address', (c) => {
   const address = c.req.param('address').toLowerCase();
-  if (!/^0x[a-f0-9]{40}$/.test(address)) {
-    return c.json({ error: 'Invalid address' }, 400);
+  if (!/^0x[a-f0-9]{40}$/.test(address)) return c.json({ error: 'Invalid address' }, 400);
+
+  const slots = {};
+  for (const slot of [1, 2]) {
+    const fp = saveFile(address, slot);
+    if (existsSync(fp)) {
+      try { slots[slot] = JSON.parse(readFileSync(fp, 'utf-8')); } catch {}
+    }
   }
 
-  const filePath = join(DATA_DIR, `${address}.json`);
-  if (!existsSync(filePath)) {
-    return c.json({ error: 'No save found' }, 404);
+  // Backward compat: migrate old single-file save to slot 1
+  const oldFile = join(DATA_DIR, `${address}.json`);
+  if (existsSync(oldFile) && !slots[1]) {
+    try {
+      const old = JSON.parse(readFileSync(oldFile, 'utf-8'));
+      slots[1] = old;
+      writeFileSync(saveFile(address, 1), JSON.stringify(old, null, 2));
+      unlinkSync(oldFile);
+    } catch {}
   }
+
+  return c.json({ address, slots });
+});
+
+/**
+ * GET /save/:address/:slot — Load specific slot
+ */
+app.get('/save/:address/:slot', (c) => {
+  const address = c.req.param('address').toLowerCase();
+  const slot = parseInt(c.req.param('slot'));
+  if (!/^0x[a-f0-9]{40}$/.test(address) || ![1, 2].includes(slot)) {
+    return c.json({ error: 'Invalid params' }, 400);
+  }
+
+  const fp = saveFile(address, slot);
+  if (!existsSync(fp)) return c.json({ error: 'No save found' }, 404);
 
   try {
-    const data = JSON.parse(readFileSync(filePath, 'utf-8'));
-    return c.json(data);
+    return c.json(JSON.parse(readFileSync(fp, 'utf-8')));
   } catch {
-    return c.json({ error: 'Corrupt save file' }, 500);
+    return c.json({ error: 'Corrupt save' }, 500);
   }
 });
 
 /**
- * POST /save — Store a signed save
- * Body: { state, address, timestamp, signature, sceneName }
- * Verifies the signature matches the address before storing.
+ * POST /save — Store a signed save to a specific slot
+ * Body: { state, address, timestamp, signature, sceneName, slot }
  */
 app.post('/save', async (c) => {
   try {
     const body = await c.req.json();
-    const { state, address, timestamp, signature, sceneName } = body;
+    const { state, address, timestamp, signature, sceneName, slot } = body;
+    const slotId = slot ?? 1;
 
     if (!state || !address || !timestamp || !signature) {
-      return c.json({ error: 'Missing required fields: state, address, timestamp, signature' }, 400);
+      return c.json({ error: 'Missing required fields' }, 400);
+    }
+    if (![1, 2].includes(slotId)) {
+      return c.json({ error: 'Invalid slot (1 or 2)' }, 400);
     }
 
     const addr = address.toLowerCase();
-    if (!/^0x[a-f0-9]{40}$/.test(addr)) {
-      return c.json({ error: 'Invalid address' }, 400);
-    }
+    if (!/^0x[a-f0-9]{40}$/.test(addr)) return c.json({ error: 'Invalid address' }, 400);
 
-    // Verify signature — the message format must match what the client signs
+    // Verify signature
     const message = JSON.stringify({ state, address: addr, timestamp });
     let valid = false;
     try {
-      valid = await verifyMessage({
-        address: addr,
-        message,
-        signature,
-      });
+      valid = await verifyMessage({ address: addr, message, signature });
     } catch (err) {
-      console.error('Signature verification failed:', err);
+      console.error('Sig verify failed:', err);
       return c.json({ error: 'Invalid signature' }, 401);
     }
+    if (!valid) return c.json({ error: 'Signature mismatch' }, 401);
 
-    if (!valid) {
-      return c.json({ error: 'Signature does not match address' }, 401);
-    }
+    const fp = saveFile(addr, slotId);
+    const saveData = { state, address: addr, timestamp, signature, sceneName, slot: slotId, savedAt: Date.now() };
+    writeFileSync(fp, JSON.stringify(saveData, null, 2));
 
-    // Store the save
-    const filePath = join(DATA_DIR, `${addr}.json`);
-    const saveData = { state, address: addr, timestamp, signature, sceneName, savedAt: Date.now() };
-    writeFileSync(filePath, JSON.stringify(saveData, null, 2));
-
-    console.log(`Save stored for ${addr} (${sceneName}) at ${new Date().toISOString()}`);
-    return c.json({ ok: true, address: addr, sceneName });
+    console.log(`Slot ${slotId} saved for ${addr} (${sceneName})`);
+    return c.json({ ok: true, address: addr, slot: slotId, sceneName });
   } catch (err) {
     console.error('Save error:', err);
     return c.json({ error: 'Internal server error' }, 500);
@@ -93,116 +116,109 @@ app.post('/save', async (c) => {
 });
 
 /**
- * GET /leaderboard — Top players ranked by game progress
+ * GET /leaderboard — Top players by score
  */
 app.get('/leaderboard', (c) => {
   try {
-    // readdirSync imported at top
     const files = readdirSync(DATA_DIR).filter(f => f.endsWith('.json'));
+    const playerMap = new Map();
 
-    const players = [];
     for (const file of files) {
       try {
         const data = JSON.parse(readFileSync(join(DATA_DIR, file), 'utf-8'));
         const state = data.state;
         if (!state) continue;
 
+        const addr = data.address;
         const flags = state.flags ?? {};
-        const scenesVisited = state.visited?.length ?? 0;
-        const itemCount = state.inventory?.length ?? 0;
 
-        // ─── Chapters (200 pts each, 1000 max) ───
+        // Chapters
         let chapters = 0;
-        if (flags.chapter_1_complete) chapters++;
-        if (flags.chapter_2_complete) chapters++;
-        if (flags.chapter_3_complete) chapters++;
-        if (flags.chapter_4_complete) chapters++;
-        if (flags.chapter_5_complete) chapters++;
+        for (const ch of ['chapter_1_complete','chapter_2_complete','chapter_3_complete','chapter_4_complete','chapter_5_complete']) {
+          if (flags[ch]) chapters++;
+        }
         const chapterPts = chapters * 200;
 
-        // ─── Major milestones (unique points) ───
+        // Milestones
         let milestonePts = 0;
-        if (flags.patient_zero_revealed) milestonePts += 1000;  // Game complete
-        if (flags.patient_zero_found) milestonePts += 500;      // Found PZ
-        if (flags.game_complete) milestonePts += 500;            // Endgame
-        if (flags.founder_mode) milestonePts += 300;             // Golden token + computer
+        if (flags.patient_zero_revealed) milestonePts += 1000;
+        if (flags.patient_zero_found) milestonePts += 500;
+        if (flags.game_complete) milestonePts += 500;
+        if (flags.founder_mode) milestonePts += 300;
         if (flags.basement_unlocked) milestonePts += 100;
         if (flags.server_room_open) milestonePts += 100;
         if (flags.treatment_room_unlocked) milestonePts += 100;
         if (flags.clinic_unlocked) milestonePts += 50;
         if (flags.door_unlocked) milestonePts += 50;
 
-        // ─── Exploration (10 pts per scene, 110 max) ───
+        // Exploration
+        const scenesVisited = state.visited?.length ?? 0;
         const explorePts = scenesVisited * 10;
 
-        // ─── Items discovered (15 pts each) ───
+        // Items discovered
         const discoveryFlags = [
-          'found_code_note', 'found_envelope', 'found_keycard', 'found_hw_wallet',
-          'found_floppy', 'found_rubber_duck', 'found_sign_in_sheet', 'found_clinic_note',
-          'found_clinic_photo', 'found_server_log', 'found_burned_chip', 'found_dr_badge',
-          'found_adrian_note', 'found_receipt', 'found_broken_mouse', 'found_pz_note',
-          'monkey_sticker_found', 'has_antenna', 'has_water', 'has_printout',
+          'found_code_note','found_envelope','found_keycard','found_hw_wallet',
+          'found_floppy','found_rubber_duck','found_sign_in_sheet','found_clinic_note',
+          'found_clinic_photo','found_server_log','found_burned_chip','found_dr_badge',
+          'found_adrian_note','found_receipt','found_broken_mouse','found_pz_note',
+          'monkey_sticker_found','has_antenna','has_water','has_printout',
         ];
         const itemsDiscovered = discoveryFlags.filter(f => flags[f]).length;
         const discoveryPts = itemsDiscovered * 15;
 
-        // ─── Puzzles solved (50 pts each) ───
+        // Puzzles
         let puzzlePts = 0;
-        if (flags.plant_watered) puzzlePts += 50;           // Water + plant = golden token
-        if (flags.computer_unlocked) puzzlePts += 50;       // Ledger + computer
-        if (flags.floppy_inserted) puzzlePts += 50;         // Floppy in drive
-        if (flags.emergency_switch_flipped) puzzlePts += 50; // Emergency switch
-        if (flags.duck_reunion) puzzlePts += 50;             // Easter egg
+        for (const pf of ['plant_watered','computer_unlocked','floppy_inserted','emergency_switch_flipped','duck_reunion']) {
+          if (flags[pf]) puzzlePts += 50;
+        }
 
-        // ─── Hidden / Easter eggs (75 pts each) ───
+        // Hidden
         let hiddenPts = 0;
-        const hiddenFlags = ['debug_look_1','debug_look_2','debug_look_3','debug_look_4','debug_look_5'];
-        hiddenPts += hiddenFlags.filter(f => flags[f]).length * 25;
+        for (const hf of ['debug_look_1','debug_look_2','debug_look_3','debug_look_4','debug_look_5']) {
+          if (flags[hf]) hiddenPts += 25;
+        }
         if (flags.receptionist_mentioned_pz) hiddenPts += 50;
         if (flags.vip_rug_hint) hiddenPts += 50;
         if (flags.satoshi_pool_hint) hiddenPts += 50;
 
-        // ─── TOKEN GATED / Holder exclusive (100+ pts each) ───
+        // Holder exclusive
         let holderPts = 0;
         const holderBadges = [];
-        if (flags.floppy_lobby_revealed)  { holderPts += 100; holderBadges.push('ARCHIVIST'); }
-        if (flags.floppy_basement_unlocked) { holderPts += 150; holderBadges.push('SECTOR ZERO'); }
-        if (flags.floppy_trading_revealed) { holderPts += 100; holderBadges.push('ALPHA LEAK'); }
-        if (flags.floppy_mining_revealed) { holderPts += 100; holderBadges.push('GENESIS MINER'); }
-        if (flags.floppy_clinic_revealed) { holderPts += 100; holderBadges.push('MEDICAL RECORDS'); }
-        if (flags.floppy_endgame_complete) { holderPts += 200; holderBadges.push('PRESERVED'); }
+        const holderMap = {
+          floppy_lobby_revealed: [100, 'ARCHIVIST'],
+          floppy_basement_unlocked: [150, 'SECTOR ZERO'],
+          floppy_trading_revealed: [100, 'ALPHA LEAK'],
+          floppy_mining_revealed: [100, 'GENESIS MINER'],
+          floppy_clinic_revealed: [100, 'MEDICAL RECORDS'],
+          floppy_endgame_complete: [200, 'PRESERVED'],
+          has_vip_floppy: [100, 'VIP ACCESS'],
+        };
+        for (const [flag, [pts, badge]] of Object.entries(holderMap)) {
+          if (flags[flag]) { holderPts += pts; holderBadges.push(badge); }
+        }
         if (flags.floppy_lore_discovered) holderPts += 100;
         if (flags.adrian_message_found) holderPts += 150;
         if (flags.patient_records_unlocked) holderPts += 100;
-        if (flags.has_vip_floppy) { holderPts += 100; holderBadges.push('VIP ACCESS'); }
 
         const score = chapterPts + milestonePts + explorePts + discoveryPts + puzzlePts + hiddenPts + holderPts;
 
-        players.push({
-          address: data.address,
-          sceneName: data.sceneName,
-          score,
-          chapters,
-          scenesVisited,
-          items: itemsDiscovered,
-          puzzles: Math.floor(puzzlePts / 50),
-          gameComplete: !!flags.patient_zero_revealed,
-          patientZero: !!flags.patient_zero_found,
-          holderBadges,
-          holderPts,
-          hiddenPts,
-          lastSaved: data.savedAt || data.timestamp,
-        });
-      } catch { /* skip corrupt files */ }
+        // Keep best score per address
+        const existing = playerMap.get(addr);
+        if (!existing || score > existing.score) {
+          playerMap.set(addr, {
+            address: addr, sceneName: data.sceneName, score, chapters,
+            scenesVisited, items: itemsDiscovered, puzzles: Math.floor(puzzlePts / 50),
+            gameComplete: !!flags.patient_zero_revealed, patientZero: !!flags.patient_zero_found,
+            holderBadges, holderPts, hiddenPts,
+            lastSaved: data.savedAt || data.timestamp,
+          });
+        }
+      } catch {}
     }
 
-    // Sort by score descending
-    players.sort((a, b) => b.score - a.score);
+    const players = [...playerMap.values()].sort((a, b) => b.score - a.score);
 
-    return c.json({
-      total: players.length,
-      players: players.slice(0, 50),
-    });
+    return c.json({ total: players.length, players: players.slice(0, 50) });
   } catch (err) {
     console.error('Leaderboard error:', err);
     return c.json({ error: 'Internal server error' }, 500);
@@ -210,14 +226,13 @@ app.get('/leaderboard', (c) => {
 });
 
 /**
- * DELETE /save/:address — Delete save (requires signature)
+ * DELETE /save/:address/:slot
  */
-app.delete('/save/:address', async (c) => {
+app.delete('/save/:address/:slot', (c) => {
   const address = c.req.param('address').toLowerCase();
-  const filePath = join(DATA_DIR, `${address}.json`);
-  if (existsSync(filePath)) {
-    unlinkSync(filePath);
-  }
+  const slot = parseInt(c.req.param('slot'));
+  const fp = saveFile(address, slot);
+  if (existsSync(fp)) unlinkSync(fp);
   return c.json({ ok: true });
 });
 

@@ -2,7 +2,7 @@ import Phaser from 'phaser';
 import type { GameState } from '@/types/game.types';
 import { SaveLoadSystem } from '@/systems/SaveLoadSystem';
 import { getWalletState } from '@/web3/wallet';
-import { exportSignedWalletSave, importWalletSave, saveForWalletRemote, loadForWallet } from '@/web3/wallet-save';
+import { exportSignedWalletSave, importWalletSave, saveForWalletRemote, loadRemoteSlots } from '@/web3/wallet-save';
 import type { GameScene } from '@/scenes/GameScene';
 import { TWP, FONT } from '@/config/theme';
 
@@ -32,7 +32,7 @@ export class SaveButton {
     bg.on('pointerdown', () => this.showMenu());
   }
 
-  private showMenu(): void {
+  private async showMenu(): Promise<void> {
     const overlay = document.createElement('div');
     overlay.id = 'save-load-overlay';
     overlay.style.cssText = `
@@ -70,12 +70,14 @@ export class SaveButton {
 
     const saveSystem = new SaveLoadSystem();
     if (isWallet) saveSystem.setWalletAddress(address!);
-    // Sync player position before showing menu
     const gs = this.scene.scene.get('GameScene') as GameScene | undefined;
     gs?.syncPlayerPosition?.();
     const gameState = this.scene.registry.get('gameState') as GameState | undefined;
     const sceneData = this.scene.registry.get('sceneData') as { title?: string } | undefined;
     const sceneName = sceneData?.title ?? 'Unknown';
+
+    // Load remote slots if wallet connected
+    const remoteSlots = isWallet ? await loadRemoteSlots(address!).catch(() => null) : null;
 
     const makeBtn = (text: string, enabled: boolean, onClick: () => void) => {
       const btn = document.createElement('button');
@@ -96,15 +98,23 @@ export class SaveButton {
       return btn;
     };
 
+    // Build slot data: remote (wallet) takes priority over local
+    const getSlot = (slotId: number) => {
+      const remote = remoteSlots?.[slotId];
+      const local = saveSystem.loadFromSlot(slotId);
+      if (remote) return { state: remote.state, sceneName: remote.sceneName, timestamp: remote.timestamp ?? (remote as any).savedAt ?? Date.now(), source: 'cloud' as const };
+      if (local) return { state: local.state, sceneName: local.sceneName, timestamp: local.timestamp, source: 'local' as const };
+      return null;
+    };
+
     // Save slots 1 & 2
     for (const slotId of [1, 2]) {
-      const slot = saveSystem.loadFromSlot(slotId);
-      const slotLabel = slot
-        ? `${slot.sceneName} — ${new Date(slot.timestamp).toLocaleDateString()}`
+      const slot = getSlot(slotId);
+      const label = slot
+        ? `${slot.sceneName} — ${new Date(slot.timestamp).toLocaleDateString()}${isWallet ? ' \u2601' : ''}`
         : 'Empty';
-      modal.appendChild(makeBtn(`\u{1F4BE} Save Slot ${slotId}: ${slotLabel}`, !!gameState, async () => {
+      modal.appendChild(makeBtn(`\u{1F4BE} Slot ${slotId}: ${label}`, !!gameState, async () => {
         if (gameState) {
-          // Warn if slot already has data
           if (slot) {
             const confirmed = confirm(`Overwrite Slot ${slotId}?\n\n"${slot.sceneName}" saved on ${new Date(slot.timestamp).toLocaleString()}\n\nThis cannot be undone.`);
             if (!confirmed) return;
@@ -112,7 +122,7 @@ export class SaveButton {
           gameState.savedAt = Date.now();
           saveSystem.saveToSlot(slotId, gameState, sceneName);
           if (isWallet) {
-            saveForWalletRemote(address!, gameState, sceneName).catch(() => {});
+            saveForWalletRemote(address!, gameState, sceneName, slotId).catch(() => {});
           }
           cleanup();
         }
@@ -126,11 +136,11 @@ export class SaveButton {
 
     // Load slots 1 & 2
     for (const slotId of [1, 2]) {
-      const slot = saveSystem.loadFromSlot(slotId);
-      const slotLabel = slot
-        ? `${slot.sceneName} — ${new Date(slot.timestamp).toLocaleDateString()}`
+      const slot = getSlot(slotId);
+      const label = slot
+        ? `${slot.sceneName} — ${new Date(slot.timestamp).toLocaleDateString()}${slot.source === 'cloud' ? ' \u2601' : ''}`
         : 'Empty';
-      modal.appendChild(makeBtn(`\u{1F4C2} Load Slot ${slotId}: ${slotLabel}`, !!slot, () => {
+      modal.appendChild(makeBtn(`\u{1F4C2} Load Slot ${slotId}: ${label}`, !!slot, () => {
         if (slot) {
           if (!slot.state.firedTriggers) slot.state.firedTriggers = [];
           if (!slot.state.dialogueProgress) slot.state.dialogueProgress = {};

@@ -50,15 +50,28 @@ export function saveForWallet(address: string, state: GameState, sceneName: stri
 }
 
 /**
- * Save to remote Railway server (requires wallet signature — only call from manual save).
+ * Save to remote Railway server for a specific slot (requires wallet signature).
  * Returns true on success.
  */
-export async function saveForWalletRemote(address: string, state: GameState, sceneName: string): Promise<boolean> {
-  // Save locally first
+export async function saveForWalletRemote(address: string, state: GameState, sceneName: string, slot = 1): Promise<boolean> {
   saveLocal(address, state, sceneName);
 
+  const { walletClient } = getWalletState();
+  if (!walletClient) return false;
+
   try {
-    await saveRemote(address, state, sceneName);
+    const addr = address.toLowerCase();
+    const timestamp = Date.now();
+    const message = JSON.stringify({ state, address: addr, timestamp });
+    const signature = await walletClient.signMessage({ account: addr as `0x${string}`, message });
+
+    const resp = await fetch(`${SAVE_SERVER}/save`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ state, address: addr, timestamp, signature, sceneName, slot }),
+    });
+    if (!resp.ok) throw new Error(`${resp.status}`);
+    console.log(`Remote save synced: slot ${slot} for ${addr}`);
     return true;
   } catch (err) {
     console.warn('Remote save failed:', err);
@@ -66,46 +79,38 @@ export async function saveForWalletRemote(address: string, state: GameState, sce
   }
 }
 
-/** Save to remote server (requires wallet signature) */
-async function saveRemote(address: string, state: GameState, sceneName: string): Promise<void> {
-  const { walletClient } = getWalletState();
-  if (!walletClient) return;
-
-  const addr = address.toLowerCase();
-  const timestamp = Date.now();
-  const message = JSON.stringify({ state, address: addr, timestamp });
-
-  const signature = await walletClient.signMessage({ account: addr as `0x${string}`, message });
-  const resp = await fetch(`${SAVE_SERVER}/save`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ state, address: addr, timestamp, signature, sceneName }),
-  });
-  if (!resp.ok) throw new Error(`Remote save failed: ${resp.status}`);
-  console.log('Remote save synced for', addr);
+/**
+ * Load all remote slots for a wallet. Returns { 1: WalletSave, 2: WalletSave } or null.
+ */
+export async function loadRemoteSlots(address: string): Promise<Record<number, WalletSave> | null> {
+  try {
+    const resp = await fetch(`${SAVE_SERVER}/save/${address.toLowerCase()}`);
+    if (resp.ok) {
+      const data = await resp.json() as { slots: Record<number, WalletSave> };
+      return data.slots ?? null;
+    }
+  } catch {
+    console.warn('Remote slots unavailable');
+  }
+  return null;
 }
 
 /**
- * Load save for a wallet. Tries remote first, falls back to local.
+ * Load best save for a wallet (highest progress from any slot). Tries remote first.
  */
 export async function loadForWallet(address: string): Promise<WalletSave | null> {
-  const addr = address.toLowerCase();
-
-  // Try remote first (cross-device)
-  try {
-    const resp = await fetch(`${SAVE_SERVER}/save/${addr}`);
-    if (resp.ok) {
-      const data = await resp.json() as WalletSave;
-      // Update local cache
-      saveLocal(addr, data.state, data.sceneName);
-      return data;
+  const remote = await loadRemoteSlots(address);
+  if (remote) {
+    // Return the most recent slot
+    const slots = Object.values(remote);
+    if (slots.length > 0) {
+      const best = slots.sort((a, b) => (b.timestamp ?? 0) - (a.timestamp ?? 0))[0];
+      saveLocal(address, best.state, best.sceneName);
+      return best;
     }
-  } catch {
-    console.warn('Remote load unavailable, using local');
   }
 
-  // Fallback to local
-  return loadLocal(addr);
+  return loadLocal(address);
 }
 
 /** Quick check (local only, sync) */
