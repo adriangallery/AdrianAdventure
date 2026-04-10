@@ -33,7 +33,7 @@
       "idle": null,
       "walk": null
     },
-    "playerScale": 2.2
+    "playerScale": 5.55
   },
   "ui": {
     "verbs": [
@@ -468,10 +468,10 @@
         "id": "hs_desk_lamp",
         "name": "Desk Lamp",
         "bounds": {
-          "x": 33,
-          "y": 20,
-          "w": 8,
-          "h": 25
+          "x": 43.6,
+          "y": 25.2,
+          "w": 5.8,
+          "h": 15.6
         },
         "scripts": {
           "LOOK": [
@@ -837,33 +837,95 @@
       ]
     },
     {
-      "items": ["floppy_box", "hs_desk"],
+      "items": [
+        "floppy_box",
+        "hs_desk"
+      ],
       "result": "floppy_trading_secret",
       "script": [
-        { "op": "say", "text": "I insert a floppy from the box into the trading desk's reader. The three monitors sync instantly." },
-        { "op": "wait", "ms": 800 },
-        { "op": "say", "text": "The screens display: 'BACKUP TRADING STRATEGIES FOUND — FLOPPY ARCHIVE v1.0. Last modified: 3 AM, obviously.'" },
-        { "op": "say", "text": "Strategy #1: 'Buy when mass is fearful.' Strategy #2: 'Sell when mass is greedy.' Strategy #3: 'Ignore strategies 1 and 2. Ape in. YOLO. NFA.'" },
-        { "op": "wait", "ms": 600 },
-        { "op": "say", "text": "The AI trading bot interrupts: 'These strategies predate me by two years and outperformed me by 340%. I am humbled. And slightly offended.'" },
-        { "op": "say", "text": "At the bottom of the file: 'NOTE: If you own these floppies, you already understood the best strategy — collect the art, ignore the noise.' Smart." },
-        { "op": "setFlag", "flag": "floppy_trading_revealed", "value": true },
-        { "op": "achievement", "text": "ALPHA LEAK — Found Adrian's backup trading strategies" }
+        {
+          "op": "say",
+          "text": "I insert a floppy from the box into the trading desk's reader. The three monitors sync instantly."
+        },
+        {
+          "op": "wait",
+          "ms": 800
+        },
+        {
+          "op": "say",
+          "text": "The screens display: 'BACKUP TRADING STRATEGIES FOUND — FLOPPY ARCHIVE v1.0. Last modified: 3 AM, obviously.'"
+        },
+        {
+          "op": "say",
+          "text": "Strategy #1: 'Buy when mass is fearful.' Strategy #2: 'Sell when mass is greedy.' Strategy #3: 'Ignore strategies 1 and 2. Ape in. YOLO. NFA.'"
+        },
+        {
+          "op": "wait",
+          "ms": 600
+        },
+        {
+          "op": "say",
+          "text": "The AI trading bot interrupts: 'These strategies predate me by two years and outperformed me by 340%. I am humbled. And slightly offended.'"
+        },
+        {
+          "op": "say",
+          "text": "At the bottom of the file: 'NOTE: If you own these floppies, you already understood the best strategy — collect the art, ignore the noise.' Smart."
+        },
+        {
+          "op": "setFlag",
+          "flag": "floppy_trading_revealed",
+          "value": true
+        },
+        {
+          "op": "achievement",
+          "text": "ALPHA LEAK — Found Adrian's backup trading strategies"
+        }
       ]
     },
     {
-      "items": ["floppy_box", "hs_computer"],
+      "items": [
+        "floppy_box",
+        "hs_computer"
+      ],
       "result": "floppy_mining_secret",
       "script": [
-        { "op": "say", "text": "I hold a floppy disc near the mining rig's USB port. Wait — floppy discs don't use USB. But the rig detects it anyway." },
-        { "op": "wait", "ms": 800 },
-        { "op": "say", "text": "The GPUs whir louder. The screen displays: 'ADRIANLAB FLOPPY — GENESIS CONFIG DETECTED. Loading original mining parameters from 2024...'" },
-        { "op": "say", "text": "The rig shows Adrian's first-ever mining config. Hash rate: pathetic. Power bill: astronomical. Conviction: immeasurable." },
-        { "op": "wait", "ms": 600 },
-        { "op": "say", "text": "A GPU lights up with a hidden overclocking profile labeled 'FLOPPY_HODLER_BOOST'. The hash rate spikes. The rig hums a thank you." },
-        { "op": "say", "text": "The screen settles on a message: 'This rig mined the first block that powered AdrianLAB. Your floppies carry its DNA. Digital archaeology at its finest.'" },
-        { "op": "setFlag", "flag": "floppy_mining_revealed", "value": true },
-        { "op": "achievement", "text": "GENESIS MINER — Activated the rig's original config" }
+        {
+          "op": "say",
+          "text": "I hold a floppy disc near the mining rig's USB port. Wait — floppy discs don't use USB. But the rig detects it anyway."
+        },
+        {
+          "op": "wait",
+          "ms": 800
+        },
+        {
+          "op": "say",
+          "text": "The GPUs whir louder. The screen displays: 'ADRIANLAB FLOPPY — GENESIS CONFIG DETECTED. Loading original mining parameters from 2024...'"
+        },
+        {
+          "op": "say",
+          "text": "The rig shows Adrian's first-ever mining config. Hash rate: pathetic. Power bill: astronomical. Conviction: immeasurable."
+        },
+        {
+          "op": "wait",
+          "ms": 600
+        },
+        {
+          "op": "say",
+          "text": "A GPU lights up with a hidden overclocking profile labeled 'FLOPPY_HODLER_BOOST'. The hash rate spikes. The rig hums a thank you."
+        },
+        {
+          "op": "say",
+          "text": "The screen settles on a message: 'This rig mined the first block that powered AdrianLAB. Your floppies carry its DNA. Digital archaeology at its finest.'"
+        },
+        {
+          "op": "setFlag",
+          "flag": "floppy_mining_revealed",
+          "value": true
+        },
+        {
+          "op": "achievement",
+          "text": "GENESIS MINER — Activated the rig's original config"
+        }
       ]
     }
   ],
