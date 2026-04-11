@@ -326,8 +326,33 @@
           ],
           "USE": [
             {
-              "op": "say",
-              "text": "I spin the weather vane manually. It whirls, then settles pointing... straight down. That can't be a good sign for the market."
+              "op": "ifFlag",
+              "flag": "vane_turned",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "The vane is already locked pointing down. I can still hear the mechanism clicking beneath the roof."
+                }
+              ],
+              "else": [
+                {
+                  "op": "say",
+                  "text": "I grip the Bitcoin weather vane and force it straight down. Something mechanical clicks beneath the roof — a hidden latch releasing."
+                },
+                {
+                  "op": "setFlag",
+                  "flag": "vane_turned",
+                  "value": true
+                },
+                {
+                  "op": "wait",
+                  "ms": 800
+                },
+                {
+                  "op": "say",
+                  "text": "The vane locks into position with a heavy clunk. That sound came from the service shaft. The vane must be connected to its locking mechanism."
+                }
+              ]
             }
           ],
           "TALK": [
@@ -591,38 +616,62 @@
         "scripts": {
           "LOOK": [
             {
-              "op": "say",
-              "text": "A heavy metal hatch flush with the roof. Through the grate I can see a vertical service shaft dropping straight down — past the floors, past the pipes, all the way to the basement. A maintenance ladder runs along the inside. The keycard slot blinks red: 'RESTRICTED.'"
-            }
-          ],
-          "USE": [
-            {
               "op": "ifFlag",
-              "flag": "has_keycard",
+              "flag": "vane_turned",
               "then": [
                 {
-                  "op": "sayBrief",
-                  "text": "The keycard beeps. Green light. The hatch swings open — a service ladder descends into darkness.",
-                  "duration": 1500
-                },
-                {
-                  "op": "setFlag",
-                  "flag": "basement_unlocked",
-                  "value": true
-                },
-                {
-                  "op": "fadeToScene",
-                  "sceneId": "basement",
-                  "spawn": {
-                    "x": 50,
-                    "y": 90
-                  }
+                  "op": "say",
+                  "text": "A heavy metal hatch flush with the roof. Through the grate I can see the service shaft dropping all the way to the basement. The mechanical latch is disengaged — just need the keycard now."
                 }
               ],
               "else": [
                 {
                   "op": "say",
-                  "text": "The hatch is sealed. A keycard reader blinks red next to the handle. Whatever's at the bottom of this shaft, Adrian kept it locked down."
+                  "text": "A heavy metal hatch flush with the roof. Through the grate I can see a vertical service shaft dropping straight down to the basement. A keycard slot blinks red, but there's also a heavy mechanical latch underneath — connected by cable to something else on the roof."
+                }
+              ]
+            }
+          ],
+          "USE": [
+            {
+              "op": "ifFlag",
+              "flag": "vane_turned",
+              "then": [
+                {
+                  "op": "ifFlag",
+                  "flag": "has_keycard",
+                  "then": [
+                    {
+                      "op": "sayBrief",
+                      "text": "The keycard beeps. Green light. The hatch swings open — a service ladder descends into darkness.",
+                      "duration": 1500
+                    },
+                    {
+                      "op": "setFlag",
+                      "flag": "basement_unlocked",
+                      "value": true
+                    },
+                    {
+                      "op": "fadeToScene",
+                      "sceneId": "basement",
+                      "spawn": {
+                        "x": 50,
+                        "y": 90
+                      }
+                    }
+                  ],
+                  "else": [
+                    {
+                      "op": "say",
+                      "text": "The mechanical latch is released, but the keycard reader still blinks red. I need both — the latch AND the credentials."
+                    }
+                  ]
+                }
+              ],
+              "else": [
+                {
+                  "op": "say",
+                  "text": "The hatch won't budge. A mechanical latch holds it shut from underneath — something besides the keycard slot is locking this down."
                 }
               ]
             }
@@ -642,31 +691,43 @@
           "OPEN": [
             {
               "op": "ifFlag",
-              "flag": "has_keycard",
+              "flag": "vane_turned",
               "then": [
                 {
-                  "op": "sayBrief",
-                  "text": "The keycard beeps. Green light. The hatch swings open — a service ladder descends into darkness.",
-                  "duration": 1500
-                },
-                {
-                  "op": "setFlag",
-                  "flag": "basement_unlocked",
-                  "value": true
-                },
-                {
-                  "op": "fadeToScene",
-                  "sceneId": "basement",
-                  "spawn": {
-                    "x": 50,
-                    "y": 90
-                  }
+                  "op": "ifFlag",
+                  "flag": "has_keycard",
+                  "then": [
+                    {
+                      "op": "sayBrief",
+                      "text": "The keycard beeps. Green light. The hatch swings open — a service ladder descends into darkness.",
+                      "duration": 1500
+                    },
+                    {
+                      "op": "setFlag",
+                      "flag": "basement_unlocked",
+                      "value": true
+                    },
+                    {
+                      "op": "fadeToScene",
+                      "sceneId": "basement",
+                      "spawn": {
+                        "x": 50,
+                        "y": 90
+                      }
+                    }
+                  ],
+                  "else": [
+                    {
+                      "op": "say",
+                      "text": "The latch is free, but the keycard reader still blinks red. ACCESS DENIED. I need the right credentials too."
+                    }
+                  ]
                 }
               ],
               "else": [
                 {
                   "op": "say",
-                  "text": "The keycard slot blinks red. ACCESS DENIED. I need proper credentials to open this shaft."
+                  "text": "Something mechanical holds the hatch shut from below. The keycard slot won't even activate — a secondary lock is engaged."
                 }
               ]
             }
@@ -995,22 +1056,34 @@
       "result": null,
       "script": [
         {
-          "op": "sayBrief",
-          "text": "The keycard beeps. Green light. The hatch swings open — a service ladder descends into darkness.",
-          "duration": 1500
-        },
-        {
-          "op": "setFlag",
-          "flag": "basement_unlocked",
-          "value": true
-        },
-        {
-          "op": "fadeToScene",
-          "sceneId": "basement",
-          "spawn": {
-            "x": 50,
-            "y": 90
-          }
+          "op": "ifFlag",
+          "flag": "vane_turned",
+          "then": [
+            {
+              "op": "sayBrief",
+              "text": "The keycard beeps. Green light. The hatch swings open — a service ladder descends into darkness.",
+              "duration": 1500
+            },
+            {
+              "op": "setFlag",
+              "flag": "basement_unlocked",
+              "value": true
+            },
+            {
+              "op": "fadeToScene",
+              "sceneId": "basement",
+              "spawn": {
+                "x": 50,
+                "y": 90
+              }
+            }
+          ],
+          "else": [
+            {
+              "op": "say",
+              "text": "The keycard beeps but the hatch doesn't move. A mechanical latch underneath still holds it shut. Something else on this roof controls that lock."
+            }
+          ]
         }
       ]
     }
