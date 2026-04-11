@@ -16,5 +16,16 @@
   "devDependencies": {
     "typescript": "^5.5.0",
     "vite": "^5.4.0"
+  },
+  "overrides": {
+    "@reown/appkit": "1.8.19",
+    "@reown/appkit-common": "1.8.19",
+    "@reown/appkit-controllers": "1.8.19",
+    "@reown/appkit-pay": "1.8.19",
+    "@reown/appkit-polyfills": "1.8.19",
+    "@reown/appkit-scaffold-ui": "1.8.19",
+    "@reown/appkit-ui": "1.8.19",
+    "@reown/appkit-utils": "1.8.19",
+    "@reown/appkit-wallet": "1.8.19"
   }
 }
