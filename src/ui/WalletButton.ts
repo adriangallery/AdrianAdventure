@@ -98,6 +98,12 @@ export class WalletButton {
           // Ensure backward compat for old saves missing new fields
           if (!walletSave.state.firedTriggers) walletSave.state.firedTriggers = [];
           if (!walletSave.state.dialogueProgress) walletSave.state.dialogueProgress = {};
+          // Strip NFT items from old saves — they shouldn't be inventory items
+          if (walletSave.state.inventory) {
+            walletSave.state.inventory = walletSave.state.inventory.filter(
+              (item: { fromNFT?: boolean }) => !item.fromNFT
+            );
+          }
           registry.set('gameState', walletSave.state);
           registry.set('currentSceneId', walletSave.state.currentScene);
           if (walletSave.state.playerPosition) {
