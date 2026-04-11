@@ -1,7 +1,6 @@
 import Phaser from 'phaser';
 import { connectWallet, disconnectWallet, getWalletState, onWalletChange, truncateAddress, hasInjectedWallet, hasWalletConnectConfig, type WalletProviderType } from '@/web3/wallet';
 import { hasFloppyBoxTokens } from '@/web3/contracts';
-import { loadNFTs, type GameNFT } from '@/web3/nft-loader';
 import { loadForWallet } from '@/web3/wallet-save';
 import type { InventorySystem } from '@/systems/InventorySystem';
 import { TWP, FONT } from '@/config/theme';
@@ -77,21 +76,11 @@ export class WalletButton {
     this.resizeBg();
 
     if (this.inventory) {
-      try {
-        const nfts: GameNFT[] = await loadNFTs(address);
-        for (const nft of nfts) {
-          this.inventory.addNFTItem(`nft_${nft.contract}_${nft.tokenId}`, `${nft.filter}: ${nft.name}`, nft.image);
-        }
-      } catch (err) { console.error('NFT load failed:', err); }
-
       // Check for AdrianLAB Floppy Box tokens (10000-10010)
       try {
-        console.log('Checking floppy box tokens for', address);
         const hasFloppy = await hasFloppyBoxTokens(address as `0x${string}`);
-        console.log('Floppy box result:', hasFloppy);
         if (hasFloppy && this.inventory && !this.inventory.hasItem('floppy_box')) {
           this.inventory.addItem('floppy_box', 'Floppy Disc Box');
-          console.log('Floppy Disc Box added to inventory');
         }
       } catch (err) { console.error('Floppy box check failed:', err); }
     }
