@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { connectWallet, disconnectWallet, getWalletState, onWalletChange, truncateAddress, hasInjectedWallet, hasWalletConnectConfig, authorizeSession, type WalletProviderType } from '@/web3/wallet';
+
 import { hasFloppyBoxTokens } from '@/web3/contracts';
 import { loadForWallet } from '@/web3/wallet-save';
 import type { InventorySystem } from '@/systems/InventorySystem';
@@ -75,8 +76,10 @@ export class WalletButton {
     this.label.setText(truncateAddress(address));
     this.resizeBg();
 
-    // Authorize session for cloud saves (one-time MetaMask signature)
-    authorizeSession().catch(() => console.warn('Session auth skipped'));
+    // Try session auth for cloud saves — only works with injected wallets (not WalletConnect)
+    if (getWalletState().providerType === 'injected') {
+      authorizeSession().catch(() => {});
+    }
 
     if (this.inventory) {
       // Check for AdrianLAB Floppy Box tokens (10000-10010)

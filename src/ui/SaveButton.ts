@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import type { GameState } from '@/types/game.types';
 import { SaveLoadSystem } from '@/systems/SaveLoadSystem';
-import { getWalletState, getSessionAuth, authorizeSession } from '@/web3/wallet';
+import { getWalletState } from '@/web3/wallet';
 import { exportSignedWalletSave, importWalletSave, saveForWalletRemote, loadRemoteSlots } from '@/web3/wallet-save';
 import type { GameScene } from '@/scenes/GameScene';
 import { TWP, FONT } from '@/config/theme';
@@ -115,17 +115,12 @@ export class SaveButton {
         : 'Empty';
       modal.appendChild(makeBtn(`\u{1F4BE} Slot ${slotId}: ${label}`, !!gameState, async () => {
         if (!gameState) return;
-        try {
-          gameState.savedAt = Date.now();
-          saveSystem.saveToSlot(slotId, gameState, sceneName);
-          if (isWallet) {
-            if (!getSessionAuth()) {
-              await authorizeSession();
-            }
-            await saveForWalletRemote(address!, gameState, sceneName, slotId);
-          }
-        } catch (err) {
-          console.error('Save failed:', err);
+        gameState.savedAt = Date.now();
+        saveSystem.saveToSlot(slotId, gameState, sceneName);
+        if (isWallet) {
+          saveForWalletRemote(address!, gameState, sceneName, slotId)
+            .then(ok => { if (!ok) console.warn(`Cloud save slot ${slotId} failed`); })
+            .catch(err => console.error('Cloud save error:', err));
         }
         cleanup();
       }));
