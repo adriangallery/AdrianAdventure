@@ -74,6 +74,8 @@ export class GameScene extends Phaser.Scene {
     if (!this.gameState.firedTriggers) this.gameState.firedTriggers = [];
     if (!this.gameState.dialogueProgress) this.gameState.dialogueProgress = {};
     if (!this.gameState.achievements) this.gameState.achievements = [];
+    // Retroactive achievement repair: backfill achievements for flags already earned
+    this.repairAchievements();
     // Restore persisted fired triggers
     this.firedTriggers = new Set(this.gameState.firedTriggers);
     this.registry.set('gameState', this.gameState);
@@ -769,6 +771,23 @@ export class GameScene extends Phaser.Scene {
   private persistFiredTriggers(): void {
     this.gameState.firedTriggers = [...this.firedTriggers];
     this.registry.set('gameState', this.gameState);
+  }
+
+  /** Retroactive achievement repair — backfill achievements for flags already earned */
+  private repairAchievements(): void {
+    const flags = this.gameState.flags;
+    const earned = this.gameState.achievements;
+    const repairs: Array<{ flag: string; id: string }> = [
+      { flag: 'chapter_1_complete', id: 'ch1_complete' },
+      { flag: 'chapter_2_complete', id: 'ch2_complete' },
+      { flag: 'chapter_3_complete', id: 'ch3_complete' },
+      { flag: 'chapter_4_complete', id: 'ch4_complete' },
+    ];
+    for (const { flag, id } of repairs) {
+      if (flags[flag] && !earned.includes(id)) {
+        earned.push(id);
+      }
+    }
   }
 
   shutdown(): void {

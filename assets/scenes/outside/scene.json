@@ -88,6 +88,10 @@
                   "value": true
                 },
                 {
+                  "op": "achievement",
+                  "text": "CHAPTER 1 COMPLETE \u2014 Breaking & Entering"
+                },
+                {
                   "op": "fadeToScene",
                   "sceneId": "lobby",
                   "spawn": {
@@ -129,6 +133,10 @@
                   "op": "setFlag",
                   "flag": "chapter_1_complete",
                   "value": true
+                },
+                {
+                  "op": "achievement",
+                  "text": "CHAPTER 1 COMPLETE \u2014 Breaking & Entering"
                 },
                 {
                   "op": "fadeToScene",

@@ -52,7 +52,7 @@ export class PreloadScene extends Phaser.Scene {
       'mystery_envelope', 'mystery_envelope_opened', 'server_log', 'burned_chip', 'dr_satoshi_badge',
       'clinic_photo', 'adrian_note',
       'rubber_duck', 'receipt', 'broken_mouse',
-      'floppy_box', 'energy_drink', 'clinic_sign_in_sheet',
+      'floppy_box', 'energy_drink', 'clinic_sign_in_sheet', 'clinic_note', 'luxury_watch',
     ];
     for (const id of itemIds) {
       const key = `item_${id}`;

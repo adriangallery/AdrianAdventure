@@ -33,8 +33,7 @@
       "idle": null,
       "walk": null
     },
-    "playerScale": 4.85,
-    "playerDepth": 20
+    "playerScale": 4.85
   },
   "ui": {
     "verbs": [
@@ -628,7 +627,7 @@
           "LOOK": [
             {
               "op": "say",
-              "text": "A faded photograph. A group of people at a ribbon cutting. 'PZRC Opening Day \u2014 Block Genesis'. One face is scratched out."
+              "text": "A faded photograph. A group of people at a ribbon cutting. 'PZRC Opening Day — Block Genesis'. One face is scratched out."
             }
           ],
           "PICK": [
@@ -674,7 +673,7 @@
           "OPEN": [
             {
               "op": "say",
-              "text": "I flip the photo over. On the back: 'Grand Opening \u2014 The future of recovery starts here.' Someone crossed out 'future' and wrote 'end.'"
+              "text": "I flip the photo over. On the back: 'Grand Opening — The future of recovery starts here.' Someone crossed out 'future' and wrote 'end.'"
             }
           ],
           "CLOSE": [
@@ -701,8 +700,7 @@
               "text": "The photo has already given me more questions than answers. The worst kind of airdrop."
             }
           ]
-        },
-        "hideWhenFlag": "found_clinic_photo"
+        }
       },
       {
         "id": "hs_dr_coat",
@@ -741,7 +739,7 @@
                     },
                     {
                       "op": "say",
-                      "text": "His coat's inner pocket... a vintage badge: 'Dr. S. Nakamoto \u2014 Chief of Rehabilitation, Block 0'. This is a collector's item."
+                      "text": "His coat's inner pocket... a vintage badge: 'Dr. S. Nakamoto — Chief of Rehabilitation, Block 0'. This is a collector's item."
                     }
                   ]
                 }
@@ -1275,7 +1273,7 @@
         },
         {
           "op": "say",
-          "text": "'ADRIANLAB FLOPPY RECOGNIZED. PATIENT DATABASE DECRYPTION: AUTHORIZED.' Wait \u2014 my floppy collection is a decryption key?"
+          "text": "'ADRIANLAB FLOPPY RECOGNIZED. PATIENT DATABASE DECRYPTION: AUTHORIZED.' Wait — my floppy collection is a decryption key?"
         },
         {
           "op": "wait",
@@ -1291,7 +1289,7 @@
         },
         {
           "op": "say",
-          "text": "At the end of the list: 'Patient #0000 \u2014 REDACTED. See Treatment Room.' The cursor blinks. The computer knows more than it's showing."
+          "text": "At the end of the list: 'Patient #0000 — REDACTED. See Treatment Room.' The cursor blinks. The computer knows more than it's showing."
         },
         {
           "op": "setFlag",
@@ -1305,7 +1303,7 @@
         },
         {
           "op": "achievement",
-          "text": "MEDICAL RECORDS \u2014 Decrypted the patient database"
+          "text": "MEDICAL RECORDS — Decrypted the patient database"
         }
       ]
     }
@@ -1348,7 +1346,7 @@
       "id": "no_photo",
       "sprite": "overlay_no_photo",
       "flag": "found_clinic_photo",
-      "depth": 5
+      "depth": 12
     }
   ]
 }

@@ -1160,6 +1160,44 @@
   "combos": [
     {
       "items": [
+        "ledger",
+        "hs_main_computer"
+      ],
+      "result": "insert_ledger",
+      "script": [
+        {
+          "op": "ifFlag",
+          "flag": "computer_unlocked",
+          "then": [
+            {
+              "op": "say",
+              "text": "The computer already recognized Adrian's Ledger. The vault dashboard is still open."
+            }
+          ],
+          "else": [
+            {
+              "op": "say",
+              "text": "I plug in Adrian's Ledger... The screen flashes: 'WALLET RECOGNIZED. VAULT ACCESS GRANTED.'"
+            },
+            {
+              "op": "wait",
+              "ms": 800
+            },
+            {
+              "op": "say",
+              "text": "The monitor reveals a dashboard: portfolio tracker, NFT collection, and... a map to something called 'Patient Zero Clinic'."
+            },
+            {
+              "op": "setFlag",
+              "flag": "computer_unlocked",
+              "value": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "items": [
         "floppy_box",
         "hs_main_computer"
       ],

@@ -570,8 +570,8 @@
               "op": "fadeToScene",
               "sceneId": "clinic_interior",
               "spawn": {
-                "x": 70,
-                "y": 95
+                "x": 70.2,
+                "y": 98.1
               }
             }
           ],
@@ -585,8 +585,8 @@
               "op": "fadeToScene",
               "sceneId": "clinic_interior",
               "spawn": {
-                "x": 70,
-                "y": 95
+                "x": 70.2,
+                "y": 98.1
               }
             }
           ],

@@ -126,6 +126,13 @@ export const ACHIEVEMENTS: AchievementDef[] = [
     tokenId: 20020,
     category: 'explorer',
   },
+  {
+    id: 'diamond_hands',
+    name: 'Diamond Hands',
+    description: 'Retrieved the luxury watch from the armchair',
+    tokenId: 20021,
+    category: 'explorer',
+  },
 ];
 
 /** Map from achievement text (as used in scene JSON) to achievement ID */
@@ -145,6 +152,7 @@ export const ACHIEVEMENT_TEXT_TO_ID: Record<string, string> = {
   'MEDICAL RECORDS — Decrypted the patient database': 'medical_records',
   'PRESERVED — Your floppies hold the story of Patient Zero': 'preserved',
   'SIGNAL BOOST — Salvaged the rooftop antenna': 'signal_boost',
+  'DIAMOND HANDS — Retrieved the luxury watch': 'diamond_hands',
 };
 
 /** Get achievement def by ID */

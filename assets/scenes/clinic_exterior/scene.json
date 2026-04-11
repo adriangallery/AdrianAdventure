@@ -151,7 +151,7 @@
                   "sceneId": "clinic_interior",
                   "spawn": {
                     "x": 18.1,
-                    "y": 95
+                    "y": 98.5
                   }
                 }
               ],
@@ -174,7 +174,7 @@
                       "sceneId": "clinic_interior",
                       "spawn": {
                         "x": 18.1,
-                        "y": 95
+                        "y": 98.5
                       }
                     }
                   ],
@@ -198,7 +198,7 @@
                   "sceneId": "clinic_interior",
                   "spawn": {
                     "x": 18.1,
-                    "y": 95
+                    "y": 98.5
                   }
                 }
               ],
@@ -291,7 +291,7 @@
                 },
                 {
                   "op": "say",
-                  "text": "At the very bottom: 'Patient Zero \u2014 [REDACTED]'. The barcode might work on the scanner."
+                  "text": "At the very bottom: 'Patient Zero — [REDACTED]'. The barcode might work on the scanner."
                 }
               ]
             }
@@ -575,7 +575,7 @@
             },
             {
               "op": "say",
-              "text": "\"12 STEPS TO RECOVERY: Step 1 \u2014 Disconnect your wallet. Steps 2-12 \u2014 See Step 1.\""
+              "text": "\"12 STEPS TO RECOVERY: Step 1 — Disconnect your wallet. Steps 2-12 — See Step 1.\""
             }
           ],
           "USE": [
@@ -593,7 +593,7 @@
           "PICK": [
             {
               "op": "say",
-              "text": "I try to peel a poster off. Laminated AND glued. The clinic treats its motivational content like a cold wallet \u2014 untouchable."
+              "text": "I try to peel a poster off. Laminated AND glued. The clinic treats its motivational content like a cold wallet — untouchable."
             }
           ],
           "OPEN": [
@@ -653,7 +653,7 @@
           "TALK": [
             {
               "op": "say",
-              "text": "I peer into the trash can. It stares back. We are kindred spirits \u2014 both full of other people's bad decisions."
+              "text": "I peer into the trash can. It stares back. We are kindred spirits — both full of other people's bad decisions."
             }
           ],
           "PICK": [
@@ -669,7 +669,7 @@
               "else": [
                 {
                   "op": "say",
-                  "text": "I fish through the trash... under the energy drink cans and torn whitepapers, I find a crumpled note: 'Day 47: Still believe in the tech. Patient Zero was right about everything. \u2014 Dr. S'"
+                  "text": "I fish through the trash... under the energy drink cans and torn whitepapers, I find a crumpled note: 'Day 47: Still believe in the tech. Patient Zero was right about everything. — Dr. S'"
                 },
                 {
                   "op": "addItem",
@@ -721,7 +721,7 @@
           "PUSH": [
             {
               "op": "say",
-              "text": "I push the trash can. It scrapes across concrete. The sound of metal on stone \u2014 or paper hands on sell buttons."
+              "text": "I push the trash can. It scrapes across concrete. The sound of metal on stone — or paper hands on sell buttons."
             }
           ],
           "PULL": [
@@ -763,7 +763,7 @@
           "TALK": [
             {
               "op": "say",
-              "text": "I read the graffiti aloud: 'Gwei.' It's a unit of gas, a cry for help, and a tag \u2014 all at once."
+              "text": "I read the graffiti aloud: 'Gwei.' It's a unit of gas, a cry for help, and a tag — all at once."
             }
           ],
           "PICK": [
