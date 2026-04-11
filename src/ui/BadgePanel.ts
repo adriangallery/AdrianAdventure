@@ -70,10 +70,27 @@ export class BadgePanel {
       fontFamily: FONT.FAMILY, fontSize: `${titleSize}px`, color: '#f8e848',
     }).setOrigin(0.5));
 
-    // Subtitle
-    this.container.add(this.scene.add.text(width / 2, 28 + titleSize + 6,
-      `${earned.length} / ${ACHIEVEMENTS.length} earned`, {
-      fontFamily: FONT.FAMILY, fontSize: `${Math.floor(titleSize * 0.55)}px`, color: '#b0a0c8',
+    // Player stats summary
+    const flags = state?.flags ?? {};
+    const chCount = ['chapter_1_complete','chapter_2_complete','chapter_3_complete','chapter_4_complete','chapter_5_complete']
+      .filter(f => flags[f]).length;
+    const sceneCount = state?.visited?.length ?? 0;
+    const discoveryFlags = [
+      'found_code_note','found_envelope','found_keycard','found_hw_wallet',
+      'found_floppy','found_rubber_duck','found_sign_in_sheet','found_clinic_note',
+      'found_clinic_photo','found_server_log','found_burned_chip','found_dr_badge',
+      'found_adrian_note','found_receipt','found_broken_mouse','found_pz_note',
+      'monkey_sticker_found','has_antenna','has_water','has_printout',
+    ];
+    const itemCount = discoveryFlags.filter(f => flags[f]).length;
+    const puzzleFlags = ['plant_watered','computer_unlocked','floppy_inserted','emergency_switch_flipped','duck_reunion'];
+    const puzzleCount = puzzleFlags.filter(f => flags[f]).length;
+
+    const statsY = 28 + titleSize + 6;
+    const statSize = Math.floor(titleSize * 0.5);
+    const statsText = `\u{1F4D6} ${chCount}/5 ch   \u{1F5FA} ${sceneCount}/12 scenes   \u{1F50D} ${itemCount}/20 found   \u{1F9E9} ${puzzleCount}/5 puzzles   \u{1F3C6} ${earned.length}/${ACHIEVEMENTS.length} badges`;
+    this.container.add(this.scene.add.text(width / 2, statsY, statsText, {
+      fontFamily: FONT.FAMILY, fontSize: `${statSize}px`, color: '#b0a0c8',
     }).setOrigin(0.5));
 
     // Close
@@ -92,7 +109,7 @@ export class BadgePanel {
     ];
 
     const cellH = badgeSize + 28 + nameSize;
-    let curY = 28 + titleSize + 6 + titleSize * 0.55 + 24;
+    let curY = statsY + statSize + 20;
 
     for (const cat of categories) {
       const badges = ACHIEVEMENTS.filter(a => a.category === cat.key);
