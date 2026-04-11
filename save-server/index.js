@@ -79,10 +79,10 @@ app.get('/save/:address/:slot', (c) => {
 app.post('/save', async (c) => {
   try {
     const body = await c.req.json();
-    const { state, address, timestamp, signature, sceneName, slot } = body;
+    const { state, address, timestamp, signature, sceneName, slot, authSignature, authTimestamp } = body;
     const slotId = slot ?? 1;
 
-    if (!state || !address || !timestamp || !signature) {
+    if (!state || !address) {
       return c.json({ error: 'Missing required fields' }, 400);
     }
     if (![1, 2].includes(slotId)) {
@@ -92,19 +92,38 @@ app.post('/save', async (c) => {
     const addr = address.toLowerCase();
     if (!/^0x[a-f0-9]{40}$/.test(addr)) return c.json({ error: 'Invalid address' }, 400);
 
-    // Verify signature
-    const message = JSON.stringify({ state, address: addr, timestamp });
     let valid = false;
-    try {
-      valid = await verifyMessage({ address: addr, message, signature });
-    } catch (err) {
-      console.error('Sig verify failed:', err);
-      return c.json({ error: 'Invalid signature' }, 401);
+
+    if (authSignature && authTimestamp) {
+      // Session auth mode — signature proves wallet ownership (signed once on connect)
+      const maxAge = 24 * 60 * 60 * 1000; // 24h
+      if (Date.now() - authTimestamp > maxAge) {
+        return c.json({ error: 'Session expired, reconnect wallet' }, 401);
+      }
+      const authMessage = `ZEROadventure-auth:${addr}:${authTimestamp}`;
+      try {
+        valid = await verifyMessage({ address: addr, message: authMessage, signature: authSignature });
+      } catch (err) {
+        console.error('Session auth verify failed:', err);
+        return c.json({ error: 'Invalid session auth' }, 401);
+      }
+    } else if (signature && timestamp) {
+      // Legacy per-save signature mode
+      const message = JSON.stringify({ state, address: addr, timestamp });
+      try {
+        valid = await verifyMessage({ address: addr, message, signature });
+      } catch (err) {
+        console.error('Sig verify failed:', err);
+        return c.json({ error: 'Invalid signature' }, 401);
+      }
+    } else {
+      return c.json({ error: 'Missing signature or authSignature' }, 400);
     }
+
     if (!valid) return c.json({ error: 'Signature mismatch' }, 401);
 
     const fp = saveFile(addr, slotId);
-    const saveData = { state, address: addr, timestamp, signature, sceneName, slot: slotId, savedAt: Date.now() };
+    const saveData = { state, address: addr, timestamp: timestamp || Date.now(), signature: signature || null, sceneName, slot: slotId, savedAt: Date.now() };
     writeFileSync(fp, JSON.stringify(saveData, null, 2));
 
     console.log(`Slot ${slotId} saved for ${addr} (${sceneName})`);

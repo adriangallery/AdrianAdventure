@@ -1,5 +1,5 @@
 import type { GameState } from '@/types/game.types';
-import { getWalletState } from './wallet';
+import { getWalletState, getSessionAuth } from './wallet';
 
 const WALLET_SAVE_PREFIX = 'adrian_adventure_wallet_';
 const SAVE_SERVER = 'https://enchanting-reflection-production-a838.up.railway.app';
@@ -56,21 +56,31 @@ export function saveForWallet(address: string, state: GameState, sceneName: stri
 export async function saveForWalletRemote(address: string, state: GameState, sceneName: string, slot = 1): Promise<boolean> {
   saveLocal(address, state, sceneName);
 
-  const { walletClient } = getWalletState();
-  if (!walletClient) return false;
+  const auth = getSessionAuth();
+  if (!auth) {
+    console.warn('Remote save skipped: no session auth (wallet not authorized)');
+    return false;
+  }
 
   try {
     const addr = address.toLowerCase();
-    const timestamp = Date.now();
-    const message = JSON.stringify({ state, address: addr, timestamp });
-    const signature = await walletClient.signMessage({ account: addr as `0x${string}`, message });
-
     const resp = await fetch(`${SAVE_SERVER}/save`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ state, address: addr, timestamp, signature, sceneName, slot }),
+      body: JSON.stringify({
+        state,
+        address: addr,
+        timestamp: Date.now(),
+        sceneName,
+        slot,
+        authSignature: auth.signature,
+        authTimestamp: auth.timestamp,
+      }),
     });
-    if (!resp.ok) throw new Error(`${resp.status}`);
+    if (!resp.ok) {
+      const err = await resp.text().catch(() => resp.status);
+      throw new Error(`Server ${resp.status}: ${err}`);
+    }
     console.log(`Remote save synced: slot ${slot} for ${addr}`);
     return true;
   } catch (err) {

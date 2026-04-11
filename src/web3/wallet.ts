@@ -15,6 +15,29 @@ let onChangeCallbacks: Array<(s: WalletState) => void> = [];
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 let activeProvider: any = null;
 
+/** Session auth — signed once on connect, reused for all saves */
+let sessionAuth: { signature: string; timestamp: number } | null = null;
+
+export function getSessionAuth() { return sessionAuth; }
+
+/** Sign a one-time auth message to authorize saves for this session */
+export async function authorizeSession(): Promise<boolean> {
+  if (!state.walletClient || !state.address) return false;
+  try {
+    const timestamp = Date.now();
+    const message = `ZEROadventure-auth:${state.address.toLowerCase()}:${timestamp}`;
+    const signature = await state.walletClient.signMessage({
+      account: state.address,
+      message,
+    });
+    sessionAuth = { signature, timestamp };
+    return true;
+  } catch (err) {
+    console.error('Session auth failed:', err);
+    return false;
+  }
+}
+
 /** Public client — always available for reads (no wallet needed) */
 export const publicClient = createPublicClient({
   chain: CHAIN,
@@ -134,6 +157,7 @@ export function disconnectWallet(): void {
     try { activeProvider.disconnect(); } catch { /* ignore */ }
   }
   activeProvider = null;
+  sessionAuth = null;
   state = { connected: false, address: null, walletClient: null, providerType: null };
   notifyChange();
 }
