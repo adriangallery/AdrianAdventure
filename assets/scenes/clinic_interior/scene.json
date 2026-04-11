@@ -1284,8 +1284,16 @@
           "text": "Patient records scroll by. 'Patient #0042: Chronic Airdrop Dependency. Treatment: forced HODL for 90 days. Status: Relapsed after 6 hours.'"
         },
         {
+          "op": "wait",
+          "ms": 800
+        },
+        {
           "op": "say",
           "text": "'Patient #0069: Acute Governance Proposal Addiction. Voted on 847 proposals in one week. Treatment: touch grass. Status: Grass has been tokenized. Treatment failed.'"
+        },
+        {
+          "op": "wait",
+          "ms": 800
         },
         {
           "op": "say",

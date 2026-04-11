@@ -1242,16 +1242,24 @@
               "text": "A hidden partition opens. Adrian left a personal message encoded in the floppy metadata:"
             },
             {
+              "op": "wait",
+              "ms": 800
+            },
+            {
               "op": "say",
               "text": "'To whoever holds these discs: you're not just a collector. You backed the lab when nobody believed pixel art on a blockchain was worth anything. You were right. — A.'"
             },
             {
               "op": "wait",
-              "ms": 600
+              "ms": 1000
             },
             {
               "op": "say",
               "text": "Below the message, a manifest: every floppy disc ever minted, every pack opened, every trait unlocked. The entire AdrianLAB creation history. On a 1.44MB floppy. Somehow."
+            },
+            {
+              "op": "wait",
+              "ms": 800
             },
             {
               "op": "say",

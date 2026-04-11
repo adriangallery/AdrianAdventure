@@ -890,16 +890,24 @@
           "text": "The screens display: 'BACKUP TRADING STRATEGIES FOUND — FLOPPY ARCHIVE v1.0. Last modified: 3 AM, obviously.'"
         },
         {
+          "op": "wait",
+          "ms": 800
+        },
+        {
           "op": "say",
           "text": "Strategy #1: 'Buy when mass is fearful.' Strategy #2: 'Sell when mass is greedy.' Strategy #3: 'Ignore strategies 1 and 2. Ape in. YOLO. NFA.'"
         },
         {
           "op": "wait",
-          "ms": 600
+          "ms": 800
         },
         {
           "op": "say",
           "text": "The AI trading bot interrupts: 'These strategies predate me by two years and outperformed me by 340%. I am humbled. And slightly offended.'"
+        },
+        {
+          "op": "wait",
+          "ms": 800
         },
         {
           "op": "say",
@@ -983,16 +991,24 @@
           "text": "The GPUs whir louder. The screen displays: 'ADRIANLAB FLOPPY — GENESIS CONFIG DETECTED. Loading original mining parameters from 2024...'"
         },
         {
+          "op": "wait",
+          "ms": 800
+        },
+        {
           "op": "say",
           "text": "The rig shows Adrian's first-ever mining config. Hash rate: pathetic. Power bill: astronomical. Conviction: immeasurable."
         },
         {
           "op": "wait",
-          "ms": 600
+          "ms": 800
         },
         {
           "op": "say",
           "text": "A GPU lights up with a hidden overclocking profile labeled 'FLOPPY_HODLER_BOOST'. The hash rate spikes. The rig hums a thank you."
+        },
+        {
+          "op": "wait",
+          "ms": 800
         },
         {
           "op": "say",
