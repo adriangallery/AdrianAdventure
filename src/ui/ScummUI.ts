@@ -33,6 +33,7 @@ export class ScummUI {
   private onInventorySelect: ((item: InventoryItem) => void) | null = null;
   private onItemCombo: ((item1: InventoryItem, item2: InventoryItem) => void) | null = null;
   private renderInvTimer: ReturnType<typeof setTimeout> | null = null;
+  private rebuildTimer: ReturnType<typeof setTimeout> | null = null;
 
   /** Mobile collapsible state */
   private collapsed = false;
@@ -44,7 +45,17 @@ export class ScummUI {
     this.container = scene.add.container(0, 0).setDepth(500).setScrollFactor(0);
     this.detectMobile();
     this.build();
-    scene.scale.on('resize', () => { this.detectMobile(); this.rebuild(); });
+    scene.scale.on('resize', () => {
+      this.detectMobile();
+      // Debounce rebuilds — DOM overlays (wallet modals) trigger spurious
+      // resize events on mobile Safari, causing rapid text destroy/create
+      // cycles that corrupt Phaser's canvas text cache.
+      if (this.rebuildTimer) clearTimeout(this.rebuildTimer);
+      this.rebuildTimer = setTimeout(() => {
+        this.rebuildTimer = null;
+        this.rebuild();
+      }, 300);
+    });
   }
 
   private detectMobile(): void {
@@ -132,19 +143,18 @@ export class ScummUI {
     const verbRowH = Math.max(22, mobileVerbSize + 8);
     const verbGap = Math.max(8, Math.floor(width * 0.012)); // consistent gap between columns
 
-    // Measure max width per column to position evenly
+    // Measure max width per column — single reusable text to avoid texture churn
     const cols = LAYOUT.VERB_COLS;
     const colMaxW: number[] = new Array(cols).fill(0);
-    const tempTexts: Phaser.GameObjects.Text[] = [];
+    const measure = this.scene.add.text(0, -999, '', {
+      fontFamily: FONT.FAMILY, fontSize: `${mobileVerbSize}px`,
+    }).setPadding(2, 3);
     PANEL_VERBS.forEach((verb, i) => {
-      const t = this.scene.add.text(0, 0, VERB_LABELS[verb], {
-        fontFamily: FONT.FAMILY, fontSize: `${mobileVerbSize}px`,
-      }).setPadding(2, 3);
-      tempTexts.push(t);
+      measure.setText(VERB_LABELS[verb]);
       const col = i % cols;
-      colMaxW[col] = Math.max(colMaxW[col], t.width);
+      colMaxW[col] = Math.max(colMaxW[col], measure.width);
     });
-    tempTexts.forEach(t => t.destroy());
+    measure.destroy();
 
     // Calculate column X positions from measured widths
     const colX: number[] = [];
