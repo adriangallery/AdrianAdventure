@@ -188,6 +188,7 @@ export class SaveButton {
             if (save && save.address.toLowerCase() === address!.toLowerCase()) {
               if (!save.state.firedTriggers) save.state.firedTriggers = [];
               if (!save.state.dialogueProgress) save.state.dialogueProgress = {};
+              if (!save.state.achievements) save.state.achievements = [];
               this.scene.registry.set('gameState', save.state);
               this.scene.registry.set('currentSceneId', save.state.currentScene);
               cleanup();

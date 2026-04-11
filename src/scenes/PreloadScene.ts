@@ -61,6 +61,15 @@ export class PreloadScene extends Phaser.Scene {
       }
     }
 
+    // Achievement badge sprites (load once)
+    const badgeIds = ['diamond_hands'];
+    for (const id of badgeIds) {
+      const key = `badge_${id}`;
+      if (!this.textures.exists(key)) {
+        this.load.image(key, `assets/sprites/badges/${id}.png${v}`);
+      }
+    }
+
     // NPC sprites (load once)
     const npcIds = ['receptionist', 'receptionist_talk', 'dr_satoshi'];
     for (const id of npcIds) {

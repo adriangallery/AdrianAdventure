@@ -104,6 +104,7 @@ export class WalletButton {
           // Ensure backward compat for old saves missing new fields
           if (!walletSave.state.firedTriggers) walletSave.state.firedTriggers = [];
           if (!walletSave.state.dialogueProgress) walletSave.state.dialogueProgress = {};
+          if (!walletSave.state.achievements) walletSave.state.achievements = [];
           // Strip NFT items from old saves — they shouldn't be inventory items
           if (walletSave.state.inventory) {
             walletSave.state.inventory = walletSave.state.inventory.filter(
