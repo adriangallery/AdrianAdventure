@@ -656,7 +656,8 @@ export class ScummUI {
         img.setScale(Math.min(maxDim / img.width, maxDim / img.height));
         icon = img;
       } else {
-        const iconText = item.icon || item.name.charAt(0).toUpperCase();
+        // icon may be a URL (from NFT image) — only use short strings as display text
+        const iconText = (item.icon && item.icon.length <= 2) ? item.icon : item.name.charAt(0).toUpperCase();
         icon = this.scene.add.text(x + slotSize / 2, y + slotSize / 2, iconText, {
           fontFamily: FONT.FAMILY,
           fontSize: `${Math.floor(slotSize * 0.4)}px`,
