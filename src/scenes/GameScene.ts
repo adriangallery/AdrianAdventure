@@ -658,8 +658,18 @@ export class GameScene extends Phaser.Scene {
         ui.events.emit('startDialogue', _npcId, treeId);
         await new Promise<void>((r) => ui.events.once('dialogueComplete', r));
       },
-      showTitleCard: (chapter, title, subtitle) => this.cinematicOverlay.showTitleCard(chapter, title, subtitle),
-      showNarrative: (lines) => this.cinematicOverlay.showNarrative(lines),
+      showTitleCard: (chapter, title, subtitle) => {
+        const ui = this.scene.get('UIScene');
+        return new Promise<void>((resolve) => {
+          ui.events.emit('showTitleCard', chapter, title, subtitle, resolve);
+        });
+      },
+      showNarrative: (lines) => {
+        const ui = this.scene.get('UIScene');
+        return new Promise<void>((resolve) => {
+          ui.events.emit('showNarrative', lines, resolve);
+        });
+      },
       showAchievement: (text) => {
         // Track achievement in gameState
         const achDef = getAchievementByText(text);
@@ -670,7 +680,8 @@ export class GameScene extends Phaser.Scene {
             this.registry.set('gameState', this.gameState);
           }
         }
-        this.cinematicOverlay.showAchievement(text);
+        const ui = this.scene.get('UIScene');
+        ui.events.emit('showAchievement', text);
       },
       showToast: (status, message) => { this.transactionToast.show(status, message); },
     };
