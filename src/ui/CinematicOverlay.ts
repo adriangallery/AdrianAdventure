@@ -6,7 +6,7 @@ const BG_COLOR = 0x06060c;
 const TITLE_COLOR = '#f8e848';
 const BODY_COLOR = '#f0e8d8';
 const SUBTLE_COLOR = '#504878';
-const CONTINUE_COLOR = '#504878';
+const CONTINUE_COLOR = '#a090c0';
 const ACHIEVEMENT_BG = 0xc8a820;
 const ACHIEVEMENT_TEXT_COLOR = '#08080f';
 
@@ -63,7 +63,7 @@ export class CinematicOverlay {
       const chapterSize = Math.max(12, Math.min(18, Math.floor(refDim * 0.016)));
       const titleSize = Math.max(16, Math.min(28, Math.floor(refDim * 0.026)));
       const subtitleSize = Math.max(10, Math.min(14, Math.floor(refDim * 0.012)));
-      const continueSize = Math.max(8, Math.min(11, Math.floor(refDim * 0.009)));
+      const continueSize = Math.max(10, Math.min(14, Math.floor(refDim * 0.012)));
 
       const container = this.scene.add.container(0, 0).setDepth(DEPTH).setAlpha(1).setScrollFactor(0);
 
@@ -143,7 +143,7 @@ export class CinematicOverlay {
       const refDim = isLandscape ? Math.max(width, height * 1.5) : Math.max(width, height * 0.6);
       const fontSize = Math.max(11, Math.min(16, Math.floor(refDim * 0.012)));
       const lineHeight = fontSize * (isLandscape ? 2.2 : 2.8);
-      const continueSize = Math.max(8, Math.min(11, Math.floor(refDim * 0.008)));
+      const continueSize = Math.max(10, Math.min(14, Math.floor(refDim * 0.012)));
 
       const container = this.scene.add.container(0, 0).setDepth(DEPTH).setAlpha(1).setScrollFactor(0);
 
@@ -292,7 +292,7 @@ export class CinematicOverlay {
   private pulseAlpha(text: Phaser.GameObjects.Text): void {
     this.scene.tweens.add({
       targets: text,
-      alpha: { from: 0, to: 0.7 },
+      alpha: { from: 0.3, to: 1 },
       duration: 800,
       yoyo: true,
       repeat: -1,
