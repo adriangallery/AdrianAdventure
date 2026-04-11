@@ -114,30 +114,20 @@ export class SaveButton {
         ? `${slot.sceneName} — ${new Date(slot.timestamp).toLocaleDateString()}${isWallet ? ' \u2601' : ''}`
         : 'Empty';
       modal.appendChild(makeBtn(`\u{1F4BE} Slot ${slotId}: ${label}`, !!gameState, async () => {
-        if (gameState) {
-          if (slot) {
-            const confirmed = confirm(`Overwrite Slot ${slotId}?\n\n"${slot.sceneName}" saved on ${new Date(slot.timestamp).toLocaleString()}\n\nThis cannot be undone.`);
-            if (!confirmed) return;
-          }
+        if (!gameState) return;
+        try {
           gameState.savedAt = Date.now();
           saveSystem.saveToSlot(slotId, gameState, sceneName);
           if (isWallet) {
-            // Ensure session auth exists — request signature if needed
             if (!getSessionAuth()) {
-              const authed = await authorizeSession();
-              if (!authed) {
-                console.warn('Cloud save skipped: user declined signature');
-              }
+              await authorizeSession();
             }
-            const ok = await saveForWalletRemote(address!, gameState, sceneName, slotId);
-            if (ok) {
-              console.log(`Cloud save slot ${slotId} OK`);
-            } else {
-              console.warn(`Cloud save slot ${slotId} failed`);
-            }
+            await saveForWalletRemote(address!, gameState, sceneName, slotId);
           }
-          cleanup();
+        } catch (err) {
+          console.error('Save failed:', err);
         }
+        cleanup();
       }));
     }
 
