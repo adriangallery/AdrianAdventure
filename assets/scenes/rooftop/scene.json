@@ -855,6 +855,99 @@
             }
           ]
         }
+      },
+      {
+        "id": "hs_lobbyhatch",
+        "name": "Lobby Hatch",
+        "bounds": {
+          "x": 34.1,
+          "y": 79.9,
+          "w": 12.3,
+          "h": 15.7
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "A reinforced glass hatch set into the roof. Through it I can see the lobby floor below — polished tiles, dim emergency lighting. A maintenance ladder runs down the inside wall."
+            }
+          ],
+          "USE": [
+            {
+              "op": "sayBrief",
+              "text": "I lift the hatch and climb down the ladder into the lobby.",
+              "duration": 1200
+            },
+            {
+              "op": "fadeToScene",
+              "sceneId": "lobby",
+              "spawn": {
+                "x": 50,
+                "y": 20
+              }
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "I call down through the hatch. My voice echoes off the lobby's marble floor. Nobody answers. Just the hum of the building."
+            }
+          ],
+          "PICK": [
+            {
+              "op": "say",
+              "text": "The hatch is hinged to the roof frame. It lifts open, but it's not going anywhere."
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "sayBrief",
+              "text": "I pull the hatch open and descend into the lobby.",
+              "duration": 1200
+            },
+            {
+              "op": "fadeToScene",
+              "sceneId": "lobby",
+              "spawn": {
+                "x": 50,
+                "y": 20
+              }
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "The hatch is already closed. The glass panels sit flush with the roof surface."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I push the hatch but it opens upward, not down. Wrong direction."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "sayBrief",
+              "text": "I pull the hatch open and lower myself into the lobby.",
+              "duration": 1200
+            },
+            {
+              "op": "fadeToScene",
+              "sceneId": "lobby",
+              "spawn": {
+                "x": 50,
+                "y": 20
+              }
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "The hatch doesn't need anything. It just needs a good pull to open."
+            }
+          ]
+        }
       }
     ],
     "triggers": [
@@ -885,7 +978,7 @@
       "id": "vane_flipped",
       "sprite": "vane_flipped",
       "flag": "vane_pushed",
-      "depth": 12
+      "depth": 5
     }
   ],
   "npcs": [],
