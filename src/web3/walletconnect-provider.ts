@@ -5,7 +5,7 @@ import { CHAIN_ID, getRpcUrl } from '@/config/blockchain.config';
  * Uses a custom QR modal instead of the broken AppKit modal.
  */
 export async function createWalletConnectProvider(): Promise<any> {
-  const projectId = import.meta.env.VITE_WALLETCONNECT_PROJECT_ID;
+  const projectId = (import.meta.env.VITE_WALLETCONNECT_PROJECT_ID || '').trim();
   if (!projectId) {
     throw new Error('WalletConnect Project ID not configured (VITE_WALLETCONNECT_PROJECT_ID)');
   }
@@ -46,9 +46,24 @@ export async function createWalletConnectProvider(): Promise<any> {
 
   return new Promise<any>((resolve, reject) => {
     let modal: { close: () => void } | null = null;
+    let settled = false;
+
+    const settle = () => { settled = true; };
+
+    // Timeout: 60s for relay connection + QR scan
+    const timeout = setTimeout(() => {
+      if (!settled) {
+        settle();
+        modal?.close();
+        reject(new Error('Connection timed out'));
+      }
+    }, 60_000);
 
     provider.on('display_uri', (uri: string) => {
       modal = showWCModal(uri, () => {
+        if (settled) return;
+        settle();
+        clearTimeout(timeout);
         try { provider.signer?.abortPairingAttempt?.(); } catch { /* ignore */ }
         reject(new Error('Connection request reset. Please try again.'));
       });
@@ -56,10 +71,16 @@ export async function createWalletConnectProvider(): Promise<any> {
 
     provider.enable()
       .then(() => {
+        if (settled) return;
+        settle();
+        clearTimeout(timeout);
         modal?.close();
         resolve(provider);
       })
       .catch((err: Error) => {
+        if (settled) return;
+        settle();
+        clearTimeout(timeout);
         modal?.close();
         reject(err);
       });

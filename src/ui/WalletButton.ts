@@ -56,13 +56,14 @@ export class WalletButton {
     if (state.connected) {
       disconnectWallet();
     } else {
-      const choice = await this.showWalletPicker();
-      if (!choice) return;
       try {
+        const choice = await this.showWalletPicker();
+        if (!choice) return;
         this.label.setText('...');
         const ns = await connectWallet(choice);
         await this.onConnected(ns.address!);
       } catch (err) {
+        console.error('Wallet connection error:', err);
         const msg = err instanceof Error ? err.message : 'Failed';
         this.label.setText(msg.slice(0, 16));
         this.scene.time.delayedCall(3000, () => this.updateDisplay(false, null));
