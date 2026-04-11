@@ -356,14 +356,58 @@
           ],
           "PUSH": [
             {
-              "op": "say",
-              "text": "I push the weather vane north. It fights back and returns to its sentiment-driven position. The market decides, not me."
+              "op": "ifFlag",
+              "flag": "vane_pushed",
+              "then": [
+                {
+                  "op": "setFlag",
+                  "flag": "vane_pushed",
+                  "value": false
+                },
+                {
+                  "op": "say",
+                  "text": "I push the weather vane. It creaks and swings back east. Bullish again? The market has spoken."
+                }
+              ],
+              "else": [
+                {
+                  "op": "setFlag",
+                  "flag": "vane_pushed",
+                  "value": true
+                },
+                {
+                  "op": "say",
+                  "text": "I push the weather vane. It creaks and swings west. Bearish sentiment detected. Or maybe it's just the wind."
+                }
+              ]
             }
           ],
           "PULL": [
             {
-              "op": "say",
-              "text": "I pull the weather vane toward me. The pole bends slightly. I let go before I break Adrian's market sentiment detector."
+              "op": "ifFlag",
+              "flag": "vane_pushed",
+              "then": [
+                {
+                  "op": "setFlag",
+                  "flag": "vane_pushed",
+                  "value": false
+                },
+                {
+                  "op": "say",
+                  "text": "I pull the weather vane back. It swings east with a metallic groan. Bull market restored."
+                }
+              ],
+              "else": [
+                {
+                  "op": "setFlag",
+                  "flag": "vane_pushed",
+                  "value": true
+                },
+                {
+                  "op": "say",
+                  "text": "I yank the weather vane. It spins and settles pointing west. The bears are in control now."
+                }
+              ]
             }
           ],
           "GIVE": [
@@ -836,6 +880,14 @@
       }
     ]
   },
+  "conditionalOverlays": [
+    {
+      "id": "vane_flipped",
+      "sprite": "vane_flipped",
+      "flag": "vane_pushed",
+      "depth": 12
+    }
+  ],
   "npcs": [],
   "dialogues": {},
   "items": {
