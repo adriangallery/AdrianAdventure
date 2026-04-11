@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import type { GameState } from '@/types/game.types';
 import { SaveLoadSystem } from '@/systems/SaveLoadSystem';
-import { getWalletState } from '@/web3/wallet';
+import { getWalletState, getSessionAuth, authorizeSession } from '@/web3/wallet';
 import { exportSignedWalletSave, importWalletSave, saveForWalletRemote, loadRemoteSlots } from '@/web3/wallet-save';
 import type { GameScene } from '@/scenes/GameScene';
 import { TWP, FONT } from '@/config/theme';
@@ -122,7 +122,19 @@ export class SaveButton {
           gameState.savedAt = Date.now();
           saveSystem.saveToSlot(slotId, gameState, sceneName);
           if (isWallet) {
-            saveForWalletRemote(address!, gameState, sceneName, slotId).catch(() => {});
+            // Ensure session auth exists — request signature if needed
+            if (!getSessionAuth()) {
+              const authed = await authorizeSession();
+              if (!authed) {
+                console.warn('Cloud save skipped: user declined signature');
+              }
+            }
+            const ok = await saveForWalletRemote(address!, gameState, sceneName, slotId);
+            if (ok) {
+              console.log(`Cloud save slot ${slotId} OK`);
+            } else {
+              console.warn(`Cloud save slot ${slotId} failed`);
+            }
           }
           cleanup();
         }
