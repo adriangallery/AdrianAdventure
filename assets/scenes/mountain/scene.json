@@ -817,8 +817,8 @@
             "op": "gotoScene",
             "sceneId": "outside",
             "spawn": {
-              "x": 11.8,
-              "y": 91.3
+              "x": 11.9,
+              "y": 94.9
             }
           }
         ]
