@@ -95,14 +95,20 @@ export class DialogueBox {
         },
       });
 
-      // Click to skip/dismiss
+      // Click to skip typewriter, then click again to dismiss
+      // Min display time prevents rapid-fire taps from skipping messages on mobile
+      let canDismiss = false;
+      const minReadTime = Math.min(1200, 300 + this.fullMessage.length * 15);
+
       const handler = () => {
         if (this.displayedChars < this.fullMessage.length) {
+          // Skip typewriter — show full text
           this.typewriterTimer?.remove();
           this.typewriterTimer = null;
           this.displayedChars = this.fullMessage.length;
           this.text.setText(this.fullMessage);
-        } else {
+        } else if (canDismiss) {
+          // Full text shown and min read time passed — dismiss
           this.scene.input.off('pointerdown', handler);
           this.dismiss();
         }
@@ -110,6 +116,9 @@ export class DialogueBox {
 
       this.scene.time.delayedCall(150, () => {
         this.scene.input.on('pointerdown', handler);
+      });
+      this.scene.time.delayedCall(minReadTime, () => {
+        canDismiss = true;
       });
     });
   }
