@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { SaveLoadSystem } from '@/systems/SaveLoadSystem';
 import { TWP, FONT } from '@/config/theme';
+import { ACHIEVEMENTS } from '@/config/achievements.config';
 
 /**
  * Title/Menu screen — Thimbleweed Park noir atmosphere.
@@ -194,10 +195,24 @@ export class MenuScene extends Phaser.Scene {
           border-radius: 6px;
         `;
 
+        // Achievement badges earned
+        const achIds = (p.achievements ?? []) as string[];
+        const achNames = achIds.map((id: string) => {
+          const def = ACHIEVEMENTS.find(a => a.id === id);
+          return def ? def.name : id;
+        });
+
         let badgeHtml = '';
+        // Holder badges
         if (badges.length > 0) {
-          badgeHtml = `<div style="display:flex; flex-wrap:wrap; gap:4px; margin-top:6px;">${
+          badgeHtml += `<div style="display:flex; flex-wrap:wrap; gap:4px; margin-top:6px;">${
             badges.map((b: string) => `<span style="font-size:7px; padding:2px 5px; background:#3396ff22; border:1px solid #3396ff44; border-radius:3px; color:#3396ff;">${b}</span>`).join('')
+          }</div>`;
+        }
+        // Game achievements
+        if (achNames.length > 0) {
+          badgeHtml += `<div style="display:flex; flex-wrap:wrap; gap:4px; margin-top:${badges.length > 0 ? '4' : '6'}px;">${
+            achNames.map((n: string) => `<span style="font-size:7px; padding:2px 5px; background:#f8e84822; border:1px solid #f8e84844; border-radius:3px; color:#f8e848;">\u{1F3C6} ${n}</span>`).join('')
           }</div>`;
         }
 

@@ -219,6 +219,9 @@ app.get('/leaderboard', (c) => {
 
         const score = chapterPts + milestonePts + explorePts + discoveryPts + puzzlePts + hiddenPts + holderPts;
 
+        // Achievements earned (from gameState)
+        const achievements = state.achievements ?? [];
+
         // Keep best score per address
         const existing = playerMap.get(addr);
         if (!existing || score > existing.score) {
@@ -226,7 +229,7 @@ app.get('/leaderboard', (c) => {
             address: addr, sceneName: data.sceneName, score, chapters,
             scenesVisited, items: itemsDiscovered, puzzles: Math.floor(puzzlePts / 50),
             gameComplete: !!flags.patient_zero_revealed, patientZero: !!flags.patient_zero_found,
-            holderBadges, holderPts, hiddenPts,
+            holderBadges, holderPts, hiddenPts, achievements,
             lastSaved: data.savedAt || data.timestamp,
           });
         }
