@@ -337,8 +337,8 @@
                   "op": "fadeToScene",
                   "sceneId": "recovery_pool",
                   "spawn": {
-                    "x": 8,
-                    "y": 92
+                    "x": 16.9,
+                    "y": 97
                   }
                 }
               ],
@@ -363,8 +363,8 @@
                   "op": "fadeToScene",
                   "sceneId": "recovery_pool",
                   "spawn": {
-                    "x": 8,
-                    "y": 92
+                    "x": 16.9,
+                    "y": 97
                   }
                 }
               ],

@@ -209,9 +209,9 @@ export class MenuScene extends Phaser.Scene {
           </div>
           <div style="display:flex; gap:10px; font-size:9px; color:#999;">
             <span>\u{1F4D6} ${p.chapters}/5 ch</span>
-            <span>\u{1F5FA} ${scenes} scenes</span>
-            <span>\u{1F50D} ${items} found</span>
-            <span>\u{1F9E9} ${puzzles} puzzles</span>
+            <span>\u{1F5FA} ${scenes}/12 scenes</span>
+            <span>\u{1F50D} ${items}/20 found</span>
+            <span>\u{1F9E9} ${puzzles}/5 puzzles</span>
           </div>
           <div style="display:flex; justify-content:space-between; font-size:8px; color:#666; margin-top:4px;">
             <span>\u{1F3AE} ${sceneName}</span>
