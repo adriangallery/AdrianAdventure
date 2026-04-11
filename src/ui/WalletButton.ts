@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import { connectWallet, disconnectWallet, getWalletState, onWalletChange, truncateAddress, hasInjectedWallet, hasWalletConnectConfig, type WalletProviderType } from '@/web3/wallet';
-import { getZeroBalance, hasFloppyBoxTokens } from '@/web3/contracts';
+import { hasFloppyBoxTokens } from '@/web3/contracts';
 import { loadNFTs, type GameNFT } from '@/web3/nft-loader';
 import { loadForWallet } from '@/web3/wallet-save';
 import type { InventorySystem } from '@/systems/InventorySystem';
@@ -72,9 +72,8 @@ export class WalletButton {
   }
 
   private async onConnected(address: string): Promise<void> {
-    const balance = await getZeroBalance(address as `0x${string}`);
-    if (!this.label?.active) return; // Scene may have changed during async
-    this.label.setText(`${truncateAddress(address)} | ${balance} $ZERO`);
+    if (!this.label?.active) return;
+    this.label.setText(truncateAddress(address));
     this.resizeBg();
 
     if (this.inventory) {
