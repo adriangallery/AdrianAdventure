@@ -390,26 +390,18 @@
                   "value": false
                 },
                 {
-                  "op": "say",
-                  "text": "I push the weather vane. It creaks and swings back east. Bullish again? The market has spoken."
-                },
-                {
                   "op": "ifFlag",
                   "flag": "vane_turned",
                   "then": [
                     {
                       "op": "say",
-                      "text": "The cable connected to the vane stays slack. Whatever it unlatched before is still open."
+                      "text": "I push the weather vane. It creaks and swings back east. The cable to the hatch stays slack — still unlatched."
                     }
                   ],
                   "else": [
                     {
-                      "op": "wait",
-                      "ms": 600
-                    },
-                    {
                       "op": "say",
-                      "text": "*CLUNK* Something heavy just disengaged beneath the roof. A cable connected to the vane pulled a mechanical latch. The service shaft hatch!"
+                      "text": "I push the weather vane. It creaks and swings back east. *CLUNK* — a cable pulls a mechanical latch beneath the roof. The service shaft hatch!"
                     },
                     {
                       "op": "setFlag",
@@ -426,26 +418,18 @@
                   "value": true
                 },
                 {
-                  "op": "say",
-                  "text": "I push the weather vane. It creaks and swings west. Bearish sentiment detected. Or maybe it's just the wind."
-                },
-                {
                   "op": "ifFlag",
                   "flag": "vane_turned",
                   "then": [
                     {
                       "op": "say",
-                      "text": "The cable connected to the vane stays slack. Whatever it unlatched before is still open."
+                      "text": "I push the weather vane. It creaks and swings west. Bearish sentiment. The cable to the hatch stays slack — still unlatched."
                     }
                   ],
                   "else": [
                     {
-                      "op": "wait",
-                      "ms": 600
-                    },
-                    {
                       "op": "say",
-                      "text": "*CLUNK* Something heavy just disengaged beneath the roof. A cable connected to the vane pulled a mechanical latch. The service shaft hatch!"
+                      "text": "I push the weather vane. It creaks and swings west. *CLUNK* — a cable pulls a mechanical latch beneath the roof. The service shaft hatch!"
                     },
                     {
                       "op": "setFlag",
@@ -468,26 +452,18 @@
                   "value": false
                 },
                 {
-                  "op": "say",
-                  "text": "I pull the weather vane back. It swings east with a metallic groan. Bull market restored."
-                },
-                {
                   "op": "ifFlag",
                   "flag": "vane_turned",
                   "then": [
                     {
                       "op": "say",
-                      "text": "The cable connected to the vane stays slack. Whatever it unlatched before is still open."
+                      "text": "I pull the weather vane back east. The cable to the hatch stays slack — still unlatched."
                     }
                   ],
                   "else": [
                     {
-                      "op": "wait",
-                      "ms": 600
-                    },
-                    {
                       "op": "say",
-                      "text": "*CLUNK* Something heavy just disengaged beneath the roof. A cable connected to the vane pulled a mechanical latch. The service shaft hatch!"
+                      "text": "I pull the weather vane back east. *CLUNK* — a cable pulls a mechanical latch beneath the roof. The service shaft hatch!"
                     },
                     {
                       "op": "setFlag",
@@ -504,26 +480,18 @@
                   "value": true
                 },
                 {
-                  "op": "say",
-                  "text": "I yank the weather vane. It spins and settles pointing west. The bears are in control now."
-                },
-                {
                   "op": "ifFlag",
                   "flag": "vane_turned",
                   "then": [
                     {
                       "op": "say",
-                      "text": "The cable connected to the vane stays slack. Whatever it unlatched before is still open."
+                      "text": "I yank the weather vane west. Bears in control. The cable to the hatch stays slack — still unlatched."
                     }
                   ],
                   "else": [
                     {
-                      "op": "wait",
-                      "ms": 600
-                    },
-                    {
                       "op": "say",
-                      "text": "*CLUNK* Something heavy just disengaged beneath the roof. A cable connected to the vane pulled a mechanical latch. The service shaft hatch!"
+                      "text": "I yank the weather vane west. *CLUNK* — a cable pulls a mechanical latch beneath the roof. The service shaft hatch!"
                     },
                     {
                       "op": "setFlag",
