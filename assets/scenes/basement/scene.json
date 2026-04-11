@@ -1198,6 +1198,74 @@
     },
     {
       "items": [
+        "floppy_disk",
+        "hs_main_computer"
+      ],
+      "result": "insert_floppy",
+      "script": [
+        {
+          "op": "ifFlag",
+          "flag": "computer_unlocked",
+          "then": [
+            {
+              "op": "ifFlag",
+              "flag": "floppy_inserted",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "The floppy is already inserted. The patient roster is on screen."
+                }
+              ],
+              "else": [
+                {
+                  "op": "setFlag",
+                  "flag": "floppy_inserted",
+                  "value": true
+                },
+                {
+                  "op": "removeItem",
+                  "id": "floppy_disk"
+                },
+                {
+                  "op": "addItem",
+                  "id": "printout",
+                  "name": "CRT Printout"
+                },
+                {
+                  "op": "setFlag",
+                  "flag": "has_printout",
+                  "value": true
+                },
+                {
+                  "op": "say",
+                  "text": "I insert the floppy disk... *KRRRTTT*... The drive spins up. Data flooding the screen."
+                },
+                {
+                  "op": "wait",
+                  "ms": 600
+                },
+                {
+                  "op": "say",
+                  "text": "Chronic Airdrop Dependency... Acute Rug Pull Trauma... Terminal FOMO... At the bottom, in red: PATIENT ZERO — STATUS: ESCAPED"
+                },
+                {
+                  "op": "say",
+                  "text": "The printer spits out a map. This could lead somewhere."
+                }
+              ]
+            }
+          ],
+          "else": [
+            {
+              "op": "say",
+              "text": "The computer screen says 'INSERT ADRIAN'S LEDGER'. I need to unlock it first before inserting the floppy."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "items": [
         "floppy_box",
         "hs_main_computer"
       ],
