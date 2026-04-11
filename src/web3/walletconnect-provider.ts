@@ -2,7 +2,7 @@ import { CHAIN_ID, getRpcUrl } from '@/config/blockchain.config';
 
 /**
  * Lazy-loaded WalletConnect EIP-1193 provider factory.
- * Only imported when user selects WalletConnect — keeps main bundle small.
+ * Uses a custom QR modal instead of the broken AppKit modal.
  */
 export async function createWalletConnectProvider(): Promise<any> {
   const projectId = import.meta.env.VITE_WALLETCONNECT_PROJECT_ID;
@@ -15,8 +15,8 @@ export async function createWalletConnectProvider(): Promise<any> {
   const provider = await EthereumProvider.init({
     projectId,
     chains: [CHAIN_ID],
-    optionalChains: [1], // Ethereum mainnet as fallback
-    showQrModal: true,
+    optionalChains: [1],
+    showQrModal: false, // We handle the modal ourselves
     optionalMethods: [
       'eth_sendTransaction',
       'eth_sign',
@@ -42,6 +42,26 @@ export async function createWalletConnectProvider(): Promise<any> {
     },
   });
 
-  await provider.enable();
-  return provider;
+  const { showWCModal } = await import('@/ui/WalletConnectModal');
+
+  return new Promise<any>((resolve, reject) => {
+    let modal: { close: () => void } | null = null;
+
+    provider.on('display_uri', (uri: string) => {
+      modal = showWCModal(uri, () => {
+        try { provider.signer?.abortPairingAttempt?.(); } catch { /* ignore */ }
+        reject(new Error('Connection request reset. Please try again.'));
+      });
+    });
+
+    provider.enable()
+      .then(() => {
+        modal?.close();
+        resolve(provider);
+      })
+      .catch((err: Error) => {
+        modal?.close();
+        reject(err);
+      });
+  });
 }
