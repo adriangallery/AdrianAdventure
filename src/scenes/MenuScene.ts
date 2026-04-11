@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { SaveLoadSystem } from '@/systems/SaveLoadSystem';
 import { TWP, FONT } from '@/config/theme';
 import { ACHIEVEMENTS } from '@/config/achievements.config';
+import { resolveEnsMany } from '@/web3/ens';
 
 /**
  * Title/Menu screen — Thimbleweed Park noir atmosphere.
@@ -175,10 +176,26 @@ export class MenuScene extends Phaser.Scene {
       // Top 5 only
       const top = data.players.slice(0, 5);
 
+      // Resolve ENS names in parallel (non-blocking — updates DOM when ready)
+      const addresses = top.map((p: any) => p.address as string);
+      const ensMap: Record<string, string | null> = {};
+      resolveEnsMany(addresses).then((map) => {
+        Object.assign(ensMap, map);
+        // Update displayed names
+        for (const [addr, name] of Object.entries(map)) {
+          if (name) {
+            const el = table.querySelector(`[data-addr="${addr.toLowerCase()}"]`);
+            if (el) el.textContent = name;
+          }
+        }
+      });
+
       top.forEach((p: any, i: number) => {
         const row = document.createElement('div');
         const medal = i === 0 ? '\u{1F947}' : i === 1 ? '\u{1F948}' : i === 2 ? '\u{1F949}' : `#${i + 1}`;
-        const addr = p.address.slice(0, 6) + '...' + p.address.slice(-4);
+        const shortAddr = p.address.slice(0, 6) + '...' + p.address.slice(-4);
+        const cachedEns = ensMap[p.address.toLowerCase()];
+        const addr = cachedEns || shortAddr;
         const sceneName = (p.sceneName || 'Unknown').replace(/^(The |AdrianLAB )/, '');
         const complete = p.gameComplete ? ' \u{2B50}' : '';
         const items = p.items ?? 0;
@@ -219,7 +236,7 @@ export class MenuScene extends Phaser.Scene {
         row.innerHTML = `
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 6px;">
             <span style="font-size:16px;">${medal}</span>
-            <span style="font-size:11px; color:#e8d5f5; flex:1; margin-left:8px;">${addr}${complete}</span>
+            <span data-addr="${p.address.toLowerCase()}" style="font-size:11px; color:#e8d5f5; flex:1; margin-left:8px;">${addr}${complete}</span>
             <span style="font-size:14px; color:#f8e848;">${p.score} pts</span>
           </div>
           <div style="display:flex; gap:10px; font-size:9px; color:#999;">

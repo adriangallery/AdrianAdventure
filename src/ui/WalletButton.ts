@@ -3,6 +3,7 @@ import { connectWallet, disconnectWallet, getWalletState, onWalletChange, trunca
 
 import { hasFloppyBoxTokens } from '@/web3/contracts';
 import { loadForWallet } from '@/web3/wallet-save';
+import { resolveEns } from '@/web3/ens';
 import type { InventorySystem } from '@/systems/InventorySystem';
 import { TWP, FONT } from '@/config/theme';
 
@@ -75,6 +76,14 @@ export class WalletButton {
     if (!this.label?.active) return;
     this.label.setText(truncateAddress(address));
     this.resizeBg();
+
+    // Resolve ENS name in background
+    resolveEns(address).then((ens) => {
+      if (ens && this.label?.active) {
+        this.label.setText(ens);
+        this.resizeBg();
+      }
+    });
 
     // Try session auth for cloud saves — only works with injected wallets (not WalletConnect)
     if (getWalletState().providerType === 'injected') {
@@ -196,6 +205,12 @@ export class WalletButton {
       if (connected && address) {
         this.label.setText(truncateAddress(address));
         this.bg.setStrokeStyle(1, TWP.WALLET_BORDER_ON, 0.8);
+        resolveEns(address).then((ens) => {
+          if (ens && this.label?.active) {
+            this.label.setText(ens);
+            this.resizeBg();
+          }
+        });
       } else {
         this.label.setText('Connect');
         this.bg.setStrokeStyle(1, TWP.WALLET_BORDER, 0.6);
