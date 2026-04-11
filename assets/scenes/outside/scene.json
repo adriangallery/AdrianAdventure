@@ -65,32 +65,8 @@
           "USE": [
             {
               "op": "ifFlag",
-              "flag": "has_code",
+              "flag": "door_unlocked",
               "then": [
-                {
-                  "op": "setFlag",
-                  "flag": "door_unlocked",
-                  "value": true
-                },
-                {
-                  "op": "sayBrief",
-                  "text": "7-3-1-4... *beep* Green light!",
-                  "duration": 1200
-                },
-                {
-                  "op": "sayBrief",
-                  "text": "Chapter 1 \u2014 objective: Enter the laboratory",
-                  "duration": 2000
-                },
-                {
-                  "op": "setFlag",
-                  "flag": "chapter_1_complete",
-                  "value": true
-                },
-                {
-                  "op": "achievement",
-                  "text": "CHAPTER 1 COMPLETE \u2014 Breaking & Entering"
-                },
                 {
                   "op": "fadeToScene",
                   "sceneId": "lobby",
@@ -103,8 +79,20 @@
               ],
               "else": [
                 {
-                  "op": "say",
-                  "text": "Locked. The keypad blinks red. I need a 4-digit code."
+                  "op": "ifFlag",
+                  "flag": "has_code",
+                  "then": [
+                    {
+                      "op": "say",
+                      "text": "I have the code, but I need to USE it on the keypad. Maybe I should try the code note with the door."
+                    }
+                  ],
+                  "else": [
+                    {
+                      "op": "say",
+                      "text": "Locked. The keypad blinks red. I need a 4-digit code."
+                    }
+                  ]
                 }
               ]
             }
@@ -112,32 +100,8 @@
           "OPEN": [
             {
               "op": "ifFlag",
-              "flag": "has_code",
+              "flag": "door_unlocked",
               "then": [
-                {
-                  "op": "setFlag",
-                  "flag": "door_unlocked",
-                  "value": true
-                },
-                {
-                  "op": "sayBrief",
-                  "text": "7-3-1-4... *beep* The door opens!",
-                  "duration": 1200
-                },
-                {
-                  "op": "sayBrief",
-                  "text": "Chapter 1 \u2014 objective: Enter the laboratory",
-                  "duration": 2000
-                },
-                {
-                  "op": "setFlag",
-                  "flag": "chapter_1_complete",
-                  "value": true
-                },
-                {
-                  "op": "achievement",
-                  "text": "CHAPTER 1 COMPLETE \u2014 Breaking & Entering"
-                },
                 {
                   "op": "fadeToScene",
                   "sceneId": "lobby",
@@ -150,8 +114,20 @@
               ],
               "else": [
                 {
-                  "op": "say",
-                  "text": "I need the access code first. Must be a clue around here somewhere."
+                  "op": "ifFlag",
+                  "flag": "has_code",
+                  "then": [
+                    {
+                      "op": "say",
+                      "text": "The door won't budge without the code. I should USE the code note on the keypad."
+                    }
+                  ],
+                  "else": [
+                    {
+                      "op": "say",
+                      "text": "Locked tight. There's a keypad next to it. I need a code."
+                    }
+                  ]
                 }
               ]
             }
