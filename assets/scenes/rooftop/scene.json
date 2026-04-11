@@ -523,18 +523,25 @@
         "scripts": {
           "LOOK": [
             {
-              "op": "say",
-              "text": "A light blinks rhythmically from below the building. The basement. Something is still running down there."
+              "op": "ifFlag",
+              "flag": "vane_pushed",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "The light below is dark now. Whatever the weather vane was connected to, turning it cut the power to this light. Interesting."
+                }
+              ],
+              "else": [
+                {
+                  "op": "say",
+                  "text": "A light blinks rhythmically from below the building. The basement. Something is still running down there. It seems connected to the weather vane's circuit."
+                }
+              ]
             },
             {
               "op": "ifFlag",
               "flag": "chapter_2_complete",
-              "then": [
-                {
-                  "op": "say",
-                  "text": "I need to find a way down. The service shaft hatch might be my ticket."
-                }
-              ],
+              "then": [],
               "else": [
                 {
                   "op": "setFlag",
@@ -551,7 +558,7 @@
                 },
                 {
                   "op": "say",
-                  "text": "That blinking... it's a server heartbeat. Something below needs attention. That service shaft might be the way down."
+                  "text": "That blinking... it's a server heartbeat. Something below needs attention. The service shaft hatch might be the way down."
                 }
               ]
             }
@@ -564,8 +571,20 @@
           ],
           "TALK": [
             {
-              "op": "say",
-              "text": "I shout toward the light. The wind carries my voice away. But for a moment, the blinking seems to pause. Coincidence?"
+              "op": "ifFlag",
+              "flag": "vane_pushed",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "I shout toward where the light used to be. Nothing. Dark and silent."
+                }
+              ],
+              "else": [
+                {
+                  "op": "say",
+                  "text": "I shout toward the light. The wind carries my voice away. But for a moment, the blinking seems to pause. Coincidence?"
+                }
+              ]
             }
           ],
           "PICK": [
@@ -600,8 +619,20 @@
           ],
           "GIVE": [
             {
-              "op": "say",
-              "text": "The blinking light doesn't need anything from me. It just needs me to come find it."
+              "op": "ifFlag",
+              "flag": "vane_pushed",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "The light is off. Nothing to give to darkness."
+                }
+              ],
+              "else": [
+                {
+                  "op": "say",
+                  "text": "The blinking light doesn't need anything from me. It just needs me to come find it."
+                }
+              ]
             }
           ]
         }
