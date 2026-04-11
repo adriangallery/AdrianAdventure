@@ -32,6 +32,7 @@ export class ScummUI {
   private onVerbSelect: ((verb: Verb) => void) | null = null;
   private onInventorySelect: ((item: InventoryItem) => void) | null = null;
   private onItemCombo: ((item1: InventoryItem, item2: InventoryItem) => void) | null = null;
+  private renderInvTimer: ReturnType<typeof setTimeout> | null = null;
 
   /** Mobile collapsible state */
   private collapsed = false;
@@ -310,7 +311,7 @@ export class ScummUI {
 
   setInventory(inv: InventorySystem): void {
     this.inventory = inv;
-    inv.onChanged(() => this.renderInventory());
+    inv.onChanged(() => this.scheduleRenderInventory());
     this.renderInventory();
   }
 
@@ -594,6 +595,15 @@ export class ScummUI {
       [Verb.GIVE]: "A broken mouse with a severed cable? That's not a gift. That's a threat.",
     },
   };
+
+  /** Debounce inventory re-renders to avoid canvas text corruption on mobile */
+  private scheduleRenderInventory(): void {
+    if (this.renderInvTimer) clearTimeout(this.renderInvTimer);
+    this.renderInvTimer = setTimeout(() => {
+      this.renderInvTimer = null;
+      this.renderInventory();
+    }, 100);
+  }
 
   private renderInventory(): void {
     if (!this.invContainer) return;
