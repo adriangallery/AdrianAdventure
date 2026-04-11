@@ -62,7 +62,12 @@ export class PreloadScene extends Phaser.Scene {
     }
 
     // Achievement badge sprites (load once)
-    const badgeIds = ['diamond_hands'];
+    const badgeIds = [
+      'ch1_complete', 'ch2_complete', 'ch3_complete', 'ch4_complete',
+      'patient_zero', 'game_complete',
+      'holder_vip_floppy', 'vip_access', 'archivist', 'alpha_leak',
+      'genesis_miner', 'diamond_hands',
+    ];
     for (const id of badgeIds) {
       const key = `badge_${id}`;
       if (!this.textures.exists(key)) {
