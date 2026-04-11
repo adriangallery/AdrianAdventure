@@ -403,6 +403,26 @@
                 {
                   "op": "say",
                   "text": "I push the weather vane. It creaks and swings west. Bearish sentiment detected. Or maybe it's just the wind."
+                },
+                {
+                  "op": "ifFlag",
+                  "flag": "vane_turned",
+                  "then": [],
+                  "else": [
+                    {
+                      "op": "wait",
+                      "ms": 600
+                    },
+                    {
+                      "op": "say",
+                      "text": "*CLUNK* Something heavy just disengaged beneath the roof. A cable connected to the vane pulled a mechanical latch. The service shaft hatch!"
+                    },
+                    {
+                      "op": "setFlag",
+                      "flag": "vane_turned",
+                      "value": true
+                    }
+                  ]
                 }
               ]
             }
@@ -431,6 +451,26 @@
                 {
                   "op": "say",
                   "text": "I yank the weather vane. It spins and settles pointing west. The bears are in control now."
+                },
+                {
+                  "op": "ifFlag",
+                  "flag": "vane_turned",
+                  "then": [],
+                  "else": [
+                    {
+                      "op": "wait",
+                      "ms": 600
+                    },
+                    {
+                      "op": "say",
+                      "text": "*CLUNK* Something heavy just disengaged beneath the roof. A cable connected to the vane pulled a mechanical latch. The service shaft hatch!"
+                    },
+                    {
+                      "op": "setFlag",
+                      "flag": "vane_turned",
+                      "value": true
+                    }
+                  ]
                 }
               ]
             }
