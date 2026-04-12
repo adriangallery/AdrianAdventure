@@ -49,8 +49,6 @@ export class MusicManager {
       this.masterGain.gain.value = 0;
       game.sound.mute = true;
     }
-
-    this.debugLog(`constructor | ctx.state=${this.context.state} | muted=${this.muted} | stored="${stored}" | sound.locked=${game.sound.locked}`);
   }
 
   /**
@@ -64,52 +62,34 @@ export class MusicManager {
    */
   unlockFromGesture(): void {
     this.unlockedThisSession = true;
-    this.debugLog(`unlockFromGesture called | ctx.state=${this.context.state} | sound.locked=${this.game.sound.locked}`);
 
     // Always attempt — don't gate on state, some iOS versions report
     // incorrect state until audio actually flows.
-    this.context.resume().then(() => {
-      this.debugLog(`resume() resolved | ctx.state=${this.context.state}`);
-    }).catch((e) => {
-      this.debugLog(`resume() REJECTED: ${e}`);
-    });
+    this.context.resume();
 
-    // Play a short audible test tone — proves audio output actually works.
-    // Also serves as the "warm up" buffer that iOS requires within the
-    // user gesture call-stack to consider Web Audio unlocked.
+    // Play a tiny silent buffer — "warm up" the audio pipeline.
+    // iOS requires a buffer source to start() within the user gesture
+    // call-stack before it considers Web Audio unlocked.
     try {
-      const osc = this.context.createOscillator();
-      const testGain = this.context.createGain();
-      osc.frequency.value = 440; // A4 note
-      testGain.gain.value = 0.3;
-      osc.connect(testGain);
-      testGain.connect(this.context.destination);
-      osc.start(0);
-      osc.stop(this.context.currentTime + 0.3); // 300ms beep
-      this.debugLog('test tone 440Hz started (0.3s)');
-    } catch (e) {
-      this.debugLog(`test tone FAILED: ${e}`);
-    }
+      const buf = this.context.createBuffer(1, 1, 22050);
+      const src = this.context.createBufferSource();
+      src.buffer = buf;
+      src.connect(this.context.destination);
+      src.start(0);
+    } catch { /* silent */ }
 
     // Also unlock Phaser's sound system (it may be locked independently).
-    // Phaser's WebAudioSoundManager shares our context but tracks its own
-    // locked state — calling a no-op decode nudges it to re-check.
     if (this.game.sound.locked) {
-      this.debugLog('Phaser sound.locked=true, calling unlock()');
       (this.game.sound as Phaser.Sound.WebAudioSoundManager).unlock();
     }
   }
 
   /** Main entry point — called on every scene transition */
   transitionToScene(audio: SceneAudioConfig): void {
-    this.debugLog(`transitionToScene("${audio.music}") | ctx.state=${this.context.state} | locked=${this.game.sound.locked} | muted=${this.muted}`);
-
     // If Phaser's sound system is still locked (no user gesture yet),
     // defer playback until the UNLOCKED event fires.
     if (this.game.sound.locked) {
-      this.debugLog('sound.locked — deferring to UNLOCKED event');
       this.game.sound.once(Phaser.Sound.Events.UNLOCKED, () => {
-        this.debugLog('UNLOCKED event fired — retrying transitionToScene');
         this.transitionToScene(audio);
       });
       return;
@@ -117,7 +97,6 @@ export class MusicManager {
 
     // Ensure context is running
     if (this.context.state === 'suspended') {
-      this.debugLog('context suspended — calling resume()');
       this.context.resume();
     }
 
@@ -138,12 +117,11 @@ export class MusicManager {
     // Different track — crossfade
     const buffer = this.getDecodedBuffer(newKey);
     if (!buffer) {
-      this.debugLog(`BUFFER NOT FOUND for "${newKey}" — no audio will play`);
+      console.warn(`[MusicManager] buffer for "${newKey}" not found`);
       this.fadeToSilence(duration);
       return;
     }
 
-    this.debugLog(`buffer OK for "${newKey}" (${buffer.duration.toFixed(1)}s) — creating track, masterGain=${this.masterGain.gain.value}`);
     const newTrack = this.createTrack(newKey, buffer, variation);
     this.crossfadeTo(newTrack, variation, duration);
   }
@@ -163,7 +141,6 @@ export class MusicManager {
       this.masterGain.gain.value = this.musicVolume;
       this.game.sound.mute = false;
     }
-    this.debugLog(`toggleMute → muted=${this.muted} | masterGain=${this.masterGain.gain.value}`);
     return this.muted;
   }
 
@@ -209,28 +186,6 @@ export class MusicManager {
     this.fadingTrack = null;
     this.currentKey = null;
     this.masterGain.disconnect();
-  }
-
-  // ─── Debug (TEMPORARY — remove after fixing mobile audio) ────
-
-  private debugLog(msg: string): void {
-    console.log(`[MusicManager] ${msg}`);
-    let el = document.getElementById('audio-debug');
-    if (!el) {
-      el = document.createElement('div');
-      el.id = 'audio-debug';
-      el.style.cssText = `
-        position: fixed; bottom: 0; left: 0; right: 0; z-index: 99999;
-        background: rgba(0,0,0,0.85); color: #0f0; font: 10px monospace;
-        padding: 6px; max-height: 35vh; overflow-y: auto;
-        pointer-events: none;
-      `;
-      document.body.appendChild(el);
-    }
-    const line = document.createElement('div');
-    line.textContent = `${new Date().toLocaleTimeString()} ${msg}`;
-    el.appendChild(line);
-    el.scrollTop = el.scrollHeight;
   }
 
   // ─── Private ──────────────────────────────
@@ -287,7 +242,6 @@ export class MusicManager {
       //    execute Web Audio automation ramps shortly after resume() ──
       newTrack.gainNode.gain.cancelScheduledValues(0);
       newTrack.gainNode.gain.value = safeTarget;
-      this.debugLog(`first play — gainNode set directly to ${safeTarget}`);
     }
 
     this.currentTrack = newTrack;
