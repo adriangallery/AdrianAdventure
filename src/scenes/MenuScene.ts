@@ -184,8 +184,13 @@ export class MenuScene extends Phaser.Scene {
       border: 2px solid #f8e848;
     `;
 
-    const enableAndProceed = (e: Event) => {
-      e.preventDefault();
+    // CRITICAL for iOS: use touchend (NOT touchstart) and do NOT preventDefault.
+    // iOS Safari only recognises a completed tap (touchend) as a valid user
+    // gesture for AudioContext unlock.  preventDefault() voids the gesture.
+    let acted = false;
+    const enableAndProceed = () => {
+      if (acted) return;  // guard against touchend + click double-fire
+      acted = true;
       if (musicManager) {
         musicManager.unlockFromGesture();
         if (musicManager.isMuted()) musicManager.toggleMute();
@@ -193,7 +198,7 @@ export class MenuScene extends Phaser.Scene {
       overlay.remove();
       onProceed();
     };
-    yesBtn.addEventListener('touchstart', enableAndProceed, { passive: false });
+    yesBtn.addEventListener('touchend', enableAndProceed);
     yesBtn.addEventListener('click', enableAndProceed);
     modal.appendChild(yesBtn);
 
@@ -204,12 +209,14 @@ export class MenuScene extends Phaser.Scene {
       background: transparent; color: #665577;
       border: 1px solid #333;
     `;
-    const skipAndProceed = (e: Event) => {
-      e.preventDefault();
+    let skipped = false;
+    const skipAndProceed = () => {
+      if (skipped) return;
+      skipped = true;
       overlay.remove();
       onProceed();
     };
-    noBtn.addEventListener('touchstart', skipAndProceed, { passive: false });
+    noBtn.addEventListener('touchend', skipAndProceed);
     noBtn.addEventListener('click', skipAndProceed);
     modal.appendChild(noBtn);
 

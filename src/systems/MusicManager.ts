@@ -51,16 +51,22 @@ export class MusicManager {
   }
 
   /**
-   * Unlock AudioContext using a native DOM gesture.
-   * Must be called from a touchstart/click handler on the actual canvas element
-   * (Phaser's synthetic pointerdown events are NOT recognised by iOS Safari).
-   * Plays a silent buffer to fully prime the audio pipeline.
+   * Unlock AudioContext from a native DOM gesture (touchend / click).
+   *
+   * iOS Safari requirements (from Apple docs + community research):
+   *  - Must be called from touchend (NOT touchstart — iOS 9+) or click
+   *  - Do NOT call e.preventDefault() — it voids the gesture
+   *  - Must resume() AND play a silent buffer to fully prime the pipeline
+   *  - context.resume() alone is not enough on all iOS versions
    */
   unlockFromGesture(): void {
-    if (this.context.state !== 'suspended') return;
+    // Always attempt — don't gate on state, some iOS versions report
+    // incorrect state until audio actually flows.
     this.context.resume();
-    // Play a tiny silent buffer — iOS requires an actual audio node to start
-    // within the gesture call-stack before it considers audio "unlocked".
+
+    // Play a tiny silent buffer — "warm up" the audio pipeline.
+    // iOS requires a buffer source to start() within the user gesture
+    // call-stack before it considers Web Audio unlocked.
     try {
       const buf = this.context.createBuffer(1, 1, 22050);
       const src = this.context.createBufferSource();
@@ -68,20 +74,29 @@ export class MusicManager {
       src.connect(this.context.destination);
       src.start(0);
     } catch { /* silent */ }
-  }
 
-  /** Resume AudioContext if suspended (for external callers). */
-  async ensureUnlocked(): Promise<void> {
-    if (this.context.state === 'suspended') {
-      await this.context.resume();
+    // Also unlock Phaser's sound system (it may be locked independently).
+    // Phaser's WebAudioSoundManager shares our context but tracks its own
+    // locked state — calling a no-op decode nudges it to re-check.
+    if (this.game.sound.locked) {
+      (this.game.sound as Phaser.Sound.WebAudioSoundManager).unlock();
     }
   }
 
   /** Main entry point — called on every scene transition */
-  async transitionToScene(audio: SceneAudioConfig): Promise<void> {
-    // Ensure context is running (autoplay policy — required for mobile)
+  transitionToScene(audio: SceneAudioConfig): void {
+    // If Phaser's sound system is still locked (no user gesture yet),
+    // defer playback until the UNLOCKED event fires.
+    if (this.game.sound.locked) {
+      this.game.sound.once(Phaser.Sound.Events.UNLOCKED, () => {
+        this.transitionToScene(audio);
+      });
+      return;
+    }
+
+    // Ensure context is running
     if (this.context.state === 'suspended') {
-      await this.context.resume();
+      this.context.resume();
     }
 
     const duration = (audio.crossfadeDuration ?? DEFAULT_CROSSFADE) / 1000;
