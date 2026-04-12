@@ -255,33 +255,37 @@ export class MusicManager {
 
   private crossfadeTo(newTrack: ManagedTrack, variation: MusicVariation | undefined, duration: number): void {
     const now = this.context.currentTime;
+    const targetVol = variation?.volume ?? 1.0;
+    const safeTarget = Math.max(targetVol, 0.001);
 
     // Stop any previously fading track
     this.stopTrack(this.fadingTrack);
 
-    // Fade out current — exponential curve for natural decay
     if (this.currentTrack) {
+      // ── Crossfade: fade out old, fade in new (ramps are fine here,
+      //    context has been running long enough for stable automation) ──
       const old = this.currentTrack;
       const oldVol = Math.max(old.gainNode.gain.value, 0.001);
       old.gainNode.gain.setValueAtTime(oldVol, now);
-      // Slow fade out: start losing volume gradually, then accelerate at the end
       old.gainNode.gain.exponentialRampToValueAtTime(0.001, now + duration * 1.2);
       this.fadingTrack = old;
 
-      // Clean up after fade (extra 20% time for the longer fade-out)
       setTimeout(() => {
         if (this.fadingTrack === old) {
           this.stopTrack(old);
           this.fadingTrack = null;
         }
       }, duration * 1200 + 200);
-    }
 
-    // Fade in new track — exponential curve, slightly delayed start for overlap blend
-    const targetVol = variation?.volume ?? 1.0;
-    const safeTarget = Math.max(targetVol, 0.001);
-    newTrack.gainNode.gain.setValueAtTime(0.001, now);
-    newTrack.gainNode.gain.exponentialRampToValueAtTime(safeTarget, now + duration);
+      newTrack.gainNode.gain.setValueAtTime(0.001, now);
+      newTrack.gainNode.gain.exponentialRampToValueAtTime(safeTarget, now + duration);
+    } else {
+      // ── First play: set gain directly — iOS Safari often fails to
+      //    execute Web Audio automation ramps shortly after resume() ──
+      newTrack.gainNode.gain.cancelScheduledValues(0);
+      newTrack.gainNode.gain.value = safeTarget;
+      this.debugLog(`first play — gainNode set directly to ${safeTarget}`);
+    }
 
     this.currentTrack = newTrack;
     this.currentKey = newTrack.key;
