@@ -1022,6 +1022,11 @@
               "value": true
             },
             {
+              "op": "setFlag",
+              "flag": "plant_revived",
+              "value": true
+            },
+            {
               "op": "removeItem",
               "id": "water_bottle"
             },
