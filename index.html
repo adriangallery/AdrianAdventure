@@ -11,15 +11,19 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <script>
-    // Cache buster: detect stale HTML and force reload
+    // Cache buster: detect stale HTML and force hard reload
     (function(){
       var B='__BUILD__',K='zeroadv_v';
+      // If we arrived via cache-bust redirect, clean URL and store version
+      var u=new URLSearchParams(location.search);
+      if(u.has('_cb')){localStorage.setItem(K,B);history.replaceState(null,'',location.pathname);return;}
+      // Check localStorage for version mismatch
       var p=localStorage.getItem(K);
       localStorage.setItem(K,B);
-      if(p&&p!==B){location.reload(true);return;}
-      // Also fetch a tiny version file to catch CDN-cached HTML
+      if(p&&p!==B){location.href=location.pathname+'?_cb='+Date.now();return;}
+      // Fetch server version to catch CDN-cached HTML
       fetch('/version.txt?t='+Date.now()).then(function(r){return r.text()}).then(function(v){
-        v=v.trim();if(v&&v!==B){localStorage.setItem(K,v);location.reload(true);}
+        v=v.trim();if(v&&v!==B&&v!=='dev'){location.href=location.pathname+'?_cb='+Date.now();}
       }).catch(function(){});
     })();
   </script>
