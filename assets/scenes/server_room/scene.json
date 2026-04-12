@@ -24,16 +24,15 @@
   },
   "player": {
     "spawn": {
-      "x": 15,
-      "y": 85
+      "x": 8,
+      "y": 80
     },
     "speed": 180,
     "sprite": {
       "sheet": null,
       "idle": null,
       "walk": null
-    },
-    "hidePlayer": true
+    }
   },
   "ui": {
     "verbs": [
@@ -58,10 +57,10 @@
         "id": "hs_server_rack_a",
         "name": "Active Server Rack",
         "bounds": {
-          "x": 7.7,
-          "y": 14.6,
-          "w": 20,
-          "h": 55
+          "x": 16.4,
+          "y": 26.8,
+          "w": 11.4,
+          "h": 55.1
         },
         "scripts": {
           "LOOK": [
@@ -124,10 +123,10 @@
         "id": "hs_server_rack_b",
         "name": "Dead Server Rack",
         "bounds": {
-          "x": 28.1,
-          "y": 15,
-          "w": 20,
-          "h": 42.5
+          "x": 33.1,
+          "y": 30.3,
+          "w": 8.8,
+          "h": 48.1
         },
         "scripts": {
           "LOOK": [
@@ -212,10 +211,10 @@
         "id": "hs_terminal",
         "name": "Server Terminal",
         "bounds": {
-          "x": 54.4,
-          "y": 27.2,
-          "w": 14.9,
-          "h": 15.9
+          "x": 49.4,
+          "y": 42,
+          "w": 8.6,
+          "h": 18
         },
         "scripts": {
           "LOOK": [
@@ -322,10 +321,10 @@
         "id": "hs_cooling_system",
         "name": "Cooling System",
         "bounds": {
-          "x": 76.3,
-          "y": 16.9,
-          "w": 15,
-          "h": 40
+          "x": 62.8,
+          "y": 35.7,
+          "w": 10.7,
+          "h": 41.8
         },
         "scripts": {
           "LOOK": [
@@ -388,10 +387,10 @@
         "id": "hs_emergency_switch",
         "name": "Emergency Switch",
         "bounds": {
-          "x": 41.9,
-          "y": 60.3,
-          "w": 10,
-          "h": 12
+          "x": 81.3,
+          "y": 50,
+          "w": 6.6,
+          "h": 32.3
         },
         "scripts": {
           "LOOK": [
@@ -564,10 +563,10 @@
         "id": "hs_cable_conduit",
         "name": "Cable Conduit",
         "bounds": {
-          "x": 49,
-          "y": 0,
-          "w": 5,
-          "h": 14
+          "x": 20,
+          "y": 18.1,
+          "w": 52.2,
+          "h": 7.1
         },
         "scripts": {
           "LOOK": [
@@ -630,10 +629,10 @@
         "id": "hs_raised_floor",
         "name": "Raised Floor Tiles",
         "bounds": {
-          "x": 5,
-          "y": 82,
-          "w": 88,
-          "h": 8
+          "x": 31.2,
+          "y": 87.7,
+          "w": 38.9,
+          "h": 12.3
         },
         "scripts": {
           "LOOK": [
@@ -696,10 +695,10 @@
         "id": "hs_wall_schematics",
         "name": "Wall Schematics",
         "bounds": {
-          "x": 76,
-          "y": 58,
-          "w": 16,
-          "h": 20
+          "x": 41.9,
+          "y": 28.4,
+          "w": 6.6,
+          "h": 17.1
         },
         "scripts": {
           "LOOK": [
@@ -764,10 +763,10 @@
         "id": "tr_to_basement",
         "once": false,
         "bounds": {
-          "x": 93,
-          "y": 0,
-          "w": 7,
-          "h": 100
+          "x": 5.8,
+          "y": 30,
+          "w": 5,
+          "h": 70
         },
         "onEnter": [
           {
@@ -803,10 +802,10 @@
   },
   "walkableAreas": [
     {
-      "x": 5,
-      "y": 78,
-      "w": 90,
-      "h": 22
+      "x": 9.5,
+      "y": 91.9,
+      "w": 72.2,
+      "h": 8.1
     }
   ]
 }
