@@ -74,18 +74,21 @@ export class MusicManager {
       this.debugLog(`resume() REJECTED: ${e}`);
     });
 
-    // Play a tiny silent buffer — "warm up" the audio pipeline.
-    // iOS requires a buffer source to start() within the user gesture
-    // call-stack before it considers Web Audio unlocked.
+    // Play a short audible test tone — proves audio output actually works.
+    // Also serves as the "warm up" buffer that iOS requires within the
+    // user gesture call-stack to consider Web Audio unlocked.
     try {
-      const buf = this.context.createBuffer(1, 1, 22050);
-      const src = this.context.createBufferSource();
-      src.buffer = buf;
-      src.connect(this.context.destination);
-      src.start(0);
-      this.debugLog('silent buffer played OK');
+      const osc = this.context.createOscillator();
+      const testGain = this.context.createGain();
+      osc.frequency.value = 440; // A4 note
+      testGain.gain.value = 0.3;
+      osc.connect(testGain);
+      testGain.connect(this.context.destination);
+      osc.start(0);
+      osc.stop(this.context.currentTime + 0.3); // 300ms beep
+      this.debugLog('test tone 440Hz started (0.3s)');
     } catch (e) {
-      this.debugLog(`silent buffer FAILED: ${e}`);
+      this.debugLog(`test tone FAILED: ${e}`);
     }
 
     // Also unlock Phaser's sound system (it may be locked independently).
