@@ -54,12 +54,17 @@ function editorSavePlugin(): Plugin {
 
 const BUILD_HASH = Date.now().toString(36);
 
-/** Replace __BUILD__ in index.html and expose as define constant */
+/** Replace __BUILD__ in index.html, expose as define constant, and write version.txt */
 function buildHashPlugin(): Plugin {
   return {
     name: 'build-hash',
     transformIndexHtml(html) {
       return html.replace('__BUILD__', BUILD_HASH);
+    },
+    writeBundle() {
+      // Write version.txt to dist so the cache buster can fetch it
+      const distPath = path.resolve(__dirname, 'dist', 'version.txt');
+      fs.writeFileSync(distPath, BUILD_HASH + '\n', 'utf-8');
     },
   };
 }

@@ -12,7 +12,16 @@
   <meta http-equiv="Expires" content="0">
   <script>
     // Cache buster: detect stale HTML and force reload
-    (function(){var B='__BUILD__',K='zeroadv_v';var p=localStorage.getItem(K);localStorage.setItem(K,B);if(p&&p!==B)location.reload();})();
+    (function(){
+      var B='__BUILD__',K='zeroadv_v';
+      var p=localStorage.getItem(K);
+      localStorage.setItem(K,B);
+      if(p&&p!==B){location.reload(true);return;}
+      // Also fetch a tiny version file to catch CDN-cached HTML
+      fetch('/version.txt?t='+Date.now()).then(function(r){return r.text()}).then(function(v){
+        v=v.trim();if(v&&v!==B){localStorage.setItem(K,v);location.reload(true);}
+      }).catch(function(){});
+    })();
   </script>
   <!-- Pixel font: Press Start 2P -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
