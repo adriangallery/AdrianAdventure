@@ -10,7 +10,6 @@ const DUCK_THRESHOLD = 60;
  *
  * Uses lazy loading: audio files are fetched on-demand the first time
  * a line is spoken, then cached by Phaser for subsequent plays.
- * This avoids loading 1600+ files upfront which overwhelms the browser.
  *
  * Automatically ducks background music while voice is playing.
  */
@@ -20,20 +19,20 @@ export class VoiceSystem {
   private enabled = true;
   private ducked = false;
   private loading = new Set<string>();
+  /** Incremented on stop() to cancel any running playSequence loop. */
+  private sequenceGen = 0;
 
-  /** Text→voiceKey lookup. Key = normalised first 100 chars of dialogue text. */
+  /** Text→voiceKey lookup. */
   private textMap = new Map<string, string>();
 
   constructor(scene: Phaser.Scene) {
     this.scene = scene;
   }
 
-  /** Register a mapping from dialogue text to a voice audio key. */
   register(text: string, voiceKey: string): void {
     this.textMap.set(this.normalise(text), voiceKey);
   }
 
-  /** Register many mappings at once. */
   registerAll(entries: Array<{ text: string; key: string }>): void {
     for (const e of entries) this.register(e.text, e.key);
   }
@@ -60,7 +59,7 @@ export class VoiceSystem {
     }
 
     // Lazy load then play
-    if (this.loading.has(key)) return; // already loading
+    if (this.loading.has(key)) return;
     this.loading.add(key);
     this.scene.load.audio(key, voicePath(key));
     this.scene.load.once('complete', () => {
@@ -72,8 +71,9 @@ export class VoiceSystem {
     this.scene.load.start();
   }
 
-  /** Stop currently playing voice clip. */
+  /** Stop currently playing voice clip AND cancel any running sequence. */
   stop(): void {
+    this.sequenceGen++; // cancel any playSequence loop
     if (this.currentSound) {
       this.currentSound.stop();
       this.currentSound.destroy();
@@ -82,22 +82,24 @@ export class VoiceSystem {
     this.unduckMusic();
   }
 
-  /** Play a sequence of voice keys one after another. Returns a Promise that resolves when all are done. */
+  /** Play a sequence of voice keys one after another. Cancellable via stop(). */
   async playSequence(keys: string[], gapMs = 300): Promise<void> {
+    this.stop(); // cancel any previous sequence
+    const gen = this.sequenceGen; // snapshot — if stop() is called, gen changes
+
     this.duckMusic();
     for (const key of keys) {
+      if (this.sequenceGen !== gen) return; // cancelled
+
       // Lazy load if needed
       if (!this.scene.cache.audio.has(key)) {
         await this.lazyLoad(key);
       }
+      if (this.sequenceGen !== gen) return; // cancelled during load
       if (!this.scene.cache.audio.has(key)) continue;
 
       await new Promise<void>((resolve) => {
-        if (this.currentSound) {
-          this.currentSound.stop();
-          this.currentSound.destroy();
-          this.currentSound = null;
-        }
+        if (this.sequenceGen !== gen) { resolve(); return; }
         try {
           this.currentSound = this.scene.sound.add(key, { volume: 1.0 });
           this.currentSound.once('complete', () => {
@@ -111,7 +113,7 @@ export class VoiceSystem {
         }
       });
     }
-    this.unduckMusic();
+    if (this.sequenceGen === gen) this.unduckMusic();
   }
 
   setEnabled(enabled: boolean): void {
