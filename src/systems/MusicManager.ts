@@ -48,6 +48,8 @@ export class MusicManager {
       this.masterGain.gain.value = 0;
       game.sound.mute = true;
     }
+
+    this.debugLog(`constructor | ctx.state=${this.context.state} | muted=${this.muted} | stored="${stored}" | sound.locked=${game.sound.locked}`);
   }
 
   /**
@@ -60,9 +62,15 @@ export class MusicManager {
    *  - context.resume() alone is not enough on all iOS versions
    */
   unlockFromGesture(): void {
+    this.debugLog(`unlockFromGesture called | ctx.state=${this.context.state} | sound.locked=${this.game.sound.locked}`);
+
     // Always attempt — don't gate on state, some iOS versions report
     // incorrect state until audio actually flows.
-    this.context.resume();
+    this.context.resume().then(() => {
+      this.debugLog(`resume() resolved | ctx.state=${this.context.state}`);
+    }).catch((e) => {
+      this.debugLog(`resume() REJECTED: ${e}`);
+    });
 
     // Play a tiny silent buffer — "warm up" the audio pipeline.
     // iOS requires a buffer source to start() within the user gesture
@@ -73,22 +81,30 @@ export class MusicManager {
       src.buffer = buf;
       src.connect(this.context.destination);
       src.start(0);
-    } catch { /* silent */ }
+      this.debugLog('silent buffer played OK');
+    } catch (e) {
+      this.debugLog(`silent buffer FAILED: ${e}`);
+    }
 
     // Also unlock Phaser's sound system (it may be locked independently).
     // Phaser's WebAudioSoundManager shares our context but tracks its own
     // locked state — calling a no-op decode nudges it to re-check.
     if (this.game.sound.locked) {
+      this.debugLog('Phaser sound.locked=true, calling unlock()');
       (this.game.sound as Phaser.Sound.WebAudioSoundManager).unlock();
     }
   }
 
   /** Main entry point — called on every scene transition */
   transitionToScene(audio: SceneAudioConfig): void {
+    this.debugLog(`transitionToScene("${audio.music}") | ctx.state=${this.context.state} | locked=${this.game.sound.locked} | muted=${this.muted}`);
+
     // If Phaser's sound system is still locked (no user gesture yet),
     // defer playback until the UNLOCKED event fires.
     if (this.game.sound.locked) {
+      this.debugLog('sound.locked — deferring to UNLOCKED event');
       this.game.sound.once(Phaser.Sound.Events.UNLOCKED, () => {
+        this.debugLog('UNLOCKED event fired — retrying transitionToScene');
         this.transitionToScene(audio);
       });
       return;
@@ -96,6 +112,7 @@ export class MusicManager {
 
     // Ensure context is running
     if (this.context.state === 'suspended') {
+      this.debugLog('context suspended — calling resume()');
       this.context.resume();
     }
 
@@ -179,6 +196,28 @@ export class MusicManager {
     this.fadingTrack = null;
     this.currentKey = null;
     this.masterGain.disconnect();
+  }
+
+  // ─── Debug (TEMPORARY — remove after fixing mobile audio) ────
+
+  private debugLog(msg: string): void {
+    console.log(`[MusicManager] ${msg}`);
+    let el = document.getElementById('audio-debug');
+    if (!el) {
+      el = document.createElement('div');
+      el.id = 'audio-debug';
+      el.style.cssText = `
+        position: fixed; bottom: 0; left: 0; right: 0; z-index: 99999;
+        background: rgba(0,0,0,0.85); color: #0f0; font: 10px monospace;
+        padding: 6px; max-height: 35vh; overflow-y: auto;
+        pointer-events: none;
+      `;
+      document.body.appendChild(el);
+    }
+    const line = document.createElement('div');
+    line.textContent = `${new Date().toLocaleTimeString()} ${msg}`;
+    el.appendChild(line);
+    el.scrollTop = el.scrollHeight;
   }
 
   // ─── Private ──────────────────────────────

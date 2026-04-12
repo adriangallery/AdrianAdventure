@@ -137,11 +137,15 @@ export class MenuScene extends Phaser.Scene {
    * that unlocks AudioContext on mobile (iOS Safari included).
    */
   private showAudioPrompt(musicManager: MusicManager | null, onProceed: () => void): void {
+    console.log('[MenuScene] showAudioPrompt called', { musicManager: !!musicManager, isMuted: musicManager?.isMuted() });
+
     // If audio is already unlocked and un-muted, skip the prompt
     if (musicManager && !musicManager.isMuted()) {
+      console.log('[MenuScene] audio already enabled, skipping prompt');
       onProceed();
       return;
     }
+    console.log('[MenuScene] showing audio modal');
 
     const overlay = document.createElement('div');
     overlay.style.cssText = `
