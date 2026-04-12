@@ -427,6 +427,11 @@
                   ],
                   "else": [
                     {
+                      "op": "setFlag",
+                      "flag": "emergency_switch_flipped",
+                      "value": true
+                    },
+                    {
                       "op": "say",
                       "text": "I flip the switch. Everything goes dark for a moment... The servers die. Then emergency generators kick in with a deep rumble."
                     },
@@ -453,11 +458,6 @@
                     {
                       "op": "say",
                       "text": "Coordinates: 47.6062N, 122.3321W. Seattle? What's in Seattle?"
-                    },
-                    {
-                      "op": "setFlag",
-                      "flag": "emergency_switch_flipped",
-                      "value": true
                     },
                     {
                       "op": "ifFlag",
@@ -534,13 +534,13 @@
               ],
               "else": [
                 {
-                  "op": "say",
-                  "text": "I push the glass panel. *CRACK* It shatters. Glass everywhere. The red switch is exposed now, practically begging to be flipped. Do I dare?"
-                },
-                {
                   "op": "setFlag",
                   "flag": "emergency_glass_broken",
                   "value": true
+                },
+                {
+                  "op": "say",
+                  "text": "I push the glass panel. *CRACK* It shatters. Glass everywhere. The red switch is exposed now, practically begging to be flipped. Do I dare?"
                 }
               ]
             }
@@ -655,17 +655,32 @@
           ],
           "PICK": [
             {
+              "op": "setFlag",
+              "flag": "tiles_opened",
+              "value": true
+            },
+            {
               "op": "say",
               "text": "I lift a floor tile. Below: a rat's nest of cables, a forgotten USB drive, and what appears to be a half-eaten sandwich from 2023."
             }
           ],
           "OPEN": [
             {
+              "op": "setFlag",
+              "flag": "tiles_opened",
+              "value": true
+            },
+            {
               "op": "say",
               "text": "I pry open a tile. The underfloor is like Ethereum's mempool — chaotic, congested, and full of things waiting to be processed."
             }
           ],
           "CLOSE": [
+            {
+              "op": "setFlag",
+              "flag": "tiles_opened",
+              "value": false
+            },
             {
               "op": "say",
               "text": "I put the tile back. It clicks into place with satisfying finality. Like closing a position in profit. Rare but satisfying."
@@ -756,6 +771,72 @@
             }
           ]
         }
+      },
+      {
+        "id": "hs_graffiti",
+        "name": "Graffiti",
+        "bounds": {
+          "x": 88,
+          "y": 20,
+          "w": 10,
+          "h": 25
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "'HxT WAS HERE!' Someone spray-painted this on the wall. The handwriting is... surprisingly artistic for a vandal. Almost like a professional artist did it."
+            }
+          ],
+          "USE": [
+            {
+              "op": "say",
+              "text": "I try to wipe it off. The paint is permanent. Whoever HxT is, they committed to this tag like a diamond-handed holder."
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "'Who's HxT?' I ask the wall. The wall doesn't answer, but I swear the graffiti winks at me. Half a wink, actually. A half-tiger wink."
+            }
+          ],
+          "PICK": [
+            {
+              "op": "say",
+              "text": "I can't peel graffiti off a wall. Trust me, the landlord has tried."
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "say",
+              "text": "Behind the graffiti? More wall. The real art was the vandalism we found along the way."
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "I can't close a graffiti. It's open-source art. Permissionless expression."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I push on the tag. Still wet? No... it dried years ago. HxT was here before any of us."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "I scratch at the paint. Under it, another tag: 'HxT WAS ALSO HERE EARLIER.' Layers of flex."
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "What do you give a graffiti artist? Respect. And maybe a bigger wall."
+            }
+          ]
+        }
       }
     ],
     "triggers": [
@@ -800,6 +881,26 @@
   "transitions": {
     "goto": []
   },
+  "conditionalOverlays": [
+    {
+      "id": "lights_out",
+      "sprite": "overlay_lights_out",
+      "flag": "emergency_switch_flipped",
+      "depth": 3
+    },
+    {
+      "id": "tiles_open",
+      "sprite": "overlay_tiles_open",
+      "flag": "tiles_opened",
+      "depth": 3
+    },
+    {
+      "id": "glass_broken",
+      "sprite": "overlay_glass_broken",
+      "flag": "emergency_glass_broken",
+      "depth": 3
+    }
+  ],
   "walkableAreas": [
     {
       "x": 9.5,

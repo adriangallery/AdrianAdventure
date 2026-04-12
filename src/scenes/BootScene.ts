@@ -23,6 +23,14 @@ export class BootScene extends Phaser.Scene {
     const musicManager = new MusicManager(this.game);
     this.game.registry.set('musicManager', musicManager);
 
-    this.scene.start('MenuScene');
+    // ?scene=sceneId — skip menu, jump directly to scene (dev/testing)
+    const params = new URLSearchParams(window.location.search);
+    const sceneParam = params.get('scene');
+    if (sceneParam) {
+      this.registry.set('currentSceneId', sceneParam);
+      this.scene.start('PreloadScene');
+    } else {
+      this.scene.start('MenuScene');
+    }
   }
 }
