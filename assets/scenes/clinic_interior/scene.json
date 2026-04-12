@@ -1354,7 +1354,7 @@
       "id": "no_photo",
       "sprite": "overlay_no_photo",
       "flag": "found_clinic_photo",
-      "depth": 12
+      "depth": 5
     }
   ]
 }

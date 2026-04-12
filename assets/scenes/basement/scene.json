@@ -554,8 +554,8 @@
                   "op": "fadeToScene",
                   "sceneId": "server_room",
                   "spawn": {
-                    "x": 15,
-                    "y": 85
+                    "x": 21,
+                    "y": 96.5
                   },
                   "duration": 500
                 }
@@ -583,8 +583,8 @@
                   "op": "fadeToScene",
                   "sceneId": "server_room",
                   "spawn": {
-                    "x": 15,
-                    "y": 85
+                    "x": 21,
+                    "y": 96.5
                   },
                   "duration": 600
                 }
