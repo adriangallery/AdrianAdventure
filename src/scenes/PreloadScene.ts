@@ -1,8 +1,36 @@
 import Phaser from 'phaser';
 import { VOICE_AUDIO_KEYS, voicePath } from '@/config/voice.config';
+import { FONT } from '@/config/theme';
 
 declare const __BUILD_HASH__: string;
 const v = typeof __BUILD_HASH__ !== 'undefined' ? `?v=${__BUILD_HASH__}` : '';
+
+const LOADING_TIPS: string[] = [
+  'Calibrating pixel dimensions...',
+  'Teaching NPCs sarcasm...',
+  'Hiding keys in obvious places...',
+  'Rehearsing voice lines...',
+  'Warming up the FloorEngine...',
+  'Convincing the receptionist to stay...',
+  'Decrypting Patient Zero\'s diary...',
+  'Polishing the rubber duck...',
+  'Brewing on-chain coffee...',
+  'Tuning the chimney\'s consensus...',
+  'Defragmenting floppy discs...',
+  'Bribing the doormat...',
+  'Loading 1,388 voice clips...',
+  'Auditing Adrian\'s ledger...',
+  'Feeding the three-headed monkey...',
+  'Compiling gas fees...',
+  'Minting loading screen NFT...',
+  'Verifying doormat authenticity...',
+  'Reticulating blockchains...',
+  'Asking B.O.T. for drink recipes...',
+  'Dr. Satoshi is warming up...',
+  'Sweeping the floor (engine)...',
+  'Staking patience tokens...',
+  'Downloading more RAM (on-chain)...',
+];
 
 export class PreloadScene extends Phaser.Scene {
   constructor() { super({ key: 'PreloadScene' }); }
@@ -113,14 +141,52 @@ export class PreloadScene extends Phaser.Scene {
       console.warn(`[PreloadScene] Failed to load: ${file.key} (${file.url})`);
     });
 
-    // Progress bar
+    // Progress bar + funny loading tips
     const { width, height } = this.scale;
     const barW = Math.min(width * 0.5, 200);
     const barY = height / 2;
     const bg = this.add.rectangle(width / 2, barY, barW, 6, 0x222222);
     const fill = this.add.rectangle(width / 2 - barW / 2, barY, 0, 6, 0x5b3a8c).setOrigin(0, 0.5);
-    this.load.on('progress', (v: number) => { fill.width = barW * v; });
-    this.load.on('complete', () => { bg.destroy(); fill.destroy(); });
+
+    const fontSize = Math.max(7, Math.min(10, Math.floor(width * 0.009)));
+    const tipText = this.add.text(width / 2, barY + 20, '', {
+      fontFamily: FONT.FAMILY,
+      fontSize: `${fontSize}px`,
+      color: '#504878',
+      align: 'center',
+    }).setOrigin(0.5, 0);
+
+    const pctText = this.add.text(width / 2, barY - 14, '', {
+      fontFamily: FONT.FAMILY,
+      fontSize: `${fontSize}px`,
+      color: '#a090c0',
+      align: 'center',
+    }).setOrigin(0.5, 1);
+
+    // Shuffle tips
+    const tips = [...LOADING_TIPS].sort(() => Math.random() - 0.5);
+    let tipIndex = 0;
+    tipText.setText(tips[0]);
+
+    // Rotate tip every 2.5s
+    const tipTimer = this.time.addEvent({
+      delay: 2500,
+      loop: true,
+      callback: () => {
+        tipIndex = (tipIndex + 1) % tips.length;
+        tipText.setText(tips[tipIndex]);
+      },
+    });
+
+    this.load.on('progress', (p: number) => {
+      fill.width = barW * p;
+      pctText.setText(`${Math.floor(p * 100)}%`);
+    });
+    this.load.on('complete', () => {
+      tipTimer.remove();
+      bg.destroy(); fill.destroy();
+      tipText.destroy(); pctText.destroy();
+    });
   }
 
   create(): void {
