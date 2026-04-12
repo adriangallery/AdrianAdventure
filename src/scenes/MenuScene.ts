@@ -115,34 +115,47 @@ export class MenuScene extends Phaser.Scene {
     const lbY = hasSave ? btnY + btnSpacing * 2 : btnY + btnSpacing;
     this.createButton(width / 2, lbY, 'Leaderboard', btnSize, () => this.showLeaderboard());
 
-    // Audio toggle — explicit user gesture unlocks AudioContext on mobile
+    // Audio toggle — uses a NATIVE DOM button so the browser recognises
+    // the tap as a real user gesture (Phaser's synthetic events don't count
+    // for AudioContext unlock on iOS Safari).
     const musicManager = this.game.registry.get('musicManager') as MusicManager | null;
-    const isMuted = musicManager?.isMuted() ?? false;
-    const audioY = lbY + btnSpacing;
-    const audioSize = Math.max(11, Math.min(16, Math.floor(refSize * 0.016)));
-    const audioLabel = isMuted ? '\u{1F507} Sound OFF' : '\u{1F50A} Sound ON';
-    const audioColor = isMuted ? '#665577' : TWP.MENU_BTN;
+    const isMuted = musicManager?.isMuted() ?? true;
 
-    const audioText = this.add.text(width / 2, audioY, audioLabel, {
-      fontFamily: FONT.FAMILY,
-      fontSize: `${audioSize}px`,
-      color: audioColor,
-    })
-      .setOrigin(0.5)
-      .setInteractive({ useHandCursor: true })
-      .setPadding(16, 12);
+    // Remove any leftover toggle from a previous resize rebuild
+    document.getElementById('audio-toggle-btn')?.remove();
 
-    audioText.on('pointerover', () => audioText.setColor(TWP.MENU_BTN_HOVER));
-    audioText.on('pointerout', () => audioText.setColor(audioText.text.includes('OFF') ? '#665577' : TWP.MENU_BTN));
-    audioText.on('pointerdown', () => {
-      if (musicManager) {
-        // Resume AudioContext synchronously in gesture handler (critical for mobile)
-        musicManager.ensureUnlocked();
-        const nowMuted = musicManager.toggleMute();
-        audioText.setText(nowMuted ? '\u{1F507} Sound OFF' : '\u{1F50A} Sound ON');
-        audioText.setColor(nowMuted ? '#665577' : TWP.MENU_BTN_HOVER);
-      }
-    });
+    const btn = document.createElement('button');
+    btn.id = 'audio-toggle-btn';
+    btn.textContent = isMuted ? '\u{1F507} Sound OFF' : '\u{1F50A} Sound ON';
+    btn.style.cssText = `
+      position: fixed; left: 50%; transform: translateX(-50%);
+      bottom: ${isPortrait ? '70px' : '30px'};
+      font-family: 'Press Start 2P', cursive;
+      font-size: ${Math.max(10, Math.min(14, Math.floor(refSize * 0.014)))}px;
+      color: ${isMuted ? '#665577' : '#8878a8'};
+      background: transparent; border: none; cursor: pointer;
+      padding: 12px 20px; z-index: 1000;
+      -webkit-tap-highlight-color: transparent;
+    `;
+
+    // touchstart + click cover all mobile & desktop browsers.
+    // Both fire synchronously in the native gesture call-stack.
+    const toggle = (e: Event) => {
+      e.preventDefault();
+      if (!musicManager) return;
+      // Unlock AudioContext with native gesture — plays silent buffer for iOS
+      musicManager.unlockFromGesture();
+      const nowMuted = musicManager.toggleMute();
+      btn.textContent = nowMuted ? '\u{1F507} Sound OFF' : '\u{1F50A} Sound ON';
+      btn.style.color = nowMuted ? '#665577' : '#f8e848';
+    };
+    btn.addEventListener('touchstart', toggle, { passive: false });
+    btn.addEventListener('click', toggle);
+
+    document.body.appendChild(btn);
+
+    // Clean up DOM button when leaving MenuScene
+    this.events.once('shutdown', () => btn.remove());
 
     // Rotate hint in portrait
     if (isPortrait) {

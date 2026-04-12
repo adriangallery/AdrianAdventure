@@ -39,25 +39,35 @@ export class MusicManager {
     this.masterGain.connect(this.context.destination);
     this.masterGain.gain.value = this.musicVolume;
 
-    // Restore mute state
-    this.muted = localStorage.getItem('adrian_adventure_muted') === 'true';
+    // Restore mute state — default to muted (OFF) on first visit so user must
+    // explicitly tap the Sound toggle, which provides the native gesture needed
+    // to unlock AudioContext on mobile browsers.
+    const stored = localStorage.getItem('adrian_adventure_muted');
+    this.muted = stored === null ? true : stored === 'true';
     if (this.muted) {
       this.masterGain.gain.value = 0;
       game.sound.mute = true;
     }
+  }
 
-    // Unlock AudioContext on first user gesture (required for mobile browsers)
-    const unlock = () => {
-      if (this.context.state === 'suspended') {
-        this.context.resume();
-      }
-      document.removeEventListener('pointerdown', unlock);
-      document.removeEventListener('keydown', unlock);
-    };
-    if (this.context.state !== 'running') {
-      document.addEventListener('pointerdown', unlock);
-      document.addEventListener('keydown', unlock);
-    }
+  /**
+   * Unlock AudioContext using a native DOM gesture.
+   * Must be called from a touchstart/click handler on the actual canvas element
+   * (Phaser's synthetic pointerdown events are NOT recognised by iOS Safari).
+   * Plays a silent buffer to fully prime the audio pipeline.
+   */
+  unlockFromGesture(): void {
+    if (this.context.state !== 'suspended') return;
+    this.context.resume();
+    // Play a tiny silent buffer — iOS requires an actual audio node to start
+    // within the gesture call-stack before it considers audio "unlocked".
+    try {
+      const buf = this.context.createBuffer(1, 1, 22050);
+      const src = this.context.createBufferSource();
+      src.buffer = buf;
+      src.connect(this.context.destination);
+      src.start(0);
+    } catch { /* silent */ }
   }
 
   /** Resume AudioContext if suspended (for external callers). */
