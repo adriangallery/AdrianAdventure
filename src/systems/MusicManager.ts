@@ -109,6 +109,24 @@ export class MusicManager {
     }
   }
 
+  /** Duck music volume for voice playback (fade to ~10% over 0.5s) */
+  duck(): void {
+    if (this.muted) return;
+    const now = this.context.currentTime;
+    const current = Math.max(this.masterGain.gain.value, 0.001);
+    this.masterGain.gain.setValueAtTime(current, now);
+    this.masterGain.gain.exponentialRampToValueAtTime(this.musicVolume * 0.1, now + 0.5);
+  }
+
+  /** Restore music volume after voice finishes (fade back over 1.2s) */
+  unduck(): void {
+    if (this.muted) return;
+    const now = this.context.currentTime;
+    const current = Math.max(this.masterGain.gain.value, 0.001);
+    this.masterGain.gain.setValueAtTime(current, now);
+    this.masterGain.gain.exponentialRampToValueAtTime(this.musicVolume, now + 1.2);
+  }
+
   destroy(): void {
     this.stopTrack(this.currentTrack);
     this.stopTrack(this.fadingTrack);

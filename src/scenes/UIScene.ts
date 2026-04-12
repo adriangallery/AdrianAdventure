@@ -8,11 +8,13 @@ import { VerbWheel } from '@/ui/VerbWheel';
 import { CinematicOverlay } from '@/ui/CinematicOverlay';
 import { BadgePanel } from '@/ui/BadgePanel';
 import { DialogueSystem, type DialogueTree } from '@/systems/DialogueSystem';
+import { VoiceSystem } from '@/systems/VoiceSystem';
 import type { InventorySystem } from '@/systems/InventorySystem';
 import type { SceneData, HotspotData } from '@/types/scene.types';
 import type { Verb, GameState } from '@/types/game.types';
 import type { GameScene } from './GameScene';
 import { getAchievementByText } from '@/config/achievements.config';
+import { VOICE_TEXT_MAP, NARRATOR_SEQUENCES } from '@/config/voice.config';
 import { getWalletState } from '@/web3/wallet';
 import { checkGatingRule, type GatingRule } from '@/web3/gating';
 import type { Address } from 'viem';
@@ -28,6 +30,7 @@ export class UIScene extends Phaser.Scene {
   private walletButton!: WalletButton;
   private saveButton!: SaveButton;
   private dialogueSystem!: DialogueSystem;
+  private voiceSystem!: VoiceSystem;
   private cinematicOverlay!: CinematicOverlay;
   private badgePanel!: BadgePanel;
   private isMobile = false;
@@ -61,9 +64,17 @@ export class UIScene extends Phaser.Scene {
     // Save button (top-right, next to wallet)
     this.saveButton = new SaveButton(this);
 
+    // Voice system — plays audio clips alongside dialogue text
+    this.voiceSystem = new VoiceSystem(this);
+    this.voiceSystem.registerAll(VOICE_TEXT_MAP);
+    this.registry.set('voiceSystem', this.voiceSystem);
+
     // Dialogue system
     this.dialogueSystem = new DialogueSystem({
-      say: (text, speaker) => this.dialogueBox.say(text, speaker),
+      say: (text, speaker) => {
+        this.voiceSystem.play(text);
+        return this.dialogueBox.say(text, speaker);
+      },
       showChoices: (choices) => this.choicePanel.show(choices),
       checkGating: async (rule: GatingRule) => {
         const { address } = getWalletState();
@@ -170,7 +181,11 @@ export class UIScene extends Phaser.Scene {
 
     // Say requests from ScriptEngine
     this.events.on('say', (text: string, speaker?: string, resolve?: () => void) => {
-      this.dialogueBox.say(text, speaker).then(() => resolve?.());
+      this.voiceSystem.play(text);
+      this.dialogueBox.say(text, speaker).then(() => {
+        this.voiceSystem.stop();
+        resolve?.();
+      });
     });
 
     // Brief say (auto-dismiss, no click)
@@ -188,12 +203,20 @@ export class UIScene extends Phaser.Scene {
 
     // Cinematic events (so scripts running from UIScene context can trigger them)
     this.events.on('showTitleCard', async (chapter: string, title: string, subtitle?: string, resolve?: () => void) => {
+      const sceneId = this.registry.get('currentSceneId') as string;
+      const narKeys = NARRATOR_SEQUENCES[`${sceneId}:titleCard`];
+      if (narKeys) this.voiceSystem.playSequence(narKeys);
       await this.cinematicOverlay.showTitleCard(chapter, title, subtitle);
+      this.voiceSystem.stop();
       resolve?.();
     });
 
     this.events.on('showNarrative', async (lines: string[], resolve?: () => void) => {
+      const sceneId = this.registry.get('currentSceneId') as string;
+      const narKeys = NARRATOR_SEQUENCES[`${sceneId}:narrative`];
+      if (narKeys) this.voiceSystem.playSequence(narKeys);
       await this.cinematicOverlay.showNarrative(lines);
+      this.voiceSystem.stop();
       resolve?.();
     });
 
@@ -251,10 +274,12 @@ export class UIScene extends Phaser.Scene {
     }
 
     await this.dialogueSystem.run(tree);
+    this.voiceSystem.stop();
     this.events.emit('dialogueComplete');
   }
 
   shutdown(): void {
+    this.voiceSystem?.destroy();
     this.scummUI?.destroy();
     this.verbWheel?.destroy();
     this.dialogueBox?.destroy();

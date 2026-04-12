@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { VOICE_AUDIO_KEYS, voicePath } from '@/config/voice.config';
 
 declare const __BUILD_HASH__: string;
 const v = typeof __BUILD_HASH__ !== 'undefined' ? `?v=${__BUILD_HASH__}` : '';
@@ -97,6 +98,13 @@ export class PreloadScene extends Phaser.Scene {
     for (const track of musicTracks) {
       if (!this.cache.audio.has(track)) {
         this.load.audio(track, `assets/audio/music/${track}.mp3${v}`);
+      }
+    }
+
+    // Voice audio
+    for (const key of VOICE_AUDIO_KEYS) {
+      if (!this.cache.audio.has(key)) {
+        this.load.audio(key, voicePath(key));
       }
     }
 
