@@ -899,7 +899,10 @@
   },
   "combos": [],
   "audio": {
-    "music": "retroadrian",
+    "music": "clinical",
+    "variation": {
+      "volume": 0.8
+    },
     "ambience": null,
     "sfx": {}
   },

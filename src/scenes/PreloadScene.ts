@@ -86,11 +86,18 @@ export class PreloadScene extends Phaser.Scene {
 
 
     // Audio
-    if (!this.cache.audio.has('retro-adventure')) {
-      this.load.audio('retro-adventure', `assets/audio/music/retro-adventure.mp3${v}`);
-    }
-    if (!this.cache.audio.has('retroadrian')) {
-      this.load.audio('retroadrian', `assets/audio/music/retroadrian.mp3${v}`);
+    const musicTracks = [
+      'retro-adventure',
+      'retroadrian',
+      'tension',
+      'vista',
+      'clinical',
+      'epilogue',
+    ];
+    for (const track of musicTracks) {
+      if (!this.cache.audio.has(track)) {
+        this.load.audio(track, `assets/audio/music/${track}.mp3${v}`);
+      }
     }
 
     // Log load errors so they don't fail silently

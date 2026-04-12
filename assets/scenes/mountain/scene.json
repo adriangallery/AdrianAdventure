@@ -850,11 +850,11 @@
   },
   "combos": [],
   "audio": {
-    "music": "retro-adventure",
+    "music": "vista",
     "variation": {
       "filterType": "lowpass",
-      "filterFrequency": 1200,
-      "volume": 0.35
+      "filterFrequency": 3000,
+      "volume": 0.6
     },
     "ambience": null,
     "sfx": {}

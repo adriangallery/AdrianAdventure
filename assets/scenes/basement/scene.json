@@ -1353,11 +1353,11 @@
     }
   ],
   "audio": {
-    "music": "retro-adventure",
+    "music": "tension",
     "variation": {
       "filterType": "lowpass",
-      "filterFrequency": 600,
-      "volume": 0.25
+      "filterFrequency": 2000,
+      "volume": 0.7
     },
     "ambience": null,
     "sfx": {}

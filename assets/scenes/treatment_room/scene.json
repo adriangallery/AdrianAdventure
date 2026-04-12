@@ -1153,11 +1153,11 @@
     }
   ],
   "audio": {
-    "music": "retroadrian",
+    "music": "clinical",
     "variation": {
       "filterType": "lowpass",
-      "filterFrequency": 800,
-      "volume": 0.3
+      "filterFrequency": 1200,
+      "volume": 0.4
     },
     "ambience": null,
     "sfx": {}

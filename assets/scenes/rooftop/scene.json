@@ -1188,11 +1188,9 @@
     }
   ],
   "audio": {
-    "music": "retro-adventure",
+    "music": "vista",
     "variation": {
-      "filterType": "lowpass",
-      "filterFrequency": 800,
-      "volume": 0.2
+      "volume": 0.8
     },
     "ambience": null,
     "sfx": {}

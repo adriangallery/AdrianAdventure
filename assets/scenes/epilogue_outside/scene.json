@@ -615,9 +615,9 @@
   },
   "combos": [],
   "audio": {
-    "music": "retro-adventure",
+    "music": "epilogue",
     "variation": {
-      "volume": 0.5
+      "volume": 0.7
     },
     "ambience": null,
     "sfx": {}

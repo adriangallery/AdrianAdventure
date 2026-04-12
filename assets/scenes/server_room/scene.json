@@ -789,11 +789,11 @@
   },
   "combos": [],
   "audio": {
-    "music": "retro-adventure",
+    "music": "tension",
     "variation": {
       "filterType": "lowpass",
-      "filterFrequency": 400,
-      "volume": 0.15
+      "filterFrequency": 1200,
+      "volume": 0.5
     },
     "ambience": null,
     "sfx": {}
