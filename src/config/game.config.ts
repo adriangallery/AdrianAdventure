@@ -22,6 +22,9 @@ export const GAME_CONFIG: Phaser.Types.Core.GameConfig = {
     height: '100%',
   },
   scene: [BootScene, MenuScene, PreloadScene, GameScene, UIScene],
+  audio: {
+    disableWebAudio: false,
+  },
   render: {
     pixelArt: true,
     antialias: false,

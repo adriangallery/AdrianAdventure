@@ -45,13 +45,33 @@ export class MusicManager {
       this.masterGain.gain.value = 0;
       game.sound.mute = true;
     }
+
+    // Unlock AudioContext on first user gesture (required for mobile browsers)
+    const unlock = () => {
+      if (this.context.state === 'suspended') {
+        this.context.resume();
+      }
+      document.removeEventListener('pointerdown', unlock);
+      document.removeEventListener('keydown', unlock);
+    };
+    if (this.context.state !== 'running') {
+      document.addEventListener('pointerdown', unlock);
+      document.addEventListener('keydown', unlock);
+    }
+  }
+
+  /** Resume AudioContext if suspended (for external callers). */
+  async ensureUnlocked(): Promise<void> {
+    if (this.context.state === 'suspended') {
+      await this.context.resume();
+    }
   }
 
   /** Main entry point — called on every scene transition */
-  transitionToScene(audio: SceneAudioConfig): void {
-    // Ensure context is running (autoplay policy)
+  async transitionToScene(audio: SceneAudioConfig): Promise<void> {
+    // Ensure context is running (autoplay policy — required for mobile)
     if (this.context.state === 'suspended') {
-      this.context.resume();
+      await this.context.resume();
     }
 
     const duration = (audio.crossfadeDuration ?? DEFAULT_CROSSFADE) / 1000;

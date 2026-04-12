@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { SaveLoadSystem } from '@/systems/SaveLoadSystem';
+import type { MusicManager } from '@/systems/MusicManager';
 import { TWP, FONT } from '@/config/theme';
 import { ACHIEVEMENTS } from '@/config/achievements.config';
 import { resolveEnsMany } from '@/web3/ens';
@@ -45,35 +46,48 @@ export class MenuScene extends Phaser.Scene {
     const isPortrait = height > width;
     const refSize = isPortrait ? Math.max(width, height * 0.45) : width;
 
-    this.cameras.main.setBackgroundColor(TWP.MENU_BG);
+    this.cameras.main.setBackgroundColor('#000000');
 
-    // Logo image — contains title "ZERO ADVENTURES"
+    // Buttons config (need count to calculate available space)
+    const saveSystem = new SaveLoadSystem();
+    const hasSave = saveSystem.hasSave();
+    const btnSize = Math.max(14, Math.min(20, Math.floor(refSize * 0.022)));
+    const btnSpacing = Math.max(btnSize * 2.5, 44);
+    const btnCount = hasSave ? 4 : 3; // New Game + Leaderboard + Audio + optional Continue
+    const subSize = Math.max(10, Math.min(14, Math.floor(refSize * 0.014)));
+    const rotateHintH = isPortrait ? 40 : 0;
+
+    // Reserve space for buttons at the bottom
+    const btnsH = btnCount * btnSpacing + 8;
+    const bottomZone = btnsH + rotateHintH + 16;
+
+    // Logo image — fills full width, black bg blends with menu bg
+    let imgBottomY = height * 0.5;
     if (this.textures.exists('intro')) {
-      const imgY = isPortrait ? height * 0.32 : height * 0.38;
-      const img = this.add.image(width / 2, imgY, 'intro');
-      const maxW = width * (isPortrait ? 0.92 : 0.65);
-      const maxH = height * (isPortrait ? 0.38 : 0.55);
-      const scale = Math.min(maxW / img.width, maxH / img.height);
+      const img = this.add.image(width / 2, 0, 'intro').setOrigin(0.5, 0);
+      const maxImgH = height - bottomZone;
+      const scale = Math.min(width / img.width, maxImgH / img.height);
       img.setScale(scale);
+      imgBottomY = img.height * scale;
     }
 
-    // Subtitle — below logo
-    const subSize = Math.max(10, Math.min(14, Math.floor(refSize * 0.014)));
-    const subY = isPortrait ? height * 0.56 : height * 0.68;
+    // Subtitle — overlays the bottom edge of the image with glow for readability
+    const subY = Math.min(imgBottomY - subSize * 0.5, height - bottomZone - subSize - 8);
     this.add.text(width / 2, subY, 'A Point & Click Web3 Adventure on Base', {
       fontFamily: FONT.FAMILY,
       fontSize: `${subSize}px`,
       color: TWP.MENU_SUBTITLE,
       wordWrap: { width: width * 0.85 },
       align: 'center',
+      stroke: '#000000',
+      strokeThickness: 4,
+      shadow: { offsetX: 0, offsetY: 0, color: '#000000', blur: 8, fill: true, stroke: true },
     }).setOrigin(0.5);
 
-    // Buttons
-    const saveSystem = new SaveLoadSystem();
-    const hasSave = saveSystem.hasSave();
-    const btnSize = Math.max(14, Math.min(20, Math.floor(refSize * 0.022)));
-    const btnSpacing = Math.max(btnSize * 2.5, 44);
-    const btnY = isPortrait ? height * 0.68 : height * 0.80;
+    // Buttons — centered in the space between image and bottom edge
+    const btnBlockH = btnCount * btnSpacing;
+    const spaceBelow = height - rotateHintH - imgBottomY;
+    const btnY = imgBottomY + (spaceBelow - btnBlockH) / 2;
 
     this.createButton(width / 2, btnY, 'New Game', btnSize, () => {
       this.cameras.main.fadeOut(400, 0, 0, 0);
@@ -100,6 +114,35 @@ export class MenuScene extends Phaser.Scene {
     // Leaderboard button
     const lbY = hasSave ? btnY + btnSpacing * 2 : btnY + btnSpacing;
     this.createButton(width / 2, lbY, 'Leaderboard', btnSize, () => this.showLeaderboard());
+
+    // Audio toggle — explicit user gesture unlocks AudioContext on mobile
+    const musicManager = this.game.registry.get('musicManager') as MusicManager | null;
+    const isMuted = musicManager?.isMuted() ?? false;
+    const audioY = lbY + btnSpacing;
+    const audioSize = Math.max(11, Math.min(16, Math.floor(refSize * 0.016)));
+    const audioLabel = isMuted ? '\u{1F507} Sound OFF' : '\u{1F50A} Sound ON';
+    const audioColor = isMuted ? '#665577' : TWP.MENU_BTN;
+
+    const audioText = this.add.text(width / 2, audioY, audioLabel, {
+      fontFamily: FONT.FAMILY,
+      fontSize: `${audioSize}px`,
+      color: audioColor,
+    })
+      .setOrigin(0.5)
+      .setInteractive({ useHandCursor: true })
+      .setPadding(16, 12);
+
+    audioText.on('pointerover', () => audioText.setColor(TWP.MENU_BTN_HOVER));
+    audioText.on('pointerout', () => audioText.setColor(audioText.text.includes('OFF') ? '#665577' : TWP.MENU_BTN));
+    audioText.on('pointerdown', () => {
+      if (musicManager) {
+        // Resume AudioContext synchronously in gesture handler (critical for mobile)
+        musicManager.ensureUnlocked();
+        const nowMuted = musicManager.toggleMute();
+        audioText.setText(nowMuted ? '\u{1F507} Sound OFF' : '\u{1F50A} Sound ON');
+        audioText.setColor(nowMuted ? '#665577' : TWP.MENU_BTN_HOVER);
+      }
+    });
 
     // Rotate hint in portrait
     if (isPortrait) {
