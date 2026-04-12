@@ -428,13 +428,13 @@
                   ],
                   "else": [
                     {
-                      "op": "say",
-                      "text": "I push the weather vane. It creaks and swings west. *CLUNK* — a cable pulls a mechanical latch beneath the roof. The service shaft hatch!"
-                    },
-                    {
                       "op": "setFlag",
                       "flag": "vane_turned",
                       "value": true
+                    },
+                    {
+                      "op": "say",
+                      "text": "I push the weather vane. It creaks and swings west. *CLUNK* — a cable pulls a mechanical latch beneath the roof. The service shaft hatch!"
                     }
                   ]
                 }
