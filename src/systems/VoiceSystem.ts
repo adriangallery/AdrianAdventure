@@ -44,11 +44,18 @@ export class VoiceSystem {
     if (!this.enabled) return;
     this.stop(); // stop any currently playing voice
 
-    const key = explicitKey ?? this.textMap.get(this.normalise(text));
-    if (!key) return;
+    const norm = this.normalise(text);
+    const key = explicitKey ?? this.textMap.get(norm);
+    if (!key) {
+      if (import.meta.env.DEV) console.warn(`[Voice] No match for: "${norm}"`);
+      return;
+    }
 
     // Check the audio cache — if not loaded, skip silently
-    if (!this.scene.cache.audio.has(key)) return;
+    if (!this.scene.cache.audio.has(key)) {
+      if (import.meta.env.DEV) console.warn(`[Voice] Audio not loaded: "${key}"`);
+      return;
+    }
 
     const shouldDuck = text.length >= DUCK_THRESHOLD;
     if (shouldDuck) this.duckMusic();
@@ -137,6 +144,6 @@ export class VoiceSystem {
   }
 
   private normalise(text: string): string {
-    return text.slice(0, 60).toLowerCase().replace(/[^a-z0-9 ]/g, '').trim();
+    return text.slice(0, 100).toLowerCase().replace(/[^a-z0-9 ]/g, '').replace(/\s+/g, ' ').trim();
   }
 }

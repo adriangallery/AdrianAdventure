@@ -168,6 +168,7 @@ export class UIScene extends Phaser.Scene {
     gameScene.events.on('npc:tapped', (npcId: string, treeId: string) => {
       // Prevent double-triggering while dialogue is active
       if (this.registry.get('dialogueActive')) return;
+      if (this.cache.audio.has('npc_talk')) this.sound.play('npc_talk', { volume: 0.4 });
       // Find the NPC and start talk animation
       const npcs = (gameScene as any).npcs as import('@/objects/NPC').NPC[] | undefined;
       const npc = npcs?.find((n) => n.npcId === npcId);
@@ -203,6 +204,7 @@ export class UIScene extends Phaser.Scene {
 
     // Cinematic events (so scripts running from UIScene context can trigger them)
     this.events.on('showTitleCard', async (chapter: string, title: string, subtitle?: string, resolve?: () => void) => {
+      if (this.cache.audio.has('chapter_transition')) this.sound.play('chapter_transition', { volume: 0.4 });
       const sceneId = this.registry.get('currentSceneId') as string;
       const narKeys = NARRATOR_SEQUENCES[`${sceneId}:titleCard`];
       if (narKeys) this.voiceSystem.playSequence(narKeys);

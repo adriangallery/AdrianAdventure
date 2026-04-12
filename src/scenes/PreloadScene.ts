@@ -129,6 +129,20 @@ export class PreloadScene extends Phaser.Scene {
       }
     }
 
+    // SFX
+    const sfxKeys = [
+      'ui_click', 'ui_hover', 'ui_open', 'ui_close', 'ui_error',
+      'item_pickup', 'item_use', 'item_combo', 'item_unlock',
+      'door_open', 'door_locked', 'keypad_beep', 'keypad_success', 'keypad_fail', 'footstep',
+      'achievement', 'chapter_transition', 'discovery',
+      'wallet_connect', 'npc_talk', 'save_game', 'typewriter',
+    ];
+    for (const key of sfxKeys) {
+      if (!this.cache.audio.has(key)) {
+        this.load.audio(key, `assets/audio/sfx/${key}.mp3${v}`);
+      }
+    }
+
     // Voice audio
     for (const key of VOICE_AUDIO_KEYS) {
       if (!this.cache.audio.has(key)) {
@@ -178,15 +192,22 @@ export class PreloadScene extends Phaser.Scene {
       },
     });
 
-    this.load.on('progress', (p: number) => {
-      fill.width = barW * p;
-      pctText.setText(`${Math.floor(p * 100)}%`);
-    });
-    this.load.on('complete', () => {
+    let destroyed = false;
+    const cleanup = () => {
+      if (destroyed) return;
+      destroyed = true;
       tipTimer.remove();
+      this.load.off('progress', onProgress);
       bg.destroy(); fill.destroy();
       tipText.destroy(); pctText.destroy();
-    });
+    };
+    const onProgress = (p: number) => {
+      if (destroyed) return;
+      fill.width = barW * p;
+      pctText.setText(`${Math.floor(p * 100)}%`);
+    };
+    this.load.on('progress', onProgress);
+    this.load.on('complete', cleanup);
   }
 
   create(): void {

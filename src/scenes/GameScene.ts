@@ -643,7 +643,10 @@ export class GameScene extends Phaser.Scene {
           this.scene.start('PreloadScene');
         });
       },
-      addItem: (id, name) => this.inventorySystem.addItem(id, name),
+      addItem: (id, name) => {
+        this.inventorySystem.addItem(id, name);
+        if (this.cache.audio.has('item_pickup')) this.sound.play('item_pickup', { volume: 0.6 });
+      },
       removeItem: (id) => this.inventorySystem.removeItem(id),
       isWalletConnected: () => getWalletState().connected,
       checkGating: async (rule: GatingRule) => {
@@ -682,6 +685,7 @@ export class GameScene extends Phaser.Scene {
             this.registry.set('gameState', this.gameState);
           }
         }
+        if (this.cache.audio.has('achievement')) this.sound.play('achievement', { volume: 0.6 });
         const ui = this.scene.get('UIScene');
         ui.events.emit('showAchievement', text);
       },
