@@ -1,4 +1,6 @@
+import Phaser from 'phaser';
 import type { MusicManager } from '@/systems/MusicManager';
+import { voicePath } from '@/config/voice.config';
 
 /** Only duck music for lines longer than this (short quips play over the music). */
 const DUCK_THRESHOLD = 60;
@@ -6,9 +8,9 @@ const DUCK_THRESHOLD = 60;
 /**
  * VoiceSystem — plays character voice clips alongside dialogue text.
  *
- * Maps dialogue text (or explicit voice keys) to preloaded audio files.
- * Voice plays in parallel with the typewriter effect and stops when
- * the player dismisses the dialogue.
+ * Uses lazy loading: audio files are fetched on-demand the first time
+ * a line is spoken, then cached by Phaser for subsequent plays.
+ * This avoids loading 1600+ files upfront which overwhelms the browser.
  *
  * Automatically ducks background music while voice is playing.
  */
@@ -17,8 +19,9 @@ export class VoiceSystem {
   private currentSound: Phaser.Sound.BaseSound | null = null;
   private enabled = true;
   private ducked = false;
+  private loading = new Set<string>();
 
-  /** Text→voiceKey lookup. Key = normalised first 60 chars of dialogue text. */
+  /** Text→voiceKey lookup. Key = normalised first 100 chars of dialogue text. */
   private textMap = new Map<string, string>();
 
   constructor(scene: Phaser.Scene) {
@@ -36,13 +39,12 @@ export class VoiceSystem {
   }
 
   /**
-   * Play voice for a dialogue line. Returns immediately (fire-and-forget).
-   * Only ducks music for lines longer than DUCK_THRESHOLD characters
-   * — short quips aren't worth the fade in/out.
+   * Play voice for a dialogue line. Lazy-loads the audio if needed.
+   * Only ducks music for lines longer than DUCK_THRESHOLD characters.
    */
   play(text: string, explicitKey?: string): void {
     if (!this.enabled) return;
-    this.stop(); // stop any currently playing voice
+    this.stop();
 
     const norm = this.normalise(text);
     const key = explicitKey ?? this.textMap.get(norm);
@@ -51,28 +53,23 @@ export class VoiceSystem {
       return;
     }
 
-    // Check the audio cache — if not loaded, skip silently
-    if (!this.scene.cache.audio.has(key)) {
-      if (import.meta.env.DEV) console.warn(`[Voice] Audio not loaded: "${key}"`);
+    // Already cached — play immediately
+    if (this.scene.cache.audio.has(key)) {
+      this.playKey(key, text.length);
       return;
     }
 
-    const shouldDuck = text.length >= DUCK_THRESHOLD;
-    if (shouldDuck) this.duckMusic();
-
-    try {
-      this.currentSound = this.scene.sound.add(key, { volume: 1.0 });
-      this.currentSound.once('complete', () => {
-        this.currentSound?.destroy();
-        this.currentSound = null;
-        if (shouldDuck) this.unduckMusic();
-      });
-      this.currentSound.play();
-    } catch {
-      // Audio not available — degrade gracefully
-      this.currentSound = null;
-      if (shouldDuck) this.unduckMusic();
-    }
+    // Lazy load then play
+    if (this.loading.has(key)) return; // already loading
+    this.loading.add(key);
+    this.scene.load.audio(key, voicePath(key));
+    this.scene.load.once('complete', () => {
+      this.loading.delete(key);
+      if (this.scene.cache.audio.has(key)) {
+        this.playKey(key, text.length);
+      }
+    });
+    this.scene.load.start();
   }
 
   /** Stop currently playing voice clip. */
@@ -89,9 +86,13 @@ export class VoiceSystem {
   async playSequence(keys: string[], gapMs = 300): Promise<void> {
     this.duckMusic();
     for (const key of keys) {
+      // Lazy load if needed
+      if (!this.scene.cache.audio.has(key)) {
+        await this.lazyLoad(key);
+      }
       if (!this.scene.cache.audio.has(key)) continue;
+
       await new Promise<void>((resolve) => {
-        // Stop previous sound but don't unduck — we're in a sequence
         if (this.currentSound) {
           this.currentSound.stop();
           this.currentSound.destroy();
@@ -125,6 +126,34 @@ export class VoiceSystem {
   destroy(): void {
     this.stop();
     this.textMap.clear();
+    this.loading.clear();
+  }
+
+  private playKey(key: string, textLength: number): void {
+    const shouldDuck = textLength >= DUCK_THRESHOLD;
+    if (shouldDuck) this.duckMusic();
+
+    try {
+      this.currentSound = this.scene.sound.add(key, { volume: 1.0 });
+      this.currentSound.once('complete', () => {
+        this.currentSound?.destroy();
+        this.currentSound = null;
+        if (shouldDuck) this.unduckMusic();
+      });
+      this.currentSound.play();
+    } catch {
+      this.currentSound = null;
+      if (shouldDuck) this.unduckMusic();
+    }
+  }
+
+  private lazyLoad(key: string): Promise<void> {
+    return new Promise<void>((resolve) => {
+      if (this.scene.cache.audio.has(key)) { resolve(); return; }
+      this.scene.load.audio(key, voicePath(key));
+      this.scene.load.once('complete', () => resolve());
+      this.scene.load.start();
+    });
   }
 
   private duckMusic(): void {

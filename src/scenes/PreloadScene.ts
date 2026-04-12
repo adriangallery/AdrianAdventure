@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { VOICE_AUDIO_KEYS, voicePath } from '@/config/voice.config';
+// Voice audio is lazy-loaded by VoiceSystem on demand
 import { FONT } from '@/config/theme';
 
 declare const __BUILD_HASH__: string;
@@ -143,12 +143,7 @@ export class PreloadScene extends Phaser.Scene {
       }
     }
 
-    // Voice audio
-    for (const key of VOICE_AUDIO_KEYS) {
-      if (!this.cache.audio.has(key)) {
-        this.load.audio(key, voicePath(key));
-      }
-    }
+    // Voice audio — loaded on-demand by VoiceSystem (too many to preload all at once)
 
     // Log load errors so they don't fail silently
     this.load.on('loaderror', (file: Phaser.Loader.File) => {
