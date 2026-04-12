@@ -149,16 +149,18 @@ export class MusicManager {
     this.muted = !this.muted;
     localStorage.setItem('adrian_adventure_muted', String(this.muted));
 
-    const now = this.context.currentTime;
+    // Use direct value assignment instead of linearRamp — iOS Safari
+    // often fails to execute Web Audio automation ramps when the
+    // AudioContext has just resumed (currentTime may be inconsistent).
+    this.masterGain.gain.cancelScheduledValues(0);
     if (this.muted) {
-      this.masterGain.gain.setValueAtTime(this.masterGain.gain.value, now);
-      this.masterGain.gain.linearRampToValueAtTime(0, now + 0.1);
+      this.masterGain.gain.value = 0;
       this.game.sound.mute = true;
     } else {
-      this.masterGain.gain.setValueAtTime(0, now);
-      this.masterGain.gain.linearRampToValueAtTime(this.musicVolume, now + 0.1);
+      this.masterGain.gain.value = this.musicVolume;
       this.game.sound.mute = false;
     }
+    this.debugLog(`toggleMute → muted=${this.muted} | masterGain=${this.masterGain.gain.value}`);
     return this.muted;
   }
 
