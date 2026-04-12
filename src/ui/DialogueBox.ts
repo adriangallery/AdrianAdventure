@@ -174,6 +174,7 @@ export class DialogueBox {
   }
 
   private handleResize(gameSize: Phaser.Structs.Size): void {
+    if (!this.text?.active || !this.speakerText?.active) return;
     const { width } = gameSize;
     this.text.setPosition(width / 2, this.text.y);
     this.text.setWordWrapWidth(Math.min(width - PADDING * 4, 600));
