@@ -53,7 +53,7 @@ export class MenuScene extends Phaser.Scene {
     const hasSave = saveSystem.hasSave();
     const btnSize = Math.max(14, Math.min(20, Math.floor(refSize * 0.022)));
     const btnSpacing = Math.max(btnSize * 2.5, 44);
-    const btnCount = hasSave ? 4 : 3; // New Game + Leaderboard + Audio + optional Continue
+    const btnCount = hasSave ? 3 : 2; // New Game + Leaderboard + optional Continue
     const subSize = Math.max(10, Math.min(14, Math.floor(refSize * 0.014)));
     const rotateHintH = isPortrait ? 40 : 0;
 
@@ -89,73 +89,36 @@ export class MenuScene extends Phaser.Scene {
     const spaceBelow = height - rotateHintH - imgBottomY;
     const btnY = imgBottomY + (spaceBelow - btnBlockH) / 2;
 
-    this.createButton(width / 2, btnY, 'New Game', btnSize, () => {
+    const startGame = (loadSave: boolean) => {
+      if (loadSave) {
+        const slot = saveSystem.loadAutoSave();
+        if (!slot) return;
+        this.registry.set('gameState', slot.state);
+        this.registry.set('currentSceneId', slot.state.currentScene);
+      } else {
+        this.registry.remove('gameState');
+      }
       this.cameras.main.fadeOut(400, 0, 0, 0);
       this.cameras.main.once('camerafadeoutcomplete', () => {
-        this.registry.remove('gameState');
         this.scene.start('PreloadScene');
       });
+    };
+
+    const musicManager = this.game.registry.get('musicManager') as MusicManager | null;
+
+    this.createButton(width / 2, btnY, 'New Game', btnSize, () => {
+      this.showAudioPrompt(musicManager, () => startGame(false));
     });
 
     if (hasSave) {
       this.createButton(width / 2, btnY + btnSpacing, 'Continue', btnSize, () => {
-        const slot = saveSystem.loadAutoSave();
-        if (slot) {
-          this.registry.set('gameState', slot.state);
-          this.registry.set('currentSceneId', slot.state.currentScene);
-          this.cameras.main.fadeOut(400, 0, 0, 0);
-          this.cameras.main.once('camerafadeoutcomplete', () => {
-            this.scene.start('PreloadScene');
-          });
-        }
+        this.showAudioPrompt(musicManager, () => startGame(true));
       });
     }
 
     // Leaderboard button
     const lbY = hasSave ? btnY + btnSpacing * 2 : btnY + btnSpacing;
     this.createButton(width / 2, lbY, 'Leaderboard', btnSize, () => this.showLeaderboard());
-
-    // Audio toggle — uses a NATIVE DOM button so the browser recognises
-    // the tap as a real user gesture (Phaser's synthetic events don't count
-    // for AudioContext unlock on iOS Safari).
-    const musicManager = this.game.registry.get('musicManager') as MusicManager | null;
-    const isMuted = musicManager?.isMuted() ?? true;
-
-    // Remove any leftover toggle from a previous resize rebuild
-    document.getElementById('audio-toggle-btn')?.remove();
-
-    const btn = document.createElement('button');
-    btn.id = 'audio-toggle-btn';
-    btn.textContent = isMuted ? '\u{1F507} Sound OFF' : '\u{1F50A} Sound ON';
-    btn.style.cssText = `
-      position: fixed; left: 50%; transform: translateX(-50%);
-      bottom: ${isPortrait ? '70px' : '30px'};
-      font-family: 'Press Start 2P', cursive;
-      font-size: ${Math.max(10, Math.min(14, Math.floor(refSize * 0.014)))}px;
-      color: ${isMuted ? '#665577' : '#8878a8'};
-      background: transparent; border: none; cursor: pointer;
-      padding: 12px 20px; z-index: 1000;
-      -webkit-tap-highlight-color: transparent;
-    `;
-
-    // touchstart + click cover all mobile & desktop browsers.
-    // Both fire synchronously in the native gesture call-stack.
-    const toggle = (e: Event) => {
-      e.preventDefault();
-      if (!musicManager) return;
-      // Unlock AudioContext with native gesture — plays silent buffer for iOS
-      musicManager.unlockFromGesture();
-      const nowMuted = musicManager.toggleMute();
-      btn.textContent = nowMuted ? '\u{1F507} Sound OFF' : '\u{1F50A} Sound ON';
-      btn.style.color = nowMuted ? '#665577' : '#f8e848';
-    };
-    btn.addEventListener('touchstart', toggle, { passive: false });
-    btn.addEventListener('click', toggle);
-
-    document.body.appendChild(btn);
-
-    // Clean up DOM button when leaving MenuScene
-    this.events.once('shutdown', () => btn.remove());
 
     // Rotate hint in portrait
     if (isPortrait) {
@@ -166,6 +129,92 @@ export class MenuScene extends Phaser.Scene {
         color: TWP.MENU_SUBTITLE,
       }).setOrigin(0.5);
     }
+  }
+
+  /**
+   * Native DOM modal asking the user to enable sound.
+   * The "enable" button's touchstart/click is a real browser gesture
+   * that unlocks AudioContext on mobile (iOS Safari included).
+   */
+  private showAudioPrompt(musicManager: MusicManager | null, onProceed: () => void): void {
+    // If audio is already unlocked and un-muted, skip the prompt
+    if (musicManager && !musicManager.isMuted()) {
+      onProceed();
+      return;
+    }
+
+    const overlay = document.createElement('div');
+    overlay.style.cssText = `
+      position: fixed; inset: 0; z-index: 10000;
+      background: rgba(6,6,12,0.92);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Press Start 2P', monospace;
+      -webkit-tap-highlight-color: transparent;
+    `;
+
+    const modal = document.createElement('div');
+    modal.style.cssText = `
+      background: #1a1a2e; border: 2px solid #f8e848;
+      border-radius: 8px; padding: 28px 24px; text-align: center;
+      max-width: 420px; width: 90%;
+    `;
+
+    const icon = document.createElement('div');
+    icon.textContent = '\u{1F50A}';
+    icon.style.cssText = 'font-size: 36px; margin-bottom: 16px;';
+    modal.appendChild(icon);
+
+    const msg = document.createElement('div');
+    msg.textContent = 'This adventure has music, voices & sound effects!';
+    msg.style.cssText = 'color: #e8d5f5; font-size: 11px; line-height: 1.8; margin-bottom: 20px;';
+    modal.appendChild(msg);
+
+    const btnStyle = `
+      display: block; width: 100%; padding: 14px 16px; margin-bottom: 10px;
+      font-family: 'Press Start 2P', monospace; font-size: 11px;
+      border-radius: 6px; cursor: pointer; border: none;
+      -webkit-tap-highlight-color: transparent;
+    `;
+
+    // --- "Enable" button — this is the native gesture that unlocks audio ---
+    const yesBtn = document.createElement('button');
+    yesBtn.textContent = '\u{1F3B5} Enable Sound';
+    yesBtn.style.cssText = btnStyle + `
+      background: #5b3a8c; color: #f8e848;
+      border: 2px solid #f8e848;
+    `;
+
+    const enableAndProceed = (e: Event) => {
+      e.preventDefault();
+      if (musicManager) {
+        musicManager.unlockFromGesture();
+        if (musicManager.isMuted()) musicManager.toggleMute();
+      }
+      overlay.remove();
+      onProceed();
+    };
+    yesBtn.addEventListener('touchstart', enableAndProceed, { passive: false });
+    yesBtn.addEventListener('click', enableAndProceed);
+    modal.appendChild(yesBtn);
+
+    // --- "No thanks" button ---
+    const noBtn = document.createElement('button');
+    noBtn.textContent = '\u{1F910} No thanks, silence is golden';
+    noBtn.style.cssText = btnStyle + `
+      background: transparent; color: #665577;
+      border: 1px solid #333;
+    `;
+    const skipAndProceed = (e: Event) => {
+      e.preventDefault();
+      overlay.remove();
+      onProceed();
+    };
+    noBtn.addEventListener('touchstart', skipAndProceed, { passive: false });
+    noBtn.addEventListener('click', skipAndProceed);
+    modal.appendChild(noBtn);
+
+    overlay.appendChild(modal);
+    document.body.appendChild(overlay);
   }
 
   private async showLeaderboard(): Promise<void> {
