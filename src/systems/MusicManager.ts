@@ -28,6 +28,7 @@ export class MusicManager {
   private currentKey: string | null = null;
   private musicVolume = DEFAULT_VOLUME;
   private muted = false;
+  private unlockedThisSession = false;
 
   constructor(game: Phaser.Game) {
     this.game = game;
@@ -62,6 +63,7 @@ export class MusicManager {
    *  - context.resume() alone is not enough on all iOS versions
    */
   unlockFromGesture(): void {
+    this.unlockedThisSession = true;
     this.debugLog(`unlockFromGesture called | ctx.state=${this.context.state} | sound.locked=${this.game.sound.locked}`);
 
     // Always attempt — don't gate on state, some iOS versions report
@@ -133,11 +135,12 @@ export class MusicManager {
     // Different track — crossfade
     const buffer = this.getDecodedBuffer(newKey);
     if (!buffer) {
-      console.warn(`[MusicManager] buffer for "${newKey}" not found`);
+      this.debugLog(`BUFFER NOT FOUND for "${newKey}" — no audio will play`);
       this.fadeToSilence(duration);
       return;
     }
 
+    this.debugLog(`buffer OK for "${newKey}" (${buffer.duration.toFixed(1)}s) — creating track, masterGain=${this.masterGain.gain.value}`);
     const newTrack = this.createTrack(newKey, buffer, variation);
     this.crossfadeTo(newTrack, variation, duration);
   }
@@ -161,6 +164,11 @@ export class MusicManager {
 
   isMuted(): boolean {
     return this.muted;
+  }
+
+  /** Whether unlockFromGesture() has been called in this page load. */
+  isUnlockedThisSession(): boolean {
+    return this.unlockedThisSession;
   }
 
   setMusicVolume(vol: number): void {
