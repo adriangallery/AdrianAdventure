@@ -16,7 +16,7 @@ interface SceneAudioConfig {
 }
 
 const DEFAULT_CROSSFADE = 4000;
-const DEFAULT_VOLUME = 0.4;
+const DEFAULT_VOLUME = 0.25;
 const BYPASS_FREQUENCY = 20000;
 
 export class MusicManager {
@@ -167,7 +167,7 @@ export class MusicManager {
     const now = this.context.currentTime;
     const current = Math.max(this.masterGain.gain.value, 0.001);
     this.masterGain.gain.setValueAtTime(current, now);
-    this.masterGain.gain.exponentialRampToValueAtTime(this.musicVolume * 0.1, now + 0.5);
+    this.masterGain.gain.exponentialRampToValueAtTime(this.musicVolume * 0.05, now + 0.5);
   }
 
   /** Restore music volume after voice finishes (fade back over 1.2s) */

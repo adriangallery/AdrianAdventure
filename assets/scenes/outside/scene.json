@@ -91,6 +91,25 @@
                     {
                       "op": "say",
                       "text": "Locked. The keypad blinks red. I need a 4-digit code."
+                    },
+                    {
+                      "op": "ifFlag",
+                      "flag": "found_code_note",
+                      "then": [],
+                      "else": [
+                        { "op": "wait", "ms": 400 },
+                        { "op": "setFlag", "flag": "found_code_note", "value": true },
+                        { "op": "wait", "ms": 100 },
+                        { "op": "setFlag", "flag": "found_code_note", "value": false },
+                        { "op": "wait", "ms": 150 },
+                        { "op": "setFlag", "flag": "found_code_note", "value": true },
+                        { "op": "wait", "ms": 60 },
+                        { "op": "setFlag", "flag": "found_code_note", "value": false },
+                        { "op": "wait", "ms": 250 },
+                        { "op": "setFlag", "flag": "found_code_note", "value": true },
+                        { "op": "wait", "ms": 80 },
+                        { "op": "setFlag", "flag": "found_code_note", "value": false }
+                      ]
                     }
                   ]
                 }
@@ -126,6 +145,25 @@
                     {
                       "op": "say",
                       "text": "Locked tight. There's a keypad next to it. I need a code."
+                    },
+                    {
+                      "op": "ifFlag",
+                      "flag": "found_code_note",
+                      "then": [],
+                      "else": [
+                        { "op": "wait", "ms": 400 },
+                        { "op": "setFlag", "flag": "found_code_note", "value": true },
+                        { "op": "wait", "ms": 100 },
+                        { "op": "setFlag", "flag": "found_code_note", "value": false },
+                        { "op": "wait", "ms": 150 },
+                        { "op": "setFlag", "flag": "found_code_note", "value": true },
+                        { "op": "wait", "ms": 60 },
+                        { "op": "setFlag", "flag": "found_code_note", "value": false },
+                        { "op": "wait", "ms": 250 },
+                        { "op": "setFlag", "flag": "found_code_note", "value": true },
+                        { "op": "wait", "ms": 80 },
+                        { "op": "setFlag", "flag": "found_code_note", "value": false }
+                      ]
                     }
                   ]
                 }
@@ -203,11 +241,23 @@
                 }
               ],
               "else": [
-                {
-                  "op": "setFlag",
-                  "flag": "found_code_note",
-                  "value": true
-                },
+                { "op": "setFlag", "flag": "found_code_note", "value": true },
+                { "op": "wait", "ms": 80 },
+                { "op": "setFlag", "flag": "found_code_note", "value": false },
+                { "op": "wait", "ms": 120 },
+                { "op": "setFlag", "flag": "found_code_note", "value": true },
+                { "op": "wait", "ms": 50 },
+                { "op": "setFlag", "flag": "found_code_note", "value": false },
+                { "op": "wait", "ms": 200 },
+                { "op": "setFlag", "flag": "found_code_note", "value": true },
+                { "op": "wait", "ms": 60 },
+                { "op": "setFlag", "flag": "found_code_note", "value": false },
+                { "op": "wait", "ms": 90 },
+                { "op": "setFlag", "flag": "found_code_note", "value": true },
+                { "op": "wait", "ms": 40 },
+                { "op": "setFlag", "flag": "found_code_note", "value": false },
+                { "op": "wait", "ms": 300 },
+                { "op": "setFlag", "flag": "found_code_note", "value": true },
                 {
                   "op": "setFlag",
                   "flag": "has_code",
@@ -242,11 +292,23 @@
                 }
               ],
               "else": [
-                {
-                  "op": "setFlag",
-                  "flag": "found_code_note",
-                  "value": true
-                },
+                { "op": "setFlag", "flag": "found_code_note", "value": true },
+                { "op": "wait", "ms": 80 },
+                { "op": "setFlag", "flag": "found_code_note", "value": false },
+                { "op": "wait", "ms": 120 },
+                { "op": "setFlag", "flag": "found_code_note", "value": true },
+                { "op": "wait", "ms": 50 },
+                { "op": "setFlag", "flag": "found_code_note", "value": false },
+                { "op": "wait", "ms": 200 },
+                { "op": "setFlag", "flag": "found_code_note", "value": true },
+                { "op": "wait", "ms": 60 },
+                { "op": "setFlag", "flag": "found_code_note", "value": false },
+                { "op": "wait", "ms": 90 },
+                { "op": "setFlag", "flag": "found_code_note", "value": true },
+                { "op": "wait", "ms": 40 },
+                { "op": "setFlag", "flag": "found_code_note", "value": false },
+                { "op": "wait", "ms": 300 },
+                { "op": "setFlag", "flag": "found_code_note", "value": true },
                 {
                   "op": "setFlag",
                   "flag": "has_code",
