@@ -205,9 +205,10 @@ export class UIScene extends Phaser.Scene {
     // Cinematic events (so scripts running from UIScene context can trigger them)
     this.events.on('showTitleCard', async (chapter: string, title: string, subtitle?: string, resolve?: () => void) => {
       if (this.cache.audio.has('chapter_transition')) this.sound.play('chapter_transition', { volume: 0.4 });
-      const sceneId = this.registry.get('currentSceneId') as string;
-      const narKeys = NARRATOR_SEQUENCES[`${sceneId}:titleCard`];
-      if (narKeys) this.voiceSystem.playSequence(narKeys);
+      // Title card narration disabled for now (kept for potential re-enable)
+      // const sceneId = this.registry.get('currentSceneId') as string;
+      // const narKeys = NARRATOR_SEQUENCES[`${sceneId}:titleCard`];
+      // if (narKeys) this.voiceSystem.playSequence(narKeys);
       await this.cinematicOverlay.showTitleCard(chapter, title, subtitle);
       this.voiceSystem.stop();
       resolve?.();
