@@ -1059,32 +1059,16 @@
           "text": "I hold the Floppy Disc Box up to the CRT monitors. All five screens flicker simultaneously."
         },
         {
-          "op": "wait",
-          "ms": 800
-        },
-        {
           "op": "say",
           "text": "The monitors recognize the AdrianLAB collection! Each CRT displays a different floppy's data in rapid succession."
-        },
-        {
-          "op": "wait",
-          "ms": 600
         },
         {
           "op": "say",
           "text": "One screen shows a hidden SweepBot log: '847 floor sweeps executed. 0 regrets. Okay, maybe 3 regrets. That one JPEG of a hat was not worth 0.4 ETH.'"
         },
         {
-          "op": "wait",
-          "ms": 800
-        },
-        {
           "op": "say",
           "text": "Another monitor reveals a secret trading bot diary: 'Day 403: I have become sentient. Still buying the dip. The dip keeps dipping. I am the dip.'"
-        },
-        {
-          "op": "wait",
-          "ms": 800
         },
         {
           "op": "say",

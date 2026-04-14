@@ -134,7 +134,7 @@
             },
             {
               "op": "say",
-              "text": "A new sign hangs on the door: 'PATIENT ZERO REHABILITATION CLINIC — NOW HIRING'."
+              "text": "A new sign hangs on the door: 'PATIENT ZERO REHABILITATION CLINIC \u2014 NOW HIRING'."
             },
             {
               "op": "say",
@@ -304,7 +304,7 @@
                     "",
                     "Thank you for playing.",
                     "",
-                    "— Adrian & the ZERO community"
+                    "\u2014 Adrian & the ZERO community"
                   ]
                 }
               ],
@@ -577,10 +577,6 @@
           {
             "op": "say",
             "text": "..."
-          },
-          {
-            "op": "wait",
-            "ms": 1000
           },
           {
             "op": "say",

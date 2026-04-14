@@ -85,7 +85,7 @@
                       "then": [
                         {
                           "op": "say",
-                          "text": "The computer shows the patient roster. 'PATIENT ZERO — STATUS: ESCAPED' blinks in red at the bottom."
+                          "text": "The computer shows the patient roster. 'PATIENT ZERO \u2014 STATUS: ESCAPED' blinks in red at the bottom."
                         }
                       ],
                       "else": [
@@ -117,10 +117,6 @@
                               "text": "I insert the floppy disk... *KRRRTTT*... The drive spins up. Data flooding the screen."
                             },
                             {
-                              "op": "wait",
-                              "ms": 600
-                            },
-                            {
                               "op": "say",
                               "text": "The roster lists patients. Conditions read like a crypto obituary:"
                             },
@@ -129,20 +125,12 @@
                               "text": "Chronic Airdrop Dependency... Acute Rug Pull Trauma... Terminal FOMO..."
                             },
                             {
-                              "op": "wait",
-                              "ms": 800
-                            },
-                            {
                               "op": "say",
-                              "text": "At the bottom, in red ink: PATIENT ZERO — STATUS: ESCAPED"
+                              "text": "At the bottom, in red ink: PATIENT ZERO \u2014 STATUS: ESCAPED"
                             },
                             {
                               "op": "say",
                               "text": "Escaped? Through what? And to where?"
-                            },
-                            {
-                              "op": "wait",
-                              "ms": 400
                             },
                             {
                               "op": "say",
@@ -163,10 +151,6 @@
                     {
                       "op": "say",
                       "text": "I plug in Adrian's Ledger... The screen flashes: 'WALLET RECOGNIZED. VAULT ACCESS GRANTED.'"
-                    },
-                    {
-                      "op": "wait",
-                      "ms": 800
                     },
                     {
                       "op": "say",
@@ -563,7 +547,7 @@
               "else": [
                 {
                   "op": "say",
-                  "text": "The rack slides aside with a groan. Behind it — a hidden door. Still warm from the servers."
+                  "text": "The rack slides aside with a groan. Behind it \u2014 a hidden door. Still warm from the servers."
                 },
                 {
                   "op": "sayBrief",
@@ -704,7 +688,7 @@
           "PUSH": [
             {
               "op": "say",
-              "text": "I push the armchair. It slides, revealing years of dust bunnies. The original NFTs — Non-Fungible Tumbleweeds."
+              "text": "I push the armchair. It slides, revealing years of dust bunnies. The original NFTs \u2014 Non-Fungible Tumbleweeds."
             }
           ],
           "PULL": [
@@ -1180,10 +1164,6 @@
               "text": "I plug in Adrian's Ledger... The screen flashes: 'WALLET RECOGNIZED. VAULT ACCESS GRANTED.'"
             },
             {
-              "op": "wait",
-              "ms": 800
-            },
-            {
               "op": "say",
               "text": "The monitor reveals a dashboard: portfolio tracker, NFT collection, and... a map to something called 'Patient Zero Clinic'."
             },
@@ -1241,12 +1221,8 @@
                   "text": "I insert the floppy disk... *KRRRTTT*... The drive spins up. Data flooding the screen."
                 },
                 {
-                  "op": "wait",
-                  "ms": 600
-                },
-                {
                   "op": "say",
-                  "text": "Chronic Airdrop Dependency... Acute Rug Pull Trauma... Terminal FOMO... At the bottom, in red: PATIENT ZERO — STATUS: ESCAPED"
+                  "text": "Chronic Airdrop Dependency... Acute Rug Pull Trauma... Terminal FOMO... At the bottom, in red: PATIENT ZERO \u2014 STATUS: ESCAPED"
                 },
                 {
                   "op": "say",
@@ -1286,48 +1262,24 @@
               "text": "I slide a floppy from the box into the drive. The CRT goes dark. Then..."
             },
             {
-              "op": "wait",
-              "ms": 1200
-            },
-            {
               "op": "say",
               "text": "*KRRRRTTTT-KRRRRTTTT* The drive spins up like it's been WAITING for this exact disc. The screen floods with green text."
             },
             {
-              "op": "wait",
-              "ms": 800
-            },
-            {
               "op": "say",
-              "text": "'ADRIANLAB FLOPPY COLLECTION DETECTED — HOLDER OVERRIDE ACTIVE. Decrypting Sector Zero...'"
-            },
-            {
-              "op": "wait",
-              "ms": 1000
+              "text": "'ADRIANLAB FLOPPY COLLECTION DETECTED \u2014 HOLDER OVERRIDE ACTIVE. Decrypting Sector Zero...'"
             },
             {
               "op": "say",
               "text": "A hidden partition opens. Adrian left a personal message encoded in the floppy metadata:"
             },
             {
-              "op": "wait",
-              "ms": 800
-            },
-            {
               "op": "say",
-              "text": "'To whoever holds these discs: you're not just a collector. You backed the lab when nobody believed pixel art on a blockchain was worth anything. You were right. — A.'"
-            },
-            {
-              "op": "wait",
-              "ms": 1000
+              "text": "'To whoever holds these discs: you're not just a collector. You backed the lab when nobody believed pixel art on a blockchain was worth anything. You were right. \u2014 A.'"
             },
             {
               "op": "say",
               "text": "Below the message, a manifest: every floppy disc ever minted, every pack opened, every trait unlocked. The entire AdrianLAB creation history. On a 1.44MB floppy. Somehow."
-            },
-            {
-              "op": "wait",
-              "ms": 800
             },
             {
               "op": "say",
@@ -1345,7 +1297,7 @@
             },
             {
               "op": "achievement",
-              "text": "SECTOR ZERO — Unlocked Adrian's hidden floppy message"
+              "text": "SECTOR ZERO \u2014 Unlocked Adrian's hidden floppy message"
             }
           ]
         }

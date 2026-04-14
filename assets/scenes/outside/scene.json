@@ -97,18 +97,60 @@
                       "flag": "found_code_note",
                       "then": [],
                       "else": [
-                        { "op": "wait", "ms": 400 },
-                        { "op": "setFlag", "flag": "found_code_note", "value": true },
-                        { "op": "wait", "ms": 100 },
-                        { "op": "setFlag", "flag": "found_code_note", "value": false },
-                        { "op": "wait", "ms": 150 },
-                        { "op": "setFlag", "flag": "found_code_note", "value": true },
-                        { "op": "wait", "ms": 60 },
-                        { "op": "setFlag", "flag": "found_code_note", "value": false },
-                        { "op": "wait", "ms": 250 },
-                        { "op": "setFlag", "flag": "found_code_note", "value": true },
-                        { "op": "wait", "ms": 80 },
-                        { "op": "setFlag", "flag": "found_code_note", "value": false }
+                        {
+                          "op": "wait",
+                          "ms": 400
+                        },
+                        {
+                          "op": "setFlag",
+                          "flag": "found_code_note",
+                          "value": true
+                        },
+                        {
+                          "op": "wait",
+                          "ms": 100
+                        },
+                        {
+                          "op": "setFlag",
+                          "flag": "found_code_note",
+                          "value": false
+                        },
+                        {
+                          "op": "wait",
+                          "ms": 150
+                        },
+                        {
+                          "op": "setFlag",
+                          "flag": "found_code_note",
+                          "value": true
+                        },
+                        {
+                          "op": "wait",
+                          "ms": 60
+                        },
+                        {
+                          "op": "setFlag",
+                          "flag": "found_code_note",
+                          "value": false
+                        },
+                        {
+                          "op": "wait",
+                          "ms": 250
+                        },
+                        {
+                          "op": "setFlag",
+                          "flag": "found_code_note",
+                          "value": true
+                        },
+                        {
+                          "op": "wait",
+                          "ms": 80
+                        },
+                        {
+                          "op": "setFlag",
+                          "flag": "found_code_note",
+                          "value": false
+                        }
                       ]
                     }
                   ]
@@ -151,18 +193,60 @@
                       "flag": "found_code_note",
                       "then": [],
                       "else": [
-                        { "op": "wait", "ms": 400 },
-                        { "op": "setFlag", "flag": "found_code_note", "value": true },
-                        { "op": "wait", "ms": 100 },
-                        { "op": "setFlag", "flag": "found_code_note", "value": false },
-                        { "op": "wait", "ms": 150 },
-                        { "op": "setFlag", "flag": "found_code_note", "value": true },
-                        { "op": "wait", "ms": 60 },
-                        { "op": "setFlag", "flag": "found_code_note", "value": false },
-                        { "op": "wait", "ms": 250 },
-                        { "op": "setFlag", "flag": "found_code_note", "value": true },
-                        { "op": "wait", "ms": 80 },
-                        { "op": "setFlag", "flag": "found_code_note", "value": false }
+                        {
+                          "op": "wait",
+                          "ms": 400
+                        },
+                        {
+                          "op": "setFlag",
+                          "flag": "found_code_note",
+                          "value": true
+                        },
+                        {
+                          "op": "wait",
+                          "ms": 100
+                        },
+                        {
+                          "op": "setFlag",
+                          "flag": "found_code_note",
+                          "value": false
+                        },
+                        {
+                          "op": "wait",
+                          "ms": 150
+                        },
+                        {
+                          "op": "setFlag",
+                          "flag": "found_code_note",
+                          "value": true
+                        },
+                        {
+                          "op": "wait",
+                          "ms": 60
+                        },
+                        {
+                          "op": "setFlag",
+                          "flag": "found_code_note",
+                          "value": false
+                        },
+                        {
+                          "op": "wait",
+                          "ms": 250
+                        },
+                        {
+                          "op": "setFlag",
+                          "flag": "found_code_note",
+                          "value": true
+                        },
+                        {
+                          "op": "wait",
+                          "ms": 80
+                        },
+                        {
+                          "op": "setFlag",
+                          "flag": "found_code_note",
+                          "value": false
+                        }
                       ]
                     }
                   ]
@@ -241,23 +325,83 @@
                 }
               ],
               "else": [
-                { "op": "setFlag", "flag": "found_code_note", "value": true },
-                { "op": "wait", "ms": 80 },
-                { "op": "setFlag", "flag": "found_code_note", "value": false },
-                { "op": "wait", "ms": 120 },
-                { "op": "setFlag", "flag": "found_code_note", "value": true },
-                { "op": "wait", "ms": 50 },
-                { "op": "setFlag", "flag": "found_code_note", "value": false },
-                { "op": "wait", "ms": 200 },
-                { "op": "setFlag", "flag": "found_code_note", "value": true },
-                { "op": "wait", "ms": 60 },
-                { "op": "setFlag", "flag": "found_code_note", "value": false },
-                { "op": "wait", "ms": 90 },
-                { "op": "setFlag", "flag": "found_code_note", "value": true },
-                { "op": "wait", "ms": 40 },
-                { "op": "setFlag", "flag": "found_code_note", "value": false },
-                { "op": "wait", "ms": 300 },
-                { "op": "setFlag", "flag": "found_code_note", "value": true },
+                {
+                  "op": "setFlag",
+                  "flag": "found_code_note",
+                  "value": true
+                },
+                {
+                  "op": "wait",
+                  "ms": 80
+                },
+                {
+                  "op": "setFlag",
+                  "flag": "found_code_note",
+                  "value": false
+                },
+                {
+                  "op": "wait",
+                  "ms": 120
+                },
+                {
+                  "op": "setFlag",
+                  "flag": "found_code_note",
+                  "value": true
+                },
+                {
+                  "op": "wait",
+                  "ms": 50
+                },
+                {
+                  "op": "setFlag",
+                  "flag": "found_code_note",
+                  "value": false
+                },
+                {
+                  "op": "wait",
+                  "ms": 200
+                },
+                {
+                  "op": "setFlag",
+                  "flag": "found_code_note",
+                  "value": true
+                },
+                {
+                  "op": "wait",
+                  "ms": 60
+                },
+                {
+                  "op": "setFlag",
+                  "flag": "found_code_note",
+                  "value": false
+                },
+                {
+                  "op": "wait",
+                  "ms": 90
+                },
+                {
+                  "op": "setFlag",
+                  "flag": "found_code_note",
+                  "value": true
+                },
+                {
+                  "op": "wait",
+                  "ms": 40
+                },
+                {
+                  "op": "setFlag",
+                  "flag": "found_code_note",
+                  "value": false
+                },
+                {
+                  "op": "wait",
+                  "ms": 300
+                },
+                {
+                  "op": "setFlag",
+                  "flag": "found_code_note",
+                  "value": true
+                },
                 {
                   "op": "setFlag",
                   "flag": "has_code",
@@ -292,23 +436,83 @@
                 }
               ],
               "else": [
-                { "op": "setFlag", "flag": "found_code_note", "value": true },
-                { "op": "wait", "ms": 80 },
-                { "op": "setFlag", "flag": "found_code_note", "value": false },
-                { "op": "wait", "ms": 120 },
-                { "op": "setFlag", "flag": "found_code_note", "value": true },
-                { "op": "wait", "ms": 50 },
-                { "op": "setFlag", "flag": "found_code_note", "value": false },
-                { "op": "wait", "ms": 200 },
-                { "op": "setFlag", "flag": "found_code_note", "value": true },
-                { "op": "wait", "ms": 60 },
-                { "op": "setFlag", "flag": "found_code_note", "value": false },
-                { "op": "wait", "ms": 90 },
-                { "op": "setFlag", "flag": "found_code_note", "value": true },
-                { "op": "wait", "ms": 40 },
-                { "op": "setFlag", "flag": "found_code_note", "value": false },
-                { "op": "wait", "ms": 300 },
-                { "op": "setFlag", "flag": "found_code_note", "value": true },
+                {
+                  "op": "setFlag",
+                  "flag": "found_code_note",
+                  "value": true
+                },
+                {
+                  "op": "wait",
+                  "ms": 80
+                },
+                {
+                  "op": "setFlag",
+                  "flag": "found_code_note",
+                  "value": false
+                },
+                {
+                  "op": "wait",
+                  "ms": 120
+                },
+                {
+                  "op": "setFlag",
+                  "flag": "found_code_note",
+                  "value": true
+                },
+                {
+                  "op": "wait",
+                  "ms": 50
+                },
+                {
+                  "op": "setFlag",
+                  "flag": "found_code_note",
+                  "value": false
+                },
+                {
+                  "op": "wait",
+                  "ms": 200
+                },
+                {
+                  "op": "setFlag",
+                  "flag": "found_code_note",
+                  "value": true
+                },
+                {
+                  "op": "wait",
+                  "ms": 60
+                },
+                {
+                  "op": "setFlag",
+                  "flag": "found_code_note",
+                  "value": false
+                },
+                {
+                  "op": "wait",
+                  "ms": 90
+                },
+                {
+                  "op": "setFlag",
+                  "flag": "found_code_note",
+                  "value": true
+                },
+                {
+                  "op": "wait",
+                  "ms": 40
+                },
+                {
+                  "op": "setFlag",
+                  "flag": "found_code_note",
+                  "value": false
+                },
+                {
+                  "op": "wait",
+                  "ms": 300
+                },
+                {
+                  "op": "setFlag",
+                  "flag": "found_code_note",
+                  "value": true
+                },
                 {
                   "op": "setFlag",
                   "flag": "has_code",
@@ -365,7 +569,7 @@
           "LOOK": [
             {
               "op": "say",
-              "text": "Warm light inside. I can see monitor screens glowing — someone's been running code."
+              "text": "Warm light inside. I can see monitor screens glowing \u2014 someone's been running code."
             }
           ],
           "USE": [
@@ -497,7 +701,7 @@
           "LOOK": [
             {
               "op": "say",
-              "text": "Brick chimney. No smoke — upgraded to a more efficient consensus mechanism."
+              "text": "Brick chimney. No smoke \u2014 upgraded to a more efficient consensus mechanism."
             }
           ],
           "USE": [
@@ -608,7 +812,7 @@
               "else": [
                 {
                   "op": "say",
-                  "text": "I sift through the junk mail... wait. A sealed envelope marked 'CONFIDENTIAL — PATIENT ZERO'. This looks important."
+                  "text": "I sift through the junk mail... wait. A sealed envelope marked 'CONFIDENTIAL \u2014 PATIENT ZERO'. This looks important."
                 },
                 {
                   "op": "addItem",
@@ -636,7 +840,7 @@
               "else": [
                 {
                   "op": "say",
-                  "text": "I swing open the mailbox flap. Junk mail cascades out... and a sealed envelope marked 'CONFIDENTIAL — PATIENT ZERO' slides into view."
+                  "text": "I swing open the mailbox flap. Junk mail cascades out... and a sealed envelope marked 'CONFIDENTIAL \u2014 PATIENT ZERO' slides into view."
                 },
                 {
                   "op": "addItem",
@@ -660,7 +864,7 @@
           "PUSH": [
             {
               "op": "say",
-              "text": "I push the mailbox post. It wobbles — years of neglect."
+              "text": "I push the mailbox post. It wobbles \u2014 years of neglect."
             }
           ],
           "PULL": [
@@ -794,11 +998,11 @@
               "then": [
                 {
                   "op": "say",
-                  "text": "I slide the doormat aside. Underneath — a hidden trapdoor with the AdrianZERO logo etched into it. The receptionist wasn't kidding."
+                  "text": "I slide the doormat aside. Underneath \u2014 a hidden trapdoor with the AdrianZERO logo etched into it. The receptionist wasn't kidding."
                 },
                 {
                   "op": "achievement",
-                  "text": "VIP ACCESS — Found the holder-only shortcut to the basement"
+                  "text": "VIP ACCESS \u2014 Found the holder-only shortcut to the basement"
                 },
                 {
                   "op": "fadeToScene",
@@ -862,7 +1066,7 @@
                   "then": [
                     {
                       "op": "say",
-                      "text": "I lift the doormat again. The hidden trapdoor with the AdrianZERO logo — VIP access to the basement."
+                      "text": "I lift the doormat again. The hidden trapdoor with the AdrianZERO logo \u2014 VIP access to the basement."
                     },
                     {
                       "op": "fadeToScene",
@@ -912,7 +1116,7 @@
               "then": [
                 {
                   "op": "say",
-                  "text": "I shove the mat aside. There it is — a hidden hatch, VIP access to the basement. Holders only."
+                  "text": "I shove the mat aside. There it is \u2014 a hidden hatch, VIP access to the basement. Holders only."
                 },
                 {
                   "op": "fadeToScene",
@@ -1044,7 +1248,7 @@
           "LOOK": [
             {
               "op": "say",
-              "text": "Wooden power pole. The original Layer 1 — electrical infrastructure."
+              "text": "Wooden power pole. The original Layer 1 \u2014 electrical infrastructure."
             }
           ],
           "USE": [
@@ -1603,7 +1807,7 @@
                   "",
                   "But its creator has vanished.",
                   "",
-                  "They call the missing person \"Patient Zero\" —",
+                  "They call the missing person \"Patient Zero\" \u2014",
                   "the first crypto addict, the original degen.",
                   "",
                   "A message arrives in your wallet:",
@@ -1670,10 +1874,6 @@
           "text": "I hold the note up to the keypad. 7... 3... 1... 4..."
         },
         {
-          "op": "wait",
-          "ms": 800
-        },
-        {
           "op": "say",
           "text": "*BEEP* Green light! The front door clicks open."
         },
@@ -1694,7 +1894,7 @@
         },
         {
           "op": "achievement",
-          "text": "CHAPTER 1 COMPLETE — Breaking & Entering"
+          "text": "CHAPTER 1 COMPLETE \u2014 Breaking & Entering"
         },
         {
           "op": "wait",
@@ -1723,10 +1923,6 @@
           "text": "I punch in the code from the note: 7-3-1-4..."
         },
         {
-          "op": "wait",
-          "ms": 800
-        },
-        {
           "op": "say",
           "text": "*BEEP* The door clicks open!"
         },
@@ -1747,7 +1943,7 @@
         },
         {
           "op": "achievement",
-          "text": "CHAPTER 1 COMPLETE — Breaking & Entering"
+          "text": "CHAPTER 1 COMPLETE \u2014 Breaking & Entering"
         },
         {
           "op": "wait",
@@ -1803,7 +1999,7 @@
             "",
             "But its creator has vanished.",
             "",
-            "They call the missing person \"Patient Zero\" —",
+            "They call the missing person \"Patient Zero\" \u2014",
             "the first crypto addict, the original degen.",
             "",
             "A message arrives in your wallet:",

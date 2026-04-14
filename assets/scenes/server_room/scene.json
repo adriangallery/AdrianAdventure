@@ -220,7 +220,7 @@
           "LOOK": [
             {
               "op": "say",
-              "text": "Active monitoring logs. FloorEngine, TraitLab, SweepBot — all Adrian's infrastructure, running autonomously."
+              "text": "Active monitoring logs. FloorEngine, TraitLab, SweepBot \u2014 all Adrian's infrastructure, running autonomously."
             }
           ],
           "USE": [
@@ -436,10 +436,6 @@
                       "text": "I flip the switch. Everything goes dark for a moment... The servers die. Then emergency generators kick in with a deep rumble."
                     },
                     {
-                      "op": "wait",
-                      "ms": 800
-                    },
-                    {
                       "op": "say",
                       "text": "Behind the glass: an emergency kill switch. But someone repurposed it."
                     },
@@ -450,10 +446,6 @@
                     {
                       "op": "say",
                       "text": "Adrian didn't just build infrastructure. He built an escape route."
-                    },
-                    {
-                      "op": "wait",
-                      "ms": 600
                     },
                     {
                       "op": "say",
@@ -672,7 +664,7 @@
             },
             {
               "op": "say",
-              "text": "I pry open a tile. The underfloor is like Ethereum's mempool — chaotic, congested, and full of things waiting to be processed."
+              "text": "I pry open a tile. The underfloor is like Ethereum's mempool \u2014 chaotic, congested, and full of things waiting to be processed."
             }
           ],
           "CLOSE": [
@@ -725,7 +717,7 @@
           "USE": [
             {
               "op": "say",
-              "text": "I trace the diagram with my finger. Every server, every bot, every contract — all mapped out. Adrian was meticulous. Obsessively so."
+              "text": "I trace the diagram with my finger. Every server, every bot, every contract \u2014 all mapped out. Adrian was meticulous. Obsessively so."
             }
           ],
           "TALK": [
@@ -737,7 +729,7 @@
           "PICK": [
             {
               "op": "say",
-              "text": "They're etched into the wall. Like on-chain data — permanent and impossible to take with you."
+              "text": "They're etched into the wall. Like on-chain data \u2014 permanent and impossible to take with you."
             }
           ],
           "OPEN": [

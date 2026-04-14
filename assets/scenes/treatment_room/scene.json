@@ -158,40 +158,20 @@
                   "text": "The monitor hums to life. Green text on black screen..."
                 },
                 {
-                  "op": "wait",
-                  "ms": 1000
-                },
-                {
                   "op": "say",
                   "text": "It shows... a wallet address. Wait."
-                },
-                {
-                  "op": "wait",
-                  "ms": 800
                 },
                 {
                   "op": "say",
                   "text": "Those are MY transactions."
                 },
                 {
-                  "op": "wait",
-                  "ms": 1000
-                },
-                {
                   "op": "say",
                   "text": "The charts on the wall... they're MY portfolio. Every trade. Every mint. Every mistake."
                 },
                 {
-                  "op": "wait",
-                  "ms": 1200
-                },
-                {
                   "op": "say",
                   "text": "Patient Zero... is ME?"
-                },
-                {
-                  "op": "wait",
-                  "ms": 2000
                 },
                 {
                   "op": "say",
@@ -227,7 +207,7 @@
                 },
                 {
                   "op": "achievement",
-                  "text": "PATIENT ZERO — Identity Revealed"
+                  "text": "PATIENT ZERO \u2014 Identity Revealed"
                 }
               ]
             }
@@ -526,10 +506,6 @@
                       "text": "The note reads:"
                     },
                     {
-                      "op": "wait",
-                      "ms": 500
-                    },
-                    {
                       "op": "say",
                       "text": "\"If you're reading this, the game worked.\""
                     },
@@ -539,7 +515,7 @@
                     },
                     {
                       "op": "say",
-                      "text": "\"The patients never make it this far — they stay in the lobby refreshing charts.\""
+                      "text": "\"The patients never make it this far \u2014 they stay in the lobby refreshing charts.\""
                     },
                     {
                       "op": "say",
@@ -551,7 +527,7 @@
                     },
                     {
                       "op": "say",
-                      "text": "\"— Adrian\""
+                      "text": "\"\u2014 Adrian\""
                     }
                   ]
                 }
@@ -675,7 +651,7 @@
           "USE": [
             {
               "op": "say",
-              "text": "I touch the plaque. It's warm. The engraving shifts — showing my $ZERO balance, my first transaction, my time in the ecosystem. Patient Zero was always a founder."
+              "text": "I touch the plaque. It's warm. The engraving shifts \u2014 showing my $ZERO balance, my first transaction, my time in the ecosystem. Patient Zero was always a founder."
             }
           ],
           "TALK": [
@@ -831,7 +807,7 @@
           "LOOK": [
             {
               "op": "say",
-              "text": "A massive observation window, completely shattered. Through the spider-web of cracks I can see another room — a recliner, filing cabinets, monitors. Someone was watching from in there. Watching the patients. Watching ME. The glass broke from the inside. Whoever was observing... tried to get out."
+              "text": "A massive observation window, completely shattered. Through the spider-web of cracks I can see another room \u2014 a recliner, filing cabinets, monitors. Someone was watching from in there. Watching the patients. Watching ME. The glass broke from the inside. Whoever was observing... tried to get out."
             }
           ],
           "USE": [
@@ -849,7 +825,7 @@
           "PICK": [
             {
               "op": "say",
-              "text": "I carefully pull a shard of glass from the frame. It catches the light from the monitor — green text reflected in the fragment. For a second, I see my own face in it. Patient. Observer. Same person."
+              "text": "I carefully pull a shard of glass from the frame. It catches the light from the monitor \u2014 green text reflected in the fragment. For a second, I see my own face in it. Patient. Observer. Same person."
             }
           ],
           "OPEN": [
@@ -879,7 +855,7 @@
           "GIVE": [
             {
               "op": "say",
-              "text": "The window has already been given enough — someone's fist, apparently. Or maybe their forehead. Depends on how bad the portfolio charts looked that day."
+              "text": "The window has already been given enough \u2014 someone's fist, apparently. Or maybe their forehead. Depends on how bad the portfolio charts looked that day."
             }
           ]
         }
@@ -915,13 +891,13 @@
           "PICK": [
             {
               "op": "say",
-              "text": "I try to pull a cable loose. It won't budge. Bolted to the floor. These aren't decorative — they're load-bearing infrastructure. Like the one validator keeping a chain alive."
+              "text": "I try to pull a cable loose. It won't budge. Bolted to the floor. These aren't decorative \u2014 they're load-bearing infrastructure. Like the one validator keeping a chain alive."
             }
           ],
           "OPEN": [
             {
               "op": "say",
-              "text": "I pry open a floor panel where the cables converge. Beneath: a junction box labeled 'BIOMETRIC FEED — TREATMENT SUITE A.' This chair wasn't just reading wallets. It was reading bodies."
+              "text": "I pry open a floor panel where the cables converge. Beneath: a junction box labeled 'BIOMETRIC FEED \u2014 TREATMENT SUITE A.' This chair wasn't just reading wallets. It was reading bodies."
             }
           ],
           "CLOSE": [
@@ -1044,7 +1020,7 @@
                   },
                   {
                     "op": "achievement",
-                    "text": "PATIENT ZERO — Identity Revealed"
+                    "text": "PATIENT ZERO \u2014 Identity Revealed"
                   },
                   {
                     "op": "wait",
@@ -1102,32 +1078,16 @@
               "text": "I hold the Floppy Disc Box up to the monitor. My hands are shaking."
             },
             {
-              "op": "wait",
-              "ms": 1200
-            },
-            {
               "op": "say",
               "text": "The display splits. On the left: my wallet history. On the right: the floppy collection's on-chain data. The timestamps match."
-            },
-            {
-              "op": "wait",
-              "ms": 1000
             },
             {
               "op": "say",
               "text": "Every floppy I minted corresponds to a moment in my crypto journey. Each one a snapshot. A backup of who I was at every turning point."
             },
             {
-              "op": "wait",
-              "ms": 800
-            },
-            {
               "op": "say",
               "text": "'Patient Zero's treatment was never about curing crypto addiction. It was about preserving the story. YOUR story. And you kept the floppies. You kept the proof.'"
-            },
-            {
-              "op": "wait",
-              "ms": 600
             },
             {
               "op": "say",
@@ -1145,7 +1105,7 @@
             },
             {
               "op": "achievement",
-              "text": "PRESERVED — Your floppies hold the story of Patient Zero"
+              "text": "PRESERVED \u2014 Your floppies hold the story of Patient Zero"
             }
           ]
         }

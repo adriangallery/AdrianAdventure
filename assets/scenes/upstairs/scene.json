@@ -1,7 +1,7 @@
 {
   "version": 1,
   "id": "upstairs",
-  "title": "Upstairs — Trading Floor",
+  "title": "Upstairs \u2014 Trading Floor",
   "assets": {
     "background": "background.png",
     "walkmask": "walkmask.png",
@@ -114,12 +114,8 @@
                   "text": "I open the desk drawer and find a trading terminal key with significant access!"
                 },
                 {
-                  "op": "wait",
-                  "ms": 600
-                },
-                {
                   "op": "say",
-                  "text": "There's a sticky note inside: 'PZ escaped via contract exploit — check server logs'"
+                  "text": "There's a sticky note inside: 'PZ escaped via contract exploit \u2014 check server logs'"
                 },
                 {
                   "op": "setFlag",
@@ -186,7 +182,7 @@
           "PICK": [
             {
               "op": "say",
-              "text": "There's a rare NFT trading card inside one. It's sealed in a display case — look, don't touch."
+              "text": "There's a rare NFT trading card inside one. It's sealed in a display case \u2014 look, don't touch."
             }
           ],
           "OPEN": [
@@ -343,7 +339,7 @@
               "else": [
                 {
                   "op": "say",
-                  "text": "Something glints under the cushion — a luxury watch worth several ETH. It's tangled in the springs. I'd need something long and thin to fish it out."
+                  "text": "Something glints under the cushion \u2014 a luxury watch worth several ETH. It's tangled in the springs. I'd need something long and thin to fish it out."
                 }
               ]
             }
@@ -691,7 +687,7 @@
           "GIVE": [
             {
               "op": "say",
-              "text": "Nobody wants a half-empty energy drink. It's the NFT of beverages — unique but valueless."
+              "text": "Nobody wants a half-empty energy drink. It's the NFT of beverages \u2014 unique but valueless."
             }
           ]
         }
@@ -747,7 +743,7 @@
                 },
                 {
                   "op": "say",
-                  "text": "I grab the receipt. It's a printout of a massive transaction — coordinates to a clinic in the mountains. Someone was tracking Patient Zero."
+                  "text": "I grab the receipt. It's a printout of a massive transaction \u2014 coordinates to a clinic in the mountains. Someone was tracking Patient Zero."
                 }
               ]
             }
@@ -755,7 +751,7 @@
           "OPEN": [
             {
               "op": "say",
-              "text": "It's an open tray. Nothing to open. Like my positions — always exposed."
+              "text": "It's an open tray. Nothing to open. Like my positions \u2014 always exposed."
             }
           ],
           "CLOSE": [
@@ -831,7 +827,7 @@
           "else": [
             {
               "op": "say",
-              "text": "I insert the Golden ZERO Token into a slot on the mining rig. The screens flash: 'GOLDEN KEY ACCEPTED — FOUNDER MODE UNLOCKED.'"
+              "text": "I insert the Golden ZERO Token into a slot on the mining rig. The screens flash: 'GOLDEN KEY ACCEPTED \u2014 FOUNDER MODE UNLOCKED.'"
             },
             {
               "op": "setFlag",
@@ -851,16 +847,8 @@
               "text": "An admin panel appears. Adrian's full ecosystem dashboard."
             },
             {
-              "op": "wait",
-              "ms": 800
-            },
-            {
               "op": "say",
               "text": "The admin dashboard lights up. FloorEngine: 847 sweeps. TraitLab: 12,459 traits minted. SweepBot: running 24/7 for 403 days."
-            },
-            {
-              "op": "wait",
-              "ms": 600
             },
             {
               "op": "say",
@@ -882,36 +870,20 @@
           "text": "I insert a floppy from the box into the trading desk's reader. The three monitors sync instantly."
         },
         {
-          "op": "wait",
-          "ms": 800
-        },
-        {
           "op": "say",
-          "text": "The screens display: 'BACKUP TRADING STRATEGIES FOUND — FLOPPY ARCHIVE v1.0. Last modified: 3 AM, obviously.'"
-        },
-        {
-          "op": "wait",
-          "ms": 800
+          "text": "The screens display: 'BACKUP TRADING STRATEGIES FOUND \u2014 FLOPPY ARCHIVE v1.0. Last modified: 3 AM, obviously.'"
         },
         {
           "op": "say",
           "text": "Strategy #1: 'Buy when mass is fearful.' Strategy #2: 'Sell when mass is greedy.' Strategy #3: 'Ignore strategies 1 and 2. Ape in. YOLO. NFA.'"
         },
         {
-          "op": "wait",
-          "ms": 800
-        },
-        {
           "op": "say",
           "text": "The AI trading bot interrupts: 'These strategies predate me by two years and outperformed me by 340%. I am humbled. And slightly offended.'"
         },
         {
-          "op": "wait",
-          "ms": 800
-        },
-        {
           "op": "say",
-          "text": "At the bottom of the file: 'NOTE: If you own these floppies, you already understood the best strategy — collect the art, ignore the noise.' Smart."
+          "text": "At the bottom of the file: 'NOTE: If you own these floppies, you already understood the best strategy \u2014 collect the art, ignore the noise.' Smart."
         },
         {
           "op": "setFlag",
@@ -920,7 +892,7 @@
         },
         {
           "op": "achievement",
-          "text": "ALPHA LEAK — Found Adrian's backup trading strategies"
+          "text": "ALPHA LEAK \u2014 Found Adrian's backup trading strategies"
         }
       ]
     },
@@ -946,12 +918,8 @@
               "text": "I slide the antenna between the springs and hook the watch band. Careful... careful..."
             },
             {
-              "op": "wait",
-              "ms": 1500
-            },
-            {
               "op": "say",
-              "text": "Got it! A luxury watch — heavy, gold, and still ticking. The back is engraved: 'TIME IN THE MARKET > TIMING THE MARKET.'"
+              "text": "Got it! A luxury watch \u2014 heavy, gold, and still ticking. The back is engraved: 'TIME IN THE MARKET > TIMING THE MARKET.'"
             },
             {
               "op": "setFlag",
@@ -965,7 +933,7 @@
             },
             {
               "op": "achievement",
-              "text": "DIAMOND HANDS — Retrieved the luxury watch"
+              "text": "DIAMOND HANDS \u2014 Retrieved the luxury watch"
             }
           ]
         }
@@ -980,35 +948,19 @@
       "script": [
         {
           "op": "say",
-          "text": "I hold a floppy disc near the mining rig's USB port. Wait — floppy discs don't use USB. But the rig detects it anyway."
-        },
-        {
-          "op": "wait",
-          "ms": 800
+          "text": "I hold a floppy disc near the mining rig's USB port. Wait \u2014 floppy discs don't use USB. But the rig detects it anyway."
         },
         {
           "op": "say",
-          "text": "The GPUs whir louder. The screen displays: 'ADRIANLAB FLOPPY — GENESIS CONFIG DETECTED. Loading original mining parameters from 2024...'"
-        },
-        {
-          "op": "wait",
-          "ms": 800
+          "text": "The GPUs whir louder. The screen displays: 'ADRIANLAB FLOPPY \u2014 GENESIS CONFIG DETECTED. Loading original mining parameters from 2024...'"
         },
         {
           "op": "say",
           "text": "The rig shows Adrian's first-ever mining config. Hash rate: pathetic. Power bill: astronomical. Conviction: immeasurable."
         },
         {
-          "op": "wait",
-          "ms": 800
-        },
-        {
           "op": "say",
           "text": "A GPU lights up with a hidden overclocking profile labeled 'FLOPPY_HODLER_BOOST'. The hash rate spikes. The rig hums a thank you."
-        },
-        {
-          "op": "wait",
-          "ms": 800
         },
         {
           "op": "say",
@@ -1021,7 +973,7 @@
         },
         {
           "op": "achievement",
-          "text": "GENESIS MINER — Activated the rig's original config"
+          "text": "GENESIS MINER \u2014 Activated the rig's original config"
         }
       ]
     }
