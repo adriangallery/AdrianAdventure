@@ -19,6 +19,7 @@ export class DialogueBox {
   private typewriterTimer: Phaser.Time.TimerEvent | null = null;
   private resolvePromise: (() => void) | null = null;
   private visible = false;
+  private activeHandler: ((pointer: Phaser.Input.Pointer) => void) | null = null;
 
   constructor(scene: Phaser.Scene) {
     this.scene = scene;
@@ -55,34 +56,19 @@ export class DialogueBox {
   }
 
   say(text: string, speaker?: string): Promise<void> {
-    // If a previous say is still visible, wait for it to dismiss first
-    if (this.visible && this.resolvePromise) {
-      return new Promise<void>((resolve) => {
-        // Queue: when the current one dismisses, show the new one
-        const prevResolve = this.resolvePromise!;
-        this.resolvePromise = () => {
-          prevResolve();
-          this.showText(text, speaker, resolve);
-        };
-      });
-    }
     return new Promise<void>((resolve) => {
-      this.showText(text, speaker, resolve);
-    });
-  }
+      // Clean up any previous dialogue immediately
+      this.cleanup();
 
-  private showText(text: string, speaker: string | undefined, resolve: () => void): void {
       this.resolvePromise = resolve;
       this.fullMessage = text;
       this.displayedChars = 0;
       this.visible = true;
 
-      // Always use viewport center — text has scrollFactor(0) so it's screen-fixed
       const vpW = this.scene.scale.width;
       const centerX = vpW / 2;
       const textY = Math.max(20, this.scene.scale.height * 0.06);
 
-      // Word wrap to viewport width, not bg width
       this.text.setWordWrapWidth(Math.min(vpW - PADDING * 4, 700));
 
       if (speaker) {
@@ -110,7 +96,6 @@ export class DialogueBox {
       });
 
       // Click to skip typewriter, then click again to dismiss
-      // Min display time prevents rapid-fire taps from skipping messages on mobile
       let canDismiss = false;
       const minReadTime = Math.min(1200, 300 + this.fullMessage.length * 15);
 
@@ -123,10 +108,10 @@ export class DialogueBox {
           this.text.setText(this.fullMessage);
         } else if (canDismiss) {
           // Full text shown and min read time passed — dismiss
-          this.scene.input.off('pointerdown', handler);
           this.dismiss();
         }
       };
+      this.activeHandler = handler;
 
       this.scene.time.delayedCall(150, () => {
         this.scene.input.on('pointerdown', handler);
@@ -134,9 +119,27 @@ export class DialogueBox {
       this.scene.time.delayedCall(minReadTime, () => {
         canDismiss = true;
       });
+    });
+  }
+
+  /** Clean up current dialogue without resolving its promise. */
+  private cleanup(): void {
+    if (this.activeHandler) {
+      this.scene.input.off('pointerdown', this.activeHandler);
+      this.activeHandler = null;
+    }
+    this.typewriterTimer?.remove();
+    this.typewriterTimer = null;
+    this.visible = false;
+    this.text.setVisible(false);
+    this.speakerText.setVisible(false);
   }
 
   private dismiss(): void {
+    if (this.activeHandler) {
+      this.scene.input.off('pointerdown', this.activeHandler);
+      this.activeHandler = null;
+    }
     this.typewriterTimer?.remove();
     this.typewriterTimer = null;
     this.visible = false;
@@ -152,7 +155,7 @@ export class DialogueBox {
   /** Show text briefly (auto-dismiss after delay), then resolve. No click needed. */
   sayBrief(text: string, durationMs = 1500, speaker?: string): Promise<void> {
     return new Promise<void>((resolve) => {
-      if (this.visible) this.dismiss();
+      this.cleanup();
 
       this.resolvePromise = resolve;
       this.fullMessage = text;
@@ -196,6 +199,9 @@ export class DialogueBox {
 
   destroy(): void {
     this.scene.scale.off('resize', this.handleResize, this);
+    if (this.activeHandler) {
+      this.scene.input.off('pointerdown', this.activeHandler);
+    }
     this.typewriterTimer?.remove();
     this.text.destroy();
     this.speakerText.destroy();
