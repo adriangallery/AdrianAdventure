@@ -55,9 +55,23 @@ export class DialogueBox {
   }
 
   say(text: string, speaker?: string): Promise<void> {
+    // If a previous say is still visible, wait for it to dismiss first
+    if (this.visible && this.resolvePromise) {
+      return new Promise<void>((resolve) => {
+        // Queue: when the current one dismisses, show the new one
+        const prevResolve = this.resolvePromise!;
+        this.resolvePromise = () => {
+          prevResolve();
+          this.showText(text, speaker, resolve);
+        };
+      });
+    }
     return new Promise<void>((resolve) => {
-      if (this.visible) this.dismiss();
+      this.showText(text, speaker, resolve);
+    });
+  }
 
+  private showText(text: string, speaker: string | undefined, resolve: () => void): void {
       this.resolvePromise = resolve;
       this.fullMessage = text;
       this.displayedChars = 0;
@@ -120,7 +134,6 @@ export class DialogueBox {
       this.scene.time.delayedCall(minReadTime, () => {
         canDismiss = true;
       });
-    });
   }
 
   private dismiss(): void {
