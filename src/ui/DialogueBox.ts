@@ -20,6 +20,8 @@ export class DialogueBox {
   private resolvePromise: (() => void) | null = null;
   private visible = false;
   private activeHandler: ((pointer: Phaser.Input.Pointer) => void) | null = null;
+  private pendingHandlerCall: Phaser.Time.TimerEvent | null = null;
+  private pendingDismissCall: Phaser.Time.TimerEvent | null = null;
 
   constructor(scene: Phaser.Scene) {
     this.scene = scene;
@@ -64,6 +66,7 @@ export class DialogueBox {
       this.fullMessage = text;
       this.displayedChars = 0;
       this.visible = true;
+      this.scene.registry.set('dialogueShowing', true);
 
       const vpW = this.scene.scale.width;
       const centerX = vpW / 2;
@@ -113,7 +116,8 @@ export class DialogueBox {
       };
       this.activeHandler = handler;
 
-      this.scene.time.delayedCall(150, () => {
+      this.pendingHandlerCall = this.scene.time.delayedCall(150, () => {
+        this.pendingHandlerCall = null;
         this.scene.input.on('pointerdown', handler);
       });
       this.scene.time.delayedCall(minReadTime, () => {
@@ -128,21 +132,35 @@ export class DialogueBox {
       this.scene.input.off('pointerdown', this.activeHandler);
       this.activeHandler = null;
     }
+    // Cancel pending delayed calls to prevent handler leaks
+    this.pendingHandlerCall?.remove();
+    this.pendingHandlerCall = null;
+    this.pendingDismissCall?.remove();
+    this.pendingDismissCall = null;
     this.typewriterTimer?.remove();
     this.typewriterTimer = null;
     this.visible = false;
+    this.scene.registry.set('dialogueShowing', false);
     this.text.setVisible(false);
     this.speakerText.setVisible(false);
   }
 
   private dismiss(): void {
+    // Guard: don't dismiss if nothing is showing — prevents leaked handlers
+    // from setting dialogueDismissedAt on every click (which would freeze input)
+    if (!this.visible) return;
     if (this.activeHandler) {
       this.scene.input.off('pointerdown', this.activeHandler);
       this.activeHandler = null;
     }
+    this.pendingHandlerCall?.remove();
+    this.pendingHandlerCall = null;
+    this.pendingDismissCall?.remove();
+    this.pendingDismissCall = null;
     this.typewriterTimer?.remove();
     this.typewriterTimer = null;
     this.visible = false;
+    this.scene.registry.set('dialogueShowing', false);
     this.text.setVisible(false);
     this.speakerText.setVisible(false);
     // Signal that a dialogue was just dismissed — GameScene should ignore this click
@@ -161,6 +179,7 @@ export class DialogueBox {
       this.fullMessage = text;
       this.displayedChars = text.length;
       this.visible = true;
+      this.scene.registry.set('dialogueShowing', true);
 
       const vpW = this.scene.scale.width;
       const centerX = vpW / 2;
@@ -181,7 +200,10 @@ export class DialogueBox {
       this.text.setVisible(true);
 
       // Auto-dismiss after duration
-      this.scene.time.delayedCall(durationMs, () => this.dismiss());
+      this.pendingDismissCall = this.scene.time.delayedCall(durationMs, () => {
+        this.pendingDismissCall = null;
+        this.dismiss();
+      });
     });
   }
 
@@ -202,6 +224,8 @@ export class DialogueBox {
     if (this.activeHandler) {
       this.scene.input.off('pointerdown', this.activeHandler);
     }
+    this.pendingHandlerCall?.remove();
+    this.pendingDismissCall?.remove();
     this.typewriterTimer?.remove();
     this.text.destroy();
     this.speakerText.destroy();

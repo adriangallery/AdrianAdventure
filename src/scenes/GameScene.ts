@@ -8,6 +8,7 @@ import { SaveLoadSystem } from '@/systems/SaveLoadSystem';
 import type { MusicManager } from '@/systems/MusicManager';
 import { CinematicOverlay } from '@/ui/CinematicOverlay';
 import { Web3VisualSystem } from '@/systems/Web3VisualSystem';
+import { WEB3_ENABLED } from '@/config/platform';
 import { NPC } from '@/objects/NPC';
 import type { SceneData, HotspotData } from '@/types/scene.types';
 import { type GameState, Verb, createInitialState } from '@/types/game.types';
@@ -39,6 +40,7 @@ export class GameScene extends Phaser.Scene {
   private debugContainer?: Phaser.GameObjects.Container;
   private static DEBUG = import.meta.env.DEV;
   private pendingHotspot: HotspotData | null = null;
+  private activeCameraEffect: { type: string; disableFlag?: string } | null = null;
   /** Persisted across sessions via gameState.firedTriggers */
   private firedTriggers: Set<string> = new Set();
   /** Frame-based cooldown: ignore clicks for 1 frame after script finishes */
@@ -209,8 +211,21 @@ export class GameScene extends Phaser.Scene {
     }
 
     // Web3 dynamic visuals (conditional sprites based on wallet/NFT state)
-    if (sceneData.web3Visuals?.length) {
+    if (WEB3_ENABLED && sceneData.web3Visuals?.length) {
       this.web3VisualSystem = new Web3VisualSystem(this, this.coordSystem, sceneData.web3Visuals);
+    }
+
+    // Camera post-processing effect (e.g., anaglyph for MemeLAB)
+    this.activeCameraEffect = null;
+    const cameraEffect = (sceneData as any).cameraEffect as { type: string; disableFlag?: string } | undefined;
+    if (cameraEffect?.type === 'anaglyph') {
+      const disableFlag = cameraEffect.disableFlag;
+      if (!disableFlag || !(this.gameState.flags[disableFlag] ?? false)) {
+        if (this.game.renderer.type === Phaser.WEBGL) {
+          this.cameras.main.setPostPipeline('AnaglyphPipeline');
+          this.activeCameraEffect = cameraEffect;
+        }
+      }
     }
 
     // Debug overlays
@@ -297,6 +312,14 @@ export class GameScene extends Phaser.Scene {
       if (co.sprite.visible !== show) co.sprite.setVisible(show);
     }
 
+    // Check if camera effect should be disabled (e.g., glasses used in MemeLAB)
+    if (this.activeCameraEffect?.disableFlag) {
+      if (this.gameState.flags[this.activeCameraEffect.disableFlag] ?? false) {
+        this.cameras.main.removePostPipeline('AnaglyphPipeline');
+        this.activeCameraEffect = null;
+      }
+    }
+
     // Tick down input cooldown (prevents dismiss-click from triggering next action)
     if (this.inputCooldownFrames > 0) this.inputCooldownFrames--;
 
@@ -356,6 +379,8 @@ export class GameScene extends Phaser.Scene {
     if (this.inputCooldownFrames > 0) return;
     // Block all game input while dialogue tree is running (choices, etc.)
     if (this.registry.get('dialogueActive')) return;
+    // Block game input while any dialogue text is showing (including fallback messages)
+    if (this.registry.get('dialogueShowing')) return;
 
     // Ignore the click that just dismissed a dialogue (same frame / same tick)
     const dismissedAt = this.registry.get('dialogueDismissedAt') as number | undefined;
@@ -542,11 +567,13 @@ export class GameScene extends Phaser.Scene {
   }
 
   /** Get panel height — reads ScummUI effective height if available, falls back to formula */
-  /** Check if a hotspot should be visible (not hidden by a flag) */
+  /** Check if a hotspot should be visible (not hidden/shown by a flag) */
   private isHotspotVisible(hs: HotspotData): boolean {
     const hideFlag = (hs as any).hideWhenFlag;
-    if (!hideFlag) return true;
-    return !(this.gameState.flags[hideFlag] ?? false);
+    if (hideFlag && (this.gameState.flags[hideFlag] ?? false)) return false;
+    const showFlag = (hs as any).showWhenFlag;
+    if (showFlag && !(this.gameState.flags[showFlag] ?? false)) return false;
+    return true;
   }
 
   private getEffectivePanelHeight(): number {
@@ -583,7 +610,7 @@ export class GameScene extends Phaser.Scene {
   /** Execute an item-to-item combo script (called from UIScene) */
   executeItemComboScript(script: import('@/types/scene.types').ScriptOp[]): void {
     this.scriptEngine.updateContext(this.buildScriptContext());
-    this.scriptEngine.execute(script).then(() => {
+    this.scriptEngine.execute(script).finally(() => {
       this.inputCooldownFrames = 2;
     });
   }
@@ -599,7 +626,7 @@ export class GameScene extends Phaser.Scene {
       if (!gatePassed) {
         this.scriptEngine.updateContext(this.buildScriptContext());
         if (hotspot.gateFallback?.length) {
-          this.scriptEngine.execute(hotspot.gateFallback).then(() => { this.inputCooldownFrames = 2; });
+          this.scriptEngine.execute(hotspot.gateFallback).finally(() => { this.inputCooldownFrames = 2; });
         } else {
           this.scene.get('UIScene').events.emit('say', 'Something about this feels locked away...');
         }
@@ -610,7 +637,7 @@ export class GameScene extends Phaser.Scene {
     const scripts = hotspot.scripts[verb];
     if (scripts?.length) {
       this.scriptEngine.updateContext(this.buildScriptContext());
-      this.scriptEngine.execute(scripts).then(() => {
+      this.scriptEngine.execute(scripts).finally(() => {
         // After script finishes (say dismissed, etc.), ignore clicks for 2 frames
         // so the dismiss-click doesn't accidentally trigger the next action
         this.inputCooldownFrames = 2;
@@ -811,5 +838,9 @@ export class GameScene extends Phaser.Scene {
     this.transactionToast?.destroy();
     this.web3VisualSystem?.destroy();
     this.walletUnsub?.();
+    if (this.activeCameraEffect) {
+      this.cameras.main.removePostPipeline('AnaglyphPipeline');
+      this.activeCameraEffect = null;
+    }
   }
 }

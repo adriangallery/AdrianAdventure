@@ -13,6 +13,7 @@ import type { InventorySystem } from '@/systems/InventorySystem';
 import type { SceneData, HotspotData } from '@/types/scene.types';
 import type { Verb, GameState } from '@/types/game.types';
 import type { GameScene } from './GameScene';
+import { WEB3_ENABLED } from '@/config/platform';
 import { getAchievementByText } from '@/config/achievements.config';
 import { VOICE_TEXT_MAP, NARRATOR_SEQUENCES } from '@/config/voice.config';
 import { getWalletState } from '@/web3/wallet';
@@ -57,9 +58,11 @@ export class UIScene extends Phaser.Scene {
     this.dialogueBox = new DialogueBox(this);
     this.choicePanel = new ChoicePanel(this);
 
-    // Wallet button (top-right, small)
-    this.walletButton = new WalletButton(this);
-    this.walletButton.setInventory(inventorySystem);
+    // Wallet button (top-right, small) — hidden on Steam where Web3 is disabled
+    if (WEB3_ENABLED) {
+      this.walletButton = new WalletButton(this);
+      this.walletButton.setInventory(inventorySystem);
+    }
 
     // Save button (top-right, next to wallet)
     this.saveButton = new SaveButton(this);
@@ -174,7 +177,7 @@ export class UIScene extends Phaser.Scene {
       const npc = npcs?.find((n) => n.npcId === npcId);
       npc?.startTalking();
       this.registry.set('dialogueActive', true);
-      this.startDialogueFromScene(treeId).then(() => {
+      this.startDialogueFromScene(treeId).finally(() => {
         npc?.stopTalking();
         this.registry.set('dialogueActive', false);
       });
@@ -197,7 +200,7 @@ export class UIScene extends Phaser.Scene {
     // Dialogue requests (from ScriptEngine opcode)
     this.events.on('startDialogue', (_npcId: string, treeId: string) => {
       this.registry.set('dialogueActive', true);
-      this.startDialogueFromScene(treeId).then(() => {
+      this.startDialogueFromScene(treeId).finally(() => {
         this.registry.set('dialogueActive', false);
       });
     });
