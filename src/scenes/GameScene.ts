@@ -196,12 +196,7 @@ export class GameScene extends Phaser.Scene {
       }
     });
 
-    // Costume change event (from UIScene/ScummUI)
-    this.events.on('costume:change', (prefix: string) => {
-      this.time.delayedCall(0, () => {
-        this.player.setCostume(prefix);
-      });
-    });
+    // Costume: Player.update() reads ape_costume_worn flag directly from gameState
 
     // Audio — MusicManager persists across scenes (singleton on game.registry)
     this.musicManager = this.game.registry.get('musicManager') as MusicManager;

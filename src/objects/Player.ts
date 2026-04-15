@@ -96,6 +96,16 @@ export class Player extends Phaser.GameObjects.Sprite {
   }
 
   update(_time: number, delta: number): void {
+    // Check costume flag from gameState each frame (driven by ScummUI toggle)
+    const state = this.scene.registry.get('gameState') as { flags?: Record<string, boolean> } | undefined;
+    const wantApe = state?.flags?.['ape_costume_worn'] ?? false;
+    const wantPrefix = wantApe ? 'ape' : 'player';
+    if (wantPrefix !== this.spritePrefix) {
+      this.spritePrefix = wantPrefix;
+      // Force texture update on next idle/walk frame
+      this.idleTimer = IDLE_FRAME_MS;
+    }
+
     if (this.targetPctX === null || this.targetPctY === null) {
       // Idle animation
       this.idleTimer += delta;
