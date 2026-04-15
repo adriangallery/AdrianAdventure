@@ -358,6 +358,25 @@ export class ScummUI {
     // USE or WALK: toggle "Use X with..." cursor mode
     if (this.selectedVerb === Verb.USE || this.selectedVerb === Verb.WALK) {
       if (this.selectedItem?.id === item.id) {
+        // Second click on same item — "use on self" for costumes
+        if (item.id === 'ape_costume') {
+          const state = this.scene.registry.get('gameState') as any;
+          if (state) {
+            const wearing = state.flags['ape_costume_worn'] ?? false;
+            state.flags['ape_costume_worn'] = !wearing;
+            this.scene.registry.set('gameState', state);
+            const gameScene = this.scene.scene.get('GameScene') as any;
+            gameScene?.player?.setCostume?.(!wearing ? 'ape' : 'player');
+            this.scene.sound.play('item_use', { volume: 0.6 });
+            this.scene.events.emit('say', !wearing
+              ? "I put on the ape costume. The fur is warm. The mask smells like diamond hands and bad decisions. I look ridiculous. I look perfect."
+              : "I take off the ape costume and stuff it back in my pocket. How does it even fit in there? Best not to question adventure game logic."
+            );
+          }
+          this.selectedItem = null;
+          this.updateActionLine();
+          return;
+        }
         this.selectedItem = null;
       } else {
         this.selectedItem = item;
@@ -415,6 +434,9 @@ export class ScummUI {
     broken_mouse: "A computer mouse with a severed cable. Clicked its last click. Rest in pixels, little friend.",
     server_log: "Printed server logs. Error codes, timestamps, and someone's 3 AM debugging desperation.",
     burned_chip: "A scorched chip from the AdrianAuctions server. Whatever happened, it happened fast and hot.",
+    glasses_3d: "Retro 3D glasses with red and cyan lenses. Found under the server room floor. Someone hid these for a reason.",
+    pepememe: "A rare Pepe printout from the MemeLAB. It wears tiny 3D glasses. The back reads: 'SPECIMEN #001 \u2014 THE ORIGINAL'. Feels warm to the touch.",
+    ape_costume: "A full ape costume from the Alpha Pack. Realistic fur, expressive face, diamond-shaped buttons. When worn, I blend in with the Liquidity Pool apes. USE to put it on or take it off.",
   };
 
   private static readonly DEFAULT_ITEM_VERB_RESPONSES: Partial<Record<Verb, string>> = {

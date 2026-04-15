@@ -62,14 +62,26 @@
           ],
           "TALK": [
             {
-              "op": "say",
-              "text": "'Bro, we're providing liquidity.' 'To what?' 'To this pool. We're literally IN the liquidity pool.' The other apes nod. One adds: 'I sold ETH at $400.' Solemnly, they all pour one out. Into the pool. Where they're standing."
+              "op": "ifFlag",
+              "flag": "ape_costume_worn",
+              "then": [
+                { "op": "say", "text": "'Bro, we're providing liquidity.' 'To what?' 'To this pool. We're literally IN the liquidity pool.' The other apes nod. One adds: 'I sold ETH at $400.' Solemnly, they all pour one out. Into the pool. Where they're standing." }
+              ],
+              "else": [
+                { "op": "say", "text": "I try to talk to the apes. They glance at me, then at each other. One mutters: 'Paper hands vibes.' Another: 'Not one of us.' They all turn back to their phones. Ignored." }
+              ]
             }
           ],
           "USE": [
             {
-              "op": "say",
-              "text": "I try to engage them. One looks up briefly. 'Are you bullish or bearish?' he asks, then goes back to his phone before I can answer."
+              "op": "ifFlag",
+              "flag": "ape_costume_worn",
+              "then": [
+                { "op": "say", "text": "I try to engage them. One looks up briefly. 'Are you bullish or bearish?' he asks, then goes back to his phone before I can answer." }
+              ],
+              "else": [
+                { "op": "say", "text": "I wave at the apes. They don't even look up. I'm invisible to them without the right... look." }
+              ]
             }
           ],
           "PICK": [
@@ -80,8 +92,14 @@
           ],
           "OPEN": [
             {
-              "op": "say",
-              "text": "One of them holds up his phone. 'Check my portfolio.' I look. It's a picture of a sunset. 'That's not a portfolio.' 'It is now.'"
+              "op": "ifFlag",
+              "flag": "ape_costume_worn",
+              "then": [
+                { "op": "say", "text": "One of them holds up his phone. 'Check my portfolio.' I look. It's a picture of a sunset. 'That's not a portfolio.' 'It is now.'" }
+              ],
+              "else": [
+                { "op": "say", "text": "I try to start a conversation. They close ranks. Literally. The apes form a wall of wet fur. I'm not getting through without looking the part." }
+              ]
             }
           ],
           "CLOSE": [
@@ -110,14 +128,26 @@
           ],
           "TALK": [
             {
-              "op": "say",
-              "text": "'Welcome to the liquidity pool! We ARE the liquidity.' I look around. Apes floating in green water. 'So THIS is what happens to liquidity providers.' 'We don't leave. Ever. That's the impermanent part.'"
+              "op": "ifFlag",
+              "flag": "ape_costume_worn",
+              "then": [
+                { "op": "say", "text": "'Welcome to the liquidity pool! We ARE the liquidity.' I look around. Apes floating in green water. 'So THIS is what happens to liquidity providers.' 'We don't leave. Ever. That's the impermanent part.'" }
+              ],
+              "else": [
+                { "op": "say", "text": "The deep-end apes glance my way. 'Who let a normie in here?' one whispers. Another: 'Security!' They point at me and laugh. I don't belong here. Not looking like this." }
+              ]
             }
           ],
           "USE": [
             {
-              "op": "say",
-              "text": "I try to hand one of them a towel. 'No thanks, I'm HODLing... the water.' He sinks a little lower."
+              "op": "ifFlag",
+              "flag": "ape_costume_worn",
+              "then": [
+                { "op": "say", "text": "I try to hand one of them a towel. 'No thanks, I'm HODLing... the water.' He sinks a little lower." }
+              ],
+              "else": [
+                { "op": "say", "text": "I reach toward them. They paddle away in unison. Like synchronized swimmers, but with worse financial decisions." }
+              ]
             }
           ],
           "PICK": [
@@ -128,8 +158,14 @@
           ],
           "OPEN": [
             {
-              "op": "say",
-              "text": "'Open your mind,' one says. 'I'll open my wallet when you show me a real roadmap,' I reply. Silence. Then: 'Fair.'"
+              "op": "ifFlag",
+              "flag": "ape_costume_worn",
+              "then": [
+                { "op": "say", "text": "'Open your mind,' one says. 'I'll open my wallet when you show me a real roadmap,' I reply. Silence. Then: 'Fair.'" }
+              ],
+              "else": [
+                { "op": "say", "text": "I try to get their attention. They form a huddle and whisper about me. I hear: '...definitely a bear...' Not welcome here." }
+              ]
             }
           ],
           "CLOSE": [
@@ -331,15 +367,28 @@
           ],
           "TALK": [
             {
-              "op": "dialogue",
-              "npcId": "npc_bot_bartender",
-              "treeId": "bartender_intro"
+              "op": "ifFlag",
+              "flag": "ape_costume_worn",
+              "then": [
+                { "op": "dialogue", "npcId": "npc_bot_bartender", "treeId": "bartender_intro" }
+              ],
+              "else": [
+                { "op": "say", "speaker": "B.O.T.", "text": "*scans face* Identity: UNKNOWN. Species: HUMAN. Access level: NONE." },
+                { "op": "say", "speaker": "B.O.T.", "text": "This bar serves apes only. Come back when you look the part. Dress code is strictly enforced." },
+                { "op": "say", "text": "The robot's LED eyes flash red briefly. Clearly, I need to blend in if I want to get served here." }
+              ]
             }
           ],
           "USE": [
             {
-              "op": "say",
-              "text": "I try to access the robot's control panel. 'Buy me a drink first,' it says. Even robots have boundaries."
+              "op": "ifFlag",
+              "flag": "ape_costume_worn",
+              "then": [
+                { "op": "say", "text": "I try to access the robot's control panel. 'Buy me a drink first,' it says. Even robots have boundaries." }
+              ],
+              "else": [
+                { "op": "say", "speaker": "B.O.T.", "text": "*arm blocks access* Apes only. No exceptions. I don't make the rules. I just enforce them. Mechanically." }
+              ]
             }
           ],
           "PICK": [

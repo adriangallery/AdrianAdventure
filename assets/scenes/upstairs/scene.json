@@ -1,7 +1,7 @@
 {
   "version": 1,
   "id": "upstairs",
-  "title": "Upstairs \u2014 Trading Floor",
+  "title": "Upstairs — Trading Floor",
   "assets": {
     "background": "background.png",
     "walkmask": "walkmask.png",
@@ -115,7 +115,7 @@
                 },
                 {
                   "op": "say",
-                  "text": "There's a sticky note inside: 'PZ escaped via contract exploit \u2014 check server logs'"
+                  "text": "There's a sticky note inside: 'PZ escaped via contract exploit — check server logs'"
                 },
                 {
                   "op": "setFlag",
@@ -155,9 +155,9 @@
         "id": "hs_boxes",
         "name": "Success Boxes",
         "bounds": {
-          "x": 65.1,
-          "y": 53.8,
-          "w": 9.2,
+          "x": 89.3,
+          "y": 61.4,
+          "w": 8.2,
           "h": 33.8
         },
         "scripts": {
@@ -182,7 +182,7 @@
           "PICK": [
             {
               "op": "say",
-              "text": "There's a rare NFT trading card inside one. It's sealed in a display case \u2014 look, don't touch."
+              "text": "There's a rare NFT trading card inside one. It's sealed in a display case — look, don't touch."
             }
           ],
           "OPEN": [
@@ -339,7 +339,7 @@
               "else": [
                 {
                   "op": "say",
-                  "text": "Something glints under the cushion \u2014 a luxury watch worth several ETH. It's tangled in the springs. I'd need something long and thin to fish it out."
+                  "text": "Something glints under the cushion — a luxury watch worth several ETH. It's tangled in the springs. I'd need something long and thin to fish it out."
                 }
               ]
             }
@@ -687,7 +687,7 @@
           "GIVE": [
             {
               "op": "say",
-              "text": "Nobody wants a half-empty energy drink. It's the NFT of beverages \u2014 unique but valueless."
+              "text": "Nobody wants a half-empty energy drink. It's the NFT of beverages — unique but valueless."
             }
           ]
         }
@@ -743,7 +743,7 @@
                 },
                 {
                   "op": "say",
-                  "text": "I grab the receipt. It's a printout of a massive transaction \u2014 coordinates to a clinic in the mountains. Someone was tracking Patient Zero."
+                  "text": "I grab the receipt. It's a printout of a massive transaction — coordinates to a clinic in the mountains. Someone was tracking Patient Zero."
                 }
               ]
             }
@@ -751,7 +751,7 @@
           "OPEN": [
             {
               "op": "say",
-              "text": "It's an open tray. Nothing to open. Like my positions \u2014 always exposed."
+              "text": "It's an open tray. Nothing to open. Like my positions — always exposed."
             }
           ],
           "CLOSE": [
@@ -777,6 +777,90 @@
               "op": "say",
               "text": "The paper tray has enough bad news. It doesn't need more from me."
             }
+          ]
+        }
+      },
+      {
+        "id": "hs_alphapack",
+        "name": "Alpha Pack",
+        "bounds": {
+          "x": 66.9,
+          "y": 53,
+          "w": 5.7,
+          "h": 12.8
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "ifFlag",
+              "flag": "found_ape_costume",
+              "then": [
+                { "op": "say", "text": "An open backpack with 'ALPHA PACK' embroidered on it. Empty now \u2014 I already took the ape costume." }
+              ],
+              "else": [
+                { "op": "say", "text": "A sleek backpack tucked under the desk, labeled 'ALPHA PACK'. The zipper is half open. Something furry is poking out." }
+              ]
+            }
+          ],
+          "USE": [
+            {
+              "op": "ifFlag",
+              "flag": "found_ape_costume",
+              "then": [
+                { "op": "say", "text": "The pack is empty. All the alpha has been extracted." }
+              ],
+              "else": [
+                { "op": "say", "text": "I unzip the pack. Inside: a full ape costume \u2014 head, gloves, everything. A note reads: 'FOR EMERGENCY APE-IN ONLY. NOT FINANCIAL ADVICE.'" },
+                { "op": "say", "text": "This must be what the traders wear when they want to 'ape in' to positions anonymously. Genius and unhinged." }
+              ]
+            }
+          ],
+          "TALK": [
+            { "op": "say", "text": "I whisper to the pack. 'What alpha do you hold?' The zipper rattles. That's either wind or financial advice." }
+          ],
+          "PICK": [
+            {
+              "op": "ifFlag",
+              "flag": "found_ape_costume",
+              "then": [
+                { "op": "say", "text": "Already grabbed the costume. The empty pack can stay." }
+              ],
+              "else": [
+                { "op": "setFlag", "flag": "found_ape_costume", "value": true },
+                { "op": "addItem", "id": "ape_costume", "name": "Ape Costume" },
+                { "op": "playSound", "key": "discovery" },
+                { "op": "say", "text": "I pull out the ape costume. It's surprisingly well-made \u2014 realistic fur, expressive face, even little diamond-shaped buttons." },
+                { "op": "say", "text": "A tag inside reads: 'Property of the Liquidity Pool Recreation Committee. If found, ape in.'" }
+              ]
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "ifFlag",
+              "flag": "found_ape_costume",
+              "then": [
+                { "op": "say", "text": "Already opened and emptied. Nothing but lint and broken dreams left inside." }
+              ],
+              "else": [
+                { "op": "setFlag", "flag": "found_ape_costume", "value": true },
+                { "op": "addItem", "id": "ape_costume", "name": "Ape Costume" },
+                { "op": "playSound", "key": "discovery" },
+                { "op": "say", "text": "I open the Alpha Pack. Inside: a complete ape costume! Fur, mask, the works. Someone left this here for emergencies." },
+                { "op": "say", "text": "The label says: 'Liquidity Pool Recreation Committee \u2014 For authorized aping only.'" }
+              ]
+            }
+          ],
+          "CLOSE": [
+            { "op": "say", "text": "I zip the pack shut. The alpha stays contained. For now." }
+          ],
+          "PUSH": [
+            { "op": "say", "text": "I nudge the pack with my foot. It slides under the desk. Something rattles inside." }
+          ],
+          "PULL": [
+            { "op": "say", "text": "I drag the pack out from under the desk. It's heavier than expected. What kind of alpha weighs this much?" }
+          ],
+          "GIVE": [
+            { "op": "say", "text": "Nobody here deserves this alpha. I'm keeping the pack." }
           ]
         }
       }
@@ -827,7 +911,7 @@
           "else": [
             {
               "op": "say",
-              "text": "I insert the Golden ZERO Token into a slot on the mining rig. The screens flash: 'GOLDEN KEY ACCEPTED \u2014 FOUNDER MODE UNLOCKED.'"
+              "text": "I insert the Golden ZERO Token into a slot on the mining rig. The screens flash: 'GOLDEN KEY ACCEPTED — FOUNDER MODE UNLOCKED.'"
             },
             {
               "op": "setFlag",
@@ -871,7 +955,7 @@
         },
         {
           "op": "say",
-          "text": "The screens display: 'BACKUP TRADING STRATEGIES FOUND \u2014 FLOPPY ARCHIVE v1.0. Last modified: 3 AM, obviously.'"
+          "text": "The screens display: 'BACKUP TRADING STRATEGIES FOUND — FLOPPY ARCHIVE v1.0. Last modified: 3 AM, obviously.'"
         },
         {
           "op": "say",
@@ -883,7 +967,7 @@
         },
         {
           "op": "say",
-          "text": "At the bottom of the file: 'NOTE: If you own these floppies, you already understood the best strategy \u2014 collect the art, ignore the noise.' Smart."
+          "text": "At the bottom of the file: 'NOTE: If you own these floppies, you already understood the best strategy — collect the art, ignore the noise.' Smart."
         },
         {
           "op": "setFlag",
@@ -892,7 +976,7 @@
         },
         {
           "op": "achievement",
-          "text": "ALPHA LEAK \u2014 Found Adrian's backup trading strategies"
+          "text": "ALPHA LEAK — Found Adrian's backup trading strategies"
         }
       ]
     },
@@ -919,7 +1003,7 @@
             },
             {
               "op": "say",
-              "text": "Got it! A luxury watch \u2014 heavy, gold, and still ticking. The back is engraved: 'TIME IN THE MARKET > TIMING THE MARKET.'"
+              "text": "Got it! A luxury watch — heavy, gold, and still ticking. The back is engraved: 'TIME IN THE MARKET > TIMING THE MARKET.'"
             },
             {
               "op": "setFlag",
@@ -933,7 +1017,7 @@
             },
             {
               "op": "achievement",
-              "text": "DIAMOND HANDS \u2014 Retrieved the luxury watch"
+              "text": "DIAMOND HANDS — Retrieved the luxury watch"
             }
           ]
         }
@@ -948,11 +1032,11 @@
       "script": [
         {
           "op": "say",
-          "text": "I hold a floppy disc near the mining rig's USB port. Wait \u2014 floppy discs don't use USB. But the rig detects it anyway."
+          "text": "I hold a floppy disc near the mining rig's USB port. Wait — floppy discs don't use USB. But the rig detects it anyway."
         },
         {
           "op": "say",
-          "text": "The GPUs whir louder. The screen displays: 'ADRIANLAB FLOPPY \u2014 GENESIS CONFIG DETECTED. Loading original mining parameters from 2024...'"
+          "text": "The GPUs whir louder. The screen displays: 'ADRIANLAB FLOPPY — GENESIS CONFIG DETECTED. Loading original mining parameters from 2024...'"
         },
         {
           "op": "say",
@@ -973,7 +1057,7 @@
         },
         {
           "op": "achievement",
-          "text": "GENESIS MINER \u2014 Activated the rig's original config"
+          "text": "GENESIS MINER — Activated the rig's original config"
         }
       ]
     }
