@@ -355,28 +355,29 @@ export class ScummUI {
       return;
     }
 
+    // USE + ape_costume: immediate equip/unequip (no combine mode)
+    if (this.selectedVerb === Verb.USE && item.id === 'ape_costume') {
+      const state = this.scene.registry.get('gameState') as any;
+      if (state) {
+        const wearing = state.flags['ape_costume_worn'] ?? false;
+        state.flags['ape_costume_worn'] = !wearing;
+        this.scene.registry.set('gameState', state);
+        const gameScene = this.scene.scene.get('GameScene') as any;
+        gameScene?.player?.setCostume?.(!wearing ? 'ape' : 'player');
+        this.scene.sound.play('item_use', { volume: 0.6 });
+        this.scene.events.emit('say', !wearing
+          ? "I put on the ape costume. The fur is warm. The mask smells like diamond hands and bad decisions. I look ridiculous. I look perfect."
+          : "I take off the ape costume and stuff it back in my pocket. How does it even fit in there? Best not to question adventure game logic."
+        );
+      }
+      this.selectedItem = null;
+      this.updateActionLine();
+      return;
+    }
+
     // USE or WALK: toggle "Use X with..." cursor mode
     if (this.selectedVerb === Verb.USE || this.selectedVerb === Verb.WALK) {
       if (this.selectedItem?.id === item.id) {
-        // Second click on same item — "use on self" for costumes
-        if (item.id === 'ape_costume') {
-          const state = this.scene.registry.get('gameState') as any;
-          if (state) {
-            const wearing = state.flags['ape_costume_worn'] ?? false;
-            state.flags['ape_costume_worn'] = !wearing;
-            this.scene.registry.set('gameState', state);
-            const gameScene = this.scene.scene.get('GameScene') as any;
-            gameScene?.player?.setCostume?.(!wearing ? 'ape' : 'player');
-            this.scene.sound.play('item_use', { volume: 0.6 });
-            this.scene.events.emit('say', !wearing
-              ? "I put on the ape costume. The fur is warm. The mask smells like diamond hands and bad decisions. I look ridiculous. I look perfect."
-              : "I take off the ape costume and stuff it back in my pocket. How does it even fit in there? Best not to question adventure game logic."
-            );
-          }
-          this.selectedItem = null;
-          this.updateActionLine();
-          return;
-        }
         this.selectedItem = null;
       } else {
         this.selectedItem = item;
@@ -625,6 +626,33 @@ export class ScummUI {
       [Verb.PULL]: "The severed cable dangles. What violence happened here? Who severs a mouse cable?",
       [Verb.CLOSE]: "I snap the shell back together. Rest in pixels, little mouse.",
       [Verb.GIVE]: "A broken mouse with a severed cable? That's not a gift. That's a threat.",
+    },
+    glasses_3d: {
+      [Verb.OPEN]: "I unfold the arms. The lenses catch the light \u2014 red on one side, cyan on the other. Old school 3D tech.",
+      [Verb.TALK]: "'Show me the truth,' I whisper to the glasses. They reflect my face back in red and blue. Philosophical.",
+      [Verb.PUSH]: "I press on the lenses. They flex but don't break. Cheap plastic, but surprisingly resilient. Like memecoins.",
+      [Verb.PULL]: "I stretch the arms apart. They spring back. These glasses have been through some things.",
+      [Verb.CLOSE]: "I fold the glasses carefully. The lenses click together with a satisfying snap.",
+      [Verb.GIVE]: "Give away the only thing that can decode anaglyph rooms? I'll pass.",
+      [Verb.PICK]: "Already got them. One pair of reality-bending eyewear is enough.",
+    },
+    pepememe: {
+      [Verb.OPEN]: "I unfold the Pepe printout. On the back: chemical formulas, meme propagation charts, and a tiny 'feels good man' watermark.",
+      [Verb.TALK]: "'What secrets do you hold, Pepe?' The frog stares back with knowing eyes. He holds all secrets. And shares none.",
+      [Verb.PUSH]: "I flatten the Pepe against a surface. His expression doesn't change. Pepe is unflappable.",
+      [Verb.PULL]: "I pull at the corner. The paper is reinforced \u2014 lab-grade meme material. They built this to last.",
+      [Verb.CLOSE]: "I fold Pepe in half. It feels wrong. Like folding a Mona Lisa. I unfold immediately.",
+      [Verb.GIVE]: "Give away the rarest Pepe from the MemeLAB? The meme economy would collapse. I'm holding.",
+      [Verb.PICK]: "Already in my inventory. One Pepe to rule them all.",
+    },
+    ape_costume: {
+      [Verb.OPEN]: "I unzip the costume head. Inside: surprisingly breathable mesh lining and a label: 'One size fits all degens.'",
+      [Verb.TALK]: "I hold the ape mask up to my face. 'OOH OOH AHH AHH.' The mask doesn't judge. The mask understands.",
+      [Verb.PUSH]: "I squeeze the ape head. The foam compresses with a wheeze. It sounds like a leveraged position being liquidated.",
+      [Verb.PULL]: "I stretch the costume arms. The fur is surprisingly elastic. Designed for aggressive hand gestures, no doubt.",
+      [Verb.CLOSE]: "I zip up the costume bag. The ape face pokes out the top, watching me. Waiting.",
+      [Verb.GIVE]: "Give away my disguise? Then how would I infiltrate the Liquidity Pool? Strategic asset. Keeping it.",
+      [Verb.PICK]: "It's already mine. Finders keepers, especially in crypto.",
     },
   };
 

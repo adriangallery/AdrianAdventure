@@ -74,7 +74,10 @@ export class PreloadScene extends Phaser.Scene {
       this.load.image('player_front_left', `assets/sprites/player/Front-Left.png${v}`);
       this.load.image('player_front_right', `assets/sprites/player/Front-Right.png${v}`);
 
-      // Ape costume sprites
+    }
+
+    // Ape costume sprites (load once, separate from player check)
+    if (!this.textures.exists('ape_idle1')) {
       for (let i = 1; i <= 4; i++) {
         this.load.image(`ape_idle${i}`, `assets/sprites/player/Ape-Idle-${i}.png${v}`);
       }
