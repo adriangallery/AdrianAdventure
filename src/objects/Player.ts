@@ -102,8 +102,11 @@ export class Player extends Phaser.GameObjects.Sprite {
     const wantPrefix = wantApe ? 'ape' : 'player';
     if (wantPrefix !== this.spritePrefix) {
       this.spritePrefix = wantPrefix;
-      // Force texture update on next idle/walk frame
+      // Reset ALL animation counters to avoid freeze on costume swap
       this.idleTimer = IDLE_FRAME_MS;
+      this.walkFrameIndex = 0;
+      this.walkTimer = 0;
+      this.idleFrameIndex = 0;
     }
 
     if (this.targetPctX === null || this.targetPctY === null) {
