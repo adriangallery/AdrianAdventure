@@ -33,6 +33,9 @@ export class Player extends Phaser.GameObjects.Sprite {
   private idleFrameIndex = 0;
   private idleTimer = 0;
 
+  /** Sprite prefix — 'player' by default, 'ape' when costume worn */
+  private spritePrefix = 'player';
+
   constructor(scene: Phaser.Scene, coordSystem: CoordSystem, spawnPctX: number, spawnPctY: number, sceneData: SceneData) {
     const screen = coordSystem.pctToScreen(spawnPctX, spawnPctY);
     super(scene, screen.x, screen.y, 'player_idle1');
@@ -67,7 +70,17 @@ export class Player extends Phaser.GameObjects.Sprite {
   halt(): void {
     this.targetPctX = null;
     this.targetPctY = null;
-    this.setTexture('player_idle1');
+    this.setTexture(`${this.spritePrefix}_idle1`);
+  }
+
+  /** Change player costume. Pass 'ape' for ape costume, 'player' to revert. */
+  setCostume(prefix: string): void {
+    this.spritePrefix = prefix;
+    this.setTexture(`${prefix}_idle1`);
+  }
+
+  getCostume(): string {
+    return this.spritePrefix;
   }
 
   isMoving(): boolean {
@@ -89,7 +102,7 @@ export class Player extends Phaser.GameObjects.Sprite {
       if (this.idleTimer >= IDLE_FRAME_MS) {
         this.idleTimer = 0;
         this.idleFrameIndex = (this.idleFrameIndex + 1) % 4;
-        this.setTexture(`player_idle${this.idleFrameIndex + 1}`);
+        this.setTexture(`${this.spritePrefix}_idle${this.idleFrameIndex + 1}`);
       }
       return;
     }
@@ -104,7 +117,7 @@ export class Player extends Phaser.GameObjects.Sprite {
       this.pctY = this.targetPctY;
       this.targetPctX = null;
       this.targetPctY = null;
-      this.setTexture('player_idle1');
+      this.setTexture(`${this.spritePrefix}_idle1`);
       this.syncScreenPosition();
       this.scene.events.emit('player:arrived');
       return;
@@ -116,7 +129,7 @@ export class Player extends Phaser.GameObjects.Sprite {
     if (this.walkTimer >= WALK_FRAME_MS) {
       this.walkTimer = 0;
       this.walkFrameIndex = (this.walkFrameIndex + 1) % 3;
-      this.setTexture(`player_walk_${direction}_${this.walkFrameIndex}`);
+      this.setTexture(`${this.spritePrefix}_walk_${direction}_${this.walkFrameIndex}`);
     }
 
     // Move in % space
@@ -136,7 +149,7 @@ export class Player extends Phaser.GameObjects.Sprite {
       // Can't move in any direction — stop and notify arrival (so pending actions fire)
       this.targetPctX = null;
       this.targetPctY = null;
-      this.setTexture('player_idle1');
+      this.setTexture(`${this.spritePrefix}_idle1`);
       this.scene.events.emit('player:arrived');
     }
 

@@ -129,6 +129,11 @@ export class GameScene extends Phaser.Scene {
       this.player.setVisible(false);
     }
 
+    // Apply costume if flag is set (persists across scene transitions)
+    if (this.gameState.flags.ape_costume_worn) {
+      this.player.setCostume('ape');
+    }
+
     // Per-scene player depth override (default 10, foreground is 15)
     // Set > 15 to render player ABOVE the foreground layer
     if ((sceneData.player as any).playerDepth) {
@@ -717,6 +722,7 @@ export class GameScene extends Phaser.Scene {
         ui.events.emit('showAchievement', text);
       },
       showToast: (status, message) => { this.transactionToast.show(status, message); },
+      setCostume: (prefix) => { this.player.setCostume(prefix); },
     };
   }
 

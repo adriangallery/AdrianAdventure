@@ -30,6 +30,8 @@ export interface ScriptContext {
   showAchievement?: (text: string) => void;
   // Transaction toast
   showToast?: (status: 'pending' | 'success' | 'failed', message: string) => void;
+  // Costume change
+  setCostume?: (prefix: string) => void;
 }
 
 export class ScriptEngine {
@@ -262,6 +264,12 @@ export class ScriptEngine {
         // { op: "achievement", text: "Chapter 1 Complete" }
         // Non-blocking — fire and forget
         this.ctx.showAchievement?.(op.text as string);
+        break;
+      }
+
+      case 'setCostume': {
+        // { op: "setCostume", prefix: "ape" } — changes player sprite
+        this.ctx.setCostume?.(op.prefix as string);
         break;
       }
 

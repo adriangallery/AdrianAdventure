@@ -73,6 +73,15 @@ export class PreloadScene extends Phaser.Scene {
       this.load.image('player_right', `assets/sprites/player/Right.png${v}`);
       this.load.image('player_front_left', `assets/sprites/player/Front-Left.png${v}`);
       this.load.image('player_front_right', `assets/sprites/player/Front-Right.png${v}`);
+
+      // Ape costume sprites
+      for (let i = 1; i <= 4; i++) {
+        this.load.image(`ape_idle${i}`, `assets/sprites/player/Ape-Idle-${i}.png${v}`);
+      }
+      for (let i = 0; i <= 2; i++) {
+        this.load.image(`ape_walk_left_${i}`, `assets/sprites/player/Ape-Walk-Left-${i}.png${v}`);
+        this.load.image(`ape_walk_right_${i}`, `assets/sprites/player/Ape-Walk-Right-${i}.png${v}`);
+      }
     }
 
     // Item sprites (load once)
@@ -84,7 +93,7 @@ export class PreloadScene extends Phaser.Scene {
       'clinic_photo', 'adrian_note',
       'rubber_duck', 'receipt', 'broken_mouse',
       'floppy_box', 'energy_drink', 'clinic_sign_in_sheet', 'clinic_note', 'luxury_watch',
-      'glasses_3d', 'pepememe',
+      'glasses_3d', 'pepememe', 'ape_costume',
     ];
     for (const id of itemIds) {
       const key = `item_${id}`;
