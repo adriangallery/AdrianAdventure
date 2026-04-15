@@ -66,14 +66,46 @@
         "scripts": {
           "LOOK": [
             {
-              "op": "say",
-              "text": "An ancient CRT monitor with a green phosphor glow. The screen shows a blinking cursor: 'INSERT ADRIAN'S LEDGER TO CONTINUE...'"
+              "op": "ifFlag",
+              "flag": "crt_powered",
+              "then": [
+                {
+                  "op": "ifFlag",
+                  "flag": "crt_repaired",
+                  "then": [
+                    {
+                      "op": "say",
+                      "text": "An ancient CRT monitor with a green phosphor glow. The screen shows a blinking cursor: 'INSERT ADRIAN'S LEDGER TO CONTINUE...'"
+                    }
+                  ],
+                  "else": [
+                    {
+                      "op": "say",
+                      "text": "The CRT hums with energy but the screen shows an error: 'DIAGNOSTIC FAILURE — CHIP SLOT B7 EMPTY. Insert replacement chip to continue.'"
+                    }
+                  ]
+                }
+              ],
+              "else": [
+                {
+                  "op": "say",
+                  "text": "An ancient CRT monitor. The screen is completely dark. A faded sticker on the side reads: 'WARNING — UNSTABLE POWER SUPPLY.' This thing needs a serious jolt to start."
+                }
+              ]
             }
           ],
           "USE": [
             {
               "op": "ifFlag",
-              "flag": "found_ledger",
+              "flag": "crt_powered",
+              "then": [
+                {
+                  "op": "ifFlag",
+                  "flag": "crt_repaired",
+                  "then": [
+                    {
+                      "op": "ifFlag",
+                      "flag": "found_ledger",
               "then": [
                 {
                   "op": "ifFlag",
@@ -168,6 +200,22 @@
                 {
                   "op": "say",
                   "text": "The screen says 'INSERT ADRIAN'S LEDGER'. I need to find it somewhere."
+                }
+              ]
+            }
+                    ],
+                    "else": [
+                      {
+                        "op": "say",
+                        "text": "The CRT screen displays: 'DIAGNOSTIC FAILURE — CHIP SLOT B7 EMPTY.' I need to find a replacement chip for the missing slot."
+                      }
+                    ]
+                  }
+              ],
+              "else": [
+                {
+                  "op": "say",
+                  "text": "The CRT flickers weakly and dies. POWER INSUFFICIENT. This ancient machine needs a serious jolt of energy to boot up."
                 }
               ]
             }
@@ -1144,6 +1192,66 @@
   "combos": [
     {
       "items": [
+        "energy_drink",
+        "hs_main_computer"
+      ],
+      "result": "power_crt",
+      "script": [
+        {
+          "op": "ifFlag",
+          "flag": "crt_powered",
+          "then": [
+            { "op": "say", "text": "The CRT is already powered up. No need for more caffeine." }
+          ],
+          "else": [
+            { "op": "say", "text": "I pop open the energy drink and pour it into the cooling reservoir. The capacitors spark. 500mg of BULL RUN caffeine surges through ancient circuits." },
+            { "op": "wait", "ms": 500 },
+            { "op": "removeItem", "id": "energy_drink" },
+            { "op": "setFlag", "flag": "crt_powered", "value": true },
+            { "op": "playSound", "key": "discovery" },
+            { "op": "say", "text": "The screen blazes to life with a sickly green glow: 'POWER RESTORED. RUNNING DIAGNOSTICS...'" },
+            { "op": "wait", "ms": 300 },
+            { "op": "say", "text": "'DIAGNOSTIC FAILURE — CHIP SLOT B7 EMPTY.' The system needs a replacement chip to continue." }
+          ]
+        }
+      ]
+    },
+    {
+      "items": [
+        "burned_chip",
+        "hs_main_computer"
+      ],
+      "result": "repair_crt",
+      "script": [
+        {
+          "op": "ifFlag",
+          "flag": "crt_powered",
+          "then": [
+            {
+              "op": "ifFlag",
+              "flag": "crt_repaired",
+              "then": [
+                { "op": "say", "text": "The chip is already installed. The CRT runs fine now." }
+              ],
+              "else": [
+                { "op": "say", "text": "The burned chip from AdrianAuctions... it fits the empty socket in slot B7 perfectly." },
+                { "op": "wait", "ms": 400 },
+                { "op": "removeItem", "id": "burned_chip" },
+                { "op": "setFlag", "flag": "crt_repaired", "value": true },
+                { "op": "playSound", "key": "discovery" },
+                { "op": "say", "text": "*click* The screen refreshes: 'DIAGNOSTIC: ALL SYSTEMS NOMINAL. INSERT CREDENTIALS TO CONTINUE.'" },
+                { "op": "say", "text": "The CRT is fully operational. Now I need Adrian's Ledger to access the vault." }
+              ]
+            }
+          ],
+          "else": [
+            { "op": "say", "text": "The CRT is dead. I need to power it up first before installing any chips." }
+          ]
+        }
+      ]
+    },
+    {
+      "items": [
         "ledger",
         "hs_main_computer"
       ],
@@ -1151,27 +1259,45 @@
       "script": [
         {
           "op": "ifFlag",
-          "flag": "computer_unlocked",
+          "flag": "crt_powered",
           "then": [
             {
-              "op": "say",
-              "text": "The computer already recognized Adrian's Ledger. The vault dashboard is still open."
+              "op": "ifFlag",
+              "flag": "crt_repaired",
+              "then": [
+                {
+                  "op": "ifFlag",
+                  "flag": "computer_unlocked",
+                  "then": [
+                    {
+                      "op": "say",
+                      "text": "The computer already recognized Adrian's Ledger. The vault dashboard is still open."
+                    }
+                  ],
+                  "else": [
+                    {
+                      "op": "say",
+                      "text": "I plug in Adrian's Ledger... The screen flashes: 'WALLET RECOGNIZED. VAULT ACCESS GRANTED.'"
+                    },
+                    {
+                      "op": "say",
+                      "text": "The monitor reveals a dashboard: portfolio tracker, NFT collection, and... a map to something called 'Patient Zero Clinic'."
+                    },
+                    {
+                      "op": "setFlag",
+                      "flag": "computer_unlocked",
+                      "value": true
+                    }
+                  ]
+                }
+              ],
+              "else": [
+                { "op": "say", "text": "The CRT shows a diagnostic error. I need to fix the chip slot before authenticating." }
+              ]
             }
           ],
           "else": [
-            {
-              "op": "say",
-              "text": "I plug in Adrian's Ledger... The screen flashes: 'WALLET RECOGNIZED. VAULT ACCESS GRANTED.'"
-            },
-            {
-              "op": "say",
-              "text": "The monitor reveals a dashboard: portfolio tracker, NFT collection, and... a map to something called 'Patient Zero Clinic'."
-            },
-            {
-              "op": "setFlag",
-              "flag": "computer_unlocked",
-              "value": true
-            }
+            { "op": "say", "text": "The CRT is dead. I need to power it up first." }
           ]
         }
       ]
@@ -1185,7 +1311,7 @@
       "script": [
         {
           "op": "ifFlag",
-          "flag": "computer_unlocked",
+          "flag": "crt_repaired",
           "then": [
             {
               "op": "ifFlag",
@@ -1234,7 +1360,7 @@
           "else": [
             {
               "op": "say",
-              "text": "The computer screen says 'INSERT ADRIAN'S LEDGER'. I need to unlock it first before inserting the floppy."
+              "text": "The CRT isn't ready yet. I need to power it up and fix the diagnostics before inserting anything."
             }
           ]
         }

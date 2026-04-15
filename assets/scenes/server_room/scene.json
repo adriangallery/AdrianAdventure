@@ -526,21 +526,28 @@
               ],
               "else": [
                 {
-                  "op": "setFlag",
-                  "flag": "emergency_glass_broken",
-                  "value": true
-                },
-                {
                   "op": "say",
-                  "text": "I push the glass panel. *CRACK* It shatters. Glass everywhere. The red switch is exposed now, practically begging to be flipped. Do I dare?"
+                  "text": "I push against the glass panel. It doesn't budge. Industrial grade — reinforced polymer. My bare hands won't cut it. I need something solid to smash through."
                 }
               ]
             }
           ],
           "PULL": [
             {
-              "op": "say",
-              "text": "I pull at the glass frame. It doesn't budge. Pushing might work better. Or a good punch."
+              "op": "ifFlag",
+              "flag": "emergency_glass_broken",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "The glass is already gone. The switch is right there."
+                }
+              ],
+              "else": [
+                {
+                  "op": "say",
+                  "text": "I pull at the glass frame. Reinforced polymer. Not coming off by hand. I need a tool — something heavy and solid."
+                }
+              ]
             }
           ],
           "GIVE": [
@@ -879,7 +886,31 @@
   "items": {
     "sceneItems": []
   },
-  "combos": [],
+  "combos": [
+    {
+      "items": [
+        "antenna",
+        "hs_emergency_switch"
+      ],
+      "result": "smash_glass",
+      "script": [
+        {
+          "op": "ifFlag",
+          "flag": "emergency_glass_broken",
+          "then": [
+            { "op": "say", "text": "The glass is already shattered. The switch is exposed." }
+          ],
+          "else": [
+            { "op": "say", "text": "I swing the loose antenna at the glass panel like a baseball bat." },
+            { "op": "wait", "ms": 400 },
+            { "op": "playSound", "key": "glass_break" },
+            { "op": "say", "text": "*CRACK!* The reinforced polymer shatters. Glass rains down. The big red switch glows underneath, practically begging to be flipped." },
+            { "op": "setFlag", "flag": "emergency_glass_broken", "value": true }
+          ]
+        }
+      ]
+    }
+  ],
   "audio": {
     "music": "tension",
     "variation": {

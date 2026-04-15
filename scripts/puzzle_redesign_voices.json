@@ -1,0 +1,147 @@
+[
+  [
+    "player",
+    "The CRT hums with energy but the screen shows an error: 'DIAGNOSTIC FAILURE — CHIP SLOT B7 EMPTY. Insert replacement chip to continue.'",
+    "player_the_crt_hums_with_energy_but_1ef44f7a"
+  ],
+  [
+    "player",
+    "An ancient CRT monitor. The screen is completely dark. A faded sticker on the side reads: 'WARNING — UNSTABLE POWER SUPPLY.' This thing needs a serious jolt to start.",
+    "player_an_ancient_crt_monitor_the_screen_4b62562e"
+  ],
+  [
+    "player",
+    "The CRT screen displays: 'DIAGNOSTIC FAILURE — CHIP SLOT B7 EMPTY.' I need to find a replacement chip for the missing slot.",
+    "player_the_crt_screen_displays_diagnostic_failure_8f89762b"
+  ],
+  [
+    "player",
+    "The CRT flickers weakly and dies. POWER INSUFFICIENT. This ancient machine needs a serious jolt of energy to boot up.",
+    "player_the_crt_flickers_weakly_and_dies_c7863786"
+  ],
+  [
+    "player",
+    "The CRT is already powered up. No need for more caffeine.",
+    "player_the_crt_is_already_powered_up_81065a96"
+  ],
+  [
+    "player",
+    "I pop open the energy drink and pour it into the cooling reservoir. The capacitors spark. 500mg of BULL RUN caffeine surges through ancient circuits.",
+    "player_i_pop_open_the_energy_drink_4f12cc64"
+  ],
+  [
+    "player",
+    "The screen blazes to life with a sickly green glow: 'POWER RESTORED. RUNNING DIAGNOSTICS...'",
+    "player_the_screen_blazes_to_life_with_fb4fd16d"
+  ],
+  [
+    "player",
+    "'DIAGNOSTIC FAILURE — CHIP SLOT B7 EMPTY.' The system needs a replacement chip to continue.",
+    "player_diagnostic_failure_chip_slot_b7_empty_00fdcf19"
+  ],
+  [
+    "player",
+    "The chip is already installed. The CRT runs fine now.",
+    "player_the_chip_is_already_installed_the_2d669a71"
+  ],
+  [
+    "player",
+    "The burned chip from AdrianAuctions... it fits the empty socket in slot B7 perfectly.",
+    "player_the_burned_chip_from_adrianauctions_it_3b511310"
+  ],
+  [
+    "player",
+    "*click* The screen refreshes: 'DIAGNOSTIC: ALL SYSTEMS NOMINAL. INSERT CREDENTIALS TO CONTINUE.'",
+    "player_click_the_screen_refreshes_diagnostic_all_e693c4cd"
+  ],
+  [
+    "player",
+    "The CRT is fully operational. Now I need Adrian's Ledger to access the vault.",
+    "player_the_crt_is_fully_operational_now_714722df"
+  ],
+  [
+    "player",
+    "The CRT is dead. I need to power it up first before installing any chips.",
+    "player_the_crt_is_dead_i_need_0b1f9b19"
+  ],
+  [
+    "player",
+    "The CRT shows a diagnostic error. I need to fix the chip slot before authenticating.",
+    "player_the_crt_shows_a_diagnostic_error_9ec16f7e"
+  ],
+  [
+    "player",
+    "The CRT is dead. I need to power it up first.",
+    "player_the_crt_is_dead_i_need_6baa1ede"
+  ],
+  [
+    "player",
+    "The CRT isn't ready yet. I need to power it up and fix the diagnostics before inserting anything.",
+    "player_the_crt_isnt_ready_yet_i_b7caefbd"
+  ],
+  [
+    "player",
+    "I push against the glass panel. It doesn't budge. Industrial grade — reinforced polymer. My bare hands won't cut it. I need something solid to smash through.",
+    "player_i_push_against_the_glass_panel_c888fc49"
+  ],
+  [
+    "player",
+    "The glass is already gone. The switch is right there.",
+    "player_the_glass_is_already_gone_the_1dfe11ec"
+  ],
+  [
+    "player",
+    "I pull at the glass frame. Reinforced polymer. Not coming off by hand. I need a tool — something heavy and solid.",
+    "player_i_pull_at_the_glass_frame_6f84ad35"
+  ],
+  [
+    "player",
+    "The glass is already shattered. The switch is exposed.",
+    "player_the_glass_is_already_shattered_the_c8076aa2"
+  ],
+  [
+    "player",
+    "I swing the loose antenna at the glass panel like a baseball bat.",
+    "player_i_swing_the_loose_antenna_at_deedfc7a"
+  ],
+  [
+    "player",
+    "*CRACK!* The reinforced polymer shatters. Glass rains down. The big red switch glows underneath, practically begging to be flipped.",
+    "player_crack_the_reinforced_polymer_shatters_glass_edc5ed73"
+  ],
+  [
+    "player",
+    "I insert the trading terminal key into the keyhole. It fits. The mechanisms align — authorization and physical key together.",
+    "player_i_insert_the_trading_terminal_key_eaed4a70"
+  ],
+  [
+    "player",
+    "The card reader turns green — I'm authorized. But there's also a physical keyhole underneath. The door has a dual-lock system. I need a key.",
+    "player_the_card_reader_turns_green_im_9c346f9e"
+  ],
+  [
+    "player",
+    "The key turns in the lock. Authorization confirmed. The treatment room door swings open.",
+    "player_the_key_turns_in_the_lock_8b1503bc"
+  ],
+  [
+    "player",
+    "Card reader is green — authorized. But the keyhole still needs a physical key. Dual security.",
+    "player_card_reader_is_green_authorized_but_e109795d"
+  ],
+  [
+    "satoshi",
+    "Let me see... *examines the envelope* 'CONFIDENTIAL — PATIENT ZERO.' The original referral documentation. The admission records, the initial diagnosis... Where did you find this?",
+    "satoshi_let_me_see_examines_the_envelope_7502d8c2"
+  ],
+  [
+    "satoshi",
+    "You've done your homework. Not many visitors bring evidence — they usually just bring opinions. Very well. I'll authorize treatment room access. But the door has a dual-lock system. You'll need a physical key too. Adrian insisted on analog security for the most sensitive room. Said smart contracts can be exploited, but a deadbolt can't.",
+    "satoshi_youve_done_your_homework_not_many_65f29729"
+  ],
+  [
+    "satoshi",
+    "Ah, a holder. The blockchain doesn't lie. VIP authorization granted. But the treatment room has a dual-lock — you'll still need the physical key. Adrian was paranoid about security. Said smart contracts can be exploited, but a deadbolt can't. Find the key, and the room is yours.",
+    "satoshi_ah_a_holder_the_blockchain_doesnt_56a23445"
+  ]
+]

@@ -406,45 +406,64 @@
               "flag": "treatment_room_unlocked",
               "then": [
                 {
-                  "op": "sayBrief",
-                  "text": "The door opens...",
-                  "duration": 1000
-                },
-                {
-                  "op": "ifFlag",
-                  "flag": "chapter_5_intro_shown",
-                  "then": [],
-                  "else": [
+                  "op": "ifHasItem",
+                  "id": "terminal_key",
+                  "then": [
                     {
-                      "op": "narrative",
-                      "lines": [
-                        "The treatment room. One chair. One monitor.",
-                        "Dr. Satoshi said not everyone is ready for what's inside.",
-                        "The truth about Patient Zero...",
-                        "...has been in your wallet all along."
+                      "op": "say",
+                      "text": "I insert the trading terminal key into the keyhole. It fits. The mechanisms align — authorization and physical key together."
+                    },
+                    {
+                      "op": "wait",
+                      "ms": 400
+                    },
+                    {
+                      "op": "playSound",
+                      "key": "door_open"
+                    },
+                    {
+                      "op": "ifFlag",
+                      "flag": "chapter_5_intro_shown",
+                      "then": [],
+                      "else": [
+                        {
+                          "op": "narrative",
+                          "lines": [
+                            "The treatment room. One chair. One monitor.",
+                            "Dr. Satoshi said not everyone is ready for what's inside.",
+                            "The truth about Patient Zero...",
+                            "...has been in your wallet all along."
+                          ]
+                        },
+                        {
+                          "op": "titleCard",
+                          "chapter": "CHAPTER 5",
+                          "title": "Patient Zero",
+                          "subtitle": "The blockchain doesn't lie."
+                        },
+                        {
+                          "op": "setFlag",
+                          "flag": "chapter_5_intro_shown",
+                          "value": true
+                        }
                       ]
                     },
                     {
-                      "op": "titleCard",
-                      "chapter": "CHAPTER 5",
-                      "title": "Patient Zero",
-                      "subtitle": "The blockchain doesn't lie."
-                    },
+                      "op": "fadeToScene",
+                      "sceneId": "treatment_room",
+                      "spawn": {
+                        "x": 82.7,
+                        "y": 96.7
+                      },
+                      "duration": 800
+                    }
+                  ],
+                  "else": [
                     {
-                      "op": "setFlag",
-                      "flag": "chapter_5_intro_shown",
-                      "value": true
+                      "op": "say",
+                      "text": "The card reader turns green — I'm authorized. But there's also a physical keyhole underneath. The door has a dual-lock system. I need a key."
                     }
                   ]
-                },
-                {
-                  "op": "fadeToScene",
-                  "sceneId": "treatment_room",
-                  "spawn": {
-                    "x": 82.7,
-                    "y": 96.7
-                  },
-                  "duration": 800
                 }
               ],
               "else": [
@@ -473,45 +492,60 @@
               "flag": "treatment_room_unlocked",
               "then": [
                 {
-                  "op": "sayBrief",
-                  "text": "The door opens...",
-                  "duration": 1000
-                },
-                {
-                  "op": "ifFlag",
-                  "flag": "chapter_5_intro_shown",
-                  "then": [],
-                  "else": [
+                  "op": "ifHasItem",
+                  "id": "terminal_key",
+                  "then": [
                     {
-                      "op": "narrative",
-                      "lines": [
-                        "The treatment room. One chair. One monitor.",
-                        "Dr. Satoshi said not everyone is ready for what's inside.",
-                        "The truth about Patient Zero...",
-                        "...has been in your wallet all along."
+                      "op": "say",
+                      "text": "The key turns in the lock. Authorization confirmed. The treatment room door swings open."
+                    },
+                    {
+                      "op": "wait",
+                      "ms": 400
+                    },
+                    {
+                      "op": "ifFlag",
+                      "flag": "chapter_5_intro_shown",
+                      "then": [],
+                      "else": [
+                        {
+                          "op": "narrative",
+                          "lines": [
+                            "The treatment room. One chair. One monitor.",
+                            "Dr. Satoshi said not everyone is ready for what's inside.",
+                            "The truth about Patient Zero...",
+                            "...has been in your wallet all along."
+                          ]
+                        },
+                        {
+                          "op": "titleCard",
+                          "chapter": "CHAPTER 5",
+                          "title": "Patient Zero",
+                          "subtitle": "The blockchain doesn't lie."
+                        },
+                        {
+                          "op": "setFlag",
+                          "flag": "chapter_5_intro_shown",
+                          "value": true
+                        }
                       ]
                     },
                     {
-                      "op": "titleCard",
-                      "chapter": "CHAPTER 5",
-                      "title": "Patient Zero",
-                      "subtitle": "The blockchain doesn't lie."
-                    },
+                      "op": "fadeToScene",
+                      "sceneId": "treatment_room",
+                      "spawn": {
+                        "x": 82.7,
+                        "y": 96.7
+                      },
+                      "duration": 800
+                    }
+                  ],
+                  "else": [
                     {
-                      "op": "setFlag",
-                      "flag": "chapter_5_intro_shown",
-                      "value": true
+                      "op": "say",
+                      "text": "Card reader is green — authorized. But the keyhole still needs a physical key. Dual security."
                     }
                   ]
-                },
-                {
-                  "op": "fadeToScene",
-                  "sceneId": "treatment_room",
-                  "spawn": {
-                    "x": 82.7,
-                    "y": 96.7
-                  },
-                  "duration": 800
                 }
               ],
               "else": [
@@ -1128,6 +1162,11 @@
               "next": "treatment_room"
             },
             {
+              "text": "I found confidential documents about Patient Zero.",
+              "next": "evidence_path",
+              "flag": "found_envelope"
+            },
+            {
               "text": "[Requires AdrianZERO] I have VIP access.",
               "next": "vip_access",
               "gate": {
@@ -1215,7 +1254,7 @@
         },
         "vip_access": {
           "speaker": "Dr. Satoshi",
-          "text": "Ah, a holder. The blockchain doesn't lie. VIP access granted. The treatment room is yours. Be careful what you find in there. Not everyone is ready to face... themselves.",
+          "text": "Ah, a holder. The blockchain doesn't lie. VIP authorization granted. But the treatment room has a dual-lock — you'll still need the physical key. Adrian was paranoid about security. Said smart contracts can be exploited, but a deadbolt can't. Find the key, and the room is yours.",
           "onEnter": [
             {
               "op": "setFlag",
@@ -1247,6 +1286,45 @@
         "goodbye": {
           "speaker": "Dr. Satoshi",
           "text": "Take your time. The clinic is always open. Unlike most exchanges during a bank run.",
+          "end": true
+        },
+        "evidence_path": {
+          "speaker": "Dr. Satoshi",
+          "text": "Let me see... *examines the envelope* 'CONFIDENTIAL — PATIENT ZERO.' The original referral documentation. The admission records, the initial diagnosis... Where did you find this?",
+          "choices": [
+            {
+              "text": "In a mailbox outside AdrianLAB. Someone wanted this found.",
+              "next": "evidence_accepted"
+            },
+            {
+              "text": "Does it matter? Can I see the treatment room?",
+              "next": "evidence_accepted"
+            }
+          ]
+        },
+        "evidence_accepted": {
+          "speaker": "Dr. Satoshi",
+          "text": "You've done your homework. Not many visitors bring evidence — they usually just bring opinions. Very well. I'll authorize treatment room access. But the door has a dual-lock system. You'll need a physical key too. Adrian insisted on analog security for the most sensitive room. Said smart contracts can be exploited, but a deadbolt can't.",
+          "onEnter": [
+            {
+              "op": "setFlag",
+              "flag": "treatment_room_unlocked",
+              "value": true
+            },
+            {
+              "op": "setFlag",
+              "flag": "chapter_4_complete",
+              "value": true
+            },
+            {
+              "op": "removeItem",
+              "id": "mystery_envelope"
+            },
+            {
+              "op": "achievement",
+              "text": "Chapter 4 Complete: The Mountain Path"
+            }
+          ],
           "end": true
         }
       }
