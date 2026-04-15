@@ -77,13 +77,15 @@ export class PreloadScene extends Phaser.Scene {
     }
 
     // Ape costume sprites (load once, separate from player check)
+    // Note: ape sprites use normal orientation (Left=faces left), but Player.ts
+    // mirrors direction (dx>0 uses 'left' key), so we swap Left↔Right on load.
     if (!this.textures.exists('ape_idle1')) {
       for (let i = 1; i <= 4; i++) {
         this.load.image(`ape_idle${i}`, `assets/sprites/player/Ape-Idle-${i}.png${v}`);
       }
       for (let i = 0; i <= 2; i++) {
-        this.load.image(`ape_walk_left_${i}`, `assets/sprites/player/Ape-Walk-Left-${i}.png${v}`);
-        this.load.image(`ape_walk_right_${i}`, `assets/sprites/player/Ape-Walk-Right-${i}.png${v}`);
+        this.load.image(`ape_walk_left_${i}`, `assets/sprites/player/Ape-Walk-Right-${i}.png${v}`);
+        this.load.image(`ape_walk_right_${i}`, `assets/sprites/player/Ape-Walk-Left-${i}.png${v}`);
       }
     }
 
