@@ -6,6 +6,7 @@ import { loadForWallet } from '@/web3/wallet-save';
 import { resolveEns } from '@/web3/ens';
 import type { InventorySystem } from '@/systems/InventorySystem';
 import { TWP, FONT } from '@/config/theme';
+import { WEB3_ENABLED } from '@/config/platform';
 
 /**
  * Minimal wallet button — top-right, Thimbleweed Park style.

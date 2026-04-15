@@ -1,5 +1,6 @@
 import { createPublicClient, createWalletClient, custom, http, type WalletClient, type Address } from 'viem';
 import { CHAIN, CHAIN_ID, getRpcUrl } from '@/config/blockchain.config';
+import { WEB3_ENABLED } from '@/config/platform';
 
 export type WalletProviderType = 'injected' | 'walletconnect';
 
@@ -76,6 +77,9 @@ export function hasWalletConnectConfig(): boolean {
 export async function connectWallet(
   providerType: WalletProviderType = 'injected',
 ): Promise<WalletState> {
+  if (!WEB3_ENABLED) {
+    throw new Error('Web3 features are not available on this platform');
+  }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let provider: any;
 

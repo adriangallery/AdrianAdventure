@@ -84,6 +84,7 @@ export default defineConfig({
   define: {
     __BUILD_HASH__: JSON.stringify(BUILD_HASH),
   },
+  base: './',
   build: {
     outDir: 'dist',
     sourcemap: true,

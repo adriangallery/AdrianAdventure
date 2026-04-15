@@ -4,3 +4,13 @@ dist/
 .DS_Store
 *.local
 .vercel
+
+# Android (Capacitor)
+android/app/build/
+android/.gradle/
+*.keystore
+keystore.properties
+
+# Steam (Electron)
+steam-build/
+steam-output/

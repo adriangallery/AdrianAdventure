@@ -1,6 +1,7 @@
 import type { Address } from 'viem';
 import { publicClient, getWalletState } from './wallet';
 import { CONTRACTS, DIAMOND_MINT_ABI, DIAMOND_ACHIEVEMENT_ABI } from '@/config/blockchain.config';
+import { WEB3_WRITES_ENABLED } from '@/config/platform';
 
 // ─── Mint result type ───────────────────────────────────────
 
@@ -38,6 +39,9 @@ export function isAchievementMintConfigured(): boolean {
  * - Payment: free / ETH / $ZERO
  */
 export async function mintItem(params: MintParams): Promise<MintResult> {
+  if (!WEB3_WRITES_ENABLED) {
+    return { status: 'not-configured', error: 'Minting is available on the web version only' };
+  }
   const { walletClient, address } = getWalletState();
   if (!walletClient || !address) {
     return { status: 'failed', error: 'Wallet not connected' };
@@ -81,6 +85,9 @@ export async function mintItem(params: MintParams): Promise<MintResult> {
  * TODO: Define achievement token IDs range and which contract/facet mints them.
  */
 export async function mintAchievement(achievementId: number): Promise<MintResult> {
+  if (!WEB3_WRITES_ENABLED) {
+    return { status: 'not-configured', error: 'Minting is available on the web version only' };
+  }
   const { walletClient, address } = getWalletState();
   if (!walletClient || !address) {
     return { status: 'failed', error: 'Wallet not connected' };
