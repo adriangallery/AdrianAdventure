@@ -1918,6 +1918,21 @@ export const VOICE_AUDIO_KEYS: string[] = [
   'player_whos_hxt_i_ask_the_wall_bbf3c308',
   'player_whose_journal_is_this_an_ape_28d1ded6',
   'player_you_cant_open_a_banana_peel_eab49412',
+  'player_a_giant_containment_tube_filled_with_c8c97cc0',
+  'player_i_press_my_ear_to_the_0640acaa',
+  'player_i_push_against_the_tube_it_dd91c1f0',
+  'player_i_reach_toward_the_blurry_shape_69da1510',
+  'player_i_squint_through_the_redblue_haze_3a3fcdc4',
+  'player_i_touch_the_glass_its_warm_4554a744',
+  'player_i_try_the_keyboard_dead_but_bce51b9d',
+  'player_if_only_i_had_something_to_61f1ad91',
+  'player_its_bolted_to_the_floor_and_32bc443e',
+  'player_log_entries_scroll_memepropagationrate_exponential_estimatedvirality_89b24343',
+  'player_the_entire_room_is_stuck_in_1d1b6dea',
+  'player_the_screen_reads_meme_virus_99_612ddbe3',
+  'player_through_the_anaglyph_distortion_i_can_960536de',
+  'player_through_the_distortion_i_can_make_60543f94',
+  'player_what_the_everything_is_red_and_44446074',
 ];
 
 /** Get the asset path for a voice key. */
@@ -3769,6 +3784,21 @@ export const VOICE_TEXT_MAP: Array<{ text: string; key: string }> = [
   { text: '\'Who\'s HxT?\' I ask the wall. The wall doesn\'t answer, but I swear the graffiti winks at me. Half a w', key: 'player_whos_hxt_i_ask_the_wall_bbf3c308' },
   { text: '\'Whose journal is this?\' An ape raises his hand. \'Day 47: Portfolio down 80%. Mood: bullish. Day 48:', key: 'player_whose_journal_is_this_an_ape_28d1ded6' },
   { text: 'You can\'t open a banana peel. You can unpeel a banana, but that ship has sailed. Or slipped.', key: 'player_you_cant_open_a_banana_peel_eab49412' },
+  { text: 'A giant containment tube filled with swirling green digital essence. Fragments of viral meme content', key: 'player_a_giant_containment_tube_filled_with_c8c97cc0' },
+  { text: 'I press my ear to the tube. From inside I hear whispers: \'...to the moon... wagmi... gm...\' The meme', key: 'player_i_press_my_ear_to_the_0640acaa' },
+  { text: 'I push against the tube. It doesn\'t budge, but the liquid inside sloshes aggressively. The memes are', key: 'player_i_push_against_the_tube_it_dd91c1f0' },
+  { text: 'I reach toward the blurry shape. If only I could see clearly through this optical nightmare...', key: 'player_i_reach_toward_the_blurry_shape_69da1510' },
+  { text: 'I squint through the red-blue haze. Numbers flicker on a screen... 99%... something. Can\'t read the ', key: 'player_i_squint_through_the_redblue_haze_3a3fcdc4' },
+  { text: 'I touch the glass. It\'s warm. The liquid inside reacts, swirling faster. A readout spikes: \'VIRALITY', key: 'player_i_touch_the_glass_its_warm_4554a744' },
+  { text: 'I try the keyboard. Dead. But the screen flickers: \'LAST OPERATOR: Dr. S. — EXPERIMENT STATUS: CONTA', key: 'player_i_try_the_keyboard_dead_but_bce51b9d' },
+  { text: 'If only I had something to help me see through this optical chaos...', key: 'player_if_only_i_had_something_to_61f1ad91' },
+  { text: 'It\'s bolted to the floor and ceiling. This thing isn\'t going anywhere. Neither are the memes trapped', key: 'player_its_bolted_to_the_floor_and_32bc443e' },
+  { text: 'Log entries scroll: \'MEME_PROPAGATION_RATE: EXPONENTIAL. ESTIMATED_VIRALITY: INFINITE. TARGET: ALL T', key: 'player_log_entries_scroll_memepropagationrate_exponential_estimatedvirality_89b24343' },
+  { text: 'The entire room is stuck in some kind of anaglyph 3D mode. Like a bad \'80s movie.', key: 'player_the_entire_room_is_stuck_in_1d1b6dea' },
+  { text: 'The screen reads \'MEME VIRUS 99%\'. Progress bar nearly full. Below: \'DEPLOYMENT STATUS: PENDING\'. So', key: 'player_the_screen_reads_meme_virus_99_612ddbe3' },
+  { text: 'Through the anaglyph distortion I can barely make out... a giant tube? Something green pulses inside', key: 'player_through_the_anaglyph_distortion_i_can_960536de' },
+  { text: 'Through the distortion, I can make out shapes — lab equipment, screens, a giant glowing tube in the ', key: 'player_through_the_distortion_i_can_make_60543f94' },
+  { text: 'What the... Everything is RED and BLUE! My eyes are going haywire!', key: 'player_what_the_everything_is_red_and_44446074' },
 ];
 
 export const NARRATOR_SEQUENCES: Record<string, string[]> = {
