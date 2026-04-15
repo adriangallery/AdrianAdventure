@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { GAME_CONFIG, DEFAULT_SCENE_ID } from '@/config/game.config';
+import { IS_NATIVE } from '@/config/platform';
 
 const game = new Phaser.Game(GAME_CONFIG);
 
@@ -11,6 +12,15 @@ game.events.once('ready', () => {
     setTimeout(() => loading.remove(), 500);
   }
   game.scale.refresh();
+
+  // Native app: dismiss splash screen and hide status bar
+  if (IS_NATIVE) {
+    import('@capacitor/splash-screen').then(({ SplashScreen }) => SplashScreen.hide());
+    import('@capacitor/status-bar').then(({ StatusBar, Style }) => {
+      StatusBar.setStyle({ style: Style.Dark });
+      StatusBar.hide();
+    });
+  }
 
   const params = new URLSearchParams(window.location.search);
 
@@ -34,6 +44,17 @@ game.events.once('ready', () => {
   }
 });
 
+// Native app: Android back button handling
+if (IS_NATIVE) {
+  import('@capacitor/app').then(({ App }) => {
+    App.addListener('backButton', () => {
+      const scenes = game.scene.getScenes(true);
+      const onMenu = scenes.some(s => s.scene.key === 'MenuScene');
+      if (onMenu) App.exitApp();
+    });
+  });
+}
+
 // Expose for debugging
 (window as any).__game = game;
 
@@ -42,7 +63,7 @@ function createSceneSelector(g: Phaser.Game): void {
   const scenes = [
     'outside', 'mountain', 'clinic_exterior', 'clinic_interior',
     'lobby', 'upstairs', 'rooftop', 'basement', 'server_room',
-    'treatment_room', 'epilogue_outside', 'recovery_pool',
+    'treatment_room', 'epilogue_outside', 'recovery_pool', 'memelab',
   ];
 
   const btn = document.createElement('button');

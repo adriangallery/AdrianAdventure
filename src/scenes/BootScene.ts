@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { DEFAULT_SCENE_ID } from '@/config/game.config';
 import { MusicManager } from '@/systems/MusicManager';
+import { AnaglyphPipeline } from '@/shaders/AnaglyphPipeline';
 
 export class BootScene extends Phaser.Scene {
   constructor() {
@@ -17,6 +18,12 @@ export class BootScene extends Phaser.Scene {
     if (loading) {
       loading.classList.add('hidden');
       setTimeout(() => loading.remove(), 500);
+    }
+
+    // Register custom post-processing pipelines (WebGL only)
+    const renderer = this.game.renderer;
+    if (renderer.type === Phaser.WEBGL) {
+      (renderer as Phaser.Renderer.WebGL.WebGLRenderer).pipelines.addPostPipeline('AnaglyphPipeline', AnaglyphPipeline);
     }
 
     // Create persistent MusicManager (survives scene transitions)

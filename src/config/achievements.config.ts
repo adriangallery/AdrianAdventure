@@ -133,6 +133,13 @@ export const ACHIEVEMENTS: AchievementDef[] = [
     tokenId: 20021,
     category: 'explorer',
   },
+  {
+    id: 'meme_achievement',
+    name: 'Meme Achievement',
+    description: 'Decoded the MemeLAB conspiracy and recovered the rare Pepe',
+    tokenId: 20022,
+    category: 'secret',
+  },
 ];
 
 /** Map from achievement text (as used in scene JSON) to achievement ID */
@@ -153,6 +160,7 @@ export const ACHIEVEMENT_TEXT_TO_ID: Record<string, string> = {
   'PRESERVED — Your floppies hold the story of Patient Zero': 'preserved',
   'SIGNAL BOOST — Salvaged the rooftop antenna': 'signal_boost',
   'DIAMOND HANDS — Retrieved the luxury watch': 'diamond_hands',
+  'MEME ACHIEVEMENT — Decoded the MemeLAB conspiracy': 'meme_achievement',
 };
 
 /** Get achievement def by ID */

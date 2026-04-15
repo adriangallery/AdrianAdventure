@@ -21,6 +21,8 @@ const LOADING_TIPS: string[] = [
   'Loading 1,388 voice clips...',
   'Auditing Adrian\'s ledger...',
   'Feeding the three-headed monkey...',
+  'Synthesizing rare Pepes...',
+  'Calibrating anaglyph distortion...',
   'Compiling gas fees...',
   'Minting loading screen NFT...',
   'Verifying doormat authenticity...',
@@ -49,13 +51,13 @@ export class PreloadScene extends Phaser.Scene {
     this.load.json(`scene_${sceneId}`, `${basePath}/scene.json${v}`);
 
     if (!this.textures.exists(`bg_${sceneId}`)) {
-      this.load.image(`bg_${sceneId}`, `${basePath}/background.png${v}`);
+      this.load.image(`bg_${sceneId}`, `${basePath}/background.webp${v}`);
     }
 
     // Foreground layer (optional — fails silently if file doesn't exist)
     const fgKey = `fg_${sceneId}`;
     if (!this.textures.exists(fgKey)) {
-      this.load.image(fgKey, `${basePath}/foreground.png${v}`);
+      this.load.image(fgKey, `${basePath}/foreground.webp${v}`);
     }
 
     // Player sprites (load once)
@@ -82,6 +84,7 @@ export class PreloadScene extends Phaser.Scene {
       'clinic_photo', 'adrian_note',
       'rubber_duck', 'receipt', 'broken_mouse',
       'floppy_box', 'energy_drink', 'clinic_sign_in_sheet', 'clinic_note', 'luxury_watch',
+      'glasses_3d', 'pepememe',
     ];
     for (const id of itemIds) {
       const key = `item_${id}`;
@@ -95,7 +98,7 @@ export class PreloadScene extends Phaser.Scene {
       'ch1_complete', 'ch2_complete', 'ch3_complete', 'ch4_complete',
       'patient_zero', 'game_complete',
       'holder_vip_floppy', 'vip_access', 'archivist', 'alpha_leak',
-      'genesis_miner', 'diamond_hands',
+      'genesis_miner', 'diamond_hands', 'meme_achievement',
     ];
     for (const id of badgeIds) {
       const key = `badge_${id}`;
@@ -240,7 +243,8 @@ export class PreloadScene extends Phaser.Scene {
       for (const co of sceneData.conditionalOverlays) {
         const key = `overlay_${sceneId}_${co.id}`;
         if (!this.textures.exists(key)) {
-          this.load.image(key, `${basePath}/${co.sprite}.png${v}`);
+          const ext = co.format === 'webp' ? 'webp' : 'png';
+          this.load.image(key, `${basePath}/${co.sprite}.${ext}${v}`);
           needsLoad = true;
         }
       }

@@ -496,20 +496,116 @@
         "scripts": {
           "LOOK": [
             {
-              "op": "say",
-              "text": "A heavy metal door, pitch black behind the gap. A sign reads: 'DEEP LIQUIDITY — AUTHORIZED WHALES ONLY'. Below it, someone scratched: 'abandon all stablecoins, ye who enter here.'"
+              "op": "ifFlag",
+              "flag": "memelab_visited",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "The door to the MemeLAB. Now that I know what's inside, the sign 'DEEP LIQUIDITY' makes a sick kind of sense."
+                }
+              ],
+              "else": [
+                {
+                  "op": "say",
+                  "text": "A heavy metal door, pitch black behind the gap. A sign reads: 'DEEP LIQUIDITY — AUTHORIZED WHALES ONLY'. Below it, someone scratched: 'abandon all stablecoins, ye who enter here.'"
+                }
+              ]
             }
           ],
           "USE": [
             {
-              "op": "say",
-              "text": "I reach for the handle. A cold draft pushes back. From inside, I hear the sound of margin calls echoing in the void. Nope. Not today. Not ever."
+              "op": "ifFlag",
+              "flag": "dark_door_opened",
+              "then": [
+                {
+                  "op": "sayBrief",
+                  "text": "Into the MemeLAB...",
+                  "duration": 800
+                },
+                {
+                  "op": "fadeToScene",
+                  "sceneId": "memelab",
+                  "spawn": {
+                    "x": 7.8,
+                    "y": 96.8
+                  }
+                }
+              ],
+              "else": [
+                {
+                  "op": "say",
+                  "text": "I reach for the handle. A cold draft pushes back. The air smells like... memes? Digital decay? Something glows faintly behind the door."
+                },
+                {
+                  "op": "say",
+                  "text": "I push harder. The door groans open. Red and blue light spills out. What the hell is in there?"
+                },
+                {
+                  "op": "setFlag",
+                  "flag": "dark_door_opened",
+                  "value": true
+                },
+                {
+                  "op": "playSound",
+                  "key": "door_open"
+                },
+                {
+                  "op": "fadeToScene",
+                  "sceneId": "memelab",
+                  "spawn": {
+                    "x": 7.8,
+                    "y": 96.8
+                  }
+                }
+              ]
             }
           ],
           "OPEN": [
             {
-              "op": "say",
-              "text": "I try the door. It opens an inch. The darkness inside is so complete it feels like staring into an unlisted token's order book. I close it immediately."
+              "op": "ifFlag",
+              "flag": "dark_door_opened",
+              "then": [
+                {
+                  "op": "sayBrief",
+                  "text": "Into the MemeLAB...",
+                  "duration": 800
+                },
+                {
+                  "op": "fadeToScene",
+                  "sceneId": "memelab",
+                  "spawn": {
+                    "x": 7.8,
+                    "y": 96.8
+                  }
+                }
+              ],
+              "else": [
+                {
+                  "op": "say",
+                  "text": "I try the door. It resists, then yields with a metallic shriek. Red and cyan light pours through the crack."
+                },
+                {
+                  "op": "say",
+                  "text": "Whatever's in there has been sealed for a while. Only one way to find out..."
+                },
+                {
+                  "op": "setFlag",
+                  "flag": "dark_door_opened",
+                  "value": true
+                },
+                {
+                  "op": "playSound",
+                  "key": "door_open"
+                },
+                {
+                  "op": "fadeToScene",
+                  "sceneId": "memelab",
+                  "spawn": {
+                    "x": 7.8,
+                    "y": 96.8
+                  }
+                }
+              ]
             }
           ],
           "TALK": [
@@ -532,14 +628,90 @@
           ],
           "PUSH": [
             {
-              "op": "say",
-              "text": "I push the door. It groans. An ape behind me grabs my shoulder. 'Don't. That's the deep end. Nobody comes back from the deep end with their portfolio intact.'"
+              "op": "ifFlag",
+              "flag": "dark_door_opened",
+              "then": [
+                {
+                  "op": "sayBrief",
+                  "text": "Back to the MemeLAB.",
+                  "duration": 800
+                },
+                {
+                  "op": "fadeToScene",
+                  "sceneId": "memelab",
+                  "spawn": {
+                    "x": 7.8,
+                    "y": 96.8
+                  }
+                }
+              ],
+              "else": [
+                {
+                  "op": "say",
+                  "text": "I push the door. It groans open. Red and blue light floods out — like stepping into a glitched dimension."
+                },
+                {
+                  "op": "setFlag",
+                  "flag": "dark_door_opened",
+                  "value": true
+                },
+                {
+                  "op": "playSound",
+                  "key": "door_open"
+                },
+                {
+                  "op": "fadeToScene",
+                  "sceneId": "memelab",
+                  "spawn": {
+                    "x": 7.8,
+                    "y": 96.8
+                  }
+                }
+              ]
             }
           ],
           "PULL": [
             {
-              "op": "say",
-              "text": "I pull the door. Cold air hits my face. Smells like leveraged positions and regret. A screen glows inside showing only one word: 'REKT'. I let go."
+              "op": "ifFlag",
+              "flag": "dark_door_opened",
+              "then": [
+                {
+                  "op": "sayBrief",
+                  "text": "Back to the MemeLAB.",
+                  "duration": 800
+                },
+                {
+                  "op": "fadeToScene",
+                  "sceneId": "memelab",
+                  "spawn": {
+                    "x": 7.8,
+                    "y": 96.8
+                  }
+                }
+              ],
+              "else": [
+                {
+                  "op": "say",
+                  "text": "I pull the door. Cold air hits my face. But this time I see it — red and cyan light from inside. A lab."
+                },
+                {
+                  "op": "setFlag",
+                  "flag": "dark_door_opened",
+                  "value": true
+                },
+                {
+                  "op": "playSound",
+                  "key": "door_open"
+                },
+                {
+                  "op": "fadeToScene",
+                  "sceneId": "memelab",
+                  "spawn": {
+                    "x": 7.8,
+                    "y": 96.8
+                  }
+                }
+              ]
             }
           ]
         }
@@ -843,7 +1015,112 @@
   "items": {
     "sceneItems": []
   },
-  "combos": [],
+  "combos": [
+    {
+      "items": [
+        "pepememe",
+        "hs_robot_bartender"
+      ],
+      "result": "pepe_bar_revelation",
+      "script": [
+        {
+          "op": "playSound",
+          "key": "item_use"
+        },
+        {
+          "op": "say",
+          "text": "I hold up the rare Pepe to B.O.T."
+        },
+        {
+          "op": "say",
+          "speaker": "B.O.T.",
+          "text": "Is that... a rare Pepe? FROM the MemeLAB? My circuits haven't processed meme alpha like this since the great Doge pump of 2021."
+        },
+        {
+          "op": "say",
+          "speaker": "B.O.T.",
+          "text": "The patients here were trying to ENGINEER viral memes. Turn them into tokenized assets. 'Meme as a Service' — MaaS. Dr. Satoshi shut it down when the memes became... sentient."
+        },
+        {
+          "op": "say",
+          "text": "B.O.T.'s eyes flash green. For a moment, every screen in the pool bar displays the same Pepe face."
+        },
+        {
+          "op": "say",
+          "speaker": "B.O.T.",
+          "text": "You've seen behind the veil. The MemeLAB was their crown jewel. Keep that Pepe safe — it's the last proof of what they were building down there."
+        },
+        {
+          "op": "playSound",
+          "key": "achievement"
+        },
+        {
+          "op": "mintAchievement",
+          "achievementId": 20022,
+          "text": "MEME ACHIEVEMENT — Decoded the MemeLAB conspiracy"
+        }
+      ]
+    },
+    {
+      "items": [
+        "pepememe",
+        "hs_pool_group_left"
+      ],
+      "result": "pepe_pool_left",
+      "script": [
+        {
+          "op": "say",
+          "text": "I show the rare Pepe to the apes floating in the pool."
+        },
+        {
+          "op": "say",
+          "text": "They all turn simultaneously. One of them gasps. Another starts crying. A third whispers reverently: 'It's... the original. The specimen from the lab.'"
+        },
+        {
+          "op": "say",
+          "text": "They stare at the Pepe with a mixture of awe and PTSD. These apes have seen things."
+        }
+      ]
+    },
+    {
+      "items": [
+        "pepememe",
+        "hs_pool_group_right"
+      ],
+      "result": "pepe_pool_right",
+      "script": [
+        {
+          "op": "say",
+          "text": "I flash the Pepe at the right side of the pool."
+        },
+        {
+          "op": "say",
+          "text": "An ape does a spit-take with his green drink. 'WHERE did you get that?! That's from behind the door! How did you survive the anaglyph?!'"
+        },
+        {
+          "op": "say",
+          "text": "'3D glasses,' I say. The ape stares at me like I've just explained quantum physics to a goldfish."
+        }
+      ]
+    },
+    {
+      "items": [
+        "pepememe",
+        "hs_rubber_duck"
+      ],
+      "result": "pepe_meets_duck",
+      "script": [
+        {
+          "op": "say",
+          "text": "I hold the Pepe next to the giant rubber duck. They stare at each other. Two icons. Two legends. One pool."
+        },
+        {
+          "op": "say",
+          "text": "For a brief, beautiful moment, I feel like I'm holding the entire internet in my hands."
+        }
+      ]
+    }
+  ],
   "audio": {
     "music": "clinical",
     "variation": {

@@ -652,8 +652,18 @@
               "value": true
             },
             {
-              "op": "say",
-              "text": "I lift a floor tile. Below: a rat's nest of cables, a forgotten USB drive, and what appears to be a half-eaten sandwich from 2023."
+              "op": "ifFlag",
+              "flag": "found_glasses_3d",
+              "then": [
+                { "op": "say", "text": "I lift a floor tile. Below: a rat's nest of cables, a forgotten USB drive, and what appears to be a half-eaten sandwich from 2023." }
+              ],
+              "else": [
+                { "op": "say", "text": "I lift a floor tile. Below: cables, a forgotten USB drive, a half-eaten sandwich... and wait \u2014 a pair of retro 3D glasses? Red and cyan lenses, taped together." },
+                { "op": "say", "text": "Someone hid these under the server room floor. Why would you need 3D glasses in a data center? Unless something down here isn't what it seems..." },
+                { "op": "setFlag", "flag": "found_glasses_3d", "value": true },
+                { "op": "addItem", "id": "glasses_3d", "name": "3D Glasses" },
+                { "op": "playSound", "key": "discovery" }
+              ]
             }
           ],
           "OPEN": [
@@ -663,8 +673,18 @@
               "value": true
             },
             {
-              "op": "say",
-              "text": "I pry open a tile. The underfloor is like Ethereum's mempool \u2014 chaotic, congested, and full of things waiting to be processed."
+              "op": "ifFlag",
+              "flag": "found_glasses_3d",
+              "then": [
+                { "op": "say", "text": "I pry open a tile. The underfloor is like Ethereum's mempool \u2014 chaotic, congested, and full of things waiting to be processed." }
+              ],
+              "else": [
+                { "op": "say", "text": "I pry open a tile. Among the cables and dust, something catches my eye \u2014 a pair of old-school 3D glasses! Red and cyan lenses, retro style." },
+                { "op": "say", "text": "They look out of place here. Like someone stashed them in a hurry. Who needs anaglyph glasses in a server room?" },
+                { "op": "setFlag", "flag": "found_glasses_3d", "value": true },
+                { "op": "addItem", "id": "glasses_3d", "name": "3D Glasses" },
+                { "op": "playSound", "key": "discovery" }
+              ]
             }
           ],
           "CLOSE": [

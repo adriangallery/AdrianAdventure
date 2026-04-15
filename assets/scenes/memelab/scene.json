@@ -1,0 +1,881 @@
+{
+  "version": 1,
+  "id": "memelab",
+  "title": "The MemeLAB",
+  "assets": {
+    "background": "background.webp",
+    "walkmask": "walkmask.png",
+    "atlas": null
+  },
+  "render": {
+    "world": {
+      "width": 3712,
+      "height": 1152
+    },
+    "camera": {
+      "start": {
+        "x": 0,
+        "y": 0
+      },
+      "followPlayer": true,
+      "lerp": 0.08,
+      "clampToWorld": true
+    }
+  },
+  "player": {
+    "spawn": {
+      "x": 6.3,
+      "y": 96.6
+    },
+    "speed": 160,
+    "sprite": {
+      "sheet": null,
+      "idle": null,
+      "walk": null
+    },
+    "playerScale": 5.75
+  },
+  "ui": {
+    "verbs": [
+      "LOOK",
+      "USE",
+      "PICK",
+      "OPEN",
+      "CLOSE",
+      "PUSH",
+      "PULL",
+      "TALK",
+      "GIVE"
+    ],
+    "mobileDrawerDefault": "collapsed"
+  },
+  "maskMapping": {
+    "walkableColor": "#0000FF",
+    "hotspotColor": "#FFFF00",
+    "triggerColor": "#FF00FF",
+    "regionIdStrategy": "manual"
+  },
+  "cameraEffect": {
+    "type": "anaglyph",
+    "disableFlag": "memelab_clear_vision"
+  },
+  "conditionalOverlays": [],
+  "regions": {
+    "hotspots": [
+      {
+        "id": "hs_meme_tube",
+        "name": "Containment Tube",
+        "bounds": {
+          "x": 44.1,
+          "y": 19,
+          "w": 11.9,
+          "h": 69
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "ifFlag",
+              "flag": "memelab_clear_vision",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "A giant containment tube filled with swirling green digital essence. Fragments of viral meme content pulse inside. Labels on the base read: 'SPECIMEN: CONCENTRATED MEME ENERGY — DO NOT RELEASE'."
+                }
+              ],
+              "else": [
+                {
+                  "op": "say",
+                  "text": "Through the anaglyph distortion I can barely make out... a giant tube? Something green pulses inside. My eyes hurt just looking at it."
+                }
+              ]
+            }
+          ],
+          "USE": [
+            {
+              "op": "ifFlag",
+              "flag": "memelab_clear_vision",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "I touch the glass. It's warm. The liquid inside reacts, swirling faster. A readout spikes: 'VIRALITY INDEX: CRITICAL'. Better not disturb it."
+                }
+              ],
+              "else": [
+                {
+                  "op": "say",
+                  "text": "I reach toward the blurry shape. If only I could see clearly through this optical nightmare..."
+                }
+              ]
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "I press my ear to the tube. From inside I hear whispers: '...to the moon... wagmi... gm...' The memes are alive."
+            }
+          ],
+          "PICK": [
+            {
+              "op": "say",
+              "text": "It's bolted to the floor and ceiling. This thing isn't going anywhere. Neither are the memes trapped inside."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I push against the tube. It doesn't budge, but the liquid inside sloshes aggressively. The memes are agitated."
+            }
+          ]
+        }
+      },
+      {
+        "id": "hs_meme_virus_screen",
+        "name": "Meme Virus Monitor",
+        "bounds": {
+          "x": 21.4,
+          "y": 43.8,
+          "w": 8.1,
+          "h": 20.1
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "ifFlag",
+              "flag": "memelab_clear_vision",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "The screen reads 'MEME VIRUS 99%'. Progress bar nearly full. Below: 'DEPLOYMENT STATUS: PENDING'. Someone was engineering weaponized memes here."
+                },
+                {
+                  "op": "say",
+                  "text": "Log entries scroll: 'MEME_PROPAGATION_RATE: EXPONENTIAL. ESTIMATED_VIRALITY: INFINITE. TARGET: ALL TIMELINES'. This is... terrifying and hilarious."
+                }
+              ],
+              "else": [
+                {
+                  "op": "say",
+                  "text": "I squint through the red-blue haze. Numbers flicker on a screen... 99%... something. Can't read the rest."
+                }
+              ]
+            }
+          ],
+          "USE": [
+            {
+              "op": "ifFlag",
+              "flag": "memelab_clear_vision",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "I try the keyboard. Dead. But the screen flickers: 'LAST OPERATOR: Dr. S. — EXPERIMENT STATUS: CONTAINED'. Dr. Satoshi was running this lab."
+                }
+              ],
+              "else": [
+                {
+                  "op": "say",
+                  "text": "I mash keys I can barely see. The screen responds with garbled colors. Useless without clear vision."
+                }
+              ]
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "I address the screen directly. 'What are you deploying?' No response. Screens don't talk back. Unlike memes."
+            }
+          ]
+        }
+      },
+      {
+        "id": "hs_rarity_index",
+        "name": "Rarity Index Board",
+        "bounds": {
+          "x": 63.1,
+          "y": 26.3,
+          "w": 16.9,
+          "h": 31.7
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "ifFlag",
+              "flag": "memelab_clear_vision",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "A board labeled 'RARITY INDEX' with charts and emoji faces ranked by rarity. It's like a periodic table of memes."
+                },
+                {
+                  "op": "say",
+                  "text": "The hierarchy: Common, Uncommon, Rare, Epic, Legendary... and above all, circled in red: 'ULTRA RARE PEPE'. Someone took meme economics very seriously."
+                }
+              ],
+              "else": [
+                {
+                  "op": "say",
+                  "text": "A board with... charts? Faces? Everything is doubled and shifted. The anaglyph makes it impossible to read."
+                }
+              ]
+            }
+          ],
+          "USE": [
+            {
+              "op": "say",
+              "text": "I trace the rarity tiers with my finger. Each level has a corresponding 'market cap' estimate. They were pricing memes like crypto tokens."
+            }
+          ],
+          "PICK": [
+            {
+              "op": "say",
+              "text": "The board is screwed to the wall. Probably for the best — this kind of research shouldn't leave the lab."
+            }
+          ]
+        }
+      },
+      {
+        "id": "hs_chemicals",
+        "name": "Chemical Station",
+        "bounds": {
+          "x": 32.2,
+          "y": 34.4,
+          "w": 8.1,
+          "h": 51.3
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "ifFlag",
+              "flag": "memelab_clear_vision",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "Beakers filled with glowing green liquid. Labels read: 'CONCENTRATED VIRALITY', 'DISTILLED SARCASM', 'PURE IRONY'. This is a meme chemistry lab."
+                }
+              ],
+              "else": [
+                {
+                  "op": "say",
+                  "text": "Blurry glass shapes. Something green. Could be chemistry equipment, could be modern art. Hard to tell in anaglyph."
+                }
+              ]
+            }
+          ],
+          "USE": [
+            {
+              "op": "say",
+              "text": "I'm not drinking that. The last person who did probably became a full-time shitposter on crypto Twitter."
+            }
+          ],
+          "PICK": [
+            {
+              "op": "say",
+              "text": "These chemicals should stay right where they are. In a secure, undrinkable location."
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "say",
+              "text": "I uncork a beaker. The smell hits me like a trending tweet — sharp, viral, and impossible to ignore. I cork it back immediately."
+            }
+          ]
+        }
+      },
+      {
+        "id": "hs_do_not_push",
+        "name": "DO NOT PUSH Button",
+        "bounds": {
+          "x": 89.3,
+          "y": 34.3,
+          "w": 8,
+          "h": 43.6
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "ifFlag",
+              "flag": "memelab_clear_vision",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "A big red button with 'DO NOT PUSH' written above it in multiple languages. Classic. The most tempting button in any lab."
+                }
+              ],
+              "else": [
+                {
+                  "op": "say",
+                  "text": "Something red. A button? The label is unreadable through the distortion but I can feel it daring me."
+                }
+              ]
+            }
+          ],
+          "USE": [
+            {
+              "op": "ifFlag",
+              "flag": "pushed_button",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "I already pushed it once. The tube is still glowing brighter. I should probably stop pressing mysterious buttons in secret meme labs."
+                }
+              ],
+              "else": [
+                {
+                  "op": "setFlag",
+                  "flag": "pushed_button",
+                  "value": true
+                },
+                {
+                  "op": "playSound",
+                  "key": "keypad_beep"
+                },
+                {
+                  "op": "say",
+                  "text": "I push the button. The containment tube surges with light. Every screen in the room flashes 'FEELS GOOD MAN' for exactly 4.20 seconds."
+                },
+                {
+                  "op": "say",
+                  "text": "Then silence. The tube settles back to its normal glow. Whatever I just did... I'm sure it was fine."
+                }
+              ]
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "ifFlag",
+              "flag": "pushed_button",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "No. Once was enough. I can still see 'FEELS GOOD MAN' burned into my retinas."
+                }
+              ],
+              "else": [
+                {
+                  "op": "setFlag",
+                  "flag": "pushed_button",
+                  "value": true
+                },
+                {
+                  "op": "playSound",
+                  "key": "keypad_beep"
+                },
+                {
+                  "op": "say",
+                  "text": "I push the button. The containment tube surges with light. Every screen in the room flashes 'FEELS GOOD MAN' for exactly 4.20 seconds."
+                },
+                {
+                  "op": "say",
+                  "text": "Then silence. The tube settles back to its normal glow. Whatever I just did... I'm sure it was fine."
+                }
+              ]
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "say",
+              "text": "It's a button, not a door. But I appreciate the creative thinking."
+            }
+          ]
+        }
+      },
+      {
+        "id": "hs_slime",
+        "name": "Green Slime",
+        "bounds": {
+          "x": 12.4,
+          "y": 0,
+          "w": 24.4,
+          "h": 20.7
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "ifFlag",
+              "flag": "memelab_clear_vision",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "Green slime drips from the ceiling. It smells like digital decay — like if an NFT could decompose. The slime pulses in rhythm with the containment tube."
+                }
+              ],
+              "else": [
+                {
+                  "op": "say",
+                  "text": "Something drips from above. Green? Red? Blue? All of the above? This anaglyph is giving me a headache."
+                }
+              ]
+            }
+          ],
+          "USE": [
+            {
+              "op": "say",
+              "text": "I'd rather not touch the slime. It's probably sentient by now. And it might have opinions about yield farming."
+            }
+          ],
+          "PICK": [
+            {
+              "op": "say",
+              "text": "I am NOT picking up radioactive meme slime. I have standards. Low standards, but standards."
+            }
+          ]
+        }
+      },
+      {
+        "id": "hs_pepememe",
+        "name": "Rare Pepe",
+        "bounds": {
+          "x": 77.1,
+          "y": 55.3,
+          "w": 5.6,
+          "h": 14.1
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "It's a rare Pepe printout, wearing 3D glasses just like mine! It sits on the desk, perfectly preserved. The rarest of rare. The meme to end all memes."
+            }
+          ],
+          "PICK": [
+            {
+              "op": "ifFlag",
+              "flag": "found_pepememe",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "I already have the rare Pepe. One is enough. The meme market can't handle more supply."
+                }
+              ],
+              "else": [
+                {
+                  "op": "setFlag",
+                  "flag": "found_pepememe",
+                  "value": true
+                },
+                {
+                  "op": "addItem",
+                  "id": "pepememe",
+                  "name": "Rare Pepe"
+                },
+                {
+                  "op": "playSound",
+                  "key": "discovery"
+                },
+                {
+                  "op": "say",
+                  "text": "I carefully pick up the rare Pepe. It feels... warm? Like holding pure meme energy. The eyes seem to follow me."
+                },
+                {
+                  "op": "say",
+                  "text": "A label on the back reads: 'SPECIMEN #001 — THE ORIGINAL. Do not expose to normies. Handle with diamond hands.'"
+                }
+              ]
+            }
+          ],
+          "USE": [
+            {
+              "op": "say",
+              "text": "I stare into the Pepe's eyes. It stares back. We share a moment of mutual understanding. Feels good, man."
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "'Hello, Pepe.' The frog says nothing. But somehow I feel... validated. Like getting 1000 likes on a tweet that took 2 seconds to write."
+            }
+          ]
+        }
+      },
+      {
+        "id": "hs_exit_door",
+        "name": "Door to Liquidity Pool",
+        "bounds": {
+          "x": 6,
+          "y": 29,
+          "w": 5.4,
+          "h": 60.6
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "The door back to the Liquidity Pool. Somehow it looks more inviting from this side."
+            }
+          ],
+          "USE": [
+            {
+              "op": "sayBrief",
+              "text": "Back to the pool.",
+              "duration": 800
+            },
+            {
+              "op": "fadeToScene",
+              "sceneId": "recovery_pool",
+              "spawn": {
+                "x": 7,
+                "y": 98
+              }
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "sayBrief",
+              "text": "Back to the pool.",
+              "duration": 800
+            },
+            {
+              "op": "fadeToScene",
+              "sceneId": "recovery_pool",
+              "spawn": {
+                "x": 7,
+                "y": 98
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "hs_equipment_rack",
+        "name": "Analysis Equipment",
+        "bounds": {
+          "x": 85.2,
+          "y": 35.3,
+          "w": 3.5,
+          "h": 35.2
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "ifFlag",
+              "flag": "memelab_clear_vision",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "A rack of analysis equipment: oscilloscopes, spectrum analyzers, and something labeled 'MEME RESONANCE DETECTOR'. All monitoring the containment tube's output."
+                }
+              ],
+              "else": [
+                {
+                  "op": "say",
+                  "text": "Boxy shapes with blinking lights. Equipment of some kind. The anaglyph makes everything look like abstract art."
+                }
+              ]
+            }
+          ],
+          "USE": [
+            {
+              "op": "say",
+              "text": "I flip a switch. A readout displays: 'CURRENT MEME SENTIMENT: BULLISH'. I flip it back."
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "say",
+              "text": "I open a panel. Inside: a tangle of wires and a sticky note that reads 'IF MEMES ESCAPE, RUN.' Reassuring."
+            }
+          ]
+        }
+      }
+    ],
+    "triggers": [
+      {
+        "id": "tr_exit_left",
+        "once": false,
+        "bounds": {
+          "x": 3.9,
+          "y": 78.3,
+          "w": 2,
+          "h": 20
+        },
+        "onEnter": [
+          {
+            "op": "fadeToScene",
+            "sceneId": "recovery_pool",
+            "spawn": {
+              "x": 7,
+              "y": 98
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "items": {
+    "sceneItems": []
+  },
+  "combos": [
+    {
+      "items": [
+        "glasses_3d",
+        "hs_meme_tube"
+      ],
+      "result": "clear_vision",
+      "script": [
+        {
+          "op": "playSound",
+          "key": "item_use"
+        },
+        {
+          "op": "say",
+          "text": "I put on the 3D glasses. The world shifts... red and blue channels merge..."
+        },
+        {
+          "op": "setFlag",
+          "flag": "memelab_clear_vision",
+          "value": true
+        },
+        {
+          "op": "playSound",
+          "key": "discovery"
+        },
+        {
+          "op": "say",
+          "text": "Everything snaps into focus! The MemeLAB is revealed in its full glory — a complete meme engineering facility!"
+        },
+        {
+          "op": "say",
+          "text": "No wonder they hid it behind anaglyph distortion. They didn't want anyone sane to find this place."
+        },
+        {
+          "op": "say",
+          "text": "Wait... is that... a Pepe? A rare Pepe, just sitting there on the desk! I couldn't see it before through the distortion!"
+        }
+      ]
+    },
+    {
+      "items": [
+        "glasses_3d",
+        "hs_meme_virus_screen"
+      ],
+      "result": "clear_vision_alt1",
+      "script": [
+        {
+          "op": "playSound",
+          "key": "item_use"
+        },
+        {
+          "op": "say",
+          "text": "I put on the 3D glasses to read the screen better. The anaglyph dissolves..."
+        },
+        {
+          "op": "setFlag",
+          "flag": "memelab_clear_vision",
+          "value": true
+        },
+        {
+          "op": "playSound",
+          "key": "discovery"
+        },
+        {
+          "op": "say",
+          "text": "The entire room snaps into focus! I can finally see everything clearly. This is a full meme engineering laboratory!"
+        },
+        {
+          "op": "say",
+          "text": "And over on the desk... is that a rare Pepe? It was invisible through the distortion!"
+        }
+      ]
+    },
+    {
+      "items": [
+        "glasses_3d",
+        "hs_rarity_index"
+      ],
+      "result": "clear_vision_alt2",
+      "script": [
+        {
+          "op": "playSound",
+          "key": "item_use"
+        },
+        {
+          "op": "say",
+          "text": "I put on the glasses to read the board. The red-blue haze melts away..."
+        },
+        {
+          "op": "setFlag",
+          "flag": "memelab_clear_vision",
+          "value": true
+        },
+        {
+          "op": "playSound",
+          "key": "discovery"
+        },
+        {
+          "op": "say",
+          "text": "Crystal clear! The whole MemeLAB is revealed. And look — a rare Pepe on the desk! Hidden in plain sight by the anaglyph!"
+        }
+      ]
+    },
+    {
+      "items": [
+        "glasses_3d",
+        "hs_chemicals"
+      ],
+      "result": "clear_vision_alt3",
+      "script": [
+        {
+          "op": "playSound",
+          "key": "item_use"
+        },
+        {
+          "op": "say",
+          "text": "I put on the 3D glasses. The anaglyph effect dissolves instantly!"
+        },
+        {
+          "op": "setFlag",
+          "flag": "memelab_clear_vision",
+          "value": true
+        },
+        {
+          "op": "playSound",
+          "key": "discovery"
+        },
+        {
+          "op": "say",
+          "text": "Now I can see the MemeLAB clearly. Including a rare Pepe that was hidden by the distortion!"
+        }
+      ]
+    },
+    {
+      "items": [
+        "glasses_3d",
+        "hs_equipment_rack"
+      ],
+      "result": "clear_vision_alt4",
+      "script": [
+        {
+          "op": "playSound",
+          "key": "item_use"
+        },
+        {
+          "op": "say",
+          "text": "I put on the 3D glasses. The anaglyph effect dissolves instantly!"
+        },
+        {
+          "op": "setFlag",
+          "flag": "memelab_clear_vision",
+          "value": true
+        },
+        {
+          "op": "playSound",
+          "key": "discovery"
+        },
+        {
+          "op": "say",
+          "text": "The room snaps into focus. A complete meme lab! And look — a rare Pepe, hidden by the distortion!"
+        }
+      ]
+    },
+    {
+      "items": [
+        "glasses_3d",
+        "hs_do_not_push"
+      ],
+      "result": "clear_vision_alt5",
+      "script": [
+        {
+          "op": "playSound",
+          "key": "item_use"
+        },
+        {
+          "op": "say",
+          "text": "I put on the glasses before pushing anything. The anaglyph clears!"
+        },
+        {
+          "op": "setFlag",
+          "flag": "memelab_clear_vision",
+          "value": true
+        },
+        {
+          "op": "playSound",
+          "key": "discovery"
+        },
+        {
+          "op": "say",
+          "text": "Smart move. Now I can see clearly — this is a full MemeLAB. And is that a Pepe on the desk?"
+        }
+      ]
+    },
+    {
+      "items": [
+        "glasses_3d",
+        "hs_slime"
+      ],
+      "result": "clear_vision_alt6",
+      "script": [
+        {
+          "op": "playSound",
+          "key": "item_use"
+        },
+        {
+          "op": "say",
+          "text": "I put on the glasses. The world stops being a headache..."
+        },
+        {
+          "op": "setFlag",
+          "flag": "memelab_clear_vision",
+          "value": true
+        },
+        {
+          "op": "playSound",
+          "key": "discovery"
+        },
+        {
+          "op": "say",
+          "text": "Finally! Clear vision reveals the MemeLAB in all its glory. And a rare Pepe I couldn't see before!"
+        }
+      ]
+    }
+  ],
+  "audio": {
+    "music": "tension",
+    "variation": {
+      "filterType": "lowpass",
+      "filterFrequency": 800,
+      "volume": 0.4
+    },
+    "ambience": null,
+    "sfx": {}
+  },
+  "transitions": {
+    "goto": []
+  },
+  "walkableAreas": [
+    {
+      "x": 3,
+      "y": 91.8,
+      "w": 85.4,
+      "h": 8.2
+    }
+  ],
+  "onEnter": [
+    {
+      "op": "ifFlag",
+      "flag": "memelab_visited",
+      "then": [],
+      "else": [
+        {
+          "op": "setFlag",
+          "flag": "memelab_visited",
+          "value": true
+        },
+        {
+          "op": "say",
+          "text": "What the... Everything is RED and BLUE! My eyes are going haywire!"
+        },
+        {
+          "op": "say",
+          "text": "The entire room is stuck in some kind of anaglyph 3D mode. Like a bad '80s movie."
+        },
+        {
+          "op": "say",
+          "text": "Through the distortion, I can make out shapes — lab equipment, screens, a giant glowing tube in the center. But I can barely read anything."
+        },
+        {
+          "op": "say",
+          "text": "If only I had something to help me see through this optical chaos..."
+        }
+      ]
+    }
+  ]
+}
