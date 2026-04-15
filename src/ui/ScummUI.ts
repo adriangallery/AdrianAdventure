@@ -362,8 +362,9 @@ export class ScummUI {
         const wearing = state.flags['ape_costume_worn'] ?? false;
         state.flags['ape_costume_worn'] = !wearing;
         this.scene.registry.set('gameState', state);
-        const gameScene = this.scene.scene.get('GameScene') as any;
-        gameScene?.player?.setCostume?.(!wearing ? 'ape' : 'player');
+        // Delegate to GameScene via event (direct setCostume from UIScene can break sprite state)
+        const gameScene = this.scene.scene.get('GameScene');
+        gameScene?.events.emit('costume:change', !wearing ? 'ape' : 'player');
         this.scene.sound.play('item_use', { volume: 0.6 });
         this.scene.events.emit('say', !wearing
           ? "I put on the ape costume. The fur is warm. The mask smells like diamond hands and bad decisions. I look ridiculous. I look perfect."
