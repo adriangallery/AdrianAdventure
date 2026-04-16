@@ -11,7 +11,7 @@ const DATA_DIR = process.env.SAVE_DIR || '/data/saves';
 if (!existsSync(DATA_DIR)) mkdirSync(DATA_DIR, { recursive: true });
 
 app.use('*', cors({
-  origin: ['https://zeroadventure.vercel.app', 'http://localhost:3000', 'http://localhost:5173'],
+  origin: ['https://zeroadventure.vercel.app', 'https://adrianzero.com', 'http://localhost:3000', 'http://localhost:5173'],
   allowMethods: ['GET', 'POST', 'OPTIONS'],
 }));
 

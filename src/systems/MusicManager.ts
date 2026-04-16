@@ -95,6 +95,10 @@ export class MusicManager {
       return;
     }
 
+    // Re-sync Phaser mute with our state — Phaser's auto-unlock (triggered
+    // by any user gesture) can reset game.sound.mute to false.
+    this.game.sound.mute = this.muted;
+
     // Ensure context is running
     if (this.context.state === 'suspended') {
       this.context.resume();

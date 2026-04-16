@@ -215,6 +215,12 @@ export class MenuScene extends Phaser.Scene {
     const skipAndProceed = () => {
       if (skipped) return;
       skipped = true;
+      // Re-apply mute — the click gesture may trigger Phaser's auto-unlock
+      // which can reset game.sound.mute. Explicitly enforce silence.
+      if (musicManager) {
+        if (!musicManager.isMuted()) musicManager.toggleMute();
+        this.game.sound.mute = true;
+      }
       overlay.remove();
       onProceed();
     };
