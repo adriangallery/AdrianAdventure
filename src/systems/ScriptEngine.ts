@@ -28,6 +28,7 @@ export interface ScriptContext {
   showTitleCard?: (chapter: string, title: string, subtitle?: string) => Promise<void>;
   showNarrative?: (lines: string[]) => Promise<void>;
   showAchievement?: (text: string) => void;
+  showCredits?: () => Promise<void>;
   // Transaction toast
   showToast?: (status: 'pending' | 'success' | 'failed', message: string) => void;
   // Costume change
@@ -270,6 +271,14 @@ export class ScriptEngine {
       case 'setCostume': {
         // { op: "setCostume", prefix: "ape" } — changes player sprite
         this.ctx.setCostume?.(op.prefix as string);
+        break;
+      }
+
+      case 'credits': {
+        // { op: "credits" } — show scrolling end credits
+        if (this.ctx.showCredits) {
+          await this.ctx.showCredits();
+        }
         break;
       }
 

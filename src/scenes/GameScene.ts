@@ -39,6 +39,7 @@ export class GameScene extends Phaser.Scene {
   private conditionalOverlays: Array<{ sprite: Phaser.GameObjects.Image; flag: string; invert?: boolean }> = [];
   private debugContainer?: Phaser.GameObjects.Container;
   private static DEBUG = import.meta.env.DEV;
+  private get isTrailer(): boolean { return !!this.registry.get('trailerMode'); }
   private pendingHotspot: HotspotData | null = null;
   private activeCameraEffect: { type: string; disableFlag?: string } | null = null;
   /** Persisted across sessions via gameState.firedTriggers */
@@ -169,23 +170,25 @@ export class GameScene extends Phaser.Scene {
 
     // Camera setup based on orientation
     this.setupCamera();
-    this.cameras.main.fadeIn(400, 0, 0, 0);
+    if (!this.isTrailer) this.cameras.main.fadeIn(400, 0, 0, 0);
 
     // Cinematic overlay (full-screen story moments)
     this.cinematicOverlay = new CinematicOverlay(this);
     this.transactionToast = new TransactionToast(this);
 
     // If scene has onEnter scripts, show black cover immediately to prevent scene flash
-    if (sceneData.onEnter?.length) {
+    if (sceneData.onEnter?.length && !this.isTrailer) {
       this.cinematicOverlay.showBlackCover();
     }
 
     // Script engine
     this.scriptEngine = new ScriptEngine(this.buildScriptContext());
 
-    // Input — use worldX/worldY for game area (accounts for camera scroll)
-    this.input.on('pointerdown', this.handlePointerDown, this);
-    this.input.on('pointermove', this.handlePointerMove, this);
+    // Input — disabled in trailer mode
+    if (!this.isTrailer) {
+      this.input.on('pointerdown', this.handlePointerDown, this);
+      this.input.on('pointermove', this.handlePointerMove, this);
+    }
 
     // Execute pending verb when player arrives at hotspot
     this.events.on('player:arrived', () => {
@@ -251,15 +254,15 @@ export class GameScene extends Phaser.Scene {
     // Listen for panel toggle (mobile collapse/expand)
     this.scene.get('UIScene').events.on('panel:toggled', () => this.handleResize());
 
-    this.showSceneTitle(sceneData.title);
-    this.gameState.savedAt = Date.now();
-    // Save spawn position initially; manual saves will capture actual player position
-    this.gameState.playerPosition = { pctX: spawn.x, pctY: spawn.y };
-    this.saveSystem.autoSave(this.gameState, sceneData.title);
+    if (!this.isTrailer) {
+      this.showSceneTitle(sceneData.title);
+      this.gameState.savedAt = Date.now();
+      this.gameState.playerPosition = { pctX: spawn.x, pctY: spawn.y };
+      this.saveSystem.autoSave(this.gameState, sceneData.title);
+    }
 
-    // Run scene onEnter scripts (chapter intros, premise, etc.)
-    if (sceneData.onEnter?.length) {
-      // Run immediately — black cover prevents scene flash
+    // Run scene onEnter scripts (chapter intros, premise, etc.) — skipped in trailer
+    if (sceneData.onEnter?.length && !this.isTrailer) {
       this.time.delayedCall(100, () => {
         this.scriptEngine.updateContext(this.buildScriptContext());
         this.scriptEngine.execute(sceneData.onEnter!).then(() => {
@@ -267,7 +270,7 @@ export class GameScene extends Phaser.Scene {
           this.checkSpawnTriggers(sceneData);
         });
       });
-    } else {
+    } else if (!this.isTrailer) {
       this.time.delayedCall(300, () => this.checkSpawnTriggers(sceneData));
     }
 
@@ -330,8 +333,8 @@ export class GameScene extends Phaser.Scene {
     // Tick down input cooldown (prevents dismiss-click from triggering next action)
     if (this.inputCooldownFrames > 0) this.inputCooldownFrames--;
 
-    // Walk-through trigger detection — check player position against triggers each frame
-    if (this.player.isMoving() && !this.scriptEngine.isRunning()) {
+    // Walk-through trigger detection — disabled in trailer mode
+    if (this.player.isMoving() && !this.scriptEngine.isRunning() && !this.isTrailer) {
       const sceneData = this.registry.get('sceneData') as SceneData | undefined;
       if (sceneData) {
         for (const tr of sceneData.regions.triggers) {
@@ -725,6 +728,12 @@ export class GameScene extends Phaser.Scene {
       },
       showToast: (status, message) => { this.transactionToast.show(status, message); },
       setCostume: (prefix) => { this.player.setCostume(prefix); },
+      showCredits: () => {
+        const ui = this.scene.get('UIScene');
+        return new Promise<void>((resolve) => {
+          ui.events.emit('showCredits', resolve);
+        });
+      },
     };
   }
 
@@ -739,7 +748,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   private drawDebugBounds(sceneData: SceneData): void {
-    if (!GameScene.DEBUG) return;
+    if (!GameScene.DEBUG || this.isTrailer) return;
     this.debugContainer?.destroy();
 
     const container = this.add.container(0, 0).setDepth(50);

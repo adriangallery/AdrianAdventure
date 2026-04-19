@@ -115,14 +115,24 @@ export class SaveButton {
         : 'Empty';
       modal.appendChild(makeBtn(`\u{1F4BE} Slot ${slotId}: ${label}`, !!gameState, async () => {
         if (!gameState) return;
-        gameState.savedAt = Date.now();
-        saveSystem.saveToSlot(slotId, gameState, sceneName);
-        if (isWallet) {
-          saveForWalletRemote(address!, gameState, sceneName, slotId)
-            .then(ok => { if (!ok) console.warn(`Cloud save slot ${slotId} failed`); })
-            .catch(err => console.error('Cloud save error:', err));
+
+        const doSave = () => {
+          gameState.savedAt = Date.now();
+          saveSystem.saveToSlot(slotId, gameState, sceneName);
+          if (isWallet) {
+            saveForWalletRemote(address!, gameState, sceneName, slotId)
+              .then(ok => { if (!ok) console.warn(`Cloud save slot ${slotId} failed`); })
+              .catch(err => console.error('Cloud save error:', err));
+          }
+          showSaveToast(modal, `Slot ${slotId} saved!`, cleanup);
+        };
+
+        if (slot) {
+          // Slot occupied — ask for confirmation
+          showOverwriteConfirm(modal, slotId, slot.sceneName, slot.timestamp, doSave);
+        } else {
+          doSave();
         }
-        cleanup();
       }));
     }
 
@@ -226,4 +236,66 @@ export class SaveButton {
     this.container.destroy();
     document.getElementById('save-load-overlay')?.remove();
   }
+}
+
+/** Inline overwrite confirmation — replaces modal content temporarily */
+function showOverwriteConfirm(
+  modal: HTMLDivElement, slotId: number, sceneName: string, timestamp: number, onConfirm: () => void,
+): void {
+  const existing = modal.querySelector('.save-confirm') as HTMLElement | null;
+  if (existing) existing.remove();
+
+  const box = document.createElement('div');
+  box.className = 'save-confirm';
+  box.style.cssText = `
+    background: #2a1a1a; border: 1px solid #e94560; border-radius: 6px;
+    padding: 14px; margin: 10px 0; text-align: center;
+  `;
+
+  const msg = document.createElement('div');
+  msg.textContent = `Overwrite Slot ${slotId}?`;
+  msg.style.cssText = 'color: #e94560; font-size: 10px; margin-bottom: 6px;';
+  box.appendChild(msg);
+
+  const detail = document.createElement('div');
+  detail.textContent = `${sceneName} — ${new Date(timestamp).toLocaleDateString()}`;
+  detail.style.cssText = 'color: #888; font-size: 8px; margin-bottom: 12px;';
+  box.appendChild(detail);
+
+  const btnStyle = `
+    padding: 8px 16px; font-family: 'Press Start 2P', monospace;
+    font-size: 8px; border-radius: 4px; cursor: pointer; border: none; margin: 0 4px;
+  `;
+
+  const yes = document.createElement('button');
+  yes.textContent = 'Overwrite';
+  yes.style.cssText = btnStyle + 'background: #e94560; color: #fff;';
+  yes.onclick = () => { box.remove(); onConfirm(); };
+
+  const no = document.createElement('button');
+  no.textContent = 'Cancel';
+  no.style.cssText = btnStyle + 'background: transparent; color: #888; border: 1px solid #444;';
+  no.onclick = () => box.remove();
+
+  box.appendChild(yes);
+  box.appendChild(no);
+  modal.insertBefore(box, modal.children[2] || null);
+}
+
+/** Brief success toast inside the save modal, then auto-close */
+function showSaveToast(modal: HTMLDivElement, message: string, cleanup: () => void): void {
+  // Clear modal content and show success
+  modal.innerHTML = '';
+
+  const icon = document.createElement('div');
+  icon.textContent = '\u2705';
+  icon.style.cssText = 'font-size: 32px; margin-bottom: 12px;';
+  modal.appendChild(icon);
+
+  const msg = document.createElement('div');
+  msg.textContent = message;
+  msg.style.cssText = 'color: #f8e848; font-size: 12px;';
+  modal.appendChild(msg);
+
+  setTimeout(cleanup, 1200);
 }

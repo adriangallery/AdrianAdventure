@@ -4,6 +4,7 @@ import { MenuScene } from '@/scenes/MenuScene';
 import { PreloadScene } from '@/scenes/PreloadScene';
 import { GameScene } from '@/scenes/GameScene';
 import { UIScene } from '@/scenes/UIScene';
+import { TrailerScene } from '@/scenes/TrailerScene';
 
 export const MASK_COLORS = {
   WALKABLE: '#0000FF',
@@ -21,7 +22,7 @@ export const GAME_CONFIG: Phaser.Types.Core.GameConfig = {
     width: '100%',
     height: '100%',
   },
-  scene: [BootScene, MenuScene, PreloadScene, GameScene, UIScene],
+  scene: [BootScene, MenuScene, PreloadScene, GameScene, UIScene, TrailerScene],
   audio: {
     disableWebAudio: false,
   },

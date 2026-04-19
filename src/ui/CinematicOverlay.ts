@@ -267,6 +267,179 @@ export class CinematicOverlay {
     });
   }
 
+  /**
+   * Rolling credits — classic vertical scroll (Star Wars / Monkey Island style).
+   * Shows roles, fun lines, and earned achievements. Click to skip.
+   */
+  showCredits(earnedAchievements: string[] = []): Promise<void> {
+    return new Promise<void>((resolve) => {
+      const { width, height } = this.scene.scale;
+      const refDim = Math.max(width, height * 0.6);
+
+      const titleSize = Math.max(18, Math.min(28, Math.floor(refDim * 0.024)));
+      const headingSize = Math.max(12, Math.min(18, Math.floor(refDim * 0.016)));
+      const bodySize = Math.max(10, Math.min(14, Math.floor(refDim * 0.012)));
+      const smallSize = Math.max(8, Math.min(11, Math.floor(refDim * 0.009)));
+
+      const container = this.scene.add.container(0, 0).setDepth(DEPTH).setAlpha(1).setScrollFactor(0);
+
+      // Black background
+      const bg = this.scene.add.rectangle(width / 2, height / 2, width, height, BG_COLOR, 1)
+        .setOrigin(0.5).setScrollFactor(0);
+      container.add(bg);
+
+      // Build credits content as a vertical stack
+      // Each entry: { text, color, size, gap (extra spacing after) }
+      const lines: Array<{ text: string; color: string; size: number; gap?: number }> = [
+        { text: 'Z E R O a d v e n t u r e   I I', color: TITLE_COLOR, size: titleSize, gap: 20 },
+        { text: 'A Point & Click Web3 Adventure on Base', color: SUBTLE_COLOR, size: smallSize, gap: 50 },
+
+        // ── Story ──
+        { text: 'You found Patient Zero.', color: BODY_COLOR, size: bodySize },
+        { text: 'You found yourself.', color: BODY_COLOR, size: bodySize, gap: 50 },
+
+        // ── Roles ──
+        { text: '— CREATED BY —', color: SUBTLE_COLOR, size: smallSize, gap: 10 },
+        { text: 'Adrian', color: TITLE_COLOR, size: headingSize },
+        { text: 'Code, Design, Blockchain, Sleepless Nights,', color: BODY_COLOR, size: smallSize },
+        { text: 'Questionable Variable Names, and Pixel Misalignment', color: BODY_COLOR, size: smallSize, gap: 40 },
+
+        { text: '— ART & PIXEL WIZARDRY —', color: SUBTLE_COLOR, size: smallSize, gap: 10 },
+        { text: 'Tiger', color: TITLE_COLOR, size: headingSize },
+        { text: '@HalfxTiger', color: SUBTLE_COLOR, size: smallSize },
+        { text: 'Scenes, Characters, Items, UI,', color: BODY_COLOR, size: smallSize },
+        { text: 'and making pixels look better than most AAA studios', color: BODY_COLOR, size: smallSize, gap: 40 },
+
+        { text: '— AI ASSISTANCE —', color: SUBTLE_COLOR, size: smallSize, gap: 10 },
+        { text: 'Claude', color: '#48d8e8', size: headingSize },
+        { text: 'Anthropic', color: SUBTLE_COLOR, size: smallSize },
+        { text: 'Voice Generation, Code Architecture,', color: BODY_COLOR, size: smallSize },
+        { text: 'Writing 5000 lines at 3 AM without complaining,', color: BODY_COLOR, size: smallSize },
+        { text: 'and pretending to understand the blockchain', color: BODY_COLOR, size: smallSize, gap: 40 },
+
+        // ── Tech ──
+        { text: '— BUILT WITH —', color: SUBTLE_COLOR, size: smallSize, gap: 10 },
+        { text: 'Phaser 3  \u00B7  TypeScript  \u00B7  Viem', color: BODY_COLOR, size: bodySize },
+        { text: 'Base Chain  \u00B7  EIP-2535 Diamond  \u00B7  Kokoro TTS', color: BODY_COLOR, size: bodySize, gap: 40 },
+
+        // ── Fun section ──
+        { text: '— SPECIAL THANKS —', color: SUBTLE_COLOR, size: smallSize, gap: 10 },
+        { text: 'The $ZERO Community', color: TITLE_COLOR, size: bodySize },
+        { text: 'The FloorEngine (for sweeping while we sleep)', color: BODY_COLOR, size: smallSize },
+        { text: 'The Rubber Duck (for listening)', color: BODY_COLOR, size: smallSize },
+        { text: 'Coffee (the real proof-of-work)', color: BODY_COLOR, size: smallSize, gap: 40 },
+
+        { text: '— BUGS REPORTED BY —', color: SUBTLE_COLOR, size: smallSize, gap: 10 },
+        { text: 'Nobody. There are no bugs.', color: BODY_COLOR, size: smallSize },
+        { text: 'Everything is a feature.', color: BODY_COLOR, size: smallSize, gap: 40 },
+
+        { text: '— NO ANIMALS WERE HARMED —', color: SUBTLE_COLOR, size: smallSize, gap: 10 },
+        { text: 'Except the three-headed monkey.', color: BODY_COLOR, size: smallSize },
+        { text: 'He knows what he did.', color: BODY_COLOR, size: smallSize, gap: 40 },
+
+        { text: '— TIGER FUN FACT —', color: SUBTLE_COLOR, size: smallSize, gap: 10 },
+        { text: 'Tiger drew every pixel in this game', color: BODY_COLOR, size: smallSize },
+        { text: 'while Adrian kept changing the color palette.', color: BODY_COLOR, size: smallSize },
+        { text: 'Tiger is still drawing. Please send help.', color: BODY_COLOR, size: smallSize, gap: 40 },
+
+        { text: '— ADRIAN FUN FACT —', color: SUBTLE_COLOR, size: smallSize, gap: 10 },
+        { text: 'Adrian deployed 38 smart contracts', color: BODY_COLOR, size: smallSize },
+        { text: 'and forgot what half of them do.', color: BODY_COLOR, size: smallSize },
+        { text: 'The other half forgot what Adrian does.', color: BODY_COLOR, size: smallSize, gap: 40 },
+
+        { text: '— AI FUN FACT —', color: SUBTLE_COLOR, size: smallSize, gap: 10 },
+        { text: 'Claude wrote 1,600+ voice line configs', color: BODY_COLOR, size: smallSize },
+        { text: 'and still can\'t tell you what $ZERO is worth.', color: BODY_COLOR, size: smallSize },
+        { text: '"I\'m not a financial advisor." \u2014 Claude, 2026', color: SUBTLE_COLOR, size: smallSize, gap: 50 },
+      ];
+
+      // ── Achievement summary ──
+      if (earnedAchievements.length > 0) {
+        lines.push({ text: '— YOUR ACHIEVEMENTS —', color: SUBTLE_COLOR, size: smallSize, gap: 10 });
+        for (const id of earnedAchievements) {
+          // Use achievement badge emoji based on category
+          const name = id.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+          lines.push({ text: `\u2B50 ${name}`, color: TITLE_COLOR, size: smallSize });
+        }
+        lines.push({ text: '', color: BODY_COLOR, size: smallSize, gap: 30 });
+      }
+
+      // ── Final ──
+      lines.push(
+        { text: 'The ecosystem continues.', color: BODY_COLOR, size: bodySize },
+        { text: 'The FloorEngine sweeps.', color: BODY_COLOR, size: bodySize },
+        { text: 'The community builds.', color: BODY_COLOR, size: bodySize, gap: 40 },
+        { text: 'Thank you for playing.', color: TITLE_COLOR, size: headingSize, gap: 50 },
+        { text: 'BE REAL | BE $ZERO', color: TITLE_COLOR, size: titleSize, gap: 30 },
+        { text: 'zeroadventures.com', color: SUBTLE_COLOR, size: smallSize, gap: 80 },
+      );
+
+      // Create text objects stacked vertically, starting BELOW the screen
+      const lineGap = 8; // base gap between lines
+      let curY = 0;
+      const textObjects: Phaser.GameObjects.Text[] = [];
+
+      for (const line of lines) {
+        const txt = this.scene.add.text(width / 2, curY, line.text, {
+          fontFamily: FONT.FAMILY,
+          fontSize: `${line.size}px`,
+          color: line.color,
+          align: 'center',
+          wordWrap: { width: width * 0.85, useAdvancedWrap: true },
+          lineSpacing: 4,
+        }).setOrigin(0.5, 0).setScrollFactor(0);
+        container.add(txt);
+        textObjects.push(txt);
+        curY += line.size + lineGap + (line.gap ?? 0);
+      }
+
+      // Total content height
+      const contentH = curY;
+      // Duration: scroll the entire content + screen height
+      const totalScroll = contentH + height;
+      const scrollDuration = totalScroll * 28; // ~28ms per pixel = slow, cinematic
+
+      // Position all text below the screen
+      const scrollContainer = this.scene.add.container(0, height).setScrollFactor(0);
+      for (const txt of textObjects) {
+        container.remove(txt);
+        scrollContainer.add(txt);
+      }
+      container.add(scrollContainer);
+
+      // Scroll upward
+      this.scene.tweens.add({
+        targets: scrollContainer,
+        y: -contentH,
+        duration: scrollDuration,
+        ease: 'Linear',
+        onComplete: () => {
+          this.fadeOutAndDestroy(container, resolve);
+        },
+      });
+
+      // "Click to skip" hint at bottom
+      const skipHint = this.scene.add.text(width / 2, height - 20, '[ click to skip ]', {
+        fontFamily: FONT.FAMILY, fontSize: `${smallSize}px`,
+        color: CONTINUE_COLOR, align: 'center',
+      }).setOrigin(0.5).setScrollFactor(0).setAlpha(0);
+      container.add(skipHint);
+
+      // Show skip hint after 3 seconds
+      this.scene.time.delayedCall(3000, () => {
+        this.pulseAlpha(skipHint);
+      });
+
+      // Click to skip
+      const clickHandler = () => {
+        this.scene.input.off('pointerdown', clickHandler);
+        this.scene.tweens.killTweensOf(scrollContainer);
+        this.fadeOutAndDestroy(container, resolve);
+      };
+      this.scene.input.on('pointerdown', clickHandler);
+    });
+  }
+
   // ─── Private helpers ───────────────────────
 
   private typewrite(

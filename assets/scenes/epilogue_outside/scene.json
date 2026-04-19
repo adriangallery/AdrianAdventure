@@ -291,21 +291,7 @@
                   "text": "I take the first step down the mountain. The adventure continues... on-chain."
                 },
                 {
-                  "op": "narrative",
-                  "lines": [
-                    "ZEROADVENTURE II",
-                    "",
-                    "You found Patient Zero.",
-                    "You found yourself.",
-                    "",
-                    "The ecosystem continues.",
-                    "The FloorEngine sweeps.",
-                    "The community builds.",
-                    "",
-                    "Thank you for playing.",
-                    "",
-                    "\u2014 Adrian & the ZERO community"
-                  ]
+                  "op": "credits"
                 }
               ],
               "else": [

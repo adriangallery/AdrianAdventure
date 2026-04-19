@@ -242,6 +242,13 @@ export class UIScene extends Phaser.Scene {
       this.cinematicOverlay.showAchievement(text);
     });
 
+    // Rolling end credits
+    this.events.on('showCredits', (resolve?: () => void) => {
+      const state = this.registry.get('gameState') as GameState | undefined;
+      const earned = state?.achievements ?? [];
+      this.cinematicOverlay.showCredits(earned).then(() => resolve?.());
+    });
+
     // Scene change refresh
     this.events.on('scene:changed', () => {
       // Nothing to refresh — panel persists
