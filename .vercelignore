@@ -1,4 +1,10 @@
 steam-build/
 save-server/
 scripts/
+audiobook/
+trailer/
+electron/
+capacitor.config.ts
 *.py
+*.mp3
+*.mp4
