@@ -53,6 +53,20 @@ export class ScriptEngine {
     return this.running;
   }
 
+  /**
+   * Last-resort recovery: clear running flag and pending queue so the player
+   * isn't permanently locked if a script awaits a Promise that never resolves
+   * (e.g., a lost dialogue resolver). Logs a warning so we can investigate.
+   */
+  forceReset(reason: string): void {
+    if (this.running) {
+      console.warn(`[ScriptEngine] forceReset: ${reason}`);
+    }
+    this.running = false;
+    this.stopped = false;
+    this.pendingQueue = [];
+  }
+
   async execute(ops: ScriptOp[]): Promise<void> {
     if (this.running) {
       // Queue instead of silently dropping — prevents once-triggers from being lost

@@ -126,7 +126,12 @@ export class DialogueBox {
     });
   }
 
-  /** Clean up current dialogue without resolving its promise. */
+  /**
+   * Clean up current dialogue and resolve its pending promise.
+   * Resolving prevents script-engine awaits from hanging when a say is
+   * interrupted by another say (which would otherwise leave running=true
+   * and freeze all input permanently).
+   */
   private cleanup(): void {
     if (this.activeHandler) {
       this.scene.input.off('pointerdown', this.activeHandler);
@@ -143,6 +148,10 @@ export class DialogueBox {
     this.scene.registry.set('dialogueShowing', false);
     this.text.setVisible(false);
     this.speakerText.setVisible(false);
+    // Capture and clear before invoking, so re-entrant calls don't double-resolve
+    const prev = this.resolvePromise;
+    this.resolvePromise = null;
+    prev?.();
   }
 
   private dismiss(): void {

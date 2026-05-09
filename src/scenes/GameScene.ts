@@ -617,12 +617,33 @@ export class GameScene extends Phaser.Scene {
     [Verb.WALK]: "I'll walk there.",
   };
 
-  /** Execute an item-to-item combo script (called from UIScene) */
-  executeItemComboScript(script: import('@/types/scene.types').ScriptOp[]): void {
+  /**
+   * Run a script with a watchdog that force-resets the engine if it never
+   * resolves (defence against lost Promise resolvers in dialogue/UI chains
+   * that would otherwise freeze all input until a scene transition).
+   */
+  private runScriptWithWatchdog(
+    script: import('@/types/scene.types').ScriptOp[],
+    label: string,
+  ): void {
     this.scriptEngine.updateContext(this.buildScriptContext());
+    let settled = false;
+    const watchdog = window.setTimeout(() => {
+      if (!settled && this.scriptEngine.isRunning()) {
+        this.scriptEngine.forceReset(`watchdog timeout: ${label}`);
+        this.inputCooldownFrames = 2;
+      }
+    }, 30_000);
     this.scriptEngine.execute(script).finally(() => {
+      settled = true;
+      clearTimeout(watchdog);
       this.inputCooldownFrames = 2;
     });
+  }
+
+  /** Execute an item-to-item combo script (called from UIScene) */
+  executeItemComboScript(script: import('@/types/scene.types').ScriptOp[]): void {
+    this.runScriptWithWatchdog(script, 'item combo');
   }
 
   async executeHotspotVerb(hotspot: HotspotData, verb: Verb): Promise<void> {
@@ -634,9 +655,8 @@ export class GameScene extends Phaser.Scene {
         gatePassed = await checkGatingRule(address as Address, hotspot.gate as GatingRule);
       }
       if (!gatePassed) {
-        this.scriptEngine.updateContext(this.buildScriptContext());
         if (hotspot.gateFallback?.length) {
-          this.scriptEngine.execute(hotspot.gateFallback).finally(() => { this.inputCooldownFrames = 2; });
+          this.runScriptWithWatchdog(hotspot.gateFallback, `gate fallback ${hotspot.id}`);
         } else {
           this.scene.get('UIScene').events.emit('say', 'Something about this feels locked away...');
         }
@@ -646,12 +666,7 @@ export class GameScene extends Phaser.Scene {
 
     const scripts = hotspot.scripts[verb];
     if (scripts?.length) {
-      this.scriptEngine.updateContext(this.buildScriptContext());
-      this.scriptEngine.execute(scripts).finally(() => {
-        // After script finishes (say dismissed, etc.), ignore clicks for 2 frames
-        // so the dismiss-click doesn't accidentally trigger the next action
-        this.inputCooldownFrames = 2;
-      });
+      this.runScriptWithWatchdog(scripts, `${hotspot.id}/${verb}`);
     } else {
       const fallback = GameScene.VERB_DEFAULTS[verb] || 'Nothing interesting happens.';
       this.scene.get('UIScene').events.emit('say', fallback);
