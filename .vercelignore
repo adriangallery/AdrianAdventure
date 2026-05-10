@@ -6,5 +6,3 @@ trailer/
 electron/
 capacitor.config.ts
 *.py
-*.mp3
-*.mp4
