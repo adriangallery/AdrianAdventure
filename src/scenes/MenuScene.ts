@@ -278,7 +278,7 @@ export class MenuScene extends Phaser.Scene {
 
     // Fetch leaderboard
     try {
-      const resp = await fetch('https://enchanting-reflection-production-a838.up.railway.app/leaderboard');
+      const resp = await fetch('https://save.zerothetoken.com/leaderboard');
       const data = await resp.json();
       loading.remove();
 

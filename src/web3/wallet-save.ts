@@ -3,7 +3,7 @@ import { getWalletState, getSessionAuth } from './wallet';
 
 
 const WALLET_SAVE_PREFIX = 'adrian_adventure_wallet_';
-const SAVE_SERVER = 'https://enchanting-reflection-production-a838.up.railway.app';
+const SAVE_SERVER = 'https://save.zerothetoken.com';
 
 export interface WalletSave {
   state: GameState;
