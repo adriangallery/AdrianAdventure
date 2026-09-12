@@ -1,0 +1,17 @@
+node_modules
+dist
+.git
+.env
+.env.*
+.vercel
+.vercel.tmp
+electron
+capacitor.config.ts
+android
+audiobook
+trailer
+save-server
+steam-build
+scripts
+*.mp4
+.DS_Store
