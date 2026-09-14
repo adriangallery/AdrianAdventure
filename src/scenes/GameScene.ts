@@ -446,7 +446,13 @@ export class GameScene extends Phaser.Scene {
 
     // Check hotspot
     const rawHotspot = this.sceneDataLoader.getHotspotAtPct(pct.x, pct.y);
-    const hotspot = rawHotspot && this.isHotspotVisible(rawHotspot) ? rawHotspot : null;
+    let hotspot = rawHotspot && this.isHotspotVisible(rawHotspot) ? rawHotspot : null;
+    // V6: con el dedo, 22 px de margen alrededor de cada hotspot (área táctil de al menos 44 px)
+    if (!hotspot && pointer.wasTouch) {
+      const pad = this.touchPadPct();
+      hotspot = this.sceneDataLoader.getHotspotNearPct(pct.x, pct.y, pad.x, pad.y, (hs) => this.isHotspotVisible(hs));
+    }
+    if (hotspot) this.flashHotspot(hotspot);
 
     // Item combo mode: USE [item] with [hotspot]
     if (selectedItem && hotspot) {
@@ -578,6 +584,26 @@ export class GameScene extends Phaser.Scene {
 
   /** Get panel height — reads ScummUI effective height if available, falls back to formula */
   /** Check if a hotspot should be visible (not hidden/shown by a flag) */
+  /** V6: 22 px de pantalla expresados en % del fondo (la mitad del área táctil mínima de 44 px). */
+  private touchPadPct(): { x: number; y: number } {
+    const o = this.coordSystem.pctToScreen(0, 0);
+    const f = this.coordSystem.pctToScreen(100, 100);
+    const w = Math.max(1, f.x - o.x);
+    const h = Math.max(1, f.y - o.y);
+    return { x: (22 / w) * 100, y: (22 / h) * 100 };
+  }
+
+  /** V6: resaltado breve del hotspot pulsado, para que el toque se note. */
+  private flashHotspot(hs: HotspotData): void {
+    if (!hs.bounds) return;
+    const a = this.coordSystem.pctToScreen(hs.bounds.x, hs.bounds.y);
+    const b = this.coordSystem.pctToScreen(hs.bounds.x + hs.bounds.w, hs.bounds.y + hs.bounds.h);
+    const g = this.add.graphics().setDepth(50);
+    g.lineStyle(3, TWP.INV_SLOT_SELECT, 1);
+    g.strokeRoundedRect(a.x, a.y, b.x - a.x, b.y - a.y, 6);
+    this.tweens.add({ targets: g, alpha: 0, duration: 350, ease: 'Quad.easeOut', onComplete: () => g.destroy() });
+  }
+
   private isHotspotVisible(hs: HotspotData): boolean {
     const hideFlag = (hs as any).hideWhenFlag;
     if (hideFlag && (this.gameState.flags[hideFlag] ?? false)) return false;

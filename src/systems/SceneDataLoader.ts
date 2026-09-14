@@ -25,6 +25,31 @@ export class SceneDataLoader {
     return null;
   }
 
+  /**
+   * V6 (controles táctiles): hotspot bajo el dedo con margen. Si el punto no cae dentro de ningún
+   * hotspot visible, devuelve el visible más cercano cuyo rectángulo ampliado en padX/padY (%) lo
+   * contiene. Solo se usa con toques; el ratón sigue con getHotspotAtPct exacto.
+   */
+  getHotspotNearPct(px: number, py: number, padX: number, padY: number, isVisible: (hs: HotspotData) => boolean = () => true): HotspotData | null {
+    let best: HotspotData | null = null;
+    let bestDist = Infinity;
+    for (const hs of this.data.regions.hotspots) {
+      if (!hs.bounds || !isVisible(hs)) continue;
+      const b = hs.bounds;
+      const dx = px < b.x ? b.x - px : px > b.x + b.w ? px - (b.x + b.w) : 0;
+      const dy = py < b.y ? b.y - py : py > b.y + b.h ? py - (b.y + b.h) : 0;
+      if (dx === 0 && dy === 0) return hs;
+      if (dx <= padX && dy <= padY) {
+        const dist = Math.hypot(dx / Math.max(padX, 1e-6), dy / Math.max(padY, 1e-6));
+        if (dist < bestDist) {
+          bestDist = dist;
+          best = hs;
+        }
+      }
+    }
+    return best;
+  }
+
   /** Find trigger at percentage coordinates (0-100) */
   getTriggerAtPct(px: number, py: number): TriggerData | null {
     for (const tr of this.data.regions.triggers) {
