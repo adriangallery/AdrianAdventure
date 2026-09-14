@@ -39,7 +39,10 @@ export class BadgePanel {
     return btn;
   }
 
-  toggle(): void { this.visible ? this.hide() : this.show(); }
+  toggle(): void {
+    if (this.visible) this.hide();
+    else this.show();
+  }
 
   show(): void {
     this.visible = true;
