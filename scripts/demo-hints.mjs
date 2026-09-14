@@ -39,7 +39,11 @@ let hint = null;
 const end = Date.now() + 40000;
 while (Date.now() < end) {
   await shot();
-  hint = await page.evaluate(() => window.__game.registry.get('lastHint') ?? null);
+  hint = await page.evaluate(() => {
+    const gs = window.__game.scene.getScene('GameScene');
+    const h = window.__game.registry.get('lastHint');
+    return h ? { ...h, blocking: !!gs.registry.get('dialogueShowing'), label: gs.children.list.some((c) => c.name === 'hint-label') } : null;
+  });
   if (hint) break;
   await new Promise((r) => setTimeout(r, 400));
 }
@@ -48,3 +52,5 @@ await page.screenshot({ path: 'demo-hints-full.png' });
 await browser.close();
 console.log(`pista: ${JSON.stringify(hint)} · ${n} frames`);
 if (!hint || !String(hint.text).startsWith('Hint:')) { console.error('No apareció ninguna pista tras la espera'); process.exit(1); }
+if (!hint.label) { console.error('La pista no tiene etiqueta en pantalla'); process.exit(1); }
+if (hint.blocking) { console.error('La pista bloquea los toques (dialogueShowing)'); process.exit(1); }
