@@ -1,10 +1,9 @@
 import Phaser from 'phaser';
-import { TWP, FONT } from '@/config/theme';
+import { FONT } from '@/config/theme';
 import { ACHIEVEMENTS, type AchievementDef } from '@/config/achievements.config';
 import type { GameState } from '@/types/game.types';
 import { getWalletState } from '@/web3/wallet';
 import { mintAchievement, hasLabToken, type MintResult } from '@/web3/contracts';
-import { CONTRACTS } from '@/config/blockchain.config';
 import type { Address } from 'viem';
 
 const OPENSEA_BASE = 'https://opensea.io/assets/base/0x90546848474fb3c9fda3fdad887969bb244e7e58';

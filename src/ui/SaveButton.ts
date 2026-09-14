@@ -5,7 +5,7 @@ import { SaveLoadSystem } from '@/systems/SaveLoadSystem';
 import { getWalletState } from '@/web3/wallet';
 import { exportSignedWalletSave, importWalletSave, saveForWalletRemote, loadRemoteSlots } from '@/web3/wallet-save';
 import type { GameScene } from '@/scenes/GameScene';
-import { TWP, FONT } from '@/config/theme';
+import { TWP } from '@/config/theme';
 
 /**
  * Floppy disk save button — top-left corner.
