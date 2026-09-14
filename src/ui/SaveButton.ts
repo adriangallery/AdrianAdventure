@@ -180,12 +180,12 @@ export class SaveButton {
       const muteBtn: HTMLButtonElement = makeBtn(muteLabel(), true, () => { music.toggleMute(); muteBtn.textContent = muteLabel(); });
       muteBtn.dataset.setting = 'music';
       modal.appendChild(muteBtn);
-      const volLabel = () => `\u266A Volume: ${MUSIC_LEVEL_LABEL[getMusicLevel() ?? 'medium']}`;
+      const volLabel = () => `\u266A Volume: ${MUSIC_LEVEL_LABEL[getMusicLevel() ?? 'low']}`;
       const volBtn: HTMLButtonElement = makeBtn(volLabel(), true, () => {
-        const cur = getMusicLevel() ?? 'medium';
+        const cur = getMusicLevel() ?? 'low';
         const next = MUSIC_LEVELS[(MUSIC_LEVELS.indexOf(cur) + 1) % MUSIC_LEVELS.length];
         setMusicLevel(next);
-        music.setMusicVolume(musicVolumeFor(next, 0.55));
+        music.setMusicVolume(musicVolumeFor(next, 0.25));
         volBtn.textContent = volLabel();
       });
       volBtn.dataset.setting = 'volume';
