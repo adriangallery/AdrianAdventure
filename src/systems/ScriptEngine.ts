@@ -40,6 +40,8 @@ export class ScriptEngine {
   private running = false;
   private stopped = false;
   private pendingQueue: ScriptOp[][] = [];
+  /** V6: mientras el jugador mantiene pulsado, las esperas de presentación terminan al momento */
+  private fastForward = false;
 
   constructor(ctx: ScriptContext) {
     this.ctx = ctx;
@@ -51,6 +53,19 @@ export class ScriptEngine {
 
   isRunning(): boolean {
     return this.running;
+  }
+
+  setFastForward(on: boolean): void {
+    this.fastForward = on;
+  }
+
+  /** Espera ms milisegundos, o menos si se activa el avance rápido. */
+  private sleep(ms: number): Promise<void> {
+    return new Promise<void>((resolve) => {
+      const end = Date.now() + ms;
+      const tick = () => (this.fastForward || Date.now() >= end ? resolve() : setTimeout(tick, 50));
+      tick();
+    });
   }
 
   /**
@@ -106,7 +121,7 @@ export class ScriptEngine {
       case 'sayBrief':
         // Show text briefly (auto-dismiss), no click needed. Optional duration in ms.
         if (this.ctx.sayBrief) {
-          await this.ctx.sayBrief(op.text as string, (op.duration as number) ?? 1500, op.speaker as string | undefined);
+          await this.ctx.sayBrief(op.text as string, this.fastForward ? 250 : (op.duration as number) ?? 1500, op.speaker as string | undefined);
         } else {
           await this.ctx.say(op.text as string, op.speaker as string | undefined);
         }
@@ -146,9 +161,7 @@ export class ScriptEngine {
         break;
 
       case 'wait':
-        await new Promise<void>((resolve) =>
-          setTimeout(resolve, (op.ms as number) ?? 1000),
-        );
+        await this.sleep((op.ms as number) ?? 1000);
         break;
 
       case 'playSound':

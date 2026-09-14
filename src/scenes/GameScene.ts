@@ -46,6 +46,11 @@ export class GameScene extends Phaser.Scene {
   /** V6: toque en curso sobre un hotspot (tocar = mirar, mantener = acción principal) */
   private touchHold: { hotspot: HotspotData; x: number; y: number; timer: Phaser.Time.TimerEvent; ring: Phaser.GameObjects.Graphics; onUp: () => void; onMove: (p: Phaser.Input.Pointer) => void } | null = null;
   private static readonly HOLD_MS = 450;
+  /** V6: mantener pulsado en cinemática/diálogo = avance rápido (toques sintéticos cada FF_STEP_MS) */
+  private fastForward: { timer: Phaser.Time.TimerEvent; ticker?: Phaser.Time.TimerEvent; label?: Phaser.GameObjects.Text; onUp: () => void } | null = null;
+  private emittingSynthetic = false;
+  private static readonly FF_HOLD_MS = 600;
+  private static readonly FF_STEP_MS = 180;
   private static readonly HOLD_SLOP_PX = 16;
   private activeCameraEffect: { type: string; disableFlag?: string } | null = null;
   /** Persisted across sessions via gameState.firedTriggers */
@@ -393,6 +398,9 @@ export class GameScene extends Phaser.Scene {
   // ─── Input ────────────────────────────────
 
   private handlePointerDown(pointer: Phaser.Input.Pointer): void {
+    if (this.emittingSynthetic) return;
+    const blocked = this.scriptEngine.isRunning() || !!this.registry.get('dialogueActive') || !!this.registry.get('dialogueShowing');
+    if (blocked) this.beginFastForwardHold(pointer);
     if (this.scriptEngine.isRunning()) return;
     if (this.inputCooldownFrames > 0) return;
     // Block all game input while dialogue tree is running (choices, etc.)
@@ -606,6 +614,53 @@ export class GameScene extends Phaser.Scene {
     const w = Math.max(1, f.x - o.x);
     const h = Math.max(1, f.y - o.y);
     return { x: (22 / w) * 100, y: (22 / h) * 100 };
+  }
+
+  /**
+   * V6: si el jugador mantiene pulsado durante una cinemática o un diálogo, pasado FF_HOLD_MS se activa el
+   * avance rápido: las esperas del script terminan al momento y se reparten toques sintéticos que revelan y
+   * cierran textos. Las elecciones de diálogo siguen necesitando un toque real (los toques sintéticos no
+   * golpean botones).
+   */
+  private beginFastForwardHold(pointer: Phaser.Input.Pointer): void {
+    if (this.fastForward) return;
+    const onUp = () => this.endFastForward();
+    const timer = this.time.delayedCall(GameScene.FF_HOLD_MS, () => {
+      if (!this.fastForward || !pointer.isDown) { this.endFastForward(); return; }
+      this.scriptEngine.setFastForward(true);
+      this.fastForward.label = this.add.text(this.scale.width - 12, 12, '>> FAST', {
+        fontFamily: FONT.FAMILY, fontSize: '12px', color: TWP.HINT_TEXT, backgroundColor: TWP.HINT_BG, padding: { x: 6, y: 3 },
+      }).setOrigin(1, 0).setDepth(400).setScrollFactor(0);
+      const ui = this.scene.get('UIScene');
+      this.fastForward.ticker = this.time.addEvent({
+        delay: GameScene.FF_STEP_MS,
+        loop: true,
+        callback: () => {
+          this.emittingSynthetic = true;
+          try {
+            this.input.emit('pointerdown', pointer);
+            if (ui && ui !== this) ui.input.emit('pointerdown', pointer);
+          } finally {
+            this.emittingSynthetic = false;
+          }
+        },
+      });
+    });
+    this.input.once('pointerup', onUp);
+    this.fastForward = { timer, onUp };
+  }
+
+  private endFastForward(): void {
+    const ff = this.fastForward;
+    if (!ff) return;
+    ff.timer.remove();
+    ff.ticker?.remove();
+    ff.label?.destroy();
+    this.input.off('pointerup', ff.onUp);
+    this.fastForward = null;
+    this.scriptEngine?.setFastForward(false);
+    // que el dedo al soltar no mande al personaje a andar
+    this.inputCooldownFrames = Math.max(this.inputCooldownFrames, 6);
   }
 
   /** V6: empieza un toque sobre un hotspot; al soltar antes de HOLD_MS se mira y si se mantiene se hace la acción principal. */
@@ -1001,6 +1056,7 @@ export class GameScene extends Phaser.Scene {
 
   shutdown(): void {
     this.cancelTouchHold();
+    this.endFastForward();
     // Remove window listeners to prevent memory leaks
     if (this.boundScheduleResize) {
       window.removeEventListener('orientationchange', this.boundScheduleResize);
