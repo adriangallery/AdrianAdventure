@@ -4,6 +4,7 @@
   "title": "AdrianLAB Lobby",
   "assets": {
     "background": "background.png",
+    "foreground": "foreground.png",
     "walkmask": "walkmask.png",
     "atlas": null
   },
