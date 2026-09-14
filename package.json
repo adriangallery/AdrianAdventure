@@ -11,6 +11,7 @@
     "trailer:capture": "node scripts/capture-trailer.cjs",
     "build": "tsc && vite build && cp -r assets dist/",
     "preview": "vite preview",
+    "test:smoke": "node scripts/smoke.mjs",
     "build:android": "npm run build && find dist/assets/scenes -name 'background.png' -delete && find dist/assets/scenes -name 'foreground.png' -delete && npx cap sync android",
     "open:android": "npx cap open android",
     "build:steam": "npm run build && electron-builder --dir",

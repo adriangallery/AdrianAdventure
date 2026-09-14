@@ -4,6 +4,7 @@
   "title": "Upstairs — Trading Floor",
   "assets": {
     "background": "background.png",
+    "foreground": "foreground.png",
     "walkmask": "walkmask.png",
     "atlas": null
   },

@@ -1,3 +1,4 @@
+import type { SceneData } from '@/types/scene.types';
 import Phaser from 'phaser';
 // Voice audio is lazy-loaded by VoiceSystem on demand
 import { FONT } from '@/config/theme';
@@ -54,11 +55,15 @@ export class PreloadScene extends Phaser.Scene {
       this.load.image(`bg_${sceneId}`, `${basePath}/background.webp${v}`);
     }
 
-    // Foreground layer (optional — fails silently if file doesn't exist)
+    // Foreground layer — solo si el scene.json lo declara (`assets.foreground`). Antes se pedía
+    // siempre y en las 8 escenas sin primer plano dejaba un error de consola y una petición perdida
+    // (lo sacó el smoke test de V8). Se encola cuando llega el JSON; Phaser lo carga en esta pasada.
     const fgKey = `fg_${sceneId}`;
-    if (!this.textures.exists(fgKey)) {
-      this.load.image(fgKey, `${basePath}/foreground.webp${v}`);
-    }
+    this.load.once(`filecomplete-json-scene_${sceneId}`, (_key: string, _type: string, data: SceneData) => {
+      if (data?.assets?.foreground && !this.textures.exists(fgKey)) {
+        this.load.image(fgKey, `${basePath}/foreground.webp${v}`);
+      }
+    });
 
     // Player sprites (load once)
     if (!this.textures.exists('player_idle1')) {
