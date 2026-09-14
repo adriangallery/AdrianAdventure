@@ -32,3 +32,38 @@ jobs:
 
       - name: Vite build (sin copiar assets)
         run: npx vite build
+
+  smoke:
+    # V8: arranque, cada escena, cambio de escena y guardar/cargar en Chrome headless contra el build real
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Build con assets (igual que el Dockerfile del mini)
+        run: npm run build
+
+      - name: Servir el build
+        run: |
+          npx vite preview --host 127.0.0.1 --port 4173 --strictPort > preview.log 2>&1 &
+          for i in $(seq 1 60); do curl -sf http://127.0.0.1:4173/ >/dev/null && exit 0; sleep 1; done
+          cat preview.log; exit 1
+
+      - name: Tests de humo
+        run: npm run test:smoke
+        env:
+          BASE_URL: http://127.0.0.1:4173
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: smoke-shots
+          path: smoke-shots/
