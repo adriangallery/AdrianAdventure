@@ -1,0 +1,36 @@
+# V8 (plan AdrianZERO): lint + typecheck en cada PR y push a main. Fase 1: falla con errores de ESLint y de
+# TypeScript (strict ya activo en tsconfig); los avisos se listan pero no bloquean.
+name: lint
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: lint-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: ESLint (sin tocar el lockfile)
+        run: npm i --no-save eslint@9 @eslint/js@9 typescript-eslint@8 globals@15
+      - name: Typecheck (strict)
+        run: npx tsc --noEmit
+      - name: ESLint
+        run: |
+          npx eslint src --format stylish | tee eslint-report.txt
+          echo "### ESLint" >> "$GITHUB_STEP_SUMMARY"
+          tail -n 3 eslint-report.txt >> "$GITHUB_STEP_SUMMARY"
