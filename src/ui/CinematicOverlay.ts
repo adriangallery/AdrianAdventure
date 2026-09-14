@@ -100,6 +100,7 @@ export class CinematicOverlay {
       container.add(continueHint);
 
       let typingDone = false;
+      this.skipTyping = false;
 
       // Start typewriter sequence
       this.typewrite(chapterText, chapter, 40, () => {
@@ -122,7 +123,8 @@ export class CinematicOverlay {
 
       // Wait for click to dismiss
       const clickHandler = () => {
-        if (!typingDone) return;
+        if (!typingDone) { this.skipTyping = true; return; }
+        this.skipTyping = false;
         this.scene.input.off('pointerdown', clickHandler);
         this.fadeOutAndDestroy(container, resolve);
       };
@@ -442,6 +444,9 @@ export class CinematicOverlay {
 
   // ─── Private helpers ───────────────────────
 
+  /** V6: un toque durante la escritura del título la completa de golpe */
+  private skipTyping = false;
+
   private typewrite(
     textObj: Phaser.GameObjects.Text, fullText: string,
     charDelayMs: number, onComplete: () => void,
@@ -451,6 +456,7 @@ export class CinematicOverlay {
       delay: charDelayMs,
       repeat: fullText.length - 1,
       callback: () => {
+        if (this.skipTyping) charIndex = fullText.length - 1;
         charIndex++;
         textObj.setText(fullText.substring(0, charIndex));
         if (charIndex >= fullText.length) {

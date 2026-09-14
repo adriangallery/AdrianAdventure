@@ -156,8 +156,9 @@ export class UIScene extends Phaser.Scene {
     const gameScene = this.scene.get('GameScene');
 
     // Hotspot tapped → execute selected verb (SCUMM style)
-    gameScene.events.on('hotspot:tapped', (hotspot: HotspotData) => {
-      const verb = this.scummUI.getSelectedVerb();
+    gameScene.events.on('hotspot:tapped', (hotspot: HotspotData, verbOverride?: Verb) => {
+      // V6: el toque (mirar) o el mantener pulsado (acción principal) traen su verbo; si no, el del panel
+      const verb = verbOverride ?? this.scummUI.getSelectedVerb();
       const gs = this.scene.get('GameScene') as GameScene;
       gs.executeHotspotVerb(hotspot, verb);
     });

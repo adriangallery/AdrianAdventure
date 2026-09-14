@@ -23,7 +23,8 @@ await page.waitForFunction(
 );
 // Esperar a que la escena esté libre: sin script de entrada, sin diálogo y sin cooldown de input.
 // Si hay un diálogo abierto se toca el centro para avanzarlo (como haría el jugador).
-for (let i = 0; i < 60; i++) {
+let calm = 0;
+for (let i = 0; i < 90; i++) {
   const st = await page.evaluate(() => {
     const gs = window.__game.scene.getScene('GameScene');
     return {
@@ -32,7 +33,8 @@ for (let i = 0; i < 60; i++) {
       cooldown: gs.inputCooldownFrames ?? 0,
     };
   });
-  if (!st.script && !st.dialogue && st.cooldown <= 0) break;
+  // La cinemática de entrada arranca con retraso: dar la escena por libre solo tras 4 comprobaciones seguidas
+  if (!st.script && !st.dialogue && st.cooldown <= 0) { if (++calm >= 4) break; } else calm = 0;
   // Cinemática de entrada («click to continue») o diálogo: tocar para avanzar, como el jugador
   if (st.script || st.dialogue) await page.touchscreen.tap(422, 120);
   await new Promise((r) => setTimeout(r, 700));

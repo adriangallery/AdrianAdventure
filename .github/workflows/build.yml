@@ -70,7 +70,7 @@ jobs:
 
   demo-v6:
     # GIF de demostración para Adrián (regla visual del plan) — solo en la rama de V6
-    if: github.head_ref == 'feat/v6-touch-targets'
+    if: startsWith(github.head_ref, 'feat/v6')
     needs: build
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -99,6 +99,20 @@ jobs:
         env:
           BASE_URL: http://127.0.0.1:4173
 
+      - name: Grabar tocar = mirar / mantener = acción
+        id: demohold
+        continue-on-error: true
+        run: node scripts/demo-hold.mjs
+        env:
+          BASE_URL: http://127.0.0.1:4173
+
+      - name: Grabar mantener = avance rápido de cinemática
+        id: demoskip
+        continue-on-error: true
+        run: node scripts/demo-skip.mjs
+        env:
+          BASE_URL: http://127.0.0.1:4173
+
       - name: GIF
         if: always()
         run: |
@@ -106,6 +120,16 @@ jobs:
           ffmpeg -loglevel error -y -framerate 12 -i demo-frames/%03d.png \
             -vf "fps=12,scale=520:-1:flags=neighbor,split[a][b];[a]palettegen[p];[b][p]paletteuse" demo-v6-touch.gif
           ls -la demo-v6-touch.gif
+          if ls demo-hold-frames/*.png >/dev/null 2>&1; then
+            ffmpeg -loglevel error -y -framerate 12 -i demo-hold-frames/%03d.png \
+              -vf "fps=12,scale=640:-1:flags=neighbor,split[a][b];[a]palettegen[p];[b][p]paletteuse" demo-v6-hold.gif
+            ls -la demo-v6-hold.gif
+          fi
+          if ls demo-skip-frames/*.png >/dev/null 2>&1; then
+            ffmpeg -loglevel error -y -framerate 12 -i demo-skip-frames/%03d.png \
+              -vf "fps=12,scale=640:-1:flags=neighbor,split[a][b];[a]palettegen[p];[b][p]paletteuse" demo-v6-skip.gif
+            ls -la demo-v6-skip.gif
+          fi
 
       - uses: actions/upload-artifact@v4
         if: always()
@@ -115,8 +139,12 @@ jobs:
             demo-v6-touch.gif
             demo-full.png
             demo-frames/
+            demo-v6-hold.gif
+            demo-hold-full.png
+            demo-v6-skip.gif
+            demo-skip-full.png
 
       - name: Resultado de la demo
-        if: steps.demo.outcome == 'failure'
+        if: steps.demo.outcome == 'failure' || steps.demohold.outcome == 'failure' || steps.demoskip.outcome == 'failure'
         run: exit 1
 
