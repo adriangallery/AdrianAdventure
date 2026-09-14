@@ -46,6 +46,13 @@ export class GameScene extends Phaser.Scene {
   /** V6: toque en curso sobre un hotspot (tocar = mirar, mantener = acción principal) */
   private touchHold: { hotspot: HotspotData; x: number; y: number; timer: Phaser.Time.TimerEvent; ring: Phaser.GameObjects.Graphics; onUp: () => void; onMove: (p: Phaser.Input.Pointer) => void } | null = null;
   private static readonly HOLD_MS = 450;
+  /** V6: pistas cuando el jugador lleva un rato sin avanzar (sin cambiar escena, inventario ni flags) */
+  private touchedHotspots = new Set<string>();
+  private progressSig = '';
+  private lastProgressAt = 0;
+  private lastHintAt = 0;
+  private static readonly HINT_AFTER_MS = 3 * 60 * 1000;
+  private static readonly HINT_REPEAT_MS = 150 * 1000;
   /** V6: mantener pulsado en cinemática/diálogo = avance rápido (toques sintéticos cada FF_STEP_MS) */
   private fastForward: { timer: Phaser.Time.TimerEvent; ticker?: Phaser.Time.TimerEvent; label?: Phaser.GameObjects.Text; onUp: () => void } | null = null;
   private emittingSynthetic = false;
@@ -220,6 +227,11 @@ export class GameScene extends Phaser.Scene {
 
     // NPCs
     this.npcs = [];
+    // V6: estado de las pistas por inactividad (por escena)
+    this.touchedHotspots = new Set<string>();
+    this.progressSig = '';
+    this.lastProgressAt = Date.now();
+    this.lastHintAt = 0;
     if (sceneData.npcs) {
       for (const nd of sceneData.npcs) {
         const npcScreen = this.coordSystem.pctToScreen(nd.position.x, nd.position.y);
@@ -272,6 +284,7 @@ export class GameScene extends Phaser.Scene {
       this.gameState.savedAt = Date.now();
       this.gameState.playerPosition = { pctX: spawn.x, pctY: spawn.y };
       this.saveSystem.autoSave(this.gameState, sceneData.title);
+      this.time.addEvent({ delay: 5000, loop: true, callback: () => this.checkIdleHint() });
       // V6: aviso de autoguardado; si la escena abre con cinemática, se enseña al terminarla
       if (!sceneData.onEnter?.length) this.showAutosaveIndicator();
     }
@@ -771,6 +784,51 @@ export class GameScene extends Phaser.Scene {
     return Verb.USE;
   }
 
+  /** Firma del progreso: cambia al cambiar de escena, coger/soltar objetos o activar flags. */
+  private currentProgressSig(): string {
+    const flags = Object.values(this.gameState.flags ?? {}).filter(Boolean).length;
+    const inv = (this.gameState.inventory ?? []).map((i) => i.id).join(',');
+    return `${this.gameState.currentScene}|${inv}|${flags}`;
+  }
+
+  /**
+   * V6: si el jugador lleva HINT_AFTER_MS sin avanzar (se puede acortar con ?hintAfter=<segundos> para
+   * pruebas), una pista breve: primero un objeto que aún no ha tocado y que hace algo (con resaltado); si ya
+   * los tocó todos, el inventario; si no hay inventario, probar otros verbos.
+   */
+  private checkIdleHint(): void {
+    if (this.isTrailer) return;
+    const now = Date.now();
+    const sig = this.currentProgressSig();
+    if (sig !== this.progressSig) { this.progressSig = sig; this.lastProgressAt = now; return; }
+    if (this.scriptEngine.isRunning() || this.registry.get('dialogueShowing') || this.registry.get('dialogueActive')) {
+      this.lastProgressAt = Math.max(this.lastProgressAt, now - 1000);
+      return;
+    }
+    const override = Number(new URLSearchParams(window.location.search).get('hintAfter'));
+    const after = override > 0 ? override * 1000 : GameScene.HINT_AFTER_MS;
+    if (now - this.lastProgressAt < after) return;
+    if (this.lastHintAt && now - this.lastHintAt < Math.min(GameScene.HINT_REPEAT_MS, after * 2)) return;
+
+    const sceneData = this.registry.get('sceneData') as SceneData;
+    const candidates = (sceneData?.regions?.hotspots ?? [])
+      .filter((h) => h.bounds && this.isHotspotVisible(h) && !this.touchedHotspots.has(h.id));
+    const useful = candidates.find((h) => GameScene.mainVerbFor(h) !== Verb.USE) ?? candidates[0];
+    let text: string;
+    if (useful) {
+      text = `Hint: take a closer look at the ${useful.name}.`;
+      this.flashHotspot(useful);
+      this.time.delayedCall(450, () => this.flashHotspot(useful));
+    } else if ((this.gameState.inventory ?? []).length) {
+      text = 'Hint: something in your inventory might help here.';
+    } else {
+      text = 'Hint: try other verbs (Open, Pick up, Push), not just Look.';
+    }
+    this.lastHintAt = now;
+    this.registry.set('lastHint', { at: now, text });
+    this.scene.get('UIScene').events.emit('sayBrief', text, 4000, undefined, () => {});
+  }
+
   /** V6: aviso breve «AUTOSAVED» sobre el panel, abajo a la derecha del área de juego. */
   private showAutosaveIndicator(): void {
     if (this.isTrailer) return;
@@ -865,6 +923,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   async executeHotspotVerb(hotspot: HotspotData, verb: Verb): Promise<void> {
+    this.touchedHotspots.add(hotspot.id);
     // Check hotspot-level gate if present
     if (hotspot.gate) {
       const { address } = getWalletState();
