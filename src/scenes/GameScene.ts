@@ -826,7 +826,20 @@ export class GameScene extends Phaser.Scene {
     }
     this.lastHintAt = now;
     this.registry.set('lastHint', { at: now, text });
-    this.scene.get('UIScene').events.emit('sayBrief', text, 4000, undefined, () => {});
+    this.showHintLabel(text);
+  }
+
+  /**
+   * Etiqueta de pista arriba del área de juego. No usa el cuadro de diálogo a propósito: `sayBrief` marca
+   * `dialogueShowing` y bloquearía los toques en la escena mientras se lee.
+   */
+  private showHintLabel(text: string): void {
+    this.children.list.filter((c) => c.name === 'hint-label').forEach((c) => c.destroy());
+    const label = this.add.text(this.scale.width / 2, Math.max(20, this.scale.height * 0.06), text, {
+      fontFamily: FONT.FAMILY, fontSize: '11px', color: TWP.HINT_TEXT, backgroundColor: TWP.HINT_BG,
+      padding: { x: 8, y: 4 }, align: 'center', wordWrap: { width: Math.min(this.scale.width - 48, 600) },
+    }).setOrigin(0.5, 0).setDepth(400).setScrollFactor(0).setAlpha(0).setName('hint-label');
+    this.tweens.add({ targets: label, alpha: 1, duration: 250, hold: 4000, yoyo: true, onComplete: () => label.destroy() });
   }
 
   /** V6: aviso breve «AUTOSAVED» sobre el panel, abajo a la derecha del área de juego. */
