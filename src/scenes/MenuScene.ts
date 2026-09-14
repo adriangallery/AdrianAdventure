@@ -114,6 +114,15 @@ export class MenuScene extends Phaser.Scene {
       this.createButton(width / 2, btnY + btnSpacing, 'Continue', btnSize, () => {
         this.showAudioPrompt(musicManager, () => startGame(true));
       });
+      // V6: dónde y cuándo se guardó la partida que se va a continuar
+      const auto = saveSystem.loadAutoSave();
+      if (auto) {
+        this.add.text(width / 2, btnY + btnSpacing + btnSize * 1.05, `${auto.sceneName} · ${MenuScene.timeAgo(auto.timestamp)}`, {
+          fontFamily: FONT.FAMILY,
+          fontSize: `${Math.max(8, Math.round(subSize * 0.8))}px`,
+          color: TWP.MENU_SUBTITLE,
+        }).setOrigin(0.5, 0).setAlpha(0.8).setName('continue-detail');
+      }
     }
 
     // Leaderboard button
@@ -384,6 +393,16 @@ export class MenuScene extends Phaser.Scene {
       loading.textContent = 'Failed to load leaderboard';
       loading.style.color = '#e94560';
     }
+  }
+
+  /** «just now» · «5 min ago» · «3 h ago» · «2 d ago» */
+  static timeAgo(ts: number): string {
+    const m = Math.round((Date.now() - ts) / 60000);
+    if (m < 1) return 'just now';
+    if (m < 60) return `${m} min ago`;
+    const h = Math.round(m / 60);
+    if (h < 24) return `${h} h ago`;
+    return `${Math.round(h / 24)} d ago`;
   }
 
   private createButton(x: number, y: number, label: string, size: number, onClick: () => void): void {
