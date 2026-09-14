@@ -23,7 +23,7 @@ await page.waitForFunction(
 );
 // Esperar a que la escena esté libre: sin script de entrada, sin diálogo y sin cooldown de input.
 // Si hay un diálogo abierto se toca el centro para avanzarlo (como haría el jugador).
-for (let i = 0; i < 40; i++) {
+for (let i = 0; i < 60; i++) {
   const st = await page.evaluate(() => {
     const gs = window.__game.scene.getScene('GameScene');
     return {
@@ -33,9 +33,15 @@ for (let i = 0; i < 40; i++) {
     };
   });
   if (!st.script && !st.dialogue && st.cooldown <= 0) break;
-  if (st.dialogue) await page.touchscreen.tap(422, 120);
-  await new Promise((r) => setTimeout(r, 500));
+  // Cinemática de entrada («click to continue») o diálogo: tocar para avanzar, como el jugador
+  if (st.script || st.dialogue) await page.touchscreen.tap(422, 120);
+  await new Promise((r) => setTimeout(r, 700));
 }
+const idle = await page.evaluate(() => {
+  const gs = window.__game.scene.getScene('GameScene');
+  return !gs.scriptEngine?.isRunning?.() && !gs.registry.get('dialogueShowing') && !gs.registry.get('dialogueActive');
+});
+if (!idle) { console.error('La escena no quedó libre tras pasar la cinemática'); process.exit(1); }
 await new Promise((r) => setTimeout(r, 800));
 
 // Centrar la cámara en el teclado y calcular dónde queda en pantalla
