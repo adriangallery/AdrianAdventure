@@ -1,4 +1,7 @@
 import Phaser from 'phaser';
+
+// Inyectado por vite.config.ts (define); mismo patrón que PreloadScene.
+declare const __BUILD_HASH__: string;
 import type { MusicVariation } from '@/types/scene.types';
 
 interface ManagedTrack {
