@@ -41,6 +41,12 @@ export class GameScene extends Phaser.Scene {
   private static DEBUG = import.meta.env.DEV;
   private get isTrailer(): boolean { return !!this.registry.get('trailerMode'); }
   private pendingHotspot: HotspotData | null = null;
+  /** V6: verbo a ejecutar al llegar (mantener pulsado = acción principal); null = el verbo del panel */
+  private pendingVerb: Verb | null = null;
+  /** V6: toque en curso sobre un hotspot (tocar = mirar, mantener = acción principal) */
+  private touchHold: { hotspot: HotspotData; x: number; y: number; timer: Phaser.Time.TimerEvent; ring: Phaser.GameObjects.Graphics; onUp: () => void; onMove: (p: Phaser.Input.Pointer) => void } | null = null;
+  private static readonly HOLD_MS = 450;
+  private static readonly HOLD_SLOP_PX = 16;
   private activeCameraEffect: { type: string; disableFlag?: string } | null = null;
   /** Persisted across sessions via gameState.firedTriggers */
   private firedTriggers: Set<string> = new Set();
@@ -194,8 +200,10 @@ export class GameScene extends Phaser.Scene {
     this.events.on('player:arrived', () => {
       if (this.pendingHotspot) {
         const hotspot = this.pendingHotspot;
+        const verb = this.pendingVerb ?? undefined;
         this.pendingHotspot = null;
-        this.events.emit('hotspot:tapped', hotspot);
+        this.pendingVerb = null;
+        this.events.emit('hotspot:tapped', hotspot, verb);
       }
     });
 
@@ -454,6 +462,12 @@ export class GameScene extends Phaser.Scene {
     }
     if (hotspot) this.flashHotspot(hotspot);
 
+    // V6: con el dedo y sin verbo elegido, tocar un hotspot = mirar y mantener pulsado = acción principal
+    if (pointer.wasTouch && hotspot && !selectedItem && verb === Verb.WALK) {
+      this.beginTouchHold(pointer, hotspot);
+      return;
+    }
+
     // Item combo mode: USE [item] with [hotspot]
     if (selectedItem && hotspot) {
       scummUI?.clearSelectedItem?.();
@@ -490,6 +504,7 @@ export class GameScene extends Phaser.Scene {
       const targetY = Math.min(b.y + b.h, 100);
       if (this.player.canReachPct(targetX, targetY)) {
         this.pendingHotspot = hotspot;
+        this.pendingVerb = null;
         this.player.walkToPct(targetX, targetY);
       } else {
         this.pendingHotspot = null;
@@ -591,6 +606,111 @@ export class GameScene extends Phaser.Scene {
     const w = Math.max(1, f.x - o.x);
     const h = Math.max(1, f.y - o.y);
     return { x: (22 / w) * 100, y: (22 / h) * 100 };
+  }
+
+  /** V6: empieza un toque sobre un hotspot; al soltar antes de HOLD_MS se mira y si se mantiene se hace la acción principal. */
+  private beginTouchHold(pointer: Phaser.Input.Pointer, hotspot: HotspotData): void {
+    this.cancelTouchHold();
+    this.events.emit('hotspot:hover', hotspot.name);
+    const x = pointer.x, y = pointer.y;
+    const ring = this.add.graphics().setDepth(60).setScrollFactor(0);
+    const startedAt = this.time.now;
+    const draw = () => {
+      const t = Math.min(1, (this.time.now - startedAt) / GameScene.HOLD_MS);
+      ring.clear();
+      if (t < 0.15) return; // un toque rápido no llega a enseñar el anillo
+      ring.lineStyle(4, TWP.INV_SLOT_SELECT, 0.9);
+      ring.beginPath();
+      ring.arc(x, y, 26, -Math.PI / 2, -Math.PI / 2 + t * Math.PI * 2);
+      ring.strokePath();
+    };
+    this.events.on('update', draw);
+    const cleanup = () => {
+      this.events.off('update', draw);
+      ring.destroy();
+      this.input.off('pointerup', onUp);
+      this.input.off('pointermove', onMove);
+      this.touchHold = null;
+    };
+    const onUp = () => {
+      if (!this.touchHold) return;
+      this.touchHold.timer.remove();
+      cleanup();
+      this.runHotspotVerb(hotspot, Verb.LOOK);
+    };
+    const onMove = (p: Phaser.Input.Pointer) => {
+      if (Math.hypot(p.x - x, p.y - y) > GameScene.HOLD_SLOP_PX && this.touchHold) {
+        this.touchHold.timer.remove();
+        cleanup(); // arrastrar cancela: ni mirar ni actuar
+      }
+    };
+    const timer = this.time.delayedCall(GameScene.HOLD_MS, () => {
+      if (!this.touchHold) return;
+      cleanup();
+      this.flashHotspot(hotspot);
+      this.runHotspotVerb(hotspot, GameScene.mainVerbFor(hotspot));
+    });
+    this.input.on('pointerup', onUp);
+    this.input.on('pointermove', onMove);
+    this.touchHold = { hotspot, x, y, timer, ring, onUp, onMove };
+  }
+
+  private cancelTouchHold(): void {
+    const h = this.touchHold;
+    if (!h) return;
+    h.timer.remove();
+    h.ring.destroy();
+    this.input.off('pointerup', h.onUp);
+    this.input.off('pointermove', h.onMove);
+    this.touchHold = null;
+  }
+
+  /** Ejecuta un verbo concreto sobre un hotspot: mirar y hablar al momento; el resto andando hasta él. */
+  private runHotspotVerb(hotspot: HotspotData, verb: Verb): void {
+    if (verb === Verb.LOOK || verb === Verb.TALK || !hotspot.bounds) {
+      this.pendingHotspot = null;
+      this.pendingVerb = null;
+      this.events.emit('hotspot:tapped', hotspot, verb);
+      return;
+    }
+    const b = hotspot.bounds;
+    const targetX = b.x + b.w / 2;
+    const targetY = Math.min(b.y + b.h, 100);
+    if (this.player.canReachPct(targetX, targetY)) {
+      this.pendingHotspot = hotspot;
+      this.pendingVerb = verb;
+      this.player.walkToPct(targetX, targetY);
+    } else {
+      this.pendingHotspot = null;
+      this.pendingVerb = null;
+      this.events.emit('hotspot:tapped', hotspot, verb);
+    }
+  }
+
+  /** Verbos que cuentan como «acción principal», por orden de preferencia. */
+  private static readonly MAIN_VERB_ORDER: Verb[] = [Verb.PICK, Verb.OPEN, Verb.USE, Verb.TALK, Verb.PUSH, Verb.PULL, Verb.CLOSE, Verb.GIVE];
+  private static readonly FLAVOR_OPS = new Set(['say', 'sayBrief', 'ifFlag', 'wait', 'playSound']);
+
+  /**
+   * V6: la acción principal de un hotspot es el primer verbo cuyo script hace algo más que hablar
+   * (coger, cambiar de escena, poner un flag…). Si ninguno lo hace, USE.
+   */
+  static mainVerbFor(hotspot: HotspotData): Verb {
+    const walk = (ops: unknown): string[] => {
+      if (!Array.isArray(ops)) return [];
+      const out: string[] = [];
+      for (const o of ops as Array<Record<string, unknown>>) {
+        if (!o || typeof o.op !== 'string') continue;
+        out.push(o.op);
+        for (const k of ['then', 'else', 'steps', 'script']) out.push(...walk(o[k]));
+      }
+      return out;
+    };
+    for (const v of GameScene.MAIN_VERB_ORDER) {
+      const ops = walk(hotspot.scripts?.[v]);
+      if (ops.some((op) => !GameScene.FLAVOR_OPS.has(op))) return v;
+    }
+    return Verb.USE;
   }
 
   /** V6: resaltado breve del hotspot pulsado, para que el toque se note. */
@@ -880,6 +1000,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   shutdown(): void {
+    this.cancelTouchHold();
     // Remove window listeners to prevent memory leaks
     if (this.boundScheduleResize) {
       window.removeEventListener('orientationchange', this.boundScheduleResize);
