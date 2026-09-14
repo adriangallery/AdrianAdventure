@@ -134,6 +134,13 @@ jobs:
         env:
           BASE_URL: http://127.0.0.1:4173
 
+      - name: Grabar ajustes
+        id: demosettings
+        continue-on-error: true
+        run: node scripts/demo-settings.mjs
+        env:
+          BASE_URL: http://127.0.0.1:4173
+
       - name: GIF
         if: always()
         run: |
@@ -145,6 +152,11 @@ jobs:
             ffmpeg -loglevel error -y -framerate 12 -i demo-hold-frames/%03d.png \
               -vf "fps=12,scale=640:-1:flags=neighbor,split[a][b];[a]palettegen[p];[b][p]paletteuse" demo-v6-hold.gif
             ls -la demo-v6-hold.gif
+          fi
+          if ls demo-settings-frames/*.png >/dev/null 2>&1; then
+            ffmpeg -loglevel error -y -framerate 4 -i demo-settings-frames/%03d.png \
+              -vf "fps=4,scale=640:-1:flags=neighbor,split[a][b];[a]palettegen[p];[b][p]paletteuse" demo-v6-settings.gif
+            ls -la demo-v6-settings.gif
           fi
           if ls demo-verbs-frames/*.png >/dev/null 2>&1; then
             ffmpeg -loglevel error -y -framerate 6 -i demo-verbs-frames/%03d.png \
@@ -185,8 +197,10 @@ jobs:
             demo-hints-full.png
             demo-v6-verbs.gif
             demo-verbs-full.png
+            demo-v6-settings.gif
+            demo-settings-full.png
 
       - name: Resultado de la demo
-        if: steps.demo.outcome == 'failure' || steps.demohold.outcome == 'failure' || steps.demoskip.outcome == 'failure' || steps.demoautosave.outcome == 'failure' || steps.demohints.outcome == 'failure' || steps.demoverbs.outcome == 'failure'
+        if: steps.demo.outcome == 'failure' || steps.demohold.outcome == 'failure' || steps.demoskip.outcome == 'failure' || steps.demoautosave.outcome == 'failure' || steps.demohints.outcome == 'failure' || steps.demoverbs.outcome == 'failure' || steps.demosettings.outcome == 'failure'
         run: exit 1
 

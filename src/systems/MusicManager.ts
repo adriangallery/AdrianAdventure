@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { getMusicLevel, musicVolumeFor } from '@/systems/Settings';
 
 // Inyectado por vite.config.ts (define); mismo patrón que PreloadScene.
 declare const __BUILD_HASH__: string;
@@ -29,7 +30,7 @@ export class MusicManager {
   private currentTrack: ManagedTrack | null = null;
   private fadingTrack: ManagedTrack | null = null;
   private currentKey: string | null = null;
-  private musicVolume = DEFAULT_VOLUME;
+  private musicVolume = musicVolumeFor(getMusicLevel(), DEFAULT_VOLUME);
   private muted = false;
   private unlockedThisSession = false;
 
