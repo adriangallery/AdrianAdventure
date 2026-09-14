@@ -27,12 +27,14 @@ const busy = () => page.evaluate(() => {
   return !!gs.scriptEngine?.isRunning?.() || !!gs.registry.get('dialogueShowing') || !!gs.registry.get('dialogueActive') || (gs.inputCooldownFrames ?? 0) > 0;
 });
 // Deja la escena libre tocando arriba (zona sin objetos) mientras haya cinemática o diálogo
+// La cinemática de entrada arranca con retraso: solo cuenta como libre tras 4 comprobaciones seguidas
 const settle = async () => {
-  for (let i = 0; i < 60 && (await busy()); i++) {
-    await page.touchscreen.tap(422, 40);
+  let calm = 0;
+  for (let i = 0; i < 90 && calm < 4; i++) {
+    if (await busy()) { calm = 0; await page.touchscreen.tap(422, 40); } else calm++;
     await new Promise((r) => setTimeout(r, 700));
   }
-  return !(await busy());
+  return calm >= 4;
 };
 if (!(await settle())) { console.error('La escena no quedó libre'); process.exit(1); }
 await new Promise((r) => setTimeout(r, 600));
