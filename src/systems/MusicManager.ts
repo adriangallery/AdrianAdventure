@@ -84,6 +84,33 @@ export class MusicManager {
     }
   }
 
+  /** Pista pedida que aún se está descargando (la última escena manda). */
+  private pendingKey: string | null = null;
+  private readonly loadingTracks = new Set<string>();
+
+  /** Descarga una pista con el loader de la escena activa; `onReady` cuando está decodificada. */
+  private loadTrack(key: string, onReady: () => void): void {
+    if (this.loadingTracks.has(key)) return;
+    const scene = this.game.scene.getScenes(true).find((sc) => !!sc.load);
+    if (!scene) {
+      console.warn(`[MusicManager] no active scene to load "${key}"`);
+      return;
+    }
+    this.loadingTracks.add(key);
+    const v = typeof __BUILD_HASH__ !== 'undefined' ? `?v=${__BUILD_HASH__}` : '';
+    scene.load.audio(key, `assets/audio/music/${key}.mp3${v}`);
+    scene.load.once(`filecomplete-audio-${key}`, () => {
+      this.loadingTracks.delete(key);
+      onReady();
+    });
+    scene.load.once(Phaser.Loader.Events.FILE_LOAD_ERROR, (file: Phaser.Loader.File) => {
+      if (file.key !== key) return;
+      this.loadingTracks.delete(key);
+      console.warn(`[MusicManager] failed to load "${key}"`);
+    });
+    scene.load.start();
+  }
+
   /** Main entry point — called on every scene transition */
   transitionToScene(audio: SceneAudioConfig): void {
     // If Phaser's sound system is still locked (no user gesture yet),
@@ -121,10 +148,15 @@ export class MusicManager {
     // Different track — crossfade
     const buffer = this.getDecodedBuffer(newKey);
     if (!buffer) {
-      console.warn(`[MusicManager] buffer for "${newKey}" not found`);
-      this.fadeToSilence(duration);
+      // V5: la pista aún no está descargada (solo se precarga la de la escena inicial).
+      // Se pide ahora y, si seguimos en esa escena cuando llegue, se reintenta la transición.
+      this.pendingKey = newKey;
+      this.loadTrack(newKey, () => {
+        if (this.pendingKey === newKey) this.transitionToScene(audio);
+      });
       return;
     }
+    this.pendingKey = null;
 
     const newTrack = this.createTrack(newKey, buffer, variation);
     this.crossfadeTo(newTrack, variation, duration);

@@ -132,14 +132,9 @@ export class PreloadScene extends Phaser.Scene {
 
 
     // Audio
-    const musicTracks = [
-      'retro-adventure',
-      'retroadrian',
-      'tension',
-      'vista',
-      'clinical',
-      'epilogue',
-    ];
+    // V5 (14-sep-2026): solo la pista de la escena inicial. Las otras 5 (~21 MB) las carga
+    // MusicManager al entrar en la escena que las usa.
+    const musicTracks = ['retro-adventure'];
     for (const track of musicTracks) {
       if (!this.cache.audio.has(track)) {
         this.load.audio(track, `assets/audio/music/${track}.mp3${v}`);

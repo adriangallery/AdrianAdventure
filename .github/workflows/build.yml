@@ -1,0 +1,34 @@
+# Build de AdrianAdventure en cada PR (plan AdrianZERO V8, primer paso). El portátil no puede
+# compilar y el mini es producción: aquí se comprueba que `tsc` y `vite build` pasan antes de
+# desplegar con `git push dokku`.
+name: build
+
+on:
+  pull_request:
+  workflow_dispatch: {}
+
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: TypeScript
+        run: npx tsc --noEmit
+
+      - name: Vite build (sin copiar assets)
+        run: npx vite build
