@@ -272,6 +272,8 @@ export class GameScene extends Phaser.Scene {
       this.gameState.savedAt = Date.now();
       this.gameState.playerPosition = { pctX: spawn.x, pctY: spawn.y };
       this.saveSystem.autoSave(this.gameState, sceneData.title);
+      // V6: aviso de autoguardado; si la escena abre con cinemática, se enseña al terminarla
+      if (!sceneData.onEnter?.length) this.showAutosaveIndicator();
     }
 
     // Run scene onEnter scripts (chapter intros, premise, etc.) — skipped in trailer
@@ -280,6 +282,7 @@ export class GameScene extends Phaser.Scene {
         this.scriptEngine.updateContext(this.buildScriptContext());
         this.scriptEngine.execute(sceneData.onEnter!).then(() => {
           this.cinematicOverlay.hideBlackCover();
+          this.showAutosaveIndicator();
           this.checkSpawnTriggers(sceneData);
         });
       });
@@ -766,6 +769,20 @@ export class GameScene extends Phaser.Scene {
       if (ops.some((op) => !GameScene.FLAVOR_OPS.has(op))) return v;
     }
     return Verb.USE;
+  }
+
+  /** V6: aviso breve «AUTOSAVED» sobre el panel, abajo a la derecha del área de juego. */
+  private showAutosaveIndicator(): void {
+    if (this.isTrailer) return;
+    this.registry.set('lastAutosaveAt', Date.now());
+    const panelH = this.getEffectivePanelHeight();
+    const label = this.add.text(this.scale.width - 12, this.scale.height - panelH - 10, 'AUTOSAVED', {
+      fontFamily: FONT.FAMILY, fontSize: '10px', color: TWP.HINT_TEXT, backgroundColor: TWP.HINT_BG, padding: { x: 6, y: 3 },
+    }).setOrigin(1, 1).setDepth(400).setScrollFactor(0).setAlpha(0).setName('autosave-indicator');
+    this.tweens.add({
+      targets: label, alpha: 1, duration: 200, hold: 1600, yoyo: true,
+      onComplete: () => label.destroy(),
+    });
   }
 
   /** V6: resaltado breve del hotspot pulsado, para que el toque se note. */
