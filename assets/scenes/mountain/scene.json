@@ -4,6 +4,7 @@
   "title": "Patient Zero Rehabilitation Clinic",
   "assets": {
     "background": "background.png",
+    "foreground": "foreground.png",
     "walkmask": "walkmask.png",
     "atlas": null
   },

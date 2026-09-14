@@ -5,8 +5,7 @@
   "assets": {
     "background": "background.png",
     "walkmask": "walkmask.png",
-    "atlas": null,
-    "foreground": "foreground.png"
+    "atlas": null
   },
   "render": {
     "world": {
