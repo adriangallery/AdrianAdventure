@@ -31,6 +31,7 @@ jobs:
         run: npx tsc --noEmit
       - name: ESLint
         run: |
+          set -o pipefail
           npx eslint src --format stylish | tee eslint-report.txt
           echo "### ESLint" >> "$GITHUB_STEP_SUMMARY"
           tail -n 3 eslint-report.txt >> "$GITHUB_STEP_SUMMARY"
