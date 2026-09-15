@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { TEXT_SPEEDS, MUSIC_LEVELS, TEXT_SPEED_LABEL, MUSIC_LEVEL_LABEL, getTextSpeed, setTextSpeed, getMusicLevel, setMusicLevel, musicVolumeFor } from '@/systems/Settings';
 import type { GameState } from '@/types/game.types';
 import { SaveLoadSystem } from '@/systems/SaveLoadSystem';
 import { getWalletState } from '@/web3/wallet';
@@ -159,6 +160,36 @@ export class SaveButton {
           this.scene.scene.start('PreloadScene');
         }
       }));
+    }
+
+    // V6: ajustes — velocidad del texto, música y volumen
+    const sepSettings = document.createElement('hr');
+    sepSettings.style.cssText = 'border: none; border-top: 1px solid #333; margin: 12px 0;';
+    modal.appendChild(sepSettings);
+    const music = this.scene.game.registry.get('musicManager') as { toggleMute(): boolean; isMuted(): boolean; setMusicVolume(v: number): void } | null;
+    const speedLabel = () => `\u2699 Text speed: ${TEXT_SPEED_LABEL[getTextSpeed()]}`;
+    const speedBtn: HTMLButtonElement = makeBtn(speedLabel(), true, () => {
+      const next = TEXT_SPEEDS[(TEXT_SPEEDS.indexOf(getTextSpeed()) + 1) % TEXT_SPEEDS.length];
+      setTextSpeed(next);
+      speedBtn.textContent = speedLabel();
+    });
+    speedBtn.dataset.setting = 'text-speed';
+    modal.appendChild(speedBtn);
+    if (music) {
+      const muteLabel = () => `\u266A Music: ${music.isMuted() ? 'Off' : 'On'}`;
+      const muteBtn: HTMLButtonElement = makeBtn(muteLabel(), true, () => { music.toggleMute(); muteBtn.textContent = muteLabel(); });
+      muteBtn.dataset.setting = 'music';
+      modal.appendChild(muteBtn);
+      const volLabel = () => `\u266A Volume: ${MUSIC_LEVEL_LABEL[getMusicLevel() ?? 'low']}`;
+      const volBtn: HTMLButtonElement = makeBtn(volLabel(), true, () => {
+        const cur = getMusicLevel() ?? 'low';
+        const next = MUSIC_LEVELS[(MUSIC_LEVELS.indexOf(cur) + 1) % MUSIC_LEVELS.length];
+        setMusicLevel(next);
+        music.setMusicVolume(musicVolumeFor(next, 0.25));
+        volBtn.textContent = volLabel();
+      });
+      volBtn.dataset.setting = 'volume';
+      modal.appendChild(volBtn);
     }
 
     // Wallet-only features

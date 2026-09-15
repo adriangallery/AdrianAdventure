@@ -1,8 +1,9 @@
 import Phaser from 'phaser';
+import { charDelayMs } from '@/systems/Settings';
 import { TWP, FONT } from '@/config/theme';
 
 const PADDING = 16;
-const TYPEWRITER_SPEED = 25; // ms per character
+// Velocidad del texto: ver src/systems/Settings.ts (antes fija a 25 ms por carácter)
 
 /**
  * Dialogue text displayed directly in the game viewport, floating above the character.
@@ -88,15 +89,21 @@ export class DialogueBox {
       this.text.setVisible(true);
       this.text.setWordWrapWidth(Math.min(this.scene.scale.width - PADDING * 4, 600));
 
-      // Typewriter effect
-      this.typewriterTimer = this.scene.time.addEvent({
-        delay: TYPEWRITER_SPEED,
-        repeat: this.fullMessage.length - 1,
-        callback: () => {
-          this.displayedChars++;
-          this.text.setText(this.fullMessage.substring(0, this.displayedChars));
-        },
-      });
+      // Typewriter effect — V6: velocidad según los ajustes del jugador (instant = texto completo)
+      const charDelay = charDelayMs();
+      if (charDelay === 0) {
+        this.displayedChars = this.fullMessage.length;
+        this.text.setText(this.fullMessage);
+      } else {
+        this.typewriterTimer = this.scene.time.addEvent({
+          delay: charDelay,
+          repeat: this.fullMessage.length - 1,
+          callback: () => {
+            this.displayedChars++;
+            this.text.setText(this.fullMessage.substring(0, this.displayedChars));
+          },
+        });
+      }
 
       // Click to skip typewriter, then click again to dismiss
       let canDismiss = false;
