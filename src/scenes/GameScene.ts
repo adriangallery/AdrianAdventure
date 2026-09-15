@@ -1027,7 +1027,8 @@ export class GameScene extends Phaser.Scene {
 
   private buildScriptContext(): ScriptContext {
     return {
-      state: this.gameState,
+      // A1.1: siempre el estado vivo (setState e InventorySystem sustituyen el objeto)
+      getState: () => this.gameState,
       setState: (updater) => { this.gameState = updater(this.gameState); this.registry.set('gameState', this.gameState); },
       say: (text, speaker) => new Promise<void>((resolve) => {
         this.scene.get('UIScene').events.emit('say', text, speaker, resolve);

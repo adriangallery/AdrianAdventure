@@ -9,7 +9,12 @@ export interface MintResult {
 }
 
 export interface ScriptContext {
-  state: GameState;
+  /**
+   * A1.1: estado VIVO de la partida. Es una función y no un valor porque `setState` e `InventorySystem`
+   * sustituyen el objeto: un `state` copiado al crear el contexto hacía que `ifFlag`/`ifHasItem`/`ifVisited`
+   * leyeran el estado anterior a un `setFlag`/`addItem` del mismo script (y el rescate de `forceReset` igual).
+   */
+  getState: () => GameState;
   setState: (updater: (s: GameState) => GameState) => void;
   say: (text: string, speaker?: string) => Promise<void>;
   sayBrief?: (text: string, durationMs?: number, speaker?: string) => Promise<void>;
@@ -44,10 +49,16 @@ export interface ScriptContext {
 export const WATCHDOG_MS = 30_000;
 
 /**
- * A1.1: ops que esperan algo que termina solo (temporizador, red, confirmación en la wallet). Mientras el
- * script está en una de ellas el watchdog no cuenta: no es un cuelgue aunque tarde.
+ * A1.1: ops que esperan algo que seguro termina solo. Mientras el script está en una de ellas el watchdog no
+ * cuenta: no es un cuelgue aunque tarde.
+ * - `wait`: temporizador propio.
+ * - `web3Require`: solo lecturas RPC (`checkGatingRule` → `publicClient.readContract`), y el transporte `http`
+ *   de viem corta cada petición por tiempo, así que acaba (en `else` si falla).
+ * Los mints NO están: `walletClient.writeContract` espera a que el jugador confirme en la wallet, sin límite de
+ * tiempo y sin nada en pantalla del juego. `mintAchievement` ya no bloquea el script, y un `mintNFT` que
+ * pasa de 30 s se abandona como cualquier cuelgue, pero su resultado tardío sigue ejecutando onSuccess/onFail.
  */
-const SELF_RESOLVING_OPS = new Set(['wait', 'web3Require', 'mintNFT', 'mintAchievement']);
+const SELF_RESOLVING_OPS = new Set(['wait', 'web3Require']);
 
 /** Script en la cola, con una etiqueta para los avisos (p. ej. `hs_porch_light/LOOK`). */
 interface QueuedScript {
@@ -180,7 +191,8 @@ export class ScriptEngine {
         continue;
       }
       if (op.op === 'mintAchievement' && op.text) {
-        // El logro visual y su registro en la partida son estado; el mint on-chain no se reintenta
+        // El logro visual y su registro en la partida son estado. El mint on-chain no se lanza desde el rescate
+        // (abriría la wallet de golpe): el jugador puede reclamarlo después desde el panel de logros
         this.ctx.showAchievement?.(op.text as string);
         applied.push('achievement');
         continue;
@@ -232,15 +244,15 @@ export class ScriptEngine {
     let cond: boolean;
     switch (op.op) {
       case 'ifFlag':
-        cond = this.ctx.state.flags[op.flag as string] ?? false;
+        cond = this.ctx.getState().flags[op.flag as string] ?? false;
         break;
       case 'ifHasItem':
         // { op: "ifHasItem", id: "keycard", then: [...], else: [...] }
-        cond = this.ctx.state.inventory.some((i) => i.id === (op.id as string));
+        cond = this.ctx.getState().inventory.some((i) => i.id === (op.id as string));
         break;
       case 'ifVisited':
         // { op: "ifVisited", sceneId: "basement", then: [...], else: [...] }
-        cond = this.ctx.state.visited.includes(op.sceneId as string);
+        cond = this.ctx.getState().visited.includes(op.sceneId as string);
         break;
       case 'ifWalletConnected':
         cond = this.ctx.isWalletConnected?.() ?? false;
@@ -355,17 +367,29 @@ export class ScriptEngine {
           break;
         }
         this.ctx.showToast?.('pending', 'Minting... (confirm in wallet)');
-        const mintResult = await this.ctx.mintItem(op.tokenId as number);
-        if (gen !== this.generation) break;
+        const mintLabel = `${this.currentLabel || 'script'}/mintNFT`;
+        const mintResult = await this.ctx.mintItem(op.tokenId as number).catch((err: unknown): MintResult => ({
+          status: 'failed',
+          error: err instanceof Error ? err.message : 'Unknown error',
+        }));
+        let branch: ScriptOp[] | undefined;
         if (mintResult.status === 'success') {
           this.ctx.showToast?.('success', 'Minted successfully!');
-          if (op.onSuccess) await this.runOps(op.onSuccess as ScriptOp[], gen);
+          branch = op.onSuccess as ScriptOp[] | undefined;
         } else if (mintResult.status === 'not-configured') {
           this.ctx.showToast?.('failed', 'Minting not available yet');
-          if (op.onFail) await this.runOps(op.onFail as ScriptOp[], gen);
+          branch = op.onFail as ScriptOp[] | undefined;
         } else {
           this.ctx.showToast?.('failed', mintResult.error ?? 'Mint failed');
-          if (op.onFail) await this.runOps(op.onFail as ScriptOp[], gen);
+          branch = op.onFail as ScriptOp[] | undefined;
+        }
+        if (!branch) break;
+        if (gen === this.generation) {
+          await this.runOps(branch, gen);
+        } else {
+          // A1.1: el watchdog abandonó este script mientras el jugador tardaba en confirmar en la wallet, pero la
+          // transacción ha terminado igual: su rama (p. ej. el addItem del objeto minteado) no se pierde
+          void this.execute(branch, `${mintLabel} (resultado tras reinicio)`);
         }
         break;
       }
@@ -374,21 +398,29 @@ export class ScriptEngine {
         // { op: "mintAchievement", achievementId: 1, text: "Chapter 1 Complete", onSuccess: [...], onFail: [...] }
         // Always show visual achievement first
         if (op.text) this.ctx.showAchievement?.(op.text as string);
-        // Then attempt on-chain mint if wallet connected and configured
+        // A1.1: el mint on-chain va en segundo plano. Espera a que el jugador confirme en la wallet sin límite de
+        // tiempo y sin nada del juego en pantalla: si bloqueara el script, la entrada quedaría bloqueada para
+        // siempre (p. ej. WalletConnect en el móvil sin mirar). El logro visual ya está; los avisos y las ramas
+        // onSuccess/onFail llegan después como un script aparte.
         if (this.ctx.mintAchievement) {
-          const result = await this.ctx.mintAchievement(op.achievementId as number);
-          if (gen !== this.generation) break;
-          if (result.status === 'success') {
-            this.ctx.showToast?.('success', `Achievement minted on-chain!`);
-            if (op.onSuccess) await this.runOps(op.onSuccess as ScriptOp[], gen);
-          } else if (result.status === 'not-configured') {
-            // Silently skip — visual achievement still shown
-            if (op.onFail) await this.runOps(op.onFail as ScriptOp[], gen);
-          } else if (result.status === 'failed') {
-            // Don't interrupt gameplay for a failed achievement mint
-            console.warn('Achievement mint failed:', result.error);
-            if (op.onFail) await this.runOps(op.onFail as ScriptOp[], gen);
-          }
+          const achLabel = `${this.currentLabel || 'script'}/mintAchievement`;
+          void this.ctx.mintAchievement(op.achievementId as number)
+            .catch((err: unknown): MintResult => ({ status: 'failed', error: err instanceof Error ? err.message : 'Unknown error' }))
+            .then((result) => {
+              let later: ScriptOp[] | undefined;
+              if (result.status === 'success') {
+                this.ctx.showToast?.('success', `Achievement minted on-chain!`);
+                later = op.onSuccess as ScriptOp[] | undefined;
+              } else if (result.status === 'not-configured') {
+                // Silently skip — visual achievement still shown
+                later = op.onFail as ScriptOp[] | undefined;
+              } else if (result.status === 'failed') {
+                // Don't interrupt gameplay for a failed achievement mint
+                console.warn('Achievement mint failed:', result.error);
+                later = op.onFail as ScriptOp[] | undefined;
+              }
+              if (later?.length) void this.execute(later, `${achLabel} (resultado)`);
+            });
         }
         break;
       }
