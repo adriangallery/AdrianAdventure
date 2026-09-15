@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { ScummUI, SCUMM_PANEL_MIN_HEIGHT } from '@/ui/ScummUI';
+import { ScummUI } from '@/ui/ScummUI';
 import { DialogueBox } from '@/ui/DialogueBox';
 import { ChoicePanel } from '@/ui/ChoicePanel';
 import { WalletButton } from '@/ui/WalletButton';
@@ -41,7 +41,6 @@ export class UIScene extends Phaser.Scene {
   }
 
   create(): void {
-    const sceneData = this.registry.get('sceneData') as SceneData;
     const inventorySystem = this.registry.get('inventorySystem') as InventorySystem;
 
     const { width, height } = this.scale;
