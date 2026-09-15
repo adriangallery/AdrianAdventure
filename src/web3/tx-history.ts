@@ -24,6 +24,8 @@ interface AlchemyTransfer {
 }
 
 const FETCH_TIMEOUT_MS = 5000;
+/** API pública de Blockscout para Base (CORS abierto, sin clave): se usa si el build no trae Alchemy */
+const BLOCKSCOUT_API = 'https://base.blockscout.com/api/v2';
 const CATEGORIES = ['external', 'erc20', 'erc721', 'erc1155'];
 
 async function fetchTransfers(rpcUrl: string, side: 'fromAddress' | 'toAddress', address: string, limit: number): Promise<AlchemyTransfer[]> {
@@ -51,14 +53,105 @@ async function fetchTransfers(rpcUrl: string, side: 'fromAddress' | 'toAddress',
   }
 }
 
+interface BlockscoutTx {
+  hash: string;
+  timestamp: string | null;
+  block_number: number;
+  value: string;
+  method: string | null;
+  from: { hash: string } | null;
+  to: { hash: string } | null;
+}
+
+interface BlockscoutTokenTransfer {
+  transaction_hash: string;
+  timestamp: string | null;
+  block_number: number;
+  from: { hash: string } | null;
+  to: { hash: string } | null;
+  token: { symbol: string | null; type: string; decimals: string | null } | null;
+  total: { value?: string; decimals?: string | null } | null;
+}
+
+async function fetchJson<T>(url: string): Promise<T> {
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), FETCH_TIMEOUT_MS);
+  try {
+    const resp = await fetch(url, { signal: ctrl.signal });
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    return await resp.json() as T;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+function units(raw: string | undefined, decimals: string | number | null | undefined): number | null {
+  if (!raw) return null;
+  const d = Number(decimals ?? 0);
+  const n = Number(raw) / 10 ** d;
+  return Number.isFinite(n) ? n : null;
+}
+
+/** Transacciones + transferencias de tokens desde Blockscout, en el mismo formato que Alchemy. */
+async function loadFromBlockscout(address: string, limit: number): Promise<PatientTransfer[]> {
+  const me = address.toLowerCase();
+  const [txs, transfers] = await Promise.all([
+    fetchJson<{ items?: BlockscoutTx[] }>(`${BLOCKSCOUT_API}/addresses/${address}/transactions`),
+    fetchJson<{ items?: BlockscoutTokenTransfer[] }>(`${BLOCKSCOUT_API}/addresses/${address}/token-transfers`),
+  ]);
+  const fromTxs = (txs.items ?? []).slice(0, limit * 2).map((t): PatientTransfer => {
+    const eth = units(t.value, 18);
+    return {
+      hash: t.hash,
+      direction: t.from?.hash.toLowerCase() === me ? 'OUT' : 'IN',
+      // Una llamada sin ETH se enseña por su método (claim, approve, swap…)
+      asset: eth ? 'ETH' : `${t.method ?? 'call'}()`,
+      value: eth || null,
+      category: eth ? 'external' : 'call',
+      blockNum: t.block_number,
+      timestamp: t.timestamp,
+    };
+  });
+  const fromTransfers = (transfers.items ?? []).slice(0, limit * 2).map((t): PatientTransfer => {
+    const fungible = t.token?.type === 'ERC-20';
+    return {
+      hash: t.transaction_hash,
+      direction: t.from?.hash.toLowerCase() === me ? 'OUT' : 'IN',
+      asset: t.token?.symbol ?? (fungible ? '?' : 'NFT'),
+      value: fungible ? units(t.total?.value, t.total?.decimals ?? t.token?.decimals) : null,
+      category: fungible ? 'erc20' : 'erc721',
+      blockNum: t.block_number,
+      timestamp: t.timestamp,
+    };
+  });
+  // Una tx que movió tokens ya sale como transferencia: no repetir su llamada sin valor
+  const tokenTxs = new Set(fromTransfers.map((t) => t.hash));
+  return [...fromTransfers, ...fromTxs.filter((t) => !(t.category === 'call' && tokenTxs.has(t.hash)))]
+    .sort((a, b) => b.blockNum - a.blockNum)
+    .slice(0, limit);
+}
+
 /**
  * Últimas transferencias reales (entrantes y salientes) de la wallet en Base.
- * Devuelve null si no hay nodo con alchemy_getAssetTransfers o la consulta falla: el monitor
- * lo cuenta como «registros ilegibles», nunca se inventan transacciones.
+ * Con clave de Alchemy usa alchemy_getAssetTransfers; sin ella (o si falla) Blockscout.
+ * Devuelve null si ninguna fuente responde: el monitor lo cuenta como «registros ilegibles»,
+ * nunca se inventan transacciones.
  */
 export async function loadPatientHistory(address: string, limit = 6): Promise<PatientTransfer[] | null> {
   const rpcUrl = getRpcUrl();
-  if (!rpcUrl.includes('alchemy.com')) return null;
+  if (rpcUrl.includes('alchemy.com')) {
+    const viaAlchemy = await loadFromAlchemy(rpcUrl, address, limit);
+    if (viaAlchemy) return viaAlchemy;
+  }
+  try {
+    return await loadFromBlockscout(address, limit);
+  } catch (err) {
+    console.warn('tx-history: Blockscout no respondió', err);
+    return null;
+  }
+}
+
+async function loadFromAlchemy(rpcUrl: string, address: string, limit: number): Promise<PatientTransfer[] | null> {
   try {
     const [outs, ins] = await Promise.all([
       fetchTransfers(rpcUrl, 'fromAddress', address, limit),
@@ -78,7 +171,7 @@ export async function loadPatientHistory(address: string, limit = 6): Promise<Pa
       .sort((a, b) => b.blockNum - a.blockNum)
       .slice(0, limit);
   } catch (err) {
-    console.warn('tx-history: no se pudo leer el historial', err);
+    console.warn('tx-history: Alchemy no respondió, pruebo Blockscout', err);
     return null;
   }
 }
@@ -88,7 +181,7 @@ export function shortAddress(address: string): string {
 }
 
 function formatValue(t: PatientTransfer): string {
-  if (t.value === null || t.category === 'erc721' || t.category === 'erc1155') return t.asset;
+  if (t.value === null || t.category === 'erc721' || t.category === 'erc1155' || t.category === 'call') return t.asset;
   const v = t.value >= 1000 ? Math.round(t.value).toLocaleString('en-US')
     : t.value >= 1 ? t.value.toFixed(2)
     : t.value.toPrecision(2);
