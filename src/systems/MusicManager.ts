@@ -363,7 +363,7 @@ export class MusicManager {
     // Fallback: Phaser WebAudioSound exposes audioBuffer as a getter from cache
     try {
       const tempSound = this.game.sound.add(key) as Phaser.Sound.WebAudioSound;
-      const buffer = (tempSound as any).audioBuffer;
+      const buffer = (tempSound as unknown as { audioBuffer?: AudioBuffer }).audioBuffer;
       tempSound.destroy();
       if (buffer instanceof AudioBuffer) return buffer;
     } catch {

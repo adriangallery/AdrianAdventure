@@ -3,7 +3,7 @@ import { scriptedVerbs, realActionVerbs } from '@/systems/HotspotVerbs';
 import type { HotspotData } from '@/types/scene.types';
 import { Verb, PANEL_VERBS, VERB_LABELS } from '@/types/game.types';
 import type { InventorySystem } from '@/systems/InventorySystem';
-import type { InventoryItem } from '@/types/game.types';
+import type { InventoryItem, GameState } from '@/types/game.types';
 import { TWP, FONT, LAYOUT } from '@/config/theme';
 
 export const SCUMM_PANEL_MIN_HEIGHT: number = LAYOUT.PANEL_MIN_HEIGHT;
@@ -402,7 +402,7 @@ export class ScummUI {
 
     // USE + ape_costume: immediate equip/unequip (no combine mode)
     if (this.selectedVerb === Verb.USE && item.id === 'ape_costume') {
-      const state = this.scene.registry.get('gameState') as any;
+      const state = this.scene.registry.get('gameState') as GameState | undefined;
       if (state) {
         const wearing = state.flags['ape_costume_worn'] ?? false;
         state.flags['ape_costume_worn'] = !wearing;

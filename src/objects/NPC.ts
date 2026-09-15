@@ -9,6 +9,9 @@ export class NPC extends Phaser.GameObjects.Container {
   public npcId: string;
   public npcName: string;
   public dialogueTreeId: string | null;
+  /** Scale multiplier and position (%) from the scene data, kept for repositioning on resize */
+  public dataScale = 1;
+  public pctPosition: { x: number; y: number } | null = null;
   private npcBody: Phaser.GameObjects.Rectangle | Phaser.GameObjects.Image;
   private label: Phaser.GameObjects.Text;
   private talkSpriteKey: string | null = null;

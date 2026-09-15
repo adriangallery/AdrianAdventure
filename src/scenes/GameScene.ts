@@ -19,6 +19,7 @@ import { mintItem, mintAchievement, type MintResult } from '@/web3/contracts';
 import { TransactionToast } from '@/ui/TransactionToast';
 import { getAchievementByText } from '@/config/achievements.config';
 import type { Address } from 'viem';
+import type { ScummUI } from '@/ui/ScummUI';
 
 export class GameScene extends Phaser.Scene {
   private player!: Player;
@@ -155,8 +156,8 @@ export class GameScene extends Phaser.Scene {
 
     // Per-scene player depth override (default 10, foreground is 15)
     // Set > 15 to render player ABOVE the foreground layer
-    if ((sceneData.player as any).playerDepth) {
-      this.player.setDepth((sceneData.player as any).playerDepth);
+    if (sceneData.player.playerDepth) {
+      this.player.setDepth(sceneData.player.playerDepth);
     }
 
     // Foreground layer — renders above player for depth (walk behind bushes/rocks)
@@ -171,7 +172,7 @@ export class GameScene extends Phaser.Scene {
 
     // Conditional overlays — sprites shown/hidden based on game flags
     this.conditionalOverlays = [];
-    const overlayConfigs = (sceneData as any).conditionalOverlays ?? [];
+    const overlayConfigs = sceneData.conditionalOverlays ?? [];
     for (const co of overlayConfigs) {
       const key = `overlay_${sceneId}_${co.id}`;
       if (this.textures.exists(key)) {
@@ -238,8 +239,8 @@ export class GameScene extends Phaser.Scene {
         const npc = new NPC(this, npcScreen.x, npcScreen.y, nd.id, nd.name, nd.dialogueTreeId, nd.color ? parseInt(nd.color, 16) : undefined);
         const npcScale = this.coordSystem.getScale() * (nd.scale ?? 1);
         npc.setScale(npcScale);
-        (npc as any)._npcDataScale = nd.scale ?? 1; // store for resize
-        (npc as any)._npcPctPosition = { x: nd.position.x, y: nd.position.y }; // store for resize repositioning
+        npc.dataScale = nd.scale ?? 1; // store for resize
+        npc.pctPosition = { x: nd.position.x, y: nd.position.y }; // store for resize repositioning
         npc.startIdle();
         this.npcs.push(npc);
       }
@@ -252,7 +253,7 @@ export class GameScene extends Phaser.Scene {
 
     // Camera post-processing effect (e.g., anaglyph for MemeLAB)
     this.activeCameraEffect = null;
-    const cameraEffect = (sceneData as any).cameraEffect as { type: string; disableFlag?: string } | undefined;
+    const cameraEffect = sceneData.cameraEffect;
     if (cameraEffect?.type === 'anaglyph') {
       const disableFlag = cameraEffect.disableFlag;
       if (!disableFlag || !(this.gameState.flags[disableFlag] ?? false)) {
@@ -441,7 +442,7 @@ export class GameScene extends Phaser.Scene {
 
     // Get current verb and selected item from UI (needed for NPC item interactions)
     const uiScene = this.scene.get('UIScene') as Phaser.Scene;
-    const scummUI = (uiScene as any).scummUI;
+    const scummUI = (uiScene as unknown as { scummUI?: ScummUI }).scummUI;
     const verb: Verb = scummUI?.getSelectedVerb?.() ?? Verb.WALK;
     const selectedItem = scummUI?.getSelectedItem?.() ?? null;
 
@@ -461,8 +462,8 @@ export class GameScene extends Phaser.Scene {
           const sceneData = this.registry.get('sceneData') as SceneData;
           const npcData = sceneData.npcs?.find(n => n.id === npc.npcId);
           const responseMap = verb === Verb.GIVE
-            ? (npcData as any)?.giveResponses
-            : (npcData as any)?.useResponses;
+            ? npcData?.giveResponses
+            : npcData?.useResponses;
           const response = responseMap?.[selectedItem.id]
             ?? responseMap?._default?.replace('{item}', selectedItem.name)
             ?? (verb === Verb.GIVE
@@ -599,8 +600,8 @@ export class GameScene extends Phaser.Scene {
     this.player.onResize(this.coordSystem);
 
     for (const npc of this.npcs) {
-      const npcDataScale = (npc as any)._npcDataScale ?? 1;
-      const npcPctPos = (npc as any)._npcPctPosition as { x: number; y: number } | undefined;
+      const npcDataScale = npc.dataScale;
+      const npcPctPos = npc.pctPosition;
       if (npcPctPos) {
         const newPos = this.coordSystem.pctToScreen(npcPctPos.x, npcPctPos.y);
         npc.setPosition(newPos.x, newPos.y);
@@ -870,9 +871,9 @@ export class GameScene extends Phaser.Scene {
   }
 
   private isHotspotVisible(hs: HotspotData): boolean {
-    const hideFlag = (hs as any).hideWhenFlag;
+    const hideFlag = hs.hideWhenFlag;
     if (hideFlag && (this.gameState.flags[hideFlag] ?? false)) return false;
-    const showFlag = (hs as any).showWhenFlag;
+    const showFlag = hs.showWhenFlag;
     if (showFlag && !(this.gameState.flags[showFlag] ?? false)) return false;
     return true;
   }

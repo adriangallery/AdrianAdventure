@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import { FONT } from '@/config/theme';
-import { createInitialState } from '@/types/game.types';
+import { createInitialState, type GameState } from '@/types/game.types';
 import type { Player } from '@/objects/Player';
 
 /**
@@ -240,7 +240,7 @@ export class TrailerScene extends Phaser.Scene {
     const player = this.getPlayer();
     if (player) {
       player.setCostume('ape');
-      const gs = this.registry.get('gameState') as any;
+      const gs = this.registry.get('gameState') as GameState | undefined;
       if (gs) { gs.flags['ape_costume_worn'] = true; this.registry.set('gameState', gs); }
     }
     await this.wait(1800);
@@ -420,7 +420,7 @@ export class TrailerScene extends Phaser.Scene {
   }
 
   private getPlayer(): Player | null {
-    return (this.scene.get('GameScene') as any)?.player ?? null;
+    return (this.scene.get('GameScene') as unknown as { player?: Player } | null)?.player ?? null;
   }
 
   // ─── Montage ───────────────────────────────────────────

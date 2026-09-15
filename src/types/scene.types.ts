@@ -25,6 +25,8 @@ export interface SceneData {
     playerScale?: number;
     /** Hide player sprite (for closeup/cinematic scenes) */
     hidePlayer?: boolean;
+    /** Per-scene player depth override (default 10, foreground is 15) */
+    playerDepth?: number;
     sprite: { sheet: string | null; idle: string | null; walk: string | null };
   };
   ui: {
@@ -58,6 +60,17 @@ export interface SceneData {
   onEnter?: ScriptOp[];
   /** Conditional visual overlays based on wallet/NFT state */
   web3Visuals?: Web3Visual[];
+  /** Sprites shown/hidden based on game flags */
+  conditionalOverlays?: ConditionalOverlayData[];
+  /** Camera post-processing effect (e.g., anaglyph for MemeLAB) */
+  cameraEffect?: { type: string; disableFlag?: string };
+}
+
+export interface ConditionalOverlayData {
+  id: string;
+  flag: string;
+  invert?: boolean;
+  depth?: number;
 }
 
 // ─── Web3 Visual Elements ───────────────────────────────────
@@ -93,6 +106,9 @@ export interface NPCData {
   dialogueTreeId?: string;
   /** Custom scale multiplier for this NPC (default: 1.0) */
   scale?: number;
+  /** Fun responses when the player GIVEs/USEs an item on the NPC (key = item id or _default) */
+  giveResponses?: Record<string, string>;
+  useResponses?: Record<string, string>;
 }
 
 export interface DialogueTreeData {
@@ -137,6 +153,10 @@ export interface HotspotData {
   gate?: { type: string; contract?: string; tokenId?: number; minBalance?: number | string };
   /** Script to run when gate fails (default: generic locked message) */
   gateFallback?: ScriptOp[];
+  /** Hotspot hidden while this flag is set */
+  hideWhenFlag?: string;
+  /** Hotspot only visible while this flag is set */
+  showWhenFlag?: string;
 }
 
 export interface TriggerData {
