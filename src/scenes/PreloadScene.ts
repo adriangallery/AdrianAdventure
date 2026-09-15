@@ -225,7 +225,7 @@ export class PreloadScene extends Phaser.Scene {
   create(): void {
     // Load web3Visual sprites from scene JSON (requires scene data to be parsed first)
     const sceneId = this.registry.get('currentSceneId') as string;
-    const sceneData = this.cache.json.get(`scene_${sceneId}`) as any;
+    const sceneData = this.cache.json.get(`scene_${sceneId}`) as SceneData | undefined;
     if (sceneData?.web3Visuals?.length) {
       const basePath = `assets/scenes/${sceneId}`;
       let needsLoad = false;

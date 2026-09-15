@@ -10,7 +10,7 @@ import { BadgePanel } from '@/ui/BadgePanel';
 import { DialogueSystem, type DialogueTree } from '@/systems/DialogueSystem';
 import { VoiceSystem } from '@/systems/VoiceSystem';
 import type { InventorySystem } from '@/systems/InventorySystem';
-import type { SceneData, HotspotData } from '@/types/scene.types';
+import type { SceneData, HotspotData, ScriptOp } from '@/types/scene.types';
 import type { Verb, GameState } from '@/types/game.types';
 import type { GameScene } from './GameScene';
 import { WEB3_ENABLED } from '@/config/platform';
@@ -98,7 +98,7 @@ export class UIScene extends Phaser.Scene {
       runScripts: async (ops) => {
         // Execute simple ops (setFlag, addItem) directly to avoid ScriptEngine deadlock
         // when dialogue is initiated from within a running script
-        for (const op of ops as any[]) {
+        for (const op of ops as Array<{ op: string; flag: string; value: boolean; text: string; speaker?: string; id: string; name: string }>) {
           if (op.op === 'setFlag') {
             const state = this.registry.get('gameState') as GameState | undefined;
             if (state) { state.flags[op.flag] = op.value; this.registry.set('gameState', state); }
@@ -138,7 +138,7 @@ export class UIScene extends Phaser.Scene {
 
     // --- Item-to-item combo handler ---
     this.scummUI.onCombo((item1, item2) => {
-      const globalConfig = this.cache.json.get('globalConfig') as { itemCombos?: Array<{ item1: string; item2: string; result: string | null; script: any[] }> } | null;
+      const globalConfig = this.cache.json.get('globalConfig') as { itemCombos?: Array<{ item1: string; item2: string; result: string | null; script: ScriptOp[] }> } | null;
       const combos = globalConfig?.itemCombos ?? [];
       const match = combos.find(c =>
         (c.item1 === item1.id && c.item2 === item2.id) ||
@@ -177,7 +177,7 @@ export class UIScene extends Phaser.Scene {
       if (this.registry.get('dialogueActive')) return;
       if (this.cache.audio.has('npc_talk')) this.sound.play('npc_talk', { volume: 0.4 });
       // Find the NPC and start talk animation
-      const npcs = (gameScene as any).npcs as import('@/objects/NPC').NPC[] | undefined;
+      const npcs = (gameScene as unknown as { npcs?: import('@/objects/NPC').NPC[] }).npcs;
       const npc = npcs?.find((n) => n.npcId === npcId);
       npc?.startTalking();
       this.registry.set('dialogueActive', true);

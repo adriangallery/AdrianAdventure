@@ -103,7 +103,7 @@ export class SaveButton {
     const getSlot = (slotId: number) => {
       const remote = remoteSlots?.[slotId];
       const local = saveSystem.loadFromSlot(slotId);
-      if (remote) return { state: remote.state, sceneName: remote.sceneName, timestamp: remote.timestamp ?? (remote as any).savedAt ?? Date.now(), source: 'cloud' as const };
+      if (remote) return { state: remote.state, sceneName: remote.sceneName, timestamp: remote.timestamp ?? (remote as unknown as { savedAt?: number }).savedAt ?? Date.now(), source: 'cloud' as const };
       if (local) return { state: local.state, sceneName: local.sceneName, timestamp: local.timestamp, source: 'local' as const };
       return null;
     };

@@ -5,6 +5,21 @@ import { TWP, FONT } from '@/config/theme';
 import { ACHIEVEMENTS } from '@/config/achievements.config';
 import { resolveEnsMany } from '@/web3/ens';
 
+/** Fila del leaderboard de save.zerothetoken.com */
+interface LeaderboardPlayer {
+  address: string;
+  score?: number;
+  chapters?: number;
+  sceneName?: string;
+  gameComplete?: boolean;
+  items?: number;
+  scenesVisited?: number;
+  puzzles?: number;
+  lastSaved: number | string;
+  holderBadges?: string[];
+  achievements?: string[];
+}
+
 /**
  * Title/Menu screen — Thimbleweed Park noir atmosphere.
  */
@@ -288,7 +303,7 @@ export class MenuScene extends Phaser.Scene {
     // Fetch leaderboard
     try {
       const resp = await fetch('https://save.zerothetoken.com/leaderboard');
-      const data = await resp.json();
+      const data = await resp.json() as { players?: LeaderboardPlayer[]; total?: number };
       loading.remove();
 
       if (!data.players || data.players.length === 0) {
@@ -306,7 +321,7 @@ export class MenuScene extends Phaser.Scene {
       const top = data.players.slice(0, 5);
 
       // Resolve ENS names in parallel (non-blocking — updates DOM when ready)
-      const addresses = top.map((p: any) => p.address as string);
+      const addresses = top.map((p) => p.address);
       const ensMap: Record<string, string | null> = {};
       resolveEnsMany(addresses).then((map) => {
         Object.assign(ensMap, map);
@@ -319,7 +334,7 @@ export class MenuScene extends Phaser.Scene {
         }
       });
 
-      top.forEach((p: any, i: number) => {
+      top.forEach((p, i) => {
         const row = document.createElement('div');
         const medal = i === 0 ? '\u{1F947}' : i === 1 ? '\u{1F948}' : i === 2 ? '\u{1F949}' : `#${i + 1}`;
         const shortAddr = p.address.slice(0, 6) + '...' + p.address.slice(-4);

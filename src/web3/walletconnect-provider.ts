@@ -1,10 +1,13 @@
 import { CHAIN_ID, getRpcUrl } from '@/config/blockchain.config';
+import type { EthereumProvider } from '@walletconnect/ethereum-provider';
+
+type WalletConnectProvider = Awaited<ReturnType<typeof EthereumProvider.init>>;
 
 /**
  * Lazy-loaded WalletConnect EIP-1193 provider factory.
  * Uses a custom QR modal instead of the broken AppKit modal.
  */
-export async function createWalletConnectProvider(): Promise<any> {
+export async function createWalletConnectProvider(): Promise<WalletConnectProvider> {
   const projectId = (import.meta.env.VITE_WALLETCONNECT_PROJECT_ID || '').trim();
   if (!projectId) {
     throw new Error('WalletConnect Project ID not configured (VITE_WALLETCONNECT_PROJECT_ID)');
@@ -44,7 +47,7 @@ export async function createWalletConnectProvider(): Promise<any> {
 
   const { showWCModal } = await import('@/ui/WalletConnectModal');
 
-  return new Promise<any>((resolve, reject) => {
+  return new Promise<WalletConnectProvider>((resolve, reject) => {
     let modal: { close: () => void } | null = null;
     let settled = false;
 

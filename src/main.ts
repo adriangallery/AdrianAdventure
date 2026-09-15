@@ -56,7 +56,7 @@ if (IS_NATIVE) {
 }
 
 // Expose for debugging
-(window as any).__game = game;
+(window as unknown as { __game?: Phaser.Game }).__game = game;
 
 /** Floating scene selector for dev/testing */
 function createSceneSelector(g: Phaser.Game): void {
