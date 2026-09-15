@@ -20,6 +20,7 @@ import { TransactionToast } from '@/ui/TransactionToast';
 import { getAchievementByText } from '@/config/achievements.config';
 import type { Address } from 'viem';
 import type { ScummUI } from '@/ui/ScummUI';
+import type { UIScene } from '@/scenes/UIScene';
 
 /** Resultado del hit-test de un toque: nada (panel, fuera del fondo), un NPC o un punto del fondo. */
 type TapHit =
@@ -299,6 +300,21 @@ export class GameScene extends Phaser.Scene {
       this.gameState.playerPosition = { pctX: spawn.x, pctY: spawn.y };
       this.saveSystem.autoSave(this.gameState, sceneData.title);
       this.time.addEvent({ delay: 5000, loop: true, callback: () => this.checkIdleHint() });
+    }
+
+    // A1.1: un solo watchdog para todos los scripts (hotspots, combos, onEnter y triggers). Va con el reloj de
+    // Phaser: con la pestaña oculta no avanza, y mientras hay algo en pantalla para el jugador no cuenta.
+    this.time.addEvent({
+      delay: GameScene.WATCHDOG_TICK_MS,
+      loop: true,
+      callback: () => {
+        if (this.scriptEngine.watchdogTick(GameScene.WATCHDOG_TICK_MS, this.isPresentingToPlayer())) {
+          this.inputCooldownFrames = 2;
+        }
+      },
+    });
+
+    if (!this.isTrailer) {
       // V6: aviso de autoguardado; si la escena abre con cinemática, se enseña al terminarla
       if (!sceneData.onEnter?.length) this.showAutosaveIndicator();
     }
@@ -307,7 +323,7 @@ export class GameScene extends Phaser.Scene {
     if (sceneData.onEnter?.length && !this.isTrailer) {
       this.time.delayedCall(100, () => {
         this.scriptEngine.updateContext(this.buildScriptContext());
-        this.scriptEngine.execute(sceneData.onEnter!).then(() => {
+        this.scriptEngine.execute(sceneData.onEnter!, `${sceneId}/onEnter`).then(() => {
           this.cinematicOverlay.hideBlackCover();
           this.showAutosaveIndicator();
           this.checkSpawnTriggers(sceneData);
@@ -396,7 +412,7 @@ export class GameScene extends Phaser.Scene {
             this.firedTriggers.add(tr.id);
             this.persistFiredTriggers();
             this.player.halt();
-            this.scriptEngine.execute(tr.onEnter);
+            this.scriptEngine.execute(tr.onEnter, `${tr.id}/onEnter`);
             break;
           }
         }
@@ -555,8 +571,7 @@ export class GameScene extends Phaser.Scene {
         (c: { items: string[] }) => c.items.includes(item.id) && c.items.includes(hs.id)
       );
       if (combo) {
-        this.scriptEngine.updateContext(this.buildScriptContext());
-        this.scriptEngine.execute(combo.script);
+        this.runScript(combo.script, `combo ${item.id}+${hs.id}`);
       } else {
         this.scene.get('UIScene').events.emit('say', `I can't use ${item.name} with ${hs.name}.`);
       }
@@ -953,33 +968,33 @@ export class GameScene extends Phaser.Scene {
     [Verb.WALK]: "I'll walk there.",
   };
 
+  private static readonly WATCHDOG_TICK_MS = 1000;
+
   /**
-   * Run a script with a watchdog that force-resets the engine if it never
-   * resolves (defence against lost Promise resolvers in dialogue/UI chains
-   * that would otherwise freeze all input until a scene transition).
+   * A1.1: hay algo en pantalla esperando al jugador (texto, árbol de diálogo, elección o cinemática). Mientras
+   * tanto el watchdog de scripts no cuenta: dejar un texto abierto no es un cuelgue.
    */
-  private runScriptWithWatchdog(
-    script: import('@/types/scene.types').ScriptOp[],
-    label: string,
-  ): void {
+  private isPresentingToPlayer(): boolean {
+    if (this.registry.get('dialogueShowing') || this.registry.get('dialogueActive')) return true;
+    if (((this.registry.get('cinematicActive') as number | undefined) ?? 0) > 0) return true;
+    if (!this.scene.isActive('UIScene')) return false;
+    return (this.scene.get('UIScene') as UIScene).getChoicePanel()?.isAwaitingChoice() ?? false;
+  }
+
+  /**
+   * Ejecuta un script de hotspot o combo. El watchdog (A1.1) es uno solo para todos los scripts, en create();
+   * `label` sale en su aviso si alguna vez tiene que forzar el reinicio.
+   */
+  private runScript(script: import('@/types/scene.types').ScriptOp[], label: string): void {
     this.scriptEngine.updateContext(this.buildScriptContext());
-    let settled = false;
-    const watchdog = window.setTimeout(() => {
-      if (!settled && this.scriptEngine.isRunning()) {
-        this.scriptEngine.forceReset(`watchdog timeout: ${label}`);
-        this.inputCooldownFrames = 2;
-      }
-    }, 30_000);
-    this.scriptEngine.execute(script).finally(() => {
-      settled = true;
-      clearTimeout(watchdog);
+    this.scriptEngine.execute(script, label).finally(() => {
       this.inputCooldownFrames = 2;
     });
   }
 
   /** Execute an item-to-item combo script (called from UIScene) */
   executeItemComboScript(script: import('@/types/scene.types').ScriptOp[]): void {
-    this.runScriptWithWatchdog(script, 'item combo');
+    this.runScript(script, 'item combo');
   }
 
   async executeHotspotVerb(hotspot: HotspotData, verb: Verb): Promise<void> {
@@ -993,7 +1008,7 @@ export class GameScene extends Phaser.Scene {
       }
       if (!gatePassed) {
         if (hotspot.gateFallback?.length) {
-          this.runScriptWithWatchdog(hotspot.gateFallback, `gate fallback ${hotspot.id}`);
+          this.runScript(hotspot.gateFallback, `gate fallback ${hotspot.id}`);
         } else {
           this.scene.get('UIScene').events.emit('say', 'Something about this feels locked away...');
         }
@@ -1003,7 +1018,7 @@ export class GameScene extends Phaser.Scene {
 
     const scripts = hotspot.scripts[verb];
     if (scripts?.length) {
-      this.runScriptWithWatchdog(scripts, `${hotspot.id}/${verb}`);
+      this.runScript(scripts, `${hotspot.id}/${verb}`);
     } else {
       const fallback = GameScene.VERB_DEFAULTS[verb] || 'Nothing interesting happens.';
       this.scene.get('UIScene').events.emit('say', fallback);
@@ -1051,8 +1066,11 @@ export class GameScene extends Phaser.Scene {
       },
       startDialogue: async (_npcId, treeId) => {
         const ui = this.scene.get('UIScene');
+        // A1.1: escuchar antes de emitir; un árbol que no existe emite `dialogueComplete` al momento y la
+        // promesa se quedaba sin resolver (el watchdog tenía que forzar el reinicio)
+        const done = new Promise<void>((r) => ui.events.once('dialogueComplete', r));
         ui.events.emit('startDialogue', _npcId, treeId);
-        await new Promise<void>((r) => ui.events.once('dialogueComplete', r));
+        await done;
       },
       showTitleCard: (chapter, title, subtitle) => {
         const ui = this.scene.get('UIScene');
@@ -1161,7 +1179,7 @@ export class GameScene extends Phaser.Scene {
         this.firedTriggers.add(tr.id);
         this.persistFiredTriggers();
         this.scriptEngine.updateContext(this.buildScriptContext());
-        this.scriptEngine.execute(tr.onEnter);
+        this.scriptEngine.execute(tr.onEnter, `${tr.id}/onEnter`);
         break;
       }
     }

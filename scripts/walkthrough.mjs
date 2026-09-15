@@ -149,7 +149,7 @@ async function runRoute(file, route) {
   page.on('console', (msg) => {
     const text = msg.text();
     if (msg.type() === 'error' && !IGNORE.some((re) => re.test(text))) problems.push(`console.error: ${text.slice(0, 200)}`);
-    // El watchdog de 30 s de GameScene descarta scripts en cola (A1.1): aquí es un fallo, no ruido
+    // El watchdog de ScriptEngine solo salta con un script colgado sin nada en pantalla (A1.1): aquí es un fallo, no ruido
     if (msg.type() === 'warn' && /forceReset/.test(text)) problems.push(`watchdog: ${text.slice(0, 200)}`);
   });
   page.on('response', (res) => {
