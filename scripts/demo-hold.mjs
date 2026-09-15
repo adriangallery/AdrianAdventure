@@ -1,43 +1,17 @@
 // Demo de V6 para Adrián (regla visual): en móvil, TOCAR un objeto = mirarlo y MANTENER PULSADO = su
-// acción principal (anillo de progreso de 450 ms). Graba frames PNG que el job de CI convierte en GIF.
-// Uso: BASE_URL=http://127.0.0.1:4173 node scripts/demo-hold.mjs
-import { mkdirSync, rmSync } from 'node:fs';
-import puppeteer from 'puppeteer';
+// acción principal (anillo de progreso de 450 ms).
+// Uso: BASE_URL=http://127.0.0.1:4173 node scripts/lib/demo.mjs run hold
+import { startDemo } from './lib/demo.mjs';
 
-const BASE = process.env.BASE_URL || 'http://127.0.0.1:4173';
 const SCENE = process.env.DEMO_SCENE || 'outside';
-const OUT = 'demo-hold-frames';
-rmSync(OUT, { recursive: true, force: true });
-mkdirSync(OUT, { recursive: true });
+const demo = await startDemo(import.meta.url, { fps: 12, viewport: { deviceScaleFactor: 2 } });
+const { page } = demo;
+await demo.openScene(SCENE);
 
-const browser = await puppeteer.launch({
-  headless: true,
-  args: ['--no-sandbox', '--use-gl=swiftshader', '--enable-webgl', '--ignore-gpu-blocklist'],
-});
-const page = await browser.newPage();
-await page.setViewport({ width: 844, height: 390, deviceScaleFactor: 2, isMobile: true, hasTouch: true });
-await page.goto(`${BASE}/?scene=${SCENE}`, { waitUntil: 'domcontentloaded' });
-await page.waitForFunction(
-  (id) => window.__game?.scene?.isActive('GameScene') && window.__game.registry.get('currentSceneId') === id,
-  { timeout: 90000, polling: 500 }, SCENE,
-);
-
-const busy = () => page.evaluate(() => {
-  const gs = window.__game.scene.getScene('GameScene');
-  return !!gs.scriptEngine?.isRunning?.() || !!gs.registry.get('dialogueShowing') || !!gs.registry.get('dialogueActive') || (gs.inputCooldownFrames ?? 0) > 0;
-});
-// Deja la escena libre tocando arriba (zona sin objetos) mientras haya cinemática o diálogo
-// La cinemática de entrada arranca con retraso: solo cuenta como libre tras 4 comprobaciones seguidas
-const settle = async () => {
-  let calm = 0;
-  for (let i = 0; i < 90 && calm < 4; i++) {
-    if (await busy()) { calm = 0; await page.touchscreen.tap(422, 40); } else calm++;
-    await new Promise((r) => setTimeout(r, 700));
-  }
-  return calm >= 4;
-};
-if (!(await settle())) { console.error('La escena no quedó libre'); process.exit(1); }
-await new Promise((r) => setTimeout(r, 600));
+// Deja la escena libre tocando arriba (zona sin objetos) mientras haya cinemática, diálogo o cooldown
+const settle = () => demo.settle({ cooldown: true });
+if (!(await settle())) await demo.fail('La escena no quedó libre');
+await demo.sleep(600);
 
 // Elegir un objeto visible con acción principal «real» (no USE por descarte) y centrar la cámara en él
 const target = await page.evaluate(() => {
@@ -59,33 +33,29 @@ const target = await page.evaluate(() => {
 });
 console.log('objetivo', JSON.stringify(target));
 
-let n = 0;
-const shot = () => page.screenshot({ path: `${OUT}/${String(n++).padStart(3, '0')}.png` });
-const film = async (ms) => { const end = Date.now() + ms; while (Date.now() < end) await shot(); };
-
 // 1) Tocar = mirar
-await film(500);
+await demo.film(500);
 await page.touchscreen.tap(target.x, target.y);
-await film(1800);
+await demo.film(1800);
 const afterTap = await page.evaluate(() => window.__verbs.slice());
-if (!(await settle())) { console.error('El diálogo de «mirar» no se cerró'); process.exit(1); }
-await film(400);
+if (!(await settle())) await demo.fail('El diálogo de «mirar» no se cerró');
+await demo.film(400);
 
 // 2) Mantener pulsado = acción principal (toque de 700 ms con captura del anillo)
 await page.touchscreen.touchStart(target.x, target.y);
-await film(700);
+await demo.film(700);
 await page.touchscreen.touchEnd();
-await film(2200);
+await demo.film(2200);
 const afterHold = await page.evaluate(() => window.__verbs.slice());
-await page.screenshot({ path: 'demo-hold-full.png' });
-await browser.close();
+await demo.still('full');
+await demo.end();
 
 console.log('tras tocar', JSON.stringify(afterTap));
 console.log('tras mantener', JSON.stringify(afterHold));
-console.log(`${n} frames`);
+console.log(`${demo.frames} frames`);
 const tapOk = afterTap.length === 1 && afterTap[0].verb === 'LOOK';
 const holdVerbs = afterHold.slice(afterTap.length).map((e) => e.verb);
 // La acción puede llegar al instante (TALK/sin alcance) o al terminar de andar
 const holdOk = holdVerbs.includes(target.main) && !holdVerbs.includes('LOOK');
-if (!tapOk) { console.error('Tocar no disparó LOOK'); process.exit(1); }
-if (!holdOk) { console.error(`Mantener no disparó ${target.main}: ${JSON.stringify(holdVerbs)}`); process.exit(1); }
+if (!tapOk) await demo.fail('Tocar no disparó LOOK');
+if (!holdOk) await demo.fail(`Mantener no disparó ${target.main}: ${JSON.stringify(holdVerbs)}`);

@@ -69,3 +69,34 @@ Reglas de las rutas `sequence-break`, para no dar por cerrada una ruta sin haber
 - Contra producción: Actions → build → Run workflow → `BASE_URL=https://adventure.zerothetoken.com`. Lanza
   smoke y walkthrough sin compilar. La API solo existe si ese despliegue ya incluye A0.1.
 - Una sola ruta: `WALKTHROUGH_ONLY=<id>`.
+
+# Demos visuales (A0.2)
+
+Los checkpoints `visual` dejan una demo `scripts/demo-<id>.mjs` que graba lo que cambió y comprueba que se
+ve. El job `demo` de `.github/workflows/build.yml` las graba en Chrome headless contra el build y sube:
+
+- `demo-gifs`: `demo-out/<nombre>/<nombre>.gif`, capturas fijas (`full.png`…), `log.txt` y `report.json`.
+- `demo-frames`: los fotogramas PNG (7 días).
+
+Cuándo corre: en PRs de ramas `scumm/*` y `feat/*` graba las demos que la PR añade o cambia, y todas si
+cambia `scripts/lib/demo.mjs`. Sin demos que grabar, el job termina en verde sin compilar. A mano:
+Actions → build → Run workflow con `DEMOS` (nombres separados por espacios, vacío = todas) y, si se
+quiere, `BASE_URL` para grabar contra un despliegue. Una demo que falla deja su GIF igualmente y pone el
+job en rojo.
+
+Plantilla (la grabación, el viewport móvil 844x390 y el GIF están en `scripts/lib/demo.mjs`):
+
+```js
+import { startDemo } from './lib/demo.mjs';
+
+const demo = await startDemo(import.meta.url, { fps: 8 });   // width del GIF: 640 por defecto
+await demo.openScene('lobby');                              // ?scene=lobby y espera a GameScene
+if (!(await demo.settle())) await demo.fail('La escena no quedó libre');
+await demo.film(1500);                                      // o demo.shot() fotograma a fotograma
+await demo.still('full');
+await demo.end();
+if (!ok) await demo.fail('Qué no se ve');                   // siempre con await
+```
+
+En local (con `npm ci` hecho, nunca en el portátil de 8 GB): `BASE_URL=… node scripts/lib/demo.mjs run <nombre>`.
+Sin puppeteer: `node scripts/lib/demo.mjs list [--changed <ref>]` y `node scripts/lib/demo.mjs gif <nombre>`.
