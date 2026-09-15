@@ -1041,6 +1041,12 @@ export class GameScene extends Phaser.Scene {
           ui.events.emit('showCredits', resolve);
         });
       },
+      showMonitorReveal: () => {
+        const ui = this.scene.get('UIScene');
+        return new Promise<void>((resolve) => {
+          ui.events.emit('showMonitorReveal', resolve);
+        });
+      },
     };
   }
 

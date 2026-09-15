@@ -467,6 +467,125 @@ export class CinematicOverlay {
     });
   }
 
+  /**
+   * V6b — monitor del treatment_room: lluvia verde a pantalla completa y, encima, el expediente del
+   * jugador tecleado como en un terminal. `linesPromise` resuelve cuando termina la consulta on-chain;
+   * mientras tanto parpadea «ACCESSING PATIENT RECORDS». Clic: completa el texto; otro clic: cierra.
+   */
+  showMonitorReveal(linesPromise: Promise<string[]>): Promise<void> {
+    return new Promise<void>((resolve) => {
+      const { width, height } = this.scene.scale;
+      const container = this.scene.add.container(0, 0).setDepth(DEPTH).setScrollFactor(0);
+      container.add(this.scene.add.rectangle(width / 2, height / 2, width, height, 0x000000, 1)
+        .setOrigin(0.5).setScrollFactor(0));
+
+      // Lluvia en un canvas propio: cada paso oscurece un poco y dibuja un carácter por columna
+      const texKey = `monitor_rain_${Date.now()}`;
+      const canvasTex = this.scene.textures.createCanvas(texKey, width, height);
+      if (canvasTex) container.add(this.scene.add.image(0, 0, texKey).setOrigin(0, 0).setScrollFactor(0));
+      const glyph = Math.max(10, Math.floor(Math.min(width, height) / 40));
+      const cols = Math.ceil(width / glyph);
+      const drops = Array.from({ length: cols }, () => Math.floor(Math.random() * -40));
+      const chars = '0123456789abcdefx';
+      const reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
+      const rainTimer = this.scene.time.addEvent({
+        delay: 60, loop: true, paused: reducedMotion || !canvasTex,
+        callback: () => {
+          if (!canvasTex) return;
+          const ctx = canvasTex.context;
+          ctx.fillStyle = 'rgba(0, 0, 0, 0.12)';
+          ctx.fillRect(0, 0, width, height);
+          ctx.font = `${glyph}px monospace`;
+          for (let i = 0; i < cols; i++) {
+            const y = drops[i] * glyph;
+            if (y >= 0) {
+              ctx.fillStyle = Math.random() < 0.1 ? '#c8ffc8' : '#1f9f44';
+              ctx.fillText(chars[Math.floor(Math.random() * chars.length)], i * glyph, y);
+            }
+            drops[i] = y > height && Math.random() > 0.975 ? 0 : drops[i] + 1;
+          }
+          canvasTex.refresh();
+        },
+      });
+
+      // Panel de terminal
+      const panelW = Math.min(width * 0.9, 760);
+      const panelH = Math.min(height * 0.72, 520);
+      const pad = Math.max(12, Math.floor(panelW * 0.04));
+      const fontSize = Math.max(8, Math.min(14, Math.floor((panelW - pad * 2) / 30)));
+      const panel = this.scene.add.rectangle(width / 2, height / 2, panelW, panelH, 0x000000, 0.82)
+        .setOrigin(0.5).setStrokeStyle(2, 0x2bd35a, 0.9).setScrollFactor(0);
+      container.add(panel);
+      const text = this.scene.add.text(width / 2 - panelW / 2 + pad, height / 2 - panelH / 2 + pad, '', {
+        fontFamily: FONT.FAMILY, fontSize: `${fontSize}px`, color: '#5dff8a',
+        lineSpacing: Math.floor(fontSize * 0.9),
+        wordWrap: { width: panelW - pad * 2, useAdvancedWrap: true },
+      }).setOrigin(0, 0).setScrollFactor(0);
+      container.add(text);
+      const continueHint = this.scene.add.text(width / 2, height / 2 + panelH / 2 - pad, '[ click to continue ]', {
+        fontFamily: FONT.FAMILY, fontSize: `${Math.max(8, fontSize - 2)}px`, color: '#2bd35a', align: 'center',
+      }).setOrigin(0.5, 1).setScrollFactor(0).setAlpha(0);
+      container.add(continueHint);
+
+      let phase: 'loading' | 'typing' | 'done' = 'loading';
+      let full = '';
+      let typed = 0;
+      let cursorOn = true;
+      const loadingText = '> ACCESSING PATIENT RECORDS';
+      const cursorTimer = this.scene.time.addEvent({
+        delay: 400, loop: true,
+        callback: () => {
+          cursorOn = !cursorOn;
+          if (phase === 'loading') text.setText(`${loadingText}${cursorOn ? '...' : ''}_`);
+        },
+      });
+      text.setText(`${loadingText}..._`);
+
+      let typeTimer: Phaser.Time.TimerEvent | null = null;
+      const finishTyping = () => {
+        typeTimer?.remove();
+        typeTimer = null;
+        text.setText(full);
+        phase = 'done';
+        this.pulseAlpha(continueHint);
+      };
+
+      const minLoadingMs = 1400;
+      const startedAt = Date.now();
+      linesPromise
+        .catch(() => ['> RECORDS UNREADABLE. THE NODE IS SILENT.', '> DIAGNOSIS: PATIENT ZERO'])
+        .then((lines) => {
+          const delay = Math.max(0, minLoadingMs - (Date.now() - startedAt));
+          this.scene.time.delayedCall(delay, () => {
+            if (!container.active) return;
+            full = lines.join('\n');
+            phase = 'typing';
+            typeTimer = this.scene.time.addEvent({
+              delay: 24, loop: true,
+              callback: () => {
+                typed = Math.min(full.length, typed + 2);
+                text.setText(full.slice(0, typed) + (typed < full.length ? '_' : ''));
+                if (typed >= full.length) finishTyping();
+              },
+            });
+          });
+        });
+
+      const clickHandler = () => {
+        if (phase === 'loading') return;
+        if (phase === 'typing') { finishTyping(); return; }
+        this.scene.input.off('pointerdown', clickHandler);
+        rainTimer.remove();
+        cursorTimer.remove();
+        this.fadeOutAndDestroy(container, () => {
+          if (this.scene.textures.exists(texKey)) this.scene.textures.remove(texKey);
+          resolve();
+        });
+      };
+      this.scene.input.on('pointerdown', clickHandler);
+    });
+  }
+
   /** Pulse a "click to continue" hint with gentle breathing */
   private pulseAlpha(text: Phaser.GameObjects.Text): void {
     this.scene.tweens.add({

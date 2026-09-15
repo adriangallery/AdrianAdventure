@@ -29,6 +29,8 @@ export interface ScriptContext {
   showNarrative?: (lines: string[]) => Promise<void>;
   showAchievement?: (text: string) => void;
   showCredits?: () => Promise<void>;
+  /** V6b: monitor del treatment_room — lluvia verde + expediente real de la wallet */
+  showMonitorReveal?: () => Promise<void>;
   // Transaction toast
   showToast?: (status: 'pending' | 'success' | 'failed', message: string) => void;
   // Costume change
@@ -305,6 +307,14 @@ export class ScriptEngine {
         // { op: "credits" } — show scrolling end credits
         if (this.ctx.showCredits) {
           await this.ctx.showCredits();
+        }
+        break;
+      }
+
+      case 'monitorReveal': {
+        // { op: "monitorReveal" } — full-screen monitor with the player's real wallet history
+        if (this.ctx.showMonitorReveal) {
+          await this.ctx.showMonitorReveal();
         }
         break;
       }
