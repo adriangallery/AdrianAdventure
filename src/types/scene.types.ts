@@ -68,6 +68,9 @@ export interface SceneData {
 
 export interface ConditionalOverlayData {
   id: string;
+  /** Sprite file name (without extension) inside the scene folder */
+  sprite: string;
+  format?: 'png' | 'webp';
   flag: string;
   invert?: boolean;
   depth?: number;
