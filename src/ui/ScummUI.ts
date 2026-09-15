@@ -378,6 +378,14 @@ export class ScummUI {
     this.onItemCombo = cb;
   }
 
+  /** A0.1 (QA): pulsar un objeto del inventario por id, igual que tocar su casilla. false si no lo tengo. */
+  clickInventoryItem(id: string): boolean {
+    const item = this.inventory?.getItems().find((i) => i.id === id);
+    if (!item) return false;
+    this.selectInventoryItem(item);
+    return true;
+  }
+
   /** Inventory item clicked — behavior depends on current verb. */
   private selectInventoryItem(item: InventoryItem): void {
     // LOOK: describe the item

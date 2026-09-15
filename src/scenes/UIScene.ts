@@ -266,6 +266,10 @@ export class UIScene extends Phaser.Scene {
     });
   }
 
+  /** A0.1 (QA): panel SCUMM y panel de elecciones, para la API de QA (?qa=1). */
+  getScummUI(): ScummUI { return this.scummUI; }
+  getChoicePanel(): ChoicePanel { return this.choicePanel; }
+
   private async startDialogueFromScene(treeId: string): Promise<void> {
     const sceneData = this.registry.get('sceneData') as SceneData;
     const treeData = sceneData.dialogues?.[treeId];

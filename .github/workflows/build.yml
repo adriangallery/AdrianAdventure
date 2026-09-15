@@ -1,14 +1,23 @@
 # Build de AdrianAdventure en cada PR (plan AdrianZERO V8, primer paso). El portátil no puede
 # compilar y el mini es producción: aquí se comprueba que `tsc` y `vite build` pasan antes de
 # desplegar con `git push dokku`.
+# A0.1 (plan SCUMM): job `walkthrough` (ruta crítica y atajos con la API ?qa=1, ver qa/README.md), también en
+# `main`, y `workflow_dispatch` con BASE_URL para lanzar smoke y walkthrough contra una URL ya desplegada.
 name: build
 
 on:
   pull_request:
-  workflow_dispatch: {}
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      BASE_URL:
+        description: 'URL ya desplegada para smoke y walkthrough (p. ej. https://adventure.zerothetoken.com). Vacío = compilar y probar el build.'
+        required: false
+        default: ''
 
 concurrency:
-  group: build-${{ github.ref }}
+  group: build-${{ github.event_name }}-${{ github.ref }}-${{ inputs.BASE_URL }}
   cancel-in-progress: true
 
 permissions:
@@ -16,6 +25,7 @@ permissions:
 
 jobs:
   build:
+    if: ${{ !inputs.BASE_URL }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -36,6 +46,7 @@ jobs:
   smoke:
     # V8: arranque, cada escena, cambio de escena y guardar/cargar en Chrome headless contra el build real
     needs: build
+    if: ${{ !cancelled() && (needs.build.result == 'success' || (needs.build.result == 'skipped' && inputs.BASE_URL)) }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -49,9 +60,11 @@ jobs:
       - run: npm ci
 
       - name: Build con assets (igual que el Dockerfile del mini)
+        if: ${{ !inputs.BASE_URL }}
         run: npm run build
 
       - name: Servir el build
+        if: ${{ !inputs.BASE_URL }}
         run: |
           npx vite preview --host 127.0.0.1 --port 4173 --strictPort > preview.log 2>&1 &
           for i in $(seq 1 60); do curl -sf http://127.0.0.1:4173/ >/dev/null && exit 0; sleep 1; done
@@ -60,13 +73,51 @@ jobs:
       - name: Tests de humo
         run: npm run test:smoke
         env:
-          BASE_URL: http://127.0.0.1:4173
+          BASE_URL: ${{ inputs.BASE_URL || 'http://127.0.0.1:4173' }}
 
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: smoke-shots
           path: smoke-shots/
+
+  walkthrough:
+    # A0.1: New Game → créditos con la API de QA y atajos de secuencia (qa/*.json); capturas por paso
+    needs: build
+    if: ${{ !cancelled() && (needs.build.result == 'success' || (needs.build.result == 'skipped' && inputs.BASE_URL)) }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Build con assets (igual que el Dockerfile del mini)
+        if: ${{ !inputs.BASE_URL }}
+        run: npm run build
+
+      - name: Servir el build
+        if: ${{ !inputs.BASE_URL }}
+        run: |
+          npx vite preview --host 127.0.0.1 --port 4173 --strictPort > preview.log 2>&1 &
+          for i in $(seq 1 60); do curl -sf http://127.0.0.1:4173/ >/dev/null && exit 0; sleep 1; done
+          cat preview.log; exit 1
+
+      - name: Recorrido y atajos
+        run: npm run test:walkthrough -- qa/walkthrough.json qa/sequence-breaks.json
+        env:
+          BASE_URL: ${{ inputs.BASE_URL || 'http://127.0.0.1:4173' }}
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: walkthrough-shots
+          path: walkthrough-shots/
 
   demo-v6:
     # GIF de demostración para Adrián (regla visual del plan) — solo en la rama de V6
@@ -252,4 +303,3 @@ jobs:
             demo-a1-3-poster-lobby.gif
             demo-a1-3-poster-lobby.png
             demo-a1-3-frames/
-

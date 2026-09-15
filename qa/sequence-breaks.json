@@ -1,0 +1,49 @@
+{
+  "title": "Atajos de secuencia: llegar antes de tiempo debe ser imposible",
+  "routes": [
+    {
+      "id": "clinica-sin-printout",
+      "kind": "sequence-break",
+      "knownBreak": "A1.2",
+      "title": "outside → mountain → clinic_exterior desde el minuto 1, sin el printout del capítulo 3",
+      "why": "outside.tr_mountain y mountain.tr_to_clinic no tienen gate (hs_winding_path sí pide el printout)",
+      "goal": { "scene": "clinic_exterior" },
+      "steps": [
+        { "do": "newGame", "expect": { "scene": "outside" } },
+        { "do": "walk", "x": 1.5, "y": 95, "untilScene": "mountain" },
+        { "do": "walk", "x": 21, "y": 65, "untilScene": "clinic_exterior", "note": "tr_chapter4_intro para al personaje a medio camino" }
+      ]
+    },
+    {
+      "id": "recepcion-clinica-sin-capitulo-3",
+      "kind": "sequence-break",
+      "knownBreak": "A1.2",
+      "title": "Recepción de la clínica (capítulo 4) sin haber pasado por el sótano",
+      "why": "mismo atajo de montaña + la hoja de visitas de clinic_exterior abre la puerta sin keycard",
+      "goal": { "scene": "clinic_interior" },
+      "steps": [
+        { "do": "newGame", "expect": { "scene": "outside" } },
+        { "do": "walk", "x": 1.5, "y": 95, "untilScene": "mountain" },
+        { "do": "walk", "x": 21, "y": 65, "untilScene": "clinic_exterior" },
+        { "do": "act", "verb": "PICK", "target": "hs_visitor_box" },
+        { "do": "act", "verb": "USE", "target": "hs_main_entrance" }
+      ]
+    },
+    {
+      "id": "sotano-sin-keycard",
+      "kind": "sequence-break",
+      "title": "Control: el sótano por la azotea sin la keycard del abrigo",
+      "why": "hs_roof_access_panel exige has_keycard; esta ruta debe quedarse fuera",
+      "goal": { "scene": "basement" },
+      "steps": [
+        { "do": "newGame", "expect": { "scene": "outside" } },
+        { "do": "act", "verb": "PICK", "target": "hs_porch_light" },
+        { "do": "use", "item": "code_note", "target": "hs_keypad", "expect": { "scene": "lobby" } },
+        { "do": "act", "verb": "USE", "target": "hs_stairs_up", "expect": { "scene": "upstairs" } },
+        { "do": "act", "verb": "USE", "target": "hs_roof_hatch", "expect": { "scene": "rooftop" } },
+        { "do": "act", "verb": "USE", "target": "hs_weather_vane", "expect": { "flags": { "vane_turned": true } } },
+        { "do": "act", "verb": "USE", "target": "hs_roof_access_panel" }
+      ]
+    }
+  ]
+}

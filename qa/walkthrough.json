@@ -1,0 +1,55 @@
+{
+  "title": "Ruta crítica: New Game → créditos (sin wallet)",
+  "routes": [
+    {
+      "id": "ruta-critica",
+      "kind": "walkthrough",
+      "title": "Los 5 capítulos y el epílogo sin wallet conectada",
+      "goal": { "scene": "epilogue_outside", "flags": { "game_complete": true } },
+      "steps": [
+        { "do": "newGame", "expect": { "scene": "outside", "flags": { "premise_shown": true, "chapter_1_intro_shown": true } } },
+
+        { "do": "act", "verb": "PICK", "target": "hs_porch_light", "expect": { "has": ["code_note"], "flags": { "has_code": true } } },
+        { "do": "act", "verb": "PICK", "target": "hs_doormat", "note": "el Ledger se usa en el capítulo 3", "expect": { "has": ["ledger"] } },
+        { "do": "act", "verb": "PICK", "target": "hs_mailbox", "note": "el sobre abre el diálogo con Dr. Satoshi en el capítulo 4", "expect": { "has": ["mystery_envelope"], "flags": { "found_envelope": true } } },
+        { "do": "use", "item": "code_note", "target": "hs_keypad", "expect": { "scene": "lobby", "flags": { "door_unlocked": true, "chapter_1_complete": true, "chapter_2_intro_shown": true } } },
+
+        { "do": "act", "verb": "PICK", "target": "hs_coat", "expect": { "has": ["keycard"], "flags": { "has_keycard": true } } },
+        { "do": "act", "verb": "USE", "target": "hs_stairs_up", "expect": { "scene": "upstairs" } },
+        { "do": "act", "verb": "OPEN", "target": "hs_desk", "expect": { "has": ["terminal_key"] } },
+        { "do": "act", "verb": "PICK", "target": "hs_energy_drink", "expect": { "has": ["energy_drink"] } },
+        { "do": "act", "verb": "USE", "target": "hs_roof_hatch", "expect": { "scene": "rooftop" } },
+
+        { "do": "act", "verb": "PICK", "target": "hs_antenna_array", "expect": { "has": ["antenna"] } },
+        { "do": "act", "verb": "USE", "target": "hs_weather_vane", "expect": { "flags": { "vane_turned": true } } },
+        { "do": "act", "verb": "LOOK", "target": "hs_basement_light", "expect": { "flags": { "chapter_2_complete": true } } },
+        { "do": "act", "verb": "USE", "target": "hs_roof_access_panel", "expect": { "scene": "basement", "flags": { "basement_unlocked": true, "chapter_3_intro_shown": true } } },
+
+        { "do": "act", "verb": "PICK", "target": "hs_left_desk", "expect": { "has": ["floppy_disk"] } },
+        { "do": "use", "item": "energy_drink", "target": "hs_main_computer", "expect": { "lacks": ["energy_drink"], "flags": { "crt_powered": true } } },
+        { "do": "act", "verb": "PUSH", "target": "hs_equipment", "expect": { "scene": "server_room", "flags": { "server_room_open": true } } },
+
+        { "do": "act", "verb": "PICK", "target": "hs_server_rack_b", "expect": { "has": ["burned_chip"] } },
+        { "do": "use", "item": "antenna", "target": "hs_emergency_switch", "expect": { "flags": { "emergency_glass_broken": true } } },
+        { "do": "act", "verb": "USE", "target": "hs_emergency_switch", "expect": { "flags": { "emergency_switch_flipped": true, "chapter_3_complete": true } } },
+        { "do": "walk", "x": 8, "y": 95, "untilScene": "basement", "note": "salida a pie por tr_to_basement", "expect": { "scene": "basement" } },
+
+        { "do": "use", "item": "burned_chip", "target": "hs_main_computer", "expect": { "lacks": ["burned_chip"], "flags": { "crt_repaired": true } } },
+        { "do": "use", "item": "ledger", "target": "hs_main_computer", "expect": { "flags": { "computer_unlocked": true } } },
+        { "do": "use", "item": "floppy_disk", "target": "hs_main_computer", "expect": { "has": ["printout"], "lacks": ["floppy_disk"], "flags": { "has_printout": true } } },
+        { "do": "act", "verb": "USE", "target": "hs_stairs", "expect": { "scene": "lobby" } },
+        { "do": "act", "verb": "USE", "target": "hs_frontdoor", "expect": { "scene": "outside" } },
+
+        { "do": "walk", "x": 1.5, "y": 95, "untilScene": "mountain", "note": "salida a pie por tr_mountain", "expect": { "scene": "mountain", "flags": { "chapter_4_intro_shown": true } } },
+        { "do": "act", "verb": "USE", "target": "hs_winding_path", "expect": { "scene": "clinic_exterior" } },
+        { "do": "act", "verb": "USE", "target": "hs_main_entrance", "expect": { "scene": "clinic_interior" } },
+        { "do": "talk", "npc": "npc_dr_satoshi", "choices": ["confidential documents", "In a mailbox"], "expect": { "flags": { "treatment_room_unlocked": true, "chapter_4_complete": true } } },
+
+        { "do": "act", "verb": "USE", "target": "hs_treatment_door", "expect": { "scene": "treatment_room", "flags": { "chapter_5_intro_shown": true } } },
+        { "do": "act", "verb": "USE", "target": "hs_monitor", "expect": { "flags": { "monitor_revealed": true, "patient_zero_revealed": true, "chapter_5_complete": true } } },
+        { "do": "act", "verb": "USE", "target": "hs_exit_door", "expect": { "scene": "epilogue_outside", "flags": { "game_complete": true } } },
+        { "do": "act", "verb": "USE", "target": "hs_path_forward", "note": "créditos", "expect": { "scene": "epilogue_outside", "flags": { "game_complete": true } } }
+      ]
+    }
+  ]
+}

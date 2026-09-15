@@ -58,6 +58,11 @@ if (IS_NATIVE) {
 // Expose for debugging
 (window as unknown as { __game?: Phaser.Game }).__game = game;
 
+// A0.1 (plan SCUMM): API de QA para el recorrido automático (window.__qa). Solo con ?qa=1 y en un chunk aparte.
+if (new URLSearchParams(window.location.search).get('qa') === '1') {
+  import('@/qa/QaApi').then(({ installQa }) => installQa(game));
+}
+
 /** Floating scene selector for dev/testing */
 function createSceneSelector(g: Phaser.Game): void {
   const scenes = [

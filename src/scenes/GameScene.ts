@@ -11,7 +11,7 @@ import { Web3VisualSystem } from '@/systems/Web3VisualSystem';
 import { WEB3_ENABLED } from '@/config/platform';
 import { NPC } from '@/objects/NPC';
 import type { SceneData, HotspotData } from '@/types/scene.types';
-import { type GameState, Verb, createInitialState } from '@/types/game.types';
+import { type GameState, type InventoryItem, Verb, createInitialState } from '@/types/game.types';
 import { TWP, FONT, LAYOUT } from '@/config/theme';
 import { getWalletState, onWalletChange } from '@/web3/wallet';
 import { checkGatingRule, checkGatingRuleCached, type GatingRule } from '@/web3/gating';
@@ -77,6 +77,9 @@ export class GameScene extends Phaser.Scene {
 
   create(): void {
     const sceneId = this.registry.get('currentSceneId') as string;
+    // A0.1: la API de QA espera a que termine el cambio de escena y a que pasen onEnter y los triggers de spawn
+    this.registry.remove('sceneTransition');
+    this.registry.set('sceneCreatedAt', Date.now());
     const sceneData = this.cache.json.get(`scene_${sceneId}`) as SceneData;
     this.sceneDataLoader = new SceneDataLoader(sceneData);
     this.saveSystem = new SaveLoadSystem();
@@ -441,10 +444,7 @@ export class GameScene extends Phaser.Scene {
     const pct = this.coordSystem.screenToPct(wx, wy);
 
     // Get current verb and selected item from UI (needed for NPC item interactions)
-    const uiScene = this.scene.get('UIScene') as Phaser.Scene;
-    const scummUI = (uiScene as unknown as { scummUI?: ScummUI }).scummUI;
-    const verb: Verb = scummUI?.getSelectedVerb?.() ?? Verb.WALK;
-    const selectedItem = scummUI?.getSelectedItem?.() ?? null;
+    const { scummUI, verb, selectedItem } = this.uiSelection();
 
     // NPC click detection — use actual sprite bounds for accurate hit testing
     for (const npc of this.npcs) {
@@ -456,23 +456,7 @@ export class GameScene extends Phaser.Scene {
       const dx = wx - npcScreen.tx;
       const dy = wy - npcScreen.ty;
       if (Math.abs(dx) < bodyW && dy > -bodyH && dy < 10 * npcScale) {
-        // GIVE/USE item on NPC — show fun response instead of dialogue
-        if (selectedItem && (verb === Verb.USE || verb === Verb.GIVE)) {
-          scummUI?.clearSelectedItem?.();
-          const sceneData = this.registry.get('sceneData') as SceneData;
-          const npcData = sceneData.npcs?.find(n => n.id === npc.npcId);
-          const responseMap = verb === Verb.GIVE
-            ? npcData?.giveResponses
-            : npcData?.useResponses;
-          const response = responseMap?.[selectedItem.id]
-            ?? responseMap?._default?.replace('{item}', selectedItem.name)
-            ?? (verb === Verb.GIVE
-              ? `${npc.npcName} doesn't want ${selectedItem.name}.`
-              : `I can't use ${selectedItem.name} on ${npc.npcName}.`);
-          this.scene.get('UIScene').events.emit('say', response, npc.npcName);
-          return;
-        }
-        this.events.emit('npc:tapped', npc.npcId, npc.dialogueTreeId);
+        this.dispatchNpcTap(npc, verb, selectedItem, scummUI);
         return;
       }
     }
@@ -494,18 +478,67 @@ export class GameScene extends Phaser.Scene {
       return;
     }
 
+    this.dispatchTap(pct, hotspot, verb, selectedItem, scummUI);
+  }
+
+  /** Verbo y objeto elegidos en el panel SCUMM (WALK y ninguno si el panel aún no existe). */
+  private uiSelection(): { scummUI: ScummUI | undefined; verb: Verb; selectedItem: InventoryItem | null } {
+    const uiScene = this.scene.get('UIScene') as Phaser.Scene;
+    const scummUI = (uiScene as unknown as { scummUI?: ScummUI }).scummUI;
+    return {
+      scummUI,
+      verb: scummUI?.getSelectedVerb?.() ?? Verb.WALK,
+      selectedItem: scummUI?.getSelectedItem?.() ?? null,
+    };
+  }
+
+  /** Toque sobre un NPC ya localizado: dar o usar el objeto elegido, o empezar su diálogo. */
+  private dispatchNpcTap(npc: NPC, verb: Verb, selectedItem: InventoryItem | null, scummUI: ScummUI | undefined): void {
+    // GIVE/USE item on NPC — show fun response instead of dialogue
+    if (selectedItem && (verb === Verb.USE || verb === Verb.GIVE)) {
+      scummUI?.clearSelectedItem?.();
+      const sceneData = this.registry.get('sceneData') as SceneData;
+      const npcData = sceneData.npcs?.find(n => n.id === npc.npcId);
+      const responseMap = verb === Verb.GIVE
+        ? npcData?.giveResponses
+        : npcData?.useResponses;
+      const response = responseMap?.[selectedItem.id]
+        ?? responseMap?._default?.replace('{item}', selectedItem.name)
+        ?? (verb === Verb.GIVE
+          ? `${npc.npcName} doesn't want ${selectedItem.name}.`
+          : `I can't use ${selectedItem.name} on ${npc.npcName}.`);
+      this.scene.get('UIScene').events.emit('say', response, npc.npcName);
+      return;
+    }
+    this.events.emit('npc:tapped', npc.npcId, npc.dialogueTreeId);
+  }
+
+  /**
+   * Toque en la escena ya resuelto (punto en % y hotspot visible bajo él, si hay): combo con el objeto
+   * elegido, andar, mirar/hablar al momento o ir hasta el hotspot y actuar al llegar. A0.1: la API de QA
+   * entra por aquí, así que un clic real y una prueba siguen exactamente el mismo camino.
+   */
+  private dispatchTap(
+    pct: { x: number; y: number },
+    hotspot: HotspotData | null,
+    verb: Verb,
+    selectedItem: InventoryItem | null,
+    scummUI: ScummUI | undefined,
+  ): void {
     // Item combo mode: USE [item] with [hotspot]
     if (selectedItem && hotspot) {
+      const item = selectedItem;
+      const hs = hotspot;
       scummUI?.clearSelectedItem?.();
       const sceneData = this.registry.get('sceneData') as SceneData;
       const combo = sceneData.combos?.find(
-        (c: { items: string[] }) => c.items.includes(selectedItem.id) && c.items.includes(hotspot.id)
+        (c: { items: string[] }) => c.items.includes(item.id) && c.items.includes(hs.id)
       );
       if (combo) {
         this.scriptEngine.updateContext(this.buildScriptContext());
         this.scriptEngine.execute(combo.script);
       } else {
-        this.scene.get('UIScene').events.emit('say', `I can't use ${selectedItem.name} with ${hotspot.name}.`);
+        this.scene.get('UIScene').events.emit('say', `I can't use ${item.name} with ${hs.name}.`);
       }
       return;
     }
@@ -650,19 +683,10 @@ export class GameScene extends Phaser.Scene {
       this.fastForward.label = this.add.text(this.scale.width - 12, 12, '>> FAST', {
         fontFamily: FONT.FAMILY, fontSize: '12px', color: TWP.HINT_TEXT, backgroundColor: TWP.HINT_BG, padding: { x: 6, y: 3 },
       }).setOrigin(1, 0).setDepth(400).setScrollFactor(0);
-      const ui = this.scene.get('UIScene');
       this.fastForward.ticker = this.time.addEvent({
         delay: GameScene.FF_STEP_MS,
         loop: true,
-        callback: () => {
-          this.emittingSynthetic = true;
-          try {
-            this.input.emit('pointerdown', pointer);
-            if (ui && ui !== this) ui.input.emit('pointerdown', pointer);
-          } finally {
-            this.emittingSynthetic = false;
-          }
-        },
+        callback: () => this.emitSyntheticTap(pointer),
       });
     });
     this.input.once('pointerup', onUp);
@@ -977,6 +1001,8 @@ export class GameScene extends Phaser.Scene {
         this.scene.get('UIScene').events.emit('sayBrief', text, durationMs, speaker, resolve);
       }),
       gotoScene: (sceneId, spawn) => {
+        // A0.1: marca de cambio de escena en curso (la quita create() de la escena nueva)
+        this.registry.set('sceneTransition', sceneId);
         // Clear player position on scene transition (new scene uses its own spawn)
         this.gameState.playerPosition = undefined;
         this.saveSystem.autoSave(this.gameState, this.sceneDataLoader.getSceneData().title);
@@ -1150,6 +1176,84 @@ export class GameScene extends Phaser.Scene {
         earned.push(id);
       }
     }
+  }
+
+  /** Toque sintético en GameScene y UIScene (avance rápido y QA): cierra textos y cinemáticas; handlePointerDown lo ignora. */
+  private emitSyntheticTap(pointer: Phaser.Input.Pointer): void {
+    const ui = this.scene.get('UIScene');
+    this.emittingSynthetic = true;
+    try {
+      this.input.emit('pointerdown', pointer);
+      if (ui && ui !== this) ui.input.emit('pointerdown', pointer);
+    } finally {
+      this.emittingSynthetic = false;
+    }
+  }
+
+  // ─── A0.1: puente para la API de QA (solo lo usa src/qa/QaApi.ts con ?qa=1) ───
+
+  /** Lo mismo que comprueba handlePointerDown antes de aceptar un toque en la escena. */
+  qaIsInputBlocked(): boolean {
+    if (this.scriptEngine.isRunning() || this.inputCooldownFrames > 0) return true;
+    if (this.registry.get('dialogueActive') || this.registry.get('dialogueShowing')) return true;
+    const dismissedAt = this.registry.get('dialogueDismissedAt') as number | undefined;
+    return dismissedAt !== undefined && this.time.now - dismissedAt < 50;
+  }
+
+  /** Qué hay en marcha en la escena: script, personaje andando o fundido de cámara. */
+  qaBusy(): { script: boolean; walking: boolean; fading: boolean } {
+    return {
+      script: this.scriptEngine.isRunning(),
+      walking: this.player.isMoving(),
+      fading: this.cameras.main.fadeEffect.isRunning,
+    };
+  }
+
+  /** Toque sintético del avance rápido: cierra el texto o la cinemática en pantalla sin mandar andar. */
+  qaSyntheticTap(): void {
+    this.emitSyntheticTap(this.input.activePointer);
+  }
+
+  /** Tocar un hotspot con el verbo y el objeto elegidos en el panel, como con el ratón. */
+  qaTapHotspot(hotspot: HotspotData): void {
+    const { scummUI, verb, selectedItem } = this.uiSelection();
+    this.flashHotspot(hotspot);
+    this.events.emit('hotspot:focus', hotspot);
+    const b = hotspot.bounds;
+    const pct = b ? { x: b.x + b.w / 2, y: b.y + b.h / 2 } : { x: this.player.pctX, y: this.player.pctY };
+    this.dispatchTap(pct, hotspot, verb, selectedItem, scummUI);
+  }
+
+  /** Tocar un NPC. false si no existe o no tiene diálogo (con el ratón tampoco se puede pulsar). */
+  qaTapNpc(npcId: string): boolean {
+    const npc = this.npcs.find((n) => n.npcId === npcId && n.dialogueTreeId);
+    if (!npc) return false;
+    const { scummUI, verb, selectedItem } = this.uiSelection();
+    this.dispatchNpcTap(npc, verb, selectedItem, scummUI);
+    return true;
+  }
+
+  /** Tocar un punto del fondo sin hotspot (en % del fondo): andar hasta allí. */
+  qaWalk(pctX: number, pctY: number): void {
+    const { scummUI, verb, selectedItem } = this.uiSelection();
+    this.dispatchTap({ x: pctX, y: pctY }, null, verb, selectedItem, scummUI);
+  }
+
+  /** Cambio de escena por el mismo camino que `gotoScene`/`fadeToScene` de los scripts. */
+  qaGoto(sceneId: string, spawn?: { x: number; y: number }): void {
+    this.buildScriptContext().gotoScene(sceneId, spawn);
+  }
+
+  qaIsHotspotVisible(hotspot: HotspotData): boolean {
+    return this.isHotspotVisible(hotspot);
+  }
+
+  qaPlayer(): { x: number; y: number } {
+    return { x: this.player.pctX, y: this.player.pctY };
+  }
+
+  qaNpcIds(): string[] {
+    return this.npcs.filter((n) => n.dialogueTreeId).map((n) => n.npcId);
   }
 
   shutdown(): void {

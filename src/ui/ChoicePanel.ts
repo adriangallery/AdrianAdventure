@@ -10,6 +10,8 @@ export class ChoicePanel {
   private scene: Phaser.Scene;
   private container: Phaser.GameObjects.Container;
   private resolveChoice: ((index: number) => void) | null = null;
+  /** Opciones en pantalla (A0.1: la API de QA las lee y elige por aquí) */
+  private options: { text: string; enabled: boolean }[] = [];
 
   constructor(scene: Phaser.Scene) {
     this.scene = scene;
@@ -20,6 +22,7 @@ export class ChoicePanel {
   show(choices: { text: string; enabled: boolean }[]): Promise<number> {
     return new Promise<number>((resolve) => {
       this.resolveChoice = resolve;
+      this.options = choices.map((c) => ({ text: c.text, enabled: c.enabled }));
       this.container.removeAll(true);
 
       const { width, height } = this.scene.scale;
@@ -43,7 +46,7 @@ export class ChoicePanel {
       choices.forEach((choice, i) => {
         const y = padTop + i * lineH + lineH / 2;
         const color = choice.enabled ? TWP.CHOICE_ENABLED : TWP.CHOICE_DISABLED;
-        const prefix = choice.enabled ? '\u2022 ' : '\u{1F512} ';
+        const prefix = choice.enabled ? '• ' : '\u{1F512} ';
 
         const text = this.scene.add
           .text(padX, y, `${prefix}${choice.text}`, {
@@ -99,6 +102,23 @@ export class ChoicePanel {
 
   isVisible(): boolean {
     return this.container.visible;
+  }
+
+  /** A0.1: true mientras el diálogo espera que el jugador elija. */
+  isAwaitingChoice(): boolean {
+    return this.resolveChoice !== null;
+  }
+
+  /** A0.1: opciones en pantalla, en orden (las bloqueadas no se pueden pulsar). */
+  getOptions(): { text: string; enabled: boolean }[] {
+    return this.options.map((o) => ({ ...o }));
+  }
+
+  /** A0.1: elegir la opción `index` igual que al pulsar su línea. false si no hay elección o está bloqueada. */
+  choose(index: number): boolean {
+    if (!this.resolveChoice || !this.options[index]?.enabled) return false;
+    this.selectChoice(index);
+    return true;
   }
 
   destroy(): void {
