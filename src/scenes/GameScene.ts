@@ -213,6 +213,8 @@ export class GameScene extends Phaser.Scene {
     }
 
     // Execute pending verb when player arrives at hotspot
+    // A0.1: los eventos de la escena sobreviven al reinicio; sin quitar el anterior se acumulaba uno por escena
+    this.events.removeAllListeners('player:arrived');
     this.events.on('player:arrived', () => {
       if (this.pendingHotspot) {
         const hotspot = this.pendingHotspot;
@@ -281,7 +283,9 @@ export class GameScene extends Phaser.Scene {
     else this.scene.get('UIScene').events.emit('scene:changed');
 
     // Listen for panel toggle (mobile collapse/expand)
-    this.scene.get('UIScene').events.on('panel:toggled', () => this.handleResize());
+    const uiEvents = this.scene.get('UIScene').events;
+    uiEvents.removeAllListeners('panel:toggled');
+    uiEvents.on('panel:toggled', () => this.handleResize());
 
     if (!this.isTrailer) {
       this.showSceneTitle(sceneData.title);

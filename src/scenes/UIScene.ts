@@ -37,6 +37,13 @@ export class UIScene extends Phaser.Scene {
   private badgePanel!: BadgePanel;
   private isMobile = false;
 
+  /** Eventos de GameScene que escucha UIScene (se re-registran en cada create) */
+  private static readonly GAME_SCENE_EVENTS = ['hotspot:tapped', 'hotspot:focus', 'hotspot:hover', 'npc:tapped'];
+  /** Eventos propios que escucha UIScene (se re-registran en cada create) */
+  private static readonly OWN_EVENTS = [
+    'say', 'sayBrief', 'startDialogue', 'showTitleCard', 'showMonitorReveal', 'showNarrative', 'showAchievement', 'showCredits', 'scene:changed',
+  ];
+
   constructor() {
     super({ key: 'UIScene' });
   }
@@ -154,6 +161,16 @@ export class UIScene extends Phaser.Scene {
 
     // --- Event listeners ---
     const gameScene = this.scene.get('GameScene');
+
+    // A0.1 (hallazgo del walkthrough): los emisores de eventos de GameScene y UIScene sobreviven a stop/launch
+    // y Phaser no llama a shutdown() solo, pero create() se ejecuta en cada cambio de escena. Sin esto cada
+    // escena nueva añadía otra copia de estos listeners: en la escena N cada acción se ejecutaba N veces, y el
+    // sayBrief duplicado de un cambio de escena dejaba `dialogueShowing` colgado y la escena siguiente sin
+    // aceptar toques. También se limpia el estado de texto/diálogo que pudo quedar de la escena anterior.
+    for (const ev of UIScene.GAME_SCENE_EVENTS) gameScene.events.removeAllListeners(ev);
+    for (const ev of UIScene.OWN_EVENTS) this.events.removeAllListeners(ev);
+    this.registry.set('dialogueShowing', false);
+    this.registry.set('dialogueActive', false);
 
     // Hotspot tapped → execute selected verb (SCUMM style)
     gameScene.events.on('hotspot:tapped', (hotspot: HotspotData, verbOverride?: Verb) => {
