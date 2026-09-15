@@ -17,6 +17,7 @@ import { WEB3_ENABLED } from '@/config/platform';
 import { getAchievementByText } from '@/config/achievements.config';
 import { VOICE_TEXT_MAP, NARRATOR_SEQUENCES } from '@/config/voice.config';
 import { getWalletState } from '@/web3/wallet';
+import { loadPatientFile } from '@/web3/tx-history';
 import { checkGatingRule, type GatingRule } from '@/web3/gating';
 import type { Address } from 'viem';
 
@@ -217,6 +218,13 @@ export class UIScene extends Phaser.Scene {
       // if (narKeys) this.voiceSystem.playSequence(narKeys);
       await this.cinematicOverlay.showTitleCard(chapter, title, subtitle);
       this.voiceSystem.stop();
+      resolve?.();
+    });
+
+    // V6b: el expediente se pide al abrir la cinemática; la lluvia arranca ya y el texto llega al resolver
+    this.events.on('showMonitorReveal', async (resolve?: () => void) => {
+      const { address } = getWalletState();
+      await this.cinematicOverlay.showMonitorReveal(loadPatientFile(address));
       resolve?.();
     });
 

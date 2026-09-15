@@ -157,6 +157,9 @@
                   "text": "The monitor hums to life. Green text on black screen..."
                 },
                 {
+                  "op": "monitorReveal"
+                },
+                {
                   "op": "say",
                   "text": "It shows... a wallet address. Wait."
                 },
