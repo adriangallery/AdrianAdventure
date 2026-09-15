@@ -204,3 +204,52 @@ jobs:
         if: steps.demo.outcome == 'failure' || steps.demohold.outcome == 'failure' || steps.demoskip.outcome == 'failure' || steps.demoautosave.outcome == 'failure' || steps.demohints.outcome == 'failure' || steps.demoverbs.outcome == 'failure' || steps.demosettings.outcome == 'failure'
         run: exit 1
 
+  demo-a1-3:
+    # Plan SCUMM A1.3 (regla visual): captura y GIF del póster del lobby. Provisional hasta que A0.2
+    # convierta estos jobs en uno genérico que ejecute scripts/demo-*.mjs.
+    if: startsWith(github.head_ref, 'scumm/a1-3') || github.event_name == 'workflow_dispatch'
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - run: npm run build
+
+      - name: Servir el build
+        run: |
+          npx vite preview --host 127.0.0.1 --port 4173 --strictPort > preview.log 2>&1 &
+          for i in $(seq 1 60); do curl -sf http://127.0.0.1:4173/ >/dev/null && exit 0; sleep 1; done
+          cat preview.log; exit 1
+
+      - name: Grabar el póster del lobby
+        run: node scripts/demo-a1-3-poster-lobby.mjs
+        env:
+          BASE_URL: http://127.0.0.1:4173
+
+      - name: GIF
+        if: always()
+        run: |
+          if ls demo-a1-3-frames/*.png >/dev/null 2>&1; then
+            sudo apt-get install -y -qq ffmpeg >/dev/null
+            ffmpeg -loglevel error -y -framerate 4 -i demo-a1-3-frames/%03d.png \
+              -vf "fps=4,scale=640:-1:flags=neighbor,split[a][b];[a]palettegen[p];[b][p]paletteuse" demo-a1-3-poster-lobby.gif
+            ls -la demo-a1-3-poster-lobby.gif
+          fi
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: demo-a1-3-poster-lobby
+          path: |
+            demo-a1-3-poster-lobby.gif
+            demo-a1-3-poster-lobby.png
+            demo-a1-3-frames/
+

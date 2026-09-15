@@ -226,47 +226,35 @@ export class PreloadScene extends Phaser.Scene {
     // Load web3Visual sprites from scene JSON (requires scene data to be parsed first)
     const sceneId = this.registry.get('currentSceneId') as string;
     const sceneData = this.cache.json.get(`scene_${sceneId}`) as SceneData | undefined;
-    if (sceneData?.web3Visuals?.length) {
-      const basePath = `assets/scenes/${sceneId}`;
-      let needsLoad = false;
-      for (const visual of sceneData.web3Visuals) {
-        // Load default sprite
-        if (!this.textures.exists(visual.defaultSprite)) {
-          this.load.image(visual.defaultSprite, `${basePath}/${visual.defaultSprite}.png${v}`);
-          needsLoad = true;
-        }
-        // Load variant sprites
-        for (const variant of visual.variants ?? []) {
-          if (!this.textures.exists(variant.sprite)) {
-            this.load.image(variant.sprite, `${basePath}/${variant.sprite}.png${v}`);
-            needsLoad = true;
-          }
-        }
-      }
-      if (needsLoad) {
-        this.load.once('complete', () => this.scene.start('GameScene'));
-        this.load.start();
-        return;
+    const basePath = `assets/scenes/${sceneId}`;
+    // A1.3: web3Visuals y conditionalOverlays van en UNA sola cola. Antes, si faltaba algún sprite
+    // web3 se arrancaba GameScene al terminar esa carga y los overlays nunca se pedían: en la
+    // primera visita al lobby `overlay_lobby_plant_revived` no existía y GameScene lo saltaba.
+    let needsLoad = false;
+    const queue = (key: string, url: string) => {
+      if (this.textures.exists(key)) return;
+      this.load.image(key, url);
+      needsLoad = true;
+    };
+
+    // Sprites web3 (por defecto y variantes para holders)
+    for (const visual of sceneData?.web3Visuals ?? []) {
+      queue(visual.defaultSprite, `${basePath}/${visual.defaultSprite}.png${v}`);
+      for (const variant of visual.variants ?? []) {
+        queue(variant.sprite, `${basePath}/${variant.sprite}.png${v}`);
       }
     }
 
-    // Load conditional overlay sprites (flag-gated visuals)
-    if (sceneData?.conditionalOverlays?.length) {
-      const basePath = `assets/scenes/${sceneId}`;
-      let needsLoad = false;
-      for (const co of sceneData.conditionalOverlays) {
-        const key = `overlay_${sceneId}_${co.id}`;
-        if (!this.textures.exists(key)) {
-          const ext = co.format === 'webp' ? 'webp' : 'png';
-          this.load.image(key, `${basePath}/${co.sprite}.${ext}${v}`);
-          needsLoad = true;
-        }
-      }
-      if (needsLoad) {
-        this.load.once('complete', () => this.scene.start('GameScene'));
-        this.load.start();
-        return;
-      }
+    // Overlays condicionados por flags
+    for (const co of sceneData?.conditionalOverlays ?? []) {
+      const ext = co.format === 'webp' ? 'webp' : 'png';
+      queue(`overlay_${sceneId}_${co.id}`, `${basePath}/${co.sprite}.${ext}${v}`);
+    }
+
+    if (needsLoad) {
+      this.load.once('complete', () => this.scene.start('GameScene'));
+      this.load.start();
+      return;
     }
 
     this.scene.start('GameScene');
