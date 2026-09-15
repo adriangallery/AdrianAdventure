@@ -1,5 +1,5 @@
 import type { GameState } from '@/types/game.types';
-import { saveForWallet, loadForWallet, hasWalletSave, type WalletSave } from '@/web3/wallet-save';
+import { saveForWallet, loadForWallet, hasWalletSave, cloudAutosave, type WalletSave } from '@/web3/wallet-save';
 
 const SAVE_KEY = 'adrian_adventure_save';
 const MAX_SLOTS = 3;
@@ -34,6 +34,8 @@ export class SaveLoadSystem {
     // Also save to wallet-linked storage if connected
     if (this.walletAddress) {
       saveForWallet(this.walletAddress, state, sceneName);
+      // V7: copia en la nube (slot 0) para continuar desde otro dispositivo; limitada a 1/min
+      cloudAutosave(this.walletAddress, state, sceneName);
     }
   }
 

@@ -31,7 +31,8 @@ app.get('/save/:address', (c) => {
   if (!/^0x[a-f0-9]{40}$/.test(address)) return c.json({ error: 'Invalid address' }, 400);
 
   const slots = {};
-  for (const slot of [1, 2]) {
+  // Slot 0 = autoguardado en la nube (V7); 1 y 2 = guardados manuales
+  for (const slot of [0, 1, 2]) {
     const fp = saveFile(address, slot);
     if (existsSync(fp)) {
       try { slots[slot] = JSON.parse(readFileSync(fp, 'utf-8')); } catch {}
@@ -58,7 +59,7 @@ app.get('/save/:address', (c) => {
 app.get('/save/:address/:slot', (c) => {
   const address = c.req.param('address').toLowerCase();
   const slot = parseInt(c.req.param('slot'));
-  if (!/^0x[a-f0-9]{40}$/.test(address) || ![1, 2].includes(slot)) {
+  if (!/^0x[a-f0-9]{40}$/.test(address) || ![0, 1, 2].includes(slot)) {
     return c.json({ error: 'Invalid params' }, 400);
   }
 
@@ -85,8 +86,8 @@ app.post('/save', async (c) => {
     if (!state || !address) {
       return c.json({ error: 'Missing required fields' }, 400);
     }
-    if (![1, 2].includes(slotId)) {
-      return c.json({ error: 'Invalid slot (1 or 2)' }, 400);
+    if (![0, 1, 2].includes(slotId)) {
+      return c.json({ error: 'Invalid slot (0 = autosave, 1 or 2)' }, 400);
     }
 
     const addr = address.toLowerCase();
