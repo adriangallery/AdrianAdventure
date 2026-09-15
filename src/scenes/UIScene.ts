@@ -171,6 +171,7 @@ export class UIScene extends Phaser.Scene {
     for (const ev of UIScene.OWN_EVENTS) this.events.removeAllListeners(ev);
     this.registry.set('dialogueShowing', false);
     this.registry.set('dialogueActive', false);
+    this.registry.set('cinematicActive', 0);
 
     // Hotspot tapped → execute selected verb (SCUMM style)
     gameScene.events.on('hotspot:tapped', (hotspot: HotspotData, verbOverride?: Verb) => {
@@ -233,7 +234,7 @@ export class UIScene extends Phaser.Scene {
       // const sceneId = this.registry.get('currentSceneId') as string;
       // const narKeys = NARRATOR_SEQUENCES[`${sceneId}:titleCard`];
       // if (narKeys) this.voiceSystem.playSequence(narKeys);
-      await this.cinematicOverlay.showTitleCard(chapter, title, subtitle);
+      await this.duringCinematic(this.cinematicOverlay.showTitleCard(chapter, title, subtitle));
       this.voiceSystem.stop();
       resolve?.();
     });
@@ -241,7 +242,7 @@ export class UIScene extends Phaser.Scene {
     // V6b: el expediente se pide al abrir la cinemática; la lluvia arranca ya y el texto llega al resolver
     this.events.on('showMonitorReveal', async (resolve?: () => void) => {
       const { address } = getWalletState();
-      await this.cinematicOverlay.showMonitorReveal(loadPatientFile(address));
+      await this.duringCinematic(this.cinematicOverlay.showMonitorReveal(loadPatientFile(address)));
       resolve?.();
     });
 
@@ -249,7 +250,7 @@ export class UIScene extends Phaser.Scene {
       const sceneId = this.registry.get('currentSceneId') as string;
       const narKeys = NARRATOR_SEQUENCES[`${sceneId}:narrative`];
       if (narKeys) this.voiceSystem.playSequence(narKeys);
-      await this.cinematicOverlay.showNarrative(lines);
+      await this.duringCinematic(this.cinematicOverlay.showNarrative(lines));
       this.voiceSystem.stop();
       resolve?.();
     });
@@ -274,13 +275,26 @@ export class UIScene extends Phaser.Scene {
     this.events.on('showCredits', (resolve?: () => void) => {
       const state = this.registry.get('gameState') as GameState | undefined;
       const earned = state?.achievements ?? [];
-      this.cinematicOverlay.showCredits(earned).then(() => resolve?.());
+      this.duringCinematic(this.cinematicOverlay.showCredits(earned)).then(() => resolve?.());
     });
 
     // Scene change refresh
     this.events.on('scene:changed', () => {
       // Nothing to refresh — panel persists
     });
+  }
+
+  /**
+   * A1.1: cuenta la cinemática como «en pantalla» (registry `cinematicActive`) mientras dura, para que el
+   * watchdog de scripts de GameScene no corra durante una tarjeta de capítulo, una narración o los créditos.
+   */
+  private async duringCinematic(shown: Promise<void>): Promise<void> {
+    this.registry.set('cinematicActive', ((this.registry.get('cinematicActive') as number | undefined) ?? 0) + 1);
+    try {
+      await shown;
+    } finally {
+      this.registry.set('cinematicActive', Math.max(0, ((this.registry.get('cinematicActive') as number | undefined) ?? 1) - 1));
+    }
   }
 
   /** A0.1 (QA): panel SCUMM y panel de elecciones, para la API de QA (?qa=1). */

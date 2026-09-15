@@ -9,7 +9,12 @@ export interface MintResult {
 }
 
 export interface ScriptContext {
-  state: GameState;
+  /**
+   * A1.1: estado VIVO de la partida. Es una función y no un valor porque `setState` e `InventorySystem`
+   * sustituyen el objeto: un `state` copiado al crear el contexto hacía que `ifFlag`/`ifHasItem`/`ifVisited`
+   * leyeran el estado anterior a un `setFlag`/`addItem` del mismo script (y el rescate de `forceReset` igual).
+   */
+  getState: () => GameState;
   setState: (updater: (s: GameState) => GameState) => void;
   say: (text: string, speaker?: string) => Promise<void>;
   sayBrief?: (text: string, durationMs?: number, speaker?: string) => Promise<void>;
@@ -37,13 +42,53 @@ export interface ScriptContext {
   setCostume?: (prefix: string) => void;
 }
 
+/**
+ * A1.1: tiempo que un script puede estar parado sin nada en pantalla que espere al jugador antes de que el
+ * watchdog lo dé por colgado (una promesa de la UI que nunca se resuelve).
+ */
+export const WATCHDOG_MS = 30_000;
+
+/**
+ * A1.1: ops que esperan algo que seguro termina solo. Mientras el script está en una de ellas el watchdog no
+ * cuenta: no es un cuelgue aunque tarde.
+ * - `wait`: temporizador propio.
+ * - `web3Require`: solo lecturas RPC (`checkGatingRule` → `publicClient.readContract`), y el transporte `http`
+ *   de viem corta cada petición por tiempo, así que acaba (en `else` si falla).
+ * Los mints NO están: `walletClient.writeContract` espera a que el jugador confirme en la wallet, sin límite de
+ * tiempo y sin nada en pantalla del juego. `mintAchievement` ya no bloquea el script, y un `mintNFT` que
+ * pasa de 30 s se abandona como cualquier cuelgue, pero su resultado tardío sigue ejecutando onSuccess/onFail.
+ */
+const SELF_RESOLVING_OPS = new Set(['wait', 'web3Require']);
+
+/** Script en la cola, con una etiqueta para los avisos (p. ej. `hs_porch_light/LOOK`). */
+interface QueuedScript {
+  ops: ScriptOp[];
+  label: string;
+}
+
+/** Bloque de ops en ejecución y la posición del op en curso (un script con ramas apila varios). */
+interface Frame {
+  ops: ScriptOp[];
+  index: number;
+}
+
 export class ScriptEngine {
   private ctx: ScriptContext;
   private running = false;
   private stopped = false;
-  private pendingQueue: ScriptOp[][] = [];
+  private pendingQueue: QueuedScript[] = [];
   /** V6: mientras el jugador mantiene pulsado, las esperas de presentación terminan al momento */
   private fastForward = false;
+  /**
+   * A1.1: cada `execute` que arranca la cola lleva una generación. `forceReset` la incrementa: la ejecución
+   * abandonada deja de avanzar en cuanto se resuelve lo que esperaba, así nunca corre a la vez que la siguiente.
+   */
+  private generation = 0;
+  /** A1.1: pila de bloques del script en curso (el último es el más interno) */
+  private frames: Frame[] = [];
+  private currentLabel = '';
+  /** A1.1: tiempo parado sin nada en pantalla; vuelve a cero al empezar o terminar cada op */
+  private stallMs = 0;
 
   constructor(ctx: ScriptContext) {
     this.ctx = ctx;
@@ -70,51 +115,209 @@ export class ScriptEngine {
     });
   }
 
+  /** Op que el script está esperando ahora mismo (el del bloque más interno). */
+  private currentOp(): ScriptOp | null {
+    const frame = this.frames[this.frames.length - 1];
+    return frame ? frame.ops[frame.index] ?? null : null;
+  }
+
   /**
-   * Last-resort recovery: clear running flag and pending queue so the player
-   * isn't permanently locked if a script awaits a Promise that never resolves
-   * (e.g., a lost dialogue resolver). Logs a warning so we can investigate.
+   * A1.1: avanza el watchdog `elapsedMs`. Solo cuenta el tiempo en que el script no avanza, no hay nada en
+   * pantalla esperando al jugador (`presenting`: texto, diálogo, elección o cinemática) y el op en curso no es
+   * de los que terminan solos. Cualquier avance o algo en pantalla pone el contador a cero. Al llegar a
+   * WATCHDOG_MS fuerza el reinicio (sin perder operaciones de estado) y devuelve true.
+   */
+  watchdogTick(elapsedMs: number, presenting: boolean): boolean {
+    if (!this.running) {
+      this.stallMs = 0;
+      return false;
+    }
+    const op = this.currentOp();
+    if (presenting || (op && SELF_RESOLVING_OPS.has(op.op))) {
+      this.stallMs = 0;
+      return false;
+    }
+    this.stallMs += elapsedMs;
+    if (this.stallMs < WATCHDOG_MS) return false;
+    const where = this.currentLabel ? ` en ${this.currentLabel}` : '';
+    this.forceReset(`watchdog: «${op?.op ?? '?'}»${where} lleva ${Math.round(this.stallMs / 1000)} s sin resolverse y sin nada en pantalla`);
+    return true;
+  }
+
+  /**
+   * Last-resort recovery when a script awaits a Promise that never resolves (e.g., a lost dialogue resolver).
+   * A1.1: se abandona el op colgado y lo que quedaba de presentación, pero las operaciones de estado del resto
+   * del script y de los scripts en cola (setFlag, addItem, removeItem, cambios de escena, logros, disfraz, con
+   * sus ramas evaluadas) se aplican en orden, así que la partida queda como si el jugador hubiera seguido.
    */
   forceReset(reason: string): void {
-    if (this.running) {
-      console.warn(`[ScriptEngine] forceReset: ${reason}`);
+    const wasRunning = this.running;
+    const current: ScriptOp[][] = [];
+    if (!this.stopped) {
+      // Resto del script en curso, del bloque más interno al más externo; el op colgado no se repite
+      for (let i = this.frames.length - 1; i >= 0; i--) {
+        const frame = this.frames[i];
+        current.push(frame.ops.slice(frame.index + 1));
+      }
     }
+    const queued = this.pendingQueue;
+
+    this.generation++;
     this.running = false;
     this.stopped = false;
     this.pendingQueue = [];
+    this.frames = [];
+    this.currentLabel = '';
+    this.stallMs = 0;
+
+    const applied: string[] = [];
+    for (const block of current) {
+      if (this.salvage(block, applied)) break; // un `stop` corta el resto de ese script
+    }
+    for (const script of queued) this.salvage(script.ops, applied);
+
+    if (wasRunning || applied.length) {
+      const summary = applied.length ? `${applied.length} op(s) de estado aplicadas (${applied.join(', ')})` : 'sin ops de estado pendientes';
+      console.warn(`[ScriptEngine] forceReset: ${reason} · ${summary}; ${queued.length} script(s) en cola`);
+    }
   }
 
-  async execute(ops: ScriptOp[]): Promise<void> {
+  /** Aplica solo las operaciones de estado de `ops` (ramas incluidas). Devuelve true si encontró `stop`. */
+  private salvage(ops: ScriptOp[], applied: string[]): boolean {
+    for (const op of ops) {
+      if (op.op === 'stop') return true;
+      if (this.applyStateOp(op)) {
+        applied.push(op.op === 'setFlag' ? `setFlag ${String(op.flag)}` : op.op === 'addItem' ? `addItem ${String(op.id)}` : op.op);
+        continue;
+      }
+      if (op.op === 'mintAchievement' && op.text) {
+        // El logro visual y su registro en la partida son estado. El mint on-chain no se lanza desde el rescate
+        // (abriría la wallet de golpe): el jugador puede reclamarlo después desde el panel de logros
+        this.ctx.showAchievement?.(op.text as string);
+        applied.push('achievement');
+        continue;
+      }
+      const branch = this.branchOf(op);
+      if (branch && this.salvage(branch, applied)) return true;
+      // Presentación (say, cinemáticas, diálogo, sonido, esperas) y web3 asíncrono: se omiten
+    }
+    return false;
+  }
+
+  /** Ops de estado síncronas. Devuelve true si `op` lo era (y lo ha aplicado). */
+  private applyStateOp(op: ScriptOp): boolean {
+    switch (op.op) {
+      case 'setFlag':
+        this.ctx.setState((s) => ({
+          ...s,
+          flags: { ...s.flags, [op.flag as string]: op.value as boolean },
+        }));
+        return true;
+      case 'addItem':
+        this.ctx.addItem(op.id as string, op.name as string);
+        return true;
+      case 'removeItem':
+        this.ctx.removeItem(op.id as string);
+        return true;
+      case 'gotoScene':
+      case 'fadeToScene':
+        this.ctx.gotoScene(op.sceneId as string, op.spawn as { x: number; y: number } | undefined);
+        return true;
+      case 'achievement':
+        // { op: "achievement", text: "Chapter 1 Complete" } — non-blocking
+        this.ctx.showAchievement?.(op.text as string);
+        return true;
+      case 'setCostume':
+        // { op: "setCostume", prefix: "ape" } — changes player sprite
+        this.ctx.setCostume?.(op.prefix as string);
+        return true;
+      default:
+        return false;
+    }
+  }
+
+  /**
+   * Rama elegida por un condicional síncrono (ifFlag, ifHasItem, ifVisited, ifWalletConnected); undefined si
+   * `op` no es uno de ellos o la rama elegida no existe.
+   */
+  private branchOf(op: ScriptOp): ScriptOp[] | undefined {
+    let cond: boolean;
+    switch (op.op) {
+      case 'ifFlag':
+        cond = this.ctx.getState().flags[op.flag as string] ?? false;
+        break;
+      case 'ifHasItem':
+        // { op: "ifHasItem", id: "keycard", then: [...], else: [...] }
+        cond = this.ctx.getState().inventory.some((i) => i.id === (op.id as string));
+        break;
+      case 'ifVisited':
+        // { op: "ifVisited", sceneId: "basement", then: [...], else: [...] }
+        cond = this.ctx.getState().visited.includes(op.sceneId as string);
+        break;
+      case 'ifWalletConnected':
+        cond = this.ctx.isWalletConnected?.() ?? false;
+        break;
+      default:
+        return undefined;
+    }
+    return (cond ? op.then : op.else) as ScriptOp[] | undefined;
+  }
+
+  async execute(ops: ScriptOp[], label = ''): Promise<void> {
     if (this.running) {
       // Queue instead of silently dropping — prevents once-triggers from being lost
-      this.pendingQueue.push(ops);
+      this.pendingQueue.push({ ops, label });
       return;
     }
+    const gen = ++this.generation;
     this.running = true;
     this.stopped = false;
+    this.currentLabel = label;
+    this.stallMs = 0;
 
     try {
-      await this.runOps(ops);
+      await this.runOps(ops, gen);
       // Drain queued scripts (FIFO)
-      while (this.pendingQueue.length > 0) {
+      while (gen === this.generation && this.pendingQueue.length > 0) {
         this.stopped = false;
         const next = this.pendingQueue.shift()!;
-        await this.runOps(next);
+        this.currentLabel = next.label;
+        await this.runOps(next.ops, gen);
       }
     } finally {
-      this.running = false;
-      this.stopped = false;
+      // Una ejecución abandonada por forceReset no toca el estado de la que vino después
+      if (gen === this.generation) {
+        this.running = false;
+        this.stopped = false;
+        this.frames = [];
+        this.currentLabel = '';
+      }
     }
   }
 
-  private async runOps(ops: ScriptOp[]): Promise<void> {
-    for (const op of ops) {
-      if (this.stopped) break;
-      await this.runOp(op);
+  private async runOps(ops: ScriptOp[], gen: number): Promise<void> {
+    const frame: Frame = { ops, index: 0 };
+    this.frames.push(frame);
+    try {
+      for (; frame.index < ops.length; frame.index++) {
+        if (this.stopped || gen !== this.generation) break;
+        this.stallMs = 0;
+        await this.runOp(ops[frame.index], gen);
+        if (gen === this.generation) this.stallMs = 0;
+      }
+    } finally {
+      if (gen === this.generation) this.frames.pop();
     }
   }
 
-  private async runOp(op: ScriptOp): Promise<void> {
+  private async runOp(op: ScriptOp, gen: number): Promise<void> {
+    if (this.applyStateOp(op)) return;
+    const branch = this.branchOf(op);
+    if (branch) {
+      await this.runOps(branch, gen);
+      return;
+    }
+
     switch (op.op) {
       case 'say':
         await this.ctx.say(op.text as string, op.speaker as string | undefined);
@@ -129,39 +332,6 @@ export class ScriptEngine {
         }
         break;
 
-      case 'setFlag':
-        this.ctx.setState((s) => ({
-          ...s,
-          flags: { ...s.flags, [op.flag as string]: op.value as boolean },
-        }));
-        break;
-
-      case 'ifFlag': {
-        const flagValue = this.ctx.state.flags[op.flag as string] ?? false;
-        if (flagValue && op.then) {
-          await this.runOps(op.then as ScriptOp[]);
-        } else if (!flagValue && op.else) {
-          await this.runOps(op.else as ScriptOp[]);
-        }
-        break;
-      }
-
-      case 'addItem':
-        this.ctx.addItem(op.id as string, op.name as string);
-        break;
-
-      case 'removeItem':
-        this.ctx.removeItem(op.id as string);
-        break;
-
-      case 'gotoScene':
-      case 'fadeToScene':
-        this.ctx.gotoScene(
-          op.sceneId as string,
-          op.spawn as { x: number; y: number } | undefined,
-        );
-        break;
-
       case 'wait':
         await this.sleep((op.ms as number) ?? 1000);
         break;
@@ -172,29 +342,19 @@ export class ScriptEngine {
 
       // ─── Web3 opcodes ──────────────────────────────────
 
-      case 'ifWalletConnected': {
-        const connected = this.ctx.isWalletConnected?.() ?? false;
-        if (connected && op.then) {
-          await this.runOps(op.then as ScriptOp[]);
-        } else if (!connected && op.else) {
-          await this.runOps(op.else as ScriptOp[]);
-        }
-        break;
-      }
-
       case 'web3Require': {
         // Check a gating rule; run then/else based on result
         // { op: "web3Require", rule: { type: "ERC721", contract: "..." }, then: [...], else: [...] }
         if (!this.ctx.checkGating) {
-          if (op.else) await this.runOps(op.else as ScriptOp[]);
+          if (op.else) await this.runOps(op.else as ScriptOp[], gen);
           break;
         }
         const rule = op.rule as GatingRule;
         const passed = await this.ctx.checkGating(rule);
         if (passed && op.then) {
-          await this.runOps(op.then as ScriptOp[]);
+          await this.runOps(op.then as ScriptOp[], gen);
         } else if (!passed && op.else) {
-          await this.runOps(op.else as ScriptOp[]);
+          await this.runOps(op.else as ScriptOp[], gen);
         }
         break;
       }
@@ -203,20 +363,33 @@ export class ScriptEngine {
         // { op: "mintNFT", tokenId: 99, onSuccess: [...], onFail: [...] }
         if (!this.ctx.mintItem) {
           await this.ctx.say('Wallet not connected. Cannot mint.');
-          if (op.onFail) await this.runOps(op.onFail as ScriptOp[]);
+          if (op.onFail) await this.runOps(op.onFail as ScriptOp[], gen);
           break;
         }
         this.ctx.showToast?.('pending', 'Minting... (confirm in wallet)');
-        const mintResult = await this.ctx.mintItem(op.tokenId as number);
+        const mintLabel = `${this.currentLabel || 'script'}/mintNFT`;
+        const mintResult = await this.ctx.mintItem(op.tokenId as number).catch((err: unknown): MintResult => ({
+          status: 'failed',
+          error: err instanceof Error ? err.message : 'Unknown error',
+        }));
+        let branch: ScriptOp[] | undefined;
         if (mintResult.status === 'success') {
           this.ctx.showToast?.('success', 'Minted successfully!');
-          if (op.onSuccess) await this.runOps(op.onSuccess as ScriptOp[]);
+          branch = op.onSuccess as ScriptOp[] | undefined;
         } else if (mintResult.status === 'not-configured') {
           this.ctx.showToast?.('failed', 'Minting not available yet');
-          if (op.onFail) await this.runOps(op.onFail as ScriptOp[]);
+          branch = op.onFail as ScriptOp[] | undefined;
         } else {
           this.ctx.showToast?.('failed', mintResult.error ?? 'Mint failed');
-          if (op.onFail) await this.runOps(op.onFail as ScriptOp[]);
+          branch = op.onFail as ScriptOp[] | undefined;
+        }
+        if (!branch) break;
+        if (gen === this.generation) {
+          await this.runOps(branch, gen);
+        } else {
+          // A1.1: el watchdog abandonó este script mientras el jugador tardaba en confirmar en la wallet, pero la
+          // transacción ha terminado igual: su rama (p. ej. el addItem del objeto minteado) no se pierde
+          void this.execute(branch, `${mintLabel} (resultado tras reinicio)`);
         }
         break;
       }
@@ -225,20 +398,29 @@ export class ScriptEngine {
         // { op: "mintAchievement", achievementId: 1, text: "Chapter 1 Complete", onSuccess: [...], onFail: [...] }
         // Always show visual achievement first
         if (op.text) this.ctx.showAchievement?.(op.text as string);
-        // Then attempt on-chain mint if wallet connected and configured
+        // A1.1: el mint on-chain va en segundo plano. Espera a que el jugador confirme en la wallet sin límite de
+        // tiempo y sin nada del juego en pantalla: si bloqueara el script, la entrada quedaría bloqueada para
+        // siempre (p. ej. WalletConnect en el móvil sin mirar). El logro visual ya está; los avisos y las ramas
+        // onSuccess/onFail llegan después como un script aparte.
         if (this.ctx.mintAchievement) {
-          const result = await this.ctx.mintAchievement(op.achievementId as number);
-          if (result.status === 'success') {
-            this.ctx.showToast?.('success', `Achievement minted on-chain!`);
-            if (op.onSuccess) await this.runOps(op.onSuccess as ScriptOp[]);
-          } else if (result.status === 'not-configured') {
-            // Silently skip — visual achievement still shown
-            if (op.onFail) await this.runOps(op.onFail as ScriptOp[]);
-          } else if (result.status === 'failed') {
-            // Don't interrupt gameplay for a failed achievement mint
-            console.warn('Achievement mint failed:', result.error);
-            if (op.onFail) await this.runOps(op.onFail as ScriptOp[]);
-          }
+          const achLabel = `${this.currentLabel || 'script'}/mintAchievement`;
+          void this.ctx.mintAchievement(op.achievementId as number)
+            .catch((err: unknown): MintResult => ({ status: 'failed', error: err instanceof Error ? err.message : 'Unknown error' }))
+            .then((result) => {
+              let later: ScriptOp[] | undefined;
+              if (result.status === 'success') {
+                this.ctx.showToast?.('success', `Achievement minted on-chain!`);
+                later = op.onSuccess as ScriptOp[] | undefined;
+              } else if (result.status === 'not-configured') {
+                // Silently skip — visual achievement still shown
+                later = op.onFail as ScriptOp[] | undefined;
+              } else if (result.status === 'failed') {
+                // Don't interrupt gameplay for a failed achievement mint
+                console.warn('Achievement mint failed:', result.error);
+                later = op.onFail as ScriptOp[] | undefined;
+              }
+              if (later?.length) void this.execute(later, `${achLabel} (resultado)`);
+            });
         }
         break;
       }
@@ -247,28 +429,6 @@ export class ScriptEngine {
         // { op: "dialogue", npcId: "old_man", treeId: "intro" }
         if (this.ctx.startDialogue) {
           await this.ctx.startDialogue(op.npcId as string, op.treeId as string);
-        }
-        break;
-      }
-
-      case 'ifHasItem': {
-        // { op: "ifHasItem", id: "keycard", then: [...], else: [...] }
-        const hasIt = this.ctx.state.inventory.some((i) => i.id === (op.id as string));
-        if (hasIt && op.then) {
-          await this.runOps(op.then as ScriptOp[]);
-        } else if (!hasIt && op.else) {
-          await this.runOps(op.else as ScriptOp[]);
-        }
-        break;
-      }
-
-      case 'ifVisited': {
-        // { op: "ifVisited", sceneId: "basement", then: [...], else: [...] }
-        const visited = this.ctx.state.visited.includes(op.sceneId as string);
-        if (visited && op.then) {
-          await this.runOps(op.then as ScriptOp[]);
-        } else if (!visited && op.else) {
-          await this.runOps(op.else as ScriptOp[]);
         }
         break;
       }
@@ -290,19 +450,6 @@ export class ScriptEngine {
         break;
       }
 
-      case 'achievement': {
-        // { op: "achievement", text: "Chapter 1 Complete" }
-        // Non-blocking — fire and forget
-        this.ctx.showAchievement?.(op.text as string);
-        break;
-      }
-
-      case 'setCostume': {
-        // { op: "setCostume", prefix: "ape" } — changes player sprite
-        this.ctx.setCostume?.(op.prefix as string);
-        break;
-      }
-
       case 'credits': {
         // { op: "credits" } — show scrolling end credits
         if (this.ctx.showCredits) {
@@ -320,8 +467,15 @@ export class ScriptEngine {
       }
 
       case 'stop':
-        this.stopped = true;
+        if (gen === this.generation) this.stopped = true;
         return;
+
+      case 'ifFlag':
+      case 'ifHasItem':
+      case 'ifVisited':
+      case 'ifWalletConnected':
+        // Condicional sin rama para el valor actual: no hace nada
+        break;
 
       default:
         console.warn(`ScriptEngine: unknown opcode "${op.op}"`);

@@ -36,6 +36,10 @@ y la ruta falla. Un hotspot que el ratón no alcanza es un fallo, nunca un «el 
   lleve `knownBreak`: entonces es **XFAIL**, un atajo conocido que cerrará ese checkpoint. Si una ruta con
   `knownBreak` ya no llega, sale **XPASS** y también falla, para quitar la marca en la misma PR.
 
+`act` admite `holdTextMs` (A1.1): deja el primer texto del script en pantalla ese tiempo sin cerrarlo, como un
+jugador que se distrae, y falla si el script deja de estar en marcha durante la espera. La ruta crítica lo usa
+en `PICK hs_mailbox` (35 s, más que los 30 s del watchdog, con `addItem` y `setFlag` pendientes tras el texto).
+
 Pasos: `newGame`, `act`, `use`, `combine`, `talk`, `walk`, `goto`, `dismissAll`, `wait` (`ms`). Cada paso
 admite `expect` con `scene`, `has`, `lacks`, `flags`, `visited` y `achievements`. Las rutas llevan un
 `goal` con el mismo formato.

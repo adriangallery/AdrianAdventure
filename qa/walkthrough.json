@@ -11,7 +11,7 @@
 
         { "do": "act", "verb": "PICK", "target": "hs_porch_light", "expect": { "has": ["code_note"], "flags": { "has_code": true } } },
         { "do": "act", "verb": "PICK", "target": "hs_doormat", "note": "el Ledger se usa en el capítulo 3", "expect": { "has": ["ledger"] } },
-        { "do": "act", "verb": "PICK", "target": "hs_mailbox", "note": "el sobre abre el diálogo con Dr. Satoshi en el capítulo 4", "expect": { "has": ["mystery_envelope"], "flags": { "found_envelope": true } } },
+        { "do": "act", "verb": "PICK", "target": "hs_mailbox", "holdTextMs": 35000, "note": "el sobre abre el diálogo con Dr. Satoshi en el capítulo 4. A1.1: el texto se deja 35 s en pantalla antes del addItem y el setFlag; el watchdog no debe cortar el script", "expect": { "has": ["mystery_envelope"], "flags": { "found_envelope": true } } },
         { "do": "use", "item": "code_note", "target": "hs_keypad", "expect": { "scene": "lobby", "flags": { "door_unlocked": true, "chapter_1_complete": true, "chapter_2_intro_shown": true } } },
 
         { "do": "act", "verb": "PICK", "target": "hs_coat", "expect": { "has": ["keycard"], "flags": { "has_keycard": true } } },
