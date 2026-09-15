@@ -163,6 +163,9 @@ export class UIScene extends Phaser.Scene {
       gs.executeHotspotVerb(hotspot, verb);
     });
 
+    // V6: panel contextual — resalta los verbos que hacen algo con el objeto enfocado y atenúa los que no tienen respuesta
+    gameScene.events.on('hotspot:focus', (hotspot: HotspotData) => this.scummUI.setContextHotspot(hotspot));
+
     // Hotspot hover → update action line
     gameScene.events.on('hotspot:hover', (name: string | null) => {
       this.scummUI.setHoveredObject(name);

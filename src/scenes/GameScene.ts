@@ -485,6 +485,7 @@ export class GameScene extends Phaser.Scene {
       hotspot = this.sceneDataLoader.getHotspotNearPct(pct.x, pct.y, pad.x, pad.y, (hs) => this.isHotspotVisible(hs));
     }
     if (hotspot) this.flashHotspot(hotspot);
+    if (hotspot) this.events.emit('hotspot:focus', hotspot);
 
     // V6: con el dedo y sin verbo elegido, tocar un hotspot = mirar y mantener pulsado = acción principal
     if (pointer.wasTouch && hotspot && !selectedItem && verb === Verb.WALK) {
@@ -569,6 +570,7 @@ export class GameScene extends Phaser.Scene {
     const pct = this.coordSystem.screenToPct(wx, wy);
     const hs = this.sceneDataLoader.getHotspotAtPct(pct.x, pct.y);
     this.events.emit('hotspot:hover', hs ? hs.name : null);
+    if (hs && this.isHotspotVisible(hs)) this.events.emit('hotspot:focus', hs);
   }
 
   // ─── Resize ───────────────────────────────

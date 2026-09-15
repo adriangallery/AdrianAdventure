@@ -1,4 +1,6 @@
 import Phaser from 'phaser';
+import { scriptedVerbs, realActionVerbs } from '@/systems/HotspotVerbs';
+import type { HotspotData } from '@/types/scene.types';
 import { Verb, PANEL_VERBS, VERB_LABELS } from '@/types/game.types';
 import type { InventorySystem } from '@/systems/InventorySystem';
 import type { InventoryItem } from '@/types/game.types';
@@ -36,7 +38,10 @@ export class ScummUI {
   private rebuildTimer: ReturnType<typeof setTimeout> | null = null;
 
   /** Mobile collapsible state */
-  private collapsed = false;
+  /** V6: el panel plegado en móvil se recuerda entre partidas */
+  private collapsed = ScummUI.readCollapsed();
+  private contextId: string | null = null;
+  private contextTimer: Phaser.Time.TimerEvent | null = null;
   private isMobile = false;
   private handleBar: Phaser.GameObjects.Container | null = null;
 
@@ -243,15 +248,55 @@ export class ScummUI {
     if (this.collapsed) this.expand(); else this.collapse();
   }
 
+  private static readCollapsed(): boolean {
+    try { return localStorage.getItem('adrian_adventure_panel_collapsed') === '1'; } catch { return false; }
+  }
+
+  private static writeCollapsed(v: boolean): void {
+    try { localStorage.setItem('adrian_adventure_panel_collapsed', v ? '1' : '0'); } catch { /* sin almacenamiento */ }
+  }
+
+  /**
+   * V6: panel contextual. Con un objeto enfocado, los verbos que hacen algo de verdad se resaltan, los que no
+   * tienen respuesta escrita se atenúan y el resto queda normal. Se limpia a los 5 s sin foco nuevo.
+   */
+  setContextHotspot(hotspot: HotspotData | null): void {
+    const id = hotspot?.id ?? null;
+    this.contextTimer?.remove();
+    this.contextTimer = hotspot ? this.scene.time.delayedCall(5000, () => this.setContextHotspot(null)) : null;
+    if (id === this.contextId) return;
+    this.contextId = id;
+    const scripted = hotspot ? scriptedVerbs(hotspot) : null;
+    const real = hotspot ? realActionVerbs(hotspot) : null;
+    for (const [verb, text] of this.verbTexts) {
+      if (!scripted || !real) { text.setAlpha(1); if (verb !== this.selectedVerb) text.setColor(TWP.VERB_NORMAL); continue; }
+      text.setAlpha(scripted.has(verb) ? 1 : 0.4);
+      if (verb !== this.selectedVerb) text.setColor(real.has(verb) ? TWP.VERB_HOVER : TWP.VERB_NORMAL);
+    }
+    this.scene.registry.set('verbContext', hotspot ? { id, real: [...real!], scripted: [...scripted!] } : null);
+  }
+
+  /** Estado del contexto para pruebas: verbos atenuados y resaltados en pantalla. */
+  getContextState(): { id: string | null; dimmed: string[]; highlighted: string[] } {
+    const dimmed: string[] = []; const highlighted: string[] = [];
+    for (const [verb, text] of this.verbTexts) {
+      if (text.alpha < 0.9) dimmed.push(verb);
+      else if (text.style.color === TWP.VERB_HOVER) highlighted.push(verb);
+    }
+    return { id: this.contextId, dimmed, highlighted };
+  }
+
   collapse(): void {
     if (!this.isMobile || this.collapsed) return;
     this.collapsed = true;
+    ScummUI.writeCollapsed(true);
     this.animatePanel();
   }
 
   expand(): void {
     if (!this.isMobile || !this.collapsed) return;
     this.collapsed = false;
+    ScummUI.writeCollapsed(false);
     this.animatePanel();
   }
 
