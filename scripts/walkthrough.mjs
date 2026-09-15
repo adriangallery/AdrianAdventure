@@ -8,6 +8,9 @@
 //  - sequence-break: intenta llegar antes de tiempo a `goal`. Si lo consigue es un atajo abierto → FALLO,
 //    salvo que la ruta lleve `knownBreak` (checkpoint que lo cerrará) → XFAIL documentado. Si lleva
 //    `knownBreak` y ya no se llega → XPASS, que también falla para que se quite la marca.
+//    La ruta solo se da por cerrada si la para el paso del intento (`attempt: true`, o el último) o un paso
+//    con `gate: true`; un tropiezo en cualquier otro paso es ERROR. Los pasos anteriores al intento
+//    necesitan `expect`, para no dar por cerrada una ruta que nunca llegó al punto del atajo.
 //
 // Uso: BASE_URL=http://127.0.0.1:4173 node scripts/walkthrough.mjs [qa/walkthrough.json qa/sequence-breaks.json]
 //      WALKTHROUGH_ONLY=<id de ruta> para lanzar una sola.
@@ -33,7 +36,7 @@ function describe(s) {
     case 'use': return `USE ${s.item} → ${s.target}`;
     case 'combine': return `USE ${s.items.join(' + ')}`;
     case 'talk': return `TALK ${s.npc}${s.choices?.length ? ` [${s.choices.join(' / ')}]` : ''}`;
-    case 'walk': return `WALK ${s.x},${s.y}${s.untilScene ? ` → ${s.untilScene}` : ''}`;
+    case 'walk': return `WALK ${s.x},${s.y}${s.trigger ? ` (${s.trigger})` : ''}${s.untilScene ? ` → ${s.untilScene}` : ''}`;
     case 'goto': return `GOTO ${s.scene}`;
     case 'wait': return `WAIT ${s.ms} ms`;
     default: return s.do;
@@ -72,24 +75,66 @@ const callQa = (page, step) => page.evaluate(async (s) => {
   }
 }, step);
 
+const inBounds = (p, b) => !!p && p.x >= b.x && p.x <= b.x + b.w && p.y >= b.y && p.y <= b.y + b.h;
+const fmtPoint = (p) => (p ? `${p.x.toFixed(1)},${p.y.toFixed(1)}` : '?');
+
 async function runStep(page, step) {
   if (step.do === 'wait') {
     await sleep(step.ms ?? 1000);
     return page.evaluate(() => window.__qa.state());
   }
-  // walk con untilScene: volver a pulsar el mismo punto si un trigger intermedio paró al personaje
+  // walk con untilScene: volver a pulsar el mismo punto si un trigger intermedio paró al personaje. Si no
+  // llega, es un error de la prueba; solo cuenta como «el juego no deja» si lleva `trigger` y el personaje
+  // llegó a pisar ese trigger (o se disparó) sin pasar de escena. Así un cambio de coordenadas o de
+  // pathfinding nunca se confunde con un gate cerrado.
   if (step.do === 'walk' && step.untilScene) {
-    let st;
-    for (let i = 0; i < (step.tries ?? 3); i++) {
-      st = await callQa(page, step);
-      if (st.scene === step.untilScene) break;
+    const before = await page.evaluate(() => window.__qa.state());
+    let trigger = null;
+    if (step.trigger) {
+      trigger = before.triggers.find((t) => t.id === step.trigger);
+      if (!trigger) throw new Error(`[qa:error] no existe el trigger «${step.trigger}» en ${before.scene}`);
+      if (!inBounds({ x: step.x, y: step.y }, trigger.bounds)) {
+        throw new Error(`[qa:error] ruta mal definida: ${step.x},${step.y} no cae dentro de ${step.trigger} ${JSON.stringify(trigger.bounds)}`);
+      }
     }
-    return st;
+    const tries = step.tries ?? 3;
+    let st;
+    for (let i = 0; i < tries; i++) {
+      st = await callQa(page, step);
+      if (st.scene === step.untilScene) return st;
+    }
+    const where = `escena «${st.scene}», personaje en ${fmtPoint(st.player)}`;
+    if (trigger && st.scene === before.scene) {
+      const fired = !before.firedTriggers.includes(trigger.id) && st.firedTriggers.includes(trigger.id);
+      if (fired || inBounds(st.player, trigger.bounds)) {
+        throw new Error(`[qa:blocked] llegó a ${trigger.id} y no pasó a «${step.untilScene}» (${where})`);
+      }
+    }
+    throw new Error(`[qa:error] WALK ${step.x},${step.y} no llegó a «${step.untilScene}» tras ${tries} intentos (${where}${trigger ? `, fuera de ${trigger.id}` : ''})`);
   }
   return callQa(page, step);
 }
 
 const kindOf = (message) => (/\[qa:blocked\]/.test(message) ? 'blocked' : 'error');
+
+/** Paso que intenta el atajo en una ruta sequence-break: el marcado con `attempt`, o el último. */
+const attemptIndex = (route) => {
+  const i = route.steps.findIndex((s) => s.attempt);
+  return i >= 0 ? i : route.steps.length - 1;
+};
+
+/** Defectos de definición: una ruta de atajo mal escrita no puede darse por cerrada. */
+function routeDefects(route) {
+  if ((route.kind ?? 'walkthrough') !== 'sequence-break') return [];
+  const out = [];
+  if (!route.goal) out.push('falta "goal"');
+  if (!route.steps?.length) out.push('no tiene pasos');
+  if (route.steps.filter((s) => s.attempt).length > 1) out.push('más de un paso con "attempt"');
+  route.steps.slice(0, attemptIndex(route)).forEach((s, i) => {
+    if (!s.expect) out.push(`paso ${i + 1} (${describe(s)}): los pasos anteriores al intento necesitan "expect"`);
+  });
+  return out;
+}
 
 async function runRoute(file, route) {
   const dir = `${OUT}/${slug(route.id)}`;
@@ -119,6 +164,12 @@ async function runRoute(file, route) {
   let state = null;
   let stopped = null;
   let goalReached = false;
+
+  const defects = routeDefects(route);
+  if (defects.length) {
+    await context.close();
+    return { ...result, status: 'error', detail: `ruta mal definida: ${defects.join('; ')}` };
+  }
 
   try {
     await page.goto(`${BASE}/?qa=1`, { waitUntil: 'domcontentloaded', timeout: 90_000 });
@@ -162,6 +213,11 @@ async function runRoute(file, route) {
   await context.close();
 
   if (result.kind === 'sequence-break') {
+    const attempt = attemptIndex(route);
+    // Solo cierra la ruta el paso del intento o uno marcado como gate; cualquier otro tropiezo es un error de
+    // la prueba (no se llegó a probar el atajo), igual que un [qa:error] en cualquier paso.
+    const closingStep = stopped && stopped.index > 0 && stopped.kind !== 'error'
+      && (stopped.index - 1 === attempt || route.steps[stopped.index - 1]?.gate === true);
     if (stopped?.kind === 'error') {
       result.status = 'error';
       result.detail = `paso ${stopped.index}: ${stopped.message}`;
@@ -170,8 +226,13 @@ async function runRoute(file, route) {
       result.detail = result.knownBreak
         ? `atajo abierto, conocido: lo cierra ${result.knownBreak}`
         : 'atajo abierto: se llega antes de tiempo';
+    } else if (stopped && !closingStep) {
+      result.status = 'error';
+      result.detail = `paso de preparación ${stopped.index} (${result.steps[stopped.index - 1]?.label ?? '?'}) no salió como se esperaba, así que el atajo no se llegó a intentar: ${stopped.message}`;
     } else {
-      const why = stopped ? `paso ${stopped.index}: ${stopped.message}` : `no se cumplió ${JSON.stringify(route.goal)}`;
+      const why = stopped
+        ? `paso ${stopped.index}${stopped.index - 1 === attempt ? ' (intento)' : ' (gate)'}: ${stopped.message}`
+        : `el intento (paso ${attempt + 1}) terminó sin cumplir ${JSON.stringify(route.goal)}`;
       result.status = result.knownBreak ? 'xpass' : 'pass';
       result.detail = result.knownBreak ? `el atajo ya está cerrado (${why}): quita "knownBreak" de la ruta` : `cerrado (${why})`;
     }
@@ -215,9 +276,8 @@ for (const file of FILES) {
 }
 await browser.close();
 
-const warnings = [...new Set(results.flatMap((r) => r.lastState?.warnings ?? []))];
 const missing = [...new Set(results.flatMap((r) => r.missing))];
-writeFileSync(`${OUT}/report.json`, JSON.stringify({ base: BASE, at: new Date().toISOString(), results, warnings, missing }, null, 2));
+writeFileSync(`${OUT}/report.json`, JSON.stringify({ base: BASE, at: new Date().toISOString(), results, missing }, null, 2));
 
 const LABEL = { pass: 'OK', xfail: 'XFAIL (conocido)', xpass: 'XPASS (quitar knownBreak)', fail: 'FALLO', error: 'ERROR' };
 const cell = (s) => String(s ?? '').replace(/\|/g, '\\|').replace(/\n/g, ' ');
@@ -230,11 +290,9 @@ const md = [
   '|---|---|---|---|---|',
   ...results.map((r) => `| ${cell(r.id)} | ${r.kind} | ${LABEL[r.status]} | ${r.farthest ? cell(`${r.farthest.index}/${r.steps.length > r.farthest.index ? r.steps.length : r.farthest.index}. ${r.farthest.label} (${r.farthest.scene})`) : '—'} | ${cell(r.detail)} |`),
 ];
-if (warnings.length) md.push('', '<details><summary>Avisos de hotspots</summary>', '', ...warnings.map((w) => `- ${cell(w)}`), '', '</details>');
 if (missing.length) md.push('', `<details><summary>Recursos con error HTTP (${missing.length})</summary>`, '', ...missing.slice(0, 50).map((m) => `- ${cell(m)}`), '', '</details>');
 if (process.env.GITHUB_STEP_SUMMARY) appendFileSync(process.env.GITHUB_STEP_SUMMARY, `${md.join('\n')}\n`);
 
-if (warnings.length) console.log(`\nAvisos:\n${warnings.map((w) => `  - ${w}`).join('\n')}`);
 if (missing.length) console.log(`\nRecursos con error HTTP (${missing.length}): ${missing.slice(0, 10).join(', ')}`);
 const bad = results.filter((r) => ['fail', 'error', 'xpass'].includes(r.status));
 if (!results.length) {

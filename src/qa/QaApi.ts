@@ -37,10 +37,10 @@ export interface QaState {
   hotspots: string[];
   /** NPCs con diálogo (clicables) */
   npcs: string[];
+  /** Triggers de la escena con bounds (en % del fondo) */
+  triggers: { id: string; bounds: { x: number; y: number; w: number; h: number } }[];
   /** Opciones en pantalla si el diálogo espera una elección */
   choices: Choice[] | null;
-  /** Avisos acumulados (p. ej. hotspots tapados por otros que el ratón no puede pulsar) */
-  warnings: string[];
   /** Últimas acciones y textos mostrados, para diagnosticar */
   log: string[];
 }
@@ -77,7 +77,6 @@ type Target = { kind: 'hotspot'; hotspot: HotspotData } | { kind: 'npc'; id: str
 export function installQa(game: Phaser.Game): void {
   const registry = game.registry;
   const log: string[] = [];
-  const warnings = new Set<string>();
   const note = (line: string) => {
     log.push(line);
     if (log.length > 60) log.shift();
@@ -195,31 +194,12 @@ export function installQa(game: Phaser.Game): void {
     if (p.getSelectedVerb() !== verb) p.selectVerb(verb);
   };
 
-  /** Aviso si ningún punto del hotspot cae en él con el ratón (otro hotspot anterior en la lista lo tapa). */
-  const checkClickable = (hotspot: HotspotData, data: SceneData) => {
-    const b = hotspot.bounds;
-    if (!b) return;
-    const cover = new Set<string>();
-    for (let i = 0; i < 7; i++) {
-      for (let j = 0; j < 7; j++) {
-        const px = b.x + (b.w * (i + 0.5)) / 7;
-        const py = b.y + (b.h * (j + 0.5)) / 7;
-        const top = data.regions.hotspots.find((h) => h.bounds
-          && px >= h.bounds.x && px <= h.bounds.x + h.bounds.w && py >= h.bounds.y && py <= h.bounds.y + h.bounds.h);
-        if (top === hotspot) return;
-        if (top) cover.add(top.id);
-      }
-    }
-    warnings.add(`${data.id}.${hotspot.id}: tapado por ${[...cover].join(', ')}; con el ratón no se llega a pulsar`);
-  };
-
   const resolveTarget = (id: string): Target => {
     const data = sceneData();
     const scene = registry.get('currentSceneId') as string;
     const hotspot = data?.regions.hotspots.find((h) => h.id === id);
     if (hotspot) {
       if (!gs().qaIsHotspotVisible(hotspot)) throw new QaError('blocked', `el hotspot «${id}» está oculto ahora mismo en ${scene}`);
-      checkClickable(hotspot, data!);
       return { kind: 'hotspot', hotspot };
     }
     if (data?.npcs?.some((n) => n.id === id)) {
@@ -229,9 +209,15 @@ export function installQa(game: Phaser.Game): void {
     throw new QaError('error', `no existe el hotspot ni el NPC «${id}» en la escena ${scene}`);
   };
 
+  /**
+   * Clic de ratón resuelto con el mismo hit-test que `handlePointerDown` (panel, fondo, NPC antes que
+   * hotspots, hotspot oculto que tapa). Si el ratón no alcanza el objetivo, la prueba falla: es un error del
+   * juego o de la ruta, nunca un «el juego no deja».
+   */
   const tap = (target: Target) => {
-    if (target.kind === 'npc') gs().qaTapNpc(target.id);
-    else gs().qaTapHotspot(target.hotspot);
+    const id = target.kind === 'npc' ? target.id : target.hotspot.id;
+    const why = target.kind === 'npc' ? gs().qaTapNpc(target.id) : gs().qaTapHotspot(target.hotspot);
+    if (why) throw new QaError('error', `el ratón no puede pulsar «${id}» en ${String(registry.get('currentSceneId'))}: ${why}`);
   };
 
   const snapshot = (): QaState => {
@@ -255,8 +241,8 @@ export function installQa(game: Phaser.Game): void {
       player: scene ? scene.qaPlayer() : null,
       hotspots: scene && data ? data.regions.hotspots.filter((h) => scene.qaIsHotspotVisible(h)).map((h) => h.id) : [],
       npcs: scene ? scene.qaNpcIds() : [],
+      triggers: scene ? scene.qaTriggers() : [],
       choices: choicePanel?.isAwaitingChoice() ? choicePanel.getOptions() : null,
-      warnings: [...warnings],
       log: [...log],
     };
   };
@@ -336,7 +322,8 @@ export function installQa(game: Phaser.Game): void {
       chooseVerb(Verb.WALK);
       await waitInputFree();
       note(`WALK ${pctX},${pctY}`);
-      gs().qaWalk(pctX, pctY);
+      const why = gs().qaWalk(pctX, pctY);
+      if (why) throw new QaError('error', `no se puede hacer clic para andar a ${pctX},${pctY}: ${why}`);
       await settle();
       return snapshot();
     },

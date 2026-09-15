@@ -9,9 +9,9 @@
       "why": "outside.tr_mountain y mountain.tr_to_clinic no tienen gate (hs_winding_path sí pide el printout)",
       "goal": { "scene": "clinic_exterior" },
       "steps": [
-        { "do": "newGame", "expect": { "scene": "outside" } },
-        { "do": "walk", "x": 1.5, "y": 95, "untilScene": "mountain" },
-        { "do": "walk", "x": 21, "y": 65, "untilScene": "clinic_exterior", "note": "tr_chapter4_intro para al personaje a medio camino" }
+        { "do": "newGame", "expect": { "scene": "outside", "lacks": ["printout"] } },
+        { "do": "walk", "x": 1.5, "y": 95, "trigger": "tr_mountain", "untilScene": "mountain", "gate": true, "note": "A1.2 puede cerrar ya esta salida", "expect": { "scene": "mountain" } },
+        { "do": "walk", "x": 21, "y": 65, "trigger": "tr_to_clinic", "untilScene": "clinic_exterior", "attempt": true, "note": "tr_chapter4_intro para al personaje a medio camino" }
       ]
     },
     {
@@ -22,11 +22,11 @@
       "why": "mismo atajo de montaña + la hoja de visitas de clinic_exterior abre la puerta sin keycard",
       "goal": { "scene": "clinic_interior" },
       "steps": [
-        { "do": "newGame", "expect": { "scene": "outside" } },
-        { "do": "walk", "x": 1.5, "y": 95, "untilScene": "mountain" },
-        { "do": "walk", "x": 21, "y": 65, "untilScene": "clinic_exterior" },
-        { "do": "act", "verb": "PICK", "target": "hs_visitor_box" },
-        { "do": "act", "verb": "USE", "target": "hs_main_entrance" }
+        { "do": "newGame", "expect": { "scene": "outside", "lacks": ["keycard"], "flags": { "chapter_3_complete": false } } },
+        { "do": "walk", "x": 1.5, "y": 95, "trigger": "tr_mountain", "untilScene": "mountain", "gate": true, "expect": { "scene": "mountain" } },
+        { "do": "walk", "x": 21, "y": 65, "trigger": "tr_to_clinic", "untilScene": "clinic_exterior", "gate": true, "expect": { "scene": "clinic_exterior" } },
+        { "do": "act", "verb": "PICK", "target": "hs_visitor_box", "expect": { "scene": "clinic_exterior", "has": ["sign_in_sheet"], "flags": { "found_sign_in_sheet": true } } },
+        { "do": "act", "verb": "USE", "target": "hs_main_entrance", "attempt": true }
       ]
     },
     {
@@ -37,12 +37,12 @@
       "goal": { "scene": "basement" },
       "steps": [
         { "do": "newGame", "expect": { "scene": "outside" } },
-        { "do": "act", "verb": "PICK", "target": "hs_porch_light" },
+        { "do": "act", "verb": "PICK", "target": "hs_porch_light", "expect": { "has": ["code_note"] } },
         { "do": "use", "item": "code_note", "target": "hs_keypad", "expect": { "scene": "lobby" } },
-        { "do": "act", "verb": "USE", "target": "hs_stairs_up", "expect": { "scene": "upstairs" } },
+        { "do": "act", "verb": "USE", "target": "hs_stairs_up", "expect": { "scene": "upstairs", "lacks": ["keycard"] } },
         { "do": "act", "verb": "USE", "target": "hs_roof_hatch", "expect": { "scene": "rooftop" } },
-        { "do": "act", "verb": "USE", "target": "hs_weather_vane", "expect": { "flags": { "vane_turned": true } } },
-        { "do": "act", "verb": "USE", "target": "hs_roof_access_panel" }
+        { "do": "act", "verb": "USE", "target": "hs_weather_vane", "expect": { "scene": "rooftop", "flags": { "vane_turned": true, "has_keycard": false } } },
+        { "do": "act", "verb": "USE", "target": "hs_roof_access_panel", "attempt": true }
       ]
     }
   ]

@@ -21,6 +21,12 @@ import { getAchievementByText } from '@/config/achievements.config';
 import type { Address } from 'viem';
 import type { ScummUI } from '@/ui/ScummUI';
 
+/** Resultado del hit-test de un toque: nada (panel, fuera del fondo), un NPC o un punto del fondo. */
+type TapHit =
+  | { kind: 'none'; reason: string }
+  | { kind: 'npc'; npc: NPC }
+  | { kind: 'scene'; pct: { x: number; y: number }; hotspot: HotspotData | null; rawHotspot: HotspotData | null };
+
 export class GameScene extends Phaser.Scene {
   private player!: Player;
   private coordSystem!: CoordSystem;
@@ -436,43 +442,18 @@ export class GameScene extends Phaser.Scene {
     const dismissedAt = this.registry.get('dialogueDismissedAt') as number | undefined;
     if (dismissedAt !== undefined && this.time.now - dismissedAt < 50) return;
 
-    // Panel check uses SCREEN Y (panel is fixed to bottom of screen)
-    const panelH = this.getEffectivePanelHeight();
-    if (pointer.y >= this.scale.height - panelH) return;
-
-    // Game area check uses WORLD coords (accounts for camera scroll)
-    const wx = pointer.worldX;
-    const wy = pointer.worldY;
-    if (!this.coordSystem.isInBgArea(wx, wy)) return;
-
-    const pct = this.coordSystem.screenToPct(wx, wy);
+    const hit = this.hitTestAt(pointer.worldX, pointer.worldY, pointer.y, pointer.wasTouch);
+    if (hit.kind === 'none') return;
 
     // Get current verb and selected item from UI (needed for NPC item interactions)
     const { scummUI, verb, selectedItem } = this.uiSelection();
 
-    // NPC click detection — use actual sprite bounds for accurate hit testing
-    for (const npc of this.npcs) {
-      if (!npc.dialogueTreeId) continue;
-      const npcScreen = npc.getWorldTransformMatrix();
-      const npcScale = npc.scale;
-      const bodyW = (npc.width * npcScale) / 2;
-      const bodyH = npc.height * npcScale;
-      const dx = wx - npcScreen.tx;
-      const dy = wy - npcScreen.ty;
-      if (Math.abs(dx) < bodyW && dy > -bodyH && dy < 10 * npcScale) {
-        this.dispatchNpcTap(npc, verb, selectedItem, scummUI);
-        return;
-      }
+    if (hit.kind === 'npc') {
+      this.dispatchNpcTap(hit.npc, verb, selectedItem, scummUI);
+      return;
     }
 
-    // Check hotspot
-    const rawHotspot = this.sceneDataLoader.getHotspotAtPct(pct.x, pct.y);
-    let hotspot = rawHotspot && this.isHotspotVisible(rawHotspot) ? rawHotspot : null;
-    // V6: con el dedo, 22 px de margen alrededor de cada hotspot (área táctil de al menos 44 px)
-    if (!hotspot && pointer.wasTouch) {
-      const pad = this.touchPadPct();
-      hotspot = this.sceneDataLoader.getHotspotNearPct(pct.x, pct.y, pad.x, pad.y, (hs) => this.isHotspotVisible(hs));
-    }
+    const { pct, hotspot } = hit;
     if (hotspot) this.flashHotspot(hotspot);
     if (hotspot) this.events.emit('hotspot:focus', hotspot);
 
@@ -483,6 +464,41 @@ export class GameScene extends Phaser.Scene {
     }
 
     this.dispatchTap(pct, hotspot, verb, selectedItem, scummUI);
+  }
+
+  /**
+   * Qué recibe un toque en ese punto (coordenadas de mundo e Y de pantalla), con las reglas del clic real:
+   * el panel SCUMM y lo que cae fuera del fondo no cuentan; los NPC con diálogo van antes que los hotspots
+   * (hitbox del sprite); manda el primer hotspot de la lista que contiene el punto, y si está oculto el
+   * punto se queda sin hotspot. Con el dedo, 22 px de margen alrededor de cada hotspot (V6).
+   * A0.1: la API de QA resuelve sus toques aquí, así que no puede pulsar lo que el ratón no alcanza.
+   */
+  private hitTestAt(wx: number, wy: number, screenY: number, wasTouch: boolean): TapHit {
+    // Panel check uses SCREEN Y (panel is fixed to bottom of screen)
+    if (screenY >= this.scale.height - this.getEffectivePanelHeight()) return { kind: 'none', reason: 'el panel de verbos' };
+    // Game area check uses WORLD coords (accounts for camera scroll)
+    if (!this.coordSystem.isInBgArea(wx, wy)) return { kind: 'none', reason: 'fuera del fondo' };
+
+    // NPC click detection — use actual sprite bounds for accurate hit testing
+    for (const npc of this.npcs) {
+      if (!npc.dialogueTreeId) continue;
+      const npcScreen = npc.getWorldTransformMatrix();
+      const npcScale = npc.scale;
+      const bodyW = (npc.width * npcScale) / 2;
+      const bodyH = npc.height * npcScale;
+      const dx = wx - npcScreen.tx;
+      const dy = wy - npcScreen.ty;
+      if (Math.abs(dx) < bodyW && dy > -bodyH && dy < 10 * npcScale) return { kind: 'npc', npc };
+    }
+
+    const pct = this.coordSystem.screenToPct(wx, wy);
+    const rawHotspot = this.sceneDataLoader.getHotspotAtPct(pct.x, pct.y);
+    let hotspot = rawHotspot && this.isHotspotVisible(rawHotspot) ? rawHotspot : null;
+    if (!hotspot && wasTouch) {
+      const pad = this.touchPadPct();
+      hotspot = this.sceneDataLoader.getHotspotNearPct(pct.x, pct.y, pad.x, pad.y, (hs) => this.isHotspotVisible(hs));
+    }
+    return { kind: 'scene', pct, hotspot, rawHotspot };
   }
 
   /** Verbo y objeto elegidos en el panel SCUMM (WALK y ninguno si el panel aún no existe). */
@@ -1218,29 +1234,90 @@ export class GameScene extends Phaser.Scene {
     this.emitSyntheticTap(this.input.activePointer);
   }
 
-  /** Tocar un hotspot con el verbo y el objeto elegidos en el panel, como con el ratón. */
-  qaTapHotspot(hotspot: HotspotData): void {
-    const { scummUI, verb, selectedItem } = this.uiSelection();
-    this.flashHotspot(hotspot);
-    this.events.emit('hotspot:focus', hotspot);
+  /** Coordenadas de un punto del fondo (en %) tal y como las recibiría un clic: mundo e Y de pantalla. */
+  private qaPoint(pctX: number, pctY: number): { wx: number; wy: number; sy: number } {
+    const w = this.coordSystem.pctToScreen(pctX, pctY);
+    return { wx: w.x, wy: w.y, sy: w.y - this.cameras.main.scrollY };
+  }
+
+  private describeHit(hit: TapHit): string {
+    if (hit.kind === 'none') return hit.reason;
+    if (hit.kind === 'npc') return `el NPC ${hit.npc.npcId}`;
+    if (!hit.rawHotspot) return 'fondo sin hotspot';
+    return hit.hotspot ? `el hotspot ${hit.rawHotspot.id}` : `el hotspot oculto ${hit.rawHotspot.id}`;
+  }
+
+  /**
+   * Clic de ratón sobre un hotspot con el verbo y el objeto elegidos en el panel. Busca dentro de sus bounds
+   * (centro y rejilla de 7×7) un punto donde `hitTestAt` devuelva ese mismo hotspot y hace clic ahí.
+   * Devuelve null si ha pulsado, o por qué el ratón no puede pulsarlo (tapado, sin bounds, bajo el panel…).
+   */
+  qaTapHotspot(hotspot: HotspotData): string | null {
     const b = hotspot.bounds;
-    const pct = b ? { x: b.x + b.w / 2, y: b.y + b.h / 2 } : { x: this.player.pctX, y: this.player.pctY };
-    this.dispatchTap(pct, hotspot, verb, selectedItem, scummUI);
+    if (!b) return 'no tiene bounds, ningún clic cae en él';
+    const points = [{ x: b.x + b.w / 2, y: b.y + b.h / 2 }];
+    for (let i = 0; i < 7; i++) {
+      for (let j = 0; j < 7; j++) points.push({ x: b.x + (b.w * (i + 0.5)) / 7, y: b.y + (b.h * (j + 0.5)) / 7 });
+    }
+    const covers = new Set<string>();
+    for (const p of points) {
+      const { wx, wy, sy } = this.qaPoint(p.x, p.y);
+      const hit = this.hitTestAt(wx, wy, sy, false);
+      if (hit.kind === 'scene' && hit.hotspot === hotspot) {
+        const { scummUI, verb, selectedItem } = this.uiSelection();
+        this.flashHotspot(hotspot);
+        this.events.emit('hotspot:focus', hotspot);
+        this.dispatchTap(hit.pct, hotspot, verb, selectedItem, scummUI);
+        return null;
+      }
+      covers.add(this.describeHit(hit));
+    }
+    return `ningún punto suyo recibe el clic (encima: ${[...covers].join(', ')})`;
   }
 
-  /** Tocar un NPC. false si no existe o no tiene diálogo (con el ratón tampoco se puede pulsar). */
-  qaTapNpc(npcId: string): boolean {
+  /** Clic de ratón sobre un NPC con diálogo, buscando un punto de su hitbox que no tape otro NPC. */
+  qaTapNpc(npcId: string): string | null {
     const npc = this.npcs.find((n) => n.npcId === npcId && n.dialogueTreeId);
-    if (!npc) return false;
-    const { scummUI, verb, selectedItem } = this.uiSelection();
-    this.dispatchNpcTap(npc, verb, selectedItem, scummUI);
-    return true;
+    if (!npc) return 'no existe o no tiene diálogo';
+    const m = npc.getWorldTransformMatrix();
+    const tx = m.tx;
+    const ty = m.ty;
+    const bodyW = (npc.width * npc.scale) / 2;
+    const bodyH = npc.height * npc.scale;
+    const cam = this.cameras.main;
+    const covers = new Set<string>();
+    for (const fy of [0.5, 0.25, 0.75, 0.05]) {
+      for (const fx of [0, -0.5, 0.5]) {
+        const wx = tx + fx * bodyW;
+        const wy = ty - fy * bodyH;
+        const hit = this.hitTestAt(wx, wy, wy - cam.scrollY, false);
+        if (hit.kind === 'npc' && hit.npc === npc) {
+          const { scummUI, verb, selectedItem } = this.uiSelection();
+          this.dispatchNpcTap(npc, verb, selectedItem, scummUI);
+          return null;
+        }
+        covers.add(this.describeHit(hit));
+      }
+    }
+    return `ningún punto de su sprite recibe el clic (encima: ${[...covers].join(', ')})`;
   }
 
-  /** Tocar un punto del fondo sin hotspot (en % del fondo): andar hasta allí. */
-  qaWalk(pctX: number, pctY: number): void {
+  /** Clic de ratón en un punto del fondo (en %) con el verbo elegido: andar hasta allí. null si ha pulsado. */
+  qaWalk(pctX: number, pctY: number): string | null {
+    const { wx, wy, sy } = this.qaPoint(pctX, pctY);
+    const hit = this.hitTestAt(wx, wy, sy, false);
+    if (hit.kind === 'none') return `el punto cae en ${hit.reason}`;
+    if (hit.kind === 'npc') return `el punto cae en el NPC ${hit.npc.npcId}: el clic abriría su diálogo`;
     const { scummUI, verb, selectedItem } = this.uiSelection();
-    this.dispatchTap({ x: pctX, y: pctY }, null, verb, selectedItem, scummUI);
+    if (hit.hotspot) this.events.emit('hotspot:focus', hit.hotspot);
+    this.dispatchTap(hit.pct, hit.hotspot, verb, selectedItem, scummUI);
+    return null;
+  }
+
+  /** Triggers de la escena con bounds (para comprobar si el personaje llegó a pisarlos). */
+  qaTriggers(): { id: string; bounds: { x: number; y: number; w: number; h: number } }[] {
+    const data = this.registry.get('sceneData') as SceneData | undefined;
+    return (data?.regions.triggers ?? []).flatMap((t) => (t.bounds ? [{ id: t.id, bounds: { ...t.bounds } }] : []));
   }
 
   /** Cambio de escena por el mismo camino que `gotoScene`/`fadeToScene` de los scripts. */

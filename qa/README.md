@@ -24,6 +24,11 @@ hasta el hotspot, combos, gates y diálogos). Nunca pone flags ni da objetos.
 Todas esperan a que el juego quede quieto y devuelven `state()`. Los errores empiezan por `[qa:blocked]`
 (el juego no deja hacerlo) o `[qa:error]` (id inexistente, tiempo agotado).
 
+Los clics se resuelven con el mismo hit-test que el ratón (`GameScene.hitTestAt`): zona del panel, fuera
+del fondo, NPC con diálogo antes que hotspots y hotspot oculto que tapa a otro. La API busca un punto del
+hotspot (o del sprite del NPC) donde el clic caiga en ese mismo objetivo; si no lo hay, lanza `[qa:error]`
+y la ruta falla. Un hotspot que el ratón no alcanza es un fallo, nunca un «el juego no deja».
+
 ## Rutas
 
 - `walkthrough.json`: ruta crítica desde New Game hasta los créditos, sin wallet.
@@ -31,9 +36,23 @@ Todas esperan a que el juego quede quieto y devuelven `state()`. Los errores emp
   lleve `knownBreak`: entonces es **XFAIL**, un atajo conocido que cerrará ese checkpoint. Si una ruta con
   `knownBreak` ya no llega, sale **XPASS** y también falla, para quitar la marca en la misma PR.
 
-Pasos: `newGame`, `act`, `use`, `combine`, `talk`, `walk` (con `untilScene` repite el toque si un trigger
-paró al personaje), `goto`, `dismissAll`, `wait` (`ms`). Cada paso admite `expect` con `scene`, `has`,
-`lacks`, `flags`, `visited` y `achievements`. Las rutas llevan un `goal` con el mismo formato.
+Pasos: `newGame`, `act`, `use`, `combine`, `talk`, `walk`, `goto`, `dismissAll`, `wait` (`ms`). Cada paso
+admite `expect` con `scene`, `has`, `lacks`, `flags`, `visited` y `achievements`. Las rutas llevan un
+`goal` con el mismo formato.
+
+`walk` con `untilScene` repite el clic si un trigger intermedio paró al personaje. Si no llega a esa
+escena lanza `[qa:error]`. Con `trigger` (id de un trigger cuyo rectángulo contiene `x,y`) distingue dos
+casos:
+- el personaje pisó el trigger (o se disparó) y no cambió de escena: es un gate cerrado, `[qa:blocked]`;
+- no llegó a pisarlo: `[qa:error]`, por coordenadas o pathfinding rotos.
+
+Reglas de las rutas `sequence-break`, para no dar por cerrada una ruta sin haber probado el atajo:
+- el paso que intenta el atajo lleva `"attempt": true` (si ninguno lo lleva, es el último);
+- todos los pasos anteriores al intento llevan `expect`; si falta, la ruta sale ERROR («mal definida»);
+- la ruta solo sale cerrada si la para el intento o un paso con `"gate": true` (un gate que el checkpoint
+  que cierra el atajo puede poner antes, como las salidas de la montaña);
+- un `[qa:blocked]` o un `expect` fallido en cualquier otro paso es ERROR, igual que un `[qa:error]` en
+  cualquier paso.
 
 ### Atajos conocidos (expected-fail)
 

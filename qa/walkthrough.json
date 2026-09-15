@@ -32,7 +32,7 @@
         { "do": "act", "verb": "PICK", "target": "hs_server_rack_b", "expect": { "has": ["burned_chip"] } },
         { "do": "use", "item": "antenna", "target": "hs_emergency_switch", "expect": { "flags": { "emergency_glass_broken": true } } },
         { "do": "act", "verb": "USE", "target": "hs_emergency_switch", "expect": { "flags": { "emergency_switch_flipped": true, "chapter_3_complete": true } } },
-        { "do": "walk", "x": 8, "y": 95, "untilScene": "basement", "note": "salida a pie por tr_to_basement", "expect": { "scene": "basement" } },
+        { "do": "walk", "x": 8, "y": 95, "trigger": "tr_to_basement", "untilScene": "basement", "note": "salida a pie por tr_to_basement", "expect": { "scene": "basement" } },
 
         { "do": "use", "item": "burned_chip", "target": "hs_main_computer", "expect": { "lacks": ["burned_chip"], "flags": { "crt_repaired": true } } },
         { "do": "use", "item": "ledger", "target": "hs_main_computer", "expect": { "flags": { "computer_unlocked": true } } },
@@ -40,7 +40,7 @@
         { "do": "act", "verb": "USE", "target": "hs_stairs", "expect": { "scene": "lobby" } },
         { "do": "act", "verb": "USE", "target": "hs_frontdoor", "expect": { "scene": "outside" } },
 
-        { "do": "walk", "x": 1.5, "y": 95, "untilScene": "mountain", "note": "salida a pie por tr_mountain", "expect": { "scene": "mountain", "flags": { "chapter_4_intro_shown": true } } },
+        { "do": "walk", "x": 1.5, "y": 95, "trigger": "tr_mountain", "untilScene": "mountain", "note": "salida a pie por tr_mountain", "expect": { "scene": "mountain", "flags": { "chapter_4_intro_shown": true } } },
         { "do": "act", "verb": "USE", "target": "hs_winding_path", "expect": { "scene": "clinic_exterior" } },
         { "do": "act", "verb": "USE", "target": "hs_main_entrance", "expect": { "scene": "clinic_interior" } },
         { "do": "talk", "npc": "npc_dr_satoshi", "choices": ["confidential documents", "In a mailbox"], "expect": { "flags": { "treatment_room_unlocked": true, "chapter_4_complete": true } } },
