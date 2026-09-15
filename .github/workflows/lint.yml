@@ -33,5 +33,15 @@ jobs:
         run: |
           set -o pipefail
           npx eslint src --format stylish | tee eslint-report.txt
+          npx eslint src --format json --output-file eslint-report.json || true
           echo "### ESLint" >> "$GITHUB_STEP_SUMMARY"
           tail -n 3 eslint-report.txt >> "$GITHUB_STEP_SUMMARY"
+      - name: Informe de ESLint (artefacto)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: eslint-report
+          path: |
+            eslint-report.txt
+            eslint-report.json
+          retention-days: 30
