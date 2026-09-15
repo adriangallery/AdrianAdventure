@@ -46,7 +46,8 @@ export interface QaState {
 }
 
 export interface QaApi {
-  act(verb: string, targetId: string, choiceTexts?: string[]): Promise<QaState>;
+  /** `holdTextMs` (A1.1): deja el primer texto del script en pantalla ese tiempo sin cerrarlo antes de seguir. */
+  act(verb: string, targetId: string, choiceTexts?: string[], holdTextMs?: number): Promise<QaState>;
   use(itemId: string, targetId: string, choiceTexts?: string[]): Promise<QaState>;
   combine(itemA: string, itemB: string): Promise<QaState>;
   talk(npcId: string, choiceTexts?: string[]): Promise<QaState>;
@@ -165,6 +166,26 @@ export function installQa(game: Phaser.Game): void {
     if (queue.length) throw new QaError('error', `respuestas de diálogo sin usar: ${queue.join(' | ')}`);
   };
 
+  /**
+   * A1.1: como un jugador que se distrae, deja el primer texto del script en pantalla `ms` sin tocar nada. Falla
+   * si el texto no es de un script en marcha (la espera no probaría nada), si se cierra antes de tiempo o si el
+   * script deja de estar en marcha durante la espera (el watchdog antiguo lo cortaba a los 30 s).
+   */
+  const holdText = async (ms: number) => {
+    await waitFor(() => !!registry.get('dialogueShowing'), 30_000, 'el texto que había que dejar en pantalla');
+    if (!gs().qaBusy().script) {
+      throw new QaError('error', 'el texto en pantalla no es de un script en marcha: la espera no prueba el watchdog');
+    }
+    note(`(texto en pantalla ${Math.round(ms / 1000)} s sin cerrar)`);
+    const t0 = Date.now();
+    while (Date.now() - t0 < ms) {
+      await sleep(500);
+      const secs = ((Date.now() - t0) / 1000).toFixed(1);
+      if (!registry.get('dialogueShowing')) throw new QaError('error', `el texto se cerró solo a los ${secs} s de ${ms / 1000} s`);
+      if (!gs().qaBusy().script) throw new QaError('error', `el script dejó de estar en marcha a los ${secs} s con el texto en pantalla (watchdog)`);
+    }
+  };
+
   const ensureGame = async () => {
     if (active('MenuScene') && !active('GameScene') && !active('PreloadScene')) {
       throw new QaError('error', 'no hay partida: estás en el menú (usa newGame())');
@@ -248,7 +269,7 @@ export function installQa(game: Phaser.Game): void {
   };
 
   const api: QaApi = {
-    async act(verbName, targetId, choiceTexts = []) {
+    async act(verbName, targetId, choiceTexts = [], holdTextMs = 0) {
       const verb = parseVerb(verbName);
       await ensureGame();
       const target = resolveTarget(targetId);
@@ -256,6 +277,7 @@ export function installQa(game: Phaser.Game): void {
       await waitInputFree();
       note(`${verb} ${targetId}`);
       tap(target);
+      if (holdTextMs > 0) await holdText(holdTextMs);
       await settle(choiceTexts);
       return snapshot();
     },

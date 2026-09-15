@@ -32,7 +32,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 function describe(s) {
   switch (s.do) {
-    case 'act': return `${s.verb} ${s.target}`;
+    case 'act': return `${s.verb} ${s.target}${s.holdTextMs ? ` (texto ${s.holdTextMs / 1000} s)` : ''}`;
     case 'use': return `USE ${s.item} → ${s.target}`;
     case 'combine': return `USE ${s.items.join(' + ')}`;
     case 'talk': return `TALK ${s.npc}${s.choices?.length ? ` [${s.choices.join(' / ')}]` : ''}`;
@@ -63,7 +63,7 @@ const callQa = (page, step) => page.evaluate(async (s) => {
   const q = window.__qa;
   switch (s.do) {
     case 'newGame': return q.newGame();
-    case 'act': return q.act(s.verb, s.target, s.choices ?? []);
+    case 'act': return q.act(s.verb, s.target, s.choices ?? [], s.holdTextMs ?? 0);
     case 'use': return q.use(s.item, s.target, s.choices ?? []);
     case 'combine': return q.combine(s.items[0], s.items[1]);
     case 'talk': return q.talk(s.npc, s.choices ?? []);
