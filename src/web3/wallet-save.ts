@@ -111,18 +111,34 @@ export async function loadRemoteSlots(address: string): Promise<Record<number, W
  * Load best save for a wallet (highest progress from any slot). Tries remote first.
  */
 export async function loadForWallet(address: string): Promise<WalletSave | null> {
+  const local = loadLocal(address);
   const remote = await loadRemoteSlots(address);
-  if (remote) {
-    // Return the most recent slot
-    const slots = Object.values(remote);
-    if (slots.length > 0) {
-      const best = slots.sort((a, b) => (b.timestamp ?? 0) - (a.timestamp ?? 0))[0];
-      saveLocal(address, best.state, best.sceneName);
-      return best;
-    }
+  const remoteBest = remote
+    ? Object.values(remote).sort((a, b) => (b.timestamp ?? 0) - (a.timestamp ?? 0))[0] ?? null
+    : null;
+  // V7: gana la partida más reciente. Antes la nube pisaba siempre la local, y un progreso local más nuevo
+  // (jugado sin conexión o antes del último sync) se perdía al conectar la wallet.
+  if (remoteBest && (!local || (remoteBest.timestamp ?? 0) > (local.timestamp ?? 0))) {
+    saveLocal(address, remoteBest.state, remoteBest.sceneName);
+    return remoteBest;
   }
+  return local;
+}
 
-  return loadLocal(address);
+/** Slot remoto del autoguardado en la nube (el servidor acepta 0 = autosave, 1-2 = manuales). */
+export const CLOUD_AUTOSAVE_SLOT = 0;
+const CLOUD_AUTOSAVE_MIN_MS = 60 * 1000;
+let lastCloudAutosaveAt = 0;
+
+/**
+ * V7: sube el autoguardado a la nube como mucho una vez por minuto. Nunca bloquea ni lanza: si falla,
+ * el guardado local ya está hecho y el siguiente cambio de escena lo reintenta.
+ */
+export function cloudAutosave(address: string, state: GameState, sceneName: string): void {
+  const now = Date.now();
+  if (now - lastCloudAutosaveAt < CLOUD_AUTOSAVE_MIN_MS) return;
+  lastCloudAutosaveAt = now;
+  void saveForWalletRemote(address, state, sceneName, CLOUD_AUTOSAVE_SLOT);
 }
 
 /** Quick check (local only, sync) */
