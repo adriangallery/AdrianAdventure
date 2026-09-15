@@ -1,50 +1,21 @@
 // Demo de V6 para Adrián (regla visual): toque con el dedo JUSTO FUERA del teclado de la escena
-// `outside` (hotspot de 1,9 % de ancho) y resaltado amarillo al pulsar. Genera frames PNG que el job
-// de CI convierte en GIF. Uso: BASE_URL=http://127.0.0.1:4173 node scripts/demo-touch.mjs
-import { mkdirSync, rmSync } from 'node:fs';
-import puppeteer from 'puppeteer';
+// `outside` (hotspot de 1,9 % de ancho) y resaltado amarillo al pulsar.
+// Uso: BASE_URL=http://127.0.0.1:4173 node scripts/lib/demo.mjs run touch
+import { startDemo } from './lib/demo.mjs';
 
-const BASE = process.env.BASE_URL || 'http://127.0.0.1:4173';
-const OUT = 'demo-frames';
-rmSync(OUT, { recursive: true, force: true });
-mkdirSync(OUT, { recursive: true });
-
-const browser = await puppeteer.launch({
-  headless: true,
-  args: ['--no-sandbox', '--use-gl=swiftshader', '--enable-webgl', '--ignore-gpu-blocklist'],
-});
-const page = await browser.newPage();
-// Móvil en horizontal con pantalla táctil
-await page.setViewport({ width: 844, height: 390, deviceScaleFactor: 2, isMobile: true, hasTouch: true });
-await page.goto(`${BASE}/?scene=outside`, { waitUntil: 'domcontentloaded' });
-await page.waitForFunction(
-  () => window.__game?.scene?.isActive('GameScene') && window.__game.registry.get('currentSceneId') === 'outside',
-  { timeout: 90000, polling: 500 },
-);
+// Móvil en horizontal con pantalla táctil, a doble densidad (el recorte es pequeño)
+const demo = await startDemo(import.meta.url, { fps: 12, width: 520, viewport: { deviceScaleFactor: 2 } });
+const { page } = demo;
+await demo.openScene('outside');
 // Esperar a que la escena esté libre: sin script de entrada, sin diálogo y sin cooldown de input.
-// Si hay un diálogo abierto se toca el centro para avanzarlo (como haría el jugador).
-let calm = 0;
-for (let i = 0; i < 90; i++) {
-  const st = await page.evaluate(() => {
-    const gs = window.__game.scene.getScene('GameScene');
-    return {
-      script: !!gs.scriptEngine?.isRunning?.(),
-      dialogue: !!gs.registry.get('dialogueShowing') || !!gs.registry.get('dialogueActive'),
-      cooldown: gs.inputCooldownFrames ?? 0,
-    };
-  });
-  // La cinemática de entrada arranca con retraso: dar la escena por libre solo tras 4 comprobaciones seguidas
-  if (!st.script && !st.dialogue && st.cooldown <= 0) { if (++calm >= 4) break; } else calm = 0;
-  // Cinemática de entrada («click to continue») o diálogo: tocar para avanzar, como el jugador
-  if (st.script || st.dialogue) await page.touchscreen.tap(422, 120);
-  await new Promise((r) => setTimeout(r, 700));
-}
+// Si hay un diálogo abierto se toca para avanzarlo (como haría el jugador).
+await demo.settle({ tap: [422, 120], cooldown: true });
 const idle = await page.evaluate(() => {
   const gs = window.__game.scene.getScene('GameScene');
   return !gs.scriptEngine?.isRunning?.() && !gs.registry.get('dialogueShowing') && !gs.registry.get('dialogueActive');
 });
-if (!idle) { console.error('La escena no quedó libre tras pasar la cinemática'); process.exit(1); }
-await new Promise((r) => setTimeout(r, 800));
+if (!idle) await demo.fail('La escena no quedó libre tras pasar la cinemática');
+await demo.sleep(800);
 
 // Centrar la cámara en el teclado y calcular dónde queda en pantalla
 const target = await page.evaluate(() => {
@@ -59,7 +30,7 @@ const target = await page.evaluate(() => {
   return { left: a.x - cam.scrollX, right: b.x - cam.scrollX, top: a.y - cam.scrollY, bottom: b.y - cam.scrollY, w: cam.width, h: cam.height };
 });
 console.log('teclado en pantalla', JSON.stringify(target));
-await new Promise((r) => setTimeout(r, 400));
+await demo.sleep(400);
 
 const clip = {
   x: Math.max(0, Math.round(target.left - 120)),
@@ -72,11 +43,8 @@ await page.evaluate(() => {
   const gs = window.__game.scene.getScene('GameScene');
   gs.input.on('pointerdown', (p) => { window.__lastTap = { wasTouch: p.wasTouch, x: Math.round(p.x), y: Math.round(p.y) }; });
 });
-let n = 0;
-const shot = () => page.screenshot({ path: `${OUT}/${String(n++).padStart(3, '0')}.png`, clip });
-const hold = async (ms) => { const end = Date.now() + ms; while (Date.now() < end) await shot(); };
 
-await hold(600);
+await demo.film(600, { clip });
 // Toque 12 px a la derecha del borde del teclado: fuera del rectángulo, dentro del margen de 22 px
 const tapX = Math.round(target.right + 12);
 const tapY = Math.round((target.top + target.bottom) / 2);
@@ -102,8 +70,8 @@ const diag = await page.evaluate(([tx, ty]) => {
 }, [tapX, tapY]);
 console.log('diagnóstico', JSON.stringify(diag));
 const flashed = diag.flashed;
-await hold(900);
-console.log(`toque en (${tapX}, ${tapY}) · resaltado visible: ${flashed} · ${n} frames`);
-await page.screenshot({ path: 'demo-full.png' });
-await browser.close();
-if (!flashed) { console.error('El toque junto al teclado no resaltó el hotspot'); process.exit(1); }
+await demo.film(900, { clip });
+console.log(`toque en (${tapX}, ${tapY}) · resaltado visible: ${flashed} · ${demo.frames} frames`);
+await demo.still('full');
+await demo.end();
+if (!flashed) await demo.fail('El toque junto al teclado no resaltó el hotspot');
