@@ -104,3 +104,45 @@ if (!ok) await demo.fail('Qué no se ve');                   // siempre con awai
 
 En local (con `npm ci` hecho, nunca en el portátil de 8 GB): `BASE_URL=… node scripts/lib/demo.mjs run <nombre>`.
 Sin puppeteer: `node scripts/lib/demo.mjs list [--changed <ref>]` y `node scripts/lib/demo.mjs gif <nombre>`.
+
+# Linter de escenas (A0.4)
+
+`scripts/lint-scenes.mjs` revisa el contenido de `assets/scenes/<id>/scene.json` sin compilar ni abrir el
+juego (Node puro, sin dependencias, segundos). Corre en el job `lint` de `.github/workflows/lint.yml`:
+deja la tabla en el resumen del job y sube `lint-scenes-report.json` y `.md` como artefacto
+`lint-scenes-report`.
+
+| Regla | Qué detecta | Por defecto |
+|---|---|---|
+| (a) | flags que se leen y nunca se ponen, o que se ponen y nunca se leen | aviso |
+| (b) | objetos que se consiguen (`addItem`) y no sirven para nada | aviso |
+| (c) | salidas (`fadeToScene`/`gotoScene`) en hotspots y triggers sin gate, para revisar a mano | aviso |
+| (d) | operaciones de estado (`setFlag`, `addItem`, `removeItem`, cambio de escena, logros) después de un `say` en el mismo bloque, o en una rama que se abre después del `say`; marca los parpadeos (la misma flag puesta varias veces) | aviso |
+| (e) | `player.spawn`, `transitions.goto[].spawn` y `spawn` de las salidas fuera de las `walkableAreas` de la escena destino | aviso |
+| (f) | fondos, primeros planos, overlays, `web3Visuals`, música, `playSound`, iconos de objetos, sprites de NPC, escenas destino y árboles de diálogo que no existen | **error** |
+| (g) | hotspots solapados; aviso fuerte si uno contiene a otro (si el que contiene va antes en la lista, el clic nunca llega al de dentro) | aviso |
+
+Las rutas que comprueba (f) son las que resuelve el código, no el nombre del JSON: el fondo es siempre
+`background.webp`, el primer plano `foreground.webp`, los iconos `assets/sprites/items/<id>.png` y además
+tienen que estar en las listas de precarga de `PreloadScene.ts` (si no, aviso: el asset existe pero no se
+carga). La `walkmask` no la carga ningún sistema, así que si falta es solo aviso. La cabecera del script
+documenta todas las fuentes de verdad (qué cuenta como lectura o escritura de una flag, qué cuenta como
+uso de un objeto, de qué ficheros de `src/` se fía).
+
+## Lanzarlo
+
+- `npm run lint:scenes` (o `node scripts/lint-scenes.mjs`): consola agrupada por regla y escena, resumen
+  `errores: N · avisos: M` y los dos informes en la raíz (ignorados en git). Sale con 1 solo si hay errores.
+- `--scene <id>`: solo los hallazgos de esa escena (el análisis de flags y objetos sigue siendo global).
+- `--strict`: todo es error (útil antes de cerrar un checkpoint de contenido).
+- `--json`: el informe JSON por la salida estándar. `--no-write`: no escribe los informes.
+- Pruebas: `npm run test:lint` (`node --test tests/lint-scenes.test.mjs`, escenas sintéticas en memoria).
+
+## Silenciar un falso positivo
+
+`qa/lint-scenes-allow.json` es una lista de `{ "rule", "scene"?, "id"?, "reason" }`. `rule` es la letra
+(`"c"`) o el nombre de la regla; `id` se compara con el id del hallazgo (flag, objeto, hotspot, ruta del
+asset, par `hsA+hsB`) o con su ruta completa (`escena.hotspot.VERB[3]`) y admite `*` al final. Sin
+`reason` la entrada se ignora, y una entrada que ya no silencia nada sale en el informe para borrarla.
+Úsalo poco: para un hallazgo real que no se arregla en la misma PR, motivo «hallazgo A0.4, pendiente» (o
+el checkpoint que lo cierra); para un falso positivo, explica por qué el linter no lo ve.

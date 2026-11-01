@@ -14,6 +14,8 @@
     "test:smoke": "node scripts/smoke.mjs",
     "test:walkthrough": "node scripts/walkthrough.mjs",
     "test:engine": "node --experimental-strip-types --test tests/script-engine.test.mjs",
+    "test:lint": "node --test tests/lint-scenes.test.mjs",
+    "lint:scenes": "node scripts/lint-scenes.mjs",
     "build:android": "npm run build && find dist/assets/scenes -name 'background.png' -delete && find dist/assets/scenes -name 'foreground.png' -delete && npx cap sync android",
     "open:android": "npx cap open android",
     "build:steam": "npm run build && electron-builder --dir",
