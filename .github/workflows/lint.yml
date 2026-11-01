@@ -31,6 +31,8 @@ jobs:
         run: npx tsc --noEmit
       - name: Pruebas del motor de scripts (A1.1)
         run: npm run test:engine
+      - name: Pruebas del linter de escenas (A0.4)
+        run: npm run test:lint
       - name: ESLint
         run: |
           set -o pipefail
@@ -46,4 +48,24 @@ jobs:
           path: |
             eslint-report.txt
             eslint-report.json
+          retention-days: 30
+      # A0.4: contenido de las escenas. Node puro, sin dependencias. Solo (f) (assets que no existen) es error;
+      # el resto son avisos en el resumen y en el artefacto. Corre aunque fallen tsc o ESLint.
+      - name: Linter de escenas (A0.4)
+        if: ${{ !cancelled() }}
+        run: |
+          set +e
+          node scripts/lint-scenes.mjs
+          rc=$?
+          [ -f lint-scenes-report.md ] && cat lint-scenes-report.md >> "$GITHUB_STEP_SUMMARY"
+          exit $rc
+      - name: Informe del linter de escenas (artefacto)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lint-scenes-report
+          path: |
+            lint-scenes-report.json
+            lint-scenes-report.md
+          if-no-files-found: ignore
           retention-days: 30

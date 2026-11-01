@@ -17,3 +17,7 @@ steam-output/
 
 # Demos visuales (A0.2)
 demo-out/
+
+# Linter de escenas (A0.4)
+lint-scenes-report.json
+lint-scenes-report.md
