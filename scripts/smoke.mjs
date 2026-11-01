@@ -1,7 +1,8 @@
 // Tests de humo de AdrianAdventure (plan AdrianZERO V8). Corre en GitHub Actions contra `vite preview`
 // del build real (con assets): arranque, cada escena, cambio de escena en caliente y guardar/cargar.
+// A1.5 (plan SCUMM): con el sonido apagado no se piden música ni voces; al activarlo en ajustes, sí.
 // Uso: BASE_URL=http://127.0.0.1:4173 node scripts/smoke.mjs
-import { readdirSync, existsSync, mkdirSync } from 'node:fs';
+import { readdirSync, existsSync, mkdirSync, readFileSync } from 'node:fs';
 import puppeteer from 'puppeteer';
 
 const BASE = process.env.BASE_URL || 'http://127.0.0.1:4173';
@@ -98,6 +99,69 @@ await step('guardar y cargar', async () => {
     return 'ok';
   }, second);
   if (ok !== 'ok') throw new Error(ok);
+});
+
+// A1.5: arranque con «No thanks, silence is golden» en un perfil limpio. Se registran todas las peticiones y
+// falla si se pide algún mp3 de música o de voz (ni en la precarga, ni al cambiar de escena, ni al hablar).
+// Después se activa el sonido desde los ajustes del juego (`__qa.setSound(true)`, el mismo botón del menú del
+// disquete) y la música de la escena actual y la voz tienen que pedirse sin recargar la página.
+const AUDIO_RE = /\/assets\/audio\/(music|voice)\/[^/?]+\.mp3/;
+const SILENT_SCENE = 'mountain';
+const voiceKey = readFileSync('src/config/voice.config.ts', 'utf8').match(/VOICE_TEXT_MAP[\s\S]*?key: '([^']+)'/)?.[1];
+await step('silencio: sin música ni voces; al activar el sonido en ajustes, sí', async () => {
+  const ctx = await browser.createBrowserContext();
+  const p = await ctx.newPage();
+  await p.setViewport({ width: 1280, height: 720 });
+  p.on('pageerror', (err) => fail(`[silencio] error de página: ${err.message}`));
+  let phase = 'silencio';
+  const audioReqs = [];
+  const bytes = { silencio: 0, sonido: 0 };
+  const audioBytes = { silencio: 0, sonido: 0 };
+  p.on('request', (req) => {
+    const m = req.url().match(AUDIO_RE);
+    if (m) audioReqs.push({ phase, kind: m[1], url: req.url().replace(BASE, '') });
+  });
+  p.on('response', async (res) => {
+    if (!res.url().startsWith(BASE)) return;
+    const ph = phase;
+    let len = Number(res.headers()['content-length'] || 0);
+    if (!len) { try { len = (await res.buffer()).length; } catch { len = 0; } }
+    bytes[ph] += len;
+    if (AUDIO_RE.test(res.url())) audioBytes[ph] += len;
+  });
+  const wait = (fn, arg, timeout = SCENE_TIMEOUT) => p.waitForFunction(fn, { timeout, polling: 250 }, arg);
+  const mb = (n) => `${(n / 1048576).toFixed(2)} MB`;
+  try {
+    await p.goto(`${BASE}/?qa=1`, { waitUntil: 'domcontentloaded' });
+    await wait(() => !!window.__qa);
+    await p.evaluate(() => window.__qa.newGame());
+    // Una frase con voz y un cambio de escena, todo en silencio
+    await p.evaluate((key) => window.__game.registry.get('voiceSystem')?.play('smoke voice line', key), voiceKey);
+    await p.evaluate((id) => window.__qa.goto(id), SILENT_SCENE);
+    await p.evaluate((key) => window.__game.registry.get('voiceSystem')?.play('smoke voice line', key), voiceKey);
+    await new Promise((r) => setTimeout(r, 3000));
+    const silent = audioReqs.filter((r) => r.phase === 'silencio');
+    console.log(`    silencio: ${silent.length} peticiones de audio (${mb(audioBytes.silencio)}) · ${mb(bytes.silencio)} en total`);
+    for (const r of silent) console.log(`      ${r.kind}: ${r.url}`);
+    await p.screenshot({ path: `${SHOTS}/zz-silencio.png` });
+    if (silent.length) throw new Error(`con el sonido apagado se pidieron ${silent.length} mp3 de música/voz: ${silent.map((r) => r.url.split('?')[0]).join(', ')}`);
+
+    phase = 'sonido';
+    await p.evaluate(() => window.__qa.setSound(true));
+    const music = await p.evaluate(() => window.__game.registry.get('sceneData')?.audio?.music);
+    await wait((key) => {
+      const mm = window.__game.registry.get('musicManager');
+      return !mm.isMuted() && mm.currentKey === key;
+    }, music, 60000);
+    await p.evaluate((key) => window.__game.registry.get('voiceSystem')?.play('smoke voice line', key), voiceKey);
+    await new Promise((r) => setTimeout(r, 3000));
+    const loud = audioReqs.filter((r) => r.phase === 'sonido');
+    console.log(`    sonido activado en ajustes: ${loud.map((r) => r.url.split('?')[0]).join(', ') || 'nada'} (${mb(audioBytes.sonido)})`);
+    if (!loud.some((r) => r.kind === 'music' && r.url.includes(`/${music}.mp3`))) throw new Error(`al activar el sonido no se pidió la música de la escena (${music})`);
+    if (voiceKey && !loud.some((r) => r.kind === 'voice')) throw new Error('al activar el sonido la voz no se pidió');
+  } finally {
+    await ctx.close();
+  }
 });
 
 await browser.close();
