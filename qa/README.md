@@ -101,6 +101,13 @@ y `montana-con-capitulo-3-a-medias` comprueban que ni la keycard ni haber bajado
 `sotano-sin-keycard` es de control: debe quedarse fuera. Las demás salidas sin gate son vueltas a escenas del
 mismo capítulo o anteriores y están silenciadas en `qa/lint-scenes-allow.json` con su motivo.
 
+### Parámetros de depuración de la URL (A1.8)
+
+`?scene=<id>`, `?skip`, `?dev` y `?hintAfter=<s>` solo valen en `npm run dev` o con `?qa=1`
+(`src/config/debugParams.ts`); en el build de producción sin `?qa=1` se ignoran. Smoke y demos cargan
+`?qa=1&scene=<id>`, y el smoke comprueba que `?scene` sin `?qa=1` se queda en el menú. Revisión de la QA
+antigua punto por punto: `qa/OLD_QA_RECHECK.md`.
+
 ## Lanzarlo
 
 - En cada PR y en `main`: automático (build → walkthrough).
