@@ -103,6 +103,7 @@ export interface QaState {
   prefetch: ReturnType<ScenePrefetcher['qaState']> | null;
   /** A2.7: último cambio de escena: ms desde que se pidió hasta GameScene creada, modo y si hubo pantalla de carga */
   lastTransition: LastTransition | null;
+  /**
    * A2.9: diario (móvil de Dex): `open`, `tab`, `chapter` (capítulo actual), `goals` ([{ id, done }] del capítulo),
    * `notes` (ids apuntados, en orden), `anon` (última llamada: `{ puzzle, level, text }`, puzzle null = frase de relleno),
    * `openPuzzle` (puzle abierto y nivel ya dado), `unseen` (cosas nuevas sin ver: el punto del botón) y `calling`. null
