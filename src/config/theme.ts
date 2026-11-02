@@ -59,6 +59,9 @@ export const TWP = {
   HINT_BG:         'rgba(8,8,15,0.75)',
   HINT_STROKE:     '#1a1a2e',
 
+  // A2.4: resaltado de hotspots al mantener Tab (escritorio)
+  HOTSPOT_HIGHLIGHT: 0x48d8e8,
+
   // Wallet button
   WALLET_BG:        0x08080f,
   WALLET_BORDER:    0x2a2a40,

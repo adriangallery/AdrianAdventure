@@ -5,6 +5,8 @@ import { Verb, PANEL_VERBS, VERB_LABELS } from '@/types/game.types';
 import type { InventorySystem } from '@/systems/InventorySystem';
 import type { InventoryItem, GameState } from '@/types/game.types';
 import { TWP, FONT, LAYOUT } from '@/config/theme';
+import { hasFinePointer } from '@/config/platform';
+import { VERB_KEYS } from '@/systems/DesktopControls';
 
 export const SCUMM_PANEL_MIN_HEIGHT: number = LAYOUT.PANEL_MIN_HEIGHT;
 const COLLAPSED_HEIGHT = 36;
@@ -18,10 +20,13 @@ const COLLAPSED_HEIGHT = 36;
  * - Top: action/sentence line
  */
 export class ScummUI {
+  private static readonly KEY_HINT_ALPHA = 0.6;
   private scene: Phaser.Scene;
   private container: Phaser.GameObjects.Container;
   private actionLine!: Phaser.GameObjects.Text;
   private verbTexts: Map<Verb, Phaser.GameObjects.Text> = new Map();
+  /** A2.4: letra del atajo de teclado junto a cada verbo (solo escritorio: panel ancho y puntero fino) */
+  private keyHints: Map<Verb, Phaser.GameObjects.Text> = new Map();
   private invContainer!: Phaser.GameObjects.Container;
   private invScrollOffset = 0;
   private panelHeight = SCUMM_PANEL_MIN_HEIGHT;
@@ -76,6 +81,7 @@ export class ScummUI {
   private build(): void {
     this.container.removeAll(true);
     this.verbTexts.clear();
+    this.keyHints.clear();
     this.handleBar = null;
 
     const { width, height } = this.scene.scale;
@@ -159,10 +165,19 @@ export class ScummUI {
     const measure = this.scene.add.text(0, -999, '', {
       fontFamily: FONT.FAMILY, fontSize: `${mobileVerbSize}px`,
     }).setPadding(2, 3);
+    // A2.4: en escritorio, la tecla de cada verbo en pequeño a su derecha (cuenta en el ancho de la columna)
+    const showKeys = !this.isMobile && hasFinePointer();
+    const keyFontSize = Math.max(9, Math.round(mobileVerbSize * 0.55));
+    let keyW = 0;
+    if (showKeys) {
+      const keyMeasure = this.scene.add.text(0, -999, 'W', { fontFamily: FONT.FAMILY, fontSize: `${keyFontSize}px` });
+      keyW = keyMeasure.width + 1;
+      keyMeasure.destroy();
+    }
     PANEL_VERBS.forEach((verb, i) => {
       measure.setText(VERB_LABELS[verb]);
       const col = i % cols;
-      colMaxW[col] = Math.max(colMaxW[col], measure.width);
+      colMaxW[col] = Math.max(colMaxW[col], measure.width + keyW);
     });
     measure.destroy();
 
@@ -201,6 +216,15 @@ export class ScummUI {
 
       this.verbTexts.set(verb, text);
       this.container.add(text);
+
+      const key = VERB_KEYS[verb];
+      if (showKeys && key) {
+        const hint = this.scene.add.text(x + text.width, y + 2, key.toUpperCase(), {
+          fontFamily: FONT.FAMILY, fontSize: `${keyFontSize}px`, color: TWP.VERB_NORMAL,
+        }).setAlpha(ScummUI.KEY_HINT_ALPHA);
+        this.keyHints.set(verb, hint);
+        this.container.add(hint);
+      }
     });
 
     // Total verb area width (for positioning arrows/inventory after)
@@ -274,6 +298,8 @@ export class ScummUI {
     const scripted = hotspot ? scriptedVerbs(hotspot) : null;
     const real = hotspot ? realActionVerbs(hotspot) : null;
     for (const [verb, text] of this.verbTexts) {
+      // A2.4: la letra del atajo se atenúa con su verbo
+      this.keyHints.get(verb)?.setAlpha(!scripted || scripted.has(verb) ? ScummUI.KEY_HINT_ALPHA : ScummUI.KEY_HINT_ALPHA * 0.45);
       if (!scripted || !real) { text.setAlpha(1); if (verb !== this.selectedVerb) text.setColor(TWP.VERB_NORMAL); continue; }
       text.setAlpha(scripted.has(verb) ? 1 : 0.4);
       if (verb !== this.selectedVerb) text.setColor(real.has(verb) ? TWP.VERB_HOVER : TWP.VERB_NORMAL);
@@ -344,6 +370,19 @@ export class ScummUI {
   }
 
   getSelectedVerb(): Verb { return this.selectedVerb; }
+
+  /**
+   * A2.4 (Esc sin cinemática): suelta el objeto elegido y vuelve a Walk. Devuelve si había algo que soltar.
+   */
+  resetSelection(): boolean {
+    const had = !!this.selectedItem || this.selectedVerb !== Verb.WALK;
+    this.selectedItem = null;
+    this.selectVerb(Verb.WALK);
+    return had;
+  }
+
+  /** A2.4 (QA): verbos con su tecla pintada en el panel (vacío en móvil o sin ratón). */
+  getKeyHints(): string[] { return [...this.keyHints.keys()]; }
   getSelectedItem(): InventoryItem | null { return this.selectedItem; }
   clearSelectedItem(): void { this.selectedItem = null; this.updateActionLine(); }
   onVerb(cb: (verb: Verb) => void): void { this.onVerbSelect = cb; }

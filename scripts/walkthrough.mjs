@@ -1,5 +1,6 @@
 // A0.1 (plan SCUMM): recorrido automático y pruebas de atajos con la API de QA del juego (?qa=1).
-// Ejecuta rutas declarativas de qa/*.json (newGame, act, use, combine, talk, walk, goto, dismissAll, wait, resize)
+// Ejecuta rutas declarativas de qa/*.json (newGame, act, use, combine, talk, walk, goto, dismissAll, wait, resize y,
+// desde A2.4, key, click, rightclick y doubleclick)
 // con comprobaciones de escena, inventario y flags. Cada ruta va en un navegador limpio (sin partidas
 // guardadas). Deja una captura por paso y un informe en walkthrough-shots/ (report.json + resumen de CI).
 //
@@ -53,6 +54,11 @@ const callQa = (page, step) => page.evaluate(async (s) => {
     case 'goto': return q.goto(s.scene, s.spawn);
     case 'dismissAll': return q.dismissAll();
     case 'state': return q.state();
+    // A2.4: teclado y ratón de escritorio
+    case 'key': return q.press(s.key, s.phase ?? 'press');
+    case 'click': return q.click(s.target, s.choices ?? []);
+    case 'rightclick': return q.rightClick(s.target, s.choices ?? []);
+    case 'doubleclick': return q.doubleClick(s.target);
     default: throw new Error(`[qa:error] paso desconocido «${s.do}»`);
   }
 }, step);
@@ -138,6 +144,8 @@ async function runRoute(file, route) {
   let goalReached = false;
   // A1.10: listeners de resize tras el primer paso, para `expect.noListenerGrowth`
   let listenersBaseline;
+  // A2.4: lo mismo con los listeners de teclado y del lienzo
+  let inputListenersBaseline;
 
   try {
     await page.goto(`${BASE}/?qa=1`, { waitUntil: 'domcontentloaded', timeout: 90_000 });
@@ -156,9 +164,10 @@ async function runRoute(file, route) {
     try {
       state = await runStep(page, step);
       if (listenersBaseline === undefined && typeof state?.resizeListeners === 'number') listenersBaseline = state.resizeListeners;
+      if (inputListenersBaseline === undefined && typeof state?.inputListeners === 'number') inputListenersBaseline = state.inputListeners;
       // Un atajo abierto manda aunque fallen las comprobaciones del paso
       if (route.goal && check(route.goal, state).length === 0) goalReached = true;
-      fails = [...check(step.expect, state, { listenersBaseline }), ...checkRejects(step, before, state)];
+      fails = [...check(step.expect, state, { listenersBaseline, inputListenersBaseline }), ...checkRejects(step, before, state)];
       if (seqBreak && i === attempt && !goalReached) fails.push(...checkAttemptRan(step, before, state));
     } catch (err) {
       error = err.message.split('\n')[0];
@@ -178,7 +187,9 @@ async function runRoute(file, route) {
       break;
     }
     result.farthest = { index: i + 1, label, scene: state.scene };
-    const listeners = step.expect?.noListenerGrowth ? ` · listeners de resize ${state.resizeListeners} (tras el primer paso ${listenersBaseline})` : '';
+    const listeners = step.expect?.noListenerGrowth
+      ? ` · listeners de resize ${state.resizeListeners} (tras el primer paso ${listenersBaseline}) · de teclado/lienzo ${state.inputListeners ?? '?'} (${inputListenersBaseline ?? '?'})`
+      : '';
     console.log(`    ✓ ${i + 1}. ${label} (${secs} s) · ${state.scene}${listeners}`);
   }
 

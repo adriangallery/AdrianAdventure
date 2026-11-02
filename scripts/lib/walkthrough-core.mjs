@@ -15,12 +15,18 @@ export function describe(s) {
     case 'goto': return `GOTO ${s.scene}`;
     case 'wait': return `WAIT ${s.ms} ms`;
     case 'resize': return `RESIZE ${s.width}x${s.height}`;
+    // A2.4: controles de escritorio
+    case 'key': return `KEY ${s.key}${s.phase && s.phase !== 'press' ? ` (${s.phase})` : ''}`;
+    case 'click': return `CLICK ${s.target}`;
+    case 'rightclick': return `RIGHTCLICK ${s.target}`;
+    case 'doubleclick': return `DOUBLECLICK ${s.target}`;
     default: return s.do;
   }
 }
 
 /**
- * Comprobaciones de estado: scene, has, lacks, flags, unsetFlags, visited, achievements, (A2.6) lastChoices, (A2.2) facing y (A1.10) noListenerGrowth, que
+ * Comprobaciones de estado: scene, has, lacks, flags, unsetFlags, visited, achievements, (A2.6) lastChoices, (A2.2) facing,
+ * (A2.4) verb, walkTarget y highlighted, y (A1.10) noListenerGrowth, que
  * compara `st.resizeListeners` con `ctx.listenersBaseline` (lo que había tras el primer paso de la ruta). `flags` trata
  * una flag ausente como false; (A1.4) `unsetFlags` exige que la flag no esté en la partida, ni a false: nadie la ha
  * escrito (p. ej. un parpadeo que antes se hacía encendiendo y apagando la flag). Devuelve los fallos.
@@ -45,7 +51,14 @@ export function check(expect, st, ctx = {}) {
     if (typeof st.facing !== 'string') f.push('el juego no expone `facing` en state() (API de QA anterior a A2.2)');
     else if (st.facing !== expect.facing) f.push(`el personaje mira «${st.facing}», se esperaba «${expect.facing}»`);
   }
-  if (expect.noListenerGrowth) f.push(...checkListenerGrowth(st, ctx.listenersBaseline));
+  // A2.4: verbo elegido en el panel, último acercamiento (objetivo y verbo) y resaltado de Tab
+  if (expect.verb !== undefined) {
+    if (st.verb === undefined) f.push('el juego no expone `verb` en state() (API de QA anterior a A2.4)');
+    else if (st.verb !== expect.verb) f.push(`verbo del panel «${st.verb}», se esperaba «${expect.verb}»`);
+  }
+  if (expect.walkTarget) f.push(...checkWalkTarget(expect.walkTarget, st));
+  if (expect.highlighted) f.push(...checkHighlighted(expect.highlighted, st));
+  if (expect.noListenerGrowth) f.push(...checkListenerGrowth(st, ctx.listenersBaseline, ctx.inputListenersBaseline));
   if (expect.lastChoices) f.push(...checkLastChoices(expect.lastChoices, st));
   return f;
 }
@@ -86,16 +99,45 @@ export function checkLastChoices(want, st) {
 
 /**
  * A1.10: los listeners de `resize` del ScaleManager no pueden crecer con los cambios de escena. `baseline` es el
- * recuento tras el primer paso de la ruta (New Game: GameScene y UIScene ya creadas una vez).
+ * recuento tras el primer paso de la ruta (New Game: GameScene y UIScene ya creadas una vez). A2.4: lo mismo con los
+ * de teclado y del lienzo (`st.inputListeners` frente a `inputBaseline`), si el juego los expone.
  */
-export function checkListenerGrowth(st, baseline) {
+export function checkListenerGrowth(st, baseline, inputBaseline) {
   const n = st?.resizeListeners;
   if (typeof n !== 'number') return ['el juego no expone `resizeListeners` en state() (API de QA anterior a A1.10)'];
   if (typeof baseline !== 'number') return ['sin recuento de referencia de listeners de resize (se toma tras el primer paso)'];
+  const f = [];
   if (n > baseline) {
-    return [`listeners de resize del ScaleManager: ${n}, tras el primer paso había ${baseline}: se acumulan con los cambios de escena`];
+    f.push(`listeners de resize del ScaleManager: ${n}, tras el primer paso había ${baseline}: se acumulan con los cambios de escena`);
   }
-  return [];
+  const k = st?.inputListeners;
+  if (typeof k === 'number' && typeof inputBaseline === 'number' && k > inputBaseline) {
+    f.push(`listeners de teclado y del lienzo: ${k}, tras el primer paso había ${inputBaseline}: se acumulan con los cambios de escena`);
+  }
+  return f;
+}
+
+/** A2.4: `expect.walkTarget` = { target?, verb? } contra el último acercamiento (`st.walkTarget`). */
+export function checkWalkTarget(want, st) {
+  if (st.walkTarget === undefined) return ['el juego no expone `walkTarget` en state() (API de QA anterior a A2.2)'];
+  const wt = st.walkTarget;
+  if (!wt) return [`no hubo acercamiento a ningún objetivo (se esperaba ${JSON.stringify(want)})`];
+  const f = [];
+  if (want.target !== undefined && wt.target !== want.target) f.push(`el último objetivo fue «${wt.target}», se esperaba «${want.target}»`);
+  if (want.verb !== undefined && wt.verb !== want.verb) f.push(`el último verbo sobre «${wt.target}» fue ${wt.verb}, se esperaba ${want.verb}`);
+  return f;
+}
+
+/** A2.4: `expect.highlighted` = { min?, max?, includes?, excludes? } contra los resaltados de Tab (`st.highlightedHotspots`). */
+export function checkHighlighted(want, st) {
+  const ids = st.highlightedHotspots;
+  if (!Array.isArray(ids)) return ['el juego no expone `highlightedHotspots` en state() (API de QA anterior a A2.4)'];
+  const f = [];
+  if (typeof want.min === 'number' && ids.length < want.min) f.push(`${ids.length} resaltados con Tab, se esperaban al menos ${want.min}`);
+  if (typeof want.max === 'number' && ids.length > want.max) f.push(`${ids.length} resaltados con Tab, se esperaban como mucho ${want.max}`);
+  for (const id of want.includes ?? []) if (!ids.includes(id)) f.push(`«${id}» no sale resaltado con Tab`);
+  for (const id of want.excludes ?? []) if (ids.includes(id)) f.push(`«${id}» sale resaltado con Tab y no debería`);
+  return f;
 }
 
 /** Líneas del log de la API de QA que aparecieron entre dos estados (usa `logTotal`, el log es circular). */
@@ -121,7 +163,7 @@ export function checkRejects(step, before, after) {
 
 /** Pasos que hacen clic en un hotspot o NPC de la escena (y no combinan objetos del inventario). */
 export function tapsScene(step, before) {
-  if (step.do === 'act' || step.do === 'talk') return true;
+  if (['act', 'talk', 'click', 'rightclick', 'doubleclick'].includes(step.do)) return true;
   if (step.do === 'use') return !(before?.inventory ?? []).includes(step.target);
   return false;
 }
@@ -165,6 +207,12 @@ export function routeDefects(route, opts = {}) {
   steps.forEach((s, i) => {
     if (s.do === 'resize' && !(Number.isInteger(s.width) && Number.isInteger(s.height) && s.width > 0 && s.height > 0)) {
       out.push(`paso ${i + 1} (${describe(s)}): "resize" necesita "width" y "height" enteros positivos`);
+    }
+    if (s.do === 'key' && (typeof s.key !== 'string' || !s.key || !['press', 'down', 'up', undefined].includes(s.phase))) {
+      out.push(`paso ${i + 1} (${describe(s)}): "key" necesita "key" (KeyboardEvent.key) y "phase" press|down|up si lo lleva`);
+    }
+    if (['click', 'rightclick', 'doubleclick'].includes(s.do) && (typeof s.target !== 'string' || !s.target)) {
+      out.push(`paso ${i + 1} (${describe(s)}): "${s.do}" necesita "target"`);
     }
     if (s.do === 'goto' && !opts.allowGoto) {
       out.push(`paso ${i + 1} (${describe(s)}): "goto" se salta puertas y gates; solo vale en rutas del selftest con "allowGoto"`);

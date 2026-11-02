@@ -4,8 +4,8 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import {
-  attemptIndex, check, checkAttemptRan, checkLastChoices, checkListenerGrowth, checkRejects, classify, describe, kindOf, newLogLines,
-  routeDefects, selftestDefects, selftestMismatch,
+  attemptIndex, check, checkAttemptRan, checkHighlighted, checkLastChoices, checkListenerGrowth, checkRejects, checkWalkTarget, classify,
+  describe, kindOf, newLogLines, routeDefects, selftestDefects, selftestMismatch, tapsScene,
 } from '../scripts/lib/walkthrough-core.mjs';
 
 const readJson = (p) => JSON.parse(readFileSync(new URL(`../${p}`, import.meta.url), 'utf8'));
@@ -255,4 +255,60 @@ test('A2.6: la ruta crítica comprueba la opción usada en gris, la oculta por `
   assert.ok(talks.some((s) => s.expect.lastChoices.used?.length), 'una opción usada en gris');
   assert.ok(talks.some((s) => s.expect.lastChoices.absent?.length), 'una opción oculta');
   assert.ok(talks.every((s) => /come back later|goodbye/i.test(s.choices.at(-1))), 'cada charla termina por su salida explícita');
+});
+
+test('A2.4: pasos de escritorio (key, click, rightclick, doubleclick): descripción y definición', () => {
+  const wt = (step) => ({ id: 'w', steps: [NEW, step] });
+  assert.equal(describe({ do: 'key', key: 'l' }), 'KEY l');
+  assert.equal(describe({ do: 'key', key: 'Tab', phase: 'down' }), 'KEY Tab (down)');
+  assert.equal(describe({ do: 'click', target: 'hs_plant' }), 'CLICK hs_plant');
+  assert.equal(describe({ do: 'rightclick', target: 'npc_receptionist' }), 'RIGHTCLICK npc_receptionist');
+  assert.equal(describe({ do: 'doubleclick', target: 'hs_stairs_up' }), 'DOUBLECLICK hs_stairs_up');
+  for (const ok of [{ do: 'key', key: 'Escape' }, { do: 'key', key: 'Tab', phase: 'up' }, { do: 'rightclick', target: 'x' }]) {
+    assert.deepEqual(routeDefects(wt(ok)), [], JSON.stringify(ok));
+  }
+  for (const bad of [{ do: 'key' }, { do: 'key', key: '' }, { do: 'key', key: 'l', phase: 'hold' }, { do: 'click' }, { do: 'doubleclick', target: '' }]) {
+    assert.equal(routeDefects(wt(bad)).length, 1, JSON.stringify(bad));
+  }
+  assert.ok(tapsScene({ do: 'rightclick', target: 'x' }) && tapsScene({ do: 'doubleclick', target: 'x' }) && tapsScene({ do: 'click', target: 'x' }));
+  assert.ok(!tapsScene({ do: 'key', key: 'l' }));
+});
+
+test('A2.4: expect.verb, expect.walkTarget y expect.highlighted', () => {
+  assert.deepEqual(check({ verb: 'LOOK' }, st({ verb: 'LOOK' })), []);
+  assert.match(check({ verb: 'LOOK' }, st({ verb: 'WALK' }))[0], /verbo del panel «WALK», se esperaba «LOOK»/);
+  assert.match(check({ verb: 'LOOK' }, st())[0], /anterior a A2\.4/);
+
+  const walkTarget = { target: 'npc_receptionist', verb: 'TALK', walkTo: { x: 30, y: 90 }, face: 'left' };
+  assert.deepEqual(check({ walkTarget: { target: 'npc_receptionist', verb: 'TALK' } }, st({ walkTarget })), []);
+  assert.equal(checkWalkTarget({ target: 'hs_coat', verb: 'PICK' }, st({ walkTarget })).length, 2);
+  assert.match(checkWalkTarget({ verb: 'TALK' }, st({ walkTarget: null }))[0], /no hubo acercamiento/);
+
+  const highlightedHotspots = ['hs_a', 'hs_b', 'npc_c'];
+  assert.deepEqual(check({ highlighted: { min: 3, includes: ['npc_c'], excludes: ['hs_z'] } }, st({ highlightedHotspots })), []);
+  assert.equal(checkHighlighted({ min: 4, max: 1, includes: ['hs_z'], excludes: ['hs_a'] }, st({ highlightedHotspots })).length, 4);
+  assert.deepEqual(check({ highlighted: { max: 0 } }, st({ highlightedHotspots: [] })), []);
+  assert.match(checkHighlighted({ min: 1 }, st())[0], /anterior a A2\.4/);
+});
+
+test('A2.4: noListenerGrowth también mira los listeners de teclado y del lienzo si el juego los expone', () => {
+  const exp = { noListenerGrowth: true };
+  assert.deepEqual(check(exp, st({ resizeListeners: 9, inputListeners: 4 }), { listenersBaseline: 9, inputListenersBaseline: 4 }), []);
+  const grown = check(exp, st({ resizeListeners: 9, inputListeners: 8 }), { listenersBaseline: 9, inputListenersBaseline: 4 });
+  assert.equal(grown.length, 1);
+  assert.match(grown[0], /teclado y del lienzo: 8, tras el primer paso había 4/);
+  assert.deepEqual(checkListenerGrowth({ resizeListeners: 9 }, 9, 4), [], 'sin inputListeners (API anterior) no se mira');
+});
+
+test('A2.4: la ruta de escritorio prueba Tab, una tecla de verbo, el clic derecho en una NPC y el doble clic en una salida', () => {
+  const route = readJson('qa/walkthrough.json').routes.find((r) => r.id === 'controles-escritorio');
+  assert.ok(route, 'existe la ruta controles-escritorio');
+  const steps = route.steps;
+  assert.ok(steps.some((s) => s.do === 'key' && s.key === 'Tab' && s.phase === 'down' && s.expect?.highlighted?.min > 0), 'Tab resalta');
+  assert.ok(steps.some((s) => s.do === 'key' && s.key === 'Tab' && s.phase === 'up' && s.expect?.highlighted?.max === 0), 'soltar Tab quita');
+  const l = steps.findIndex((s) => s.do === 'key' && s.key === 'l');
+  assert.ok(l >= 0 && steps[l + 1].do === 'click' && steps[l + 1].expect.walkTarget.verb === 'LOOK', 'L + clic = LOOK');
+  assert.ok(steps.some((s) => s.do === 'rightclick' && /^npc_/.test(s.target) && s.expect?.walkTarget?.verb === 'TALK'), 'clic derecho en NPC = hablar');
+  const dbl = steps.find((s) => s.do === 'doubleclick');
+  assert.ok(dbl && dbl.expect?.scene && dbl.expect.noListenerGrowth, 'doble clic en una salida cambia de escena y no deja listeners');
 });
