@@ -9,7 +9,7 @@
 //     844x390 la base exacta es 1,38 y la regla la deja sin redondear (un entero la cambiaría un 28-45 %, ver la
 //     cabecera de PixelScale.ts): se comprueba que la regla se cumple, no que sea entera;
 //   - el alto del jugador (en % del fondo) coincide (±1 %) en lobby, clinic_interior y la acera de outside;
-//   - en outside, en el porche el factor de profundidad es < 0,7 y al volver a la acera vuelve a 1 (y a la escala entera).
+//   - en outside, en el porche el factor de profundidad está entre 0,75 y 0,9 (casi a la profundidad de la cochera: Dex no puede encoger a la mitad) y al volver a la acera vuelve a 1 (y a la escala entera).
 // Capturas fijas a zoom 1 (sin reescalar): `<viewport>-<escena>-pies.png` (los pies y las zapatillas del jugador, para
 // ver el píxel limpio), `<viewport>-<escena>.png` y, en outside, `<viewport>-filtro-lineal.png` /
 // `<viewport>-filtro-nearest.png` (el fondo con el filtro de A2.8 y con el de antes, para comparar los cables).
@@ -159,7 +159,7 @@ for (const vp of VIEWPORTS) {
   const porch = await pixel();
   console.log(`${label} outside (porche): ${JSON.stringify(porch)}`);
   report.push({ tag: `${label} outside (porche)`, ...porch });
-  if (!(minDepth < 0.7)) problems.push(`${label} outside: en el porche el factor de profundidad es ${minDepth} (se esperaba < 0,7)`);
+  if (!(minDepth >= 0.75 && minDepth < 0.9)) problems.push(`${label} outside: en el porche el factor de profundidad es ${minDepth} (se esperaba entre 0,75 y 0,9)`);
   await demo.still(`${label}-outside-porche`);
   // Filtro del fondo: el de A2.8 (lineal) y el de antes (nearest), mismo encuadre
   await demo.still(`${label}-filtro-lineal`);
