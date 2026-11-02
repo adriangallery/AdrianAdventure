@@ -36,6 +36,13 @@ export interface QaState {
   player: Point | null;
   /** A2.1: última ruta calculada al andar (origen, puntos de paso y destino, en %); null si aún no ha andado */
   path: Point[] | null;
+  /** A2.2: hacia dónde mira el personaje (left | right | front | back); null fuera de la partida */
+  facing: 'left' | 'right' | 'front' | 'back' | null;
+  /**
+   * A2.2: último acercamiento a un hotspot/NPC: objetivo, verbo, punto al que fue (null = no anduvo: LOOK, ya estaba
+   * allí o no se puede llegar) y orientación decidida. null tras andar libremente o al entrar en la escena.
+   */
+  walkTarget: { target: string; verb: string; walkTo: Point | null; face: string | null } | null;
   /** Hotspots visibles ahora mismo */
   hotspots: string[];
   /** NPCs con diálogo (clicables) */
@@ -287,6 +294,8 @@ export function installQa(game: Phaser.Game): void {
       dialogueProgress: JSON.parse(JSON.stringify(st?.dialogueProgress ?? {})) as Record<string, string[]>,
       player: scene ? scene.qaPlayer() : null,
       path: scene ? scene.qaPath() : null,
+      facing: scene ? scene.qaFacing() : null,
+      walkTarget: scene ? scene.qaWalkTarget() : null,
       hotspots: scene && data ? data.regions.hotspots.filter((h) => scene.qaIsHotspotVisible(h)).map((h) => h.id) : [],
       npcs: scene ? scene.qaNpcIds() : [],
       triggers: scene ? scene.qaTriggers() : [],

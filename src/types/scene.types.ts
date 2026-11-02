@@ -122,6 +122,10 @@ export interface NPCData {
    * desde su `start` o desde `node`, en vez del texto de giveResponses/useResponses. `setFlag` se pone antes.
    */
   itemDialogues?: Record<string, NPCItemDialogue>;
+  /** A2.2: punto (en %) desde el que se le habla; por defecto, a distancia de conversación del lado del jugador */
+  walkTo?: { x: number; y: number };
+  /** A2.2: orientación del jugador al llegar; por defecto, de perfil hacia la NPC */
+  face?: 'left' | 'right' | 'front' | 'back';
 }
 
 export interface NPCItemDialogue {
@@ -188,6 +192,10 @@ export interface HotspotData {
   hideWhenFlag?: string;
   /** Hotspot only visible while this flag is set */
   showWhenFlag?: string;
+  /** A2.2: punto (en %) al que anda el jugador antes de actuar; por defecto, el centro-abajo de `bounds` */
+  walkTo?: { x: number; y: number };
+  /** A2.2: orientación del jugador al llegar; por defecto, hacia el hotspot (ver src/systems/Facing.ts) */
+  face?: 'left' | 'right' | 'front' | 'back';
 }
 
 export interface TriggerData {

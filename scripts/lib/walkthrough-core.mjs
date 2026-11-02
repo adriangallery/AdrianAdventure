@@ -20,7 +20,7 @@ export function describe(s) {
 }
 
 /**
- * Comprobaciones de estado: scene, has, lacks, flags, unsetFlags, visited, achievements, (A2.6) lastChoices y (A1.10) noListenerGrowth, que
+ * Comprobaciones de estado: scene, has, lacks, flags, unsetFlags, visited, achievements, (A2.6) lastChoices, (A2.2) facing y (A1.10) noListenerGrowth, que
  * compara `st.resizeListeners` con `ctx.listenersBaseline` (lo que había tras el primer paso de la ruta). `flags` trata
  * una flag ausente como false; (A1.4) `unsetFlags` exige que la flag no esté en la partida, ni a false: nadie la ha
  * escrito (p. ej. un parpadeo que antes se hacía encendiendo y apagando la flag). Devuelve los fallos.
@@ -40,6 +40,11 @@ export function check(expect, st, ctx = {}) {
   }
   for (const id of expect.visited ?? []) if (!st.visited.includes(id)) f.push(`no se visitó «${id}»`);
   for (const id of expect.achievements ?? []) if (!st.achievements.includes(id)) f.push(`falta el logro «${id}»`);
+  // A2.2: orientación del personaje al terminar el paso (left | right | front | back)
+  if (expect.facing !== undefined) {
+    if (typeof st.facing !== 'string') f.push('el juego no expone `facing` en state() (API de QA anterior a A2.2)');
+    else if (st.facing !== expect.facing) f.push(`el personaje mira «${st.facing}», se esperaba «${expect.facing}»`);
+  }
   if (expect.noListenerGrowth) f.push(...checkListenerGrowth(st, ctx.listenersBaseline));
   if (expect.lastChoices) f.push(...checkLastChoices(expect.lastChoices, st));
   return f;

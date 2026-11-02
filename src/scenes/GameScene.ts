@@ -25,6 +25,7 @@ import { gameUrlParams } from '@/config/debugParams';
 import type { Address } from 'viem';
 import type { ScummUI } from '@/ui/ScummUI';
 import type { UIScene } from '@/scenes/UIScene';
+import { approachHotspot, approachTalk, lookFacing, type Approach, type ApproachTarget, type Facing, type FacingOptions } from '@/systems/Facing';
 
 /** Resultado del hit-test de un toque: nada (panel, fuera del fondo), un NPC o un punto del fondo. */
 type TapHit =
@@ -64,9 +65,13 @@ export class GameScene extends Phaser.Scene {
   private debugContainer?: Phaser.GameObjects.Container;
   private static DEBUG = import.meta.env.DEV;
   private get isTrailer(): boolean { return !!this.registry.get('trailerMode'); }
-  private pendingHotspot: HotspotData | null = null;
-  /** V6: verbo a ejecutar al llegar (mantener pulsado = acción principal); null = el verbo del panel */
-  private pendingVerb: Verb | null = null;
+  /**
+   * Acción que espera a que el jugador llegue (player:arrived): A2.2 se gira a `face` y ejecuta `run` (el verbo sobre
+   * el hotspot, el combo o hablar con la NPC). Lo cancelan un trigger que lo para, un script o un diálogo en marcha.
+   */
+  private pending: { face: Facing | null; run: () => void } | null = null;
+  /** A2.2: último acercamiento (objetivo, verbo, punto de llegada y orientación), para la API de QA */
+  private lastApproach: { target: string; verb: Verb; walkTo: { x: number; y: number } | null; face: Facing | null } | null = null;
   /** V6: toque en curso sobre un hotspot (tocar = mirar, mantener = acción principal) */
   private touchHold: { hotspot: HotspotData; x: number; y: number; timer: Phaser.Time.TimerEvent; ring: Phaser.GameObjects.Graphics; onUp: () => void; onMove: (p: Phaser.Input.Pointer) => void } | null = null;
   private static readonly HOLD_MS = 450;
@@ -245,15 +250,18 @@ export class GameScene extends Phaser.Scene {
     // Execute pending verb when player arrives at hotspot
     // A0.1: los eventos de la escena sobreviven al reinicio; sin quitar el anterior se acumulaba uno por escena
     this.events.removeAllListeners('player:arrived');
+    this.pending = null;
+    this.lastApproach = null;
     this.events.on('player:arrived', () => {
-      if (this.pendingHotspot) {
-        const hotspot = this.pendingHotspot;
-        const verb = this.pendingVerb ?? undefined;
-        this.pendingHotspot = null;
-        this.pendingVerb = null;
-        this.noteQaAction();
-        this.events.emit('hotspot:tapped', hotspot, verb);
-      }
+      const pending = this.pending;
+      if (!pending) return;
+      this.pending = null;
+      // Algo tomó el control mientras andaba: no se actúa
+      if (this.scriptEngine.isRunning() || this.registry.get('dialogueActive')) return;
+      // A2.2: se gira hacia el objetivo antes de actuar
+      if (pending.face) this.player.face(pending.face);
+      this.noteQaAction();
+      pending.run();
     });
 
     // Costume: Player.update() reads ape_costume_worn flag directly from gameState
@@ -445,8 +453,19 @@ export class GameScene extends Phaser.Scene {
           this.player.pctY >= b.y && this.player.pctY <= b.y + b.h) {
         this.firedTriggers.add(tr.id);
         this.persistFiredTriggers();
+        // A2.2: si iba a usar algo (no andar sin más), el trigger lo para igual; al acabar su script, si sigue en la
+        // escena y nadie le ha dado otra orden, retoma el camino y actúa al llegar (el trigger ya disparó)
+        const pending = this.pending;
+        const resumeTo = pending && this.lastApproach?.walkTo ? { ...this.lastApproach.walkTo } : null;
+        const run = this.sceneRun;
         this.player.halt();
-        this.scriptEngine.execute(tr.onEnter, `${tr.id}/onEnter`);
+        this.pending = null;
+        void this.scriptEngine.execute(tr.onEnter, `${tr.id}/onEnter`).finally(() => {
+          if (!pending || !resumeTo || run !== this.sceneRun || this.pending || this.player.isMoving()) return;
+          if (this.registry.get('sceneTransition') || this.registry.get('dialogueActive')) return;
+          this.pending = pending;
+          this.player.walkToPct(resumeTo.x, resumeTo.y);
+        });
         return true;
       }
     }
@@ -572,23 +591,32 @@ export class GameScene extends Phaser.Scene {
     };
   }
 
-  /** Toque sobre un NPC ya localizado: dar o usar el objeto elegido, o empezar su diálogo. */
+  /**
+   * Toque sobre un NPC ya localizado: dar o usar el objeto elegido, o empezar su diálogo. A2.2: antes anda hasta la
+   * distancia de conversación y se gira hacia él; con LOOK solo se gira.
+   */
   private dispatchNpcTap(npc: NPC, verb: Verb, selectedItem: InventoryItem | null, scummUI: ScummUI | undefined): void {
-    this.noteQaAction();
+    const sceneData = this.registry.get('sceneData') as SceneData;
+    const npcData = sceneData.npcs?.find(n => n.id === npc.npcId);
+    const target: ApproachTarget = { position: npc.pctPosition ?? undefined, walkTo: npcData?.walkTo, face: npcData?.face };
+    const plan: Approach = verb === Verb.LOOK
+      ? { walkTo: null, face: lookFacing(target, this.playerPct(), this.facingOpts()), aim: null }
+      : approachTalk(target, this.playerPct(), this.reachPct, this.facingOpts());
     // GIVE/USE item on NPC — show fun response instead of dialogue
     if (selectedItem && (verb === Verb.USE || verb === Verb.GIVE)) {
       scummUI?.clearSelectedItem?.();
-      const sceneData = this.registry.get('sceneData') as SceneData;
-      const npcData = sceneData.npcs?.find(n => n.id === npc.npcId);
       // A2.6: la NPC reacciona a ese objeto con un árbol (o un nodo de su árbol) en vez de una frase suelta
       const itemDialogue = npcData?.itemDialogues?.[selectedItem.id];
       const itemTree = itemDialogue ? (itemDialogue.tree ?? npc.dialogueTreeId) : null;
       if (itemDialogue && itemTree && sceneData.dialogues?.[itemTree]) {
-        if (itemDialogue.setFlag) {
-          this.gameState = { ...this.gameState, flags: { ...this.gameState.flags, [itemDialogue.setFlag]: true } };
-          this.registry.set('gameState', this.gameState);
-        }
-        this.events.emit('npc:tapped', npc.npcId, itemTree, itemDialogue.node);
+        // A2.2: también se acerca y se gira antes de enseñar el objeto
+        this.approachAndRun(npc.npcId, verb, plan, () => {
+          if (itemDialogue.setFlag) {
+            this.gameState = { ...this.gameState, flags: { ...this.gameState.flags, [itemDialogue.setFlag]: true } };
+            this.registry.set('gameState', this.gameState);
+          }
+          this.events.emit('npc:tapped', npc.npcId, itemTree, itemDialogue.node);
+        });
         return;
       }
       const responseMap = verb === Verb.GIVE
@@ -599,10 +627,54 @@ export class GameScene extends Phaser.Scene {
         ?? (verb === Verb.GIVE
           ? `${npc.npcName} doesn't want ${selectedItem.name}.`
           : `I can't use ${selectedItem.name} on ${npc.npcName}.`);
-      this.scene.get('UIScene').events.emit('say', response, npc.npcName);
+      this.approachAndRun(npc.npcId, verb, plan, () => this.scene.get('UIScene').events.emit('say', response, npc.npcName));
       return;
     }
-    this.events.emit('npc:tapped', npc.npcId, npc.dialogueTreeId);
+    this.approachAndRun(npc.npcId, verb, plan, () => this.events.emit('npc:tapped', npc.npcId, npc.dialogueTreeId));
+  }
+
+  // ─── A2.2: acercarse y mirar hacia el objetivo ───
+
+  private playerPct(): { x: number; y: number } {
+    return { x: this.player.pctX, y: this.player.pctY };
+  }
+
+  /** Reach de Facing: punto alcanzable más cercano desde el jugador, o null si está en otra isla */
+  private reachPct = (p: { x: number; y: number }) => this.player.approachPct(p);
+
+  /** Proporción del fondo y altura del personaje en %, para decidir si algo está por encima de la cabeza o a los pies */
+  private facingOpts(): FacingOptions {
+    const bgH = this.coordSystem.bgH;
+    return {
+      aspect: this.coordSystem.imgW / this.coordSystem.imgH,
+      playerHeight: bgH > 0 ? (this.player.displayHeight / bgH) * 100 : undefined,
+    };
+  }
+
+  /** Plan para un verbo sobre un hotspot: LOOK solo gira; TALK, a distancia de conversación; el resto, a su walkTo. */
+  private planHotspot(hotspot: HotspotData, verb: Verb): Approach {
+    const player = this.playerPct();
+    if (verb === Verb.LOOK) return { walkTo: null, face: lookFacing(hotspot, player, this.facingOpts()), aim: null };
+    if (verb === Verb.TALK) return approachTalk(hotspot, player, this.reachPct, this.facingOpts());
+    return approachHotspot(hotspot, player, this.reachPct, this.facingOpts());
+  }
+
+  /**
+   * Con punto de llegada, anda hasta él y al llegar (player:arrived) se gira y ejecuta `run`. Sin él (LOOK, ya está
+   * allí, sin bounds o en otra isla), se para si andaba, se gira y ejecuta al momento.
+   */
+  private approachAndRun(id: string, verb: Verb, plan: Approach, run: () => void): void {
+    this.lastApproach = { target: id, verb, walkTo: plan.walkTo ? { ...plan.walkTo } : null, face: plan.face };
+    if (plan.walkTo) {
+      this.pending = { face: plan.face, run };
+      this.player.walkToPct(plan.walkTo.x, plan.walkTo.y);
+      return;
+    }
+    this.pending = null;
+    if (this.player.isMoving()) this.player.halt();
+    if (plan.face) this.player.face(plan.face);
+    this.noteQaAction();
+    run();
   }
 
   /**
@@ -619,7 +691,6 @@ export class GameScene extends Phaser.Scene {
   ): void {
     // Item combo mode: USE [item] with [hotspot]
     if (selectedItem && hotspot) {
-      this.noteQaAction();
       const item = selectedItem;
       const hs = hotspot;
       scummUI?.clearSelectedItem?.();
@@ -627,44 +698,25 @@ export class GameScene extends Phaser.Scene {
       const combo = sceneData.combos?.find(
         (c: { items: string[] }) => c.items.includes(item.id) && c.items.includes(hs.id)
       );
-      if (combo) {
-        this.runScript(combo.script, `combo ${item.id}+${hs.id}`);
-      } else {
-        this.scene.get('UIScene').events.emit('say', `I can't use ${item.name} with ${hs.name}.`);
-      }
+      // A2.2: USE objeto con hotspot también va hasta él y se gira antes
+      this.approachAndRun(hs.id, Verb.USE, this.planHotspot(hs, Verb.USE), () => {
+        if (combo) {
+          this.runScript(combo.script, `combo ${item.id}+${hs.id}`);
+        } else {
+          this.scene.get('UIScene').events.emit('say', `I can't use ${item.name} with ${hs.name}.`);
+        }
+      });
       return;
     }
 
     if (verb === Verb.WALK || !hotspot) {
-      this.pendingHotspot = null;
+      this.pending = null;
+      this.lastApproach = null;
       this.player.walkToPct(pct.x, pct.y);
-    } else if (verb === Verb.LOOK || verb === Verb.TALK) {
-      // LOOK/TALK: execute immediately (no walk needed)
-      this.pendingHotspot = null;
-      this.noteQaAction();
-      this.events.emit('hotspot:tapped', hotspot);
-    } else {
-      // USE, PICK, OPEN, CLOSE: walk to hotspot, execute on arrival
-      if (!hotspot.bounds) {
-        // No explicit bounds — execute immediately without walking
-        this.pendingHotspot = null;
-        this.noteQaAction();
-        this.events.emit('hotspot:tapped', hotspot);
-        return;
-      }
-      const b = hotspot.bounds;
-      const targetX = b.x + b.w / 2;
-      const targetY = Math.min(b.y + b.h, 100);
-      if (this.player.canReachPct(targetX, targetY)) {
-        this.pendingHotspot = hotspot;
-        this.pendingVerb = null;
-        this.player.walkToPct(targetX, targetY);
-      } else {
-        this.pendingHotspot = null;
-        this.noteQaAction();
-        this.events.emit('hotspot:tapped', hotspot);
-      }
+      return;
     }
+    // A2.2: LOOK se gira sin andar; TALK anda a distancia de conversación; USE, PICK, OPEN… a su walkTo
+    this.runHotspotVerb(hotspot, verb);
   }
 
   private handlePointerMove(pointer: Phaser.Input.Pointer): void {
@@ -860,26 +912,13 @@ export class GameScene extends Phaser.Scene {
     this.touchHold = null;
   }
 
-  /** Ejecuta un verbo concreto sobre un hotspot: mirar y hablar al momento; el resto andando hasta él. */
+  /**
+   * Ejecuta un verbo concreto sobre un hotspot. A2.2: LOOK se gira hacia él sin andar; TALK anda a distancia de
+   * conversación; el resto anda a su `walkTo` (por defecto, el centro-abajo de los bounds llevado a lo alcanzable).
+   * Al llegar se gira (`face`) y ejecuta. Sin punto alcanzable, se gira y ejecuta sin andar.
+   */
   private runHotspotVerb(hotspot: HotspotData, verb: Verb): void {
-    if (verb === Verb.LOOK || verb === Verb.TALK || !hotspot.bounds) {
-      this.pendingHotspot = null;
-      this.pendingVerb = null;
-      this.events.emit('hotspot:tapped', hotspot, verb);
-      return;
-    }
-    const b = hotspot.bounds;
-    const targetX = b.x + b.w / 2;
-    const targetY = Math.min(b.y + b.h, 100);
-    if (this.player.canReachPct(targetX, targetY)) {
-      this.pendingHotspot = hotspot;
-      this.pendingVerb = verb;
-      this.player.walkToPct(targetX, targetY);
-    } else {
-      this.pendingHotspot = null;
-      this.pendingVerb = null;
-      this.events.emit('hotspot:tapped', hotspot, verb);
-    }
+    this.approachAndRun(hotspot.id, verb, this.planHotspot(hotspot, verb), () => this.events.emit('hotspot:tapped', hotspot, verb));
   }
 
   /** Verbos que cuentan como «acción principal», por orden de preferencia. */
@@ -1463,6 +1502,16 @@ export class GameScene extends Phaser.Scene {
   /** A2.1: última ruta calculada (origen, puntos de paso y destino, en %) */
   qaPath(): { x: number; y: number }[] | null {
     return this.player.getLastPath();
+  }
+
+  /** A2.2: hacia dónde mira el personaje */
+  qaFacing(): Facing {
+    return this.player.getFacing();
+  }
+
+  /** A2.2: último acercamiento a un hotspot/NPC (null tras andar libremente o al entrar en la escena) */
+  qaWalkTarget(): { target: string; verb: Verb; walkTo: { x: number; y: number } | null; face: Facing | null } | null {
+    return this.lastApproach ? { ...this.lastApproach, walkTo: this.lastApproach.walkTo ? { ...this.lastApproach.walkTo } : null } : null;
   }
 
   /** A2.1: ¿se puede pisar el punto (en %)? walkableAreas menos blockedAreas */

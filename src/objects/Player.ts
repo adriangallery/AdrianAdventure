@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import type { SceneData } from '@/types/scene.types';
 import type { CoordSystem } from '@/systems/CoordSystem';
 import { NavGrid, type Point } from '@/systems/Pathfinding';
+import type { Facing } from '@/systems/Facing';
 
 const WALK_FRAME_MS = 180;
 const IDLE_FRAME_MS = 400;
@@ -54,6 +55,16 @@ export class Player extends Phaser.GameObjects.Sprite {
   /** Sprite prefix — 'player' by default, 'ape' when costume worn */
   private spritePrefix = 'player';
 
+  /**
+   * A2.2: hacia dónde mira. 'front' = idle animado (Idle-1..4); el resto, un sprite quieto (ver facingTexture).
+   * Al andar pasa a 'left'/'right' según hacia dónde va y así se queda al llegar; GameScene lo gira con face().
+   */
+  private facing: Facing = 'front';
+  /** Último lado hacia el que miró de perfil (elige la variante de espaldas: girado a un lado u otro) */
+  private lastSide: 'left' | 'right' = 'right';
+  /** Textura quieta de la orientación actual; null = idle animado */
+  private staticKey: string | null = null;
+
   constructor(scene: Phaser.Scene, coordSystem: CoordSystem, spawnPctX: number, spawnPctY: number, sceneData: SceneData) {
     const screen = coordSystem.pctToScreen(spawnPctX, spawnPctY);
     super(scene, screen.x, screen.y, 'player_idle1');
@@ -97,13 +108,59 @@ export class Player extends Phaser.GameObjects.Sprite {
     this.targetPctX = null;
     this.targetPctY = null;
     this.waypoints = [];
-    this.setTexture(`${this.spritePrefix}_idle1`);
+    this.applyFacing();
+  }
+
+  /**
+   * A2.2: girarse. Sprites (las claves de perfil están espejadas, como las de andar: `player_left` = Left.png, que
+   * mira a la DERECHA de la pantalla):
+   *  - right → player_left (Left.png) · left → player_right (Right.png)
+   *  - back  → player_back_left (Back-Left.png, de espaldas girado a la derecha) o player_back_right (Back-Right.png,
+   *            girado a la izquierda), según el último lado al que miró
+   *  - front → idle animado (Idle-1..4, de frente)
+   * Disfraz de mono: solo hay idle y andar; de perfil usa el primer fotograma de andar y de espaldas, el idle.
+   * Si está andando no hace nada (al llegar ya se gira GameScene).
+   */
+  face(dir: Facing): void {
+    if (this.isMoving()) return;
+    this.setFacing(dir);
+    this.applyFacing();
+  }
+
+  getFacing(): Facing {
+    return this.facing;
+  }
+
+  private setFacing(dir: Facing): void {
+    this.facing = dir;
+    if (dir === 'left' || dir === 'right') this.lastSide = dir;
+  }
+
+  /** Textura quieta para la orientación actual con el disfraz actual, o null si toca el idle animado. */
+  private facingTexture(): string | null {
+    const p = this.spritePrefix;
+    let cands: string[] = [];
+    if (this.facing === 'back') {
+      cands = [`${p}_back_${this.lastSide === 'right' ? 'left' : 'right'}`];
+    } else if (this.facing === 'left' || this.facing === 'right') {
+      const mirrored = this.facing === 'right' ? 'left' : 'right';
+      cands = [`${p}_${mirrored}`, `${p}_walk_${mirrored}_0`];
+    }
+    return cands.find((k) => this.scene.textures.exists(k)) ?? null;
+  }
+
+  /** Pone la textura de la orientación actual (quieta, o el primer fotograma del idle si mira de frente). */
+  private applyFacing(): void {
+    this.staticKey = this.facingTexture();
+    this.idleTimer = 0;
+    this.idleFrameIndex = 0;
+    this.setTexture(this.staticKey ?? `${this.spritePrefix}_idle1`);
   }
 
   /** Change player costume. Pass 'ape' for ape costume, 'player' to revert. */
   setCostume(prefix: string): void {
     this.spritePrefix = prefix;
-    this.setTexture(`${prefix}_idle1`);
+    if (!this.isMoving()) this.applyFacing();
   }
 
   getCostume(): string {
@@ -134,9 +191,12 @@ export class Player extends Phaser.GameObjects.Sprite {
       this.walkFrameIndex = 0;
       this.walkTimer = 0;
       this.idleFrameIndex = 0;
+      if (this.targetPctX === null) this.applyFacing();
     }
 
     if (this.targetPctX === null || this.targetPctY === null) {
+      // A2.2: mirando a un lado o de espaldas se queda quieto; el idle animado es de frente
+      if (this.staticKey) return;
       // Idle animation
       this.idleTimer += delta;
       if (this.idleTimer >= IDLE_FRAME_MS) {
@@ -149,6 +209,8 @@ export class Player extends Phaser.GameObjects.Sprite {
 
     // Walk animation (sprite direction is mirrored from movement direction)
     const direction = this.targetPctX - this.pctX > 0 ? 'left' : 'right';
+    // A2.2: mira hacia donde anda (las claves de andar están espejadas: 'left' = va hacia la derecha)
+    this.setFacing(direction === 'left' ? 'right' : 'left');
     this.walkTimer += delta;
     if (this.walkTimer >= WALK_FRAME_MS) {
       this.walkTimer = 0;
@@ -204,7 +266,7 @@ export class Player extends Phaser.GameObjects.Sprite {
         }
         this.targetPctX = null;
         this.targetPctY = null;
-        this.setTexture(`${this.spritePrefix}_idle1`);
+        this.applyFacing();
         this.syncScreenPosition();
         this.scene.events.emit('player:arrived');
         return;
@@ -221,7 +283,7 @@ export class Player extends Phaser.GameObjects.Sprite {
     this.targetPctX = null;
     this.targetPctY = null;
     this.waypoints = [];
-    this.setTexture(`${this.spritePrefix}_idle1`);
+    this.applyFacing();
     this.syncScreenPosition();
     this.scene.events.emit('player:arrived');
   }
@@ -242,6 +304,14 @@ export class Player extends Phaser.GameObjects.Sprite {
    */
   canReachPct(px: number, py: number): boolean {
     return this.nav.canReach({ x: this.pctX, y: this.pctY }, { x: px, y: py });
+  }
+
+  /**
+   * A2.2: punto alcanzable más cercano a `p` desde donde está el personaje, o null si `p` está en otra isla de la
+   * zona caminable (ver NavGrid.approach). Es la `Reach` de Facing.
+   */
+  approachPct(p: Point): Point | null {
+    return this.nav.approach({ x: this.pctX, y: this.pctY }, p);
   }
 
   /** A2.1: última ruta calculada (origen, puntos de paso y destino), para la API de QA y la demo */
