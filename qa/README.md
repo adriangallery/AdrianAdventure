@@ -60,12 +60,18 @@ Reglas de las rutas `sequence-break`, para no dar por cerrada una ruta sin haber
 
 ### Atajos conocidos (expected-fail)
 
-| Ruta | Atajo | Lo cierra |
+Ninguno abierto. Cerrados:
+
+| Ruta | Atajo | Cerrado en |
 |---|---|---|
 | `clinica-sin-printout` | `outside.tr_mountain` → `mountain.tr_to_clinic` sin gate: clínica desde el minuto 1 | A1.2 |
 | `recepcion-clinica-sin-capitulo-3` | Mismo atajo + la hoja de `hs_visitor_box` abre la puerta: recepción sin sótano | A1.2 |
 
-`sotano-sin-keycard` es de control: debe quedarse fuera.
+Desde A1.2 las dos salidas a la montaña piden lo mismo que `hs_winding_path`: el `printout` o `chapter_3_complete`
+(si no, el protagonista dice por qué no sigue y el trigger se puede volver a pisar). `montana-con-keycard-sin-capitulo-3`
+y `montana-con-capitulo-3-a-medias` comprueban que ni la keycard ni haber bajado al sótano abren la montaña.
+`sotano-sin-keycard` es de control: debe quedarse fuera. Las demás salidas sin gate son vueltas a escenas del
+mismo capítulo o anteriores y están silenciadas en `qa/lint-scenes-allow.json` con su motivo.
 
 ## Lanzarlo
 

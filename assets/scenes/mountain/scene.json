@@ -835,12 +835,40 @@
         },
         "onEnter": [
           {
-            "op": "fadeToScene",
-            "sceneId": "clinic_exterior",
-            "spawn": {
-              "x": 13.8,
-              "y": 95.8
-            }
+            "op": "ifHasItem",
+            "id": "printout",
+            "then": [
+              {
+                "op": "fadeToScene",
+                "sceneId": "clinic_exterior",
+                "spawn": {
+                  "x": 13.8,
+                  "y": 95.8
+                }
+              }
+            ],
+            "else": [
+              {
+                "op": "ifFlag",
+                "flag": "chapter_3_complete",
+                "then": [
+                  {
+                    "op": "fadeToScene",
+                    "sceneId": "clinic_exterior",
+                    "spawn": {
+                      "x": 13.8,
+                      "y": 95.8
+                    }
+                  }
+                ],
+                "else": [
+                  {
+                    "op": "say",
+                    "text": "The path forks every ten steps up there. Without directions I would be wandering these slopes until the next halving."
+                  }
+                ]
+              }
+            ]
           }
         ]
       }
