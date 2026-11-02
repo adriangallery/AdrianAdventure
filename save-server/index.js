@@ -175,13 +175,15 @@ app.get('/leaderboard', (c) => {
 
         // Items discovered
         const discoveryFlags = [
-          'found_code_note','found_envelope','found_keycard','found_hw_wallet',
+          'found_code_note','found_envelope','found_keycard','found_terminal_key',
           'found_floppy','found_rubber_duck','found_sign_in_sheet','found_clinic_note',
           'found_clinic_photo','found_server_log','found_burned_chip','found_dr_badge',
           'found_adrian_note','found_receipt','found_broken_mouse','found_pz_note',
           'monkey_sticker_found','has_antenna','has_water','has_printout',
         ];
-        const itemsDiscovered = discoveryFlags.filter(f => flags[f]).length;
+        // A1.4: found_hw_wallet pasó a llamarse found_terminal_key; las partidas viejas (clientes sin actualizar) siguen contando
+        const legacyFlags = { found_terminal_key: 'found_hw_wallet' };
+        const itemsDiscovered = discoveryFlags.filter(f => flags[f] || (legacyFlags[f] && flags[legacyFlags[f]])).length;
         const discoveryPts = itemsDiscovered * 15;
 
         // Puzzles
