@@ -34,8 +34,9 @@ const inScene = (id, since = 0) => page.waitForFunction(({ sid, since }) => {
   const g = window.__game;
   if (!g) return false;
   const pre = g.scene.getScene('PreloadScene');
-  // pantalla de carga completa = PreloadScene activa con su barra, porcentaje y frase
-  if (g.scene.isActive('PreloadScene') && (pre.children?.list?.length ?? 0) >= 4) window.__sawLoadingScreen = true;
+  // pantalla de carga completa = PreloadScene con su barra, porcentaje y frase (4 objetos; la barrita de A2.7 son 2).
+  // Durante preload() la escena está en LOADING y isActive() es false: se mira su lista, que se vacía al pararla.
+  if ((pre?.children?.list?.length ?? 0) >= 4) window.__sawLoadingScreen = true;
   return g.scene.isActive('GameScene') && !g.scene.isActive('PreloadScene') && g.registry.get('currentSceneId') === sid
     && g.registry.get('sceneData')?.id === sid && (g.registry.get('sceneCreatedAt') ?? 0) >= since;
 }, { timeout: 120000, polling: 'raf' }, { sid: id, since });
