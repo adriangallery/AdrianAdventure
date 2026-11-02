@@ -1,6 +1,7 @@
 // Tests de humo de AdrianAdventure (plan AdrianZERO V8). Corre en GitHub Actions contra `vite preview`
 // del build real (con assets): arranque, cada escena, cambio de escena en caliente y guardar/cargar.
 // A1.5 (plan SCUMM): con el sonido apagado no se piden música ni voces; al activarlo en ajustes, sí.
+// A1.8: las escenas se abren con ?qa=1&scene=<id>; sin ?qa=1 el build de producción ignora ?scene.
 // Uso: BASE_URL=http://127.0.0.1:4173 node scripts/smoke.mjs
 import { readdirSync, existsSync, mkdirSync, readFileSync } from 'node:fs';
 import puppeteer from 'puppeteer';
@@ -59,9 +60,23 @@ await step('menú', async () => {
   await page.screenshot({ path: `${SHOTS}/00-menu.png` });
 });
 
+// A1.8: en el build de producción ?scene/?skip/?dev solo valen con ?qa=1; sin él se queda en el menú.
+await step('sin ?qa=1 no se salta a una escena', async () => {
+  await page.goto(`${BASE}/?scene=treatment_room&skip&dev`, { waitUntil: 'domcontentloaded' });
+  await waitGame(() => window.__game?.scene?.isActive('MenuScene'));
+  await new Promise((r) => setTimeout(r, 2000));
+  const s = await page.evaluate(() => ({
+    game: window.__game.scene.isActive('GameScene') || window.__game.scene.isActive('PreloadScene'),
+    menu: window.__game.scene.isActive('MenuScene'),
+    selector: !!document.querySelector('button[title="Scene Selector"]'),
+  }));
+  if (s.game || !s.menu) throw new Error(`?scene sin ?qa=1 sacó al jugador del menú (${JSON.stringify(s)})`);
+  if (s.selector) throw new Error('?dev sin ?qa=1 mostró el selector de escenas');
+});
+
 for (const [i, id] of scenes.entries()) {
   await step(`escena ${id}`, async () => {
-    await page.goto(`${BASE}/?scene=${encodeURIComponent(id)}`, { waitUntil: 'domcontentloaded' });
+    await page.goto(`${BASE}/?qa=1&scene=${encodeURIComponent(id)}`, { waitUntil: 'domcontentloaded' });
     await waitGame(
       (sceneId) => {
         const g = window.__game;
@@ -75,7 +90,7 @@ for (const [i, id] of scenes.entries()) {
 
 const [first, second] = scenes;
 await step(`cambio de escena en caliente ${first} → ${second}`, async () => {
-  await page.goto(`${BASE}/?scene=${encodeURIComponent(first)}`, { waitUntil: 'domcontentloaded' });
+  await page.goto(`${BASE}/?qa=1&scene=${encodeURIComponent(first)}`, { waitUntil: 'domcontentloaded' });
   await waitGame((sceneId) => window.__game?.scene?.isActive('GameScene') && window.__game.registry.get('currentSceneId') === sceneId, first);
   await page.evaluate((next) => {
     const g = window.__game;

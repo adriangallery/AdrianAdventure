@@ -101,6 +101,13 @@ y `montana-con-capitulo-3-a-medias` comprueban que ni la keycard ni haber bajado
 `sotano-sin-keycard` es de control: debe quedarse fuera. Las demás salidas sin gate son vueltas a escenas del
 mismo capítulo o anteriores y están silenciadas en `qa/lint-scenes-allow.json` con su motivo.
 
+### Parámetros de depuración de la URL (A1.8)
+
+`?scene=<id>`, `?skip`, `?dev` y `?hintAfter=<s>` solo valen en `npm run dev` o con `?qa=1`
+(`src/config/debugParams.ts`); en el build de producción sin `?qa=1` se ignoran. Smoke y demos cargan
+`?qa=1&scene=<id>`, y el smoke comprueba que `?scene` sin `?qa=1` se queda en el menú. Revisión de la QA
+antigua punto por punto: `qa/OLD_QA_RECHECK.md`.
+
 ## Lanzarlo
 
 - En cada PR y en `main`: automático (build → walkthrough).
@@ -215,7 +222,7 @@ deja la tabla en el resumen del job y sube `lint-scenes-report.json` y `.md` com
 | (b) | objetos que se consiguen (`addItem`) y no sirven para nada | aviso |
 | (c) | salidas (`fadeToScene`/`gotoScene`) en hotspots y triggers sin gate, para revisar a mano | aviso |
 | (d) | operaciones de estado (`setFlag`, `addItem`, `removeItem`, cambio de escena, logros) después de un `say` en el mismo bloque, o en una rama que se abre después del `say`; marca los parpadeos (la misma flag puesta varias veces) | aviso |
-| (e) | `player.spawn`, `transitions.goto[].spawn` y `spawn` de las salidas fuera de las `walkableAreas` de la escena destino | aviso |
+| (e) | `player.spawn`, `transitions.goto[].spawn` y `spawn` de las salidas fuera de las `walkableAreas` de la escena destino (A1.8: **error**; una escena destino sin `walkableAreas` sigue siendo aviso) | **error** |
 | (f) | fondos, primeros planos, overlays, `web3Visuals`, música, `playSound`, iconos de objetos, sprites de NPC, escenas destino y árboles de diálogo que no existen | **error** |
 | (g) | hotspots solapados; aviso fuerte si uno contiene a otro (si el que contiene va antes en la lista, el clic nunca llega al de dentro) | aviso |
 

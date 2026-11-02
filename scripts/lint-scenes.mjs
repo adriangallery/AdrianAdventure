@@ -8,11 +8,11 @@
 //   b  objetos que se consiguen (addItem) y no sirven para nada
 //   c  salidas (fadeToScene/gotoScene) en hotspots y triggers sin gate, para revisar a mano
 //   d  operaciones de estado después de un say/sayBrief en el mismo bloque
-//   e  spawns fuera de walkableAreas (en la escena destino)
+//   e  spawns fuera de walkableAreas (en la escena destino; ERROR desde A1.8, el aviso sin walkableAreas sigue siendo aviso)
 //   f  sprites, fondos, audio, escenas y diálogos referenciados que no existen (ERROR por defecto)
 //   g  hotspots solapados (aviso fuerte si uno que va antes en la lista tapa entero a otro)
 //
-// Por defecto solo (f) es error; el resto, aviso. --strict lo convierte todo en error. Código de salida 1
+// Por defecto (f) y los spawns fuera de zona de (e) son error; el resto, aviso. --strict lo convierte todo en error. Código de salida 1
 // solo si hay errores. Escribe lint-scenes-report.json y lint-scenes-report.md en la raíz del repo.
 // Excepciones con motivo en qa/lint-scenes-allow.json: [{ "rule": "c", "scene": "x", "id": "y", "reason": "…" }]
 // (`id` compara con el id del hallazgo o con su ruta; admite `*` al final como prefijo).
@@ -367,7 +367,7 @@ export function lintProject(project) {
       if (outside.has(key)) return void outside.get(key).wheres.push(where);
       const f = { wheres: [where] };
       outside.set(key, f);
-      push('e', 'warning', srcScene, where.slice(srcScene.length + 1), where, `${label} (${spawn.x}, ${spawn.y}) cae fuera de las walkableAreas de ${target}`, f);
+      push('e', 'error', srcScene, where.slice(srcScene.length + 1), where, `${label} (${spawn.x}, ${spawn.y}) cae fuera de las walkableAreas de ${target}`, f);
     }
   };
   for (const [id, s] of Object.entries(scenes)) {

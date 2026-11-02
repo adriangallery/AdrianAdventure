@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { GAME_CONFIG, DEFAULT_SCENE_ID } from '@/config/game.config';
 import { IS_NATIVE } from '@/config/platform';
+import { gameUrlParams } from '@/config/debugParams';
 
 const game = new Phaser.Game(GAME_CONFIG);
 
@@ -22,7 +23,8 @@ game.events.once('ready', () => {
     });
   }
 
-  const params = new URLSearchParams(window.location.search);
+  // A1.8: ?scene, ?skip y ?dev solo en dev o con ?qa=1 (src/config/debugParams.ts)
+  const params = gameUrlParams(window.location.search, import.meta.env.DEV);
 
   // ?scene=sceneId — jump directly to any scene (dev/testing)
   const sceneParam = params.get('scene');

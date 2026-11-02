@@ -106,5 +106,17 @@
     "scene": "upstairs",
     "id": "tr_to_lobby",
     "reason": "A1.2, salida legítima: bajar al lobby (capítulo 2), de donde se viene."
+  },
+  {
+    "rule": "b",
+    "scene": "lobby",
+    "id": "vip_floppy",
+    "reason": "A1.8 (QA antigua 2, «floppy sin uso»): vip_floppy solo está en lobby.items.sceneItems, que ningún sistema del motor carga ni pinta: el jugador no puede conseguirlo, así que no hay un floppy inútil en el inventario. Los floppies que sí se consiguen se usan (floppy_disk en el ordenador del sótano, ruta crítica; floppy_box de holders en 6 combos de 5 escenas). Pendiente de decidir en el plan de recompensas de holders: implementar sceneItems o quitar la entrada."
+  },
+  {
+    "rule": "f",
+    "scene": "lobby",
+    "id": "assets/sprites/items/vip_floppy.png",
+    "reason": "A1.8: icono de vip_floppy, inalcanzable (ver la excepción (b) de lobby.vip_floppy)."
   }
 ]

@@ -147,6 +147,8 @@ test('(e) spawn propio y spawn de una salida fuera de las walkableAreas del dest
   assert.equal(f.length, 2);
   assert.ok(f.some((x) => x.id === 'player.spawn'));
   assert.ok(f.some((x) => /→ b \(5, 95\)/.test(x.message)));
+  // A1.8: un spawn fuera de zona deja al personaje donde no puede andar; es error, no aviso
+  assert.ok(f.every((x) => x.severity === 'error'));
 });
 
 test('(e) no salta con spawns dentro (bordes incluidos) y avisa una vez si no hay walkableAreas', () => {
@@ -156,6 +158,7 @@ test('(e) no salta con spawns dentro (bordes incluidos) y avisa una vez si no ha
   const f = only(lintProject(project([a, b, c])), 'e');
   assert.equal(f.length, 1);
   assert.match(f[0].message, /sin walkableAreas/);
+  assert.equal(f[0].severity, 'warning');
 });
 
 // ── (f) assets ──

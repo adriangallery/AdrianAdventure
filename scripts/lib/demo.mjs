@@ -11,7 +11,7 @@
 // En una demo:
 //   import { startDemo } from './lib/demo.mjs';
 //   const demo = await startDemo(import.meta.url, { fps: 8 });
-//   await demo.openScene('outside');          // ?scene=outside y espera a GameScene
+//   await demo.openScene('outside');          // ?qa=1&scene=outside y espera a GameScene
 //   if (!(await demo.settle())) demo.fail('La escena no quedó libre');
 //   await demo.film(1500);                    // o demo.shot() fotograma a fotograma
 //   await demo.still('full');
@@ -89,9 +89,9 @@ export async function startDemo(ref, { fps = 8, width = 640, viewport = {} } = {
     /** Captura fija `demo-out/<nombre>/<etiqueta>.png`. */
     still: (label = 'full', opts = {}) => page.screenshot({ ...opts, path: join(dir, `${label}.png`) }),
 
-    /** Carga `?scene=<id>` (más `query`, p. ej. `&hintAfter=6`) y espera a que GameScene esté en esa escena. */
+    /** Carga `?qa=1&scene=<id>` (A1.8: en producción `scene` solo vale con `qa=1`; más `query`, p. ej. `&hintAfter=6`) y espera a que GameScene esté en esa escena. */
     async openScene(scene, query = '') {
-      await page.goto(`${BASE_URL}/?scene=${scene}${query}`, { waitUntil: 'domcontentloaded' });
+      await page.goto(`${BASE_URL}/?qa=1&scene=${scene}${query}`, { waitUntil: 'domcontentloaded' });
       await page.waitForFunction(
         (id) => window.__game?.scene?.isActive('GameScene') && window.__game.registry.get('currentSceneId') === id,
         { timeout: 90000, polling: 500 }, scene,
