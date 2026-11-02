@@ -85,6 +85,12 @@ export class PreloadScene extends Phaser.Scene {
       this.load.image('player_front_right', `assets/sprites/player/Front-Right.png${v}`);
 
     }
+    // A2.2: de espaldas (Player.face('back')); como las de perfil, la clave sigue el nombre del PNG. Aparte del bloque
+    // de arriba porque TrailerScene carga las demás del personaje y no estas.
+    if (!this.textures.exists('player_back_left')) {
+      this.load.image('player_back_left', `assets/sprites/player/Back-Left.png${v}`);
+      this.load.image('player_back_right', `assets/sprites/player/Back-Right.png${v}`);
+    }
 
     // Ape costume sprites (load once, separate from player check)
     // Note: ape sprites use normal orientation (Left=faces left), but Player.ts

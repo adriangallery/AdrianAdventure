@@ -289,6 +289,28 @@ export class NavGrid {
     return best ?? { ...target };
   }
 
+  /**
+   * A2.2: punto alcanzable desde `from` más cercano a `target` (el que usaría findPath como destino), o null si
+   * `target` queda en otra isla: el punto más cercano de otra componente está más de `tolerance` % más cerca que el
+   * de la de `from`. Con eso un objeto de la pared sobre el suelo del jugador se alcanza (se va debajo) y uno de
+   * otra plataforma no (se actúa sin andar). Sin zonas caminables, el propio `target`.
+   */
+  approach(from: Point, target: Point, tolerance = 2): Point | null {
+    if (this.unrestricted) return { ...target };
+    const s = this.startCell(from);
+    if (s < 0) return null;
+    const comp = this.comp[s];
+    const mine = this.nearestReachable(target, comp);
+    const dMine = Math.hypot(mine.x - target.x, mine.y - target.y);
+    const n = this.componentCount;
+    for (let k = 0; k < n; k++) {
+      if (k === comp) continue;
+      const p = this.nearestReachable(target, k);
+      if (Math.hypot(p.x - target.x, p.y - target.y) + tolerance < dMine) return null;
+    }
+    return mine;
+  }
+
   /** Ruta de `start` a `target` (o al punto alcanzable más cercano). */
   findPath(start: Point, target: Point): PathResult {
     if (this.unrestricted) {

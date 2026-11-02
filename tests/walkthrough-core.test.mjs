@@ -26,6 +26,15 @@ test('check: escena, inventario, flags, visitados y logros', () => {
   assert.deepEqual(check({ scene: 'x' }, null), ['sin estado del juego']);
 });
 
+test('check: expect.facing (A2.2) compara la orientación del personaje', () => {
+  assert.deepEqual(check({ facing: 'left' }, st({ facing: 'left' })), []);
+  assert.deepEqual(check({ facing: 'back' }, st({ facing: 'left' })), ['el personaje mira «left», se esperaba «back»']);
+  // API de QA anterior a A2.2: sin `facing` en el estado es un fallo claro, no un pase silencioso
+  assert.deepEqual(check({ facing: 'front' }, st()), ['el juego no expone `facing` en state() (API de QA anterior a A2.2)']);
+  // Sin expect.facing no se mira
+  assert.deepEqual(check({ scene: 'outside' }, st({ facing: 'right' })), []);
+});
+
 test('kindOf: [qa:blocked] es bloqueo; lo demás, error', () => {
   assert.equal(kindOf('[qa:blocked] no tengo «x»'), 'blocked');
   assert.equal(kindOf('[qa:error] el ratón no puede pulsar «x»'), 'error');
