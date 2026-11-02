@@ -45,7 +45,10 @@ const hints = await page.evaluate(() => window.__qa.state().verbKeyHints);
 console.log(`Tab: ${lit.length} resaltados · letras de atajos en el panel: ${hints.length ? hints.join(', ') : 'ninguna (sin puntero fino)'}`);
 await demo.film(500);
 
-// 3) Clic derecho en la recepcionista (centro de su sprite en píxeles de página)
+// 3) Clic derecho en la recepcionista (centro de su sprite en píxeles de página). En 1280×720 la cámara sigue al
+// jugador y ella queda fuera de pantalla: primero anda hacia el mostrador para que la cámara la enseñe.
+await page.evaluate(() => window.__qa.walk(45, 86));
+await demo.film(400);
 const npc = await page.evaluate(() => {
   const g = window.__game;
   const gs = g.scene.getScene('GameScene');
@@ -55,6 +58,8 @@ const npc = await page.evaluate(() => {
   const cam = gs.cameras.main;
   return { x: r.left + m.tx - cam.scrollX, y: r.top + m.ty - (n.height * n.scale) / 2 - cam.scrollY };
 });
+const vp = page.viewport();
+if (npc.x < 0 || npc.x > vp.width || npc.y < 0 || npc.y > vp.height) problems.push(`la recepcionista sigue fuera de pantalla: ${JSON.stringify(npc)}`);
 await page.mouse.click(npc.x, npc.y, { button: 'right' });
 const t0 = Date.now();
 while (Date.now() - t0 < 8000) {
