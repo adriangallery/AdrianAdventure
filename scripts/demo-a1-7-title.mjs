@@ -49,12 +49,35 @@ const layout = () => page.evaluate(() => {
   };
 });
 
-const waitMenu = () => page.waitForFunction(() => {
+const pageErrors = [];
+page.on('pageerror', (e) => pageErrors.push(String(e?.message || e)));
+page.on('console', (m) => { if (m.type() === 'error') pageErrors.push(m.text()); });
+
+/** Estado del menú para diagnosticar si no aparece. */
+const menuState = () => page.evaluate(() => {
   const g = window.__game;
-  const ms = g?.scene?.getScene('MenuScene');
-  return g?.scene?.isActive('MenuScene') && ms.children.list.some((c) => c.name === 'menu-subtitle')
-    && ms.children.list.some((c) => c.type === 'Image' && c.texture?.key === 'intro');
-}, { timeout: 90000, polling: 250 });
+  if (!g) return { game: false };
+  const ms = g.scene.getScene('MenuScene');
+  return {
+    game: true,
+    active: g.scene.getScenes(true).map((s) => s.scene.key),
+    intro: g.textures.exists('intro'),
+    kids: (ms?.children?.list || []).map((c) => `${c.type}:${c.name || c.texture?.key || ''}`).slice(0, 20),
+    size: [g.scale.width, g.scale.height],
+  };
+});
+
+async function waitMenu(tag) {
+  const end = Date.now() + 90000;
+  let st = null;
+  while (Date.now() < end) {
+    st = await menuState().catch((e) => ({ error: String(e) }));
+    if (st.active?.includes('MenuScene') && st.kids?.some((k) => k.endsWith(':menu-subtitle'))) return;
+    await demo.sleep(500);
+  }
+  await demo.still(`timeout-${tag}`).catch(() => {});
+  await demo.fail(`El menú no apareció (${tag}): ${JSON.stringify(st)} · errores: ${pageErrors.slice(0, 5).join(' | ')}`);
+}
 
 const problems = [];
 const results = [];
@@ -72,7 +95,7 @@ for (const withSave of [false, true]) {
       }
     }, withSave);
     await page.reload({ waitUntil: 'domcontentloaded' });
-    await waitMenu();
+    await waitMenu(`${label}${withSave ? '-save' : ''}`);
     await page.evaluate(() => document.fonts?.ready);
     await demo.sleep(1200); // fuente cargada y posibles resize iniciales
     // Reconstruir el menú con la fuente ya cargada (lo mismo que hace un resize)
