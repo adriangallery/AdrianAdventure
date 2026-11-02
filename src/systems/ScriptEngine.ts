@@ -74,6 +74,14 @@ export interface ScriptContext {
   cinema?: CinemaHooks;
   /** A2.10: `transition` de un op ya validada (Cinematics.parseTransition); sin ella, null */
   parseTransition?: (raw: unknown) => TransitionSpec | null;
+  /**
+   * A2.9: op `journalNote` — apunta una nota del diario (`assets/journal/*.json`, `notes[].id`) en la partida. Es estado
+   * (se aplica al saltar una cinemática y en el rescate de `forceReset`). Devuelve false si la nota no existe (ya
+   * apuntada = true, sin cambios).
+   */
+  journalNote?: (id: string) => boolean;
+  /** A2.9: op `callAnon` — una llamada a Anon (la pista del puzle abierto, `say` con speaker «Anon»). Presentación. */
+  callAnon?: () => Promise<void>;
 }
 
 /**
@@ -352,6 +360,14 @@ export class ScriptEngine {
         // { op: "setCostume", prefix: "ape" } — changes player sprite
         this.ctx.setCostume?.(op.prefix as string);
         return true;
+      case 'journalNote':
+        // A2.9: { op: "journalNote", id: "n2_receptionist" } — apunta la nota en el diario (sin la nota, aviso)
+        if (typeof op.id !== 'string' || !this.ctx.journalNote) {
+          console.warn(`ScriptEngine: journalNote sin id o sin diario en ${this.currentLabel || 'script'}`);
+        } else if (!this.ctx.journalNote(op.id)) {
+          console.warn(`ScriptEngine: journalNote «${op.id}» no está en assets/journal`);
+        }
+        return true;
       default:
         return false;
     }
@@ -555,6 +571,11 @@ export class ScriptEngine {
 
       case 'flicker':
         await this.flicker(op, gen);
+        break;
+
+      case 'callAnon':
+        // A2.9: { op: "callAnon" } — Anon llama: la pista del puzle abierto más avanzado (o una frase de relleno)
+        await this.ctx.callAnon?.();
         break;
 
       // ─── Web3 opcodes ──────────────────────────────────

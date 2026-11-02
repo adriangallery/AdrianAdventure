@@ -1,0 +1,70 @@
+{
+  "_doc": "A2.9/A2.9a: diario de Dex, capítulo 3 tal como es HOY (de mirar la luz del sótano al interruptor de emergencia: el capítulo 3 empieza con chapter_2_complete, aún en la azotea). Se reescribe en A3.5. Ver qa/README.md § Diario.",
+  "chapter": 3,
+  "goals": [
+    { "id": "g3_down", "text": "Get down to the basement.", "doneWhen": "basement_unlocked" },
+    { "id": "g3_crt", "text": "Wake up the old computer.", "doneWhen": "crt_powered" },
+    { "id": "g3_servers", "text": "Find where the humming comes from.", "doneWhen": "server_room_open" },
+    { "id": "g3_switch", "text": "Flip the emergency switch.", "doneWhen": "emergency_switch_flipped" }
+  ],
+  "notes": [
+    { "id": "n3_crt", "text": "The basement CRT runs on energy drink now. Next complaint: chip slot B7 is empty.", "shownWhen": "crt_powered" },
+    { "id": "n3_server_room", "text": "Hidden door behind the basement equipment rack. A whole server room. Still warm.", "shownWhen": "server_room_open" },
+    { "id": "n3_chip", "text": "Pried a fused chip out of the dead AdrianAuctions rack. Might fit an old computer.", "shownWhen": "found_burned_chip" },
+    { "id": "n3_coords", "text": "Emergency switch screen: 47.6062N, 122.3321W. Patient Zero Rehabilitation Clinic. The mountain path outside the lab goes that way.", "shownWhen": "emergency_switch_flipped" }
+  ],
+  "puzzles": [
+    {
+      "id": "p3_hatch",
+      "doneWhen": "basement_unlocked",
+      "hints": [
+        "You saw the light. Now find the way down.",
+        "The hatch on the roof wants the vane turned and your card.",
+        "Turn the weather vane. Then use the keycard on the roof hatch."
+      ]
+    },
+    {
+      "id": "p3_power",
+      "openWhen": "basement_unlocked",
+      "doneWhen": "crt_powered",
+      "hints": [
+        "That old screen is starving.",
+        "Something with an unreasonable amount of caffeine.",
+        "Use the energy drink from Adrian's office on the computer."
+      ]
+    },
+    {
+      "id": "p3_servers",
+      "openWhen": "crt_powered",
+      "doneWhen": "server_room_open",
+      "hints": [
+        "Servers hum. Follow the hum.",
+        "The equipment rack in the basement moves.",
+        "Push the equipment rack."
+      ]
+    },
+    {
+      "id": "p3_glass",
+      "openWhen": "server_room_open",
+      "doneWhen": "emergency_glass_broken",
+      "hints": [
+        "Big red switch. Glass in the way.",
+        "Something long and metal. The roof had one.",
+        "Use the antenna on the emergency switch."
+      ]
+    },
+    {
+      "id": "p3_switch",
+      "openWhen": "emergency_glass_broken",
+      "doneWhen": "emergency_switch_flipped",
+      "hints": [
+        "Nothing between you and the switch now.",
+        "It says do not touch. Touch it.",
+        "Use the emergency switch."
+      ]
+    }
+  ],
+  "anonIdle": [
+    "Down here, nobody hears you call. I do. Rarely."
+  ]
+}

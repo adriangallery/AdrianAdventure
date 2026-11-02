@@ -8,6 +8,9 @@ import type { GameState } from '@/types/game.types';
  *   1  (implícita: partidas sin `saveVersion`) todo lo anterior a A1.4.
  *   2  A1.4: flags renombradas a nombres veraces (RENAMED_FLAGS).
  *      A2.6: campo aditivo `dialogueUsed` (opcional; sin subir versión): si llega corrupto se descarta.
+ *      A2.9: campo aditivo `journal` (diario: notas, vistos, nivel de pista por puzle, llamadas; opcional, sin subir
+ *      versión): si no es un objeto se descarta; si lo es, se queda solo lo que tenga la forma esperada (la misma regla
+ *      que `progressFrom` de Journal.ts).
  *
  * Toda partida que entra en el juego pasa por aquí: los slots locales (`SaveLoadSystem.getAllSlots`), la
  * partida de la wallet en localStorage y la de la nube (`wallet-save`: `loadLocal`, `loadRemoteSlots`,
@@ -52,6 +55,24 @@ export function migrateGameState<T extends Partial<GameState> | null | undefined
         if (Array.isArray(keys)) clean[treeId] = keys.filter((k): k is string => typeof k === 'string');
       }
       state.dialogueUsed = clean;
+    }
+  }
+  // A2.9: diario. notes/seen = listas de ids (sin repetir), hints = puzzleId → nivel 1..3, calls = entero ≥ 0
+  if (state.journal !== undefined) {
+    const raw = state.journal as unknown;
+    if (!raw || typeof raw !== 'object' || Array.isArray(raw)) {
+      delete state.journal;
+    } else {
+      const r = raw as Record<string, unknown>;
+      const ids = (v: unknown) => [...new Set(Array.isArray(v) ? v.filter((x): x is string => typeof x === 'string') : [])];
+      const hints: Record<string, number> = {};
+      if (r.hints && typeof r.hints === 'object' && !Array.isArray(r.hints)) {
+        for (const [k, v] of Object.entries(r.hints as Record<string, unknown>)) {
+          if (typeof v === 'number' && Number.isFinite(v) && v >= 1) hints[k] = Math.min(3, Math.floor(v));
+        }
+      }
+      const calls = typeof r.calls === 'number' && Number.isFinite(r.calls) && r.calls >= 0 ? Math.floor(r.calls) : 0;
+      state.journal = { notes: ids(r.notes), seen: ids(r.seen), hints, calls };
     }
   }
   if (typeof state.saveVersion !== 'number' || state.saveVersion < SAVE_VERSION) state.saveVersion = SAVE_VERSION;

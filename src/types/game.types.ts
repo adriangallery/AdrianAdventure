@@ -1,4 +1,5 @@
 import { SAVE_VERSION } from '@/systems/SaveMigration';
+import type { JournalProgress } from '@/systems/Journal';
 
 export enum Verb {
   WALK = 'WALK',
@@ -66,6 +67,11 @@ export interface GameState {
    * Opcional: las partidas anteriores a A2.6 no lo traen y cargan igual (sin opciones usadas).
    */
   dialogueUsed?: Record<string, string[]>;
+  /**
+   * A2.9: diario (móvil de Dex): notas apuntadas, lo ya visto, nivel de pista de Anon por puzle y llamadas. Opcional y
+   * aditivo como `dialogueUsed`: las partidas anteriores no lo traen (diario vacío) y SaveMigration lo sanea.
+   */
+  journal?: JournalProgress;
   /** Achievement IDs that have been earned */
   achievements: string[];
   /** Timestamp of last save */
