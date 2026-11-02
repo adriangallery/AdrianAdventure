@@ -22,6 +22,9 @@ export function describe(s) {
     case 'doubleclick': return `DOUBLECLICK ${s.target}`;
     // A2.10: script de QA por el ScriptEngine (cinemáticas)
     case 'runScript': return `RUNSCRIPT ${Array.isArray(s.ops) ? s.ops.length : '?'} op(s)${s.skipAfterMs !== undefined ? ` (Esc a los ${s.skipAfterMs} ms)` : ''}`;
+    // A2.9: diario (móvil de Dex) y llamada a Anon
+    case 'journal': return `JOURNAL ${s.action ?? 'open'}${s.tab ? ` (${s.tab})` : ''}`;
+    case 'callAnon': return 'CALL ANON';
     default: return s.do;
   }
 }
@@ -63,6 +66,7 @@ export function check(expect, st, ctx = {}) {
   if (expect.noListenerGrowth) f.push(...checkListenerGrowth(st, ctx.listenersBaseline, ctx.inputListenersBaseline));
   if (expect.lastChoices) f.push(...checkLastChoices(expect.lastChoices, st));
   if (expect.cinematic) f.push(...checkCinematic(expect.cinematic, st));
+  if (expect.journal) f.push(...checkJournal(expect.journal, st));
   // A2.10: el personaje acabó cerca de un punto (en %), p. ej. tras un actorMove andado o saltado
   if (expect.playerNear) {
     const { x, y, tol = 1.5 } = expect.playerNear;
@@ -96,8 +100,49 @@ export function checkCinematic(want, st) {
   return f;
 }
 
+/**
+ * A2.9: `expect.journal` contra `st.journal`: `open` (booleano), `chapter` (número), `done`/`pending` (ids de objetivos
+ * del capítulo con y sin tic), `notes`/`noNotes` (ids de notas apuntadas y sin apuntar) y `anon` (última llamada):
+ * `puzzle` (id, o null = frase de relleno), `level` (1-3), `notPuzzle` (id o lista: la pista no puede ser de ese
+ * puzle, p. ej. uno ya resuelto) y `text` (expresión regular, sin mayúsculas).
+ */
+export function checkJournal(want, st) {
+  const j = st.journal;
+  if (j === undefined) return ['el juego no expone `journal` en state() (API de QA anterior a A2.9)'];
+  if (!j) return ['sin diario (no hay escena de juego)'];
+  const f = [];
+  if (want.open !== undefined && Boolean(j.open) !== want.open) f.push(`diario ${j.open ? 'abierto' : 'cerrado'}, se esperaba ${want.open ? 'abierto' : 'cerrado'}`);
+  if (want.chapter !== undefined && j.chapter !== want.chapter) f.push(`diario en el capítulo ${j.chapter}, se esperaba el ${want.chapter}`);
+  const goal = (id) => (j.goals ?? []).find((g) => g.id === id);
+  for (const id of want.done ?? []) {
+    const g = goal(id);
+    if (!g) f.push(`el objetivo «${id}» no está en el diario (capítulo ${j.chapter}: ${(j.goals ?? []).map((x) => x.id).join(', ')})`);
+    else if (!g.done) f.push(`el objetivo «${id}» sigue sin tic`);
+  }
+  for (const id of want.pending ?? []) {
+    const g = goal(id);
+    if (!g) f.push(`el objetivo «${id}» no está en el diario (capítulo ${j.chapter})`);
+    else if (g.done) f.push(`el objetivo «${id}» ya tiene tic y no debería`);
+  }
+  for (const id of want.notes ?? []) if (!(j.notes ?? []).includes(id)) f.push(`la nota «${id}» no está apuntada en el diario`);
+  for (const id of want.noNotes ?? []) if ((j.notes ?? []).includes(id)) f.push(`la nota «${id}» está apuntada y no debería`);
+  if (want.anon) {
+    const a = j.anon;
+    if (!a) f.push('no hay ninguna llamada a Anon en el diario');
+    else {
+      if (want.anon.puzzle !== undefined && a.puzzle !== want.anon.puzzle) f.push(`Anon dio pista de «${a.puzzle}», se esperaba de «${want.anon.puzzle}»`);
+      if (want.anon.level !== undefined && a.level !== want.anon.level) f.push(`Anon dio el nivel ${a.level} de «${a.puzzle}», se esperaba el ${want.anon.level}`);
+      const not = want.anon.notPuzzle === undefined ? [] : [].concat(want.anon.notPuzzle);
+      if (not.includes(a.puzzle)) f.push(`Anon dio pista de «${a.puzzle}», que no debería (ya resuelto)`);
+      if (want.anon.text !== undefined && !new RegExp(want.anon.text, 'i').test(a.text ?? '')) f.push(`Anon dijo «${a.text}», no casa con /${want.anon.text}/`);
+    }
+  }
+  return f;
+}
+
 /** A2.10: ops que un `runScript` de una ruta no puede llevar: cambiarían la partida por un atajo (como `goto`). */
-const RUNSCRIPT_FORBIDDEN = new Set(['addItem', 'removeItem', 'gotoScene', 'fadeToScene', 'setCostume', 'mintNFT', 'mintAchievement', 'achievement', 'dialogue', 'web3Require']);
+/** A2.9: `journalNote` y `callAnon` también: apuntan notas y suben el nivel de pista de Anon en la partida. */
+const RUNSCRIPT_FORBIDDEN = new Set(['addItem', 'removeItem', 'gotoScene', 'fadeToScene', 'setCostume', 'mintNFT', 'mintAchievement', 'achievement', 'dialogue', 'web3Require', 'journalNote', 'callAnon']);
 
 /**
  * A2.10: defectos de los ops de un paso `runScript`: lista no vacía de `{ op }`, sin ops que cambien la partida
@@ -275,6 +320,9 @@ export function routeDefects(route, opts = {}) {
       if (s.skipAfterMs !== undefined && !(typeof s.skipAfterMs === 'number' && s.skipAfterMs >= 0)) {
         out.push(`paso ${i + 1} (${describe(s)}): "skipAfterMs" tiene que ser un número ≥ 0`);
       }
+    }
+    if (s.do === 'journal' && (!['open', 'close', undefined].includes(s.action) || !['goals', 'notes', 'anon', undefined].includes(s.tab))) {
+      out.push(`paso ${i + 1} (${describe(s)}): "journal" lleva "action" open|close y "tab" goals|notes|anon (opcionales)`);
     }
     if (s.do === 'goto' && !opts.allowGoto) {
       out.push(`paso ${i + 1} (${describe(s)}): "goto" se salta puertas y gates; solo vale en rutas del selftest con "allowGoto"`);

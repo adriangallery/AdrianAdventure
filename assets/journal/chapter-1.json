@@ -1,0 +1,40 @@
+{
+  "_doc": "A2.9/A2.9a: diario de Dex (su móvil), capítulo 1 tal como es HOY (outside). Formato y reglas en qa/README.md § Diario. Condiciones con la gramática de `when` de A2.6a: flag, !flag, item:id, !item:id; lista = todas. Se reescribe en A3.3.",
+  "chapter": 1,
+  "goals": [
+    { "id": "g1_code", "text": "Find the code for Adrian's front door.", "doneWhen": "found_code_note" },
+    { "id": "g1_mail", "text": "Check Adrian's mail. Nosy is a job description.", "doneWhen": "found_envelope" },
+    { "id": "g1_porch", "text": "Search the porch for anything Adrian hid.", "doneWhen": "found_ledger" },
+    { "id": "g1_inside", "text": "Get inside the lab.", "doneWhen": "door_unlocked" }
+  ],
+  "notes": [
+    { "id": "n1_code", "text": "Behind the porch light: a note, ACCESS CODE 7314. Who hides the code next to the door? Someone who wants it found.", "shownWhen": "found_code_note" },
+    { "id": "n1_envelope", "text": "Mailbox: a sealed envelope, 'CONFIDENTIAL — PATIENT ZERO'. Somebody important will want to see this.", "shownWhen": "found_envelope" },
+    { "id": "n1_ledger", "text": "Adrian's Ledger was under the doormat. A hardware wallet under a doormat. Bold strategy.", "shownWhen": "found_ledger" }
+  ],
+  "puzzles": [
+    {
+      "id": "p1_code",
+      "doneWhen": "found_code_note",
+      "hints": [
+        "Moths know where the light is. So should you.",
+        "Something is tucked behind the porch light.",
+        "Pick up the porch light. Read the note."
+      ]
+    },
+    {
+      "id": "p1_door",
+      "openWhen": "found_code_note",
+      "doneWhen": "door_unlocked",
+      "hints": [
+        "You have numbers. Doors like numbers.",
+        "The keypad. The note. Introduce them.",
+        "Use the code note on the keypad."
+      ]
+    }
+  ],
+  "anonIdle": [
+    "You're inside. Stop calling.",
+    "Nothing to add. Keep moving."
+  ]
+}

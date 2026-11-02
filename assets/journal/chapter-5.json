@@ -1,0 +1,48 @@
+{
+  "_doc": "A2.9/A2.9a: diario de Dex, capítulo 5 tal como es HOY (de la autorización de Satoshi al epílogo). Se reescribe en A3.7. Ver qa/README.md § Diario.",
+  "chapter": 5,
+  "goals": [
+    { "id": "g5_room", "text": "Get into the treatment room.", "doneWhen": "chapter_5_intro_shown" },
+    { "id": "g5_truth", "text": "Find out who Patient Zero is.", "doneWhen": "patient_zero_revealed" },
+    { "id": "g5_out", "text": "Walk out of there.", "doneWhen": "game_complete" }
+  ],
+  "notes": [
+    { "id": "n5_monitor", "text": "The monitor showed my own transactions. Every mint. Every mistake. Patient Zero... is me?", "shownWhen": "patient_zero_revealed" },
+    { "id": "n5_adrian", "text": "Took Adrian's handwritten note from the treatment room.", "shownWhen": "found_adrian_note" }
+  ],
+  "puzzles": [
+    {
+      "id": "p5_door",
+      "doneWhen": "chapter_5_intro_shown",
+      "hints": [
+        "The doctor said yes. The door didn't.",
+        "Two locks. You have a key from Adrian's office.",
+        "Bring the trading terminal key. Use the treatment door."
+      ]
+    },
+    {
+      "id": "p5_monitor",
+      "openWhen": "chapter_5_intro_shown",
+      "doneWhen": "monitor_revealed",
+      "hints": [
+        "One chair. One screen. Sit with it.",
+        "The monitor wants to be used, not looked at.",
+        "Use the monitor."
+      ]
+    },
+    {
+      "id": "p5_exit",
+      "openWhen": "patient_zero_revealed",
+      "doneWhen": "game_complete",
+      "hints": [
+        "You found what you came for. Now leave.",
+        "The door behind you.",
+        "Use the exit door."
+      ]
+    }
+  ],
+  "anonIdle": [
+    "You know enough now.",
+    "Go outside. Look at the sky. Just the sky."
+  ]
+}

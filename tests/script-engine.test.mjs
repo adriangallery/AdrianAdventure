@@ -648,3 +648,51 @@ test('A1.9: gotoScene en un onEnter se aplaza al cierre del árbol; `dialogue` a
   assert.equal(ctx.getState().flags.tras_goto, true);
   assert.ok(warnings.some((w) => /«dialogue» \(n\/otro\)/.test(w)), 'aviso del dialogue anidado');
 });
+
+// ── A2.9: diario (journalNote es estado; callAnon es presentación) ──
+
+test('A2.9: journalNote apunta la nota por el contexto; sin nota o sin diario, aviso y el script sigue', async () => {
+  const warnings = await withWarnings(async () => {
+    const ctx = makeCtx();
+    const noted = [];
+    ctx.journalNote = (id) => { if (id === 'nope') return false; noted.push(id); return true; };
+    const engine = new ScriptEngine(ctx);
+    await engine.execute([
+      { op: 'journalNote', id: 'n2_receptionist' },
+      { op: 'journalNote', id: 'nope' },
+      { op: 'journalNote' },
+      { op: 'setFlag', flag: 'after', value: true },
+    ], 'hs_x/LOOK');
+    assert.deepEqual(noted, ['n2_receptionist']);
+    assert.equal(ctx.getState().flags.after, true);
+  });
+  assert.equal(warnings.length, 2, warnings.join('\n'));
+  assert.match(warnings[0], /nope/);
+});
+
+test('A2.9: el rescate del watchdog aplica journalNote como estado; callAnon espera su say', async () => {
+  await withWarnings(async () => {
+    const ctx = makeCtx();
+    const noted = [];
+    ctx.journalNote = (id) => { noted.push(id); return true; };
+    const engine = new ScriptEngine(ctx);
+    const hang = deferred();
+    ctx.say = () => hang.promise; // un texto que nunca se cierra y sin nada en pantalla: cuelgue
+    engine.execute([{ op: 'say', text: 'colgado' }, { op: 'journalNote', id: 'n_rescued' }], 'hs_y/USE');
+    await flush();
+    assert.equal(ticks(engine, WATCHDOG_MS / TICK, false), 1);
+    assert.deepEqual(noted, ['n_rescued']);
+  });
+  const ctx = makeCtx();
+  let calls = 0;
+  const answered = deferred();
+  ctx.callAnon = () => { calls++; return answered.promise; };
+  const engine = new ScriptEngine(ctx);
+  const done = engine.execute([{ op: 'callAnon' }, { op: 'setFlag', flag: 'after_call', value: true }], 'tr_phone');
+  await flush();
+  assert.equal(calls, 1);
+  assert.equal(ctx.getState().flags.after_call, undefined, 'espera a que Anon cuelgue');
+  answered.resolve();
+  await done;
+  assert.equal(ctx.getState().flags.after_call, true);
+});

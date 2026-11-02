@@ -106,6 +106,7 @@ export const SPEECH_COLORS: Readonly<Record<string, string>> = {
   npc_dr_satoshi:   '#f8b040',          // naranja dorado
   'dr. satoshi':    '#f8b040',
   'b.o.t.':         '#8cf070',          // verde LED
+  anon:             '#9fd8ff',          // A2.9: Anon, la voz del teléfono (azul pálido, como la pantalla del móvil)
 };
 
 // ─── Typography ────────────────────────────────────────────

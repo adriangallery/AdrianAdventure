@@ -17,6 +17,7 @@ import type { UIScene } from '@/scenes/UIScene';
 import type { SpeechState } from '@/ui/DialogueBox';
 import type { HotspotData, SceneData, ScriptOp } from '@/types/scene.types';
 import type { CinematicQaState } from '@/systems/CinematicDirector';
+import type { JournalQaState } from '@/ui/JournalPanel';
 import { Verb, type GameState } from '@/types/game.types';
 import type { LastTransition } from '@/scenes/PreloadScene';
 import type { ScenePrefetcher } from '@/systems/ScenePrefetcher';
@@ -102,6 +103,13 @@ export interface QaState {
   prefetch: ReturnType<ScenePrefetcher['qaState']> | null;
   /** A2.7: último cambio de escena: ms desde que se pidió hasta GameScene creada, modo y si hubo pantalla de carga */
   lastTransition: LastTransition | null;
+  /**
+   * A2.9: diario (móvil de Dex): `open`, `tab`, `chapter` (capítulo actual), `goals` ([{ id, done }] del capítulo),
+   * `notes` (ids apuntados, en orden), `anon` (última llamada: `{ puzzle, level, text }`, puzzle null = frase de relleno),
+   * `openPuzzle` (puzle abierto y nivel ya dado), `unseen` (cosas nuevas sin ver: el punto del botón) y `calling`. null
+   * fuera de la partida.
+   */
+  journal: JournalQaState | null;
 }
 
 export interface QaApi {
@@ -137,6 +145,15 @@ export interface QaApi {
    * (tecla real) ese tiempo después de empezar: salta la cinemática. Solo QA: el runner limita qué ops valen.
    */
   runScript(ops: ScriptOp[], opts?: { skipAfterMs?: number }): Promise<QaState>;
+  /** A2.9: pulsa el botón del móvil (el mismo manejador que el dedo). `[qa:blocked]` si el juego no deja abrirlo ahora. */
+  openJournal(tab?: 'goals' | 'notes' | 'anon'): Promise<QaState>;
+  /** A2.9: cierra el diario con su botón X (si está abierto). */
+  closeJournal(): Promise<QaState>;
+  /**
+   * A2.9: llama a Anon como el jugador: abre el diario si hace falta, pestaña «Call Anon», botón de llamar, espera a que
+   * conteste y, si lo abrió ella, lo vuelve a cerrar. La llamada queda en `state().journal.anon`.
+   */
+  callAnon(): Promise<QaState>;
 }
 
 const SETTLE_TIMEOUT_MS = 120_000;
@@ -206,6 +223,8 @@ export function installQa(game: Phaser.Game): void {
     if (registry.get('dialogueActive')) out.push('dialogue');
     if (registry.get('dialogueShowing')) out.push('text');
     if (ui().getChoicePanel().isAwaitingChoice()) out.push('choice');
+    // A2.9: el móvil está dando tono (Anon aún no ha contestado)
+    if (ui().getJournal?.()?.isCalling()) out.push('call');
     return out;
   };
 
@@ -372,7 +391,29 @@ export function installQa(game: Phaser.Game): void {
       cinematic: scene ? scene.qaCinematic() : null,
       prefetch: (registry.get('scenePrefetcher') as ScenePrefetcher | undefined)?.qaState() ?? null,
       lastTransition: (registry.get('lastTransition') as LastTransition | undefined) ?? null,
+      journal: playing ? ui().getJournal?.()?.qaState() ?? null : null,
     };
+  };
+
+  /** A2.9: el diario de la UIScene viva (error si no hay partida). */
+  const journal = () => {
+    const j = inGame() ? ui().getJournal?.() : undefined;
+    if (!j) throw new QaError('error', 'no hay diario: no hay escena de juego cargada');
+    return j;
+  };
+  /** A2.9: pulsa el botón del móvil por su manejador real (`pointerdown` del botón → toggle) */
+  const openJournalNow = (tab: 'goals' | 'notes' | 'anon' = 'goals') => {
+    const j = journal();
+    if (!j.isOpen()) {
+      if (!j.toggle()) throw new QaError('blocked', 'el diario no se abre ahora (cinemática, diálogo, texto o script en marcha)');
+    }
+    j.showTab(tab);
+  };
+  const domClick = (id: string) => {
+    const node = document.getElementById(id) as HTMLButtonElement | null;
+    if (!node) throw new QaError('error', `no está el botón #${id} del diario`);
+    if (node.disabled) throw new QaError('blocked', `el botón #${id} del diario está desactivado`);
+    node.click();
   };
 
   const key = (type: 'keydown' | 'keyup', k: string) => {
@@ -558,6 +599,40 @@ export function installQa(game: Phaser.Game): void {
       if (run.failure) throw new QaError('error', `runScript: ${run.failure instanceof Error ? run.failure.message : String(run.failure)}`);
       await settle();
       return snapshot();
+    },
+
+    async openJournal(tab = 'goals') {
+      await ensureGame();
+      note(`JOURNAL open (${tab})`);
+      openJournalNow(tab);
+      return snapshot();
+    },
+
+    async closeJournal() {
+      await ensureGame();
+      if (journal().isOpen()) {
+        note('JOURNAL close');
+        domClick('journal-close');
+      }
+      return snapshot();
+    },
+
+    async callAnon() {
+      await ensureGame();
+      const wasOpen = journal().isOpen();
+      openJournalNow('anon');
+      const before = (registry.get('journalLastCall') as unknown) ?? null;
+      note('CALL ANON');
+      domClick('journal-call');
+      await waitFor(() => !journal().isCalling(), 10_000, 'a que Anon conteste');
+      const after = (registry.get('journalLastCall') as unknown) ?? null;
+      if (after === before) throw new QaError('error', 'la llamada a Anon no dejó respuesta (¿se cerró el diario a mitad?)');
+      const call = after as { text?: string };
+      note(`«Anon: ${String(call.text ?? '').slice(0, 140)}»`);
+      const st = snapshot();
+      if (!wasOpen) domClick('journal-close');
+      await settle();
+      return wasOpen ? st : snapshot();
     },
 
     async newGame() {

@@ -13,11 +13,14 @@
     "recep":   { "voice": "af_heart",   "lang": "a", "speed": 1.0,  "why": "La recepcionista del lobby: la voz femenina americana de más calidad de Kokoro; nerviosa y rápida, velocidad normal." },
     "bot":     { "voice": "am_adam",    "lang": "a", "speed": 0.9,  "why": "B.O.T.: la misma voz que sus 26 clips de recovery_pool (generate_memelab_voices.py) para que no cambie a mitad de partida. Comparte timbre con Satoshi pero no coinciden nunca en escena (recovery_pool frente a clinic_interior). Kokoro no tiene voz robótica." },
     "nar":     { "voice": "bm_george",  "lang": "b", "speed": 0.9,  "why": "Narrador de las cinemáticas (op narrative): británico grave, el mismo del tráiler (generate_trailer_voices.py); un poco más rápido que el tráiler (0.82) porque son párrafos." },
-    "npc":     { "voice": "bm_lewis",   "lang": "b", "speed": 1.0,  "why": "Hueco para personajes nuevos sin voz propia: británico, distinto de todos los anteriores. Dale a cada personaje con peso su propio speaker." }
+    "npc":     { "voice": "bm_lewis",   "lang": "b", "speed": 1.0,  "why": "Hueco para personajes nuevos sin voz propia: británico, distinto de todos los anteriores. Dale a cada personaje con peso su propio speaker." },
+    "anon":    { "voice": "am_onyx",    "lang": "a", "speed": 0.9,  "why": "A2.9 (adelanta A3.3b): Anon, la voz al teléfono de Dex (es Adrian). Grave y distinta de Dex (am_michael) y de Satoshi/B.O.T. (am_adam), como pide la biblia (§3.2). Dice las pistas de «Call Anon» (assets/journal)." }
   },
   "match": [
     { "contains": "b.o.t",   "speaker": "bot" },
     { "contains": "satoshi", "speaker": "satoshi" },
-    { "contains": "recep",   "speaker": "recep" }
+    { "contains": "recep",   "speaker": "recep" },
+    { "contains": "anon",    "speaker": "anon" },
+    { "contains": "adrian",  "speaker": "anon" }
   ]
 }

@@ -82,3 +82,19 @@ test('A2.6: dialogueUsed válido se conserva; lo corrupto se limpia', () => {
     assert.equal('dialogueUsed' in s, false, `descarta ${JSON.stringify(bad)}`);
   }
 });
+
+test('A2.9: una partida sin journal carga igual (diario vacío) y no se le inventa el campo', () => {
+  const s = migrateGameState(oldState({}));
+  assert.equal('journal' in s, false);
+});
+
+test('A2.9: journal válido se conserva; lo corrupto se limpia (misma regla que Journal.progressFrom)', () => {
+  const good = { notes: ['n1_code'], seen: ['g1_code', 'n1_code'], hints: { p1_code: 2 }, calls: 3 };
+  assert.deepEqual(migrateGameState({ ...oldState({}), journal: structuredClone(good) }).journal, good);
+  const mixed = migrateGameState({ ...oldState({}), journal: { notes: ['a', 4, 'a'], seen: 'x', hints: { p: 7, q: 0, r: 'x', s: 2.9 }, calls: -2, extra: 1 } });
+  assert.deepEqual(mixed.journal, { notes: ['a'], seen: [], hints: { p: 3, s: 2 }, calls: 0 });
+  for (const bad of [null, 'x', 7, ['a']]) {
+    const s = migrateGameState({ ...oldState({}), journal: bad });
+    assert.equal('journal' in s, false, `descarta ${JSON.stringify(bad)}`);
+  }
+});

@@ -1,0 +1,50 @@
+{
+  "_doc": "A2.9/A2.9a: diario de Dex, capítulo 4 tal como es HOY (del interruptor de emergencia a que Satoshi autorice la sala de tratamiento: el listado del CRT va aquí porque se puede imprimir después del interruptor). Se reescribe en A3.6. Ver qa/README.md § Diario.",
+  "chapter": 4,
+  "goals": [
+    { "id": "g4_printout", "text": "Make the old computer print what it knows.", "doneWhen": "has_printout" },
+    { "id": "g4_mountain", "text": "Follow the coordinates into the mountains.", "doneWhen": "chapter_4_intro_shown" },
+    { "id": "g4_satoshi", "text": "Get the doctor to open the treatment room.", "doneWhen": "treatment_room_unlocked" }
+  ],
+  "notes": [
+    { "id": "n4_vault", "text": "The Ledger opened Adrian's vault on the CRT. There's a map to something called 'Patient Zero Clinic'.", "shownWhen": "computer_unlocked" },
+    { "id": "n4_roster", "text": "Patient roster: 'PATIENT ZERO — STATUS: ESCAPED'. Escaped through what? The printer gave me a map.", "shownWhen": "has_printout" },
+    { "id": "n4_sheet", "text": "Clinic visitor box: a sign-in sheet with a barcode. Patient Zero's name is redacted. Of course it is.", "shownWhen": "found_sign_in_sheet" },
+    { "id": "n4_pool", "text": "Satoshi says the other patients are 'providing liquidity. Downstairs.' I don't want to know. I want to know.", "shownWhen": "satoshi_pool_hint" },
+    { "id": "n4_authorized", "text": "Satoshi authorized the treatment room. The door also has a physical keyhole. Dual lock.", "shownWhen": "treatment_room_unlocked" }
+  ],
+  "puzzles": [
+    {
+      "id": "p4_records",
+      "doneWhen": "has_printout",
+      "hints": [
+        "The basement computer has more to say. Feed it.",
+        "The chip from the dead rack. Adrian's Ledger. The floppy. In that order.",
+        "Use the burned chip, then the Ledger, then the floppy disk on the basement computer."
+      ]
+    },
+    {
+      "id": "p4_mountain",
+      "openWhen": "has_printout",
+      "doneWhen": "chapter_4_intro_shown",
+      "hints": [
+        "The printout is a map. Maps are for walking.",
+        "Out the front door. The far left of the yard.",
+        "Leave the house by the path on the far left."
+      ]
+    },
+    {
+      "id": "p4_clinic",
+      "openWhen": "chapter_4_intro_shown",
+      "doneWhen": "treatment_room_unlocked",
+      "hints": [
+        "The clinic takes patients. And people with paperwork.",
+        "Your keycard opens doors. The doctor likes envelopes.",
+        "Get in with the keycard. Tell Satoshi about the confidential documents."
+      ]
+    }
+  ],
+  "anonIdle": [
+    "Fresh air. Use it. Don't use me."
+  ]
+}

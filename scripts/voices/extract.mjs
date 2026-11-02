@@ -19,6 +19,9 @@
 //   - Código (CODE_SOURCES, abajo): tablas de frases de ScummUI y GameScene y los literales que se emiten como
 //     `say`. Solo literales: las plantillas con ${…} («I can't use X with Y», «It's X. Nothing special…»,
 //     «X doesn't want Y») dependen de pares de objetos y quedan fuera.
+//   - Diario (A2.9, assets/journal/*.json): lo que dice Anon por teléfono (puzzles[].hints y anonIdle), con speaker
+//     «Anon» → hablante anon. Los objetivos y las notas solo se leen en pantalla: sin voz. La frase de relleno de
+//     src/systems/Journal.ts (ANON_FALLBACK) va en CODE_SOURCES con `speaker: 'anon'`.
 //   - Fuera: choices[].text (ChoicePanel no las lee), titleCard (UIScene tiene la voz desactivada),
 //     achievement, textos de interfaz y TrailerScene.
 //
@@ -47,7 +50,13 @@ export const CODE_SOURCES = [
   { file: 'src/scenes/GameScene.ts', blocks: ['VERB_DEFAULTS: Record<string, string> =', 'const fallback ='], emitSay: true },
   { file: 'src/scenes/UIScene.ts', blocks: [], emitSay: true },
   { file: 'src/systems/ScriptEngine.ts', blocks: [], ctxSay: true },
+  // A2.9: frase de relleno de Anon si un capítulo del diario no trae anonIdle
+  { file: 'src/systems/Journal.ts', blocks: ['ANON_FALLBACK ='], speaker: 'anon' },
 ];
+
+/** A2.9: carpeta del diario (un JSON por capítulo) y quién habla en él. */
+export const JOURNAL_DIR = 'assets/journal';
+export const JOURNAL_SPEAKER = 'Anon';
 
 // ── claves (idénticas a VoiceSystem.normalise y a generate_memelab_voices.py) ─────────────────────────────
 
@@ -171,7 +180,8 @@ export function decodeLiteral(raw) {
 /** Literales hablados de un fichero de código según su entrada de CODE_SOURCES. */
 export function extractCode(file, src, spec) {
   const out = [];
-  const push = (text, how) => { if (hasWords(text)) out.push({ kind: 'line', speaker: 'player', text, where: `${file} ${how}` }); };
+  const speaker = spec.speaker ?? 'player';
+  const push = (text, how) => { if (hasWords(text)) out.push({ kind: 'line', speaker, text, where: `${file} ${how}` }); };
   for (const marker of spec.blocks ?? []) {
     const at = src.indexOf(marker);
     if (at < 0) throw new Error(`${file}: no encuentro «${marker}» (¿ha cambiado el código? actualiza CODE_SOURCES en scripts/voices/extract.mjs)`);
@@ -203,6 +213,23 @@ function firstArgLiterals(src, start) {
     else if (c === ',' && depth === 0) { end = i; break; }
   }
   return literalsFrom(src.slice(start, end) + ';', 0);
+}
+
+// ── diario (A2.9) ─────────────────────────────────────────────────────────────────────────────────────────
+
+/** Lo que Anon dice de un capítulo del diario: las tres pistas de cada puzle y las frases de relleno. */
+export function extractJournal(file, data, voices) {
+  const out = [];
+  const speaker = speakerFor(JOURNAL_SPEAKER, voices);
+  (data?.puzzles ?? []).forEach((p, i) => {
+    (Array.isArray(p?.hints) ? p.hints : []).forEach((t, k) => {
+      if (hasWords(t)) out.push({ kind: 'line', speaker, text: t, where: `${file}: puzzles.${p?.id ?? i}.hints[${k}]` });
+    });
+  });
+  (Array.isArray(data?.anonIdle) ? data.anonIdle : []).forEach((t, k) => {
+    if (hasWords(t)) out.push({ kind: 'line', speaker, text: t, where: `${file}: anonIdle[${k}]` });
+  });
+  return out;
 }
 
 // ── mapa anterior a A0.3 y resolución ─────────────────────────────────────────────────────────────────────
@@ -266,6 +293,12 @@ export function extractProject(root = DEFAULT_ROOT, voices = loadVoices(root)) {
   const global = path.join(root, 'assets/config/global.json');
   if (fs.existsSync(global)) {
     for (const e of extractScene('global', JSON.parse(fs.readFileSync(global, 'utf8')), voices)) raw.push({ ...e, where: `global.json: ${e.where}` });
+  }
+  const journalDir = path.join(root, JOURNAL_DIR);
+  if (fs.existsSync(journalDir)) {
+    for (const name of fs.readdirSync(journalDir).filter((f) => f.endsWith('.json')).sort()) {
+      raw.push(...extractJournal(`${JOURNAL_DIR}/${name}`, JSON.parse(fs.readFileSync(path.join(journalDir, name), 'utf8')), voices));
+    }
   }
   for (const spec of CODE_SOURCES) {
     const f = path.join(root, spec.file);

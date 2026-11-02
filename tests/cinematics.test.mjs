@@ -19,6 +19,9 @@ const close = (a, b, tol = 1e-6) => Math.abs(a - b) <= tol;
 test('skipActionFor: estado se aplica, cámara/actores al estado final, presentación fuera, fin y stop', () => {
   const act = (op, extra = {}) => C.skipActionFor({ op, ...extra });
   for (const op of ['setFlag', 'addItem', 'removeItem', 'gotoScene', 'fadeToScene', 'achievement', 'setCostume']) assert.equal(act(op), 'state', op);
+  // A2.9: una nota del diario es estado (se apunta aunque se salte); una llamada de Anon es presentación
+  assert.equal(act('journalNote'), 'state');
+  assert.equal(act('callAnon'), 'skip');
   for (const op of ['ifFlag', 'ifHasItem', 'ifVisited', 'ifWalletConnected']) assert.equal(act(op), 'branch', op);
   for (const op of ['cameraPan', 'cameraZoom', 'cameraFollow', 'iris', 'wipe', 'actorMove', 'actorFace', 'actorAnim', 'actorShow', 'actorHide', 'actorTeleport']) {
     assert.equal(act(op), 'instant', op);

@@ -4,6 +4,7 @@
 // A1.8: las escenas se abren con ?qa=1&scene=<id>; sin ?qa=1 el build de producción ignora ?scene.
 // A2.4: controles de escritorio con teclado y ratón reales (Esc, Tab, doble clic en una salida, clic derecho).
 // A2.7: cambio de escena con la precarga hecha y vuelta: sin pantalla de carga y sin volver a descargar; MB y tiempos.
+// A2.9: el diario (móvil de Dex) se abre y se cierra con toques reales en 390x844, y con J/Esc.
 // Uso: BASE_URL=http://127.0.0.1:4173 node scripts/smoke.mjs
 import { readdirSync, existsSync, mkdirSync, readFileSync } from 'node:fs';
 import puppeteer from 'puppeteer';
@@ -380,6 +381,79 @@ await step('escritorio: Esc, Tab, doble clic en una salida y clic derecho (tecla
     const inv = await p.evaluate(() => window.__qa.state().inventory);
     if (!inv.includes('code_note')) throw new Error(`tras el clic derecho en la lámpara no está la nota en el inventario: ${inv.join(', ')}`);
     await p.screenshot({ path: `${SHOTS}/zz-escritorio.png` });
+  } finally {
+    await ctx.close();
+  }
+});
+
+// A2.9: el diario (móvil de Dex) con el dedo real de Chrome en móvil vertical 390x844: tocar el botón del móvil lo abre (panel
+// HTML encima del lienzo, `journalOpen`), tocar fuera del móvil lo cierra (y el toque que lo abrió no lo cierra al
+// momento); con teclado, J lo abre y Esc lo cierra. Al cambiar de escena no queda ningún panel colgado en el DOM.
+await step('diario: abrir y cerrar el móvil con toques reales en 390x844 (y J/Esc)', async () => {
+  const ctx = await browser.createBrowserContext();
+  const p = await ctx.newPage();
+  await p.setViewport({ width: 390, height: 844, isMobile: true, hasTouch: true, deviceScaleFactor: 1 });
+  p.on('pageerror', (err) => fail(`[diario] error de página: ${err.message}`));
+  const wait = (fn, arg, timeout = SCENE_TIMEOUT) => p.waitForFunction(fn, { timeout, polling: 100 }, arg);
+  const journal = () => p.evaluate(() => window.__qa.state().journal);
+  try {
+    await p.goto(`${BASE}/?qa=1&scene=upstairs`, { waitUntil: 'domcontentloaded' });
+    await wait(() => !!window.__qa && window.__game?.scene?.isActive('UIScene') && window.__game.registry.get('currentSceneId') === 'upstairs');
+    await wait(() => window.__qa.state().ready, undefined, 30000);
+    const btn = await p.evaluate(() => {
+      const c = window.__game.scene.getScene('UIScene').getJournal().buttonCenter();
+      const r = window.__game.canvas.getBoundingClientRect();
+      return { x: r.left + c.x, y: r.top + c.y };
+    });
+    await p.touchscreen.tap(btn.x, btn.y);
+    await wait(() => !!document.getElementById('journal-overlay'), undefined, 5000)
+      .catch(() => { throw new Error(`tocar el botón del móvil (${btn.x},${btn.y}) no abrió el diario`); });
+    await new Promise((r) => setTimeout(r, 600));
+    let j = await journal();
+    if (!j?.open) throw new Error(`el diario se cerró solo tras abrirlo con el dedo: ${JSON.stringify(j)}`);
+    const box = await p.evaluate(() => {
+      const r = document.getElementById('journal-phone').getBoundingClientRect();
+      return { left: r.left, top: r.top, right: r.right, bottom: r.bottom, w: innerWidth, h: innerHeight };
+    });
+    console.log(`    móvil en pantalla: ${JSON.stringify(box)}`);
+    if (box.left < 0 || box.top < 0 || box.right > box.w || box.bottom > box.h) throw new Error(`el móvil se sale de la pantalla: ${JSON.stringify(box)}`);
+    if (await p.evaluate(() => window.__game.scene.getScene('GameScene').qaIsInputBlocked()) !== true) throw new Error('con el diario abierto la escena sigue aceptando toques');
+    // Pestañas con el dedo
+    for (const tab of ['notes', 'anon', 'goals']) {
+      const t = await p.evaluate((id) => {
+        const r = document.querySelector(`#journal-phone .jr-tab[data-tab="${id}"]`).getBoundingClientRect();
+        return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
+      }, tab);
+      await p.touchscreen.tap(t.x, t.y);
+      await new Promise((r) => setTimeout(r, 200));
+      j = await journal();
+      if (j.tab !== tab) throw new Error(`tocar la pestaña ${tab} dejó ${j.tab}`);
+    }
+    await p.screenshot({ path: `${SHOTS}/zz-diario-390x844.png` });
+    // Fuera del móvil (arriba, en el margen del fondo oscuro)
+    await p.touchscreen.tap(Math.round(box.w / 2), Math.max(4, Math.floor(box.top / 2)));
+    await wait(() => !document.getElementById('journal-overlay'), undefined, 5000)
+      .catch(() => { throw new Error('tocar fuera del móvil no cerró el diario'); });
+    j = await journal();
+    if (j.open || (await p.evaluate(() => window.__game.registry.get('journalOpen')))) throw new Error(`el diario sigue abierto para el juego: ${JSON.stringify(j)}`);
+    // Teclado: J abre, Esc cierra
+    await p.keyboard.press('j');
+    await wait(() => !!document.getElementById('journal-overlay'), undefined, 3000).catch(() => { throw new Error('J no abrió el diario'); });
+    await p.keyboard.press('Escape');
+    await wait(() => !document.getElementById('journal-overlay'), undefined, 3000).catch(() => { throw new Error('Esc no cerró el diario'); });
+    // Abierto y cambio de escena: el SHUTDOWN de UIScene lo quita del DOM
+    await p.keyboard.press('j');
+    await wait(() => !!document.getElementById('journal-overlay'), undefined, 3000);
+    await p.evaluate(() => {
+      const g = window.__game;
+      g.registry.set('currentSceneId', 'lobby');
+      g.scene.stop('UIScene');
+      g.scene.stop('GameScene');
+      g.scene.start('PreloadScene');
+    });
+    await wait(() => window.__game.scene.isActive('GameScene') && window.__game.registry.get('currentSceneId') === 'lobby', undefined, 30000);
+    const left = await p.evaluate(() => ({ dom: !!document.getElementById('journal-overlay'), open: window.__game.registry.get('journalOpen') }));
+    if (left.dom || left.open) throw new Error(`tras cambiar de escena con el diario abierto queda ${JSON.stringify(left)}`);
   } finally {
     await ctx.close();
   }

@@ -12,8 +12,10 @@
 //      sin walkableAreas sigue siendo aviso)
 //   f  sprites, fondos, audio, escenas y diálogos referenciados que no existen (ERROR por defecto)
 //   g  hotspots solapados (aviso fuerte si uno que va antes en la lista tapa entero a otro)
+//   h  diario (A2.9, assets/journal/chapter-<n>.json): fichero inválido o mal formado y `journalNote` a una nota que no
+//      existe = ERROR; flags que el diario lee y nada pone, u objetos que lee y nada da = aviso
 //
-// Por defecto (f) y los spawns fuera de zona de (e) son error; el resto, aviso. --strict lo convierte todo en error. Código de salida 1
+// Por defecto (f), los spawns fuera de zona de (e) y el diario mal formado de (h) son error; el resto, aviso. --strict lo convierte todo en error. Código de salida 1
 // solo si hay errores. Escribe lint-scenes-report.json y lint-scenes-report.md en la raíz del repo.
 // Excepciones con motivo en qa/lint-scenes-allow.json: [{ "rule": "c", "scene": "x", "id": "y", "reason": "…" }]
 // (`id` compara con el id del hallazgo o con su ruta; admite `*` al final como prefijo).
@@ -22,6 +24,7 @@
 //   - Opcodes y campos: src/systems/ScriptEngine.ts. setFlag{flag,value}, addItem{id}, removeItem{id},
 //     ifHasItem{id}, ifFlag{flag}, gotoScene/fadeToScene{sceneId,spawn}, playSound{key}, dialogue{treeId},
 //     flicker{overlay} (A1.4: parpadeo de un conditionalOverlays[].id de la MISMA escena, sin tocar flags).
+//     journalNote{id} (A2.9: nota del diario, assets/journal; ver regla h) y callAnon (sin campos).
 //     Bloques anidados: then/else (if*, web3Require), onSuccess/onFail (mintNFT, mintAchievement).
 //   - Flags: escriben setFlag y dialogues…choices[].setFlag (DialogueSystem). Leen ifFlag, hideWhenFlag,
 //     showWhenFlag, conditionalOverlays[].flag, choices[].flag y cameraEffect.disableFlag (GameScene). Las
@@ -49,6 +52,11 @@
 //     elecciones) con la sintaxis de CONDITION_RE (`flag`, `!flag`, `flag:x`, `item:id`, `!item:id`);
 //     npcs[].itemDialogues con árbol de la misma escena (`tree` o el dialogueTreeId de la NPC) y `node` dentro de
 //     él. Para (a) y (b): `when` lee flags y usa objetos; itemDialogues usa su objeto y escribe su `setFlag`.
+//   - Diario (A2.9, src/systems/Journal.ts): un JSON por capítulo con chapter (entero, sin repetir), goals[{id, text,
+//     doneWhen}], notes[{id, text, shownWhen?}], puzzles[{id, openWhen?, doneWhen, hints: 3 textos}], anonIdle[textos].
+//     Ids sin repetir (por tipo) en todos los ficheros; condiciones con la sintaxis de CONDITION_RE. Las flags que lee el
+//     diario cuentan como leídas para (a) (una flag que solo mira el diario ya no es «se pone y nunca se lee"); el op
+//     journalNote{id} tiene que nombrar una nota del diario.
 //   - Caminable: Player.isWalkablePct → isWalkableIn de src/systems/Pathfinding.ts (rectángulos de walkableAreas,
 //     bordes incluidos, menos los de blockedAreas, bordes incluidos también; sin walkableAreas se anda por todas partes). Hotspots: GameScene.hitTestAt manda el PRIMER hotspot de la lista que contiene el punto.
 
@@ -64,6 +72,7 @@ export const RULES = {
   e: 'spawns fuera de zona',
   f: 'assets inexistentes',
   g: 'hotspots solapados',
+  h: 'diario',
 };
 
 const NESTED_KEYS = ['then', 'else', 'onSuccess', 'onFail'];
@@ -132,6 +141,17 @@ export function loadProject(root) {
     text: fs.readFileSync(f, 'utf8'),
   }));
   const preloadText = srcFiles.find((f) => f.file.endsWith('scenes/PreloadScene.ts'))?.text;
+  // A2.9: diario, un JSON por capítulo
+  const journalDir = path.join(root, 'assets', 'journal');
+  const journal = [];
+  for (const name of fs.existsSync(journalDir) ? fs.readdirSync(journalDir).filter((f) => f.endsWith('.json')).sort() : []) {
+    const file = `assets/journal/${name}`;
+    try {
+      journal.push({ file, data: readJson(path.join(journalDir, name)) });
+    } catch (err) {
+      journal.push({ file, data: null, error: `no es JSON válido: ${err.message}` });
+    }
+  }
   const qaUses = new Set([
     ...qaItemUses(path.join(root, 'qa', 'walkthrough.json')),
     ...qaItemUses(path.join(root, 'qa', 'sequence-breaks.json')),
@@ -140,6 +160,7 @@ export function loadProject(root) {
     scenes,
     loadErrors,
     srcFiles,
+    journal,
     qaUses,
     preload: {
       items: parseStringArray(preloadText, 'itemIds'),
@@ -257,6 +278,64 @@ function mentionedIn(files, name, skip) {
   return null;
 }
 
+// ─── Diario (A2.9) ─────────────────────────────────────────────
+
+/**
+ * Estructura de los ficheros del diario. Devuelve { problems: [{ file, where, message }], flagReads: Map(flag → [where]),
+ * itemReads: Map(item → [where]), noteIds: Set }.
+ */
+export function analyzeJournal(files = []) {
+  const problems = [];
+  const flagReads = new Map();
+  const itemReads = new Map();
+  const noteIds = new Set();
+  const seen = { goals: new Map(), notes: new Map(), puzzles: new Map(), chapter: new Map() };
+  const bad = (file, where, message) => problems.push({ file, where: `${file}${where ? `.${where}` : ''}`, message });
+  const text = (v) => typeof v === 'string' && v.trim() !== '';
+  const cond = (file, where, v, required) => {
+    const list = conditionList(v);
+    if (v !== undefined && typeof v !== 'string' && !Array.isArray(v)) return bad(file, where, 'condición: texto o lista de textos');
+    if (required && !list.length) return bad(file, where, 'falta la condición');
+    const { ok, bad: wrong } = parseWhen(v);
+    for (const w of wrong) bad(file, where, `condición «${w}» no válida (flag, !flag, item:id, !item:id)`);
+    for (const c of ok) {
+      const map = c.kind === 'item' ? itemReads : flagReads;
+      if (!map.has(c.name)) map.set(c.name, []);
+      map.get(c.name).push(`${file}.${where}`);
+    }
+  };
+  for (const { file, data, error } of files) {
+    if (error) { bad(file, '', error); continue; }
+    if (!data || typeof data !== 'object' || Array.isArray(data)) { bad(file, '', 'el fichero tiene que ser un objeto'); continue; }
+    if (!Number.isInteger(data.chapter) || data.chapter < 1) bad(file, 'chapter', '"chapter" tiene que ser un entero ≥ 1');
+    else if (seen.chapter.has(data.chapter)) bad(file, 'chapter', `el capítulo ${data.chapter} ya está en ${seen.chapter.get(data.chapter)}`);
+    else seen.chapter.set(data.chapter, file);
+    for (const kind of ['goals', 'notes', 'puzzles']) {
+      if (data[kind] === undefined) continue;
+      if (!Array.isArray(data[kind])) { bad(file, kind, `"${kind}" tiene que ser una lista`); continue; }
+      data[kind].forEach((e, i) => {
+        const where = `${kind}[${i}]`;
+        if (!e || typeof e !== 'object') return bad(file, where, 'cada entrada es un objeto');
+        if (!text(e.id)) bad(file, where, 'falta "id"');
+        else if (seen[kind].has(e.id)) bad(file, where, `id «${e.id}» repetido (ya en ${seen[kind].get(e.id)})`);
+        else seen[kind].set(e.id, file);
+        const w = text(e.id) ? `${kind}.${e.id}` : where;
+        if (kind === 'notes' && text(e.id)) noteIds.add(e.id);
+        if (kind !== 'puzzles' && !text(e.text)) bad(file, w, 'falta "text"');
+        if (kind === 'goals') cond(file, `${w}.doneWhen`, e.doneWhen, true);
+        if (kind === 'notes') cond(file, `${w}.shownWhen`, e.shownWhen, false);
+        if (kind === 'puzzles') {
+          cond(file, `${w}.openWhen`, e.openWhen, false);
+          cond(file, `${w}.doneWhen`, e.doneWhen, true);
+          if (!Array.isArray(e.hints) || e.hints.length !== 3 || !e.hints.every(text)) bad(file, `${w}.hints`, '"hints" son exactamente 3 textos: dirección, objeto, solución');
+        }
+      });
+    }
+    if (data.anonIdle !== undefined && (!Array.isArray(data.anonIdle) || !data.anonIdle.every(text))) bad(file, 'anonIdle', '"anonIdle" es una lista de textos');
+  }
+  return { problems, flagReads, itemReads, noteIds };
+}
+
 // ─── Reglas ────────────────────────────────────────────────────
 
 /**
@@ -310,6 +389,8 @@ export function lintProject(project) {
       for (const [item, d] of Object.entries(n.itemDialogues ?? {})) note(writes, d?.setFlag, `${id}.npcs.${n.id}.itemDialogues.${item}.setFlag`);
     }
   }
+  // A2.9: el diario lee flags (cuentan como lectura para «se pone y nunca se lee»)
+  const journal = analyzeJournal(project.journal ?? []);
   const sceneOf = (where) => where.split('.')[0];
   const inCode = (flag) => DYNAMIC_FLAGS.some((re) => re.test(flag)) || mentionedIn(srcFiles, flag, SRC_SKIP_FLAGS);
   for (const [flag, where] of reads) {
@@ -317,7 +398,7 @@ export function lintProject(project) {
     push('a', 'warning', sceneOf(where[0]), flag, where[0], `flag «${flag}» se lee y nunca se pone (${where.join(', ')})`, { scenes: [...new Set(where.map(sceneOf))] });
   }
   for (const [flag, where] of writes) {
-    if (reads.has(flag) || inCode(flag)) continue;
+    if (reads.has(flag) || journal.flagReads.has(flag) || inCode(flag)) continue;
     push('a', 'warning', sceneOf(where[0]), flag, where[0], `flag «${flag}» se pone y nunca se lee (${where.join(', ')})`, { scenes: [...new Set(where.map(sceneOf))] });
   }
 
@@ -582,6 +663,26 @@ export function lintProject(project) {
         }
       }
     }
+  }
+
+  // ── (h) diario (A2.9) ──
+  const jScene = (file) => `journal/${path.posix.basename(file, '.json')}`;
+  for (const pr of journal.problems) push('h', 'error', jScene(pr.file), pr.where, pr.where, `diario: ${pr.message}`);
+  for (const [flag, where] of journal.flagReads) {
+    if (writes.has(flag) || inCode(flag)) continue;
+    push('h', 'warning', sceneOf(where[0]), flag, where[0], `el diario lee la flag «${flag}» y ninguna escena ni el código la pone (${where.join(', ')})`);
+  }
+  for (const [item, where] of journal.itemReads) {
+    if (acquired.has(item) || mentionedIn(srcFiles, item, SRC_SKIP_ITEMS)) continue;
+    push('h', 'warning', sceneOf(where[0]), item, where[0], `el diario mira el objeto «${item}» y nada lo da (${where.join(', ')})`);
+  }
+  for (const c of containers) {
+    walkOps(c.ops, `${c.scene}.${c.label}`, (op, p) => {
+      if (op.op !== 'journalNote') return;
+      if (typeof op.id !== 'string' || !journal.noteIds.has(op.id)) {
+        push('h', 'error', c.scene, String(op.id), p, `journalNote: la nota «${op.id}» no está en assets/journal (notes[].id)`);
+      }
+    });
   }
 
   return findings;

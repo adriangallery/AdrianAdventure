@@ -57,7 +57,7 @@ export function cinematicModeOf(op: CineOp): 'start' | 'end' | null {
 
 /**
  * Qué hace un op cuando el jugador salta la cinemática:
- * - `state`: se aplica (setFlag, addItem, removeItem, cambio de escena, logro, disfraz): la partida queda igual que
+ * - `state`: se aplica (setFlag, addItem, removeItem, cambio de escena, logro, disfraz, nota del diario): la partida queda igual que
  *   si la hubiera visto entera.
  * - `branch`: condicional síncrono: se evalúa y su rama sigue en modo salto.
  * - `instant`: cámara, actores y transiciones: se aplica su estado final sin animar (el personaje acaba donde
@@ -70,7 +70,8 @@ export function cinematicModeOf(op: CineOp): 'start' | 'end' | null {
  */
 export type SkipAction = 'state' | 'branch' | 'instant' | 'run' | 'end' | 'stop' | 'skip';
 
-const STATE_OPS = new Set(['setFlag', 'addItem', 'removeItem', 'gotoScene', 'fadeToScene', 'achievement', 'setCostume']);
+// A2.9: `journalNote` apunta una nota del diario en la partida: es estado
+const STATE_OPS = new Set(['setFlag', 'addItem', 'removeItem', 'gotoScene', 'fadeToScene', 'achievement', 'setCostume', 'journalNote']);
 const BRANCH_OPS = new Set(['ifFlag', 'ifHasItem', 'ifVisited', 'ifWalletConnected']);
 const RUN_OPS = new Set(['mintAchievement', 'dialogue', 'web3Require', 'mintNFT']);
 /** Presentación con estado final que importa (dónde acaba la cámara o un actor, una iris cerrada) */

@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { normalise, keyFor, speakerFor, extractScene, extractCode, resolve, loadVoices } from '../scripts/voices/extract.mjs';
+import { normalise, keyFor, speakerFor, extractScene, extractCode, extractJournal, extractProject, resolve, loadVoices, CODE_SOURCES } from '../scripts/voices/extract.mjs';
 import { buildConfig } from '../scripts/voices/build-config.mjs';
 import { checkCoverage, applyAllow } from '../scripts/voice-coverage.mjs';
 
@@ -127,4 +127,44 @@ test('cobertura: falla con texto sin clip, excepciones con motivo y voice.config
 test('el voice.config.ts del repo es exactamente lo que genera build-config.mjs', async () => {
   const { buildFromDisk } = await import('../scripts/voices/build-config.mjs');
   assert.equal(fs.readFileSync(path.join(ROOT, 'src/config/voice.config.ts'), 'utf8'), buildFromDisk(ROOT).text);
+});
+
+test('A2.9: Anon (am_onyx) — speaker «Anon» y «Adrian» → anon, voz propia distinta de Dex y Satoshi', () => {
+  assert.equal(speakerFor('Anon', voices), 'anon');
+  assert.equal(speakerFor('ADRIAN', voices), 'anon');
+  assert.equal(voices.speakers.anon.voice, 'am_onyx');
+  assert.equal(voices.speakers.anon.speed, 0.9);
+  assert.notEqual(voices.speakers.anon.voice, voices.speakers.player.voice);
+  assert.notEqual(voices.speakers.anon.voice, voices.speakers.satoshi.voice);
+});
+
+test('A2.9: diario — se extraen las pistas de Anon y su relleno (no objetivos ni notas, que solo se leen)', () => {
+  const data = {
+    chapter: 1,
+    goals: [{ id: 'g', text: 'A goal nobody says.', doneWhen: 'x' }],
+    notes: [{ id: 'n', text: 'A note nobody says.' }],
+    puzzles: [{ id: 'p', doneWhen: 'x', hints: ['Hint one.', 'Hint two.', 'Hint three.'] }],
+    anonIdle: ['Idle line.', ''],
+  };
+  const out = extractJournal('assets/journal/x.json', data, voices);
+  assert.deepEqual(out.map((e) => e.text), ['Hint one.', 'Hint two.', 'Hint three.', 'Idle line.']);
+  assert.ok(out.every((e) => e.speaker === 'anon'));
+  assert.equal(keyFor('anon', 'Hint one.').startsWith('anon_hint_one_'), true);
+  // El relleno de Journal.ts va con speaker anon
+  const spec = CODE_SOURCES.find((c) => c.file === 'src/systems/Journal.ts');
+  const code = extractCode(spec.file, "export const ANON_FALLBACK = 'Nothing to say. Keep walking.';", spec);
+  assert.deepEqual(code.map((e) => [e.speaker, e.text]), [['anon', 'Nothing to say. Keep walking.']]);
+});
+
+test('A2.9: el proyecto real extrae todas las pistas de assets/journal con voz de Anon', () => {
+  const raw = extractProject(ROOT, voices);
+  const dir = path.join(ROOT, 'assets', 'journal');
+  for (const f of fs.readdirSync(dir).filter((x) => x.endsWith('.json'))) {
+    const data = JSON.parse(fs.readFileSync(path.join(dir, f), 'utf8'));
+    for (const p of data.puzzles ?? []) {
+      for (const h of p.hints) assert.ok(raw.some((e) => e.text === h && e.speaker === 'anon'), `sin extraer: ${h}`);
+    }
+    for (const g of data.goals ?? []) assert.ok(!raw.some((e) => e.text === g.text), `un objetivo no se dice: ${g.text}`);
+  }
+  assert.ok(raw.some((e) => e.speaker === 'anon' && /Nothing to say\. Keep walking\./.test(e.text)));
 });

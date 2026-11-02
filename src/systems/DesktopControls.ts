@@ -7,6 +7,8 @@
 //   pulsar la tecla del verbo ya elegido lo suelta (vuelve a Walk), como al pulsarlo en el panel
 //   Tab (mantener) resalta los hotspots y NPC que se pueden pulsar; se quita al soltar
 //   I   plegar/desplegar el panel de verbos e inventario (solo cambia algo con el panel plegable, en pantallas pequeñas)
+//   J   abrir/cerrar el diario (A2.9: el móvil de Dex); con el diario abierto, Esc también lo cierra y el resto de teclas
+//       no llega al juego
 //   Esc salta la cinemática o el texto en curso (el mismo avance rápido que mantener pulsado); si no hay ninguno,
 //       suelta el objeto y el verbo elegidos y quita el resaltado
 //
@@ -90,7 +92,8 @@ export type KeyAction =
   | { kind: 'verb'; verb: string }
   | { kind: 'highlight' }
   | { kind: 'skip' }
-  | { kind: 'inventory' };
+  | { kind: 'inventory' }
+  | { kind: 'journal' };
 
 /**
  * Qué hace una pulsación (keydown). null = no es nuestra: el navegador la recibe tal cual (sin preventDefault).
@@ -107,6 +110,7 @@ export function keyAction(
   if (e.key.length !== 1) return null;
   const k = e.key.toLowerCase();
   if (k === 'i') return { kind: 'inventory' };
+  if (k === 'j') return { kind: 'journal' };
   for (const [verb, key] of Object.entries(VERB_KEYS)) if (key === k) return { kind: 'verb', verb };
   return null;
 }
