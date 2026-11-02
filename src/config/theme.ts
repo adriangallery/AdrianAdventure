@@ -107,6 +107,12 @@ export const SPEECH_COLORS: Readonly<Record<string, string>> = {
   'dr. satoshi':    '#f8b040',
   'b.o.t.':         '#8cf070',          // verde LED
   anon:             '#9fd8ff',          // A2.9: Anon, la voz del teléfono (azul pálido, como la pantalla del móvil)
+  penny:            '#ff9ad2',          // A3.3b: la recepcionista se llama Penny (mismo rosa)
+  dooris:           '#7fffd4',          // A3.3b: DOORIS, la cerradura (aguamarina de LED)
+  'pz-bot':         '#ff5050',          // A3.3b: PZ-BOT, el bot de trading (rojo de terminal)
+  'nurse gwei':     '#c8b4ff',          // A3.3b: Nurse Gwei por interfono (lila clínico)
+  gwei:             '#c8b4ff',
+  chad:             '#ffd700',          // A3.3b: Chad, el alfa de la piscina (dorado)
 };
 
 // ─── Typography ────────────────────────────────────────────

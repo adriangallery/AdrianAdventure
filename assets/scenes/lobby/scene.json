@@ -810,7 +810,7 @@
   "npcs": [
     {
       "id": "npc_receptionist",
-      "name": "Receptionist",
+      "name": "Penny",
       "position": {
         "x": 24.2,
         "y": 65.3
@@ -859,7 +859,7 @@
       "start": "greeting",
       "nodes": {
         "greeting": {
-          "speaker": "Receptionist",
+          "speaker": "Penny",
           "text": "Welcome to AdrianLAB! Are you here for the tour or the experiments?",
           "next": "hub"
         },
@@ -894,12 +894,12 @@
           ]
         },
         "tour": {
-          "speaker": "Receptionist",
+          "speaker": "Penny",
           "text": "The lobby connects to all areas. Upstairs is the trading floor. The entrance leads outside. Oh, and whoever left their coat on the rack should really clean out their pockets.",
           "next": "hub"
         },
         "experiments": {
-          "speaker": "Receptionist",
+          "speaker": "Penny",
           "text": "Oh, you know... turning pixels into tokens, tokens into dreams, dreams into... well, mostly gas fees. But sometimes magic!",
           "choices": [
             {
@@ -913,12 +913,12 @@
           ]
         },
         "experiments_end": {
-          "speaker": "Receptionist",
+          "speaker": "Penny",
           "text": "Anytime! Let me know if you need anything else.",
           "next": "hub"
         },
         "patient_zero": {
-          "speaker": "Receptionist",
+          "speaker": "Penny",
           "text": "Patient Zero? I... I don't know what you're talking about. That's a basement-level clearance topic.",
           "onEnter": [
             {
@@ -939,17 +939,17 @@
           ]
         },
         "pz_nervous": {
-          "speaker": "Receptionist",
+          "speaker": "Penny",
           "text": "Nervous? Me? Ha! I just... look, some things in this building are above my pay grade. WAY above. If you want answers about... that... you'd need to go deeper. Literally.",
           "next": "hub"
         },
         "pz_forget": {
-          "speaker": "Receptionist",
+          "speaker": "Penny",
           "text": "Already forgotten! Ha ha... ha. Please don't mention that name again. Especially not near the basement.",
           "next": "hub"
         },
         "vip": {
-          "speaker": "Receptionist",
+          "speaker": "Penny",
           "text": "An AdrianZERO holder! VIP access granted. The basement has a special terminal for holders. The doormat at the entrance hides the way down.",
           "onEnter": [
             {

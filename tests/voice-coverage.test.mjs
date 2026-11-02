@@ -55,6 +55,24 @@ test('hablante: B.O.T., Satoshi, recepcionista, sin speaker y desconocido', () =
   assert.equal(new Set(ids).size, ids.length, 'recepcionista, narrador, npc y jugador con voces distintas');
 });
 
+test('hablante: reparto de A3.3b (Penny, Anon, DOORIS, PZ-BOT, Gwei, Chad)', () => {
+  assert.equal(speakerFor('Penny', voices), 'recep', 'Penny es la recepcionista: misma clave de clip');
+  assert.equal(speakerFor('Anon', voices), 'anon');
+  assert.equal(speakerFor('Adrian', voices), 'anon', 'Anon es Adrian');
+  assert.equal(speakerFor('DOORIS', voices), 'dooris');
+  assert.equal(speakerFor('PZ-BOT', voices), 'pzbot', 'pz-bot va antes que b.o.t');
+  assert.equal(speakerFor('PZBot', voices), 'pzbot');
+  assert.equal(speakerFor('B.O.T.', voices), 'bot', 'B.O.T. sigue siendo bot');
+  assert.equal(speakerFor('Nurse Gwei', voices), 'gwei');
+  assert.equal(speakerFor('Chad', voices), 'chad');
+  const want = { dooris: ['af_nicole', 'a', 1.0], anon: ['am_onyx', 'a', 0.9], gwei: ['bf_emma', 'b', 1.0], chad: ['am_puck', 'a', 1.0], pzbot: ['am_michael', 'a', 1.25] };
+  for (const [id, [voice, lang, speed]] of Object.entries(want)) {
+    assert.deepEqual([voices.speakers[id]?.voice, voices.speakers[id]?.lang, voices.speakers[id]?.speed], [voice, lang, speed], id);
+    assert.ok(voices.speakers[id].why, `why para ${id}`);
+  }
+  assert.equal(voices.speakers.pzbot.voice, voices.speakers.player.voice, 'PZ-BOT = voz de Dex acelerada (pista del giro)');
+});
+
 test('extracción de una escena sintética: qué entra y qué no', () => {
   const out = extractScene('synthetic', scene, voices);
   const texts = out.map((e) => e.text);
