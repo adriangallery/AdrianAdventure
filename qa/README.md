@@ -215,7 +215,7 @@ deja la tabla en el resumen del job y sube `lint-scenes-report.json` y `.md` com
 | (b) | objetos que se consiguen (`addItem`) y no sirven para nada | aviso |
 | (c) | salidas (`fadeToScene`/`gotoScene`) en hotspots y triggers sin gate, para revisar a mano | aviso |
 | (d) | operaciones de estado (`setFlag`, `addItem`, `removeItem`, cambio de escena, logros) después de un `say` en el mismo bloque, o en una rama que se abre después del `say`; marca los parpadeos (la misma flag puesta varias veces) | aviso |
-| (e) | `player.spawn`, `transitions.goto[].spawn` y `spawn` de las salidas fuera de las `walkableAreas` de la escena destino | aviso |
+| (e) | `player.spawn`, `transitions.goto[].spawn` y `spawn` de las salidas fuera de las `walkableAreas` de la escena destino (A1.8: **error**; una escena destino sin `walkableAreas` sigue siendo aviso) | **error** |
 | (f) | fondos, primeros planos, overlays, `web3Visuals`, música, `playSound`, iconos de objetos, sprites de NPC, escenas destino y árboles de diálogo que no existen | **error** |
 | (g) | hotspots solapados; aviso fuerte si uno contiene a otro (si el que contiene va antes en la lista, el clic nunca llega al de dentro) | aviso |
 

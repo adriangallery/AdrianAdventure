@@ -16,6 +16,10 @@
         { "do": "use", "item": "code_note", "target": "hs_keypad", "expect": { "scene": "lobby", "flags": { "door_unlocked": true, "chapter_1_complete": true, "chapter_2_intro_shown": true } } },
 
         { "do": "act", "verb": "PICK", "target": "hs_coat", "expect": { "has": ["keycard"], "flags": { "has_keycard": true } } },
+        { "do": "talk", "npc": "npc_receptionist", "choices": ["Patient Zero", "nervous"], "note": "A1.8 (QA antigua 4): la recepcionista se puede pulsar (hit-test del sprite antes que hs_monitor_desk, que la rodea) y su diálogo llega hasta el onEnter de patient_zero", "expect": { "scene": "lobby", "flags": { "receptionist_mentioned_pz": true } } },
+        { "do": "act", "verb": "PUSH", "target": "hs_poster", "rejects": "can't push that", "note": "A1.8 (QA antigua 5): PUSH sin script en el hotspot responde con el texto por defecto, no en silencio", "expect": { "scene": "lobby" } },
+        { "do": "act", "verb": "PULL", "target": "hs_poster", "rejects": "can't pull that", "note": "A1.8 (QA antigua 5): PULL sin script, texto por defecto", "expect": { "scene": "lobby" } },
+        { "do": "act", "verb": "GIVE", "target": "hs_poster", "rejects": "nobody to give that to", "note": "A1.8 (QA antigua 5): GIVE sin objeto ni script, texto por defecto", "expect": { "scene": "lobby" } },
         { "do": "act", "verb": "USE", "target": "hs_stairs_up", "expect": { "scene": "upstairs" } },
         { "do": "act", "verb": "OPEN", "target": "hs_desk", "note": "A1.4: la flag del cajón se llama found_terminal_key (antes found_hw_wallet)", "expect": { "has": ["terminal_key"], "flags": { "found_terminal_key": true }, "unsetFlags": ["found_hw_wallet"] } },
         { "do": "act", "verb": "PICK", "target": "hs_energy_drink", "expect": { "has": ["energy_drink"] } },

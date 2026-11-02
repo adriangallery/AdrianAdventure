@@ -21,6 +21,7 @@ import { mintItem, mintAchievement, type MintResult } from '@/web3/contracts';
 import { TransactionToast } from '@/ui/TransactionToast';
 import { getAchievementByText } from '@/config/achievements.config';
 import { bindShutdown } from './lifecycle';
+import { gameUrlParams } from '@/config/debugParams';
 import type { Address } from 'viem';
 import type { ScummUI } from '@/ui/ScummUI';
 import type { UIScene } from '@/scenes/UIScene';
@@ -911,7 +912,8 @@ export class GameScene extends Phaser.Scene {
       this.lastProgressAt = Math.max(this.lastProgressAt, now - 1000);
       return;
     }
-    const override = Number(new URLSearchParams(window.location.search).get('hintAfter'));
+    // A1.8: ?hintAfter solo en dev o con ?qa=1
+    const override = Number(gameUrlParams(window.location.search, import.meta.env.DEV).get('hintAfter'));
     const after = override > 0 ? override * 1000 : GameScene.HINT_AFTER_MS;
     if (now - this.lastProgressAt < after) return;
     if (this.lastHintAt && now - this.lastHintAt < Math.min(GameScene.HINT_REPEAT_MS, after * 2)) return;

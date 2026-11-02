@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { DEFAULT_SCENE_ID } from '@/config/game.config';
 import { MusicManager } from '@/systems/MusicManager';
 import { AnaglyphPipeline } from '@/shaders/AnaglyphPipeline';
+import { gameUrlParams } from '@/config/debugParams';
 
 export class BootScene extends Phaser.Scene {
   constructor() {
@@ -30,7 +31,8 @@ export class BootScene extends Phaser.Scene {
     const musicManager = new MusicManager(this.game);
     this.game.registry.set('musicManager', musicManager);
 
-    const params = new URLSearchParams(window.location.search);
+    // A1.8: ?scene solo en dev o con ?qa=1 (src/config/debugParams.ts); ?trailer vale siempre
+    const params = gameUrlParams(window.location.search, import.meta.env.DEV);
 
     // ?trailer — launch cinematic trailer (add &record to auto-capture WebM)
     if (params.has('trailer')) {
