@@ -28,14 +28,17 @@ cdp.on('Network.requestServedFromCache', (e) => { const r = reqs.get(e.requestId
 cdp.on('Network.responseReceived', (e) => { const r = reqs.get(e.requestId); if (r && (e.response.fromDiskCache || e.response.fromPrefetchCache)) r.cache = true; });
 cdp.on('Network.loadingFinished', (e) => { const r = reqs.get(e.requestId); if (r) r.bytes = e.encodedDataLength; });
 
-const inScene = (id) => page.waitForFunction((sid) => {
+// Escena lista = GameScene creada DESPUÉS de pedir el cambio (sceneCreatedAt, A0.1) con el scene.json de destino. Solo
+// con currentSceneId no vale: cambia al acabar el fundido de salida, cuando la escena vieja aún está activa.
+const inScene = (id, since = 0) => page.waitForFunction(({ sid, since }) => {
   const g = window.__game;
   if (!g) return false;
   const pre = g.scene.getScene('PreloadScene');
   // pantalla de carga completa = PreloadScene activa con su barra, porcentaje y frase
   if (g.scene.isActive('PreloadScene') && (pre.children?.list?.length ?? 0) >= 4) window.__sawLoadingScreen = true;
-  return g.scene.isActive('GameScene') && !g.scene.isActive('PreloadScene') && g.registry.get('currentSceneId') === sid && !!g.registry.get('sceneData');
-}, { timeout: 120000, polling: 'raf' }, id);
+  return g.scene.isActive('GameScene') && !g.scene.isActive('PreloadScene') && g.registry.get('currentSceneId') === sid
+    && g.registry.get('sceneData')?.id === sid && (g.registry.get('sceneCreatedAt') ?? 0) >= since;
+}, { timeout: 120000, polling: 'raf' }, { sid: id, since });
 
 function close(name, ms, screen) {
   const list = [...reqs.values()].filter((r) => r.phase === name && !r.cache && r.url.startsWith(BASE));
@@ -54,8 +57,8 @@ close(phase, PREFETCH_WAIT_MS, false);
 
 for (const [name, to] of [['outside → lobby (1.ª vez)', 'lobby'], ['lobby → outside (2.ª vez)', 'outside']]) {
   phase = name;
-  await page.evaluate((id) => { window.__sawLoadingScreen = false; window.__t0 = performance.now(); window.__qa.goto(id).catch(() => {}); }, to);
-  await inScene(to);
+  const since = await page.evaluate((id) => { window.__sawLoadingScreen = false; window.__t0 = performance.now(); window.__qa.goto(id).catch(() => {}); return Date.now(); }, to);
+  await inScene(to, since);
   const r = await page.evaluate(() => ({ ms: Math.round(performance.now() - window.__t0), screen: !!window.__sawLoadingScreen }));
   close(name, r.ms, r.screen);
   phase = `en ${to}`;
