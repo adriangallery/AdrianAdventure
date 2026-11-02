@@ -5,6 +5,7 @@ import { SceneDataLoader } from '@/systems/SceneDataLoader';
 import { ScriptEngine, type ScriptContext } from '@/systems/ScriptEngine';
 import { InventorySystem } from '@/systems/InventorySystem';
 import { SaveLoadSystem } from '@/systems/SaveLoadSystem';
+import { migrateGameState } from '@/systems/SaveMigration';
 import type { MusicManager } from '@/systems/MusicManager';
 import { CinematicOverlay } from '@/ui/CinematicOverlay';
 import { Web3VisualSystem } from '@/systems/Web3VisualSystem';
@@ -45,7 +46,17 @@ export class GameScene extends Phaser.Scene {
   private bgFill!: Phaser.GameObjects.Image;
   private bg!: Phaser.GameObjects.Image;
   private fg?: Phaser.GameObjects.Image;
-  private conditionalOverlays: Array<{ sprite: Phaser.GameObjects.Image; flag: string; invert?: boolean }> = [];
+  private conditionalOverlays: Array<{ id: string; sprite: Phaser.GameObjects.Image; flag: string; invert?: boolean }> = [];
+  /**
+   * A1.4: visibilidad forzada por el op `flicker` (id del overlay → visible), por encima de la flag. Es solo
+   * presentación: no se guarda. Se vacía al crear la escena y en SHUTDOWN.
+   */
+  private overlayOverrides = new Map<string, boolean>();
+  /**
+   * A1.4: Phaser reutiliza la instancia de la escena; cada create() sube este contador y el contexto de scripts
+   * guarda el suyo, así un flicker de la escena anterior que siga esperando no toca los overlays de la nueva.
+   */
+  private sceneRun = 0;
   private debugContainer?: Phaser.GameObjects.Container;
   private static DEBUG = import.meta.env.DEV;
   private get isTrailer(): boolean { return !!this.registry.get('trailerMode'); }
@@ -86,6 +97,8 @@ export class GameScene extends Phaser.Scene {
   create(): void {
     // A1.10: Phaser no llama a shutdown() solo; sin esto cada cambio de escena dejaba vivos los listeners de resize
     bindShutdown(this);
+    this.sceneRun++;
+    this.overlayOverrides.clear();
     const sceneId = this.registry.get('currentSceneId') as string;
     // A0.1: la API de QA espera a que termine el cambio de escena y a que pasen onEnter y los triggers de spawn
     this.registry.remove('sceneTransition');
@@ -102,7 +115,8 @@ export class GameScene extends Phaser.Scene {
     });
 
     // Game state
-    this.gameState = (this.registry.get('gameState') as GameState) ?? createInitialState(sceneId);
+    // A1.4: red de seguridad; las cargas ya migran, pero cualquier estado que llegue al registry pasa por aquí
+    this.gameState = migrateGameState((this.registry.get('gameState') as GameState) ?? createInitialState(sceneId));
     this.gameState.currentScene = sceneId;
     if (!this.gameState.visited.includes(sceneId)) this.gameState.visited.push(sceneId);
     // Ensure new fields exist (backward compat with old saves)
@@ -196,7 +210,7 @@ export class GameScene extends Phaser.Scene {
         const flagVal = this.gameState.flags[co.flag] ?? false;
         const show = co.invert ? !flagVal : flagVal;
         overlay.setVisible(show);
-        this.conditionalOverlays.push({ sprite: overlay, flag: co.flag, invert: co.invert });
+        this.conditionalOverlays.push({ id: co.id, sprite: overlay, flag: co.flag, invert: co.invert });
       }
     }
 
@@ -380,10 +394,10 @@ export class GameScene extends Phaser.Scene {
   update(time: number, delta: number): void {
     this.player.update(time, delta);
 
-    // Refresh conditional overlays when flags change
+    // Refresh conditional overlays when flags change (A1.4: un flicker en marcha manda sobre la flag)
     for (const co of this.conditionalOverlays) {
       const flagVal = this.gameState.flags[co.flag] ?? false;
-      const show = co.invert ? !flagVal : flagVal;
+      const show = this.overlayOverrides.get(co.id) ?? (co.invert ? !flagVal : flagVal);
       if (co.sprite.visible !== show) co.sprite.setVisible(show);
     }
 
@@ -1048,6 +1062,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   private buildScriptContext(): ScriptContext {
+    const run = this.sceneRun;
     return {
       // A1.1: siempre el estado vivo (setState e InventorySystem sustituyen el objeto)
       getState: () => this.gameState,
@@ -1123,6 +1138,18 @@ export class GameScene extends Phaser.Scene {
       },
       showToast: (status, message) => { this.transactionToast.show(status, message); },
       setCostume: (prefix) => { this.player.setCostume(prefix); },
+      // A1.4: op flicker. Solo el mapa de forzados (update() lo aplica en el siguiente frame); nunca el sprite,
+      // que tras SHUTDOWN ya está destruido, ni el estado
+      setOverlayOverride: (overlayId, visible) => {
+        if (run !== this.sceneRun) return false;
+        if (!this.conditionalOverlays.some((co) => co.id === overlayId)) return false;
+        if (visible === null) this.overlayOverrides.delete(overlayId);
+        else this.overlayOverrides.set(overlayId, visible);
+        return true;
+      },
+      clearOverlayOverrides: () => {
+        if (run === this.sceneRun) this.overlayOverrides.clear();
+      },
       showCredits: () => {
         const ui = this.scene.get('UIScene');
         return new Promise<void>((resolve) => {
@@ -1401,6 +1428,9 @@ export class GameScene extends Phaser.Scene {
    * llega, los plugins de la escena ya han destruido cámaras, objetos, tweens y relojes (ver lifecycle.ts).
    */
   shutdown(): void {
+    // A1.4: corta un flicker en marcha (el contexto ya no toca overlays de la escena que viene)
+    this.scriptEngine?.cancelEffects();
+    this.overlayOverrides.clear();
     this.cancelTouchHold();
     this.endFastForward();
     // Listeners fuera de la escena: ScaleManager (global), UIScene, window y visualViewport

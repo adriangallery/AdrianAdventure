@@ -4,7 +4,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 
-const { ScriptEngine, WATCHDOG_MS } = await import(process.env.SCRIPT_ENGINE_PATH ?? '../src/systems/ScriptEngine.ts');
+const { ScriptEngine, WATCHDOG_MS, flickerPattern } = await import(process.env.SCRIPT_ENGINE_PATH ?? '../src/systems/ScriptEngine.ts');
 
 const TICK = 1000;
 
@@ -364,4 +364,143 @@ test('A1.10: una ejecución abandonada que entra en una rama no apila su bloque 
   assert.match(warnings[0], /«say» en nuevo/);
   assert.equal(ctx.getState().flags.rama_vieja, undefined, 'el rescate no aplica la rama del script abandonado');
   assert.equal(engine.isRunning(), false);
+});
+
+// ── A1.4: flicker (parpadeo de un overlay sin tocar el estado) ──
+
+/** Contexto con overlays: `overlays` son los ids que existen en la escena; apunta cada forzado con su instante. */
+function withOverlays(ctx, overlays = ['lamp_empty']) {
+  const calls = [];
+  let setStateCalls = 0;
+  const setState = ctx.setState;
+  ctx.setState = (u) => { setStateCalls++; setState(u); };
+  ctx.overlayCalls = calls;
+  ctx.setStateCalls = () => setStateCalls;
+  ctx.setOverlayOverride = (id, visible) => {
+    if (!overlays.includes(id)) return false;
+    calls.push({ id, visible, at: Date.now() });
+    return true;
+  };
+  ctx.clearOverlayOverrides = () => calls.push({ id: '*', visible: null, at: Date.now() });
+  return ctx;
+}
+
+test('A1.4: flicker alterna el overlay, lo devuelve a su flag y no toca el estado', async () => {
+  const ctx = withOverlays(makeCtx());
+  const engine = new ScriptEngine(ctx);
+  const t0 = Date.now();
+  await engine.execute([{ op: 'flicker', overlay: 'lamp_empty', pattern: [60, 60, 60] }], 'hs_porch_light/PICK');
+  const elapsed = Date.now() - t0;
+  assert.deepEqual(ctx.overlayCalls.map((c) => c.visible), [true, false, true, null], 'visible, oculto, visible y vuelta a la flag');
+  assert.ok(ctx.overlayCalls.every((c) => c.id === 'lamp_empty'));
+  assert.ok(elapsed >= 180, `dura al menos la suma del patrón (${elapsed} ms)`);
+  assert.ok(elapsed < 1000, `y no mucho más (${elapsed} ms)`);
+  assert.equal(ctx.setStateCalls(), 0, 'ni un setState');
+  assert.deepEqual(ctx.getState().flags, {});
+  assert.equal(engine.isRunning(), false);
+});
+
+test('A1.4: flicker con startVisible false empieza oculto (parpadeo de la puerta)', async () => {
+  const ctx = withOverlays(makeCtx());
+  const engine = new ScriptEngine(ctx);
+  engine.setFastForward(true);
+  await engine.execute([{ op: 'flicker', overlay: 'lamp_empty', startVisible: false, pattern: [400, 100, 150, 60, 250, 80] }]);
+  assert.deepEqual(ctx.overlayCalls.map((c) => c.visible), [false, true, false, true, false, true, null]);
+  assert.deepEqual(ctx.getState().flags, {});
+});
+
+test('A1.4: la puerta y la lámpara: el estado final es el de las flags reales', async () => {
+  const ctx = withOverlays(makeCtx());
+  const engine = new ScriptEngine(ctx);
+  engine.setFastForward(true);
+  const lamp = [
+    { op: 'ifFlag', flag: 'found_code_note', then: [], else: [
+      { op: 'flicker', overlay: 'lamp_empty', pattern: [80, 120, 50, 200] },
+      { op: 'setFlag', flag: 'found_code_note', value: true },
+    ] },
+  ];
+  await engine.execute([{ op: 'ifFlag', flag: 'found_code_note', then: [], else: [{ op: 'flicker', overlay: 'lamp_empty', startVisible: false, pattern: [10, 10] }] }]);
+  assert.equal('found_code_note' in ctx.getState().flags, false, 'el parpadeo de la puerta no escribe la flag');
+  await engine.execute(lamp);
+  assert.deepEqual(ctx.getState().flags, { found_code_note: true });
+  assert.equal(ctx.setStateCalls(), 1, 'un solo setFlag, el real');
+});
+
+test('A1.4: flicker de un overlay que la escena no tiene solo espera, sin forzar nada', async () => {
+  const ctx = withOverlays(makeCtx(), []);
+  const engine = new ScriptEngine(ctx);
+  const t0 = Date.now();
+  await engine.execute([{ op: 'flicker', overlay: 'lamp_empty', pattern: [60, 60] }, { op: 'setFlag', flag: 'after', value: true }]);
+  assert.ok(Date.now() - t0 >= 120);
+  assert.deepEqual(ctx.overlayCalls, []);
+  assert.equal(ctx.getState().flags.after, true);
+});
+
+test('A1.4: flicker mal definido avisa y sigue', async () => {
+  const ctx = withOverlays(makeCtx());
+  const engine = new ScriptEngine(ctx);
+  const warnings = await withWarnings(async () => {
+    await engine.execute([{ op: 'flicker', overlay: 'lamp_empty', pattern: [100, -1] }, { op: 'flicker', pattern: [10] }, { op: 'setFlag', flag: 'after', value: true }], 'x/USE');
+  });
+  assert.equal(warnings.length, 2);
+  assert.match(warnings[0], /flicker mal definido en x\/USE/);
+  assert.deepEqual(ctx.overlayCalls, []);
+  assert.equal(ctx.getState().flags.after, true);
+});
+
+test('A1.4: flickerPattern acepta pattern o times/onMs/offMs', () => {
+  assert.deepEqual(flickerPattern({ op: 'flicker', pattern: [1, 2, 3] }), [1, 2, 3]);
+  assert.deepEqual(flickerPattern({ op: 'flicker', times: 2, onMs: 30, offMs: 10 }), [30, 10, 30, 10]);
+  assert.deepEqual(flickerPattern({ op: 'flicker', times: 1 }), [100, 100]);
+  assert.equal(flickerPattern({ op: 'flicker', pattern: [] }), null);
+  assert.equal(flickerPattern({ op: 'flicker', pattern: ['100'] }), null);
+  assert.equal(flickerPattern({ op: 'flicker', pattern: [Infinity] }), null);
+  assert.equal(flickerPattern({ op: 'flicker', times: 0 }), null);
+  assert.equal(flickerPattern({ op: 'flicker' }), null);
+});
+
+test('A1.4: flicker no cuenta como cuelgue para el watchdog', async () => {
+  const ctx = withOverlays(makeCtx());
+  const engine = new ScriptEngine(ctx);
+  const done = engine.execute([{ op: 'flicker', overlay: 'lamp_empty', pattern: [60_000] }]);
+  await flush();
+  assert.equal(ticks(engine, 40, false), 0);
+  engine.setFastForward(true);
+  await done;
+  assert.deepEqual(ctx.overlayCalls.map((c) => c.visible), [true, null]);
+});
+
+test('A1.4: forceReset a mitad de un flicker quita los forzados y no vuelve a tocar el overlay', async () => {
+  const ctx = withOverlays(makeCtx());
+  const engine = new ScriptEngine(ctx);
+  const done = engine.execute([
+    { op: 'flicker', overlay: 'lamp_empty', pattern: [80, 80, 80, 80] },
+    { op: 'setFlag', flag: 'found_code_note', value: true },
+  ]);
+  await new Promise((r) => setTimeout(r, 100));
+  await withWarnings(async () => engine.forceReset('prueba'));
+  await done;
+  const afterReset = ctx.overlayCalls.findIndex((c) => c.id === '*');
+  assert.ok(afterReset > 0, 'clearOverlayOverrides');
+  await new Promise((r) => setTimeout(r, 400));
+  assert.equal(ctx.overlayCalls.length, afterReset + 1, 'el bucle abandonado no vuelve a forzar el overlay');
+  assert.equal(ctx.getState().flags.found_code_note, true, 'el rescate aplica el setFlag de después');
+  assert.equal(engine.isRunning(), false);
+});
+
+test('A1.4: cancelEffects (SHUTDOWN de la escena) corta el flicker y el script sigue', async () => {
+  const ctx = withOverlays(makeCtx());
+  const engine = new ScriptEngine(ctx);
+  const t0 = Date.now();
+  const done = engine.execute([
+    { op: 'flicker', overlay: 'lamp_empty', pattern: [5000, 5000] },
+    { op: 'setFlag', flag: 'after', value: true },
+  ]);
+  await new Promise((r) => setTimeout(r, 60));
+  engine.cancelEffects();
+  await done;
+  assert.ok(Date.now() - t0 < 2000, 'no espera el resto del patrón');
+  assert.deepEqual(ctx.overlayCalls.map((c) => c.visible), [true, null]);
+  assert.equal(ctx.overlayCalls[1].id, '*');
+  assert.equal(ctx.getState().flags.after, true);
 });

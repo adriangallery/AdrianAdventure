@@ -78,7 +78,7 @@ export class BadgePanel {
       .filter(f => flags[f]).length;
     const sceneCount = state?.visited?.length ?? 0;
     const discoveryFlags = [
-      'found_code_note','found_envelope','found_keycard','found_hw_wallet',
+      'found_code_note','found_envelope','found_keycard','found_terminal_key',
       'found_floppy','found_rubber_duck','found_sign_in_sheet','found_clinic_note',
       'found_clinic_photo','found_server_log','found_burned_chip','found_dr_badge',
       'found_adrian_note','found_receipt','found_broken_mouse','found_pz_note',

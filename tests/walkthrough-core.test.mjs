@@ -19,6 +19,9 @@ test('check: escena, inventario, flags, visitados y logros', () => {
   const s = st({ inventory: ['a'], flags: { f: true }, visited: ['outside'], achievements: ['x'] });
   assert.deepEqual(check({ scene: 'outside', has: ['a'], lacks: ['b'], flags: { f: true, g: false }, visited: ['outside'], achievements: ['x'] }, s), []);
   assert.equal(check({ scene: 'lobby', has: ['b'], lacks: ['a'], flags: { f: false } }, s).length, 4);
+  // A1.4: unsetFlags distingue «nunca escrita» de «escrita a false»
+  assert.deepEqual(check({ unsetFlags: ['nunca'] }, s), []);
+  assert.deepEqual(check({ unsetFlags: ['g'], flags: { g: false } }, st({ flags: { g: false } })), ['flag g = false escrita en la partida, se esperaba sin escribir']);
   assert.deepEqual(check(undefined, s), []);
   assert.deepEqual(check({ scene: 'x' }, null), ['sin estado del juego']);
 });

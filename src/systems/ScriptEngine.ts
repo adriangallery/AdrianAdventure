@@ -40,6 +40,14 @@ export interface ScriptContext {
   showToast?: (status: 'pending' | 'success' | 'failed', message: string) => void;
   // Costume change
   setCostume?: (prefix: string) => void;
+  /**
+   * A1.4: fuerza la visibilidad de un overlay condicional de la escena actual (`conditionalOverlays[].id`) sin
+   * tocar su flag; `null` quita el forzado y vuelve a mandar la flag. Devuelve false si la escena no tiene ese
+   * overlay (o su textura no cargó). Es presentación pura: no cambia el estado ni dispara el autoguardado.
+   */
+  setOverlayOverride?: (overlayId: string, visible: boolean | null) => boolean;
+  /** A1.4: quita todos los forzados de overlays (los deja como dicte su flag). */
+  clearOverlayOverrides?: () => void;
 }
 
 /**
@@ -58,7 +66,27 @@ export const WATCHDOG_MS = 30_000;
  * tiempo y sin nada en pantalla del juego. `mintAchievement` ya no bloquea el script, y un `mintNFT` que
  * pasa de 30 s se abandona como cualquier cuelgue, pero su resultado tardío sigue ejecutando onSuccess/onFail.
  */
-const SELF_RESOLVING_OPS = new Set(['wait', 'web3Require']);
+const SELF_RESOLVING_OPS = new Set(['wait', 'web3Require', 'flicker']);
+
+/**
+ * A1.4: patrón de `flicker` ya validado: duraciones (ms) finitas y no negativas. Devuelve null si `pattern` no es
+ * una lista de números. Exportada para las pruebas.
+ */
+export function flickerPattern(op: ScriptOp): number[] | null {
+  const raw = op.pattern;
+  if (Array.isArray(raw)) {
+    if (!raw.length || !raw.every((n) => typeof n === 'number' && Number.isFinite(n) && n >= 0)) return null;
+    return raw as number[];
+  }
+  // Forma corta: { times, onMs, offMs } = times parpadeos de onMs visible y offMs oculto
+  const { times, onMs, offMs } = op;
+  if (typeof times !== 'number' || !Number.isInteger(times) || times < 1) return null;
+  const on = typeof onMs === 'number' && Number.isFinite(onMs) && onMs >= 0 ? onMs : 100;
+  const off = typeof offMs === 'number' && Number.isFinite(offMs) && offMs >= 0 ? offMs : 100;
+  const out: number[] = [];
+  for (let i = 0; i < times; i++) out.push(on, off);
+  return out;
+}
 
 /** Script en la cola, con una etiqueta para los avisos (p. ej. `hs_porch_light/LOOK`). */
 interface QueuedScript {
@@ -95,6 +123,11 @@ export class ScriptEngine {
   private currentLabel = '';
   /** A1.1: tiempo parado sin nada en pantalla; vuelve a cero al empezar o terminar cada op */
   private stallMs = 0;
+  /**
+   * A1.4: `cancelEffects` (y `forceReset`) la incrementan; un `flicker` en marcha deja de tocar el overlay en
+   * cuanto ve que cambió.
+   */
+  private effectsEpoch = 0;
 
   constructor(ctx: ScriptContext) {
     this.ctx = ctx;
@@ -112,13 +145,22 @@ export class ScriptEngine {
     this.fastForward = on;
   }
 
-  /** Espera ms milisegundos, o menos si se activa el avance rápido. */
-  private sleep(ms: number): Promise<void> {
+  /** Espera ms milisegundos, o menos si se activa el avance rápido (o, A1.4, si `cancelled()` pasa a true). */
+  private sleep(ms: number, cancelled?: () => boolean): Promise<void> {
     return new Promise<void>((resolve) => {
       const end = Date.now() + ms;
-      const tick = () => (this.fastForward || Date.now() >= end ? resolve() : setTimeout(tick, 50));
+      const tick = () => (this.fastForward || Date.now() >= end || cancelled?.() ? resolve() : setTimeout(tick, 50));
       tick();
     });
+  }
+
+  /**
+   * A1.4: corta los efectos de presentación en curso (`flicker`) y devuelve los overlays a lo que dicte su flag.
+   * No toca el estado ni el script: lo llaman `forceReset` y el SHUTDOWN de la escena.
+   */
+  cancelEffects(): void {
+    this.effectsEpoch++;
+    this.ctx.clearOverlayOverrides?.();
   }
 
   /** Op que el script está esperando ahora mismo (el del bloque más interno). */
@@ -177,6 +219,8 @@ export class ScriptEngine {
     this.stallMs = 0;
     const abandon = this.abandonCurrent;
     this.abandonCurrent = null;
+    // A1.4: un flicker colgado o abandonado no deja el overlay a medias
+    this.cancelEffects();
 
     const applied: string[] = [];
     for (const block of current) {
@@ -331,6 +375,41 @@ export class ScriptEngine {
     }
   }
 
+  /**
+   * A1.4: { op: "flicker", overlay: "lamp_empty", pattern: [400, 100, 150, 60], startVisible?: true }
+   * (o { op: "flicker", overlay, times: 3, onMs: 100, offMs: 80 }). Alterna la visibilidad del overlay condicional
+   * `overlay` de la escena actual: el primer tramo lo enseña (u oculta con `startVisible: false`) y cada tramo
+   * siguiente lo invierte, durante los ms de cada número del patrón. Al terminar el overlay vuelve a lo que dicte
+   * su flag. No toca el estado (antes se hacía encendiendo y apagando la flag con `wait`, lo que ensuciaba la
+   * partida guardada). Bloquea como mucho la suma del patrón (menos con el avance rápido); el watchdog no lo cuenta
+   * como cuelgue, y `forceReset`, `cancelEffects` o el cambio de escena lo cortan.
+   */
+  private async flicker(op: ScriptOp, gen: number): Promise<void> {
+    const pattern = flickerPattern(op);
+    const overlay = op.overlay;
+    if (!pattern || typeof overlay !== 'string') {
+      console.warn(`ScriptEngine: flicker mal definido en ${this.currentLabel || 'script'} (overlay y pattern o times)`);
+      return;
+    }
+    const setter = this.ctx.setOverlayOverride;
+    const epoch = this.effectsEpoch;
+    const live = () => gen === this.generation && epoch === this.effectsEpoch;
+    let visible = op.startVisible !== false;
+    // Sin overlay en la escena (o sin contexto gráfico) no hay nada que parpadear: solo se respeta la duración
+    const drawable = setter ? setter(overlay, visible) : false;
+    const show = (v: boolean | null) => { if (drawable && setter) setter(overlay, v); };
+    try {
+      for (let i = 0; i < pattern.length; i++) {
+        if (!live()) return;
+        if (i > 0) show(visible);
+        await this.sleep(pattern[i], () => !live());
+        visible = !visible;
+      }
+    } finally {
+      if (live()) show(null);
+    }
+  }
+
   private async runOp(op: ScriptOp, gen: number): Promise<void> {
     if (this.applyStateOp(op)) return;
     const branch = this.branchOf(op);
@@ -359,6 +438,10 @@ export class ScriptEngine {
 
       case 'playSound':
         this.ctx.playSound?.(op.key as string);
+        break;
+
+      case 'flicker':
+        await this.flicker(op, gen);
         break;
 
       // ─── Web3 opcodes ──────────────────────────────────

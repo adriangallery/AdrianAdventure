@@ -20,8 +20,10 @@ export function describe(s) {
 }
 
 /**
- * Comprobaciones de estado: scene, has, lacks, flags, visited, achievements y (A1.10) noListenerGrowth, que compara
- * `st.resizeListeners` con `ctx.listenersBaseline` (lo que había tras el primer paso de la ruta). Devuelve los fallos.
+ * Comprobaciones de estado: scene, has, lacks, flags, unsetFlags, visited, achievements y (A1.10) noListenerGrowth, que
+ * compara `st.resizeListeners` con `ctx.listenersBaseline` (lo que había tras el primer paso de la ruta). `flags` trata
+ * una flag ausente como false; (A1.4) `unsetFlags` exige que la flag no esté en la partida, ni a false: nadie la ha
+ * escrito (p. ej. un parpadeo que antes se hacía encendiendo y apagando la flag). Devuelve los fallos.
  */
 export function check(expect, st, ctx = {}) {
   if (!expect) return [];
@@ -32,6 +34,9 @@ export function check(expect, st, ctx = {}) {
   for (const id of expect.lacks ?? []) if (st.inventory.includes(id)) f.push(`«${id}» no debería estar en el inventario`);
   for (const [flag, want] of Object.entries(expect.flags ?? {})) {
     if (Boolean(st.flags[flag]) !== want) f.push(`flag ${flag} = ${Boolean(st.flags[flag])}, se esperaba ${want}`);
+  }
+  for (const flag of expect.unsetFlags ?? []) {
+    if (Object.prototype.hasOwnProperty.call(st.flags, flag)) f.push(`flag ${flag} = ${st.flags[flag]} escrita en la partida, se esperaba sin escribir`);
   }
   for (const id of expect.visited ?? []) if (!st.visited.includes(id)) f.push(`no se visitó «${id}»`);
   for (const id of expect.achievements ?? []) if (!st.achievements.includes(id)) f.push(`falta el logro «${id}»`);
