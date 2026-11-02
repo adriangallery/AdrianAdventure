@@ -54,6 +54,11 @@ export interface SceneData {
   };
   /** Rectangular areas where the player can walk (percentage 0-100) */
   walkableAreas?: Array<{ x: number; y: number; w: number; h: number }>;
+  /**
+   * A2.1: obstáculos dentro de las zonas caminables (rectángulos en %, se restan de walkableAreas; su borde tampoco
+   * se pisa). El personaje los rodea con el pathfinding (src/systems/Pathfinding.ts). Sin walkableAreas no hacen nada.
+   */
+  blockedAreas?: Array<{ x: number; y: number; w: number; h: number }>;
   npcs?: NPCData[];
   dialogues?: Record<string, DialogueTreeData>;
   /** Scripts that run automatically when the scene loads */

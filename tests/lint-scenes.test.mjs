@@ -161,6 +161,15 @@ test('(e) no salta con spawns dentro (bordes incluidos) y avisa una vez si no ha
   assert.equal(f[0].severity, 'warning');
 });
 
+test('(e) A2.1: un spawn dentro de blockedAreas es error aunque caiga en walkableAreas', () => {
+  const a = scene('a', { player: { spawn: { x: 50, y: 95 } }, blockedAreas: [{ x: 45, y: 90, w: 10, h: 6 }] });
+  const b = scene('b', { player: { spawn: { x: 20, y: 95 } }, blockedAreas: [{ x: 45, y: 90, w: 10, h: 6 }] });
+  const f = only(lintProject(project([a, b])), 'e');
+  assert.equal(f.length, 1);
+  assert.equal(f[0].severity, 'error');
+  assert.match(f[0].message, /blockedAreas/);
+});
+
 // ── (f) assets ──
 test('(f) error por fondo, overlay, web3Visual, música, sonido, icono, NPC, escena y diálogo inexistentes', () => {
   const s = scene('x', {

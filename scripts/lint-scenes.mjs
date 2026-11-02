@@ -8,7 +8,8 @@
 //   b  objetos que se consiguen (addItem) y no sirven para nada
 //   c  salidas (fadeToScene/gotoScene) en hotspots y triggers sin gate, para revisar a mano
 //   d  operaciones de estado después de un say/sayBrief en el mismo bloque
-//   e  spawns fuera de walkableAreas (en la escena destino; ERROR desde A1.8, el aviso sin walkableAreas sigue siendo aviso)
+//   e  spawns fuera de walkableAreas o dentro de blockedAreas (A2.1) (en la escena destino; ERROR desde A1.8, el aviso
+//      sin walkableAreas sigue siendo aviso)
 //   f  sprites, fondos, audio, escenas y diálogos referenciados que no existen (ERROR por defecto)
 //   g  hotspots solapados (aviso fuerte si uno que va antes en la lista tapa entero a otro)
 //
@@ -43,8 +44,8 @@
 //       NPC          textura = id del NPC; PreloadScene carga npc_<x> de assets/sprites/npcs/<x>.png
 //       escena       assets/scenes/<sceneId>/scene.json
 //       diálogo      dialogues[treeId] de la MISMA escena (UIScene.startDialogueFromScene)
-//   - Caminable: Player.isWalkablePct (rectángulos de walkableAreas, bordes incluidos; sin áreas se anda por
-//     todas partes). Hotspots: GameScene.hitTestAt manda el PRIMER hotspot de la lista que contiene el punto.
+//   - Caminable: Player.isWalkablePct → isWalkableIn de src/systems/Pathfinding.ts (rectángulos de walkableAreas,
+//     bordes incluidos, menos los de blockedAreas, bordes incluidos también; sin walkableAreas se anda por todas partes). Hotspots: GameScene.hitTestAt manda el PRIMER hotspot de la lista que contiene el punto.
 
 import fs from 'node:fs';
 import path from 'node:path';
@@ -362,12 +363,16 @@ export function lintProject(project) {
       }
       return;
     }
-    if (!areas.some((a) => inRect(spawn, a))) {
+    const blocked = (ts.blockedAreas ?? []).filter(validRect).find((b) => inRect(spawn, b));
+    if (!areas.some((a) => inRect(spawn, a)) || blocked) {
       const key = `${srcScene}|${label}|${spawn.x},${spawn.y}`;
       if (outside.has(key)) return void outside.get(key).wheres.push(where);
       const f = { wheres: [where] };
       outside.set(key, f);
-      push('e', 'error', srcScene, where.slice(srcScene.length + 1), where, `${label} (${spawn.x}, ${spawn.y}) cae fuera de las walkableAreas de ${target}`, f);
+      const why = blocked
+        ? `cae dentro de un obstáculo (blockedAreas ${blocked.x},${blocked.y} ${blocked.w}×${blocked.h}) de ${target}`
+        : `cae fuera de las walkableAreas de ${target}`;
+      push('e', 'error', srcScene, where.slice(srcScene.length + 1), where, `${label} (${spawn.x}, ${spawn.y}) ${why}`, f);
     }
   };
   for (const [id, s] of Object.entries(scenes)) {

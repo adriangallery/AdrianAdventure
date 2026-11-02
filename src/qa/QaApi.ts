@@ -33,6 +33,8 @@ export interface QaState {
   achievements: string[];
   dialogueProgress: Record<string, string[]>;
   player: Point | null;
+  /** A2.1: última ruta calculada al andar (origen, puntos de paso y destino, en %); null si aún no ha andado */
+  path: Point[] | null;
   /** Hotspots visibles ahora mismo */
   hotspots: string[];
   /** NPCs con diálogo (clicables) */
@@ -64,6 +66,8 @@ export interface QaApi {
   state(): QaState;
   goto(sceneId: string, spawn?: Point): Promise<QaState>;
   walk(pctX: number, pctY: number): Promise<QaState>;
+  /** A2.1: ¿se puede pisar el punto (en %) en la escena actual? walkableAreas menos blockedAreas */
+  isWalkable(pctX: number, pctY: number): boolean;
   newGame(): Promise<QaState>;
 }
 
@@ -271,6 +275,7 @@ export function installQa(game: Phaser.Game): void {
       achievements: [...(st?.achievements ?? [])],
       dialogueProgress: JSON.parse(JSON.stringify(st?.dialogueProgress ?? {})) as Record<string, string[]>,
       player: scene ? scene.qaPlayer() : null,
+      path: scene ? scene.qaPath() : null,
       hotspots: scene && data ? data.regions.hotspots.filter((h) => scene.qaIsHotspotVisible(h)).map((h) => h.id) : [],
       npcs: scene ? scene.qaNpcIds() : [],
       triggers: scene ? scene.qaTriggers() : [],
@@ -362,6 +367,11 @@ export function installQa(game: Phaser.Game): void {
       if (why) throw new QaError('error', `no se puede hacer clic para andar a ${pctX},${pctY}: ${why}`);
       await settle();
       return snapshot();
+    },
+
+    isWalkable(pctX, pctY) {
+      if (!inGame()) throw new QaError('error', 'no hay escena de juego cargada');
+      return gs().qaIsWalkable(pctX, pctY);
     },
 
     async newGame() {

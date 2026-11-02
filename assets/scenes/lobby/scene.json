@@ -1151,6 +1151,14 @@
       "h": 16.7
     }
   ],
+  "blockedAreas": [
+    {
+      "x": 59.8,
+      "y": 83,
+      "w": 5.2,
+      "h": 3.5
+    }
+  ],
   "web3Visuals": [
     {
       "id": "vip_poster",

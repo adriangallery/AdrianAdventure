@@ -1,9 +1,16 @@
 import Phaser from 'phaser';
 import type { SceneData } from '@/types/scene.types';
 import type { CoordSystem } from '@/systems/CoordSystem';
+import { NavGrid, type Point } from '@/systems/Pathfinding';
 
 const WALK_FRAME_MS = 180;
 const IDLE_FRAME_MS = 400;
+/**
+ * A2.1: tramo máximo (en %) entre dos comprobaciones de triggers. Un frame largo se parte en tramos de este tamaño
+ * y tras cada uno se llama a `onStep`; es menor que el trigger más estrecho (1,6 % en mountain), así que el
+ * personaje nunca se salta un trigger, vaya a la velocidad que vaya.
+ */
+const MAX_SUBSTEP_PCT = 0.5;
 
 /**
  * Player character.
@@ -12,7 +19,18 @@ const IDLE_FRAME_MS = 400;
  */
 export class Player extends Phaser.GameObjects.Sprite {
   private coordSystem: CoordSystem;
-  private walkableAreas: Array<{ x: number; y: number; w: number; h: number }>;
+  /** A2.1: rejilla de navegación (walkableAreas menos blockedAreas) */
+  private nav: NavGrid;
+  /** Puntos de paso que quedan después del objetivo actual */
+  private waypoints: Point[] = [];
+  /** Última ruta calculada: origen, puntos de paso y destino (para la API de QA) */
+  private lastPath: Point[] | null = null;
+
+  /**
+   * A2.1: se llama tras cada tramo de movimiento (≤ MAX_SUBSTEP_PCT). GameScene comprueba ahí los triggers; si
+   * devuelve true (saltó uno y paró al personaje), se deja de mover en este frame.
+   */
+  onStep: (() => boolean) | null = null;
 
   /** Global scale multiplier from config */
   private playerScaleMultiplier: number;
@@ -43,7 +61,7 @@ export class Player extends Phaser.GameObjects.Sprite {
     this.coordSystem = coordSystem;
     this.pctX = spawnPctX;
     this.pctY = spawnPctY;
-    this.walkableAreas = sceneData.walkableAreas ?? [];
+    this.nav = new NavGrid(sceneData.walkableAreas, sceneData.blockedAreas);
 
     // Per-scene playerScale overrides global config
     const globalConfig = scene.cache.json.get('globalConfig') as { playerScale?: number } | undefined;
@@ -60,16 +78,25 @@ export class Player extends Phaser.GameObjects.Sprite {
     scene.add.existing(this);
   }
 
-  /** Walk to a target in % coords, clamped to walkable areas. */
+  /**
+   * Walk to a target in % coords. A2.1: ruta A* por las zonas caminables; si el destino no se pisa o está en otra
+   * isla, va al punto alcanzable más cercano. La firma no cambia (TrailerScene la usa).
+   */
   walkToPct(pctX: number, pctY: number): void {
-    const clamped = this.clampToWalkable(pctX, pctY);
-    this.targetPctX = clamped.x;
-    this.targetPctY = clamped.y;
+    const start = { x: this.pctX, y: this.pctY };
+    const route = this.nav.findPath(start, { x: pctX, y: pctY });
+    this.lastPath = [start, ...route.points];
+    // Sin puntos (ya está en el destino) se «llega» en el siguiente frame, como antes: el verbo pendiente se ejecuta
+    const [first, ...rest] = route.points.length ? route.points : [route.goal];
+    this.waypoints = rest;
+    this.targetPctX = first.x;
+    this.targetPctY = first.y;
   }
 
   halt(): void {
     this.targetPctX = null;
     this.targetPctY = null;
+    this.waypoints = [];
     this.setTexture(`${this.spritePrefix}_idle1`);
   }
 
@@ -120,24 +147,8 @@ export class Player extends Phaser.GameObjects.Sprite {
       return;
     }
 
-    const dx = this.targetPctX - this.pctX;
-    const dy = this.targetPctY - this.pctY;
-    const dist = Math.hypot(dx, dy);
-
-    // Arrived?
-    if (dist < 0.3) {
-      this.pctX = this.targetPctX;
-      this.pctY = this.targetPctY;
-      this.targetPctX = null;
-      this.targetPctY = null;
-      this.setTexture(`${this.spritePrefix}_idle1`);
-      this.syncScreenPosition();
-      this.scene.events.emit('player:arrived');
-      return;
-    }
-
     // Walk animation (sprite direction is mirrored from movement direction)
-    const direction = dx > 0 ? 'left' : 'right';
+    const direction = this.targetPctX - this.pctX > 0 ? 'left' : 'right';
     this.walkTimer += delta;
     if (this.walkTimer >= WALK_FRAME_MS) {
       this.walkTimer = 0;
@@ -145,28 +156,74 @@ export class Player extends Phaser.GameObjects.Sprite {
       this.setTexture(`${this.spritePrefix}_walk_${direction}_${this.walkFrameIndex}`);
     }
 
-    // Move in % space
-    const step = Math.min(1, (this.pctSpeed * delta / 1000) / dist);
-    const nextX = this.pctX + dx * step;
-    const nextY = this.pctY + dy * step;
+    // A2.1: el avance del frame se reparte en tramos cortos por los puntos de paso; tras cada tramo, onStep
+    let budget = this.pctSpeed * delta / 1000;
+    while (budget > 1e-9 && this.targetPctX !== null && this.targetPctY !== null) {
+      const dx = this.targetPctX - this.pctX;
+      const dy = this.targetPctY - this.pctY;
+      const dist = Math.hypot(dx, dy);
+      const next = this.waypoints[0];
 
-    // Check walkability
-    if (this.isWalkablePct(nextX, nextY)) {
-      this.pctX = nextX;
-      this.pctY = nextY;
-    } else if (this.isWalkablePct(nextX, this.pctY)) {
-      this.pctX = nextX;
-    } else if (this.isWalkablePct(this.pctX, nextY)) {
-      this.pctY = nextY;
-    } else {
-      // Can't move in any direction — stop and notify arrival (so pending actions fire)
-      this.targetPctX = null;
-      this.targetPctY = null;
-      this.setTexture(`${this.spritePrefix}_idle1`);
-      this.scene.events.emit('player:arrived');
+      // Punto de paso intermedio alcanzado: al siguiente sin parar
+      if (next && dist <= 1e-6) {
+        this.waypoints.shift();
+        this.targetPctX = next.x;
+        this.targetPctY = next.y;
+        continue;
+      }
+      // Arrived?
+      if (!next && dist < 0.3) {
+        this.arrive();
+        return;
+      }
+
+      const move = Math.min(budget, MAX_SUBSTEP_PCT, dist);
+      budget -= move;
+      const nextX = this.pctX + (dx / dist) * move;
+      const nextY = this.pctY + (dy / dist) * move;
+
+      // Check walkability (fuera de zona —spawn mal puesto, partida vieja— se anda libre hasta volver a entrar)
+      const fromX = this.pctX;
+      const fromY = this.pctY;
+      if (!this.isWalkablePct(this.pctX, this.pctY) || this.isWalkablePct(nextX, nextY)) {
+        this.pctX = nextX;
+        this.pctY = nextY;
+      } else if (this.isWalkablePct(nextX, this.pctY)) {
+        this.pctX = nextX;
+      } else if (this.isWalkablePct(this.pctX, nextY)) {
+        this.pctY = nextY;
+      }
+      // Atascado (no avanza o solo se arrastra en el sitio): salta al siguiente punto de paso o, si era el último,
+      // se para y avisa de la llegada (so pending actions fire)
+      if (Math.hypot(this.pctX - fromX, this.pctY - fromY) < move * 0.1) {
+        const skip = this.waypoints.shift();
+        if (skip) {
+          this.targetPctX = skip.x;
+          this.targetPctY = skip.y;
+          continue;
+        }
+        this.targetPctX = null;
+        this.targetPctY = null;
+        this.setTexture(`${this.spritePrefix}_idle1`);
+        this.syncScreenPosition();
+        this.scene.events.emit('player:arrived');
+        return;
+      }
+      if (this.onStep?.()) break;
     }
 
     this.syncScreenPosition();
+  }
+
+  private arrive(): void {
+    this.pctX = this.targetPctX ?? this.pctX;
+    this.pctY = this.targetPctY ?? this.pctY;
+    this.targetPctX = null;
+    this.targetPctY = null;
+    this.waypoints = [];
+    this.setTexture(`${this.spritePrefix}_idle1`);
+    this.syncScreenPosition();
+    this.scene.events.emit('player:arrived');
   }
 
   private syncScreenPosition(): void {
@@ -174,29 +231,21 @@ export class Player extends Phaser.GameObjects.Sprite {
     this.setPosition(screen.x, screen.y);
   }
 
-  private isWalkablePct(px: number, py: number): boolean {
-    for (const a of this.walkableAreas) {
-      if (px >= a.x && px <= a.x + a.w && py >= a.y && py <= a.y + a.h) return true;
-    }
-    return this.walkableAreas.length === 0; // If no areas defined, allow everywhere
+  /** ¿Se puede pisar el punto? (walkableAreas menos blockedAreas; sin áreas, sí) */
+  isWalkablePct(px: number, py: number): boolean {
+    return this.nav.isWalkable(px, py);
   }
 
-  /** Check if a target point (or its nearest walkable clamp) is reachable — i.e. within a walkable area. */
+  /**
+   * ¿Se puede ir andando hasta el punto? Tiene que ser caminable y estar en la misma zona conexa que el personaje.
+   * Si no, GameScene ejecuta el verbo sin andar.
+   */
   canReachPct(px: number, py: number): boolean {
-    return this.isWalkablePct(px, py) || this.walkableAreas.length === 0;
+    return this.nav.canReach({ x: this.pctX, y: this.pctY }, { x: px, y: py });
   }
 
-  private clampToWalkable(px: number, py: number): { x: number; y: number } {
-    if (this.isWalkablePct(px, py)) return { x: px, y: py };
-    if (this.walkableAreas.length === 0) return { x: px, y: py };
-
-    let bestX = px, bestY = py, bestDist = Infinity;
-    for (const a of this.walkableAreas) {
-      const cx = Phaser.Math.Clamp(px, a.x, a.x + a.w);
-      const cy = Phaser.Math.Clamp(py, a.y, a.y + a.h);
-      const d = Math.hypot(px - cx, py - cy);
-      if (d < bestDist) { bestDist = d; bestX = cx; bestY = cy; }
-    }
-    return { x: bestX, y: bestY };
+  /** A2.1: última ruta calculada (origen, puntos de paso y destino), para la API de QA y la demo */
+  getLastPath(): Point[] | null {
+    return this.lastPath ? this.lastPath.map((p) => ({ ...p })) : null;
   }
 }

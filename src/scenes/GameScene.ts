@@ -174,6 +174,7 @@ export class GameScene extends Phaser.Scene {
     const spawn = spawnOverride ?? sceneData.player.spawn;
     this.registry.remove('spawnOverride');
     this.player = new Player(this, this.coordSystem, spawn.x, spawn.y, sceneData);
+    this.player.onStep = () => this.checkWalkTriggers();
 
     // Hide player for closeup/cinematic scenes
     if (sceneData.player.hidePlayer) {
@@ -419,32 +420,37 @@ export class GameScene extends Phaser.Scene {
     // Tick down input cooldown (prevents dismiss-click from triggering next action)
     if (this.inputCooldownFrames > 0) this.inputCooldownFrames--;
 
-    // Walk-through trigger detection — disabled in trailer mode
-    if (this.player.isMoving() && !this.scriptEngine.isRunning() && !this.isTrailer) {
-      const sceneData = this.registry.get('sceneData') as SceneData | undefined;
-      if (sceneData) {
-        for (const tr of sceneData.regions.triggers) {
-          if (!tr.bounds) continue;
-          if (tr.once && this.firedTriggers.has(tr.id)) continue;
-          // Check trigger gate synchronously (uses cache, skips if not cached yet)
-          if (tr.gate) {
-            const { address } = getWalletState();
-            if (!address) continue;
-            const gateResult = checkGatingRuleCached(address as Address, tr.gate as GatingRule);
-            if (gateResult === null || gateResult === false) continue;
-          }
-          const b = tr.bounds;
-          if (this.player.pctX >= b.x && this.player.pctX <= b.x + b.w &&
-              this.player.pctY >= b.y && this.player.pctY <= b.y + b.h) {
-            this.firedTriggers.add(tr.id);
-            this.persistFiredTriggers();
-            this.player.halt();
-            this.scriptEngine.execute(tr.onEnter, `${tr.id}/onEnter`);
-            break;
-          }
-        }
+    // Walk-through trigger detection — disabled in trailer mode. A2.1: Player también la llama tras cada tramo del
+    // camino (onStep), así que un frame largo no se salta un trigger estrecho
+    this.checkWalkTriggers();
+  }
+
+  /** Trigger que pisa el personaje andando: lo marca, para al personaje y ejecuta su onEnter. true si saltó uno. */
+  private checkWalkTriggers(): boolean {
+    if (!this.player.isMoving() || this.scriptEngine.isRunning() || this.isTrailer) return false;
+    const sceneData = this.registry.get('sceneData') as SceneData | undefined;
+    if (!sceneData) return false;
+    for (const tr of sceneData.regions.triggers) {
+      if (!tr.bounds) continue;
+      if (tr.once && this.firedTriggers.has(tr.id)) continue;
+      // Check trigger gate synchronously (uses cache, skips if not cached yet)
+      if (tr.gate) {
+        const { address } = getWalletState();
+        if (!address) continue;
+        const gateResult = checkGatingRuleCached(address as Address, tr.gate as GatingRule);
+        if (gateResult === null || gateResult === false) continue;
+      }
+      const b = tr.bounds;
+      if (this.player.pctX >= b.x && this.player.pctX <= b.x + b.w &&
+          this.player.pctY >= b.y && this.player.pctY <= b.y + b.h) {
+        this.firedTriggers.add(tr.id);
+        this.persistFiredTriggers();
+        this.player.halt();
+        this.scriptEngine.execute(tr.onEnter, `${tr.id}/onEnter`);
+        return true;
       }
     }
+    return false;
   }
 
   // ─── Camera ───────────────────────────────
@@ -1216,6 +1222,14 @@ export class GameScene extends Phaser.Scene {
       gfx.strokeRect(tl.x, tl.y, br.x - tl.x, br.y - tl.y);
     }
 
+    // A2.1: obstáculos (blockedAreas) rellenos, para ver lo que rodea el personaje
+    gfx.fillStyle(TWP.DEBUG_SPAWN, 0.25);
+    for (const area of sceneData.blockedAreas ?? []) {
+      const tl = this.coordSystem.pctToScreen(area.x, area.y);
+      const br = this.coordSystem.pctToScreen(area.x + area.w, area.y + area.h);
+      gfx.fillRect(tl.x, tl.y, br.x - tl.x, br.y - tl.y);
+    }
+
     gfx.lineStyle(2, TWP.DEBUG_HOTSPOT, 0.6);
     for (const hs of sceneData.regions.hotspots) {
       if (!hs.bounds) continue;
@@ -1433,6 +1447,16 @@ export class GameScene extends Phaser.Scene {
 
   qaPlayer(): { x: number; y: number } {
     return { x: this.player.pctX, y: this.player.pctY };
+  }
+
+  /** A2.1: última ruta calculada (origen, puntos de paso y destino, en %) */
+  qaPath(): { x: number; y: number }[] | null {
+    return this.player.getLastPath();
+  }
+
+  /** A2.1: ¿se puede pisar el punto (en %)? walkableAreas menos blockedAreas */
+  qaIsWalkable(pctX: number, pctY: number): boolean {
+    return this.player.isWalkablePct(pctX, pctY);
   }
 
   qaNpcIds(): string[] {
