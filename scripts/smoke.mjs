@@ -467,10 +467,17 @@ await step('respuestas de fallo: un verbo sin script dice la frase 0 de su bolsa
   await p.setViewport({ width: 1280, height: 720 });
   p.on('pageerror', (err) => fail(`[fallo] error de página: ${err.message}`));
   try {
-    await p.goto(`${BASE}/?qa=1&scene=lobby`, { waitUntil: 'domcontentloaded' });
-    await p.waitForFunction(() => !!window.__qa && window.__game?.registry.get('currentSceneId') === 'lobby' && window.__qa.state().ready, { timeout: SCENE_TIMEOUT, polling: 250 });
-    const first = await p.evaluate(() => window.__qa.act('PUSH', 'hs_poster').then((s) => s.lastFailResponse));
-    const second = await p.evaluate(() => window.__qa.act('PUSH', 'hs_poster').then((s) => s.lastFailResponse));
+    // recovery_pool no tiene onEnter (lobby abre con una narrativa) y hs_tv no tiene script de PUSH
+    await p.goto(`${BASE}/?qa=1&scene=recovery_pool`, { waitUntil: 'domcontentloaded' });
+    await p.waitForFunction(() => !!window.__qa && window.__game?.scene?.isActive('GameScene') && window.__game.registry.get('currentSceneId') === 'recovery_pool', { timeout: SCENE_TIMEOUT, polling: 250 });
+    const t0 = Date.now();
+    while (!(await p.evaluate(() => window.__qa.state().ready))) {
+      if (Date.now() - t0 > 30000) throw new Error(`recovery_pool no queda libre en 30 s: ${JSON.stringify(await p.evaluate(() => window.__qa.state().busy))}`);
+      await p.evaluate(() => window.__qa.dismissAll()).catch(() => {});
+      await new Promise((r) => setTimeout(r, 500));
+    }
+    const first = await p.evaluate(() => window.__qa.act('PUSH', 'hs_tv').then((s) => s.lastFailResponse));
+    const second = await p.evaluate(() => window.__qa.act('PUSH', 'hs_tv').then((s) => s.lastFailResponse));
     console.log(`    ${JSON.stringify(first)}`);
     if (!first || first.kind !== 'verb' || first.bag !== 'verb:PUSH') throw new Error(`PUSH sin script no dio la bolsa del verbo: ${JSON.stringify(first)}`);
     if (first.text !== failData.verbDefaults.PUSH[0]) throw new Error(`con ?qa=1 la primera frase tiene que ser la 0: «${first.text}»`);
