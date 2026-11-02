@@ -45,6 +45,11 @@
     "hotspots": [
       {
         "id": "hs_sunrise",
+        "useResponses": {
+          "glasses_3d": [
+            "I look at the sunrise through the 3D glasses. Red and cyan. ...I take them off. It's just a sunrise."
+          ]
+        },
         "name": "Sunrise",
         "bounds": {
           "x": 10,
@@ -348,6 +353,11 @@
       },
       {
         "id": "hs_now_hiring_sign",
+        "useResponses": {
+          "golden_token": [
+            "I hold the token up to the sign. They're hiring builders, not investors. Huh."
+          ]
+        },
         "name": "NOW HIRING Sign",
         "bounds": {
           "x": 72.3,

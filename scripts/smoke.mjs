@@ -5,6 +5,7 @@
 // A2.4: controles de escritorio con teclado y ratón reales (Esc, Tab, doble clic en una salida, clic derecho).
 // A2.7: cambio de escena con la precarga hecha y vuelta: sin pantalla de carga y sin volver a descargar; MB y tiempos.
 // A2.9: el diario (móvil de Dex) se abre y se cierra con toques reales en 390x844, y con J/Esc.
+// A2.5: un PUSH sin script dice la frase 0 de la bolsa verbDefaults.PUSH (ronda fija con ?qa=1) y luego la 1.
 // Uso: BASE_URL=http://127.0.0.1:4173 node scripts/smoke.mjs
 import { readdirSync, existsSync, mkdirSync, readFileSync } from 'node:fs';
 import puppeteer from 'puppeteer';
@@ -454,6 +455,33 @@ await step('diario: abrir y cerrar el móvil con toques reales en 390x844 (y J/E
     await wait(() => window.__game.scene.isActive('GameScene') && window.__game.registry.get('currentSceneId') === 'lobby', undefined, 30000);
     const left = await p.evaluate(() => ({ dom: !!document.getElementById('journal-overlay'), open: window.__game.registry.get('journalOpen') }));
     if (left.dom || left.open) throw new Error(`tras cambiar de escena con el diario abierto queda ${JSON.stringify(left)}`);
+  } finally {
+    await ctx.close();
+  }
+});
+
+await step('respuestas de fallo: un verbo sin script dice la frase 0 de su bolsa y luego otra (A2.5)', async () => {
+  const failData = JSON.parse(readFileSync('assets/config/fail-responses.json', 'utf8'));
+  const ctx = await browser.createBrowserContext();
+  const p = await ctx.newPage();
+  await p.setViewport({ width: 1280, height: 720 });
+  p.on('pageerror', (err) => fail(`[fallo] error de página: ${err.message}`));
+  try {
+    // recovery_pool no tiene onEnter (lobby abre con una narrativa) y hs_tv no tiene script de PUSH
+    await p.goto(`${BASE}/?qa=1&scene=recovery_pool`, { waitUntil: 'domcontentloaded' });
+    await p.waitForFunction(() => !!window.__qa && window.__game?.scene?.isActive('GameScene') && window.__game.registry.get('currentSceneId') === 'recovery_pool', { timeout: SCENE_TIMEOUT, polling: 250 });
+    const t0 = Date.now();
+    while (!(await p.evaluate(() => window.__qa.state().ready))) {
+      if (Date.now() - t0 > 30000) throw new Error(`recovery_pool no queda libre en 30 s: ${JSON.stringify(await p.evaluate(() => window.__qa.state().busy))}`);
+      await p.evaluate(() => window.__qa.dismissAll()).catch(() => {});
+      await new Promise((r) => setTimeout(r, 500));
+    }
+    const first = await p.evaluate(() => window.__qa.act('PUSH', 'hs_tv').then((s) => s.lastFailResponse));
+    const second = await p.evaluate(() => window.__qa.act('PUSH', 'hs_tv').then((s) => s.lastFailResponse));
+    console.log(`    ${JSON.stringify(first)}`);
+    if (!first || first.kind !== 'verb' || first.bag !== 'verb:PUSH') throw new Error(`PUSH sin script no dio la bolsa del verbo: ${JSON.stringify(first)}`);
+    if (first.text !== failData.verbDefaults.PUSH[0]) throw new Error(`con ?qa=1 la primera frase tiene que ser la 0: «${first.text}»`);
+    if (second?.text !== failData.verbDefaults.PUSH[1]) throw new Error(`la segunda vez tiene que ser la frase 1 (sin repetir): «${second?.text}»`);
   } finally {
     await ctx.close();
   }

@@ -56,6 +56,14 @@
     "hotspots": [
       {
         "id": "hs_desk",
+        "useResponses": {
+          "terminal_key": [
+            "I put the key back on the desk. The desk doesn't want it back. Nobody wants anything back."
+          ],
+          "golden_token": [
+            "I slap the token on the trading desk. 'Buy.' Nobody buys. Nobody's here."
+          ]
+        },
         "name": "Trading Desk",
         "bounds": {
           "x": 41.7,
@@ -219,6 +227,22 @@
       },
       {
         "id": "hs_computer",
+        "useResponses": {
+          "_default": [
+            "I hold it up to the mining rig. The fans spin faster. That's just the fans.",
+            "The rig has a lot of slots. None of them fits that.",
+            "I'm not feeding that to the mining rig. It eats electricity, not ideas."
+          ],
+          "energy_drink": [
+            "The rig is running fine. Whatever needs this caffeine is dead, not busy. Something downstairs, maybe."
+          ],
+          "terminal_key": [
+            "I wave the terminal key at the rig. Wrong machine. The key wants a trading terminal, not a space heater."
+          ],
+          "keycard": [
+            "No card reader on the rig. It doesn't care who I am. Most machines don't."
+          ]
+        },
         "name": "Mining Rig",
         "bounds": {
           "x": 10.6,
@@ -300,6 +324,11 @@
       },
       {
         "id": "hs_armchair",
+        "useResponses": {
+          "luxury_watch": [
+            "I'm not putting the watch back in the armchair. It took me ages to fish it out."
+          ]
+        },
         "name": "Premium Armchair",
         "bounds": {
           "x": 77,
@@ -378,6 +407,11 @@
       },
       {
         "id": "hs_roof_hatch",
+        "useResponses": {
+          "keycard": [
+            "No reader on this hatch. It's just a hatch. I can push it like a normal person."
+          ]
+        },
         "name": "Roof Hatch",
         "bounds": {
           "x": 24.1,

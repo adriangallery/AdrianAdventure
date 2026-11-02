@@ -4,7 +4,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import {
-  attemptIndex, check, checkAttemptRan, checkCinematic, checkHighlighted, checkJournal, checkLastChoices, checkListenerGrowth, checkRejects, checkWalkTarget, classify,
+  attemptIndex, check, checkAttemptRan, checkCinematic, checkFailResponse, checkHighlighted, checkJournal, checkLastChoices, checkListenerGrowth, checkRejects, checkWalkTarget, classify,
   describe, kindOf, newLogLines, routeDefects, runScriptDefects, selftestDefects, selftestMismatch, tapsScene,
   checkPixel, notePixel, checkAnim,
 } from '../scripts/lib/walkthrough-core.mjs';
@@ -490,4 +490,43 @@ test('A4.1: la ruta crítica anda en vertical en el lobby (abajo de frente, arri
   const i = route.steps.indexOf(withAnim[0]);
   assert.equal(route.steps[i - 1].target, 'hs_coat');
   assert.equal(route.steps[i + 2].npc, 'npc_receptionist');
+});
+
+test('A2.5: expect.failResponse contra state().lastFailResponse', () => {
+  const last = { kind: 'item-hotspot', item: 'keycard', target: 'hs_coat', verb: 'USE', text: "I put the keycard back in the coat.", bag: 'hotspot:lobby/hs_coat:keycard' };
+  const s = st({ lastFailResponse: last });
+  assert.deepEqual(checkFailResponse({ kind: 'item-hotspot', item: 'keycard', target: 'hs_coat', bag: 'hotspot:lobby/hs_coat:keycard', text: 'back in the COAT' }, s), []);
+  assert.deepEqual(check({ failResponse: { kind: 'item-hotspot' } }, s), []);
+  const fails = checkFailResponse({ kind: 'verb', item: 'ledger', target: 'hs_x', verb: 'PUSH', bag: 'verb:PUSH', text: 'nope' }, s);
+  assert.equal(fails.length, 6, fails.join('\n'));
+  assert.match(checkFailResponse({ kind: 'verb' }, st())[0], /anterior a A2.5/);
+  assert.match(checkFailResponse({ kind: 'verb' }, st({ lastFailResponse: null }))[0], /ninguna respuesta/);
+});
+
+test('A2.5: los rejects de respuestas de fallo de la ruta crítica casan con la frase 0 de su bolsa (ronda fija con ?qa=1)', () => {
+  const fail = readJson('assets/config/fail-responses.json');
+  const lobby = readJson('assets/scenes/lobby/scene.json');
+  const steps = readJson('qa/walkthrough.json').routes.find((r) => r.id === 'ruta-critica').steps.filter((s) => s.expect?.failResponse);
+  assert.ok(steps.length >= 5, 'PUSH/PULL/GIVE por defecto, una pareja específica y una bolsa de objeto');
+  const bagText = (bag) => {
+    const [kind, rest] = [bag.slice(0, bag.indexOf(':')), bag.slice(bag.indexOf(':') + 1)];
+    if (kind === 'verb') return fail.verbDefaults[rest][0];
+    if (kind === 'item') return fail.items[rest][0];
+    if (kind === 'hotspot') {
+      const [where, item] = rest.split(':');
+      const hs = lobby.regions.hotspots.find((h) => `lobby/${h.id}` === where);
+      return hs.useResponses[item][0];
+    }
+    throw new Error(`bolsa no prevista en la prueba: ${bag}`);
+  };
+  const kinds = new Set();
+  for (const s of steps) {
+    kinds.add(s.expect.failResponse.bag.split(':')[0]);
+    assert.match(bagText(s.expect.failResponse.bag), new RegExp(s.rejects, 'i'), `${describe(s)}: rejects /${s.rejects}/`);
+  }
+  assert.deepEqual([...kinds].sort(), ['hotspot', 'item', 'verb']);
+  // Ningún rejects de las rutas casa con las plantillas viejas («I can't use X with Y», «can't push that»…)
+  for (const f of ['qa/walkthrough.json', 'qa/sequence-breaks.json', 'qa/selftest.json']) {
+    for (const r of readJson(f).routes) for (const s of r.steps) if (s.rejects) assert.doesNotMatch(s.rejects, /can't (use|push|pull|pick)|nobody to give|doesn't want/i, `${f} ${r.id}`);
+  }
 });

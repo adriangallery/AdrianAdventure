@@ -3,7 +3,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { lintProject, applyPolicy, parseStringArray, parseWhen, depthScaleDefects, PIXEL_RANGES } from '../scripts/lint-scenes.mjs';
+import { lintProject, applyPolicy, parseStringArray, parseWhen, depthScaleDefects, PIXEL_RANGES, FAIL_MIN, FAIL_VERBS, bagDefects, itemDescIds, loadProject } from '../scripts/lint-scenes.mjs';
 
 /** Escena mínima válida: fondo, un área caminable de todo el suelo y el spawn dentro. */
 function scene(id, extra = {}) {
@@ -480,4 +480,106 @@ test('i: los rangos del linter son los de src/systems/PixelScale.ts', () => {
   assert.deepEqual(PIXEL_RANGES.pixelScale, [num('PIXEL_SCALE_MIN'), num('PIXEL_SCALE_MAX')]);
   assert.deepEqual(PIXEL_RANGES.depthFactor, [num('DEPTH_FACTOR_MIN'), num('DEPTH_FACTOR_MAX')]);
   assert.deepEqual(PIXEL_RANGES.artScale, [num('ART_SCALE_MIN'), num('ART_SCALE_MAX')]);
+});
+
+// ── (j) respuestas de fallo (A2.5) ──
+
+/** fail-responses.json mínimo válido (todas las bolsas con su mínimo) */
+function failData(extra = {}) {
+  const bag = (p, n) => Array.from({ length: n }, (_, i) => `${p} line ${i + 1}.`);
+  return {
+    verbDefaults: Object.fromEntries(FAIL_VERBS.map((v) => [v, bag(v, 3)])),
+    itemVerbDefaults: Object.fromEntries(FAIL_VERBS.filter((v) => v !== 'USE').map((v) => [v, bag(`item ${v}`, 3)])),
+    itemHotspot: bag('hotspot', 5),
+    itemNpc: { USE: bag('npc use', 3), GIVE: bag('npc give', 3) },
+    itemItem: { default: bag('pair', 5), pairs: [] },
+    items: {},
+    ...extra,
+  };
+}
+const gives = (id, item) => scene(id, { regions: { hotspots: [hs('hs_get', { PICK: [{ op: 'addItem', id: item, name: item }] })], triggers: [] } });
+
+test('j: useResponses con objeto inexistente, bolsa vacía o con marcador = error; combo = aviso', () => {
+  const s = scene('x', {
+    regions: {
+      hotspots: [
+        hs('hs_get', { PICK: [{ op: 'addItem', id: 'key', name: 'Key' }] }),
+        hs('hs_door', {}, { bounds: { x: 10, y: 10, w: 1, h: 1 }, useResponses: { _default: ['Nope.', 'Still nope.'], key: ['Not that key.'], ghost: ['Who?'], empty: [], marker: ['Using {item} here.'] } }),
+        hs('hs_box', {}, { bounds: { x: 20, y: 20, w: 1, h: 1 }, useResponses: { key: ['Never said.'] } }),
+      ],
+      triggers: [],
+    },
+    combos: [{ items: ['key', 'hs_box'], script: [{ op: 'say', text: 'Open.' }] }],
+    npcs: [{ id: 'npc_a', name: 'A', position: { x: 1, y: 1 }, giveResponses: { _default: 'She declines {item}.', key: ['Thanks.', 'Bad ${x}.'] } }],
+  });
+  const f = only(lintProject({ ...project([s]), failResponses: { data: failData({ items: { key: ['a.', 'b.', 'c.'] } }) } }), 'j');
+  const err = f.filter((x) => x.severity === 'error');
+  assert.ok(err.some((x) => x.where === 'x.hs_door.useResponses.ghost' && /no existe/.test(x.message)));
+  assert.ok(err.some((x) => x.where === 'x.hs_door.useResponses.empty' && /vacía/.test(x.message)));
+  assert.ok(err.some((x) => x.where === 'x.hs_door.useResponses.marker' && /marcador/.test(x.message)));
+  assert.ok(err.some((x) => x.where === 'x.npcs.npc_a.giveResponses._default' && /marcador/.test(x.message)));
+  assert.ok(err.some((x) => x.where === 'x.npcs.npc_a.giveResponses.key' && /marcador/.test(x.message)));
+  // ghost (no existe) también es error en la clave; empty no existe tampoco
+  assert.ok(!err.some((x) => x.where === 'x.hs_door.useResponses.key'), 'la pareja válida no da error');
+  assert.ok(!err.some((x) => x.where === 'x.hs_door.useResponses._default'), '_default no es un objeto');
+  const warn = f.filter((x) => x.severity === 'warning');
+  assert.ok(warn.some((x) => x.where === 'x.hs_box.useResponses.key' && /combo/.test(x.message)));
+});
+
+test('j: objeto del inventario con < 3 frases de mal uso = aviso; objetos de ITEM_DESCS y de addItem en src/ cuentan', () => {
+  const src = [['src/ui/ScummUI.ts', `  private static readonly ITEM_DESCS: Record<string, string> = {\n    lamp: "A lamp.",\n    other_thing: 'Other.',\n  };\n  foo() { this.inventory.addItem('coded_item', 'X'); }`]];
+  const f = only(lintProject({ ...project([gives('a', 'key')], { src }), failResponses: { data: failData({ items: { key: ['a.', 'b.'], lamp: ['a.', 'b.', 'c.'], other_thing: ['a.', 'b.', 'c.'] } }) } }), 'j');
+  assert.ok(f.every((x) => x.severity === 'warning'), JSON.stringify(f));
+  assert.deepEqual(f.map((x) => x.id).sort(), ['coded_item', 'key']);
+  assert.ok(f.some((x) => x.id === 'key' && /2 frase/.test(x.message)));
+  assert.deepEqual(itemDescIds(src[0][1]), ['lamp', 'other_thing']);
+});
+
+test('j: fail-responses.json inválido (JSON, verbos con < 3, objeto + objeto con < 5, parejas, marcadores, objeto inexistente) = error', () => {
+  const lint = (failResponses) => only(lintProject({ ...project([gives('a', 'key')]), failResponses }), 'j').filter((x) => x.severity === 'error');
+  assert.equal(lint({ data: failData({ items: { key: ['a.', 'b.', 'c.'] } }) }).length, 0, 'datos válidos: sin errores');
+  assert.ok(lint({ data: null, error: 'no es JSON válido: x' }).some((x) => /JSON/.test(x.message)));
+  const d = failData({ items: { key: ['a.', 'b.', 'c.'], ghost: ['x.'] } });
+  d.verbDefaults.PUSH = ['Only one.'];
+  delete d.verbDefaults.TALK;
+  d.itemItem.default = ['a.', 'b.'];
+  d.itemItem.pairs = [{ items: ['key'], lines: ['x.'] }, { items: ['key', 'ghost'], lines: ['Pair {item}.'] }];
+  const e = lint({ data: d });
+  const at = (where, re) => assert.ok(e.some((x) => x.where === where && re.test(x.message)), `${where} ${re}: ${JSON.stringify(e.map((x) => [x.where, x.message]))}`);
+  at('verbDefaults.PUSH', /mínimo 3/);
+  at('verbDefaults.TALK', /lista/);
+  at('itemItem.default', /mínimo 5/);
+  at('itemItem.pairs[0]', /dos ids/);
+  at('itemItem.pairs[1]', /ghost/);
+  at('itemItem.pairs[1].lines', /marcador/);
+  at('items.ghost', /no existe/);
+});
+
+test('j: bagDefects y los mínimos del linter son los de src/systems/FailResponses.ts', () => {
+  assert.deepEqual(bagDefects('One line.'), []);
+  assert.deepEqual(bagDefects(['One.', 'Two.']), []);
+  assert.equal(bagDefects('One line.', { listOnly: true }).length, 1);
+  assert.equal(bagDefects([]).length, 1);
+  assert.ok(/marcador/.test(bagDefects(['Hi ${name}.'])[0]));
+  const ts = readFileSync(new URL('../src/systems/FailResponses.ts', import.meta.url), 'utf8');
+  const num = (name) => Number(ts.match(new RegExp(`export const ${name} = ([0-9]+);`))[1]);
+  assert.deepEqual(FAIL_MIN, { item: num('MIN_ITEM_LINES'), verb: num('MIN_VERB_LINES'), itemItem: num('MIN_ITEM_ITEM_LINES') });
+  const verbs = ts.match(/export const FAIL_VERBS = \[([^\]]*)\]/)[1].match(/'([A-Z]+)'/g).map((v) => v.slice(1, -1));
+  assert.deepEqual(FAIL_VERBS, verbs);
+});
+
+test('j: el proyecto real pasa la regla sin errores ni avisos y tiene las cifras de A2.5', () => {
+  const root = new URL('..', import.meta.url).pathname;
+  const p = loadProject(root);
+  const f = only(lintProject(p), 'j');
+  assert.deepEqual(f.map((x) => `${x.severity} ${x.where}: ${x.message}`), []);
+  const d = p.failResponses.data;
+  assert.ok(Object.keys(d.items).length >= 28, 'todos los objetos con bolsa');
+  assert.ok(Object.values(d.items).every((b) => b.length >= 3));
+  assert.ok(d.itemItem.pairs.length >= 8);
+  let pairs = 0;
+  for (const s of Object.values(p.scenes)) {
+    for (const h of s.regions?.hotspots ?? []) pairs += Object.keys(h.useResponses ?? {}).filter((k) => k !== '_default').length;
+  }
+  assert.ok(pairs >= 25, `solo ${pairs} parejas objeto + hotspot`);
 });

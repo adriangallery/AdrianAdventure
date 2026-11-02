@@ -3,7 +3,7 @@
 //
 //   node scripts/lint-scenes.mjs [--strict] [--json] [--scene <id>] [--root <dir>] [--no-write]
 //
-// Recorre assets/scenes/<id>/scene.json y aplica ocho reglas:
+// Recorre assets/scenes/<id>/scene.json y aplica diez reglas:
 //   a  flags que se leen y nunca se ponen, o que se ponen y nunca se leen
 //   b  objetos que se consiguen (addItem) y no sirven para nada
 //   c  salidas (fadeToScene/gotoScene) en hotspots y triggers sin gate, para revisar a mano
@@ -18,8 +18,14 @@
 //      píxel de la escena), y `pixelScale`, `depthScale` o `npcs[].artScale` fuera de rango. Rangos: los de
 //      src/systems/PixelScale.ts (pixelScale 1-12, factores de depthScale 0,2-2 con yTop < yBottom en 0-100,
 //      artScale 0,25-4); se repiten aquí porque el linter corre en Node sin type stripping
+//   j  respuestas de fallo (A2.5, src/systems/FailResponses.ts): `useResponses` de un hotspot o `useResponses`/
+//      `giveResponses` de una NPC con un objeto que no existe, bolsa vacía o con una frase con marcador ({item}, ${…}:
+//      sin voz), y assets/config/fail-responses.json inválido (bolsas de verbo con < 3 frases, objeto + objeto con < 5,
+//      parejas mal formadas o con objetos que no existen) = ERROR; objeto del inventario con < 3 frases de mal uso
+//      (`items.<id>`) y pareja de un hotspot que es un combo (nunca se dice) = aviso. «Objeto que existe» = lo da un
+//      addItem de una escena, sale en ScummUI.ITEM_DESCS o en un addItem('…') de src/
 //
-// Por defecto (f), los spawns fuera de zona de (e) y el diario mal formado de (h) son error; el resto, aviso. --strict lo convierte todo en error. Código de salida 1
+// Por defecto (f), los spawns fuera de zona de (e), el diario mal formado de (h) y los errores de (j) son error; el resto, aviso. --strict lo convierte todo en error. Código de salida 1
 // solo si hay errores. Escribe lint-scenes-report.json y lint-scenes-report.md en la raíz del repo.
 // Excepciones con motivo en qa/lint-scenes-allow.json: [{ "rule": "c", "scene": "x", "id": "y", "reason": "…" }]
 // (`id` compara con el id del hallazgo o con su ruta; admite `*` al final como prefijo).
@@ -78,7 +84,37 @@ export const RULES = {
   g: 'hotspots solapados',
   h: 'diario',
   i: 'densidad de píxel',
+  j: 'respuestas de fallo',
 };
+
+// A2.5: mismos mínimos que src/systems/FailResponses.ts (tests/lint-scenes.test.mjs comprueba que coinciden)
+export const FAIL_MIN = { item: 3, verb: 3, itemItem: 5 };
+export const FAIL_VERBS = ['LOOK', 'USE', 'TALK', 'PICK', 'OPEN', 'CLOSE', 'PUSH', 'PULL', 'GIVE'];
+export const FAIL_FILE = 'assets/config/fail-responses.json';
+/** ¿Lleva marcador o interpolación? (igual que FailResponses.hasMarker) */
+export const hasMarker = (t) => /\$\{|\{[^{}]*\}/.test(t);
+
+/** A2.5: defectos de una bolsa (frase suelta o lista) de useResponses/giveResponses o de fail-responses.json. */
+export function bagDefects(bag, { listOnly = false, min = 1 } = {}) {
+  if (typeof bag === 'string' && !listOnly) bag = [bag];
+  if (!Array.isArray(bag)) return [listOnly ? 'tiene que ser una lista de frases' : 'tiene que ser una frase o una lista de frases'];
+  const out = [];
+  if (!bag.length) out.push('bolsa vacía');
+  bag.forEach((t, i) => {
+    if (typeof t !== 'string' || !/[A-Za-z0-9]/.test(t)) out.push(`[${i}] no es una frase`);
+    else if (hasMarker(t)) out.push(`[${i}] lleva marcador o interpolación («${t.slice(0, 40)}»): no tendría voz`);
+  });
+  if (bag.length && bag.length < min) out.push(`${bag.length} frase(s), mínimo ${min}`);
+  return out;
+}
+
+/** A2.5: ids de ScummUI.ITEM_DESCS (objetos con descripción) en el texto del fichero. */
+export function itemDescIds(text) {
+  const at = (text ?? '').indexOf('ITEM_DESCS: Record<string, string> = {');
+  if (at < 0) return [];
+  const end = text.indexOf('\n  };', at);
+  return [...text.slice(at, end < 0 ? undefined : end).matchAll(/^\s+([a-z0-9_]+):\s*["'`]/gm)].map((m) => m[1]);
+}
 
 // A2.8: mismos rangos que src/systems/PixelScale.ts (tests/lint-scenes.test.mjs comprueba que coinciden)
 export const PIXEL_RANGES = { pixelScale: [1, 12], depthFactor: [0.2, 2], artScale: [0.25, 4] };
@@ -176,6 +212,16 @@ export function loadProject(root) {
       journal.push({ file, data: null, error: `no es JSON válido: ${err.message}` });
     }
   }
+  // A2.5: respuestas de fallo globales
+  const failFile = path.join(root, FAIL_FILE);
+  let failResponses = null;
+  if (fs.existsSync(failFile)) {
+    try {
+      failResponses = { data: readJson(failFile) };
+    } catch (err) {
+      failResponses = { data: null, error: `no es JSON válido: ${err.message}` };
+    }
+  }
   const qaUses = new Set([
     ...qaItemUses(path.join(root, 'qa', 'walkthrough.json')),
     ...qaItemUses(path.join(root, 'qa', 'sequence-breaks.json')),
@@ -185,6 +231,7 @@ export function loadProject(root) {
     loadErrors,
     srcFiles,
     journal,
+    failResponses,
     qaUses,
     preload: {
       items: parseStringArray(preloadText, 'itemIds'),
@@ -727,6 +774,63 @@ export function lintProject(project) {
       if (n.artScale !== undefined && !inRange(n.artScale, PIXEL_RANGES.artScale)) {
         push('i', 'warning', id, n.id, `${id}.npcs.${n.id}.artScale`, `${n.id}: artScale = ${JSON.stringify(n.artScale)} fuera de ${PIXEL_RANGES.artScale.join('-')}; se usa 1`);
       }
+    }
+  }
+
+  // ── (j) respuestas de fallo (A2.5) ──
+  const known = new Set([...acquired.keys()]);
+  for (const f of srcFiles) {
+    if (f.file.endsWith('ui/ScummUI.ts')) for (const id of itemDescIds(f.text)) known.add(id);
+    for (const m of f.text.matchAll(/\baddItem\(\s*['"]([a-z0-9_]+)['"]/g)) known.add(m[1]);
+  }
+  const J = 'config/fail-responses';
+  for (const [id, s] of Object.entries(scenes)) {
+    const combos = new Set((s.combos ?? []).map((c) => [...(c.items ?? [])].sort().join('+')));
+    const checkMap = (map, base, hsId) => {
+      if (!map || typeof map !== 'object' || Array.isArray(map)) { push('j', 'error', id, base, base, 'tiene que ser un objeto { _default, <idDeObjeto>: frase o lista }'); return; }
+      for (const [key, bag] of Object.entries(map)) {
+        const where = `${base}.${key}`;
+        if (key !== '_default' && !known.has(key)) push('j', 'error', id, key, where, `el objeto «${key}» no existe (ningún addItem ni ScummUI.ITEM_DESCS)`);
+        for (const d of bagDefects(bag)) push('j', 'error', id, key, where, d);
+        if (hsId && key !== '_default' && combos.has([key, hsId].sort().join('+'))) push('j', 'warning', id, key, where, `${key} + ${hsId} es un combo: esta respuesta de fallo nunca se dice`);
+      }
+    };
+    for (const hs of s.regions?.hotspots ?? []) if (hs.useResponses !== undefined) checkMap(hs.useResponses, `${id}.${hs.id}.useResponses`, hs.id);
+    for (const n of s.npcs ?? []) {
+      for (const field of ['giveResponses', 'useResponses']) if (n[field] !== undefined) checkMap(n[field], `${id}.npcs.${n.id}.${field}`, null);
+    }
+  }
+  const fr = project.failResponses;
+  if (fr?.error) push('j', 'error', J, FAIL_FILE, FAIL_FILE, fr.error);
+  else if (fr?.data) {
+    const d = fr.data;
+    const bad = (where, defects) => { for (const x of defects) push('j', 'error', J, where, where, x); };
+    for (const v of FAIL_VERBS) bad(`verbDefaults.${v}`, bagDefects(d.verbDefaults?.[v], { listOnly: true, min: FAIL_MIN.verb }));
+    for (const v of FAIL_VERBS) if (v !== 'USE') bad(`itemVerbDefaults.${v}`, bagDefects(d.itemVerbDefaults?.[v], { listOnly: true, min: FAIL_MIN.verb }));
+    bad('itemHotspot', bagDefects(d.itemHotspot, { listOnly: true, min: FAIL_MIN.itemItem }));
+    for (const v of ['USE', 'GIVE']) bad(`itemNpc.${v}`, bagDefects(d.itemNpc?.[v], { listOnly: true, min: FAIL_MIN.verb }));
+    bad('itemItem.default', bagDefects(d.itemItem?.default, { listOnly: true, min: FAIL_MIN.itemItem }));
+    const seenPairs = new Set();
+    (Array.isArray(d.itemItem?.pairs) ? d.itemItem.pairs : []).forEach((p, i) => {
+      const where = `itemItem.pairs[${i}]`;
+      if (!Array.isArray(p?.items) || p.items.length !== 2 || p.items.some((x) => typeof x !== 'string') || p.items[0] === p.items[1]) {
+        bad(where, ['items tienen que ser dos ids de objeto distintos']);
+        return;
+      }
+      const k = [...p.items].sort().join('+');
+      if (seenPairs.has(k)) bad(where, [`pareja repetida (${k})`]);
+      seenPairs.add(k);
+      for (const it of p.items) if (!known.has(it)) bad(where, [`el objeto «${it}» no existe`]);
+      bad(`${where}.lines`, bagDefects(p.lines, { listOnly: true }));
+    });
+    const items = d.items && typeof d.items === 'object' ? d.items : {};
+    for (const [it, bag] of Object.entries(items)) {
+      if (!known.has(it)) bad(`items.${it}`, [`el objeto «${it}» no existe`]);
+      bad(`items.${it}`, bagDefects(bag, { listOnly: true }));
+    }
+    for (const it of [...known].sort()) {
+      const n = Array.isArray(items[it]) ? items[it].length : 0;
+      if (n < FAIL_MIN.item) push('j', 'warning', J, it, `items.${it}`, `objeto «${it}» con ${n} frase(s) de mal uso (mínimo ${FAIL_MIN.item}): cae en la bolsa genérica`);
     }
   }
 

@@ -48,6 +48,22 @@
     "hotspots": [
       {
         "id": "hs_front_door",
+        "useResponses": {
+          "_default": [
+            "I try it on the door. The door has seen burglars with better ideas.",
+            "It's a door. It wants a key or a code, not whatever that is.",
+            "I hold it against the door. The door stays shut. Doors are like that."
+          ],
+          "ledger": [
+            "I press the Ledger against the door. It's a hardware wallet, not a hardware key. ...Close, though."
+          ],
+          "keycard": [
+            "I look for a card reader on the front door. There isn't one. Adrian's front door is old-fashioned. Rude."
+          ],
+          "golden_token": [
+            "I look for a coin slot in the front door. Nope. Shame. I'd pay to get in."
+          ]
+        },
         "name": "Front Door",
         "bounds": {
           "x": 31.6,
@@ -563,6 +579,14 @@
       },
       {
         "id": "hs_mailbox",
+        "useResponses": {
+          "mystery_envelope": [
+            "I almost put the envelope back in the mailbox. No. Finders keepers. That's the law. Roughly."
+          ],
+          "code_note": [
+            "I'm not mailing the door code to anyone. That's how codes get leaked."
+          ]
+        },
         "name": "Mailbox",
         "bounds": {
           "x": 58.8,
@@ -781,6 +805,11 @@
       },
       {
         "id": "hs_doormat",
+        "useResponses": {
+          "ledger": [
+            "I put the Ledger back under the mat. Then I take it out again. Nobody needs to know."
+          ]
+        },
         "name": "Doormat",
         "bounds": {
           "x": 31.9,
@@ -1310,6 +1339,22 @@
       },
       {
         "id": "hs_keypad",
+        "useResponses": {
+          "_default": [
+            "The keypad wants numbers. That isn't numbers.",
+            "I mash it against the keypad. It doesn't even beep. That's how bad an idea it was.",
+            "Keypads take codes. Not objects. Not hope."
+          ],
+          "ledger": [
+            "I hold the Ledger up to the keypad. 'Hardware key,' I explain. The keypad only speaks digits."
+          ],
+          "keycard": [
+            "I swipe the card across the keypad. It's a keypad. It has no idea what a card is."
+          ],
+          "mystery_envelope": [
+            "The code isn't in the envelope. Probably. And I'm not opening confidential mail on a doorstep."
+          ]
+        },
         "name": "Keypad",
         "bounds": {
           "x": 37.3,

@@ -132,6 +132,19 @@
       },
       {
         "id": "hs_plant",
+        "useResponses": {
+          "_default": [
+            "I'm not putting that in the plant. Plants have feelings. This one looks like a Fernando.",
+            "Fernando the plant doesn't want that. I've decided his name is Fernando. He doesn't object.",
+            "Fernando only drinks water. I don't know how I know that. I just do."
+          ],
+          "golden_token": [
+            "I bury the golden token in Fernando's pot. Then dig it back out. Plants can't grow money. I asked."
+          ],
+          "rubber_duck": [
+            "I sit the duck in Fernando's pot. They don't get along. I take the duck back."
+          ]
+        },
         "name": "Lobby Plant",
         "bounds": {
           "x": 39.9,
@@ -198,6 +211,16 @@
       },
       {
         "id": "hs_frontdoor",
+        "useResponses": {
+          "_default": [
+            "That's the way out, not a puzzle. I can just walk through it.",
+            "I try it on the door. The door is already open. I'm overthinking a door.",
+            "The door's job is opening. It's doing fine without my help."
+          ],
+          "keycard": [
+            "No card reader on this side. Adrian's security is all on the outside. Like a lot of people."
+          ]
+        },
         "name": "Main Entrance",
         "bounds": {
           "x": 90.5,
@@ -304,6 +327,11 @@
       },
       {
         "id": "hs_coat",
+        "useResponses": {
+          "keycard": [
+            "I put the keycard back in the coat. Then take it out again. I'm here to be paid, not to be honest."
+          ]
+        },
         "name": "Wool Coat",
         "bounds": {
           "x": 53.3,
@@ -424,6 +452,16 @@
       },
       {
         "id": "hs_monitor_desk",
+        "useResponses": {
+          "_default": [
+            "I put it on the desk. Penny moves it off the desk. Silently. Terrifyingly.",
+            "Not on the desk. The desk belongs to Penny. Everything here belongs to Penny.",
+            "I slide it towards the monitor. The monitor doesn't care. Penny does."
+          ],
+          "mystery_envelope": [
+            "I leave the envelope by the monitor. Penny's eyes follow it like a cat's. I take it back before she pounces."
+          ]
+        },
         "name": "Monitor Desk",
         "bounds": {
           "x": 3,
@@ -817,7 +855,14 @@
       },
       "dialogueTreeId": "receptionist_intro",
       "giveResponses": {
-        "_default": "She politely declines {item}. 'I have a strict no-gifts policy. HR was very clear about that.'",
+        "_default": [
+          "She politely declines. 'Strict no-gifts policy. I wrote it.'",
+          "'I can't accept that. HR would be furious. I am HR.'",
+          "Penny eyes it, then me. 'Is this a bribe? Because it's a bad one.'"
+        ],
+        "energy_drink": "She reads the label and hands it back. 'Not near Fernando. He's in recovery. He only drinks rain.'",
+        "pepememe": "'A Rare Pepe? I'm not allowed to accept collectibles. Or memes. HR has a list.'",
+        "ape_costume": "'Put that away. The last time someone wore one of those in here, we lost a fern.'",
         "code_note": "'I didn't see that code. I DEFINITELY didn't see that. This conversation never happened.'",
         "mystery_envelope": "'CONFIDENTIAL? Oh no no no. Last time I opened something confidential, I found out my salary was public on the blockchain.'",
         "ledger": "'Adrian's ledger?! Put that away! If the auditors see that, we're ALL going to on-chain jail.'",
@@ -841,7 +886,12 @@
         "adrian_note": "She reads it and tears up slightly. 'He always did believe in the builders. Even the ones who break things.'"
       },
       "useResponses": {
-        "_default": "I try using {item} on the receptionist. She gives me a look that could liquidate a portfolio.",
+        "_default": [
+          "I try it on Penny. She gives me a look that could freeze a payroll.",
+          "Penny doesn't move. 'Whatever that is, it's not going on my desk. Or on me.'",
+          "'Sir. That is an HR incident.' I put it away."
+        ],
+        "energy_drink": "I wave the can at her. 'No stimulants in my lobby. Fernando is in recovery.'",
         "code_note": "I wave the code at her. 'Is this a tip? Because I don't do crypto tips. Only coffee tips.'",
         "rubber_duck": "I squeeze the duck in her face. She doesn't flinch. 'I've seen worse. You should see traders on a red day.'",
         "water_bottle": "'Is this a bribe? Because it's working. ...No wait, HR training kicked in. Sorry.'",

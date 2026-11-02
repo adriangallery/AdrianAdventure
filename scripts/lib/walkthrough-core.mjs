@@ -77,6 +77,8 @@ export function check(expect, st, ctx = {}) {
   if (expect.pixel) f.push(...checkPixel(expect.pixel, st, ctx.pixelRefs));
   // A4.1: animación del jugador (dirección del último tramo, cabeceo, textura, reposo)
   if (expect.anim) f.push(...checkAnim(expect.anim, st));
+  // A2.5: última respuesta de fallo (tipo, objeto, objetivo, verbo, bolsa y texto)
+  if (expect.failResponse) f.push(...checkFailResponse(expect.failResponse, st));
   return f;
 }
 
@@ -102,6 +104,23 @@ export function checkAnim(want, st) {
   }
   if (want.costume !== undefined && a.costume !== want.costume) f.push(`animación: disfraz «${a.costume}», se esperaba «${want.costume}»`);
   if (want.rest && !a.rest) f.push(`animación: no está en reposo (giro ${a.angle}°, elevación ${a.liftPx} px, escala ${a.scale} y base ${a.baseScale})`);
+  return f;
+}
+
+/**
+ * A2.5: `expect.failResponse` contra `st.lastFailResponse`: `kind` (item-hotspot | item-npc | item-item | verb | item-verb),
+ * `item`, `target`, `verb` y `bag` (iguales) y `text` (expresión regular, sin mayúsculas). Con ?qa=1 cada bolsa va en ronda
+ * desde 0, así que la primera vez sale su frase 0.
+ */
+export function checkFailResponse(want, st) {
+  const r = st.lastFailResponse;
+  if (r === undefined) return ['el juego no expone `lastFailResponse` en state() (API de QA anterior a A2.5)'];
+  if (!r) return ['no ha habido ninguna respuesta de fallo'];
+  const f = [];
+  for (const k of ['kind', 'item', 'target', 'verb', 'bag']) {
+    if (want[k] !== undefined && r[k] !== want[k]) f.push(`respuesta de fallo: ${k} «${r[k]}», se esperaba «${want[k]}»`);
+  }
+  if (want.text !== undefined && !new RegExp(want.text, 'i').test(r.text ?? '')) f.push(`respuesta de fallo «${r.text}», no casa con /${want.text}/`);
   return f;
 }
 

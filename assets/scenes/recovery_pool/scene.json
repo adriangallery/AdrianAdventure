@@ -45,6 +45,11 @@
     "hotspots": [
       {
         "id": "hs_pool_group_left",
+        "useResponses": {
+          "ape_costume": [
+            "I wave the ape costume at the apes. They're not impressed. I should be wearing it, not waving it."
+          ]
+        },
         "name": "Pool Apes (Left Side)",
         "bounds": {
           "x": 30.1,
@@ -111,6 +116,11 @@
       },
       {
         "id": "hs_pool_group_right",
+        "useResponses": {
+          "ape_costume": [
+            "I hold up the ape costume. 'Fur is worn, old chap. Not brandished.'"
+          ]
+        },
         "name": "Pool Apes (Right Side)",
         "bounds": {
           "x": 49.3,
@@ -177,6 +187,22 @@
       },
       {
         "id": "hs_rubber_duck",
+        "useResponses": {
+          "_default": [
+            "Gerald doesn't accept offerings like that. Gerald has standards.",
+            "I hold it out to Gerald. Gerald floats. Gerald is above all this.",
+            "The apes hiss. You don't touch Gerald with random stuff."
+          ],
+          "rubber_duck": [
+            "I hold my duck up to Gerald. They need a proper introduction. I should just walk up to him."
+          ],
+          "golden_token": [
+            "I offer Gerald the golden token. Gerald doesn't do money. Gerald is beyond money."
+          ],
+          "water_bottle": [
+            "I splash Gerald. The apes gasp. He lives in a pool. He's fine. Everyone calm down."
+          ]
+        },
         "name": "Giant Rubber Duck",
         "bounds": {
           "x": 43,
@@ -254,6 +280,11 @@
       },
       {
         "id": "hs_tv",
+        "useResponses": {
+          "glasses_3d": [
+            "I watch the TV through the 3D glasses. The charts look even more 3D. ...Stop it, Dex."
+          ]
+        },
         "name": "Wall TV",
         "bounds": {
           "x": 73.3,
@@ -350,6 +381,19 @@
       },
       {
         "id": "hs_robot_bartender",
+        "useResponses": {
+          "_default": [
+            "The bartender scans it. 'Not on the menu.' Fair.",
+            "'I do not accept that as payment.' The robot is very polite about it.",
+            "The robot beeps. 'Tips only.' That isn't a tip."
+          ],
+          "golden_token": [
+            "I slide the golden token across the bar. The robot slides it back. 'No tokens. Too volatile.'"
+          ],
+          "energy_drink": [
+            "I offer the bartender my energy drink. 'I do not drink. I am the drinks.'"
+          ]
+        },
         "name": "Robot Bartender",
         "bounds": {
           "x": 82,
@@ -534,6 +578,11 @@
       },
       {
         "id": "hs_dark_door",
+        "useResponses": {
+          "keycard": [
+            "No reader on the ominous door. Ominous doors don't do cards."
+          ]
+        },
         "name": "Ominous Door",
         "bounds": {
           "x": 0,

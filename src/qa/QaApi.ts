@@ -22,6 +22,8 @@ import { Verb, type GameState } from '@/types/game.types';
 import type { LastTransition } from '@/scenes/PreloadScene';
 import type { ScenePrefetcher } from '@/systems/ScenePrefetcher';
 import type { PlayerAnimQa } from '@/objects/Player';
+import type { FailResponse } from '@/systems/FailResponses';
+import { failResponses } from '@/systems/FailResponsesData';
 
 type Point = { x: number; y: number };
 /** A2.6: `used` = ya elegida antes en ese árbol (gris). Las ocultas (`when`, `once`) no salen. */
@@ -126,6 +128,14 @@ export interface QaState {
    * `liftPx` del tween, `scale`, `baseScale` y `rest` (sin tween y con la escala base de A2.8). null fuera de la partida.
    */
   anim: PlayerAnimQa | null;
+  /**
+   * A2.5: última respuesta de fallo (src/systems/FailResponses.ts): `kind` (item-hotspot | item-npc | item-item | verb |
+   * item-verb), `item`, `target` (hotspot, NPC u otro objeto), `verb`, `text` (lo que se dijo) y `bag` (bolsa de la que
+   * salió: `hotspot:<escena>/<id>:<objeto|_default>`, `npc:…`, `item:<id>`, `itemHotspot`, `itemNpc:<verbo>`,
+   * `itemItem:<a>+<b>`, `itemItem`, `verb:<verbo>`, `itemVerb:<verbo>`). Con ?qa=1 cada bolsa va en ronda desde 0. null si
+   * aún no ha habido ninguna.
+   */
+  lastFailResponse: FailResponse | null;
 }
 
 /** A2.8: ver QaState.pixel */
@@ -421,6 +431,7 @@ export function installQa(game: Phaser.Game): void {
       journal: playing ? ui().getJournal?.()?.qaState() ?? null : null,
       pixel: scene ? scene.qaPixel() : null,
       anim: scene ? scene.qaAnim() : null,
+      lastFailResponse: failResponses.last ? { ...failResponses.last } : null,
     };
   };
 

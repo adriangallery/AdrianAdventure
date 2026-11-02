@@ -275,6 +275,11 @@
       },
       {
         "id": "hs_filing_cabinet",
+        "useResponses": {
+          "keycard": [
+            "No card reader on the cabinet. Just a drawer. I'll try the drawer like a normal person."
+          ]
+        },
         "name": "Filing Cabinet",
         "bounds": {
           "x": 68.4,
@@ -385,6 +390,22 @@
       },
       {
         "id": "hs_treatment_door",
+        "useResponses": {
+          "_default": [
+            "That won't open the treatment room. It wants something specific.",
+            "I push it against the door. The door has a lock and a grudge.",
+            "The treatment room wants a key. That isn't a key. Barely an anything."
+          ],
+          "terminal_key": [
+            "I wave the terminal key at the lock. The LED blinks. I should just try the door. It knows I have it."
+          ],
+          "keycard": [
+            "I swipe the keycard. No reader. This door is older than the clinic's budget."
+          ],
+          "dr_satoshi_badge": [
+            "I flash the doctor's badge at the door. Doors can't read. This one can barely open."
+          ]
+        },
         "name": "Treatment Room Door",
         "bounds": {
           "x": 25.4,
@@ -583,6 +604,11 @@
       },
       {
         "id": "hs_water_dispenser",
+        "useResponses": {
+          "water_bottle": [
+            "I'm not mixing clinic water with mountain water. The clinic's tastes like regret. The doctor said so."
+          ]
+        },
         "name": "Water Dispenser",
         "bounds": {
           "x": 13.3,
@@ -737,6 +763,11 @@
       },
       {
         "id": "hs_dr_coat",
+        "useResponses": {
+          "dr_satoshi_badge": [
+            "I pin the badge back on the coat. Then unpin it. He lost it. I found it. That's how finding works."
+          ]
+        },
         "name": "Dr. Satoshi's Coat",
         "bounds": {
           "x": 77.3,
@@ -942,6 +973,11 @@
       },
       {
         "id": "hs_lightbulb_poster",
+        "useResponses": {
+          "glasses_3d": [
+            "I look at the red poster through the 3D glasses. One eye sees it. The other sees nothing. My brain files a complaint."
+          ]
+        },
         "name": "Red Glowing Poster",
         "bounds": {
           "x": 33.5,
@@ -1008,6 +1044,14 @@
       },
       {
         "id": "hs_reception_computer",
+        "useResponses": {
+          "floppy_disk": [
+            "No floppy drive. The reception computer is too modern for my backup. Insulting."
+          ],
+          "vip_floppy": [
+            "The VIP floppy doesn't fit here. VIP lounges have stricter dress codes."
+          ]
+        },
         "name": "Reception Computer",
         "bounds": {
           "x": 82,
@@ -1106,7 +1150,13 @@
       },
       "dialogueTreeId": "dr_satoshi_intro",
       "giveResponses": {
-        "_default": "'I appreciate the gesture, but I can't accept {item}. Medical ethics. Also, I don't have pockets.'",
+        "_default": [
+          "'I can't accept that. Medical ethics. Also, I don't have pockets.'",
+          "'A gift? And how does giving me that make you feel? ...Keep it.'",
+          "He shakes his head. 'Patients give me things. Then they want them back. Keep it.'"
+        ],
+        "energy_drink": "'BULL RUN? Five hundred milligrams? I've admitted people for less. Pour it out.'",
+        "pepememe": "He goes pale. 'Where did you get that? Specimens do NOT leave the lab.'",
         "code_note": "'A code? I deal in diagnoses, not digits. Well... both are digits, technically.'",
         "mystery_envelope": "'Confidential mail? In MY clinic? I have enough secrets to manage, thank you.'",
         "ledger": "'A hardware wallet? The last patient who showed me one cried for forty minutes about gas fees.'",
@@ -1130,7 +1180,12 @@
         "receipt": "'A receipt? Every transaction tells a story. This one says... someone bought too many energy drinks at 2 AM. Relatable.'"
       },
       "useResponses": {
-        "_default": "I try using {item} on Dr. Satoshi. He adjusts his glasses. 'That's not how medicine works.'",
+        "_default": [
+          "I try it on Dr. Satoshi. He adjusts his glasses. 'That's not how medicine works.'",
+          "'Please stop pointing things at me. It's going in your chart.'",
+          "He takes notes. 'Patient tests objects on doctor. Fascinating. Continue. No, don't.'"
+        ],
+        "glasses_3d": "I hold the 3D glasses up to his face. 'I see you in two colours. Both concerned.'",
         "rubber_duck": "I squeeze the duck at the doctor. 'Interesting. And how does that make you FEEL?' He's turned the session on me.",
         "water_bottle": "'Hydration is important. But using water ON a doctor isn't therapy. It's assault.'",
         "golden_token": "I wave the token at him. 'Ah yes, the classic crypto-hypnosis technique. Doesn't work on me. I'm vaccinated.'",
