@@ -1,9 +1,11 @@
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { serve } from '@hono/node-server';
-import { verifyMessage } from 'viem';
+import { verifyMessage, createPublicClient, http } from 'viem';
+import { mainnet } from 'viem/chains';
 import { readFileSync, writeFileSync, existsSync, mkdirSync, readdirSync, unlinkSync } from 'fs';
 import { join } from 'path';
+import { publicPlayer, createEnsCache } from './privacy.js';
 
 const app = new Hono();
 
@@ -14,6 +16,18 @@ app.use('*', cors({
   origin: ['https://adventure.zerothetoken.com', 'https://adventure.adrianzero.com', 'https://zeroadventure.vercel.app', 'https://adrianzero.com', 'http://localhost:3000', 'http://localhost:5173'],
   allowMethods: ['GET', 'POST', 'OPTIONS'],
 }));
+
+// A1.6: el ENS se resuelve aquí (el cliente ya no recibe la dirección completa). RPC público y gratuito, sin claves.
+// Nunca bloquea /leaderboard: caché en memoria 24 h (también el null) y resolución en segundo plano.
+const ensClient = createPublicClient({
+  chain: mainnet,
+  transport: http('https://eth.llamarpc.com', { retryCount: 0, timeout: 3000 }),
+});
+const ensCache = createEnsCache({
+  resolve: (address) => ensClient.getEnsName({ address }),
+  timeoutMs: 3000,
+  concurrency: 4,
+});
 
 app.get('/', (c) => c.json({ status: 'ok', service: 'zeroadventure-save' }));
 
@@ -147,7 +161,7 @@ app.get('/leaderboard', (c) => {
         const state = data.state;
         if (!state) continue;
 
-        const addr = data.address;
+        const addr = typeof data.address === 'string' ? data.address.toLowerCase() : '';
         const flags = state.flags ?? {};
 
         // Chapters
@@ -240,8 +254,13 @@ app.get('/leaderboard', (c) => {
     }
 
     const players = [...playerMap.values()].sort((a, b) => b.score - a.score);
+    // A1.6: solo se publican filas con dirección truncada (publicPlayer: lista blanca de campos) y solo se
+    // resuelve el ENS del top 50 devuelto, en segundo plano (no se espera; la siguiente petición ya lo trae).
+    const topInternal = players.filter((p) => publicPlayer(p) !== null).slice(0, 50);
+    ensCache.prefetch(topInternal.map((p) => p.address)).catch(() => {});
+    const top = topInternal.map((p) => publicPlayer(p, ensCache.get));
 
-    return c.json({ total: players.length, players: players.slice(0, 50) });
+    return c.json({ total: players.length, players: top });
   } catch (err) {
     console.error('Leaderboard error:', err);
     return c.json({ error: 'Internal server error' }, 500);

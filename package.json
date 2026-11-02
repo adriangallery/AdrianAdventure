@@ -15,6 +15,7 @@
     "test:walkthrough": "node scripts/walkthrough.mjs",
     "test:walkthrough:selftest": "node scripts/walkthrough.mjs --selftest qa/selftest.json",
     "test:walkthrough:unit": "node --test tests/walkthrough-core.test.mjs",
+    "test:server": "node --test tests/leaderboard-privacy.test.mjs",
     "test:engine": "node --experimental-strip-types --test tests/script-engine.test.mjs tests/audio-policy.test.mjs tests/save-migration.test.mjs tests/debug-params.test.mjs",
     "test:lint": "node --test tests/lint-scenes.test.mjs",
     "lint:scenes": "node scripts/lint-scenes.mjs",
