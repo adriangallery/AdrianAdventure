@@ -29,6 +29,10 @@ test('keyAction: verbos, Tab, Esc e I; nada con Ctrl/Cmd/Alt ni escribiendo', ()
   assert.deepEqual(keyAction({ key: 'Tab' }, 'game'), { kind: 'highlight' });
   assert.deepEqual(keyAction({ key: 'Escape' }, 'game'), { kind: 'skip' });
   assert.deepEqual(keyAction({ key: 'i' }, 'game'), { kind: 'inventory' });
+  // A2.9: J abre y cierra el diario (también con el foco en un botón del propio diario)
+  assert.deepEqual(keyAction({ key: 'j' }, 'game'), { kind: 'journal' });
+  assert.deepEqual(keyAction({ key: 'J' }, 'elsewhere'), { kind: 'journal' });
+  assert.equal(keyAction({ key: 'j' }, 'typing'), null);
   assert.equal(keyAction({ key: 'x' }, 'game'), null);
   assert.equal(keyAction({ key: 'ArrowLeft' }, 'game'), null);
   assert.equal(keyAction({ key: 'c', ctrlKey: true }, 'game'), null, 'Ctrl+C es del navegador');

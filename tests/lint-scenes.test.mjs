@@ -383,3 +383,60 @@ test('A2.6: los árboles reales del juego pasan las reglas nuevas', async () => 
     }
   }
 });
+
+// ── (h) diario (A2.9) ──
+const jfile = (data, file = 'assets/journal/chapter-1.json') => ({ file, data });
+const goodJournal = () => ({
+  chapter: 1,
+  goals: [{ id: 'g1', text: 'Goal.', doneWhen: 'set_flag' }],
+  notes: [{ id: 'n1', text: 'Note.', shownWhen: ['set_flag', 'item:gem'] }, { id: 'n_op', text: 'By op.' }],
+  puzzles: [{ id: 'p1', openWhen: 'set_flag', doneWhen: '!ghost_flag', hints: ['a', 'b', 'c'] }],
+  anonIdle: ['Nothing.'],
+});
+const journalScene = () => scene('x', {
+  regions: {
+    hotspots: [hs('hs_a', {
+      PICK: [{ op: 'setFlag', flag: 'set_flag', value: true }, { op: 'addItem', id: 'gem', name: 'Gem' }],
+      LOOK: [{ op: 'journalNote', id: 'n_op' }],
+    })],
+    triggers: [],
+  },
+});
+
+test('(h) diario válido: sin errores; avisa de la flag que nada pone; sus lecturas cuentan para (a)', () => {
+  const p = { ...project([journalScene()]), journal: [jfile(goodJournal())] };
+  const all = lintProject(p);
+  const h = only(all, 'h');
+  assert.deepEqual(h.filter((f) => f.severity === 'error'), []);
+  assert.deepEqual(h.map((f) => f.id), ['ghost_flag']);
+  assert.equal(h[0].severity, 'warning');
+  // set_flag solo lo lee el diario: ya no es «se pone y nunca se lee»
+  assert.deepEqual(only(all, 'a').map((f) => f.id), []);
+  // Sin diario, sí lo sería
+  assert.deepEqual(only(lintProject(project([journalScene()])), 'a').map((f) => f.id), ['set_flag']);
+});
+
+test('(h) errores: JSON inválido, capítulo repetido, ids repetidos, condición mal escrita, hints que no son 3, journalNote a una nota que no existe', () => {
+  const dup = goodJournal();
+  const bad = {
+    chapter: 1,
+    goals: [{ id: 'g1', text: 'Again.', doneWhen: 'set_flag' }, { id: 'g2', text: '', doneWhen: [] }],
+    notes: [{ id: 'n2', text: 'x', shownWhen: 'mal escrita' }],
+    puzzles: [{ id: 'p2', doneWhen: 'set_flag', hints: ['solo dos', 'pistas'] }],
+    anonIdle: 'not a list',
+  };
+  const s = journalScene();
+  s.regions.hotspots[0].scripts.USE = [{ op: 'journalNote', id: 'no_such_note' }];
+  const p = { ...project([s]), journal: [jfile(dup), jfile(bad, 'assets/journal/chapter-1b.json'), { file: 'assets/journal/broken.json', data: null, error: 'no es JSON válido: x' }] };
+  const errors = only(lintProject(p), 'h').filter((f) => f.severity === 'error').map((f) => f.message);
+  const has = (re) => assert.ok(errors.some((m) => re.test(m)), `falta ${re}: ${errors.join(' | ')}`);
+  has(/no es JSON válido/);
+  has(/capítulo 1 ya está/);
+  has(/id «g1» repetido/);
+  has(/falta "text"/);
+  has(/falta la condición/);
+  has(/«mal escrita» no válida/);
+  has(/exactamente 3 textos/);
+  has(/anonIdle/);
+  has(/journalNote: la nota «no_such_note»/);
+});

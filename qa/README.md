@@ -24,8 +24,10 @@ hasta el hotspot, combos, gates y diálogos). Nunca pone flags ni da objetos.
 | `rightClick(id, choices?)` | A2.4: clic derecho: verbo por defecto del hotspot (ver `src/systems/DesktopControls.ts`) o TALK en una NPC |
 | `doubleClick(id)` | A2.4: doble clic en una salida con Walk en el panel; `[qa:error]` si el personaje anda, `[qa:blocked]` si no cambia de escena en 4 s |
 | `runScript(ops, { skipAfterMs? })` | A2.10: ejecuta `ops` por el ScriptEngine principal (como un script de hotspot) y espera a que termine; los textos de una cinemática avanzan solos y los de fuera se cierran con el toque sintético. `skipAfterMs`: pulsa Esc (tecla real) a ese tiempo, para saltar la cinemática. Ver § Cinemáticas |
+| `openJournal(tab?)` / `closeJournal()` | A2.9: abre el diario (móvil de Dex) pulsando su botón con el mismo manejador que el dedo (`[qa:blocked]` si ahora no se puede: cinemática, diálogo, texto o script) y lo cierra con su X. `tab`: `goals` (por defecto), `notes`, `anon`. Ver § Diario |
+| `callAnon()` | A2.9: llama a Anon como el jugador (abre el diario si hace falta, pestaña Call Anon, botón de llamar, espera a que conteste y lo vuelve a cerrar si lo abrió ella); la llamada queda en `state().journal.anon` |
 | `isWalkable(x, y)` | A2.1: si el punto (en %) se pisa en la escena actual (`walkableAreas` menos `blockedAreas`); síncrona |
-| `state()` | Escena, inventario, flags, visitadas, hotspots visibles, elecciones, avisos, log (`logTotal`: líneas apuntadas desde que cargó) `actions` (verbos que llegaron a ejecutarse) y `resizeListeners` (A1.10: listeners de `resize` del ScaleManager) y `path` (A2.1: última ruta calculada al andar: origen, puntos de paso y destino), `facing` (A2.2: `left`/`right`/`front`/`back`) y `walkTarget` (A2.2: último acercamiento a un hotspot/NPC: `target`, `verb`, `walkTo` —null si no anduvo— y `face`), y (A2.4) `verb` (verbo del panel), `highlightedHotspots` (resaltados con Tab), `verbKeyHints` (verbos con su tecla pintada en el panel) e `inputListeners` (listeners de teclado y del lienzo), (A2.10) `cinematic` (ver § Cinemáticas) y (A2.7) `prefetch` (precarga de las escenas vecinas: `scene`, `neighbors`, `done`, `pending`, `inFlight`, `failed`, `disabled`) y `lastTransition` (último cambio de escena: `from`, `to`, `ms`, `loadMs`, `at`, `mode` `full`/`indicator`/`instant`, `loadingScreen`, `fadeMs`) |
+| `state()` | Escena, inventario, flags, visitadas, hotspots visibles, elecciones, avisos, log (`logTotal`: líneas apuntadas desde que cargó) `actions` (verbos que llegaron a ejecutarse) y `resizeListeners` (A1.10: listeners de `resize` del ScaleManager) y `path` (A2.1: última ruta calculada al andar: origen, puntos de paso y destino), `facing` (A2.2: `left`/`right`/`front`/`back`) y `walkTarget` (A2.2: último acercamiento a un hotspot/NPC: `target`, `verb`, `walkTo` —null si no anduvo— y `face`), y (A2.4) `verb` (verbo del panel), `highlightedHotspots` (resaltados con Tab), `verbKeyHints` (verbos con su tecla pintada en el panel) e `inputListeners` (listeners de teclado y del lienzo), (A2.10) `cinematic` (ver § Cinemáticas) y (A2.7) `prefetch` (precarga de las escenas vecinas: `scene`, `neighbors`, `done`, `pending`, `inFlight`, `failed`, `disabled`) y `lastTransition` (último cambio de escena: `from`, `to`, `ms`, `loadMs`, `at`, `mode` `full`/`indicator`/`instant`, `loadingScreen`, `fadeMs`) y (A2.9) `journal` (ver § Diario) |
 
 Todas (salvo `state()` e `isWalkable()`) esperan a que el juego quede quieto y devuelven `state()`. Los errores empiezan por `[qa:blocked]`
 (el juego no deja hacerlo) o `[qa:error]` (id inexistente, tiempo agotado).
@@ -57,7 +59,12 @@ clic derecho con el teclado y el ratón reales de Chrome. A2.10 añade el paso `
 `expect.cinematic` (`active`, `letterbox`, `chromeHidden`, `following`, `zoom`, `transition`, `skipped`, `covered`, `ducked`,
 `endedMin`) y `expect.playerNear` (`{ x, y, tol }`, en %); un `runScript` de una ruta no puede llevar ops que cambien la
 partida (objetos, escena, disfraz, logros, mints, diálogos) y solo pone flags `qa_*`. La ruta `cinematica` ve una
-cinemática entera y luego la misma saltada con Esc y exige el mismo estado final. Cada paso admite `expect` con `scene`, `has`, `lacks`, `flags`, `unsetFlags`, `visited`,
+cinemática entera y luego la misma saltada con Esc y exige el mismo estado final. A2.9 añade los pasos `journal`
+(`action` open|close, `tab`) y `callAnon`, y `expect.journal` (`open`, `chapter`, `done`/`pending`: objetivos con y sin tic,
+`notes`/`noNotes`: notas apuntadas o no, `anon`: `{ puzzle, level, notPuzzle, text }` de la última llamada); `runScript` no
+admite `journalNote` ni `callAnon` (cambian la partida). La ruta crítica llama dos veces a Anon con la puerta cerrada
+(nivel 1 y 2 de `p1_code`), comprueba el tic de `g1_code` y la nota `n1_code` tras coger la nota, y que la siguiente
+llamada ya es de `p1_door` y no de `p1_code`. Cada paso admite `expect` con `scene`, `has`, `lacks`, `flags`, `unsetFlags`, `visited`,
 `achievements`, `lastChoices`, `facing` (A2.2: hacia dónde mira el personaje al acabar el paso) y `noListenerGrowth`, y `rejects`: expresión regular (sin distinguir mayúsculas) que tiene que salir en los textos
 mostrados durante ese paso, p. ej. la frase con la que el juego rechaza la acción. Las rutas llevan un `goal` con
 el mismo formato que `expect`.
@@ -269,6 +276,9 @@ guardada (y en la nube) aunque acabe como empezó. Para parpadear un overlay con
   script la suma del patrón (menos con el avance rápido); el watchdog no lo cuenta como cuelgue, y `forceReset`,
   el SHUTDOWN de la escena (`ScriptEngine.cancelEffects`) o un cambio de escena lo cortan y quitan el forzado.
 
+Otros ops sin parpadeo de flags (A2.9, ver § Diario): `{ "op": "journalNote", "id": "<nota>" }` apunta una nota en el
+diario (estado de la partida, sin flag) y `{ "op": "callAnon" }` hace que Anon llame con la pista del puzle abierto.
+
 Renombrar una flag que ya está en partidas guardadas exige migración: `src/systems/SaveMigration.ts`
 (`SAVE_VERSION`, `RENAMED_FLAGS`) migra al cargar los slots locales, la partida de la wallet, la de la nube y la
 importada, y `GameScene.create` lo repite como red de seguridad. Pruebas en `tests/save-migration.test.mjs`
@@ -326,6 +336,75 @@ Ops de `src/systems/ScriptEngine.ts`; la cámara, las franjas y los actores los 
   camera: { x, y, zoom, following }, transition, covered, skipped, ended, animating, ducked }`. Demo:
   `scripts/demo-a2-10-cinematics.mjs`; ruta `cinematica` de `walkthrough.json`.
 
+# Diario = móvil de Dex (A2.9 + A2.9a)
+
+Botón pequeño con un móvil dibujado (Graphics, sin assets) en la barra de arriba, a la derecha de Save y los trofeos
+(`src/ui/JournalPanel.ts`, en UIScene). Con un objetivo recién cumplido o una nota sin ver enseña un punto amarillo (con un
+latido al aparecer). Al tocarlo (o con **J** en escritorio) abre un panel HTML casi a pantalla completa, legible en 390×844 y
+844×390, con tres pestañas:
+
+- **Goals**: objetivos del capítulo actual (`ChapterManager.getCurrentChapter`, por las flags `chapter_N_complete`) con tic al
+  cumplirse, y debajo los capítulos ya cerrados. Lo nuevo lleva la etiqueta NEW mientras está abierto.
+- **Notes**: lo que Dex ha apuntado, de lo más nuevo a lo más viejo, con su capítulo.
+- **Call Anon**: el botón de llamar. Da tono (`RING_MS`, 900 ms), Anon contesta con la pista del puzle ABIERTO más avanzado del
+  capítulo y su voz (`anon`, `am_onyx` 0.9), y cuelga (*click*). Cada llamada sube un nivel de la escalera de ESE puzle
+  (1 dirección → 2 objeto → 3 solución casi literal; luego repite la 3). Sin puzle abierto, una frase seca de relleno
+  (`anonIdle`, rota con cada llamada). El panel enseña cuántos niveles lleva el puzle abierto.
+
+No se abre con cinemática, diálogo, elección, texto en pantalla, script en marcha o cambio de escena. Se cierra con la X,
+tocando fuera del móvil (con `pointerdown` y tras 350 ms, para que el clic emulado del toque que lo abrió no lo cierre), con
+Esc o J, si llega un texto hablado o una cinemática, y en el SHUTDOWN de UIScene (quita el DOM y el estilo). Mientras está
+abierto (`registry.journalOpen`) la escena no acepta toques ni teclas de juego y la pista por inactividad no cuenta. Todo el
+texto entra con `textContent`. La pista por inactividad de V6 (`GameScene.checkIdleHint`) sigue igual: es la red de
+seguridad; Anon es la ayuda que se pide.
+
+**Datos** (`assets/journal/chapter-<n>.json`, uno por capítulo; Vite los mete en el bundle con `import.meta.glob`, así que un
+capítulo nuevo es un fichero más). Lógica pura en `src/systems/Journal.ts` (`tests/journal.test.mjs`, en `test:engine`):
+
+```jsonc
+{
+  "chapter": 1,
+  "goals":   [{ "id": "g1_code", "text": "Find the code for Adrian's front door.", "doneWhen": "found_code_note" }],
+  "notes":   [{ "id": "n1_code", "text": "Behind the porch light: …", "shownWhen": "found_code_note" },
+              { "id": "n1_x", "text": "Solo con el op journalNote (sin shownWhen)." }],
+  "puzzles": [{ "id": "p1_door", "openWhen": "found_code_note", "doneWhen": "door_unlocked",
+                "hints": ["You have numbers. Doors like numbers.", "The keypad. The note. Introduce them.", "Use the code note on the keypad."] }],
+  "anonIdle": ["Nothing to add. Keep moving."]
+}
+```
+
+- Condiciones: la gramática de `when` de A2.6a (`flag`, `!flag`, `item:id`, `!item:id`; texto o lista = todas). Una mal
+  escrita no se cumple (y el linter la marca).
+- Puzles en el orden de la ruta: «el más avanzado» es el último de la lista cuyo `openWhen` se cumple y cuyo `doneWhen` no.
+  Encadenar `openWhen` con el `doneWhen` del anterior hace que Anon siga la ruta; el primero de cada capítulo va sin
+  `openWhen` (abierto al empezar). Un puzle resuelto nunca vuelve a dar pistas.
+- Notas: se apuntan solas (cada 400 ms y al abrir) en cuanto se cumple `shownWhen`, y se quedan aunque deje de cumplirse
+  (p. ej. un objeto que se gasta). Ids sin repetir (por tipo) en todos los ficheros. Objetivos 3-4 por capítulo (hitos de
+  la biblia). El contenido de hoy sigue la ruta crítica actual de los 5 capítulos; A3.3-A3.7 reescriben estos ficheros.
+- Voz: las pistas y `anonIdle` se dicen (`scripts/voices/extract.mjs` las saca con speaker «Anon» → `anon`, más la frase de
+  reserva `ANON_FALLBACK` de Journal.ts); objetivos y notas solo se leen, sin voz. Texto nuevo de Anon → etiqueta `voices`.
+- Progreso en la partida (`GameState.journal`, aditivo y opcional; `SaveMigration.ts` lo sanea): `notes` (apuntadas),
+  `seen` (vistas con el diario abierto: el punto), `hints` (puzle → nivel dado) y `calls`. El save-server lo guarda tal cual.
+
+**Opcodes** (`src/systems/ScriptEngine.ts`; también en los onEnter de diálogo, que comparten contexto). Junto a `flicker`
+(§ Efectos sin estado):
+
+```json
+{ "op": "journalNote", "id": "n2_receptionist" }
+{ "op": "callAnon" }
+```
+
+- `journalNote`: apunta una nota (la que no tiene `shownWhen` solo se apunta así). Es estado: se aplica al saltar una
+  cinemática y en el rescate del watchdog. Una nota que no existe es error (h) del linter y aviso en consola.
+- `callAnon`: Anon llama desde el script (la misma escalera que el botón; sube el nivel) y su frase sale como `say` con
+  speaker «Anon». Presentación: se omite al saltar una cinemática.
+
+**QA**: `state().journal` = `{ open, tab, chapter, goals: [{ id, done }], notes: [ids], anon: { puzzle, level, text } | null,
+openPuzzle: { puzzle, level } | null, unseen, calling }` (`anon` es la última llamada y sobrevive al cambio de escena;
+`puzzle: null` = relleno). `__qa.openJournal()/closeJournal()/callAnon()`; pasos `journal` y `callAnon`. El smoke abre y
+cierra el diario con toques reales en 390×844 (y con J/Esc) y comprueba que el SHUTDOWN no deja el panel colgado. Demo:
+`scripts/demo-a2-9-journal.mjs`.
+
 # Linter de escenas (A0.4)
 
 `scripts/lint-scenes.mjs` revisa el contenido de `assets/scenes/<id>/scene.json` sin compilar ni abrir el
@@ -342,6 +421,7 @@ deja la tabla en el resumen del job y sube `lint-scenes-report.json` y `.md` com
 | (e) | `player.spawn`, `transitions.goto[].spawn` y `spawn` de las salidas fuera de las `walkableAreas` de la escena destino (A1.8: **error**; una escena destino sin `walkableAreas` sigue siendo aviso) | **error** |
 | (f) | fondos, primeros planos, overlays, `web3Visuals`, música, `playSound`, iconos de objetos, sprites de NPC, escenas destino y árboles de diálogo que no existen | **error** |
 | (g) | hotspots solapados; aviso fuerte si uno contiene a otro (si el que contiene va antes en la lista, el clic nunca llega al de dentro) | aviso |
+| (h) | A2.9, diario (`assets/journal/*.json`): fichero inválido, capítulo o id repetidos, campos que faltan, condición mal escrita, `hints` que no son 3 y `journalNote` a una nota que no existe (**error**); flags que el diario lee y nada pone, objetos que mira y nada da (aviso). Las flags que lee el diario cuentan como leídas para (a) | **error** / aviso |
 
 Las rutas que comprueba (f) son las que resuelve el código, no el nombre del JSON: el fondo es siempre
 `background.webp`, el primer plano `foreground.webp`, los iconos `assets/sprites/items/<id>.png` y además
@@ -385,6 +465,9 @@ Actions** (`.github/workflows/voices.yml`); nunca en local.
 - Código (`CODE_SOURCES` en `extract.mjs`): las tablas de frases de `ScummUI` (`ITEM_DESCS`,
   `ITEM_VERB_RESPONSES`, `DEFAULT_ITEM_VERB_RESPONSES`), `GameScene.VERB_DEFAULTS` y los literales que se
   emiten como `say` (`ScummUI`, `GameScene`, `UIScene`, `ScriptEngine`).
+- Diario (A2.9, `assets/journal/*.json`): las pistas de Anon (`puzzles[].hints`) y sus frases de relleno (`anonIdle`), con
+  hablante `anon`; y la frase de reserva `ANON_FALLBACK` de `src/systems/Journal.ts` (`CODE_SOURCES` con `speaker`).
+  Objetivos y notas no (solo se leen).
 - Fuera, a propósito: las plantillas con `${…}` («I can't use X with Y», «It's X. Nothing special…», «X
   doesn't want Y»: dependen de pares de objetos), `choices[].text` (no se leen en voz alta), `titleCard`
   (UIScene tiene esa voz desactivada), logros y textos de interfaz. `sayBrief` sí se extrae aunque hoy
@@ -407,10 +490,11 @@ su orden y detrás lo nuevo (`--check` solo compara).
 | `bot` | B.O.T. (recovery_pool) | `am_adam` | 0.9 |
 | `nar` | narrador de las cinemáticas | `bm_george` (británico) | 0.9 |
 | `npc` | personajes nuevos sin voz propia | `bm_lewis` (británico) | 1.0 |
+| `anon` | Anon, la voz del teléfono (A2.9; adelanta la parte de Anon de A3.3b) | `am_onyx` | 0.9 |
 
 B.O.T. conserva la voz de sus 26 clips existentes (comparte timbre con Satoshi, pero nunca coinciden en
 escena). El hablante sale del campo `speaker` del op o del nodo (reglas `match`: contiene «b.o.t»,
-«satoshi», «recep»); sin speaker es `player`, y un speaker desconocido es `npc`. Para dar voz propia a un
+«satoshi», «recep», «anon», «adrian»); sin speaker es `player`, y un speaker desconocido es `npc`. Para dar voz propia a un
 personaje nuevo, añade un hablante y su regla `match` en `voices.json`.
 
 ## Lanzar la generación

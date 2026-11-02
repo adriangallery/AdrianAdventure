@@ -4,7 +4,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import {
-  attemptIndex, check, checkAttemptRan, checkCinematic, checkHighlighted, checkLastChoices, checkListenerGrowth, checkRejects, checkWalkTarget, classify,
+  attemptIndex, check, checkAttemptRan, checkCinematic, checkHighlighted, checkJournal, checkLastChoices, checkListenerGrowth, checkRejects, checkWalkTarget, classify,
   describe, kindOf, newLogLines, routeDefects, runScriptDefects, selftestDefects, selftestMismatch, tapsScene,
 } from '../scripts/lib/walkthrough-core.mjs';
 
@@ -367,4 +367,49 @@ test('A2.10: la ruta cinematica ve la cinemática entera y saltada con Esc y exi
     assert.equal(e.cinematic.following, true);
     assert.equal(e.cinematic.zoom, 1);
   }
+});
+
+test('A2.9: pasos journal y callAnon: descripción, definición y runScript sin ops del diario', () => {
+  assert.equal(describe({ do: 'journal' }), 'JOURNAL open');
+  assert.equal(describe({ do: 'journal', action: 'close' }), 'JOURNAL close');
+  assert.equal(describe({ do: 'journal', action: 'open', tab: 'notes' }), 'JOURNAL open (notes)');
+  assert.equal(describe({ do: 'callAnon' }), 'CALL ANON');
+  const route = (steps) => ({ id: 'r', steps: [NEW, ...steps] });
+  assert.deepEqual(routeDefects(route([{ do: 'journal', action: 'open', tab: 'anon' }, { do: 'journal', action: 'close' }, { do: 'callAnon' }])), []);
+  assert.equal(routeDefects(route([{ do: 'journal', action: 'toggle' }])).length, 1);
+  assert.equal(routeDefects(route([{ do: 'journal', tab: 'inbox' }])).length, 1);
+  assert.equal(runScriptDefects([{ op: 'journalNote', id: 'n1' }]).length, 1, 'apuntar una nota cambia la partida');
+  assert.equal(runScriptDefects([{ op: 'callAnon' }]).length, 1, 'llamar sube el nivel de pista en la partida');
+  assert.equal(tapsScene({ do: 'callAnon' }, st()), false);
+});
+
+test('A2.9: expect.journal (abierto, capítulo, objetivos con y sin tic, notas, llamada de Anon)', () => {
+  const journal = {
+    open: false, tab: null, chapter: 1,
+    goals: [{ id: 'g1_code', done: true }, { id: 'g1_inside', done: false }],
+    notes: ['n1_code'],
+    anon: { puzzle: 'p1_door', level: 1, text: 'You have numbers. Doors like numbers.' },
+    openPuzzle: { puzzle: 'p1_door', level: 1 }, unseen: 0, calling: false,
+  };
+  const s = st({ journal });
+  assert.deepEqual(checkJournal({ open: false, chapter: 1, done: ['g1_code'], pending: ['g1_inside'], notes: ['n1_code'], noNotes: ['n1_ledger'],
+    anon: { puzzle: 'p1_door', level: 1, notPuzzle: 'p1_code', text: 'doors like' } }, s), []);
+  assert.deepEqual(check({ journal: { chapter: 1 } }, s), []);
+  const fails = checkJournal({ open: true, chapter: 2, done: ['g1_inside', 'nope'], pending: ['g1_code'], notes: ['n9'], noNotes: ['n1_code'],
+    anon: { puzzle: 'p1_code', level: 2, notPuzzle: ['p1_door'], text: 'porch' } }, s);
+  assert.equal(fails.length, 11, fails.join('\n'));
+  assert.match(checkJournal({ anon: { level: 1 } }, st({ journal: { ...journal, anon: null } }))[0], /ninguna llamada/);
+  assert.match(checkJournal({ open: true }, st())[0], /anterior a A2.9/);
+  assert.match(checkJournal({ open: true }, st({ journal: null }))[0], /sin diario/);
+});
+
+test('A2.9: la ruta crítica comprueba el tic de un objetivo, la escalera de Anon (1 y 2) y que no repite un puzle resuelto', () => {
+  const steps = readJson('qa/walkthrough.json').routes.find((r) => r.id === 'ruta-critica').steps;
+  const calls = steps.filter((s) => s.do === 'callAnon').map((s) => s.expect?.journal?.anon);
+  assert.deepEqual(calls.slice(0, 2).map((a) => [a.puzzle, a.level]), [['p1_code', 1], ['p1_code', 2]]);
+  assert.ok(calls.some((a) => a.puzzle === 'p1_door' && a.notPuzzle === 'p1_code'));
+  assert.ok(steps.some((s) => s.do === 'journal' && s.expect?.journal?.done?.includes('g1_code')));
+  // Los pasos del diario van entre la puerta sin nota y el felpudo, sin tocar el resto de la ruta
+  const i = steps.findIndex((s) => s.do === 'callAnon');
+  assert.equal(steps[i - 1].target, 'hs_front_door');
 });
