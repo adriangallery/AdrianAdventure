@@ -1,0 +1,149 @@
+# A0.3 (plan SCUMM): voces en CI con Kokoro (gratis, corre en el runner; sin secretos salvo GITHUB_TOKEN).
+# Extrae todo el texto hablado sin clip (scripts/voices/extract.mjs), genera los MP3 con Kokoro
+# (scripts/voices/generate.py), regenera src/config/voice.config.ts (scripts/voices/build-config.mjs) y hace
+# commit en la rama. Sin faltantes acaba en verde sin commit.
+# Disparo: etiqueta `voices` en una PR (solo al etiquetar: el commit del bot no lo relanza) o Run workflow con
+# la rama. Un push con GITHUB_TOKEN no lanza otros workflows, así que tras el commit se piden a mano lint y
+# build (workflow_dispatch) sobre la rama para que el commit nuevo tenga sus checks.
+name: voices
+
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: 'Rama donde generar las voces (vacío = la rama elegida arriba)'
+        required: false
+        default: ''
+  pull_request:
+    types: [labeled]
+
+concurrency:
+  group: voices-${{ github.head_ref || inputs.ref || github.ref_name }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  actions: write
+
+jobs:
+  voices:
+    if: ${{ github.event_name == 'workflow_dispatch' || (github.event.label.name == 'voices' && github.event.pull_request.head.repo.full_name == github.repository) }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      BRANCH: ${{ github.head_ref || inputs.ref || github.ref_name }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || inputs.ref || github.ref_name }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Texto hablado sin clip
+        id: missing
+        run: |
+          node scripts/voices/extract.mjs --missing > missing.json
+          n=$(node -e 'console.log(JSON.parse(require("fs").readFileSync("missing.json","utf8")).length)')
+          echo "count=$n" >> "$GITHUB_OUTPUT"
+          {
+            echo "### Voces (A0.3) · rama \`$BRANCH\`"
+            echo
+            echo "Textos sin clip: **$n**"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/setup-python@v5
+        if: steps.missing.outputs.count != '0'
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: .github/workflows/voices.yml
+
+      - name: Instalar Kokoro, espeak-ng y ffmpeg
+        if: steps.missing.outputs.count != '0'
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq espeak-ng ffmpeg
+          # torch solo CPU (el runner no tiene GPU; evita bajar ~2 GB de CUDA)
+          pip install torch --index-url https://download.pytorch.org/whl/cpu
+          pip install kokoro soundfile
+
+      - name: Caché del modelo (Hugging Face)
+        if: steps.missing.outputs.count != '0'
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/huggingface
+          key: kokoro-82m-v1
+
+      - name: Generar MP3 con Kokoro
+        if: steps.missing.outputs.count != '0'
+        run: python scripts/voices/generate.py missing.json --report generated.json
+
+      - name: Regenerar voice.config.ts
+        if: steps.missing.outputs.count != '0'
+        run: node scripts/voices/build-config.mjs
+
+      - name: Cobertura tras generar
+        if: steps.missing.outputs.count != '0'
+        run: |
+          set +e
+          node scripts/voice-coverage.mjs
+          rc=$?
+          cat voice-coverage-report.md >> "$GITHUB_STEP_SUMMARY"
+          exit $rc
+
+      - name: Commit y push a la rama
+        if: steps.missing.outputs.count != '0'
+        id: commit
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add assets/audio/voice src/config/voice.config.ts
+          if git diff --cached --quiet; then echo "pushed=false" >> "$GITHUB_OUTPUT"; exit 0; fi
+          n=$(git diff --cached --name-only --diff-filter=A -- assets/audio/voice | wc -l)
+          git commit -q -m "chore(voices): $n clips nuevos generados por el CI" -m "Kokoro (scripts/voices/voices.json) desde el workflow voices, run ${GITHUB_RUN_ID}."
+          git push origin "HEAD:$BRANCH"
+          echo "pushed=true" >> "$GITHUB_OUTPUT"
+          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          {
+            echo
+            echo "Commit \`$(git rev-parse --short HEAD)\` en \`$BRANCH\`: $n clips nuevos."
+            echo
+            echo "| Clave | Voz | KB | Texto |"
+            echo "|---|---|---:|---|"
+            node -e 'for (const d of JSON.parse(require("fs").readFileSync("generated.json","utf8"))) console.log(`| \`${d.key}\` | ${d.voice} | ${(d.bytes/1024).toFixed(1)} | ${d.text.slice(0,90).replace(/\|/g,"\\|")} |`)'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Lanzar lint y build sobre el commit nuevo
+        if: steps.commit.outputs.pushed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh workflow run lint.yml --ref "$BRANCH"
+          gh workflow run build.yml --ref "$BRANCH"
+
+      - name: MP3 nuevos (artefacto)
+        if: steps.missing.outputs.count != '0' && always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: voices-${{ github.run_id }}
+          path: |
+            missing.json
+            generated.json
+            voice-coverage-report.md
+          if-no-files-found: ignore
+          retention-days: 30
+
+      - name: MP3 nuevos (audio)
+        if: steps.commit.outputs.pushed == 'true'
+        run: |
+          mkdir -p voices-new
+          git diff --name-only --diff-filter=A HEAD~1 HEAD -- assets/audio/voice | xargs -r cp -t voices-new
+
+      - uses: actions/upload-artifact@v4
+        if: steps.commit.outputs.pushed == 'true'
+        with:
+          name: voices-mp3-${{ github.run_id }}
+          path: voices-new
+          retention-days: 30

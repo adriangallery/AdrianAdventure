@@ -146,3 +146,75 @@ asset, par `hsA+hsB`) o con su ruta completa (`escena.hotspot.VERB[3]`) y admite
 `reason` la entrada se ignora, y una entrada que ya no silencia nada sale en el informe para borrarla.
 Úsalo poco: para un hallazgo real que no se arregla en la misma PR, motivo «hallazgo A0.4, pendiente» (o
 el checkpoint que lo cierra); para un falso positivo, explica por qué el linter no lo ve.
+
+# Voces (A0.3)
+
+Todo texto que el juego dice en voz alta tiene que tener su MP3 en `assets/audio/voice/` y su entrada en
+`src/config/voice.config.ts`. Los clips se generan con Kokoro (gratis, Apache-2.0) **solo en GitHub
+Actions** (`.github/workflows/voices.yml`); nunca en local.
+
+## Cómo se extrae
+
+`node scripts/voices/extract.mjs` (Node puro) saca la lista `[{ speaker, text, key, status, sources }]`;
+`--missing` deja solo lo que no tiene MP3. Cuenta como hablado lo que UIScene pasa a `VoiceSystem`:
+
+- Escenas y `assets/config/global.json`: toda op `say`/`sayBrief` (en cualquier bloque anidado), el texto
+  de cada nodo de diálogo, `npcs[].giveResponses`/`useResponses` (salvo `_default`, que lleva `{item}`) y
+  las líneas de las ops `narrative` (suenan por escena con `NARRATOR_SEQUENCES['<escena>:narrative']`).
+- Código (`CODE_SOURCES` en `extract.mjs`): las tablas de frases de `ScummUI` (`ITEM_DESCS`,
+  `ITEM_VERB_RESPONSES`, `DEFAULT_ITEM_VERB_RESPONSES`), `GameScene.VERB_DEFAULTS` y los literales que se
+  emiten como `say` (`ScummUI`, `GameScene`, `UIScene`, `ScriptEngine`).
+- Fuera, a propósito: las plantillas con `${…}` («I can't use X with Y», «It's X. Nothing special…», «X
+  doesn't want Y»: dependen de pares de objetos), `choices[].text` (no se leen en voz alta), `titleCard`
+  (UIScene tiene esa voz desactivada), logros y textos de interfaz. `sayBrief` sí se extrae aunque hoy
+  UIScene no le pone voz, para que el clip ya exista si se activa.
+
+Clave: `<speaker>_<6 primeras palabras normalizadas>_<md5 del texto, 8>` (como
+`generate_memelab_voices.py`). El mapa anterior a A0.3 (2.617 clips con varios esquemas de clave) está
+congelado en `scripts/voices/fixed-keys.json`: si un texto ya tenía clip según la búsqueda de `VoiceSystem`
+(100 primeros caracteres normalizados) se usa esa clave y no se regenera nada.
+`node scripts/voices/build-config.mjs` reescribe `voice.config.ts` entero y determinista: lo congelado en
+su orden y detrás lo nuevo (`--check` solo compara).
+
+## Mapa de voces (`scripts/voices/voices.json`)
+
+| Hablante | Quién | Voz Kokoro | Velocidad |
+|---|---|---|---|
+| `player` | el protagonista (y las acotaciones de las respuestas de NPC) | `am_michael` | 0.95 |
+| `satoshi` | Dr. Satoshi | `am_adam` | 0.85 |
+| `recep` | la recepcionista del lobby | `af_heart` | 1.0 |
+| `bot` | B.O.T. (recovery_pool) | `am_adam` | 0.9 |
+| `nar` | narrador de las cinemáticas | `bm_george` (británico) | 0.9 |
+| `npc` | personajes nuevos sin voz propia | `bm_lewis` (británico) | 1.0 |
+
+B.O.T. conserva la voz de sus 26 clips existentes (comparte timbre con Satoshi, pero nunca coinciden en
+escena). El hablante sale del campo `speaker` del op o del nodo (reglas `match`: contiene «b.o.t»,
+«satoshi», «recep»); sin speaker es `player`, y un speaker desconocido es `npc`. Para dar voz propia a un
+personaje nuevo, añade un hablante y su regla `match` en `voices.json`.
+
+## Lanzar la generación
+
+- En una PR: ponle la etiqueta **`voices`** (cada vez que se etiqueta corre una vez; para repetir, quítala y
+  vuelve a ponerla).
+- A mano: Actions → **voices** → Run workflow, eligiendo la rama (o el input `ref`).
+
+El workflow instala Kokoro (torch CPU), espeak-ng y ffmpeg, genera los MP3 (mono, 24 kHz, `-q:a 2`, como
+los existentes), regenera `voice.config.ts`, comprueba la cobertura y hace commit `chore(voices): N clips
+nuevos generados por el CI` en la rama, con los MP3 y la lista como artefactos. Sin faltantes acaba en verde
+sin commit. Como un push con `GITHUB_TOKEN` no dispara workflows, lanza él mismo `lint` y `build` sobre la
+rama para que el commit nuevo tenga sus checks.
+
+## Cobertura
+
+`npm run lint:voices` (`node scripts/voice-coverage.mjs`, paso «Cobertura de voces (A0.3)» del job de
+lint) sale con 1 si hay texto hablado sin MP3 (`sin-clip`), si `voice.config.ts` no es lo que genera
+`build-config.mjs` (`desactualizado`: un MP3 sin registrar, un clip nuevo sin entrada, una edición a mano)
+o si una clave del config no tiene MP3 (`roto`). Escribe `voice-coverage-report.{md,json}` en la raíz
+(ignorados en git). Pruebas: `npm run test:voices`.
+
+## Añadir una excepción
+
+Solo durante la transición: `qa/voice-coverage-allow.json` es una lista de
+`{ "key": "<clave>" | "text": "<principio del texto>", "reason": "…" }`. Sin `reason` no vale, y una entrada
+que ya no silencia nada sale como aviso para borrarla. Lo normal es no necesitarla: etiqueta la PR con
+`voices`.
