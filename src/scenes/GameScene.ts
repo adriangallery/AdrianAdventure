@@ -812,7 +812,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   /**
-   * A4.2: un frame de vida de cada NPC (NpcLife): quién tiene su texto en pantalla (A2.3: speaker = su nombre o id),
+   * A4.2: un frame de vida de cada NPC (NpcLife): quién tiene su texto en pantalla (A2.3: speaker = su nombre o su id),
    * el clip de voz de esa frase (VoiceSystem: sonando, descargándose, ya sonó o sin voz; y el nivel de señal si hay
    * analizador), dónde está el jugador (para girarse) y si la conversación sigue en marcha.
    */
@@ -829,7 +829,7 @@ export class GameScene extends Phaser.Scene {
     const playerX = p?.active && p.visible ? p.x : null;
     for (const npc of this.npcs) {
       if (!npc.active) continue;
-      const who = speech?.kind === 'npc' ? (speech.head?.id ?? speech.speaker ?? '').trim().toLowerCase() : '';
+      const who = speech?.kind === 'npc' ? (speech.speaker ?? '').trim().toLowerCase() : '';
       const line = speech && who !== '' && (who === npc.npcId.toLowerCase() || who === npc.npcName.toLowerCase()) ? speech.text : null;
       const talking = line !== null;
       let state: VoiceState = 'none';
