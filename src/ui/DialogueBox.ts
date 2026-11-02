@@ -1,19 +1,61 @@
 import Phaser from 'phaser';
 import { charDelayMs } from '@/systems/Settings';
-import { TWP, FONT } from '@/config/theme';
+import { TWP, FONT, SPEECH_COLORS } from '@/config/theme';
+import type { SceneData } from '@/types/scene.types';
+import {
+  isAnchorOnScreen, placeSpeech, speakerKind, speechColor, speechFontSize, speechStroke, speechWrapWidth, topY,
+  type HeadAnchor, type SpeakerKind, type SpeechMode,
+} from './speechLayout';
 
-const PADDING = 16;
 // Velocidad del texto: ver src/systems/Settings.ts (antes fija a 25 ms por carácter)
 
+/** A2.3: cabeza en pantalla de quien habla ('player' o nombre/id de la NPC); null si no está o no se ve. */
+export type SpeakerHeadProvider = (who: string) => (HeadAnchor & { id: string }) | null;
+
+/** A2.3 (QA): texto en pantalla, dónde está y en qué modo. */
+export interface SpeechState {
+  text: string;
+  speaker: string | null;
+  /** Centro horizontal y borde superior del bloque de texto (pantalla) */
+  x: number;
+  y: number;
+  /** Tamaño del bloque (mensaje completo) */
+  w: number;
+  h: number;
+  color: string;
+  mode: SpeechMode;
+  kind: SpeakerKind;
+  /** Cabeza de quien habla en pantalla (null en modo top o si no se encontró) */
+  head: HeadAnchor | null;
+}
+
+interface Current {
+  speaker: string | null;
+  kind: SpeakerKind;
+  /** A quién se le pregunta la cabeza ('player' o el speaker de la NPC); null = narrador */
+  who: string | null;
+  color: string;
+  mode: SpeechMode | null;
+  head: HeadAnchor | null;
+  wrap: number;
+  w: number;
+  h: number;
+}
+
 /**
- * Dialogue text displayed directly in the game viewport, floating above the character.
- * Classic LucasArts / Thimbleweed Park style: colored text on screen, no box background.
- * Tap/click to skip or dismiss.
+ * Dialogue text displayed directly in the game viewport, LucasArts / Thimbleweed Park style: colored text on
+ * screen, no box background. Tap/click to skip or dismiss.
+ *
+ * A2.3: el texto del jugador y de las NPC se pinta sobre la cabeza de quien habla (sigue a la cámara y al
+ * personaje cada frame), en el color de cada personaje (`SPEECH_COLORS`); el narrador/sistema y los textos de
+ * quien no se ve (hidePlayer, closeups, tráiler, fuera de pantalla) van arriba-centro como antes, con el nombre.
+ * La colocación está en `speechLayout.ts` (lógica pura, con tests).
  */
 export class DialogueBox {
   private scene: Phaser.Scene;
   private text: Phaser.GameObjects.Text;
   private speakerText: Phaser.GameObjects.Text;
+  private headOf: SpeakerHeadProvider | null;
 
   private fullMessage = '';
   private displayedChars = 0;
@@ -23,39 +65,40 @@ export class DialogueBox {
   private activeHandler: ((pointer: Phaser.Input.Pointer) => void) | null = null;
   private pendingHandlerCall: Phaser.Time.TimerEvent | null = null;
   private pendingDismissCall: Phaser.Time.TimerEvent | null = null;
+  private current: Current | null = null;
+  private destroyed = false;
 
-  constructor(scene: Phaser.Scene) {
+  constructor(scene: Phaser.Scene, headOf?: SpeakerHeadProvider) {
     this.scene = scene;
-    const { width } = scene.scale;
+    this.headOf = headOf ?? null;
+    const { width, height } = scene.scale;
+    const size = speechFontSize({ width, height });
 
-    // Responsive font sizes — use larger ref on portrait for readability
-    const { height } = scene.scale;
-    const refDim = height > width ? Math.max(width, height * 0.5) : width;
-    const speakerSize = Math.max(13, Math.min(20, Math.floor(refDim * 0.018)));
-    const bodySize = Math.max(12, Math.min(18, Math.floor(refDim * 0.016)));
-
-    // Speaker name — yellow (TWP character name style)
+    // Speaker name — yellow (TWP character name style); solo en modo arriba-centro
     this.speakerText = scene.add.text(width / 2, 0, '', {
       fontFamily: FONT.FAMILY,
-      fontSize: `${speakerSize}px`,
+      fontSize: `${size.speaker}px`,
       color: TWP.DIALOGUE_SPEAKER,
       stroke: TWP.DIALOGUE_STROKE,
       strokeThickness: 3,
     }).setOrigin(0.5, 1).setDepth(600).setVisible(false).setScrollFactor(0);
 
-    // Body text — warm white with black outline
+    // Body text — color por personaje con contorno oscuro y sombra (legible sobre fondos cargados)
     this.text = scene.add.text(width / 2, 0, '', {
       fontFamily: FONT.FAMILY,
-      fontSize: `${bodySize}px`,
+      fontSize: `${size.body}px`,
       color: TWP.DIALOGUE_TEXT,
       stroke: TWP.DIALOGUE_STROKE,
-      strokeThickness: 4,
+      strokeThickness: speechStroke(size.body),
       align: 'center',
-      wordWrap: { width: Math.min(width - PADDING * 4, 700), useAdvancedWrap: true },
+      wordWrap: { width: speechWrapWidth({ width, height }, 'top'), useAdvancedWrap: true },
       lineSpacing: 8,
     }).setOrigin(0.5, 0).setDepth(600).setVisible(false).setScrollFactor(0);
+    this.text.setShadow(2, 2, '#000000', 0, true, true);
 
     scene.scale.on('resize', this.handleResize, this);
+    // A2.3: el texto sobre la cabeza sigue a la cámara y al personaje (se quita en destroy)
+    scene.events.on(Phaser.Scenes.Events.POST_UPDATE, this.layout, this);
   }
 
   say(text: string, speaker?: string): Promise<void> {
@@ -69,25 +112,9 @@ export class DialogueBox {
       this.visible = true;
       this.scene.registry.set('dialogueShowing', true);
 
-      const vpW = this.scene.scale.width;
-      const centerX = vpW / 2;
-      const textY = Math.max(20, this.scene.scale.height * 0.06);
-
-      this.text.setWordWrapWidth(Math.min(vpW - PADDING * 4, 700));
-
-      if (speaker) {
-        this.speakerText.setText(speaker);
-        this.speakerText.setPosition(centerX, textY - 4);
-        this.speakerText.setVisible(true);
-        this.text.setPosition(centerX, textY + 2);
-      } else {
-        this.speakerText.setVisible(false);
-        this.text.setPosition(centerX, textY);
-      }
-
+      this.begin(speaker);
       this.text.setText('');
       this.text.setVisible(true);
-      this.text.setWordWrapWidth(Math.min(this.scene.scale.width - PADDING * 4, 600));
 
       // Typewriter effect — V6: velocidad según los ajustes del jugador (instant = texto completo)
       const charDelay = charDelayMs();
@@ -134,6 +161,96 @@ export class DialogueBox {
   }
 
   /**
+   * A2.3: quién habla, su color y el tamaño del bloque con el mensaje completo; coloca el texto por primera vez.
+   * El tamaño se mide con el mensaje entero para que el typewriter no haga saltar el bloque.
+   */
+  private begin(speaker?: string): void {
+    const kind = speakerKind(speaker);
+    const who = kind === 'player' ? 'player' : kind === 'npc' ? (speaker ?? '').trim() : null;
+    const head = who ? this.headOf?.(who) ?? null : null;
+    const npcData = kind === 'npc'
+      ? (this.scene.registry.get('sceneData') as SceneData | undefined)?.npcs?.find((n) =>
+        n.id === head?.id || n.name.toLowerCase() === (speaker ?? '').trim().toLowerCase())
+      : undefined;
+    const color = speechColor({
+      kind,
+      keys: [head?.id, npcData?.id, npcData?.name, speaker],
+      colors: SPEECH_COLORS,
+      npcColor: npcData?.color,
+      fallback: TWP.DIALOGUE_TEXT,
+    });
+
+    const size = speechFontSize(this.scene.scale);
+    this.text.setFontSize(`${size.body}px`).setStroke(TWP.DIALOGUE_STROKE, speechStroke(size.body)).setColor(color);
+    this.speakerText.setFontSize(`${size.speaker}px`).setText(kind !== 'player' ? speaker ?? '' : '');
+    this.current = { speaker: speaker ?? null, kind, who, color, mode: null, head: null, wrap: 0, w: 0, h: 0 };
+    this.layout();
+  }
+
+  /** Mide el bloque con el mensaje completo a ese ancho de wrap (y deja escrito lo que llevaba el typewriter). */
+  private measure(wrap: number): void {
+    const cur = this.current;
+    if (!cur) return;
+    this.text.setWordWrapWidth(wrap);
+    const shown = this.text.text;
+    this.text.setText(this.fullMessage);
+    cur.w = this.text.width;
+    cur.h = this.text.height;
+    cur.wrap = wrap;
+    if (shown !== this.fullMessage) this.text.setText(shown);
+  }
+
+  /** A2.3: coloca el texto (cada frame mientras se ve, en POST_UPDATE): sobre la cabeza o arriba-centro. */
+  private layout(): void {
+    const cur = this.current;
+    if (!this.visible || !cur || this.destroyed || !this.text.active) return;
+    const vp = { width: this.scene.scale.width, height: this.scene.scale.height };
+    const head = cur.who ? this.headOf?.(cur.who) ?? null : null;
+
+    // Fuera de pantalla o sin cabeza: arriba-centro (con su ancho de wrap); se vuelve a medir solo si cambia
+    const anchor = isAnchorOnScreen(head, vp) ? head : null;
+    const wrap = speechWrapWidth(vp, anchor ? 'head' : 'top');
+    if (cur.wrap !== wrap) this.measure(wrap);
+    const panelH = (this.scene.registry.get('scummPanelHeight') as number | undefined) ?? 0;
+    const p = placeSpeech({ head: anchor, vp, textW: cur.w, textH: cur.h, bottomInset: panelH });
+
+    cur.mode = p.mode;
+    cur.head = p.mode === 'head' && anchor ? { x: anchor.x, headY: anchor.headY, footY: anchor.footY } : null;
+    if (p.mode === 'head') {
+      this.speakerText.setVisible(false);
+      this.text.setPosition(Math.round(p.x), Math.round(p.y));
+      return;
+    }
+    // Arriba-centro, como antes de A2.3: con el nombre de quien habla encima (si no es el jugador)
+    const y = topY(vp);
+    if (this.speakerText.text) {
+      this.speakerText.setPosition(p.x, y - 4).setVisible(true);
+      this.text.setPosition(p.x, y + 2);
+    } else {
+      this.speakerText.setVisible(false);
+      this.text.setPosition(p.x, y);
+    }
+  }
+
+  /** A2.3 (QA): texto en pantalla y su colocación; null si no hay ninguno. */
+  getSpeech(): SpeechState | null {
+    const cur = this.current;
+    if (!this.visible || !cur || !cur.mode) return null;
+    return {
+      text: this.fullMessage,
+      speaker: cur.speaker,
+      x: this.text.x,
+      y: this.text.y,
+      w: cur.w,
+      h: cur.h,
+      color: cur.color,
+      mode: cur.mode,
+      kind: cur.kind,
+      head: cur.head ? { ...cur.head } : null,
+    };
+  }
+
+  /**
    * Clean up current dialogue and resolve its pending promise.
    * Resolving prevents script-engine awaits from hanging when a say is
    * interrupted by another say (which would otherwise leave running=true
@@ -152,6 +269,7 @@ export class DialogueBox {
     this.typewriterTimer?.remove();
     this.typewriterTimer = null;
     this.visible = false;
+    this.current = null;
     this.scene.registry.set('dialogueShowing', false);
     this.text.setVisible(false);
     this.speakerText.setVisible(false);
@@ -176,6 +294,7 @@ export class DialogueBox {
     this.typewriterTimer?.remove();
     this.typewriterTimer = null;
     this.visible = false;
+    this.current = null;
     this.scene.registry.set('dialogueShowing', false);
     this.text.setVisible(false);
     this.speakerText.setVisible(false);
@@ -197,22 +316,8 @@ export class DialogueBox {
       this.visible = true;
       this.scene.registry.set('dialogueShowing', true);
 
-      const vpW = this.scene.scale.width;
-      const centerX = vpW / 2;
-      const textY = Math.max(20, this.scene.scale.height * 0.06);
-      this.text.setWordWrapWidth(Math.min(vpW - PADDING * 4, 700));
-
-      if (speaker) {
-        this.speakerText.setText(speaker);
-        this.speakerText.setPosition(centerX, textY - 4);
-        this.speakerText.setVisible(true);
-        this.text.setPosition(centerX, textY + 2);
-      } else {
-        this.speakerText.setVisible(false);
-        this.text.setPosition(centerX, textY);
-      }
-
       this.text.setText(text);
+      this.begin(speaker);
       this.text.setVisible(true);
 
       // Auto-dismiss after duration
@@ -227,22 +332,29 @@ export class DialogueBox {
     return this.visible;
   }
 
-  private handleResize(gameSize: Phaser.Structs.Size): void {
+  private handleResize(): void {
     if (!this.text?.active || !this.speakerText?.active) return;
-    const { width } = gameSize;
-    this.text.setPosition(width / 2, this.text.y);
-    this.text.setWordWrapWidth(Math.min(width - PADDING * 4, 600));
-    this.speakerText.setPosition(width / 2, this.speakerText.y);
+    const cur = this.current;
+    if (!cur) return;
+    // Letra y ancho de wrap nuevos: se vuelve a medir y colocar
+    const size = speechFontSize(this.scene.scale);
+    this.text.setFontSize(`${size.body}px`).setStroke(TWP.DIALOGUE_STROKE, speechStroke(size.body));
+    this.speakerText.setFontSize(`${size.speaker}px`);
+    cur.wrap = 0;
+    this.layout();
   }
 
   destroy(): void {
+    this.destroyed = true;
     this.scene.scale.off('resize', this.handleResize, this);
+    this.scene.events.off(Phaser.Scenes.Events.POST_UPDATE, this.layout, this);
     if (this.activeHandler) {
       this.scene.input.off('pointerdown', this.activeHandler);
     }
     this.pendingHandlerCall?.remove();
     this.pendingDismissCall?.remove();
     this.typewriterTimer?.remove();
+    this.current = null;
     this.text.destroy();
     this.speakerText.destroy();
   }

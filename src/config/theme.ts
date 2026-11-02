@@ -87,6 +87,24 @@ export const TWP = {
   DEBUG_SPAWN:      0xff0000,
 } as const;
 
+// ─── Speech colors (A2.3) ───────────────────────────────────
+/**
+ * Color del texto hablado por personaje (texto sobre la cabeza). Claves sin mayúsculas: id de la NPC
+ * (`npc_receptionist`) o su nombre / el `speaker` de los diálogos («Receptionist», «B.O.T.»). Orden de búsqueda en
+ * `speechColor` (src/ui/speechLayout.ts): este mapa → `color` de la NPC en su scene.json → reserva por tipo
+ * (`_player`, `_npc`, `_narrator`).
+ */
+export const SPEECH_COLORS: Readonly<Record<string, string>> = {
+  _player:          '#ffffff',          // Adrian: blanco, como el protagonista de los LucasArts
+  _narrator:        TWP.DIALOGUE_TEXT,  // narrador / sistema: arriba-centro, como siempre
+  _npc:             TWP.DIALOGUE_SPEAKER,
+  npc_receptionist: '#ff9ad2',          // rosa
+  receptionist:     '#ff9ad2',
+  npc_dr_satoshi:   '#f8b040',          // naranja dorado
+  'dr. satoshi':    '#f8b040',
+  'b.o.t.':         '#8cf070',          // verde LED
+};
+
 // ─── Typography ────────────────────────────────────────────
 export const FONT = {
   /** Primary pixel font — loaded via Google Fonts in index.html */
