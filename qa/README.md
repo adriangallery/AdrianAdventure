@@ -42,10 +42,15 @@ jugador que se distrae, y falla si el script deja de estar en marcha durante la 
 en `PICK hs_mailbox` (35 s, más que los 30 s del watchdog, con `addItem` y `setFlag` pendientes tras el texto).
 
 Pasos: `newGame`, `act`, `use`, `combine`, `talk`, `walk`, `goto`, `dismissAll`, `wait` (`ms`), `resize`
-(`width`, `height`). Cada paso admite `expect` con `scene`, `has`, `lacks`, `flags`, `visited`, `achievements` y
-`noListenerGrowth`, y `rejects`: expresión regular (sin distinguir mayúsculas) que tiene que salir en los textos
+(`width`, `height`). Cada paso admite `expect` con `scene`, `has`, `lacks`, `flags`, `unsetFlags`, `visited`,
+`achievements` y `noListenerGrowth`, y `rejects`: expresión regular (sin distinguir mayúsculas) que tiene que salir en los textos
 mostrados durante ese paso, p. ej. la frase con la que el juego rechaza la acción. Las rutas llevan un `goal` con
 el mismo formato que `expect`.
+
+`flags` trata una flag que no está en la partida como `false`; `unsetFlags` (A1.4) exige que ni siquiera esté
+escrita (ni a `false`). La ruta crítica lo usa en `USE hs_front_door` antes de coger la nota: la lámpara parpadea
+con el op `flicker` y `found_code_note` no puede aparecer en la partida; y en `OPEN hs_desk`, para que nadie vuelva
+a escribir el nombre viejo `found_hw_wallet`.
 
 `resize` (A1.10) cambia el viewport con `page.setViewport` (salta el `resize` del ScaleManager, de `window` y de
 `visualViewport`) y espera `settleMs` (1200 ms por defecto: el rebuild con debounce del panel y los reintentos de
@@ -173,6 +178,29 @@ if (!ok) await demo.fail('Qué no se ve');                   // siempre con awai
 
 En local (con `npm ci` hecho, nunca en el portátil de 8 GB): `BASE_URL=… node scripts/lib/demo.mjs run <nombre>`.
 Sin puppeteer: `node scripts/lib/demo.mjs list [--changed <ref>]` y `node scripts/lib/demo.mjs gif <nombre>`.
+
+# Efectos sin estado y migración de partidas (A1.4)
+
+Un efecto visual nunca se hace encendiendo y apagando una flag con `wait`: cada `setFlag` queda en la partida
+guardada (y en la nube) aunque acabe como empezó. Para parpadear un overlay condicional está el op `flicker`
+(`src/systems/ScriptEngine.ts`):
+
+```json
+{ "op": "flicker", "overlay": "lamp_empty", "pattern": [80, 120, 50, 200], "startVisible": true }
+{ "op": "flicker", "overlay": "lamp_empty", "times": 3, "onMs": 100, "offMs": 80 }
+```
+
+- `overlay` es el `id` de un `conditionalOverlays[]` de la MISMA escena (si no, error (f) del linter).
+- `pattern`: duraciones en ms; el primer tramo enseña el overlay (`startVisible: false` lo oculta) y cada tramo
+  siguiente lo invierte. `times`/`onMs`/`offMs` es la forma corta (por defecto 100 ms).
+- Al terminar, el overlay vuelve a lo que diga su flag. No toca el estado ni dispara el autoguardado. Bloquea el
+  script la suma del patrón (menos con el avance rápido); el watchdog no lo cuenta como cuelgue, y `forceReset`,
+  el SHUTDOWN de la escena (`ScriptEngine.cancelEffects`) o un cambio de escena lo cortan y quitan el forzado.
+
+Renombrar una flag que ya está en partidas guardadas exige migración: `src/systems/SaveMigration.ts`
+(`SAVE_VERSION`, `RENAMED_FLAGS`) migra al cargar los slots locales, la partida de la wallet, la de la nube y la
+importada, y `GameScene.create` lo repite como red de seguridad. Pruebas en `tests/save-migration.test.mjs`
+(`npm run test:engine`, Node 22). Renombradas: `found_hw_wallet` → `found_terminal_key` (A1.4).
 
 # Linter de escenas (A0.4)
 

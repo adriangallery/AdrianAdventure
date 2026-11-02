@@ -1,4 +1,5 @@
 import type { GameState } from '@/types/game.types';
+import { migrateSave } from '@/systems/SaveMigration';
 import { saveForWallet, loadForWallet, hasWalletSave, cloudAutosave, type WalletSave } from '@/web3/wallet-save';
 
 const SAVE_KEY = 'adrian_adventure_save';
@@ -75,7 +76,10 @@ export class SaveLoadSystem {
     try {
       const raw = localStorage.getItem(SAVE_KEY);
       if (!raw) return {};
-      return JSON.parse(raw) as Record<number, SaveSlot>;
+      const slots = JSON.parse(raw) as Record<number, SaveSlot>;
+      // A1.4: partidas de versiones anteriores (flags renombradas)
+      for (const slot of Object.values(slots ?? {})) migrateSave(slot);
+      return slots ?? {};
     } catch {
       return {};
     }

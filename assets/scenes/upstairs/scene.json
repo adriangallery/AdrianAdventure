@@ -92,7 +92,7 @@
           "OPEN": [
             {
               "op": "ifFlag",
-              "flag": "found_hw_wallet",
+              "flag": "found_terminal_key",
               "then": [
                 {
                   "op": "say",
@@ -102,7 +102,7 @@
               "else": [
                 {
                   "op": "setFlag",
-                  "flag": "found_hw_wallet",
+                  "flag": "found_terminal_key",
                   "value": true
                 },
                 {

@@ -166,7 +166,7 @@ test('(f) error por fondo, overlay, web3Visual, música, sonido, icono, NPC, esc
     conditionalOverlays: [{ id: 'o', sprite: 'overlay_o', flag: 'f', format: 'webp' }],
     web3Visuals: [{ id: 'w', position: { x: 1, y: 1 }, defaultSprite: 'poster', variants: [{ gate: { type: 'ERC721' }, sprite: 'poster_vip' }] }],
     npcs: [{ id: 'npc_ghost', name: 'G', position: { x: 1, y: 1 }, dialogueTreeId: 'missing_tree' }],
-    regions: { hotspots: [hs('hs', { USE: [{ op: 'playSound', key: 'boom' }, { op: 'addItem', id: 'thing' }, { op: 'fadeToScene', sceneId: 'nowhere' }, { op: 'dialogue', npcId: 'npc_ghost', treeId: 'nada' }] })], triggers: [] },
+    regions: { hotspots: [hs('hs', { USE: [{ op: 'playSound', key: 'boom' }, { op: 'addItem', id: 'thing' }, { op: 'fadeToScene', sceneId: 'nowhere' }, { op: 'dialogue', npcId: 'npc_ghost', treeId: 'nada' }, { op: 'flicker', overlay: 'lamp_nope', pattern: [100] }] })], triggers: [] },
   });
   const p = project([s]);
   p.exists = () => false; // ni siquiera el fondo
@@ -174,7 +174,7 @@ test('(f) error por fondo, overlay, web3Visual, música, sonido, icono, NPC, esc
   const errors = f.filter((x) => x.severity === 'error').map((x) => x.id);
   for (const id of ['assets/scenes/x/background.webp', 'assets/scenes/x/foreground.webp', 'assets/scenes/x/overlay_o.webp', 'assets/scenes/x/poster.png',
     'assets/scenes/x/poster_vip.png', 'assets/audio/music/nope.mp3', 'assets/audio/sfx/boom.mp3', 'assets/sprites/items/thing.png',
-    'assets/sprites/npcs/ghost.png', 'missing_tree', 'assets/scenes/nowhere/scene.json', 'nada']) {
+    'assets/sprites/npcs/ghost.png', 'missing_tree', 'assets/scenes/nowhere/scene.json', 'nada', 'lamp_nope']) {
     assert.ok(errors.includes(id), `falta error de ${id}`);
   }
   // la walkmask no la carga nadie: solo aviso
@@ -187,7 +187,7 @@ test('(f) no salta con todo en su sitio y avisa si existe pero no se precarga', 
     audio: { music: 'song', ambience: null, sfx: {} },
     conditionalOverlays: [{ id: 'o', sprite: 'overlay_o', flag: 'f' }],
     npcs: [{ id: 'npc_bob', name: 'Bob', position: { x: 1, y: 1 } }],
-    regions: { hotspots: [hs('hs', { USE: [{ op: 'playSound', key: 'ding' }, { op: 'addItem', id: 'thing' }, { op: 'ifFlag', flag: 'f' }] })], triggers: [] },
+    regions: { hotspots: [hs('hs', { USE: [{ op: 'playSound', key: 'ding' }, { op: 'addItem', id: 'thing' }, { op: 'ifFlag', flag: 'f' }, { op: 'say', text: 'a' }, { op: 'flicker', overlay: 'o', pattern: [100, 50] }] })], triggers: [] },
   });
   const files = ['assets/scenes/x/background.png', 'assets/scenes/x/foreground.webp', 'assets/scenes/x/overlay_o.png', 'assets/audio/music/song.mp3',
     'assets/audio/sfx/ding.mp3', 'assets/sprites/items/thing.png', 'assets/sprites/npcs/bob.png'];
@@ -262,4 +262,16 @@ test('tolera escenas con campos opcionales ausentes', () => {
 test('parseStringArray lee las listas de precarga de PreloadScene', () => {
   assert.deepEqual(parseStringArray("const itemIds = [\n 'a', \"b\",\n];", 'itemIds'), ['a', 'b']);
   assert.equal(parseStringArray('nada', 'itemIds'), null);
+});
+
+test('(f) A1.4: flicker sin overlay, o con un overlay de otra escena, es error', () => {
+  const a = scene('a', { conditionalOverlays: [{ id: 'o', sprite: 'o', flag: 'f' }], regions: { hotspots: [hs('hs', { USE: [{ op: 'flicker', pattern: [1] }] })], triggers: [] } });
+  const b = scene('b', { regions: { hotspots: [hs('hs', { USE: [{ op: 'ifFlag', flag: 'f', then: [{ op: 'flicker', overlay: 'o', pattern: [1] }] }] })], triggers: [] } });
+  const f = only(lintProject(project([a, b], { files: ['assets/scenes/a/o.png'] })), 'f');
+  assert.deepEqual(f.filter((x) => x.where.includes('.hs.')).map((x) => [x.scene, x.severity, x.message.replace(/«.*»/, '«»')]).sort(), [
+    ['a', 'error', 'flicker sin overlay'],
+    ['b', 'error', 'flicker: el overlay «» no está en conditionalOverlays de b'],
+  ]);
+  // flicker es presentación: no cuenta como escritura de la flag del overlay ni como estado tras say (d)
+  assert.deepEqual(only(lintProject(project([a, b], { files: ['assets/scenes/a/o.png'] })), 'd'), []);
 });

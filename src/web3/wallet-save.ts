@@ -1,5 +1,6 @@
 import type { GameState } from '@/types/game.types';
 import { getWalletState, getSessionAuth } from './wallet';
+import { migrateSave } from '@/systems/SaveMigration';
 
 
 const WALLET_SAVE_PREFIX = 'adrian_adventure_wallet_';
@@ -34,7 +35,8 @@ function loadLocal(address: string): WalletSave | null {
   try {
     const raw = localStorage.getItem(key);
     if (!raw) return null;
-    return JSON.parse(raw) as WalletSave;
+    // A1.4: partidas de versiones anteriores (flags renombradas)
+    return migrateSave(JSON.parse(raw) as WalletSave);
   } catch {
     return null;
   }
@@ -99,6 +101,8 @@ export async function loadRemoteSlots(address: string): Promise<Record<number, W
     const resp = await fetch(`${SAVE_SERVER}/save/${address.toLowerCase()}`);
     if (resp.ok) {
       const data = await resp.json() as { slots: Record<number, WalletSave> };
+      // A1.4: lo que devuelve la nube puede ser de antes del renombrado de flags
+      for (const save of Object.values(data.slots ?? {})) migrateSave(save);
       return data.slots ?? null;
     }
   } catch {
@@ -175,7 +179,7 @@ export function importWalletSave(json: string): WalletSave | null {
   try {
     const save = JSON.parse(json) as WalletSave;
     if (!save.state || !save.address) return null;
-    return save;
+    return migrateSave(save);
   } catch {
     return null;
   }

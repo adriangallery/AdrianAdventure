@@ -1,3 +1,5 @@
+import { SAVE_VERSION } from '@/systems/SaveMigration';
+
 export enum Verb {
   WALK = 'WALK',
   // Panel verbs — 3x3 grid (Thimbleweed Park order)
@@ -63,6 +65,8 @@ export interface GameState {
   achievements: string[];
   /** Timestamp of last save */
   savedAt?: number;
+  /** A1.4: versión del formato de la partida (ver SaveMigration.ts); sin ella es una partida v1 */
+  saveVersion?: number;
 }
 
 export interface InventoryItem {
@@ -74,6 +78,7 @@ export interface InventoryItem {
 
 export function createInitialState(sceneId: string): GameState {
   return {
+    saveVersion: SAVE_VERSION,
     currentScene: sceneId,
     flags: {},
     inventory: [],

@@ -19,7 +19,8 @@
 //
 // Fuentes de verdad (cómo resuelve el motor cada cosa; si cambia el código, cambia aquí):
 //   - Opcodes y campos: src/systems/ScriptEngine.ts. setFlag{flag,value}, addItem{id}, removeItem{id},
-//     ifHasItem{id}, ifFlag{flag}, gotoScene/fadeToScene{sceneId,spawn}, playSound{key}, dialogue{treeId}.
+//     ifHasItem{id}, ifFlag{flag}, gotoScene/fadeToScene{sceneId,spawn}, playSound{key}, dialogue{treeId},
+//     flicker{overlay} (A1.4: parpadeo de un conditionalOverlays[].id de la MISMA escena, sin tocar flags).
 //     Bloques anidados: then/else (if*, web3Require), onSuccess/onFail (mintNFT, mintAchievement).
 //   - Flags: escriben setFlag y dialogues…choices[].setFlag (DialogueSystem). Leen ifFlag, hideWhenFlag,
 //     showWhenFlag, conditionalOverlays[].flag, choices[].flag y cameraEffect.disableFlag (GameScene). Las
@@ -448,6 +449,15 @@ export function lintProject(project) {
       }
       if (op.op === 'dialogue' && op.treeId && !scenes[c.scene]?.dialogues?.[op.treeId]) {
         push('f', 'error', c.scene, String(op.treeId), p, `dialogue: el árbol «${op.treeId}» no está en dialogues de ${c.scene}`);
+      }
+      // A1.4: flicker parpadea un overlay condicional de la escena donde corre el script (GameScene); si no
+      // existe, el motor solo espera y no se ve nada
+      if (op.op === 'flicker') {
+        const overlays = scenes[c.scene]?.conditionalOverlays ?? [];
+        if (typeof op.overlay !== 'string') push('f', 'error', c.scene, p, p, 'flicker sin overlay');
+        else if (!overlays.some((co) => co.id === op.overlay)) {
+          push('f', 'error', c.scene, String(op.overlay), p, `flicker: el overlay «${op.overlay}» no está en conditionalOverlays de ${c.scene}`);
+        }
       }
       if (op.op === 'playSound' && typeof op.key === 'string') {
         const rel = `assets/audio/sfx/${op.key}.mp3`;
