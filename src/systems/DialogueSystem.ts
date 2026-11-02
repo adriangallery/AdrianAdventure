@@ -38,8 +38,11 @@ export interface DialogueCallbacks {
   getFlag?: (flag: string) => boolean;
   /** Set a game flag. */
   setFlag?: (flag: string, value: boolean) => void;
-  /** Run script ops (onEnter hooks). */
-  runScripts?: (ops: unknown[]) => Promise<void>;
+  /**
+   * Run script ops (onEnter hooks). A1.9: con el mismo repertorio que ScriptEngine (UIScene → GameScene
+   * `runDialogueScripts`). `where` = `<treeId>.<nodeId>`, para los avisos.
+   */
+  runScripts?: (ops: unknown[], where: string) => Promise<void>;
   /** Track dialogue completion. */
   onDialogueComplete?: (treeId: string) => void;
 }
@@ -73,7 +76,7 @@ export class DialogueSystem {
 
       // Run onEnter scripts
       if (node.onEnter && this.callbacks.runScripts) {
-        await this.callbacks.runScripts(node.onEnter);
+        await this.callbacks.runScripts(node.onEnter, `${tree.id}.${currentNodeId}`);
       }
 
       // Show text

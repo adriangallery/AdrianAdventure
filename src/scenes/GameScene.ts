@@ -3,6 +3,7 @@ import { Player } from '@/objects/Player';
 import { CoordSystem } from '@/systems/CoordSystem';
 import { SceneDataLoader } from '@/systems/SceneDataLoader';
 import { ScriptEngine, type ScriptContext } from '@/systems/ScriptEngine';
+import { DialogueScriptRunner } from '@/systems/DialogueScripts';
 import { InventorySystem } from '@/systems/InventorySystem';
 import { SaveLoadSystem } from '@/systems/SaveLoadSystem';
 import { migrateGameState } from '@/systems/SaveMigration';
@@ -35,6 +36,8 @@ export class GameScene extends Phaser.Scene {
   private coordSystem!: CoordSystem;
   private sceneDataLoader!: SceneDataLoader;
   private scriptEngine!: ScriptEngine;
+  /** A1.9: motor aparte para los onEnter de los nodos de diálogo (ver DialogueScripts.ts) */
+  private dialogueScripts!: DialogueScriptRunner;
   private inventorySystem!: InventorySystem;
   private saveSystem!: SaveLoadSystem;
   private musicManager!: MusicManager;
@@ -229,6 +232,7 @@ export class GameScene extends Phaser.Scene {
 
     // Script engine
     this.scriptEngine = new ScriptEngine(this.buildScriptContext());
+    this.dialogueScripts = new DialogueScriptRunner(new ScriptEngine(this.buildScriptContext()), () => this.buildScriptContext());
 
     // Input — disabled in trailer mode
     if (!this.isTrailer) {
@@ -329,6 +333,8 @@ export class GameScene extends Phaser.Scene {
         if (this.scriptEngine.watchdogTick(GameScene.WATCHDOG_TICK_MS, this.isPresentingToPlayer())) {
           this.inputCooldownFrames = 2;
         }
+        // A1.9: el árbol abierto no cuenta como «en pantalla» para su propio onEnter; el texto o la elección sí
+        this.dialogueScripts.watchdogTick(GameScene.WATCHDOG_TICK_MS, this.isPresentingToPlayer(false));
       },
     });
 
@@ -751,6 +757,7 @@ export class GameScene extends Phaser.Scene {
     const timer = this.time.delayedCall(GameScene.FF_HOLD_MS, () => {
       if (!this.fastForward || !pointer.isDown) { this.endFastForward(); return; }
       this.scriptEngine.setFastForward(true);
+      this.dialogueScripts.setFastForward(true);
       this.fastForward.label = this.add.text(this.scale.width - 12, 12, '>> FAST', {
         fontFamily: FONT.FAMILY, fontSize: '12px', color: TWP.HINT_TEXT, backgroundColor: TWP.HINT_BG, padding: { x: 6, y: 3 },
       }).setOrigin(1, 0).setDepth(400).setScrollFactor(0);
@@ -773,6 +780,7 @@ export class GameScene extends Phaser.Scene {
     this.input.off('pointerup', ff.onUp);
     this.fastForward = null;
     this.scriptEngine?.setFastForward(false);
+    this.dialogueScripts?.setFastForward(false);
     // que el dedo al soltar no mande al personaje a andar
     this.inputCooldownFrames = Math.max(this.inputCooldownFrames, 6);
   }
@@ -1010,8 +1018,9 @@ export class GameScene extends Phaser.Scene {
    * A1.1: hay algo en pantalla esperando al jugador (texto, árbol de diálogo, elección o cinemática). Mientras
    * tanto el watchdog de scripts no cuenta: dejar un texto abierto no es un cuelgue.
    */
-  private isPresentingToPlayer(): boolean {
-    if (this.registry.get('dialogueShowing') || this.registry.get('dialogueActive')) return true;
+  private isPresentingToPlayer(countDialogueTree = true): boolean {
+    if (this.registry.get('dialogueShowing')) return true;
+    if (countDialogueTree && this.registry.get('dialogueActive')) return true;
     if (((this.registry.get('cinematicActive') as number | undefined) ?? 0) > 0) return true;
     if (!this.scene.isActive('UIScene')) return false;
     return (this.scene.get('UIScene') as UIScene).getChoicePanel()?.isAwaitingChoice() ?? false;
@@ -1026,6 +1035,20 @@ export class GameScene extends Phaser.Scene {
     this.scriptEngine.execute(script, label).finally(() => {
       this.inputCooldownFrames = 2;
     });
+  }
+
+  /**
+   * A1.9: onEnter de un nodo de diálogo (lo llama el DialogueSystem de UIScene), con todos los opcodes de
+   * ScriptEngine y el estado vivo, en un motor aparte del principal para no bloquearse cuando el diálogo lo
+   * lanzó el op `dialogue` de un script que sigue esperando. `where` = `<treeId>.<nodeId>`.
+   */
+  runDialogueScripts(ops: import('@/types/scene.types').ScriptOp[], where: string): Promise<void> {
+    return this.dialogueScripts.run(ops, where);
+  }
+
+  /** A1.9: el árbol de diálogo se ha cerrado; aplica el cambio de escena que un onEnter dejó aplazado. */
+  finishDialogueScripts(): void {
+    this.dialogueScripts?.finishTree();
   }
 
   /** Execute an item-to-item combo script (called from UIScene) */
@@ -1430,6 +1453,7 @@ export class GameScene extends Phaser.Scene {
   shutdown(): void {
     // A1.4: corta un flicker en marcha (el contexto ya no toca overlays de la escena que viene)
     this.scriptEngine?.cancelEffects();
+    this.dialogueScripts?.cancelEffects();
     this.overlayOverrides.clear();
     this.cancelTouchHold();
     this.endFastForward();
