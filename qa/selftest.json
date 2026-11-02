@@ -6,10 +6,10 @@
       "kind": "walkthrough",
       "title": "PASS: walkthrough corto que sale bien",
       "expectStatus": "pass",
-      "goal": { "has": ["code_note"] },
+      "goal": { "has": ["fence_plank"] },
       "steps": [
         { "do": "newGame", "expect": { "scene": "outside" } },
-        { "do": "act", "verb": "PICK", "target": "hs_porch_light", "expect": { "has": ["code_note"] } }
+        { "do": "act", "verb": "PULL", "target": "hs_fence", "expect": { "has": ["fence_plank"] } }
       ]
     },
     {
@@ -39,10 +39,10 @@
       "title": "FAIL: atajo abierto sin knownBreak (el objetivo se cumple en el intento)",
       "expectStatus": "fail",
       "expectDetail": "^atajo abierto: se llega antes de tiempo$",
-      "goal": { "has": ["code_note"] },
+      "goal": { "has": ["fence_plank"] },
       "steps": [
-        { "do": "newGame", "expect": { "scene": "outside", "lacks": ["code_note"] } },
-        { "do": "act", "verb": "PICK", "target": "hs_porch_light", "attempt": true, "expect": { "scene": "outside", "lacks": ["code_note"] }, "note": "el expect del intento falla, pero manda el objetivo alcanzado" }
+        { "do": "newGame", "expect": { "scene": "outside", "lacks": ["fence_plank"] } },
+        { "do": "act", "verb": "PULL", "target": "hs_fence", "attempt": true, "expect": { "scene": "outside", "lacks": ["fence_plank"] }, "note": "el expect del intento falla, pero manda el objetivo alcanzado" }
       ]
     },
     {
@@ -52,10 +52,10 @@
       "title": "XFAIL: el mismo atajo abierto, marcado como conocido",
       "expectStatus": "xfail",
       "expectDetail": "lo cierra selftest",
-      "goal": { "has": ["code_note"] },
+      "goal": { "has": ["fence_plank"] },
       "steps": [
-        { "do": "newGame", "expect": { "scene": "outside", "lacks": ["code_note"] } },
-        { "do": "act", "verb": "PICK", "target": "hs_porch_light", "attempt": true, "expect": { "scene": "outside" } }
+        { "do": "newGame", "expect": { "scene": "outside", "lacks": ["fence_plank"] } },
+        { "do": "act", "verb": "PULL", "target": "hs_fence", "attempt": true, "expect": { "scene": "outside" } }
       ]
     },
     {

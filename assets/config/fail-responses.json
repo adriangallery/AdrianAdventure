@@ -121,6 +121,9 @@
       "Not a combo. Not even a cute accident. Next."
     ],
     "pairs": [
+      { "items": ["fence_plank", "note_half_a"], "lines": ["I nail the half note to the plank. Now it's a tiny protest sign. 'GIVE ME THE OTHER HALF.' I take it back off."] },
+      { "items": ["fence_plank", "note_half_b"], "lines": ["I hold the foil scrap on the end of the plank like a flag. A flag that says 14. Nobody salutes."] },
+      { "items": ["note_half_a", "ledger"], "lines": ["I check if the Ledger PIN is 73. It isn't. Adrian isn't that careless. Only with doors."] },
       { "items": ["code_note", "keycard"], "lines": ["I hold the code against the keycard. Numbers on a card. They don't merge. The keypad wants the note, not the card."] },
       { "items": ["floppy_disk", "ledger"], "lines": ["I try to back up the Ledger onto the floppy. One point four four megabytes. My trust issues alone are bigger."] },
       { "items": ["glasses_3d", "printout"], "lines": ["I read the printout through the 3D glasses. The map pops out. Slightly. Not helpfully."] },
@@ -290,6 +293,21 @@
       "The file's seal stays on. Not on that. Not today.",
       "I'm not breaking Patient Zero's seal against that. This needs a proper desk.",
       "'PATIENT ZERO', in red. It deserves better than being rubbed on things."
+    ],
+    "note_half_a": [
+      "Two digits won't open that. Two digits barely open a conversation.",
+      "I hold up the 73. Nothing happens. Half a clue does half of nothing.",
+      "Not there. The other half is with the birds. That's where this is going."
+    ],
+    "note_half_b": [
+      "I wave the foil scrap at it. Shiny. Useless. The magpies would be proud.",
+      "Fourteen. On its own it's just a number. Like my follower count, minus the bots.",
+      "Half a code. It needs its other half before it's good for anything. Relatable."
+    ],
+    "fence_plank": [
+      "I poke it with the plank. It doesn't fall. Not everything is a nest.",
+      "I'm not hitting that with a plank. I'm a detective. Mostly.",
+      "The plank is long. That isn't high, low or stuck. Wrong job for a plank."
     ]
   }
 }

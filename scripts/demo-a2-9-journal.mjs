@@ -1,6 +1,7 @@
 // Demo de A2.9 + A2.9a (regla visual del plan SCUMM): el diario es el móvil de Dex.
 // En `outside` (?qa=1), en 390x844 (móvil vertical) y 844x390 (móvil horizontal), con el dedo (pantalla táctil):
-//   1) coge la nota de la lámpara del porche (API de QA): el objetivo «Find the code…» se cumple y se apunta una nota;
+//   1) junta la nota del código (API de QA; A3.3c: apaga la lámpara, mitad A, tablón, nido con la mitad B, combinar):
+//      el objetivo g1_code se cumple y se apunta la nota n1_code;
 //      el botón del móvil enseña el punto amarillo de «nuevo»;
 //   2) toca el botón del móvil (barra de arriba, junto a Save y los trofeos): se abre el panel en la pestaña Goals con el
 //      tic en g1_code;
@@ -87,8 +88,19 @@ for (const vp of VIEWPORTS) {
     if (err) { bad(`no pudo andar hacia la lámpara: ${err}`); break; }
     await stageFrame(cap('andando hacia la lámpara del porche'));
   }
-  const picked = await page.evaluate(() => window.__qa.act('PICK', 'hs_porch_light').then(() => null, (e) => String(e?.message || e)));
-  if (picked) bad(`PICK hs_porch_light falló: ${picked}`);
+  // A3.3c: el PIN está partido: apagar la lámpara y coger la mitad A, el tablón de la valla, el nido (mitad B) y juntarlas
+  const chain = [
+    ['apagando la lámpara', (q) => q.act('USE', 'hs_porch_light')],
+    ['mitad A detrás de la lámpara', (q) => q.act('PICK', 'hs_porch_light')],
+    ['tablón de la valla', (q) => q.act('PULL', 'hs_fence')],
+    ['tablón + chimenea: mitad B', (q) => q.use('fence_plank', 'hs_chimney')],
+    ['juntando las mitades', (q) => q.combine('note_half_a', 'note_half_b')],
+  ];
+  for (const [what, fn] of chain) {
+    const err = await page.evaluate((src) => (0, eval)(src)(window.__qa).then(() => null, (e) => String(e?.message || e)), fn.toString());
+    if (err) { bad(`${what} falló: ${err}`); break; }
+    await stageFrame(cap(what));
+  }
   await demo.sleep(900); // el refresco del diario va cada 400 ms
   let j = await journal();
   if (!j) await demo.fail(`${label}: state().journal es null`);

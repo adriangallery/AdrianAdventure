@@ -286,7 +286,7 @@ await step('silencio: sin música ni voces; al activar el sonido en ajustes, sí
 // recién abierto (?qa=1&scene=lobby) el onEnter abre la apertura del capítulo 2 (A3.2: cinemática del motor con franjas,
 // pan a Penny, subtítulos y tarjeta): una pulsación de Esc tiene que saltarla entera sin tocar nada más. Luego mantener Tab resalta los hotspots, el menú contextual del lienzo
 // está cancelado, el doble clic en la puerta sale al momento (el personaje no anda) y en `outside` el clic derecho en
-// la lámpara del porche la coge (su verbo por defecto es PICK).
+// la lámpara del porche es PICK (su verbo por defecto; A3.3c: encendida quema y no da la mitad A).
 await step('escritorio: Esc, Tab, doble clic en una salida y clic derecho (teclado y ratón reales)', async () => {
   const ctx = await browser.createBrowserContext();
   const p = await ctx.newPage();
@@ -388,7 +388,8 @@ await step('escritorio: Esc, Tab, doble clic en una salida y clic derecho (tecla
     if (wt.verb !== 'PICK') throw new Error(`clic derecho en la lámpara: verbo ${wt.verb}, se esperaba PICK`);
     await p.evaluate(() => window.__qa.dismissAll());
     const inv = await p.evaluate(() => window.__qa.state().inventory);
-    if (!inv.includes('code_note')) throw new Error(`tras el clic derecho en la lámpara no está la nota en el inventario: ${inv.join(', ')}`);
+    // A3.3c: el clic derecho sigue siendo PICK (la lámpara da la mitad A), pero con la luz encendida quema: no se coge nada
+    if (inv.includes('note_half_a')) throw new Error(`con la lámpara encendida, el clic derecho no debería dar la mitad A: ${inv.join(', ')}`);
     await p.screenshot({ path: `${SHOTS}/zz-escritorio.png` });
   } finally {
     await ctx.close();
