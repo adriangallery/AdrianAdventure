@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { Player } from '@/objects/Player';
+import { Player, type PlayerAnimQa } from '@/objects/Player';
 import { CoordSystem } from '@/systems/CoordSystem';
 import { SceneDataLoader } from '@/systems/SceneDataLoader';
 import { ScriptEngine, type ScriptContext } from '@/systems/ScriptEngine';
@@ -34,6 +34,7 @@ import { FADE_FIRST_MS, FADE_SHORT_MS } from '@/systems/ScenePrefetch';
 import { addNote, callAnon } from '@/systems/Journal';
 import { JOURNAL_CHAPTERS, journalChapter, journalProgress, journalWorld } from '@/systems/JournalData';
 import { spriteScale, worldToArt, isIntegerScale } from '@/systems/PixelScale';
+import { wantsGesture } from '@/systems/PlayerAnim';
 
 /** A2.4 (QA): cómo pulsa la API de QA: botón derecho o clic de ratón (cuenta para el doble clic). */
 type QaClick = { button?: 'left' | 'right'; mouse?: boolean };
@@ -82,7 +83,7 @@ export class GameScene extends Phaser.Scene {
    * Acción que espera a que el jugador llegue (player:arrived): A2.2 se gira a `face` y ejecuta `run` (el verbo sobre
    * el hotspot, el combo o hablar con la NPC). Lo cancelan un trigger que lo para, un script o un diálogo en marcha.
    */
-  private pending: { face: Facing | null; run: () => void } | null = null;
+  private pending: { face: Facing | null; run: () => void; verb: Verb; aim: { x: number; y: number } | null } | null = null;
   /** A2.2: último acercamiento (objetivo, verbo, punto de llegada y orientación), para la API de QA */
   private lastApproach: { target: string; verb: Verb; walkTo: { x: number; y: number } | null; face: Facing | null } | null = null;
   /** V6: toque en curso sobre un hotspot (tocar = mirar, mantener = acción principal) */
@@ -297,6 +298,8 @@ export class GameScene extends Phaser.Scene {
       // A2.2: se gira hacia el objetivo antes de actuar
       if (pending.face) this.player.face(pending.face);
       this.noteQaAction();
+      // A4.1: gesto de alcanzar o coger a la vez que arranca el script (no lo retrasa)
+      this.startGesture(pending.verb, pending.aim);
       pending.run();
     });
 
@@ -448,6 +451,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   update(time: number, delta: number): void {
+    this.player.setAnimContext(this.playerAnimContext());
     this.player.update(time, delta);
 
     // Refresh conditional overlays when flags change (A1.4: un flicker en marcha manda sobre la flag)
@@ -762,7 +766,7 @@ export class GameScene extends Phaser.Scene {
   private approachAndRun(id: string, verb: Verb, plan: Approach, run: () => void): void {
     this.lastApproach = { target: id, verb, walkTo: plan.walkTo ? { ...plan.walkTo } : null, face: plan.face };
     if (plan.walkTo) {
-      this.pending = { face: plan.face, run };
+      this.pending = { face: plan.face, run, verb, aim: plan.aim ? { ...plan.aim } : null };
       this.player.walkToPct(plan.walkTo.x, plan.walkTo.y);
       return;
     }
@@ -770,7 +774,32 @@ export class GameScene extends Phaser.Scene {
     if (this.player.isMoving()) this.player.halt();
     if (plan.face) this.player.face(plan.face);
     this.noteQaAction();
+    this.startGesture(verb, plan.aim);
     run();
+  }
+
+  /**
+   * A4.1: gesto breve del jugador (≈ 320 ms, PlayerAnim.gesturePose) al actuar con PICK/USE/OPEN/CLOSE/PUSH/PULL/GIVE
+   * sobre algo con posición (sin `aim`, p. ej. el doble clic en una salida, no hay gesto). No espera: el script
+   * arranca a la vez.
+   */
+  private startGesture(verb: Verb, aim: { x: number; y: number } | null): void {
+    if (!aim || this.isTrailer || !wantsGesture(verb)) return;
+    const dx = aim.x - this.player.pctX;
+    this.player.gesture(Math.abs(dx) < 0.5 ? null : dx > 0 ? 'right' : 'left');
+  }
+
+  /**
+   * A4.1: lo que la animación del jugador necesita saber de la escena: si tiene texto en pantalla (UIScene, A2.3:
+   * speaker vacío o del jugador) y si la escena está libre para un tic de reposo.
+   */
+  private playerAnimContext(): { talking: boolean; idleFree: boolean } {
+    const ui = this.scene.isActive('UIScene') ? (this.scene.get('UIScene') as UIScene) : null;
+    const talking = ui?.getSpeech()?.kind === 'player';
+    const idleFree = !this.isTrailer && !this.scriptEngine?.isRunning()
+      && !this.registry.get('dialogueActive') && !this.registry.get('dialogueShowing')
+      && !this.registry.get('cinematicMode') && !this.registry.get('journalOpen');
+    return { talking, idleFree };
   }
 
   /**
@@ -1716,11 +1745,13 @@ export class GameScene extends Phaser.Scene {
   }
 
   /** Qué hay en marcha en la escena: script, personaje andando o fundido de cámara. */
-  qaBusy(): { script: boolean; walking: boolean; fading: boolean } {
+  qaBusy(): { script: boolean; walking: boolean; fading: boolean; gesture: boolean } {
     return {
       script: this.scriptEngine.isRunning(),
       walking: this.player.isMoving(),
       fading: this.cameras.main.fadeEffect.isRunning,
+      // A4.1: el gesto de coger/usar (≤ 400 ms) acaba antes de dar el paso por terminado: la escala vuelve a la base
+      gesture: this.player.isGesturing(),
     };
   }
 
@@ -1871,7 +1902,9 @@ export class GameScene extends Phaser.Scene {
     if (who === 'player') {
       const p = this.player;
       if (!p?.active || !p.visible || p.alpha === 0) return null;
-      return anchor('player', p.x, p.y - p.displayHeight, p.y);
+      // A4.1: sin la elevación del gesto: el texto no salta con el tween
+      const footY = p.getFootY();
+      return anchor('player', p.x, footY - p.displayHeight, footY);
     }
     const key = who.trim().toLowerCase();
     const npc = this.npcs.find((n) => n.active && n.visible && (n.npcId.toLowerCase() === key || n.npcName.toLowerCase() === key));
@@ -1957,6 +1990,16 @@ export class GameScene extends Phaser.Scene {
       coordScale: this.coordSystem.getScale(),
       npcs: this.npcs.map((n) => ({ id: n.npcId, scale: n.scaleY, integer: isIntegerScale(n.scaleY), heightPct: pct(n.height * n.scaleY) })),
     };
+  }
+
+  /** A4.1 (QA): animación del jugador (textura, dirección, hablar, gesto, tics, disfraz, giro y escala) */
+  qaAnim(): PlayerAnimQa {
+    return this.player.getAnimState();
+  }
+
+  /** A4.1 (QA): enseña el juego de sprites del disfraz ('ape') o el normal sin tocar inventario ni flags; null = el de la partida */
+  qaPreviewCostume(costume: 'ape' | 'player' | null): void {
+    this.player.setCostumePreview(costume);
   }
 
   qaNpcIds(): string[] {

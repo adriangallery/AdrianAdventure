@@ -6,7 +6,7 @@ import { readFileSync } from 'node:fs';
 import {
   attemptIndex, check, checkAttemptRan, checkCinematic, checkHighlighted, checkJournal, checkLastChoices, checkListenerGrowth, checkRejects, checkWalkTarget, classify,
   describe, kindOf, newLogLines, routeDefects, runScriptDefects, selftestDefects, selftestMismatch, tapsScene,
-  checkPixel, notePixel,
+  checkPixel, notePixel, checkAnim,
 } from '../scripts/lib/walkthrough-core.mjs';
 
 const readJson = (p) => JSON.parse(readFileSync(new URL(`../${p}`, import.meta.url), 'utf8'));
@@ -453,4 +453,41 @@ test('A2.8: la ruta crítica comprueba la escala entera y el mismo alto en outsi
   for (const s of withPixel) assert.equal(s.expect.pixel.integer, true);
   assert.deepEqual([withPixel[2].expect.pixel.sameHeightAs].flat(), ['outside', 'lobby']);
   assert.ok(withPixel.slice(1).every((s) => (s.expect.pixel.tol ?? 0.1) <= 0.1));
+});
+
+const anim = (extra = {}) => ({
+  texture: 'player_back_left', moving: false, dir: 'up', vertical: true, talking: false, gesture: false, idleTick: null, idleTicks: 0,
+  costume: 'player', preview: null, angle: 0, liftPx: 0, scale: 3, baseScale: 3, rest: true, ...extra,
+});
+
+test('A4.1: expect.anim comprueba dirección, hablar, textura (regex), disfraz y reposo', () => {
+  assert.deepEqual(checkAnim({ dir: 'up', talking: false, moving: false, texture: '^player_back_', costume: 'player', rest: true }, st({ anim: anim() })), []);
+  assert.match(checkAnim({ dir: 'down' }, st({ anim: anim() }))[0], /último tramo «up», se esperaba «down»/);
+  assert.match(checkAnim({ talking: true }, st({ anim: anim() }))[0], /talking = false/);
+  assert.match(checkAnim({ texture: '^player_front' }, st({ anim: anim() }))[0], /textura «player_back_left»/);
+  assert.deepEqual(checkAnim({ texture: 'BACK_LEFT' }, st({ anim: anim() })), [], 'regex sin mayúsculas');
+  assert.match(checkAnim({ costume: 'ape' }, st({ anim: anim() }))[0], /disfraz «player»/);
+  assert.match(checkAnim({ rest: true }, st({ anim: anim({ rest: false, angle: 2.1 }) }))[0], /no está en reposo \(giro 2.1°/);
+  assert.match(checkAnim({ dir: 'up' }, st())[0], /anterior a A4\.1/);
+  assert.match(checkAnim({ dir: 'up' }, st({ anim: null }))[0], /sin animación/);
+  // Va por check()
+  assert.equal(check({ anim: { dir: 'left', talking: true } }, st({ anim: anim() })).length, 2);
+  assert.deepEqual(check({ scene: 'outside' }, st({ anim: anim({ dir: 'left' }) })), [], 'sin expect.anim no se mira');
+});
+
+test('A4.1: la ruta crítica anda en vertical en el lobby (abajo de frente, arriba de espaldas) sin romper facing ni la escala', () => {
+  const route = readJson('qa/walkthrough.json').routes.find((r) => r.id === 'ruta-critica');
+  const withAnim = route.steps.filter((s) => s.expect?.anim);
+  assert.deepEqual(withAnim.map((s) => [s.do, s.expect.scene, s.expect.anim.dir, s.expect.facing]), [
+    ['walk', 'lobby', 'down', 'front'],
+    ['walk', 'lobby', 'up', 'back'],
+  ]);
+  for (const s of withAnim) {
+    assert.equal(s.expect.anim.rest, true, 'al parar, sin tween y con la escala base');
+    assert.ok(Math.abs(s.y - (s === withAnim[0] ? 98 : 85)) < 1e-9);
+  }
+  // Van justo después de coger el abrigo (lobby, sin triggers en x = 55,5) y antes de hablar con la recepcionista
+  const i = route.steps.indexOf(withAnim[0]);
+  assert.equal(route.steps[i - 1].target, 'hs_coat');
+  assert.equal(route.steps[i + 2].npc, 'npc_receptionist');
 });

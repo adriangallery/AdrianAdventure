@@ -31,7 +31,7 @@ export function describe(s) {
 
 /**
  * Comprobaciones de estado: scene, has, lacks, flags, unsetFlags, visited, achievements, (A2.6) lastChoices, (A2.2) facing,
- * (A2.4) verb, walkTarget y highlighted, (A2.10) cinematic y playerNear, (A2.8) pixel, y (A1.10) noListenerGrowth, que
+ * (A2.4) verb, walkTarget y highlighted, (A2.10) cinematic y playerNear, (A2.8) pixel, (A4.1) anim y (A1.10) noListenerGrowth, que
  * compara `st.resizeListeners` con `ctx.listenersBaseline` (lo que había tras el primer paso de la ruta). `flags` trata
  * una flag ausente como false; (A1.4) `unsetFlags` exige que la flag no esté en la partida, ni a false: nadie la ha
  * escrito (p. ej. un parpadeo que antes se hacía encendiendo y apagando la flag). Devuelve los fallos.
@@ -75,6 +75,33 @@ export function check(expect, st, ctx = {}) {
   }
   // A2.8: densidad de píxel (escala entera, unidad de la escena, misma altura que en otras escenas de la ruta)
   if (expect.pixel) f.push(...checkPixel(expect.pixel, st, ctx.pixelRefs));
+  // A4.1: animación del jugador (dirección del último tramo, cabeceo, textura, reposo)
+  if (expect.anim) f.push(...checkAnim(expect.anim, st));
+  return f;
+}
+
+/**
+ * A4.1: `expect.anim` contra `st.anim` (subconjunto):
+ *  - `dir`: dirección del último tramo andado (left | right | up | down);
+ *  - `talking` / `moving` / `gesture`: booleanos;
+ *  - `texture`: expresión regular (sin mayúsculas) sobre la textura que se ve, p. ej. `^player_back_`;
+ *  - `costume`: juego de sprites (player | ape);
+ *  - `rest: true`: sin tween (giro 0, sin elevación) y con la escala base de A2.8 (la del paso `expect.pixel`).
+ */
+export function checkAnim(want, st) {
+  const a = st.anim;
+  if (a === undefined) return ['el juego no expone `anim` en state() (API de QA anterior a A4.1)'];
+  if (!a) return ['sin animación del jugador (no hay escena de juego)'];
+  const f = [];
+  if (want.dir !== undefined && a.dir !== want.dir) f.push(`animación: último tramo «${a.dir}», se esperaba «${want.dir}»`);
+  for (const k of ['talking', 'moving', 'gesture']) {
+    if (want[k] !== undefined && Boolean(a[k]) !== want[k]) f.push(`animación: ${k} = ${Boolean(a[k])}, se esperaba ${want[k]}`);
+  }
+  if (want.texture !== undefined && !new RegExp(want.texture, 'i').test(String(a.texture ?? ''))) {
+    f.push(`animación: textura «${a.texture}», se esperaba /${want.texture}/`);
+  }
+  if (want.costume !== undefined && a.costume !== want.costume) f.push(`animación: disfraz «${a.costume}», se esperaba «${want.costume}»`);
+  if (want.rest && !a.rest) f.push(`animación: no está en reposo (giro ${a.angle}°, elevación ${a.liftPx} px, escala ${a.scale} y base ${a.baseScale})`);
   return f;
 }
 
