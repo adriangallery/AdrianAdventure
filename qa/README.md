@@ -26,8 +26,9 @@ hasta el hotspot, combos, gates y diálogos). Nunca pone flags ni da objetos.
 | `runScript(ops, { skipAfterMs? })` | A2.10: ejecuta `ops` por el ScriptEngine principal (como un script de hotspot) y espera a que termine; los textos de una cinemática avanzan solos y los de fuera se cierran con el toque sintético. `skipAfterMs`: pulsa Esc (tecla real) a ese tiempo, para saltar la cinemática. Ver § Cinemáticas |
 | `openJournal(tab?)` / `closeJournal()` | A2.9: abre el diario (móvil de Dex) pulsando su botón con el mismo manejador que el dedo (`[qa:blocked]` si ahora no se puede: cinemática, diálogo, texto o script) y lo cierra con su X. `tab`: `goals` (por defecto), `notes`, `anon`. Ver § Diario |
 | `callAnon()` | A2.9: llama a Anon como el jugador (abre el diario si hace falta, pestaña Call Anon, botón de llamar, espera a que conteste y lo vuelve a cerrar si lo abrió ella); la llamada queda en `state().journal.anon` |
+| `previewCostume(costume)` | A4.1: enseña el juego de sprites del disfraz de mono (`'ape'`) o el normal (`'player'`) en la escena actual, para ver sus animaciones; `null` vuelve al de la partida. Solo los sprites: no da el disfraz ni toca inventario ni flags, y se pierde al cambiar de escena. Ver § Animación del protagonista |
 | `isWalkable(x, y)` | A2.1: si el punto (en %) se pisa en la escena actual (`walkableAreas` menos `blockedAreas`); síncrona |
-| `state()` | Escena, inventario, flags, visitadas, hotspots visibles, elecciones, avisos, log (`logTotal`: líneas apuntadas desde que cargó) `actions` (verbos que llegaron a ejecutarse) y `resizeListeners` (A1.10: listeners de `resize` del ScaleManager) y `path` (A2.1: última ruta calculada al andar: origen, puntos de paso y destino), `facing` (A2.2: `left`/`right`/`front`/`back`) y `walkTarget` (A2.2: último acercamiento a un hotspot/NPC: `target`, `verb`, `walkTo` —null si no anduvo— y `face`), y (A2.4) `verb` (verbo del panel), `highlightedHotspots` (resaltados con Tab), `verbKeyHints` (verbos con su tecla pintada en el panel) e `inputListeners` (listeners de teclado y del lienzo), (A2.10) `cinematic` (ver § Cinemáticas) y (A2.7) `prefetch` (precarga de las escenas vecinas: `scene`, `neighbors`, `done`, `pending`, `inFlight`, `failed`, `disabled`) y `lastTransition` (último cambio de escena: `from`, `to`, `ms`, `loadMs`, `at`, `mode` `full`/`indicator`/`instant`, `loadingScreen`, `fadeMs`) y (A2.9) `journal` (ver § Diario) y (A2.8) `pixel` (ver § Densidad de píxel) |
+| `state()` | Escena, inventario, flags, visitadas, hotspots visibles, elecciones, avisos, log (`logTotal`: líneas apuntadas desde que cargó) `actions` (verbos que llegaron a ejecutarse) y `resizeListeners` (A1.10: listeners de `resize` del ScaleManager) y `path` (A2.1: última ruta calculada al andar: origen, puntos de paso y destino), `facing` (A2.2: `left`/`right`/`front`/`back`) y `walkTarget` (A2.2: último acercamiento a un hotspot/NPC: `target`, `verb`, `walkTo` —null si no anduvo— y `face`), y (A2.4) `verb` (verbo del panel), `highlightedHotspots` (resaltados con Tab), `verbKeyHints` (verbos con su tecla pintada en el panel) e `inputListeners` (listeners de teclado y del lienzo), (A2.10) `cinematic` (ver § Cinemáticas) y (A2.7) `prefetch` (precarga de las escenas vecinas: `scene`, `neighbors`, `done`, `pending`, `inFlight`, `failed`, `disabled`) y `lastTransition` (último cambio de escena: `from`, `to`, `ms`, `loadMs`, `at`, `mode` `full`/`indicator`/`instant`, `loadingScreen`, `fadeMs`) y (A2.9) `journal` (ver § Diario) y (A2.8) `pixel` (ver § Densidad de píxel) y (A4.1) `anim` (ver § Animación del protagonista) |
 
 Todas (salvo `state()` e `isWalkable()`) esperan a que el juego quede quieto y devuelven `state()`. Los errores empiezan por `[qa:blocked]`
 (el juego no deja hacerlo) o `[qa:error]` (id inexistente, tiempo agotado).
@@ -66,7 +67,10 @@ admite `journalNote` ni `callAnon` (cambian la partida). La ruta crítica llama 
 (nivel 1 y 2 de `p1_code`), comprueba el tic de `g1_code` y la nota `n1_code` tras coger la nota, y que la siguiente
 llamada ya es de `p1_door` y no de `p1_code`. A2.8 añade `expect.pixel`
 (`integer`, `pixelScale`, `heightPct` `{ min, max }`, `sameHeightAs` + `tol`, ver § Densidad de píxel); la ruta crítica
-lo usa en outside, lobby y clinic_interior. Cada paso admite `expect` con `scene`, `has`, `lacks`, `flags`, `unsetFlags`, `visited`,
+lo usa en outside, lobby y clinic_interior. A4.1 añade `expect.anim` (`dir` left|right|up|down del último tramo, `talking`,
+`moving`, `gesture`, `texture` como expresión regular sin mayúsculas, `costume` y `rest`: sin tween y con la escala base de
+A2.8); la ruta crítica anda en vertical en el lobby tras coger el abrigo (abajo: `dir` `down`, de frente; arriba: `up`, de
+espaldas). Cada paso admite `expect` con `scene`, `has`, `lacks`, `flags`, `unsetFlags`, `visited`,
 `achievements`, `lastChoices`, `facing` (A2.2: hacia dónde mira el personaje al acabar el paso) y `noListenerGrowth`, y `rejects`: expresión regular (sin distinguir mayúsculas) que tiene que salir en los textos
 mostrados durante ese paso, p. ej. la frase con la que el juego rechaza la acción. Las rutas llevan un `goal` con
 el mismo formato que `expect`.
@@ -444,6 +448,38 @@ Campos opcionales de `scene.json` (junto a `walkableAreas`/`blockedAreas` y los 
   a escala entera), `pixelScale`, `heightPct` `{ min, max }` (alto del jugador en pantalla, % del fondo) y
   `sameHeightAs` (escena o lista ya vista en la ruta, con el jugador en la franja sin profundidad) con `tol` relativa
   (0,1). Demo: `scripts/demo-a2-8-pixel-density.mjs`.
+
+# Animación del protagonista (A4.1)
+
+Lógica pura en `src/systems/PlayerAnim.ts` (`tests/player-anim.test.mjs`, en `npm run test:engine`); `Player.ts` solo
+aplica lo que decide (textura, giro sobre los pies y elevación) y `GameScene` le dice si el jugador tiene texto en pantalla
+y si la escena está libre. Sin arte nuevo: los PNG de `assets/sprites/player`.
+
+- **Andar arriba y abajo**: la dirección de cada tramo se mide en píxeles de mundo; pasa a vertical si |dy| > 1,5·|dx| y
+  vuelve a perfil solo si |dy| < |dx| (histéresis: una diagonal no parpadea). Bajando, `Front-Left`/`Front-Right`
+  alternando cada 220 ms como paso; subiendo, `Back-Left`/`Back-Right`; con balanceo de ±2,5° sobre los pies. Al llegar
+  se queda de frente (bajaba) o de espaldas (subía): `facing` `front`/`back`. De perfil, los 3 fotogramas de siempre.
+- **Hablar**: mientras el jugador tiene texto en pantalla (`UIScene.getSpeech().kind === 'player'`, con o sin voz) y está
+  quieto, cabeceo de 1,5° a 7 Hz; de frente además alterna `Idle-1`/`Front-Left`/`Idle-1`/`Front-Right` (manos) a 3,5 Hz.
+  Para al cerrarse el texto. El texto sobre la cabeza no se mueve con el tween (`GameScene.speakerHead` usa los pies sin
+  la elevación).
+- **Coger o usar**: PICK, USE, OPEN, CLOSE, PUSH, PULL y GIVE sobre algo con posición, al llegar (o al momento si no
+  anda): gesto de 320 ms a la vez que el primer op (no lo retrasa). De perfil, el fotograma de andar con el brazo
+  adelantado (`Walk-*-1`) inclinado 6° hacia el objetivo; de espaldas, su `Back-*` de puntillas (2 píxeles de arte); de
+  frente, `Front-*` hacia el lado del objetivo. `state().busy` incluye `gesture` mientras dura.
+- **Reposo**: tras 6 s quieto con la escena libre (sin script, texto, diálogo, cinemática ni diario), un tic cada 3-6 s:
+  mirar a un lado (perfil), mirar a cámara (`Idle-1`) o mover el pie (`Idle-1`/`Idle-2`). Solo cambia la textura: la
+  orientación (`facing`) no. Con `?qa=1` la semilla es fija y salen siempre en el mismo orden.
+- **Escala**: nada de esto toca la escala (un squash la haría fraccionaria y A2.8 la quiere entera): son giros y una
+  elevación en píxeles de pantalla enteros, y al parar todo vuelve a giro 0, elevación 0 y la escala base.
+- **Disfraz de mono**: mismo sistema con lo que hay (`Ape-Idle-1..4`, `Ape-Walk-Left/Right-0..2`): en vertical anda con
+  los fotogramas de perfil del último lado y el balanceo; hablar alterna `Ape-Idle-1`/`Ape-Idle-3`. Arte pendiente:
+  `Ape-Front-Left/Right` y `Ape-Back-Left/Right` (y `Ape-Left`/`Ape-Right` de perfil quieto).
+- **Cinemáticas (A2.10)**: `actorMove` del jugador anda con las mismas animaciones (también en vertical) y, saltado, acaba
+  mirando como si hubiera llegado andando; `actorAnim` con una textura fija hace que hablar solo cabecee y quita los tics.
+- **QA**: `state().anim` = `{ texture, moving, dir, vertical, talking, gesture, idleTick, idleTicks, costume, preview,
+  angle, liftPx, scale, baseScale, rest }`; `expect.anim` (ver § Rutas); `__qa.previewCostume('ape' | 'player' | null)`.
+  Demo: `scripts/demo-a4-1-player-anim.mjs`.
 
 # Linter de escenas (A0.4)
 

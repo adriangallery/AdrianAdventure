@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import type { ScriptOp } from '@/types/scene.types';
 import { FONT } from '@/config/theme';
 import type { Player } from '@/objects/Player';
+import { facingForDir, moveDir } from './PlayerAnim';
 import type { NPC } from '@/objects/NPC';
 import type { CoordSystem } from './CoordSystem';
 import type { MusicManager } from './MusicManager';
@@ -630,7 +631,10 @@ export class CinematicDirector {
         if (!this.alive || !p.active) return;
         if (Math.hypot(p.pctX - dest.x, p.pctY - dest.y) > 0.01) p.teleportPct(dest.x, dest.y);
         else p.halt();
-        if (Math.abs(dest.x - from.x) > 0.01) p.face(dest.x > from.x ? 'right' : 'left');
+        // A4.1: como al llegar andando: de perfil hacia donde iba, de espaldas si subía y de frente si bajaba
+        const dxPx = ((dest.x - from.x) / 100) * cs.imgW;
+        const dyPx = ((dest.y - from.y) / 100) * cs.imgH;
+        if (Math.abs(dest.x - from.x) > 0.01 || Math.abs(dest.y - from.y) > 0.01) p.face(facingForDir(moveDir(dxPx, dyPx, null)));
       };
       if (instant) {
         land();

@@ -4,9 +4,40 @@ import type { CoordSystem } from '@/systems/CoordSystem';
 import { NavGrid, type Point } from '@/systems/Pathfinding';
 import type { Facing } from '@/systems/Facing';
 import { resolvePixelScale, spriteScale, artHeightPct, type DepthScale, type PixelGlobalConfig } from '@/systems/PixelScale';
+import {
+  IdleTicker, QA_IDLE_SEED, facingForDir, facingTexture, gesturePose, idleTicPose, isVertical, moveDir, talkPose, walkPose,
+  type AnimDir, type AnimPose, type IdleTic, type IdleTicKind, type Side,
+} from '@/systems/PlayerAnim';
 
-const WALK_FRAME_MS = 180;
 const IDLE_FRAME_MS = 400;
+
+/** A4.1: estado de la animación para la API de QA (`state().anim`) */
+export interface PlayerAnimQa {
+  /** Textura que se ve ahora */
+  texture: string;
+  moving: boolean;
+  /** Dirección del último tramo andado (left | right | up | down; se queda al parar); null si aún no ha andado */
+  dir: AnimDir | null;
+  /** Andando (o lo último que anduvo) en vertical: Front-* / Back-* con balanceo */
+  vertical: boolean;
+  /** Cabeceo de hablar en marcha (texto del jugador en pantalla y quieto) */
+  talking: boolean;
+  /** Gesto de coger/usar en marcha */
+  gesture: boolean;
+  /** Tic de reposo en curso (null si ninguno) y cuántos van en la escena */
+  idleTick: IdleTicKind | null;
+  idleTicks: number;
+  /** Juego de sprites: player | ape; `preview` = el de __qa.previewCostume (null si no hay) */
+  costume: string;
+  preview: string | null;
+  /** Giro (grados) y elevación (píxeles de pantalla) del tween; 0 y 0 en reposo */
+  angle: number;
+  liftPx: number;
+  /** Escala aplicada (scaleY), la que pide A2.8 y si coinciden: `rest` = sin tween y con la escala base */
+  scale: number;
+  baseScale: number;
+  rest: boolean;
+}
 /**
  * A2.1: tramo máximo (en %) entre dos comprobaciones de triggers. Un frame largo se parte en tramos de este tamaño
  * y tras cada uno se llama a `onStep`; es menor que el trigger más estrecho (1,6 % en mountain), así que el
@@ -51,13 +82,33 @@ export class Player extends Phaser.GameObjects.Sprite {
   /** Movement speed in % per second */
   private pctSpeed: number;
 
-  private walkFrameIndex = 0;
-  private walkTimer = 0;
   private idleFrameIndex = 0;
   private idleTimer = 0;
 
   /** Sprite prefix — 'player' by default, 'ape' when costume worn */
   private spritePrefix = 'player';
+  /** A4.1 (QA): juego de sprites forzado por __qa.previewCostume (solo los sprites: ni inventario ni flags) */
+  private costumePreview: string | null = null;
+
+  // A4.1: animación (src/systems/PlayerAnim.ts decide; aquí solo se aplica)
+  /** Dirección del tramo actual (con histéresis); null parado */
+  private walkDir: AnimDir | null = null;
+  /** Dirección del último tramo andado (QA) */
+  private lastDir: AnimDir | null = null;
+  /** Tiempo andando (elige fotograma y balanceo) */
+  private walkClock = 0;
+  /** Lo dice GameScene cada frame: el jugador tiene texto en pantalla / la escena está libre para un tic */
+  private talkWanted = false;
+  private idleFree = false;
+  private talkClock = 0;
+  private gestureAnim: { t: number; aim: Side | null } | null = null;
+  private idleTicker: IdleTicker;
+  private ticActive = false;
+  /** pose(key) de una cinemática: hablar solo cabecea, sin cambiar la textura, y no hay tics */
+  private posed = false;
+  /** Giro y elevación del tween ahora mismo (0 y 0 en reposo) */
+  private animAngle = 0;
+  private animLiftPx = 0;
 
   /**
    * A2.2: hacia dónde mira. 'front' = idle animado (Idle-1..4); el resto, un sprite quieto (ver facingTexture).
@@ -87,6 +138,10 @@ export class Player extends Phaser.GameObjects.Sprite {
     const rawSpeed = sceneData.player.speed ?? 200;
     this.pctSpeed = (rawSpeed / coordSystem.imgH) * 100;
 
+    // A4.1: tics de reposo deterministas con ?qa=1 (demos y rutas repetibles); si no, al azar
+    const qa = typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('qa') === '1';
+    this.idleTicker = new IdleTicker(qa ? QA_IDLE_SEED : (Date.now() ^ Math.floor(Math.random() * 0x7fffffff)) >>> 0);
+
     this.setOrigin(0.5, 1); // bottom-center (feet = position)
     this.applyPixelScale();
     this.setDepth(10);
@@ -99,6 +154,7 @@ export class Player extends Phaser.GameObjects.Sprite {
    * isla, va al punto alcanzable más cercano. La firma no cambia (TrailerScene la usa).
    */
   walkToPct(pctX: number, pctY: number): void {
+    this.endGesture();
     const start = { x: this.pctX, y: this.pctY };
     const route = this.nav.findPath(start, { x: pctX, y: pctY });
     this.lastPath = [start, ...route.points];
@@ -113,6 +169,8 @@ export class Player extends Phaser.GameObjects.Sprite {
     this.targetPctX = null;
     this.targetPctY = null;
     this.waypoints = [];
+    this.walkDir = null;
+    this.endGesture();
     this.applyFacing();
   }
 
@@ -141,31 +199,140 @@ export class Player extends Phaser.GameObjects.Sprite {
     if (dir === 'left' || dir === 'right') this.lastSide = dir;
   }
 
+  /** ¿Existe la textura? (para PlayerAnim: el tráiler no carga todas y el mono no tiene Front/Back) */
+  private has = (key: string): boolean => this.scene.textures.exists(key);
+
   /** Textura quieta para la orientación actual con el disfraz actual, o null si toca el idle animado. */
   private facingTexture(): string | null {
-    const p = this.spritePrefix;
-    let cands: string[] = [];
-    if (this.facing === 'back') {
-      cands = [`${p}_back_${this.lastSide === 'right' ? 'left' : 'right'}`];
-    } else if (this.facing === 'left' || this.facing === 'right') {
-      const mirrored = this.facing === 'right' ? 'left' : 'right';
-      cands = [`${p}_${mirrored}`, `${p}_walk_${mirrored}_0`];
-    }
-    return cands.find((k) => this.scene.textures.exists(k)) ?? null;
+    return facingTexture(this.spritePrefix, this.facing, this.lastSide, this.has);
   }
 
-  /** Pone la textura de la orientación actual (quieta, o el primer fotograma del idle si mira de frente). */
+  /**
+   * Pone la textura de la orientación actual (quieta, o el primer fotograma del idle si mira de frente). A4.1: y quita
+   * cualquier tween (ángulo 0, sin elevación, escala base de A2.8) y el tic de reposo en curso.
+   */
   private applyFacing(): void {
     this.staticKey = this.facingTexture();
+    this.posed = false;
     this.idleTimer = 0;
     this.idleFrameIndex = 0;
+    this.idleTicker.reset();
+    this.ticActive = false;
     this.setTexture(this.staticKey ?? `${this.spritePrefix}_idle1`);
+    this.clearAnimTransform();
+  }
+
+  /**
+   * A4.1: vuelve a la pose de reposo sin cambiar la orientación ni reiniciar el idle: textura de la orientación (o el
+   * fotograma de idle en el que iba), ángulo 0, sin elevación y la escala base de A2.8 (el tween nunca la toca).
+   */
+  private restoreRest(): void {
+    this.ticActive = false;
+    this.setTextureIfNeeded(this.staticKey ?? `${this.spritePrefix}_idle${this.idleFrameIndex + 1}`);
+    this.clearAnimTransform();
+  }
+
+  private clearAnimTransform(): void {
+    const moved = this.animLiftPx !== 0;
+    this.animAngle = 0;
+    this.animLiftPx = 0;
+    if (this.angle !== 0) this.setAngle(0);
+    if (moved) this.syncScreenPosition();
+    this.applyPixelScale();
+  }
+
+  private setTextureIfNeeded(key: string): void {
+    if (this.texture?.key !== key && this.has(key)) this.setTexture(key);
+  }
+
+  /**
+   * A4.1: aplica una pose de PlayerAnim: textura (null = la de la orientación o el fotograma de idle en curso), giro
+   * sobre los pies y elevación en píxeles de arte (redondeada a píxeles de pantalla enteros con la escala aplicada).
+   */
+  private applyPose(pose: AnimPose, fallback: string | null): void {
+    const tex = pose.texture ?? fallback;
+    if (tex) this.setTextureIfNeeded(tex);
+    if (this.animAngle !== pose.angle) {
+      this.animAngle = pose.angle;
+      this.setAngle(pose.angle);
+    }
+    const lift = Math.round(pose.lift * this.scaleY);
+    if (lift !== this.animLiftPx) {
+      this.animLiftPx = lift;
+      this.syncScreenPosition();
+    }
   }
 
   /** Change player costume. Pass 'ape' for ape costume, 'player' to revert. */
   setCostume(prefix: string): void {
     this.spritePrefix = prefix;
     if (!this.isMoving()) this.applyFacing();
+  }
+
+  /**
+   * A4.1 (QA, `__qa.previewCostume`): fuerza el juego de sprites ('ape' | 'player') o lo suelta (null: vuelve a mandar
+   * la flag `ape_costume_worn`). Solo cambia los sprites de esta escena; ni inventario ni flags.
+   */
+  setCostumePreview(prefix: string | null): void {
+    this.costumePreview = prefix;
+  }
+
+  /**
+   * A4.1: lo que GameScene sabe y Player no: si el jugador tiene texto en pantalla (cabecea mientras dure) y si la
+   * escena está libre para un tic de reposo (sin script, texto, diálogo, cinemática ni diario).
+   */
+  setAnimContext(ctx: { talking: boolean; idleFree: boolean }): void {
+    this.talkWanted = ctx.talking;
+    this.idleFree = ctx.idleFree;
+  }
+
+  /**
+   * A4.1: gesto breve de alcanzar o coger (PlayerAnim.GESTURE_MS) al actuar sobre un hotspot; `aim` = lado de la
+   * pantalla en el que está el objetivo. Va a la vez que el script: no lo retrasa. Andando no hace nada.
+   */
+  gesture(aim: Side | null): void {
+    if (this.isMoving() || !this.visible) return;
+    this.gestureAnim = { t: 0, aim };
+    this.idleTicker.reset();
+    this.ticActive = false;
+  }
+
+  isGesturing(): boolean {
+    return this.gestureAnim !== null;
+  }
+
+  private endGesture(): void {
+    if (!this.gestureAnim) return;
+    this.gestureAnim = null;
+    this.restoreRest();
+  }
+
+  /** A4.1 (QA): ver PlayerAnimQa */
+  getAnimState(): PlayerAnimQa {
+    const tic: IdleTic | null = this.ticActive ? this.idleTicker.current() : null;
+    const moving = this.isMoving();
+    return {
+      texture: this.texture?.key ?? '',
+      moving,
+      dir: moving ? this.walkDir : this.lastDir,
+      vertical: isVertical(moving ? this.walkDir : this.lastDir),
+      talking: !moving && this.talkClock > 0,
+      gesture: this.gestureAnim !== null,
+      idleTick: tic?.kind ?? null,
+      idleTicks: this.idleTicker.count,
+      costume: this.spritePrefix,
+      preview: this.costumePreview,
+      angle: Math.round(this.angle * 100) / 100,
+      liftPx: this.animLiftPx,
+      scale: this.scaleY,
+      baseScale: this.lastScale.scale,
+      rest: this.angle === 0 && this.animLiftPx === 0 && this.scaleX === this.lastScale.scale && this.scaleY === this.lastScale.scale,
+    };
+  }
+
+  /** A4.1: y de los pies en pantalla sin la elevación del gesto (el texto sobre la cabeza no salta con el tween) */
+  getFootY(): number {
+    return this.y + this.animLiftPx;
   }
 
   getCostume(): string {
@@ -180,7 +347,7 @@ export class Player extends Phaser.GameObjects.Sprite {
   onResize(coordSystem: CoordSystem): void {
     this.coordSystem = coordSystem;
     const screen = coordSystem.pctToScreen(this.pctX, this.pctY);
-    this.setPosition(screen.x, screen.y);
+    this.setPosition(screen.x, screen.y - this.animLiftPx);
     this.applyPixelScale();
   }
 
@@ -222,39 +389,40 @@ export class Player extends Phaser.GameObjects.Sprite {
     // Check costume flag from gameState each frame (driven by ScummUI toggle)
     const state = this.scene.registry.get('gameState') as { flags?: Record<string, boolean> } | undefined;
     const wantApe = state?.flags?.['ape_costume_worn'] ?? false;
-    const wantPrefix = wantApe ? 'ape' : 'player';
+    const wantPrefix = this.costumePreview ?? (wantApe ? 'ape' : 'player');
     if (wantPrefix !== this.spritePrefix) {
       this.spritePrefix = wantPrefix;
       // Reset ALL animation counters to avoid freeze on costume swap
       this.idleTimer = IDLE_FRAME_MS;
-      this.walkFrameIndex = 0;
-      this.walkTimer = 0;
+      this.walkClock = 0;
       this.idleFrameIndex = 0;
       if (this.targetPctX === null) this.applyFacing();
     }
 
     if (this.targetPctX === null || this.targetPctY === null) {
-      // A2.2: mirando a un lado o de espaldas se queda quieto; el idle animado es de frente
-      if (this.staticKey) return;
-      // Idle animation
-      this.idleTimer += delta;
-      if (this.idleTimer >= IDLE_FRAME_MS) {
-        this.idleTimer = 0;
-        this.idleFrameIndex = (this.idleFrameIndex + 1) % 4;
-        this.setTexture(`${this.spritePrefix}_idle${this.idleFrameIndex + 1}`);
-      }
+      this.updateStill(delta);
       return;
     }
 
-    // Walk animation (sprite direction is mirrored from movement direction)
-    const direction = this.targetPctX - this.pctX > 0 ? 'left' : 'right';
-    // A2.2: mira hacia donde anda (las claves de andar están espejadas: 'left' = va hacia la derecha)
-    this.setFacing(direction === 'left' ? 'right' : 'left');
-    this.walkTimer += delta;
-    if (this.walkTimer >= WALK_FRAME_MS) {
-      this.walkTimer = 0;
-      this.walkFrameIndex = (this.walkFrameIndex + 1) % 3;
-      this.setTexture(`${this.spritePrefix}_walk_${direction}_${this.walkFrameIndex}`);
+    // A4.1: andar. Dirección del tramo en píxeles de mundo (con histéresis entre perfil y vertical): de perfil los 3
+    // fotogramas de siempre; arriba/abajo Back-*/Front-* alternando como paso, con balanceo (PlayerAnim.walkPose)
+    const dxPx = ((this.targetPctX - this.pctX) / 100) * this.coordSystem.imgW;
+    const dyPx = ((this.targetPctY - this.pctY) / 100) * this.coordSystem.imgH;
+    // Ya en el destino (llega en este mismo frame): no se gira ni cambia de fotograma
+    if (Math.abs(dxPx) > 1e-6 || Math.abs(dyPx) > 1e-6) {
+      const dir = moveDir(dxPx, dyPx, this.walkDir);
+      if (this.walkDir === null) {
+        this.walkClock = 0;
+        this.talkClock = 0;
+        this.ticActive = false;
+        this.idleTicker.reset();
+      }
+      this.walkDir = dir;
+      this.lastDir = dir;
+      // A2.2: mira hacia donde anda; A4.1: de espaldas al subir y de frente al bajar (y así se queda al llegar)
+      this.setFacing(facingForDir(dir));
+      this.walkClock += delta;
+      this.applyPose(walkPose({ prefix: this.spritePrefix, dir, side: this.lastSide, tMs: this.walkClock, has: this.has }), null);
     }
 
     // A2.1: el avance del frame se reparte en tramos cortos por los puntos de paso; tras cada tramo, onStep
@@ -305,6 +473,7 @@ export class Player extends Phaser.GameObjects.Sprite {
         }
         this.targetPctX = null;
         this.targetPctY = null;
+        this.walkDir = null;
         this.applyFacing();
         this.syncScreenPosition();
         this.scene.events.emit('player:arrived');
@@ -322,14 +491,66 @@ export class Player extends Phaser.GameObjects.Sprite {
     this.targetPctX = null;
     this.targetPctY = null;
     this.waypoints = [];
+    this.walkDir = null;
     this.applyFacing();
     this.syncScreenPosition();
     this.scene.events.emit('player:arrived');
   }
 
+  /**
+   * A4.1: quieto. Por orden: gesto de coger/usar, cabeceo de hablar (texto del jugador en pantalla), tic de reposo y,
+   * si no, lo de siempre (idle animado de frente; de perfil o de espaldas, quieto). Al acabar cada uno vuelve a la
+   * pose de reposo (ángulo 0, sin elevación, escala base).
+   */
+  private updateStill(delta: number): void {
+    const fallback = () => this.staticKey ?? `${this.spritePrefix}_idle${this.idleFrameIndex + 1}`;
+    if (this.gestureAnim) {
+      this.gestureAnim.t += delta;
+      const pose = gesturePose({
+        prefix: this.spritePrefix, facing: this.facing, side: this.lastSide, aim: this.gestureAnim.aim, tMs: this.gestureAnim.t, has: this.has,
+      });
+      if (pose) {
+        this.applyPose(pose, fallback());
+        return;
+      }
+      this.gestureAnim = null;
+      this.restoreRest();
+    }
+
+    if (this.talkWanted && this.visible) {
+      this.talkClock += delta;
+      this.idleTicker.reset();
+      this.ticActive = false;
+      this.applyPose(talkPose({ prefix: this.spritePrefix, facing: this.facing, tMs: this.talkClock, has: this.has, posed: this.posed }), fallback());
+      return;
+    }
+    if (this.talkClock > 0) {
+      this.talkClock = 0;
+      this.restoreRest();
+    }
+
+    const tick = this.idleTicker.update(delta, this.idleFree && this.visible && !this.posed, this.facing, this.lastSide);
+    if (tick) {
+      this.ticActive = true;
+      this.applyPose(idleTicPose(tick.tic, tick.t, { prefix: this.spritePrefix, has: this.has }), fallback());
+      return;
+    }
+    if (this.ticActive) this.restoreRest();
+
+    // A2.2: mirando a un lado o de espaldas se queda quieto; el idle animado es de frente
+    if (this.staticKey) return;
+    this.idleTimer += delta;
+    if (this.idleTimer >= IDLE_FRAME_MS) {
+      this.idleTimer = 0;
+      this.idleFrameIndex = (this.idleFrameIndex + 1) % 4;
+      this.setTexture(`${this.spritePrefix}_idle${this.idleFrameIndex + 1}`);
+    }
+  }
+
   private syncScreenPosition(): void {
     const screen = this.coordSystem.pctToScreen(this.pctX, this.pctY);
-    this.setPosition(screen.x, screen.y);
+    // A4.1: de puntillas en el gesto (píxeles de pantalla enteros; 0 en reposo)
+    this.setPosition(screen.x, screen.y - this.animLiftPx);
     // A2.8: con depthScale la escala cambia con la y de los pies
     if (this.depthScale) this.applyPixelScale();
   }
@@ -354,7 +575,12 @@ export class Player extends Phaser.GameObjects.Sprite {
     }
     const tex = key === 'walk' ? `${this.spritePrefix}_walk_${this.lastSide === 'right' ? 'left' : 'right'}_0` : key;
     if (!this.scene.textures.exists(tex)) return false;
+    this.endGesture();
+    this.clearAnimTransform();
     this.staticKey = tex;
+    this.posed = true;
+    this.ticActive = false;
+    this.idleTicker.reset();
     this.setTexture(tex);
     return true;
   }

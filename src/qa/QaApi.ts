@@ -21,6 +21,7 @@ import type { JournalQaState } from '@/ui/JournalPanel';
 import { Verb, type GameState } from '@/types/game.types';
 import type { LastTransition } from '@/scenes/PreloadScene';
 import type { ScenePrefetcher } from '@/systems/ScenePrefetcher';
+import type { PlayerAnimQa } from '@/objects/Player';
 
 type Point = { x: number; y: number };
 /** A2.6: `used` = ya elegida antes en ese árbol (gris). Las ocultas (`when`, `once`) no salen. */
@@ -118,6 +119,13 @@ export interface QaState {
    * `npcs` ({ id, scale, integer, heightPct }). null fuera de la partida.
    */
   pixel: PixelQaState | null;
+  /**
+   * A4.1: animación del jugador: `texture` (la que se ve), `moving`, `dir` (último tramo: left | right | up | down),
+   * `vertical`, `talking` (cabecea con su texto en pantalla), `gesture` (coger/usar), `idleTick` (tic de reposo en
+   * curso) e `idleTicks` (cuántos en la escena), `costume` (player | ape) y `preview` (el de previewCostume), `angle` y
+   * `liftPx` del tween, `scale`, `baseScale` y `rest` (sin tween y con la escala base de A2.8). null fuera de la partida.
+   */
+  anim: PlayerAnimQa | null;
 }
 
 /** A2.8: ver QaState.pixel */
@@ -165,6 +173,12 @@ export interface QaApi {
    * conteste y, si lo abrió ella, lo vuelve a cerrar. La llamada queda en `state().journal.anon`.
    */
   callAnon(): Promise<QaState>;
+  /**
+   * A4.1: enseña el juego de sprites del disfraz de mono (`'ape'`) o el normal (`'player'`) en la escena actual, para
+   * ver sus animaciones; `null` vuelve al de la partida (flag `ape_costume_worn`). Solo los sprites: no da el disfraz, ni
+   * toca inventario ni flags, y se pierde al cambiar de escena.
+   */
+  previewCostume(costume: 'ape' | 'player' | null): Promise<QaState>;
 }
 
 const SETTLE_TIMEOUT_MS = 120_000;
@@ -229,6 +243,8 @@ export function installQa(game: Phaser.Game): void {
     if (b.script) out.push('script');
     if (b.walking) out.push('walking');
     if (b.fading) out.push('fading');
+    // A4.1: gesto de coger/usar del jugador (≤ 400 ms)
+    if (b.gesture) out.push('gesture');
     // A2.10: franjas, cámara o transición aún animándose (p. ej. la vuelta de la cámara al acabar una cinemática)
     if (gs().qaCinematic()?.animating) out.push('cinematic');
     if (registry.get('dialogueActive')) out.push('dialogue');
@@ -404,6 +420,7 @@ export function installQa(game: Phaser.Game): void {
       lastTransition: (registry.get('lastTransition') as LastTransition | undefined) ?? null,
       journal: playing ? ui().getJournal?.()?.qaState() ?? null : null,
       pixel: scene ? scene.qaPixel() : null,
+      anim: scene ? scene.qaAnim() : null,
     };
   };
 
@@ -645,6 +662,17 @@ export function installQa(game: Phaser.Game): void {
       if (!wasOpen) domClick('journal-close');
       await settle();
       return wasOpen ? st : snapshot();
+    },
+
+    async previewCostume(costume) {
+      if (costume !== null && costume !== 'ape' && costume !== 'player') {
+        throw new QaError('error', `previewCostume: «${String(costume)}» no es un disfraz (ape | player | null)`);
+      }
+      await ensureGame();
+      note(`PREVIEW COSTUME ${costume ?? '(el de la partida)'}`);
+      gs().qaPreviewCostume(costume);
+      await sleep(100);
+      return snapshot();
     },
 
     async newGame() {
