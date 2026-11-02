@@ -28,3 +28,12 @@ export const WEB3_ENABLED = IS_WEB || IS_NATIVE;
 
 /** Web3 write operations (minting items/achievements on-chain) */
 export const WEB3_WRITES_ENABLED = IS_WEB;
+
+/**
+ * A2.4: hay un ratón o un trackpad (puntero fino que puede pasar por encima). Con él se pintan las teclas de los
+ * verbos en el panel; en móvil y tableta (dedo) no, aunque la ventana sea ancha.
+ */
+export function hasFinePointer(): boolean {
+  if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') return false;
+  return window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+}

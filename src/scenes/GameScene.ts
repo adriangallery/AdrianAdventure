@@ -26,6 +26,10 @@ import type { Address } from 'viem';
 import type { ScummUI } from '@/ui/ScummUI';
 import type { UIScene } from '@/scenes/UIScene';
 import { approachHotspot, approachTalk, lookFacing, type Approach, type ApproachTarget, type Facing, type FacingOptions } from '@/systems/Facing';
+import { defaultVerbFor, exitVerbFor, focusOf, isDoubleClick, keyAction, primaryVerb } from '@/systems/DesktopControls';
+
+/** A2.4 (QA): cómo pulsa la API de QA: botón derecho o clic de ratón (cuenta para el doble clic). */
+type QaClick = { button?: 'left' | 'right'; mouse?: boolean };
 
 /** Resultado del hit-test de un toque: nada (panel, fuera del fondo), un NPC o un punto del fondo. */
 type TapHit =
@@ -82,8 +86,21 @@ export class GameScene extends Phaser.Scene {
   private lastHintAt = 0;
   private static readonly HINT_AFTER_MS = 3 * 60 * 1000;
   private static readonly HINT_REPEAT_MS = 150 * 1000;
-  /** V6: mantener pulsado en cinemática/diálogo = avance rápido (toques sintéticos cada FF_STEP_MS) */
-  private fastForward: { timer: Phaser.Time.TimerEvent; ticker?: Phaser.Time.TimerEvent; label?: Phaser.GameObjects.Text; onUp: () => void } | null = null;
+  /**
+   * V6: mantener pulsado en cinemática/diálogo = avance rápido (toques sintéticos cada FF_STEP_MS). A2.4: Esc lanza el
+   * mismo avance rápido sin dedo (`byKey`): sin espera previa y hasta que no quede nada que saltar.
+   */
+  private fastForward: { timer?: Phaser.Time.TimerEvent; ticker?: Phaser.Time.TimerEvent; label?: Phaser.GameObjects.Text; onUp?: () => void; byKey?: boolean } | null = null;
+  /** A2.4: tope del avance rápido de Esc (por si algo no deja de estar «en pantalla») */
+  private static readonly KEY_SKIP_MAX_MS = 30_000;
+  /** A2.4: último clic izquierdo de ratón (hotspot y hora), para el doble clic en una salida */
+  private lastClick: { id: string | null; at: number } | null = null;
+  /** A2.4: resaltado de hotspots mientras se mantiene Tab (objetos dibujados e ids resaltados) */
+  private highlight: { objects: Phaser.GameObjects.GameObject[]; ids: string[] } | null = null;
+  /** A2.4: listeners de teclado y del lienzo (fuera de la escena: se quitan en shutdown) */
+  private desktopInput: { keydown: (e: KeyboardEvent) => void; keyup: (e: KeyboardEvent) => void; blur: () => void; contextmenu: (e: Event) => void; canvas: HTMLCanvasElement } | null = null;
+  /** A2.4 (QA): listeners de DOM vivos de todas las GameScene; si no vuelve al valor de antes, alguien no los quita */
+  private static liveDomListeners = 0;
   private emittingSynthetic = false;
   private static readonly FF_HOLD_MS = 600;
   private static readonly FF_STEP_MS = 180;
@@ -242,9 +259,12 @@ export class GameScene extends Phaser.Scene {
     this.dialogueScripts = new DialogueScriptRunner(new ScriptEngine(this.buildScriptContext()), () => this.buildScriptContext());
 
     // Input — disabled in trailer mode
+    this.lastClick = null;
     if (!this.isTrailer) {
       this.input.on('pointerdown', this.handlePointerDown, this);
       this.input.on('pointermove', this.handlePointerMove, this);
+      // A2.4: teclado (verbos, Tab, Esc, I) y clic derecho sin menú contextual en el lienzo
+      this.bindDesktopInput();
     }
 
     // Execute pending verb when player arrives at hotspot
@@ -513,10 +533,18 @@ export class GameScene extends Phaser.Scene {
     const hit = this.hitTestAt(pointer.worldX, pointer.worldY, pointer.y, pointer.wasTouch);
     if (hit.kind === 'none') return;
 
+    // A2.4: clic derecho (solo ratón) = verbo por defecto del hotspot o NPC, sin mirar el panel
+    if (!pointer.wasTouch && pointer.button === 2) {
+      this.lastClick = null;
+      this.rightClickHit(hit);
+      return;
+    }
+
     // Get current verb and selected item from UI (needed for NPC item interactions)
     const { scummUI, verb, selectedItem } = this.uiSelection();
 
     if (hit.kind === 'npc') {
+      this.lastClick = null;
       this.dispatchNpcTap(hit.npc, verb, selectedItem, scummUI);
       return;
     }
@@ -531,7 +559,56 @@ export class GameScene extends Phaser.Scene {
       return;
     }
 
+    this.leftClickScene(pct, hotspot, !pointer.wasTouch);
+  }
+
+  /**
+   * Clic izquierdo (o toque) en la escena ya resuelto, con el verbo y el objeto del panel. A2.4: con el ratón, el
+   * segundo clic de un doble clic sobre una salida la cruza al momento (`runExitNow`); en cualquier otro hotspot el
+   * doble clic es un clic más.
+   */
+  private leftClickScene(pct: { x: number; y: number }, hotspot: HotspotData | null, mouse: boolean): void {
+    const { scummUI, verb, selectedItem } = this.uiSelection();
+    if (mouse) {
+      const now = performance.now();
+      const id = hotspot?.id ?? null;
+      const second = isDoubleClick(this.lastClick, id, now);
+      this.lastClick = id && !second ? { id, at: now } : null;
+      if (second && hotspot && !selectedItem && this.runExitNow(hotspot)) return;
+    }
     this.dispatchTap(pct, hotspot, verb, selectedItem, scummUI);
+  }
+
+  /**
+   * A2.4: clic derecho. NPC → TALK; hotspot → su verbo por defecto (`defaultVerbFor`: el que hace algo de verdad, o
+   * LOOK); fondo → andar. No cambia el verbo ni el objeto elegidos en el panel.
+   */
+  private rightClickHit(hit: Exclude<TapHit, { kind: 'none' }>): void {
+    if (hit.kind === 'npc') {
+      this.dispatchNpcTap(hit.npc, Verb.TALK, null, undefined);
+      return;
+    }
+    const { pct, hotspot } = hit;
+    if (!hotspot) {
+      this.dispatchTap(pct, null, Verb.WALK, null, undefined);
+      return;
+    }
+    this.flashHotspot(hotspot);
+    this.events.emit('hotspot:focus', hotspot);
+    this.runHotspotVerb(hotspot, defaultVerbFor(hotspot) as Verb);
+  }
+
+  /**
+   * A2.4: doble clic en una salida. Sin andar: se para donde esté y ejecuta al momento el script de salida (su verbo
+   * por defecto, si cambia de escena), con su transición. Devuelve false si el hotspot no es una salida.
+   */
+  private runExitNow(hotspot: HotspotData): boolean {
+    const exitVerb = exitVerbFor(hotspot);
+    if (!exitVerb) return false;
+    const verb = exitVerb as Verb;
+    this.flashHotspot(hotspot);
+    this.approachAndRun(hotspot.id, verb, { walkTo: null, face: null, aim: null }, () => this.events.emit('hotspot:tapped', hotspot, verb));
+    return true;
   }
 
   /**
@@ -826,28 +903,67 @@ export class GameScene extends Phaser.Scene {
     const onUp = () => this.endFastForward();
     const timer = this.time.delayedCall(GameScene.FF_HOLD_MS, () => {
       if (!this.fastForward || !pointer.isDown) { this.endFastForward(); return; }
-      this.scriptEngine.setFastForward(true);
-      this.dialogueScripts.setFastForward(true);
-      this.fastForward.label = this.add.text(this.scale.width - 12, 12, '>> FAST', {
-        fontFamily: FONT.FAMILY, fontSize: '12px', color: TWP.HINT_TEXT, backgroundColor: TWP.HINT_BG, padding: { x: 6, y: 3 },
-      }).setOrigin(1, 0).setDepth(400).setScrollFactor(0);
-      this.fastForward.ticker = this.time.addEvent({
-        delay: GameScene.FF_STEP_MS,
-        loop: true,
-        callback: () => this.emitSyntheticTap(pointer),
-      });
+      this.runFastForward(() => this.emitSyntheticTap(pointer));
     });
     this.input.once('pointerup', onUp);
     this.fastForward = { timer, onUp };
   }
 
+  /** Activa el avance rápido ya decidido (mantener pulsado o Esc): esperas al momento, aviso «>> FAST» y toques. */
+  private runFastForward(tick: () => void): void {
+    if (!this.fastForward) return;
+    this.scriptEngine.setFastForward(true);
+    this.dialogueScripts.setFastForward(true);
+    this.fastForward.label = this.add.text(this.scale.width - 12, 12, '>> FAST', {
+      fontFamily: FONT.FAMILY, fontSize: '12px', color: TWP.HINT_TEXT, backgroundColor: TWP.HINT_BG, padding: { x: 6, y: 3 },
+    }).setOrigin(1, 0).setDepth(400).setScrollFactor(0);
+    this.fastForward.ticker = this.time.addEvent({ delay: GameScene.FF_STEP_MS, loop: true, callback: tick });
+  }
+
+  /** A2.4: hay algo que Esc puede saltar: script en marcha (cinemática, onEnter), texto o cinemática en pantalla. */
+  private hasSkippable(): boolean {
+    if (this.scriptEngine.isRunning() || this.registry.get('dialogueShowing')) return true;
+    return ((this.registry.get('cinematicActive') as number | undefined) ?? 0) > 0;
+  }
+
+  /** A2.4: una elección de diálogo espera al jugador (Esc no la responde: hace falta elegir). */
+  private awaitingChoice(): boolean {
+    if (!this.scene.isActive('UIScene')) return false;
+    return (this.scene.get('UIScene') as UIScene).getChoicePanel()?.isAwaitingChoice() ?? false;
+  }
+
+  /**
+   * A2.4: Esc. Con una cinemática, un texto o un script en marcha, el mismo avance rápido que mantener pulsado (V6),
+   * sin espera previa, hasta que no quede nada que saltar, salga una elección o pasen KEY_SKIP_MAX_MS. Si no hay
+   * nada, suelta el objeto y el verbo elegidos en el panel y quita el resaltado de Tab.
+   */
+  private handleEscape(): void {
+    if (this.fastForward) return;
+    if (this.hasSkippable() && !this.awaitingChoice()) {
+      const pointer = this.input.activePointer;
+      const startedAt = this.time.now;
+      this.fastForward = { byKey: true };
+      this.runFastForward(() => {
+        if (!this.hasSkippable() || this.awaitingChoice() || this.time.now - startedAt > GameScene.KEY_SKIP_MAX_MS) {
+          this.endFastForward();
+          return;
+        }
+        this.emitSyntheticTap(pointer);
+      });
+      this.emitSyntheticTap(pointer);
+      return;
+    }
+    this.hideHighlights();
+    this.uiSelection().scummUI?.resetSelection?.();
+  }
+
   private endFastForward(): void {
     const ff = this.fastForward;
     if (!ff) return;
-    ff.timer.remove();
+    ff.timer?.remove();
     ff.ticker?.remove();
     ff.label?.destroy();
-    this.input.off('pointerup', ff.onUp);
+    if (ff.onUp) this.input.off('pointerup', ff.onUp);
     this.fastForward = null;
     this.scriptEngine?.setFastForward(false);
     this.dialogueScripts?.setFastForward(false);
@@ -921,30 +1037,136 @@ export class GameScene extends Phaser.Scene {
     this.approachAndRun(hotspot.id, verb, this.planHotspot(hotspot, verb), () => this.events.emit('hotspot:tapped', hotspot, verb));
   }
 
-  /** Verbos que cuentan como «acción principal», por orden de preferencia. */
-  private static readonly MAIN_VERB_ORDER: Verb[] = [Verb.PICK, Verb.OPEN, Verb.USE, Verb.TALK, Verb.PUSH, Verb.PULL, Verb.CLOSE, Verb.GIVE];
-  private static readonly FLAVOR_OPS = new Set(['say', 'sayBrief', 'ifFlag', 'wait', 'playSound']);
-
   /**
-   * V6: la acción principal de un hotspot es el primer verbo cuyo script hace algo más que hablar
-   * (coger, cambiar de escena, poner un flag…). Si ninguno lo hace, USE.
+   * V6: la acción principal de un hotspot (mantener pulsado en táctil) es el primer verbo cuyo script hace algo más
+   * que hablar (coger, cambiar de escena, poner un flag…). Si ninguno lo hace, USE. A2.4: la regla y el orden viven en
+   * src/systems/DesktopControls.ts (`primaryVerb`), compartidos con el clic derecho, que en vez de USE cae en LOOK.
    */
   static mainVerbFor(hotspot: HotspotData): Verb {
-    const walk = (ops: unknown): string[] => {
-      if (!Array.isArray(ops)) return [];
-      const out: string[] = [];
-      for (const o of ops as Array<Record<string, unknown>>) {
-        if (!o || typeof o.op !== 'string') continue;
-        out.push(o.op);
-        for (const k of ['then', 'else', 'steps', 'script']) out.push(...walk(o[k]));
-      }
-      return out;
+    return (primaryVerb(hotspot) as Verb | null) ?? Verb.USE;
+  }
+
+  // ─── A2.4: teclado y resaltado de hotspots (escritorio) ───
+
+  private bindDesktopInput(): void {
+    this.unbindDesktopInput();
+    const canvas = this.game.canvas;
+    const keydown = (e: KeyboardEvent) => this.handleKeyDown(e);
+    const keyup = (e: KeyboardEvent) => {
+      if (e.key !== 'Tab') return;
+      if (this.highlight) e.preventDefault();
+      this.hideHighlights();
     };
-    for (const v of GameScene.MAIN_VERB_ORDER) {
-      const ops = walk(hotspot.scripts?.[v]);
-      if (ops.some((op) => !GameScene.FLAVOR_OPS.has(op))) return v;
+    // Al cambiar de ventana con Tab pulsado no llega el keyup: se quita igual
+    const blur = () => this.hideHighlights();
+    // Sin menú contextual del navegador sobre el lienzo: el clic derecho es del juego
+    const contextmenu = (e: Event) => e.preventDefault();
+    window.addEventListener('keydown', keydown);
+    window.addEventListener('keyup', keyup);
+    window.addEventListener('blur', blur);
+    canvas.addEventListener('contextmenu', contextmenu);
+    GameScene.liveDomListeners += 4;
+    // A2.4 (QA): `state().inputListeners`, en el registry (sobrevive al cambio de escena) como `qaActions`
+    this.registry.set('qaInputListeners', GameScene.liveDomListeners);
+    this.desktopInput = { keydown, keyup, blur, contextmenu, canvas };
+  }
+
+  private unbindDesktopInput(): void {
+    const d = this.desktopInput;
+    if (!d) return;
+    window.removeEventListener('keydown', d.keydown);
+    window.removeEventListener('keyup', d.keyup);
+    window.removeEventListener('blur', d.blur);
+    d.canvas.removeEventListener('contextmenu', d.contextmenu);
+    GameScene.liveDomListeners -= 4;
+    this.registry.set('qaInputListeners', GameScene.liveDomListeners);
+    this.desktopInput = null;
+  }
+
+  /** Tabla de teclas en src/systems/DesktopControls.ts. Nada mientras se escribe en un campo ni con Ctrl/Cmd/Alt. */
+  private handleKeyDown(e: KeyboardEvent): void {
+    const active = document.activeElement as HTMLElement | null;
+    const action = keyAction(e, focusOf(active, active === this.game.canvas));
+    if (!action) return;
+    if (action.kind === 'highlight') {
+      e.preventDefault(); // que Tab no mueva el foco fuera del juego
+      if (!e.repeat && !this.highlight) this.showHighlights();
+      return;
     }
-    return Verb.USE;
+    e.preventDefault();
+    if (e.repeat) return;
+    const scummUI = this.uiSelection().scummUI;
+    switch (action.kind) {
+      case 'verb': scummUI?.selectVerb(action.verb as Verb); break;
+      case 'inventory': scummUI?.toggle(); break;
+      case 'skip': this.handleEscape(); break;
+    }
+  }
+
+  /**
+   * A2.4: mientras se mantiene Tab, contorno y nombre de cada hotspot que el ratón puede pulsar ahora (visible por sus
+   * flags `hideWhenFlag`/`showWhenFlag` y con algún punto que reciba el clic: ni tapado ni bajo el panel) y de cada NPC
+   * con diálogo. Los hotspots con gate de wallet salen: se pueden pulsar (responden con su `gateFallback`).
+   */
+  private showHighlights(): void {
+    this.hideHighlights();
+    const data = this.registry.get('sceneData') as SceneData | undefined;
+    if (!data || !this.coordSystem) return;
+    const g = this.add.graphics().setDepth(45);
+    const objects: Phaser.GameObjects.GameObject[] = [g];
+    const ids: string[] = [];
+    const label = (x: number, y: number, text: string) => {
+      objects.push(this.add.text(x, y, text, {
+        fontFamily: FONT.FAMILY, fontSize: '11px', color: TWP.ACTION_LINE, backgroundColor: TWP.HINT_BG, padding: { x: 4, y: 2 },
+      }).setOrigin(0.5).setDepth(46));
+    };
+    g.lineStyle(2, TWP.HOTSPOT_HIGHLIGHT, 0.9);
+    for (const hs of data.regions?.hotspots ?? []) {
+      if (!hs.bounds || !this.isHotspotVisible(hs) || !this.clickablePoint(hs)) continue;
+      const a = this.coordSystem.pctToScreen(hs.bounds.x, hs.bounds.y);
+      const b = this.coordSystem.pctToScreen(hs.bounds.x + hs.bounds.w, hs.bounds.y + hs.bounds.h);
+      g.strokeRoundedRect(a.x, a.y, b.x - a.x, b.y - a.y, 4);
+      label((a.x + b.x) / 2, (a.y + b.y) / 2, hs.name);
+      ids.push(hs.id);
+    }
+    for (const npc of this.npcs) {
+      if (!npc.dialogueTreeId || !npc.visible) continue;
+      const m = npc.getWorldTransformMatrix();
+      const w = (npc.width * npc.scale) / 2;
+      const h = npc.height * npc.scale;
+      g.strokeRoundedRect(m.tx - w, m.ty - h, w * 2, h, 4);
+      label(m.tx, m.ty - h - 8, npc.npcName);
+      ids.push(npc.npcId);
+    }
+    this.highlight = { objects, ids };
+  }
+
+  private hideHighlights(): void {
+    const h = this.highlight;
+    if (!h) return;
+    this.highlight = null;
+    // Tras SHUTDOWN la lista de objetos ya los destruyó; destroy() dos veces no rompe
+    for (const o of h.objects) o.destroy();
+  }
+
+  /** Un punto del hotspot (en %) donde un clic de ratón cae en él (centro y rejilla de 7×7), o null si no lo hay. */
+  private clickablePoint(hotspot: HotspotData): { x: number; y: number } | null {
+    for (const p of this.hotspotProbePoints(hotspot)) {
+      const { wx, wy, sy } = this.qaPoint(p.x, p.y);
+      const hit = this.hitTestAt(wx, wy, sy, false);
+      if (hit.kind === 'scene' && hit.hotspot === hotspot) return p;
+    }
+    return null;
+  }
+
+  private hotspotProbePoints(hotspot: HotspotData): { x: number; y: number }[] {
+    const b = hotspot.bounds;
+    if (!b) return [];
+    const points = [{ x: b.x + b.w / 2, y: b.y + b.h / 2 }];
+    for (let i = 0; i < 7; i++) {
+      for (let j = 0; j < 7; j++) points.push({ x: b.x + (b.w * (i + 0.5)) / 7, y: b.y + (b.h * (j + 0.5)) / 7 });
+    }
+    return points;
   }
 
   /** Firma del progreso: cambia al cambiar de escena, coger/soltar objetos o activar flags. */
@@ -1418,22 +1640,22 @@ export class GameScene extends Phaser.Scene {
    * (centro y rejilla de 7×7) un punto donde `hitTestAt` devuelva ese mismo hotspot y hace clic ahí.
    * Devuelve null si ha pulsado, o por qué el ratón no puede pulsarlo (tapado, sin bounds, bajo el panel…).
    */
-  qaTapHotspot(hotspot: HotspotData): string | null {
-    const b = hotspot.bounds;
-    if (!b) return 'no tiene bounds, ningún clic cae en él';
-    const points = [{ x: b.x + b.w / 2, y: b.y + b.h / 2 }];
-    for (let i = 0; i < 7; i++) {
-      for (let j = 0; j < 7; j++) points.push({ x: b.x + (b.w * (i + 0.5)) / 7, y: b.y + (b.h * (j + 0.5)) / 7 });
-    }
+  qaTapHotspot(hotspot: HotspotData, opts: QaClick = {}): string | null {
+    if (!hotspot.bounds) return 'no tiene bounds, ningún clic cae en él';
     const covers = new Set<string>();
-    for (const p of points) {
+    for (const p of this.hotspotProbePoints(hotspot)) {
       const { wx, wy, sy } = this.qaPoint(p.x, p.y);
       const hit = this.hitTestAt(wx, wy, sy, false);
       if (hit.kind === 'scene' && hit.hotspot === hotspot) {
-        const { scummUI, verb, selectedItem } = this.uiSelection();
+        // A2.4: clic derecho y clics de ratón (doble clic) por el mismo camino que handlePointerDown
+        if (opts.button === 'right') {
+          this.lastClick = null;
+          this.rightClickHit(hit);
+          return null;
+        }
         this.flashHotspot(hotspot);
         this.events.emit('hotspot:focus', hotspot);
-        this.dispatchTap(hit.pct, hotspot, verb, selectedItem, scummUI);
+        this.leftClickScene(hit.pct, hotspot, !!opts.mouse);
         return null;
       }
       covers.add(this.describeHit(hit));
@@ -1442,7 +1664,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   /** Clic de ratón sobre un NPC con diálogo, buscando un punto de su hitbox que no tape otro NPC. */
-  qaTapNpc(npcId: string): string | null {
+  qaTapNpc(npcId: string, opts: QaClick = {}): string | null {
     const npc = this.npcs.find((n) => n.npcId === npcId && n.dialogueTreeId);
     if (!npc) return 'no existe o no tiene diálogo';
     const m = npc.getWorldTransformMatrix();
@@ -1458,6 +1680,12 @@ export class GameScene extends Phaser.Scene {
         const wy = ty - fy * bodyH;
         const hit = this.hitTestAt(wx, wy, wy - cam.scrollY, false);
         if (hit.kind === 'npc' && hit.npc === npc) {
+          if (opts.button === 'right') {
+            this.lastClick = null;
+            this.rightClickHit(hit);
+            return null;
+          }
+          if (opts.mouse) this.lastClick = null;
           const { scummUI, verb, selectedItem } = this.uiSelection();
           this.dispatchNpcTap(npc, verb, selectedItem, scummUI);
           return null;
@@ -1543,6 +1771,11 @@ export class GameScene extends Phaser.Scene {
     return this.npcs.filter((n) => n.dialogueTreeId).map((n) => n.npcId);
   }
 
+  /** A2.4: ids de los hotspots y NPC resaltados con Tab ahora mismo (vacío sin Tab pulsado) */
+  qaHighlighted(): string[] {
+    return this.highlight ? [...this.highlight.ids] : [];
+  }
+
   private removeViewportListeners(): void {
     if (!this.boundScheduleResize) return;
     window.removeEventListener('orientationchange', this.boundScheduleResize);
@@ -1563,6 +1796,10 @@ export class GameScene extends Phaser.Scene {
     this.overlayOverrides.clear();
     this.cancelTouchHold();
     this.endFastForward();
+    // A2.4: teclado, lienzo y resaltado de Tab
+    this.unbindDesktopInput();
+    this.hideHighlights();
+    this.lastClick = null;
     // Listeners fuera de la escena: ScaleManager (global), UIScene, window y visualViewport
     this.scale.off('resize', this.handleResize, this);
     this.scene.get('UIScene')?.events.off('panel:toggled', this.handleResize, this);

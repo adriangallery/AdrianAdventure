@@ -74,6 +74,17 @@ export interface QaState {
    * bloque en pantalla, su tamaño (w, h) y la cabeza de quien habla en pantalla (solo en modo head).
    */
   speech: SpeechState | null;
+  /** A2.4: verbo elegido en el panel (WALK si ninguno) */
+  verb: string | null;
+  /** A2.4: hotspots y NPC resaltados mientras se mantiene Tab (vacío si no) */
+  highlightedHotspots: string[];
+  /** A2.4: verbos con su tecla pintada en el panel (solo escritorio: panel ancho y ratón) */
+  verbKeyHints: string[];
+  /**
+   * A2.4: listeners de teclado y del lienzo de GameScene (4 con la escena en marcha). Como `resizeListeners`, no
+   * puede crecer con los cambios de escena (`expect.noListenerGrowth`).
+   */
+  inputListeners: number;
 }
 
 export interface QaApi {
@@ -88,10 +99,26 @@ export interface QaApi {
   walk(pctX: number, pctY: number): Promise<QaState>;
   /** A2.1: ¿se puede pisar el punto (en %) en la escena actual? walkableAreas menos blockedAreas */
   isWalkable(pctX: number, pctY: number): boolean;
+  /**
+   * A2.4: tecla real (KeyboardEvent en `window`, como el teclado): `press` = pulsar y soltar, `down`/`up` = solo
+   * pulsar o soltar (Tab se mantiene con `down` y se suelta con `up`). `key` como `KeyboardEvent.key` («l», «Tab», «Escape»).
+   */
+  press(key: string, phase?: 'press' | 'down' | 'up'): Promise<QaState>;
+  /** A2.4: clic izquierdo de ratón con el verbo que ya tenga el panel (no lo cambia: p. ej. tras `press('l')`) */
+  click(targetId: string, choiceTexts?: string[]): Promise<QaState>;
+  /** A2.4: clic derecho de ratón: verbo por defecto del hotspot o TALK en una NPC */
+  rightClick(targetId: string, choiceTexts?: string[]): Promise<QaState>;
+  /**
+   * A2.4: doble clic de ratón en una salida (con Walk en el panel). Falla si el personaje anda o el cambio de escena no
+   * empieza enseguida: tiene que cruzarla al momento.
+   */
+  doubleClick(targetId: string): Promise<QaState>;
   newGame(): Promise<QaState>;
 }
 
 const SETTLE_TIMEOUT_MS = 120_000;
+/** A2.4: el cambio de escena de un doble clic en una salida tiene que empezar antes de esto (sayBrief de 1 s + margen) */
+const DOUBLE_CLICK_EXIT_MS = 4000;
 /** Sondeos seguidos sin nada en marcha para dar la escena por quieta */
 const CALM_POLLS = 4;
 /** Margen tras crear la escena: onEnter arranca a los 100 ms y los triggers de spawn a los 300 ms */
@@ -275,9 +302,9 @@ export function installQa(game: Phaser.Game): void {
    * hotspots, hotspot oculto que tapa). Si el ratón no alcanza el objetivo, la prueba falla: es un error del
    * juego o de la ruta, nunca un «el juego no deja».
    */
-  const tap = (target: Target) => {
+  const tap = (target: Target, opts: { button?: 'left' | 'right'; mouse?: boolean } = {}) => {
     const id = target.kind === 'npc' ? target.id : target.hotspot.id;
-    const why = target.kind === 'npc' ? gs().qaTapNpc(target.id) : gs().qaTapHotspot(target.hotspot);
+    const why = target.kind === 'npc' ? gs().qaTapNpc(target.id, opts) : gs().qaTapHotspot(target.hotspot, opts);
     if (why) throw new QaError('error', `el ratón no puede pulsar «${id}» en ${String(registry.get('currentSceneId'))}: ${why}`);
   };
 
@@ -313,7 +340,15 @@ export function installQa(game: Phaser.Game): void {
       actions: (registry.get('qaActions') as number | undefined) ?? 0,
       resizeListeners: game.scale.listenerCount('resize'),
       speech: playing ? ui().getSpeech() : null,
+      verb: playing ? panel().getSelectedVerb() : null,
+      highlightedHotspots: scene ? scene.qaHighlighted() : [],
+      verbKeyHints: playing ? panel().getKeyHints() : [],
+      inputListeners: (registry.get('qaInputListeners') as number | undefined) ?? 0,
     };
+  };
+
+  const key = (type: 'keydown' | 'keyup', k: string) => {
+    window.dispatchEvent(new KeyboardEvent(type, { key: k, bubbles: true, cancelable: true }));
   };
 
   const api: QaApi = {
@@ -401,6 +436,67 @@ export function installQa(game: Phaser.Game): void {
     isWalkable(pctX, pctY) {
       if (!inGame()) throw new QaError('error', 'no hay escena de juego cargada');
       return gs().qaIsWalkable(pctX, pctY);
+    },
+
+    async press(k, phase = 'press') {
+      await ensureGame();
+      note(`KEY ${k}${phase === 'press' ? '' : ` (${phase})`}`);
+      if (phase !== 'up') key('keydown', k);
+      if (phase === 'press') {
+        await sleep(50);
+        key('keyup', k);
+      }
+      if (phase === 'up') key('keyup', k);
+      await settle();
+      return snapshot();
+    },
+
+    async click(targetId, choiceTexts = []) {
+      await ensureGame();
+      const target = resolveTarget(targetId);
+      await waitInputFree();
+      note(`CLICK ${targetId} (${panel().getSelectedVerb()})`);
+      tap(target, { mouse: true });
+      await settle(choiceTexts);
+      return snapshot();
+    },
+
+    async rightClick(targetId, choiceTexts = []) {
+      await ensureGame();
+      const target = resolveTarget(targetId);
+      await waitInputFree();
+      note(`RIGHTCLICK ${targetId}`);
+      tap(target, { button: 'right', mouse: true });
+      await settle(choiceTexts);
+      return snapshot();
+    },
+
+    async doubleClick(targetId) {
+      await ensureGame();
+      const target = resolveTarget(targetId);
+      if (target.kind !== 'hotspot') throw new QaError('error', `el doble clic es para salidas (hotspots); «${targetId}» es un NPC`);
+      chooseVerb(Verb.WALK);
+      await waitInputFree();
+      const from = registry.get('currentSceneId') as string;
+      const p0 = gs().qaPlayer();
+      note(`DOUBLECLICK ${targetId}`);
+      tap(target, { mouse: true });
+      tap(target, { mouse: true });
+      // Al momento: el personaje no se mueve y el cambio de escena empieza enseguida (tras el sayBrief de la salida)
+      const t0 = Date.now();
+      while (!registry.get('sceneTransition')) {
+        if (registry.get('currentSceneId') !== from) break;
+        const p = gs().qaPlayer();
+        if (Math.hypot(p.x - p0.x, p.y - p0.y) > 0.05) {
+          throw new QaError('error', `con el doble clic en «${targetId}» el personaje anduvo (de ${p0.x.toFixed(1)},${p0.y.toFixed(1)} a ${p.x.toFixed(1)},${p.y.toFixed(1)}): no cruzó la salida al momento`);
+        }
+        if (Date.now() - t0 > DOUBLE_CLICK_EXIT_MS) {
+          throw new QaError('blocked', `el doble clic en «${targetId}» no cambió de escena en ${DOUBLE_CLICK_EXIT_MS} ms (¿salida cerrada o no es una salida?)`);
+        }
+        await sleep(50);
+      }
+      await settle();
+      return snapshot();
     },
 
     async newGame() {

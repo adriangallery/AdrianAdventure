@@ -2,6 +2,7 @@
 // del build real (con assets): arranque, cada escena, cambio de escena en caliente y guardar/cargar.
 // A1.5 (plan SCUMM): con el sonido apagado no se piden música ni voces; al activarlo en ajustes, sí.
 // A1.8: las escenas se abren con ?qa=1&scene=<id>; sin ?qa=1 el build de producción ignora ?scene.
+// A2.4: controles de escritorio con teclado y ratón reales (Esc, Tab, doble clic en una salida, clic derecho).
 // Uso: BASE_URL=http://127.0.0.1:4173 node scripts/smoke.mjs
 import { readdirSync, existsSync, mkdirSync, readFileSync } from 'node:fs';
 import puppeteer from 'puppeteer';
@@ -188,6 +189,111 @@ await step('silencio: sin música ni voces; al activar el sonido en ajustes, sí
     console.log(`    sonido activado en ajustes: ${loud.map((r) => r.url.split('?')[0]).join(', ') || 'nada'} (${mb(audioBytes.sonido)})`);
     if (!loud.some((r) => r.kind === 'music' && r.url.includes(`/${music}.mp3`))) throw new Error(`al activar el sonido no se pidió la música de la escena (${music})`);
     if (voiceKey && !loud.some((r) => r.kind === 'voice')) throw new Error('al activar el sonido la voz no se pidió');
+  } finally {
+    await ctx.close();
+  }
+});
+
+// A2.4: controles de escritorio con teclado y ratón reales de Chrome (no eventos sintéticos de la API de QA). En el lobby
+// recién abierto (?qa=1&scene=lobby) el onEnter enseña una narrativa y un título de capítulo que esperan un clic:
+// Esc tiene que saltarlos sin tocar nada más. Luego mantener Tab resalta los hotspots, el menú contextual del lienzo
+// está cancelado, el doble clic en la puerta sale al momento (el personaje no anda) y en `outside` el clic derecho en
+// la lámpara del porche la coge (su verbo por defecto es PICK).
+await step('escritorio: Esc, Tab, doble clic en una salida y clic derecho (teclado y ratón reales)', async () => {
+  const ctx = await browser.createBrowserContext();
+  const p = await ctx.newPage();
+  await p.setViewport({ width: 1280, height: 720 });
+  p.on('pageerror', (err) => fail(`[escritorio] error de página: ${err.message}`));
+  const wait = (fn, arg, timeout = SCENE_TIMEOUT) => p.waitForFunction(fn, { timeout, polling: 100 }, arg);
+  const reg = (key) => p.evaluate((k) => window.__game.registry.get(k), key);
+  /** Centro en píxeles de página de un hotspot (bounds en % → mundo → pantalla, más la posición del lienzo) */
+  const hotspotXY = (id) => p.evaluate((hid) => {
+    const g = window.__game;
+    const gs = g.scene.getScene('GameScene');
+    const h = g.registry.get('sceneData').regions.hotspots.find((x) => x.id === hid);
+    const c = gs.coordSystem.pctToScreen(h.bounds.x + h.bounds.w / 2, h.bounds.y + h.bounds.h / 2);
+    const r = g.canvas.getBoundingClientRect();
+    const cam = gs.cameras.main;
+    return { x: r.left + c.x - cam.scrollX, y: r.top + c.y - cam.scrollY };
+  }, id);
+  const isCalm = () => p.evaluate(() => {
+    const g = window.__game;
+    const gs = g.scene.getScene('GameScene');
+    return g.scene.isActive('GameScene') && !gs.qaBusy().script && !g.registry.get('dialogueShowing')
+      && !(g.registry.get('cinematicActive') > 0) && !g.registry.get('sceneTransition');
+  });
+  /** Esc (real) cada segundo mientras haya algo en pantalla: textos de triggers de entrada incluidos */
+  const escUntilCalm = async (what) => {
+    const t0 = Date.now();
+    let quiet = 0;
+    while (quiet < 3) {
+      if (Date.now() - t0 > 30000) throw new Error(`Esc no dejó ${what} libre en 30 s`);
+      if (await isCalm()) { quiet++; await new Promise((r) => setTimeout(r, 300)); continue; }
+      quiet = 0;
+      await p.keyboard.press('Escape');
+      await new Promise((r) => setTimeout(r, 1000));
+    }
+  };
+  try {
+    await p.goto(`${BASE}/?qa=1&scene=lobby`, { waitUntil: 'domcontentloaded' });
+    await wait(() => !!window.__qa && window.__game?.scene?.isActive('GameScene') && window.__game.registry.get('currentSceneId') === 'lobby');
+    await wait(() => window.__game.registry.get('cinematicActive') > 0, undefined, 20000);
+    await new Promise((r) => setTimeout(r, 1500));
+    if (!((await reg('cinematicActive')) > 0)) throw new Error('la narrativa del lobby se cerró sola antes de pulsar Esc');
+    // Una sola pulsación salta la narrativa y el título (el mismo avance rápido que mantener pulsado)
+    await p.keyboard.press('Escape');
+    await wait(() => window.__game.registry.get('gameState')?.flags?.chapter_2_intro_shown && !(window.__game.registry.get('cinematicActive') > 0), undefined, 20000)
+      .catch(() => { throw new Error('una pulsación de Esc no saltó la narrativa y el título del capítulo del lobby en 20 s'); });
+    await escUntilCalm('el lobby');
+
+    await p.keyboard.down('Tab');
+    await new Promise((r) => setTimeout(r, 200));
+    const lit = await p.evaluate(() => window.__qa.state().highlightedHotspots);
+    await p.keyboard.up('Tab');
+    const unlit = await p.evaluate(() => window.__qa.state().highlightedHotspots);
+    console.log(`    Tab: ${lit.length} resaltados (${lit.join(', ')})`);
+    if (!lit.includes('hs_frontdoor') || !lit.includes('npc_receptionist')) throw new Error(`Tab no resaltó la puerta y la recepcionista: ${lit.join(', ')}`);
+    if (unlit.length) throw new Error(`al soltar Tab siguen resaltados: ${unlit.join(', ')}`);
+    const focusOk = await p.evaluate(() => document.activeElement === document.body || document.activeElement === window.__game.canvas);
+    if (!focusOk) throw new Error('Tab movió el foco fuera del juego');
+
+    // Menú contextual del navegador cancelado sobre el lienzo
+    const door = await hotspotXY('hs_frontdoor');
+    const prevented = await p.evaluate(({ x, y }) => {
+      const ev = new MouseEvent('contextmenu', { bubbles: true, cancelable: true, clientX: x, clientY: y, button: 2 });
+      window.__game.canvas.dispatchEvent(ev);
+      return ev.defaultPrevented;
+    }, door);
+    if (!prevented) throw new Error('el menú contextual del navegador no está cancelado sobre el lienzo');
+
+    const p0 = await p.evaluate(() => window.__qa.state().player);
+    await p.mouse.click(door.x, door.y);
+    await p.mouse.click(door.x, door.y);
+    const t0 = Date.now();
+    let moved = 0;
+    while (!(await reg('sceneTransition'))) {
+      const pl = await p.evaluate(() => window.__qa.state().player);
+      moved = Math.max(moved, Math.hypot(pl.x - p0.x, pl.y - p0.y));
+      if (Date.now() - t0 > 4000) throw new Error(`el doble clic en la puerta no cambió de escena en 4 s (el personaje se movió ${moved.toFixed(1)} %)`);
+      await new Promise((r) => setTimeout(r, 50));
+    }
+    console.log(`    doble clic en hs_frontdoor: cambio de escena a los ${Date.now() - t0} ms, personaje movido ${moved.toFixed(2)} %`);
+    if (moved > 1) throw new Error(`con el doble clic el personaje anduvo ${moved.toFixed(1)} % antes de salir`);
+    await wait(() => window.__game.scene.isActive('GameScene') && window.__game.registry.get('currentSceneId') === 'outside' && !window.__game.registry.get('sceneTransition'), undefined, 30000);
+
+    // outside abre con la premisa y el capítulo 1: también con Esc
+    await new Promise((r) => setTimeout(r, 800));
+    await escUntilCalm('outside');
+    const lamp = await hotspotXY('hs_porch_light');
+    await p.mouse.click(lamp.x, lamp.y, { button: 'right' });
+    await wait(() => window.__qa.state().walkTarget?.target === 'hs_porch_light', undefined, 5000)
+      .catch(() => { throw new Error('el clic derecho en la lámpara no hizo nada'); });
+    const wt = await p.evaluate(() => window.__qa.state().walkTarget);
+    if (wt.verb !== 'PICK') throw new Error(`clic derecho en la lámpara: verbo ${wt.verb}, se esperaba PICK`);
+    await p.evaluate(() => window.__qa.dismissAll());
+    const inv = await p.evaluate(() => window.__qa.state().inventory);
+    if (!inv.includes('code_note')) throw new Error(`tras el clic derecho en la lámpara no está la nota en el inventario: ${inv.join(', ')}`);
+    await p.screenshot({ path: `${SHOTS}/zz-escritorio.png` });
   } finally {
     await ctx.close();
   }
