@@ -15,7 +15,8 @@ import type Phaser from 'phaser';
 import type { GameScene } from '@/scenes/GameScene';
 import type { UIScene } from '@/scenes/UIScene';
 import type { SpeechState } from '@/ui/DialogueBox';
-import type { HotspotData, SceneData } from '@/types/scene.types';
+import type { HotspotData, SceneData, ScriptOp } from '@/types/scene.types';
+import type { CinematicQaState } from '@/systems/CinematicDirector';
 import { Verb, type GameState } from '@/types/game.types';
 
 type Point = { x: number; y: number };
@@ -85,6 +86,13 @@ export interface QaState {
    * puede crecer con los cambios de escena (`expect.noListenerGrowth`).
    */
   inputListeners: number;
+  /**
+   * A2.10: cinemáticas: `active` (modo cinemática), `letterbox` (franjas), `chromeHidden` (interfaz oculta), `camera`
+   * (`x`/`y` scroll, `zoom`, `following`: fuera de cinemática true = la cámara de siempre), `transition`
+   * (none|iris|wipe) y `covered` (pantalla tapada), `skipped` (la última se saltó), `ended` (terminadas en esta
+   * escena), `animating` y `ducked` (música bajada por la cinemática). null fuera de la partida.
+   */
+  cinematic: CinematicQaState | null;
 }
 
 export interface QaApi {
@@ -114,6 +122,12 @@ export interface QaApi {
    */
   doubleClick(targetId: string): Promise<QaState>;
   newGame(): Promise<QaState>;
+  /**
+   * A2.10: ejecuta `ops` por el ScriptEngine principal (como un script de hotspot) y espera a que termine. Los textos
+   * de una cinemática avanzan solos; fuera de ella se cierran con el toque sintético. Con `skipAfterMs` pulsa Esc
+   * (tecla real) ese tiempo después de empezar: salta la cinemática. Solo QA: el runner limita qué ops valen.
+   */
+  runScript(ops: ScriptOp[], opts?: { skipAfterMs?: number }): Promise<QaState>;
 }
 
 const SETTLE_TIMEOUT_MS = 120_000;
@@ -178,6 +192,8 @@ export function installQa(game: Phaser.Game): void {
     if (b.script) out.push('script');
     if (b.walking) out.push('walking');
     if (b.fading) out.push('fading');
+    // A2.10: franjas, cámara o transición aún animándose (p. ej. la vuelta de la cámara al acabar una cinemática)
+    if (gs().qaCinematic()?.animating) out.push('cinematic');
     if (registry.get('dialogueActive')) out.push('dialogue');
     if (registry.get('dialogueShowing')) out.push('text');
     if (ui().getChoicePanel().isAwaitingChoice()) out.push('choice');
@@ -344,6 +360,7 @@ export function installQa(game: Phaser.Game): void {
       highlightedHotspots: scene ? scene.qaHighlighted() : [],
       verbKeyHints: playing ? panel().getKeyHints() : [],
       inputListeners: (registry.get('qaInputListeners') as number | undefined) ?? 0,
+      cinematic: scene ? scene.qaCinematic() : null,
     };
   };
 
@@ -495,6 +512,39 @@ export function installQa(game: Phaser.Game): void {
         }
         await sleep(50);
       }
+      await settle();
+      return snapshot();
+    },
+
+    async runScript(ops, opts = {}) {
+      if (!Array.isArray(ops) || !ops.every((o) => o && typeof o.op === 'string')) {
+        throw new QaError('error', 'runScript necesita una lista de ops ({ op: "..." })');
+      }
+      await ensureGame();
+      await waitInputFree();
+      note(`RUNSCRIPT ${ops.length} op(s)${opts.skipAfterMs !== undefined ? ` (Esc a los ${opts.skipAfterMs} ms)` : ''}`);
+      const run: { finished: boolean; failure: unknown } = { finished: false, failure: null };
+      gs().qaRunScript(ops).then(() => { run.finished = true; }, (err: unknown) => { run.finished = true; run.failure = err; });
+      const t0 = Date.now();
+      let skipSent = false;
+      while (!run.finished) {
+        hookLog();
+        const elapsed = Date.now() - t0;
+        if (elapsed > SETTLE_TIMEOUT_MS) throw new QaError('error', `runScript: el script no terminó en ${SETTLE_TIMEOUT_MS} ms (ocupado: ${busyReasons().join(', ')})`);
+        if (!skipSent && opts.skipAfterMs !== undefined && elapsed >= opts.skipAfterMs) {
+          skipSent = true;
+          note('KEY Escape (saltar)');
+          key('keydown', 'Escape');
+          await sleep(50);
+          key('keyup', 'Escape');
+          continue;
+        }
+        if (ui().getChoicePanel().isAwaitingChoice()) throw new QaError('error', 'runScript: el script pide elegir en un diálogo (no hay respuestas en este paso)');
+        // Fuera de cinemática los textos esperan un toque, como siempre
+        if (registry.get('dialogueShowing') && !registry.get('cinematicMode')) gs().qaSyntheticTap();
+        await sleep(100);
+      }
+      if (run.failure) throw new QaError('error', `runScript: ${run.failure instanceof Error ? run.failure.message : String(run.failure)}`);
       await settle();
       return snapshot();
     },

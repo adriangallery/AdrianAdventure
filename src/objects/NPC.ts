@@ -97,6 +97,31 @@ export class NPC extends Phaser.GameObjects.Container {
     });
   }
 
+  /**
+   * A2.10 (actorFace): espeja el sprite. Las NPC no tienen fotogramas por orientación: `right` es el sprite tal cual
+   * y `left` el sprite espejado; `front`/`back` lo dejan como esté.
+   */
+  setMirrored(mirrored: boolean): void {
+    if (this.npcBody instanceof Phaser.GameObjects.Image) this.npcBody.setFlipX(mirrored);
+  }
+
+  isMirrored(): boolean {
+    return this.npcBody instanceof Phaser.GameObjects.Image && this.npcBody.flipX;
+  }
+
+  /** A2.10 (actorAnim): textura quieta (clave existente) o null para volver a la de siempre. */
+  setPose(key: string | null): boolean {
+    if (!(this.npcBody instanceof Phaser.GameObjects.Image)) return false;
+    if (key === null) {
+      if (this.idleSpriteKey) this.npcBody.setTexture(this.idleSpriteKey);
+      return true;
+    }
+    if (!this.scene.textures.exists(key)) return false;
+    this.stopTalking();
+    this.npcBody.setTexture(key);
+    return true;
+  }
+
   /** Stop talk animation — return to idle sprite */
   stopTalking(): void {
     if (this.talkTimer) {

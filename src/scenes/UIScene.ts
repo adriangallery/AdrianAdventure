@@ -21,6 +21,8 @@ import { loadPatientFile } from '@/web3/tx-history';
 import { checkGatingRule, type GatingRule } from '@/web3/gating';
 import type { Address } from 'viem';
 import { bindShutdown } from './lifecycle';
+import { subtitleHoldMs } from '@/systems/Cinematics';
+import { charDelayMs } from '@/systems/Settings';
 
 /**
  * UI overlay — LucasArts SCUMM-style bottom panel.
@@ -37,6 +39,10 @@ export class UIScene extends Phaser.Scene {
   private cinematicOverlay!: CinematicOverlay;
   private badgePanel!: BadgePanel;
   private isMobile = false;
+  /** A2.10: objetos de la interfaz que oculta el modo cinemática (y que vuelve a enseñar al salir) */
+  private hiddenChrome: Phaser.GameObjects.GameObject[] | null = null;
+  /** A2.10: temporizador del subtítulo de cinemática que avanza solo */
+  private subtitleTimer: Phaser.Time.TimerEvent | null = null;
 
   /** Eventos de GameScene que escucha UIScene (se re-registran en cada create) */
   private static readonly GAME_SCENE_EVENTS = ['hotspot:tapped', 'hotspot:focus', 'hotspot:hover', 'npc:tapped'];
@@ -185,6 +191,8 @@ export class UIScene extends Phaser.Scene {
     this.registry.set('dialogueShowing', false);
     this.registry.set('dialogueActive', false);
     this.registry.set('cinematicActive', 0);
+    this.hiddenChrome = null;
+    this.subtitleTimer = null;
 
     // Hotspot tapped → execute selected verb (SCUMM style)
     gameScene.events.on('hotspot:tapped', (hotspot: HotspotData, verbOverride?: Verb) => {
@@ -222,7 +230,10 @@ export class UIScene extends Phaser.Scene {
     // Say requests from ScriptEngine
     this.events.on('say', (text: string, speaker?: string, resolve?: () => void) => {
       this.voiceSystem.play(text);
-      this.dialogueBox.say(text, speaker).then(() => {
+      const shown = this.dialogueBox.say(text, speaker);
+      // A2.10: en cinemática el texto avanza solo al ritmo de su voz (o por caracteres); un toque lo adelanta
+      if (this.registry.get('cinematicMode')) this.autoAdvance(text, shown);
+      shown.then(() => {
         this.voiceSystem.stop();
         resolve?.();
       });
@@ -311,6 +322,74 @@ export class UIScene extends Phaser.Scene {
     }
   }
 
+  /**
+   * A2.10: subtítulo de cinemática. Se cierra solo cuando acaba su clip de voz (más un margen) o, sin voz, cuando
+   * ha dado tiempo a escribirlo y leerlo (`subtitleHoldMs`). Mientras la voz se descarga o suena, espera (con tope).
+   */
+  private autoAdvance(text: string, shown: Promise<void>): void {
+    this.subtitleTimer?.remove();
+    const startedAt = this.time.now;
+    let done = false;
+    void shown.then(() => { done = true; });
+    const timer = this.time.addEvent({
+      delay: 100,
+      loop: true,
+      callback: () => {
+        if (done || !this.dialogueBox) { timer.remove(); return; }
+        const elapsed = this.time.now - startedAt;
+        const clip = this.voiceSystem.clipInfo();
+        const byChars = subtitleHoldMs(text.length, charDelayMs(), null);
+        // Voz descargándose o sonando: se espera, con un tope por si nunca acaba
+        if ((clip.loading || clip.playing) && elapsed < byChars + 8000) return;
+        if (elapsed < subtitleHoldMs(text.length, charDelayMs(), clip.durationMs)) return;
+        timer.remove();
+        this.dialogueBox.advanceIfShowing(text);
+      },
+    });
+    this.subtitleTimer = timer;
+  }
+
+  /**
+   * A2.10: modo cinemática. `hidden` oculta toda la interfaz de esta escena (panel SCUMM, botones Save/Wallet,
+   * trofeos, rueda de verbos) salvo el texto hablado, las elecciones de diálogo, las cinemáticas a pantalla
+   * completa (profundidad ≥ 1000) y lo que pase en `keep` (franjas, iris). Al quitarlo vuelve a enseñar solo lo que
+   * ocultó. Lo oculto no recibe toques (Phaser no da entrada a objetos invisibles). Idempotente.
+   */
+  setCinematicChrome(hidden: boolean, keep: Phaser.GameObjects.GameObject[] = []): void {
+    if (hidden) {
+      if (this.hiddenChrome) return;
+      const skip = new Set<Phaser.GameObjects.GameObject>([...keep, ...(this.dialogueBox?.getObjects() ?? [])]);
+      const root = this.choicePanel?.getRoot();
+      if (root) skip.add(root);
+      const out: Phaser.GameObjects.GameObject[] = [];
+      for (const o of this.children.list) {
+        const v = o as unknown as { visible?: boolean; depth?: number; setVisible?: (b: boolean) => unknown };
+        if (skip.has(o) || !v.visible || !v.setVisible || (v.depth ?? 0) >= 1000) continue;
+        v.setVisible(false);
+        out.push(o);
+      }
+      this.hiddenChrome = out;
+      return;
+    }
+    const list = this.hiddenChrome;
+    this.hiddenChrome = null;
+    for (const o of list ?? []) {
+      if (o.active) (o as unknown as { setVisible: (b: boolean) => unknown }).setVisible(true);
+    }
+  }
+
+  /** A2.10: ¿está la interfaz oculta por una cinemática? (QA) */
+  isChromeHidden(): boolean {
+    return !!this.hiddenChrome;
+  }
+
+  /** A2.10: salto de cinemática: cierra el texto hablado en pantalla al momento. */
+  skipSpeech(): void {
+    this.subtitleTimer?.remove();
+    this.subtitleTimer = null;
+    this.dialogueBox?.skip();
+  }
+
   /** A0.1 (QA): panel SCUMM y panel de elecciones, para la API de QA (?qa=1). */
   getScummUI(): ScummUI { return this.scummUI; }
   getChoicePanel(): ChoicePanel { return this.choicePanel; }
@@ -382,6 +461,9 @@ export class UIScene extends Phaser.Scene {
    * curso, y los listeners que esta escena puso en los eventos de GameScene y en los suyos.
    */
   shutdown(): void {
+    this.subtitleTimer?.remove();
+    this.subtitleTimer = null;
+    this.hiddenChrome = null;
     this.voiceSystem?.destroy();
     this.scummUI?.destroy();
     this.verbWheel?.destroy();

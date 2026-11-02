@@ -136,6 +136,11 @@ export class ChoicePanel {
   }
 
   /** A0.1: true mientras el diálogo espera que el jugador elija. */
+  /** A2.10: contenedor del panel (UIScene no lo oculta con el resto de la interfaz en cinemática). */
+  getRoot(): Phaser.GameObjects.Container {
+    return this.container;
+  }
+
   isAwaitingChoice(): boolean {
     return this.resolveChoice !== null;
   }
