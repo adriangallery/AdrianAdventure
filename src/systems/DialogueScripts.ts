@@ -1,5 +1,6 @@
 import type { ScriptOp } from '@/types/scene.types';
 import type { ScriptContext, ScriptEngine } from './ScriptEngine';
+import type { TransitionSpec } from './Cinematics';
 
 /**
  * A1.9: ejecuta los `onEnter` de los nodos de diálogo con el mismo repertorio de opcodes que cualquier script
@@ -25,7 +26,7 @@ export class DialogueScriptRunner {
   private readonly baseContext: () => ScriptContext;
   /** Hay un árbol abierto (desde el primer onEnter hasta `finishTree`). */
   private treeOpen = false;
-  private pendingScene: { sceneId: string; spawn?: { x: number; y: number } } | null = null;
+  private pendingScene: { sceneId: string; spawn?: { x: number; y: number }; transition?: TransitionSpec | null } | null = null;
 
   constructor(engine: ScriptEngine, baseContext: () => ScriptContext) {
     this.engine = engine;
@@ -47,7 +48,7 @@ export class DialogueScriptRunner {
     this.pendingScene = null;
     // Lo que llegue después (p. ej. el resultado tardío de un mint lanzado en un onEnter) usa el contexto normal
     this.engine.updateContext(this.baseContext());
-    if (pending) this.baseContext().gotoScene(pending.sceneId, pending.spawn);
+    if (pending) this.baseContext().gotoScene(pending.sceneId, pending.spawn, pending.transition);
   }
 
   isRunning(): boolean {
@@ -63,6 +64,11 @@ export class DialogueScriptRunner {
     this.engine.setFastForward(on);
   }
 
+  /** A2.10: salta una cinemática abierta desde un onEnter de diálogo (mantener pulsado o Esc). */
+  skipCinematic(): boolean {
+    return this.engine.skipCinematic();
+  }
+
   /** Watchdog del motor de onEnter: `presenting` = hay texto, elección o cinemática en pantalla. */
   watchdogTick(elapsedMs: number, presenting: boolean): boolean {
     return this.engine.watchdogTick(elapsedMs, presenting);
@@ -71,15 +77,15 @@ export class DialogueScriptRunner {
   private treeContext(base: ScriptContext): ScriptContext {
     return {
       ...base,
-      gotoScene: (sceneId, spawn) => {
+      gotoScene: (sceneId, spawn, transition) => {
         if (!this.treeOpen) {
-          base.gotoScene(sceneId, spawn);
+          base.gotoScene(sceneId, spawn, transition);
           return;
         }
         if (this.pendingScene) {
           console.warn(`[DialogueScripts] gotoScene «${sceneId}» sustituye al aplazado «${this.pendingScene.sceneId}»`);
         }
-        this.pendingScene = { sceneId, spawn };
+        this.pendingScene = { sceneId, spawn, transition };
       },
       startDialogue: async (npcId, treeId) => {
         if (!this.treeOpen && base.startDialogue) {
