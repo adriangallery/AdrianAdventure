@@ -19,6 +19,10 @@
   **A2.10** (cinemáticas: cámara, actores, letterbox).
 - **Requiere motor: …**: no existe ni está planificado. Cada caso sale como checkpoint en «Checkpoints
   derivados» y siempre hay una forma de hacerlo **hoy** aunque sea menos vistosa.
+- **Ojo con A2.6**: hoy `ChoicePanel` pinta las opciones con condición no cumplida con candado y **con su
+  texto**. Los puzles de diálogo de esta biblia (DOORIS, PIN del Ledger, duelo de FUD) necesitan que A2.6
+  **oculte** esas opciones (derivado `A2.6a`). Mientras no exista, el texto de una opción condicionada nunca
+  es la respuesta («[The name on the vet bill]», no «Gerald»).
 
 ---
 
@@ -124,7 +128,7 @@ zapatillas rojas — `assets/sprites/player/*`; disfraz de mono `Ape-*`).
 
 | Personaje | Qué es | Recurso existente | Voz Kokoro (nueva `speaker` en `scripts/voices/voices.json`) | Motivación | Voz / humor |
 |---|---|---|---|---|---|
-| **DOORIS** | La cerradura inteligente de la casa de Adrian, paranoica y susurrante. Cap. 1. | `outside.hs_keypad` (ya existe) + `flicker` del overlay `lamp_empty` para «parpadear» al hablar; LED por overlay recortado con sharp (opcional) | `dooris`: **`af_nicole`** 1.0 (susurro tipo ASMR; voz Kokoro estándar). `match`: «dooris» | Proteger a Adrian «from people. Like you.» | Seguridad absurda, 2FA para todo, pasivo-agresiva y educadísima. «Hi. I'm DOORIS. I keep Adrian safe. From people. Like you.» |
+| **DOORIS** | La cerradura inteligente de la casa de Adrian, paranoica y susurrante. Cap. 1. | `outside.hs_keypad` (ya existe) + `flicker` del overlay `lamp_empty` para «parpadear» al hablar; LED por overlay recortado con sharp (opcional) | `dooris`: **`af_nicole`** 1.0 (susurro tipo ASMR; voz Kokoro estándar). `match`: «dooris» | Proteger a Adrian «from people. Like you.» | Seguridad absurda, tres factores para una puerta, pasivo-agresiva y educadísima. «Hi. I'm DOORIS. I keep Adrian safe. From people. Like you.» |
 | **Anon** (es Adrian) | Voz al teléfono de Dex. Llama en momentos clave y, a demanda, da pistas. | Sin sprite: `say` con `speaker: "Anon"`; en A2.9 el diario es el móvil de Dex | `anon`: **`am_onyx`** 0.9 (grave, distinta de Dex/Satoshi). `match`: «anon», «adrian» | Guiar a Dex sin decirle la verdad (la terapia lo exige). | Seco, pocas palabras, nunca responde preguntas directas. «The door won't open for strangers. Be less of a stranger.» *click* |
 | **PZ-BOT** | El bot de trading de Dex, vivo en un servidor. Habla por la terminal. Cap. 3 y 5. | `server_room.hs_terminal` y `hs_server_rack_a`; en cap. 5 el monitor del treatment room | `pzbot`: **`am_michael` 1.25** — la MISMA voz que Dex, acelerada (pista del giro). `match`: «pz-bot» (antes que «b.o.t») | Seguir comprando. Siempre. Obedece solo a su dueño. | Mayúsculas, entusiasmo infinito, cero memoria: «HELLO, STRANGER. YOU SOUND LIKE MY OWNER. FLATTERING. BUY?» |
 | **Nurse Gwei** | Enfermera de admisión de la clínica, solo por interfono. Cap. 4. | `clinic_exterior.hs_main_entrance` y `hs_security_camera` (la cámara es «sus ojos»); sin sprite | `gwei`: **`bf_emma`** 0.95 (británica, estricta). `match`: «gwei» | Admitir pacientes, jamás visitas. | Burocracia hospitalaria: «Visiting hours are never. Patient hours are always. Which are you?» Se cree todo lo que suena a negación: «Denial. Promising.» |
@@ -150,16 +154,35 @@ Principios aplicados en todos (Monkey Island):
   «prueba» se devuelven; todas las escenas anteriores siguen accesibles.
 - **Soluciones con gracia**: la solución tiene un chiste propio, y los intentos fallidos tentadores tienen
   respuesta específica (A2.5).
-- **Duración**: 20–40 min por capítulo (cap. 5 + epílogo, 20 min).
+- **Duración**: 20–40 min por capítulo (cap. 1, 15–20; cap. 5 + epílogo, 20).
+- **Objetos locales**: lo necesario en un capítulo se consigue en ese capítulo, o el capítulo anterior
+  obliga a llevarlo (es parte de su cierre). Nada de cruzar medio juego a por un objeto opcional que se dejó
+  atrás; si un objeto de antes se usa, hay una alternativa en la escena.
+
+**Ritmo (para el jugador con prisa)**
+
+- Algo que tocar en ≤ 30 s desde New Game; primer objeto en ≤ 2 min; la apertura cinemática (A3.2) ≤ 20 s y
+  se puede saltar.
+- 3–4 **hitos** por capítulo (un hilo resuelto): sonido de descubrimiento, logro visual y tic en el diario
+  (A2.9). Ningún tramo de más de ~8 min sin un hito.
+- Llamadas de Anon ≤ 3 líneas.
+
+**Escalera de pistas (Anon)**
+
+Cada puzle de las tablas tiene tres niveles que Anon da por teléfono cuando el jugador le llama (A2.9: el
+diario es el móvil de Dex; «Call Anon» elige la pista según las flags): 1) dirección («The birds know more
+than they let on.»), 2) objeto («Something long could reach that nest.»), 3) solución casi literal («Pull a
+plank off the fence. Poke the nest.»). La pista por inactividad actual se queda como red de seguridad.
 
 Leyenda de los diagramas: rectángulo = acción/puzle, rombo = puerta del capítulo, `obj:` = objeto.
 
 ### Capítulo 1 — «Breaking & Entering» (`outside` → entrada al `lobby`)
 
-**Sinopsis.** Atardecer. Dex llega a la casa de Adrian. Le abre (o no) **DOORIS**, la cerradura: pide PIN y
-pregunta de seguridad. El PIN está partido en dos mitades escondidas por Adrian; la respuesta está en el
-correo de Adrian. Anon llama la primera vez que Dex toca la puerta. Final: DOORIS se rinde, la puerta se abre
-y Penny mira desde el mostrador. 20–25 min.
+**Sinopsis.** Atardecer. Dex llega a la casa de Adrian. Le abre (o no) **DOORIS**, la cerradura, con
+autenticación de **tres factores** («for a door»): PIN, pregunta de seguridad y llave de hardware. El PIN
+está partido en dos mitades escondidas por Adrian; la respuesta está en el correo de Adrian; la llave de
+hardware (el Ledger) está bajo un felpudo que no se deja levantar. Anon llama la primera vez que Dex toca la puerta. Final: DOORIS se rinde, la puerta se abre
+y Penny mira desde el mostrador. 15–20 min. Hitos: PIN completo, respuesta encontrada, Ledger, puerta.
 
 ```mermaid
 graph TD
@@ -173,13 +196,14 @@ graph TD
   NEST --> HALFB["obj: note_half_b  ..14"]
   HALFA --> CODE["COMBINE mitades: obj code_note 7314"]
   HALFB --> CODE
-  START --> MAIL["OPEN buzón: factura del veterinario de Gerald"]
+  START --> MAIL["OPEN buzón: factura del veterinario + sobre"]
   MAIL --> GERALD["flag knows_gerald"]
-  MAIL --> ENV["2ª vez: obj mystery_envelope"]
+  MAIL --> ENV["obj mystery_envelope, para el cap. 2"]
   PLANK --> MAT["USE tablón con felpudo HODL pegado"]
-  MAT --> LEDGER["obj: ledger, para el cap. 3"]
-  CODE --> KEYPAD{"USE code_note en DOORIS + respuesta Gerald"}
+  MAT --> LEDGER["obj: ledger, también para el cap. 3"]
+  CODE --> KEYPAD{"DOORIS: PIN + pregunta + llave de hardware"}
   GERALD --> KEYPAD
+  LEDGER --> KEYPAD
   KEYPAD --> END1["Puerta abierta: chapter_1_complete"]
 ```
 
@@ -187,11 +211,11 @@ graph TD
 |---|---|---|---|---|---|---|---|
 | 1.1 | Lámpara caliente | `note_half_a` | `hs_porch_light` (USE apaga, PICK coge) | `porch_light_off`, `found_note_half_a` (sustituye a `found_code_note` como paso; `found_code_note` queda para la nota entera) | LOOK: «Something's wedged behind the bracket. The bulb's been on for three weeks. I'm not touching that.» PICK con luz: «Hot. Hot hot hot.» | Al apagarla las polillas vuelan a la ventana lateral: «They'll find another light. Everyone does.» | Hoy |
 | 1.2 | Tablón | `fence_plank` | `hs_fence` (PULL) | `has_plank` | El texto actual de PULL ya dice «I pull a plank. It comes loose.»; LOOK de la valla lo anuncia. | «Now there's an exploit in the perimeter. I'm the exploit.» | Hoy |
-| 1.3 | Nido de urraca | `note_half_b` | `hs_chimney` (combo `fence_plank`) | `nest_down`, `found_note_half_b` | LOOK chimenea: «Magpies nesting in the drainpipe. They steal anything shiny.» La nota está envuelta en papel de aluminio. | Dex: «Magpies steal anything shiny. Finally, someone with my investment thesis.» | Hoy |
+| 1.3 | Nido de urraca | `note_half_b` | `hs_chimney` (combo `fence_plank`) | `nest_down`, `found_note_half_b` | LOOK chimenea: «Magpies nesting in the drainpipe, way too high to reach. They steal anything shiny.» PICK: «Too high. I'd need something long.» La nota está envuelta en papel de aluminio. | Dex: «Magpies steal anything shiny. Finally, someone with my investment thesis.» | Hoy |
 | 1.4 | Nota entera | `note_half_a` + `note_half_b` → `code_note` | — (`itemCombos`) | `found_code_note`, `has_code` | Cada mitad dice que falta la otra («...the other half is with the birds. They never sell.»). | La nota completa: «7314. If you found both halves, you're patient enough. — A.» Dex: «Patient. Me. Ha.» | Hoy |
-| 1.5 | Pregunta de seguridad | `vet_bill` (y 2ª vez `mystery_envelope`) | `hs_mailbox` | `found_vet_bill`, `knows_gerald`, `found_envelope` | DOORIS pregunta «the name of the owner's best friend». LOOK de la factura: «PAWS & CLAWS VET. Patient: GERALD. Species: rubber duck (?). Born: 3 Jan 2009. Diagnosis: perfect. Note: please stop bringing him in.» | Respuesta «Gerald». DOORIS: «Correct. He's a very good boy. He's a duck.» | Hoy (elección con `flag: knows_gerald`); **ocultarla** si no se conoce: A2.6 |
-| 1.6 | DOORIS | `code_note` | `hs_keypad`, `hs_front_door` | `dooris_pin_ok`, `door_unlocked`, `chapter_1_complete` | Primera vez: pide PIN y pregunta; «Voice match: 87 %…». Si se falla la pregunta, «Lockout: three seconds. I'm merciful.» y repite. | «Two-factor authentication complete. One factor was a duck.» | Hoy (árbol `dooris_auth` desde el combo) |
-| 1.7 | Felpudo HODL (para cap. 3) | `ledger` | `hs_doormat` (combo `fence_plank`) | `found_ledger` | PICK sin tablón: «It's glued down. It says HODL. It means it.» | «Adrian's hardware wallet. Under the doormat. The most secure place in crypto: the obvious one.» | Hoy |
+| 1.5 | Pregunta de seguridad | `vet_bill` y `mystery_envelope` (el mismo OPEN da los dos) | `hs_mailbox` | `found_vet_bill`, `knows_gerald`, `found_envelope` | DOORIS pregunta «the name of the owner's best friend». LOOK de la factura: «PAWS & CLAWS VET. Patient: GERALD. Species: rubber duck (?). Born: 3 Jan 2009. Diagnosis: perfect. Note: please stop bringing him in.» | Respuesta «[The name on the vet bill]». DOORIS: «Gerald. Correct. He's a very good boy. He's a duck.» Las opciones falsas («password123», «Satoshi», «Mom») tienen su burla. | Hoy (opción con `flag: knows_gerald` y texto que no es la respuesta); con A2.6a la opción se oculta |
+| 1.6 | DOORIS | `code_note`, `ledger` (no se gastan) | `hs_keypad`, `hs_front_door` (combos con los dos objetos; el último factor abre el árbol de la pregunta) | `dooris_pin_ok`, `dooris_key_ok`, `door_unlocked`, `chapter_1_complete` | Primera vez: «Three-factor authentication: PIN, security question, hardware key.» y «Voice match: 87 %…». LOOK del teclado enumera los factores que faltan. Si se falla la pregunta, «Lockout: three seconds. I'm merciful.» y repite. Frases de DOORIS ≤ 15 palabras. | «Three-factor authentication complete. One factor was a duck.» | Hoy (combos objeto→hotspot + árbol `dooris_auth`) |
+| 1.7 | Felpudo HODL | `ledger` | `hs_doormat` (combo `fence_plank`) | `found_ledger` | DOORIS pide «a hardware key». LOOK felpudo: «HODL. Glued down. Something lumpy underneath.» PICK sin tablón: «It's glued down. It says HODL. It means it.» | «Adrian's hardware wallet. Under the doormat. The most secure place in crypto: the obvious one.» DOORIS al recibirlo: «Ledger detected. Please don't plug things into me without asking.» | Hoy |
 | 1.8 | Anon | — | trigger en el primer USE/OPEN de la puerta | `anon_call_1` | — | «Who is this?» — «A friend of Adrian. The door won't open for strangers. Be less of a stranger.» *click* | Hoy (`say` con `speaker: "Anon"`) |
 
 **Bonus Web3**: graffiti «ZERO WAS HERE» tras los arbustos (ya existe) y trampilla VIP del felpudo (ver §7).
@@ -201,8 +225,10 @@ graph TD
 **Sinopsis.** Dentro, Penny custodia el abrigo de Adrian (con la keycard) y no deja tocar nada. Arriba, el
 trading floor: un cajón con cerradura de «Terms & Conditions», una pizza fosilizada y una lata de bebida
 energética. En la azotea, la veleta Bitcoin oxidada sostiene el pestillo de la escotilla de servicio que baja
-al sótano, donde parpadea una luz. Tres hilos: **keycard** (Penny), **pestillo** (veleta) y **cajón**
-(terminal_key, que hará falta en el cap. 5). Opcional: la planta Fernando y el Golden Token. 30–35 min.
+al sótano, donde parpadea una luz. La escotilla tiene **tres cierres** («Adrian trusts nobody»), uno por
+hilo: **lector** (keycard, Penny), **pestillo** (veleta) y **cerradura** (terminal_key del cajón, que vuelve
+a hacer falta en el cap. 5). Opcional: la planta Fernando y el Golden Token. 30–35 min. Hitos: keycard,
+veleta, cajón, escotilla.
 
 ```mermaid
 graph TD
@@ -220,8 +246,9 @@ graph TD
   TOS --> TKEY["obj terminal_key + nota PZ escaped"]
   R --> ANT["PICK antena: obj antenna"]
   U --> ALPHA["OPEN Alpha Pack: obj ape_costume"]
-  COAT --> HATCH{"Escotilla: keycard + pestillo"}
+  COAT --> HATCH{"Escotilla: lector + pestillo + cerradura"}
   VANE --> HATCH
+  TKEY --> HATCH
   HATCH --> END2["Baja al sótano: chapter_2_complete"]
   U --> CAN["obj energy_drink"]
   CAN --> PLANTNO["USE con Fernando: Penny lo prohíbe"]
@@ -233,64 +260,69 @@ graph TD
 
 | # | Puzle | Objetos | Hotspots | Flags | Pista justa | Chiste | Motor |
 |---|---|---|---|---|---|---|---|
-| 2.1 | Penny y el abrigo | `mystery_envelope` (no se gasta: Penny lo devuelve «resealed, badly»), `keycard`, `leaky_pen` | `hs_monitor_desk` (combo sobre), `hs_coat`, `npc_receptionist` | `penny_reading`, `found_keycard`, `has_keycard`, `has_leaky_pen` | Penny en su diálogo: «I don't read other people's mail. Unless it's marked confidential. Then it's practically my job.» PICK abrigo antes: «Touch that coat and I call HR. I AM HR.» | Penny se enfrasca: «Oh. Oh no. Oh, he did NOT.» Dex coge la keycard y un boli de un exchange quebrado que aún gotea: «Mt. Gox. Still leaking after all these years.» | Hoy (combo objeto→hotspot del escritorio). Con A2.6 también GIVE a Penny |
+| 2.1 | Penny y el abrigo | `mystery_envelope` (no se gasta: Penny lo devuelve «resealed, badly»), `keycard`, `leaky_pen` | `hs_monitor_desk` (combo sobre), `hs_coat`, `npc_receptionist` | `penny_reading`, `found_keycard`, `has_keycard`, `has_leaky_pen` | LOOK abrigo: «Something card-shaped in the breast pocket.» PICK abrigo con Penny mirando (frase que todo jugador oye): «Touch that coat and I call HR. I AM HR. ...Unless something CONFIDENTIAL lands on my desk. Then I'm very busy. Hypothetically.» Su diálogo lo repite: «I don't read other people's mail. Unless it's marked confidential.» | Penny se enfrasca: «Oh. Oh no. Oh, he did NOT.» Dex coge la keycard y un boli de un exchange quebrado que aún gotea: «Mt. Gox. Still leaking after all these years.» | Hoy (combo objeto→hotspot del escritorio). Con A2.6 también GIVE a Penny |
 | 2.2 | Veleta oxidada | `pizza_slice` (se gasta) | `upstairs.hs_pizza_box`, `rooftop.hs_weather_vane` | `has_pizza_slice`, `vane_greased`, `vane_turned` | LOOK veleta: «Rusted solid. It needs grease. A lot of grease.» LOOK pizza: «Two slices. Forty percent cheese, sixty percent industrial lubricant.» | «Adrian's diet finally contributes to the infrastructure.» | Hoy |
-| 2.3 | Escotilla | `keycard` | `rooftop.hs_roof_access_panel` | `basement_unlocked`, `chapter_2_complete` | Los textos actuales ya explican los dos cierres (pestillo y lector). | «Two locks. Adrian trusts nobody. Including, apparently, Adrian.» | Hoy |
-| 2.4 | Terms & Conditions | `terminal_key` | `upstairs.hs_desk` (USE abre el árbol `tos_drawer`) | `tos_read_1..3`, `found_terminal_key`, `found_pz_note` | LOOK cajón: «Locked. The lock is a tiny screen: 'Accept the Terms to open'.» | «Accept» sin leer: «By accepting you agree to give Adrian your left kidney.» y no abre. «Keep reading» ×3 llega a la página 38: «Congratulations: you are the first person ever to read this. Drawer unlocked.» | Hoy (árbol de diálogo con `setFlag`) |
+| 2.3 | Escotilla | `keycard`, `terminal_key` | `rooftop.hs_roof_access_panel` (combos con los dos objetos; LOOK enumera los cierres que faltan) | `hatch_reader_ok`, `hatch_lock_ok`, `basement_unlocked`, `chapter_2_complete` | LOOK: «Three locks: a card reader, a keyhole, and something mechanical underneath. Adrian trusts nobody.» | «Three locks. Adrian trusts nobody. Including, apparently, Adrian.» | Hoy |
+| 2.4 | Terms & Conditions | `terminal_key` | `upstairs.hs_desk` (USE abre el árbol `tos_drawer`) | `tos_read_1..3`, `found_terminal_key`, `found_pz_note` | LOOK cajón: «Locked. The lock is a tiny screen: 'Accept the Terms to open'.» El LOOK de la escotilla ya dijo que falta una llave. | «Accept» sin leer: «By accepting you agree to give Adrian your left kidney.» y no abre. «Keep reading» ×3 llega a la página 38: «Congratulations: you are the first person ever to read this. Drawer unlocked.» | Hoy (árbol de diálogo con `setFlag`) |
 | 2.5 | Antena | `antenna` | `rooftop.hs_antenna_array` | `has_antenna` | LOOK: «One antenna is loose.» | Se usa en el cap. 3 (cristal) y para el reloj (opcional). | Hoy (existe) |
 | 2.6 | Disfraz de mono | `ape_costume` | `upstairs.hs_alphapack` | `found_ape_costume` | LOOK: «Something furry is poking out.» | Se usa en el cap. 4. | Hoy (existe) |
-| 2.7 (opc.) | Fernando y el Golden Token | `energy_drink` → `empty_can` → `rainwater_can` → `golden_token` (la lata vuelve vacía) | `hs_plant`, `hs_computer`, `rooftop.hs_satellite_dish` | `plant_revived`, `has_empty_can`, `has_rainwater`, `founder_mode` | Penny al intentar la bebida: «NO stimulants. Fernando is in recovery. He only drinks rain.» LOOK parabólica: «A three-metre bowl of rainwater. The best-funded birdbath in the city.» | El rig se bebe la lata: «Its liquid cooling gurgles. I think it's been waiting for this.» | Hoy |
+| 2.7 (opc.) | Fernando y el Golden Token | `energy_drink` → `empty_can` → `rainwater_can` → `golden_token` (la lata vuelve vacía; no hace falta después: la prueba de insomnio del cap. 4 tiene lata local) | `hs_plant`, `hs_computer`, `rooftop.hs_satellite_dish` | `plant_revived`, `has_empty_can`, `has_rainwater`, `founder_mode` | Penny al intentar la bebida: «NO stimulants. Fernando is in recovery. He only drinks rain.» LOOK parabólica: «A three-metre bowl of rainwater. The best-funded birdbath in the city.» | El rig se bebe la lata: «Its liquid cooling gurgles. I think it's been waiting for this.» | Hoy |
 | 2.8 (opc.) | Reloj de lujo | `luxury_watch` | `hs_armchair` | `watch_retrieved` | Existe. | Existe. | Hoy |
 
-**Bonus Web3**: rama VIP de Penny (atajo del felpudo), póster de holders, panel TraitLab del rig con 1000
-$ZERO, Founder Mode con stats reales (ver §7).
+**Bonus Web3**: rama VIP de Penny (trampilla del felpudo: pide keycard y terminal_key, ahorra solo la
+veleta), póster de holders, panel TraitLab del rig con 1000 $ZERO, Founder Mode con stats reales (ver §7).
+Nota para A3.4: el texto actual de `hs_paper_tray` dice que el recibo lleva «coordinates to a clinic»; se
+cambia (las coordenadas son del cap. 3).
+
 
 ### Capítulo 3 — «Below the Surface» (`basement`, `server_room`)
 
 **Sinopsis.** El sótano: un CRT sin corriente, un disquete «BACKUP — DO NOT LOSE» y, tras el rack, la sala
-de servidores. Allí vive **PZ-BOT**, el «saboteador»: un bot que solo obedece a su dueño y habla con la voz
-de Dex. Tres hilos: **CRT** (corriente, PIN del Ledger, disquete → listado de pacientes y mapa), **PZ-BOT**
-(engañarlo con una alfa falsa para que suelte su log) y **interruptor de emergencia** (romper el cristal,
-apagar los servidores y ver las coordenadas). Final: Dex marca las coordenadas en el mapa. 30–35 min.
+de servidores. Allí vive **PZ-BOT**, el «saboteador»: un bot que solo obedece a su dueño, habla con la voz de
+Dex y tiene bloqueado por software el interruptor de emergencia («SHUTDOWN = MISSED OPPORTUNITIES»). Tres
+hilos: **CRT** (corriente, PIN del Ledger, disquete → listado de pacientes y mapa sin marca), **PZ-BOT**
+(engañarlo con una alfa falsa: se cuelga, suelta su log y libera el interruptor) y **cristal** (romperlo con la
+antena). Con el interruptor accionado, una pantalla oculta da las coordenadas y Dex marca el mapa. 30–35 min.
+Hitos: CRT encendido, PZ-BOT colgado, coordenadas, mapa.
 
 ```mermaid
 graph TD
   B["Basement"] --> RACK["PUSH rack: abre server_room"]
-  RACK --> COND["PULL conducto de cables: obj extension_cord"]
-  COND --> POWER["USE alargador con CRT: flag crt_powered"]
+  RACK --> FLOOR["PICK suelo técnico: obj extension_cord + obj glasses_3d"]
+  FLOOR --> POWER["USE alargador con CRT: flag crt_powered"]
   LEDGER["obj ledger del cap. 1"] --> PIN["USE ledger con CRT: PIN"]
   POWER --> PIN
   VET["flag knows_gerald del cap. 1"] --> PIN
   PIN --> VAULT["flag computer_unlocked"]
-  B --> FLOP["PICK mesa: obj floppy_disk"]
+  B --> FLOP["PICK mesa: obj floppy_disk + obj scrap_paper"]
   VAULT --> PRINT["USE disquete con CRT: obj printout, el disquete vuelve"]
   FLOP --> PRINT
-  RACK --> TERM["TALK terminal: PZ-BOT"]
-  RECEIPT["obj receipt de upstairs"] --> ALPHA["COMBINE recibo + leaky_pen: obj fake_alpha"]
+  RACK --> TERM["TALK terminal: PZ-BOT bloquea el interruptor"]
+  PAPER["obj receipt de upstairs o scrap_paper"] --> ALPHA["COMBINE papel + leaky_pen: obj fake_alpha"]
+  FLOP --> PAPER
   PEN["obj leaky_pen del cap. 2"] --> ALPHA
   ALPHA --> CRASH["USE fake_alpha con terminal: PZ-BOT compra GERALD y se cuelga"]
   TERM --> CRASH
-  CRASH --> LOG["obj server_log: dueño 0xDE..."]
-  ANT["obj antenna del cap. 2"] --> GLASS["USE antena con cristal de emergencia"]
-  GLASS --> SWITCH["USE interruptor: coordenadas"]
-  LOG --> SWITCH
+  CRASH --> LOG["obj server_log: dueño 0xDE..., records moved to treatment room"]
+  CRASH --> UNLOCK["flag switch_unlocked"]
+  ANT["obj antenna del cap. 2 o broken_mouse del sótano"] --> GLASS["USE con cristal de emergencia"]
+  GLASS --> SWITCH["USE interruptor: pantalla oculta"]
+  UNLOCK --> SWITCH
   SWITCH --> COORDS["flag coords_known"]
   PRINT --> MAP{"COMBINE printout + leaky_pen"}
   COORDS --> MAP
   MAP --> END3["obj marked_map: chapter_3_complete"]
-  RACK --> TILES["PICK baldosas: obj glasses_3d para el cap. 4"]
 ```
 
 | # | Puzle | Objetos | Hotspots | Flags | Pista justa | Chiste | Motor |
 |---|---|---|---|---|---|---|---|
-| 3.1 | Corriente del CRT | `extension_cord` | `server_room.hs_cable_conduit` (PULL), `basement.hs_main_computer` | `has_extension_cord`, `crt_powered` | LOOK CRT: «Its plug dangles a metre short of the socket. Classic last-mile problem.» LOOK conducto: «...and an orange extension cord. The true backbone of every startup.» | «It's alive. It smells like 1997.» | Hoy (sustituye a la bebida energética, que pasa al cap. 2) |
-| 3.2 | PIN del Ledger | `ledger` | `hs_main_computer` → árbol `ledger_pin` | `computer_unlocked` | El Ledger: «PIN hint: my best friend's birthday. DDMM.» La factura de Gerald (cap. 1) dice «Born: 3 Jan 2009». | Opción «7314»: «That's the door, genius.» Correcta «0301»: «Gerald was born on the genesis block. Of course he was.» | Hoy (opción con `flag: knows_gerald`; ocultar: A2.6) |
-| 3.3 | Disquete | `floppy_disk` (vuelve al inventario), `printout` | `hs_left_desk`, `hs_main_computer` | `found_floppy`, `floppy_inserted`, `has_printout` | El CRT dice «INSERT BACKUP». | El listado de pacientes con diagnósticos; al final, «PATIENT ZERO — STATUS: ESCAPED». El mapa sale sin marca: «A map with no X. Very zen. Very useless.» | Hoy |
-| 3.4 | PZ-BOT y la alfa falsa | `receipt` + `leaky_pen` → `fake_alpha` (se gasta), `server_log` | `server_room.hs_terminal` | `met_pzbot`, `pzbot_crashed`, `found_server_log` | PZ-BOT: «I ONLY TALK TO MY OWNER. OR TO ALPHA. DO YOU HAVE ALPHA?» Dex: «I could write some. I have a pen and no principles.» | Dex escribe «BUY $GERALD. TRUST ME.» en el recibo. PZ-BOT: «GERALD. GERALD. ALL IN.» *crash* y vuelca su log: «Owner wallet: 0xDE…». Dex: «0xDE… could be anyone. Literally millions of people.» | Hoy |
-| 3.5 | Interruptor de emergencia | `antenna` (no se gasta) | `hs_emergency_switch` | `emergency_glass_broken`, `emergency_switch_flipped`, `coords_known` | Existe («I need a tool — something heavy and solid.»). | Al apagar, PZ-BOT se despide con la voz de Dex: «TELL MY OWNER... I BOUGHT... THE DIP.» | Hoy (existe) |
+| 3.1 | Corriente del CRT | `extension_cord` (sale con las `glasses_3d` del cap. 4) | `server_room.hs_raised_floor` (PICK/OPEN), `basement.hs_main_computer` | `has_extension_cord`, `found_glasses_3d`, `crt_powered` | LOOK CRT: «Its plug dangles a metre short of the socket. Classic last-mile problem.» LOOK suelo técnico: «Under these tiles: more cables than a DeFi protocol has dependencies.» | Bajo las baldosas: «An orange extension cord, the true backbone of every startup. And 3D glasses. Reversed. Red on the right. Monsters. I'll take both.» Al enchufar: «It's alive. It smells like 1997.» | Hoy (sustituye a la bebida energética, que pasa al cap. 2) |
+| 3.2 | PIN del Ledger | `ledger` | `hs_main_computer` → árbol `ledger_pin` | `computer_unlocked` | El Ledger: «PIN hint: my best friend's birthday. DDMM.» La factura de Gerald (cap. 1) dice «Born: 3 Jan 2009». | Opción «7314»: «That's the door, genius.» Opción «[Gerald's birthday, DDMM]» → «0301. Gerald was born on the genesis block. Of course he was.» | Hoy (opción con `flag: knows_gerald` y texto que no es la respuesta) |
+| 3.3 | Disquete | `floppy_disk` (vuelve al inventario), `printout`, `scrap_paper` | `hs_left_desk`, `hs_main_computer` | `found_floppy`, `floppy_inserted`, `has_printout` | El CRT dice «INSERT BACKUP». | El listado de pacientes con diagnósticos; al final, «PATIENT ZERO — STATUS: ESCAPED». El mapa sale sin marca: «A map with no X. Very zen. Very useless.» | Hoy |
+| 3.4 | PZ-BOT y la alfa falsa | papel (`receipt` de upstairs **o** `scrap_paper` de la mesa del sótano) + `leaky_pen` → `fake_alpha` (se gasta), `server_log` | `server_room.hs_terminal` | `met_pzbot`, `pzbot_crashed`, `switch_unlocked`, `found_server_log` | PZ-BOT: «I ONLY TALK TO MY OWNER. OR TO ALPHA. DO YOU HAVE ALPHA?» Dex: «I could write some. I need paper, a pen, and no principles. I have two of those.» | Dex escribe «BUY $GERALD. TRUST ME.» PZ-BOT: «GERALD. GERALD. ALL IN.» *crash* y vuelca su log: «Owner wallet: 0xDE…». Dex: «0xDE… could be anyone. Literally millions of people.» | Hoy |
+| 3.5 | Interruptor de emergencia | `antenna` del cap. 2 **o** `broken_mouse` del sótano (alternativa local; no se gastan) | `hs_emergency_switch` | `emergency_glass_broken`, `emergency_switch_flipped`, `coords_known` | Con PZ-BOT vivo: «EMERGENCY SHUTOFF DISABLED BY PZ-BOT. SHUTDOWN = MISSED OPPORTUNITIES.» Cristal: «I need a tool — something heavy, or something I can swing.» Con el ratón: «I swing the mouse by its cable. Medieval IT support.» | Se apaga todo menos un rack: «PZ-BOT: RUNNING ON BATTERY. 4 %. STILL BULLISH.» (sigue vivo para el cap. 5; no hay callejón por el orden) | Hoy |
 | 3.6 | Mapa marcado | `printout` + `leaky_pen` → `marked_map` | — (`itemCombos` con `ifFlag coords_known`) | `has_marked_map`, `chapter_3_complete` | Sin coordenadas: «Mark what? I don't know where X is yet.» | «X marks the spot. I've always wanted to say that. I've never had a spot.» | Hoy |
-| 3.7 (opc.) | Gafas 3D de repuesto | `glasses_3d` | `hs_raised_floor` | `found_glasses_3d` | Existe. | «3D glasses. Mine are prescription. These are... reversed? Red on the right. Monsters.» | Hoy |
-| 3.8 (opc.) | Chip quemado, pegatina del mono, secretos del floppy VIP | existentes | existentes | existentes | — | — | Hoy |
+| 3.7 (opc.) | Chip quemado, pegatina del mono, secretos del floppy VIP | existentes | existentes | existentes | — | — | Hoy |
 
 Puerta de la montaña: `outside.tr_mountain`, `mountain.tr_to_clinic` y `hs_winding_path` piden
 `marked_map` o `chapter_3_complete` (hoy: `printout`).
@@ -300,16 +332,16 @@ Puerta de la montaña: `outside.tr_mountain`, `mountain.tr_to_clinic` y `hs_wind
 **Sinopsis.** La clínica solo admite pacientes. Dex tiene que **hacerse admitir**: convencer a Nurse Gwei por
 el interfono con pruebas de sus «síntomas» y negando tenerlos. Dentro, el Dr. Satoshi solo autoriza el
 treatment room a quien se gradúe en la terapia de grupo, que en la piscina de liquidez manda **Chad**. Para
-ganarle en el **duelo de FUD** hay que aprender réplicas de los monos, de B.O.T. y de un libro, y traer del
-MemeLAB la única prueba que Chad no puede rebatir. 35–40 min.
+ganarle en el **duelo de FUD** hay que aprender réplicas de los monos y de B.O.T. (un libro dice dónde), y traer del
+MemeLAB la única prueba que Chad no puede rebatir. 35–40 min. Hitos: admitido, aceptado en la piscina,
+Pepe, Chad vencido.
 
 ```mermaid
 graph TD
   M["Mountain: mapa marcado"] --> CE["Clinic exterior: Nurse Gwei, solo pacientes"]
   CE --> KC["USE keycard: Adrian's card is revoked"]
-  CE --> TRASH["PICK papelera: obj clinic_note"]
+  CE --> TRASH["PICK papelera: obj clinic_note + una lata vacía"]
   CE --> BOX["Buzón de visitas: entregar pruebas"]
-  CAN["obj empty_can del cap. 2"] --> BOX
   TRASH --> BOX
   BOX --> EVID["flag intake_evidence"]
   EVID --> QUIZ["Cuestionario de Gwei: negarlo todo"]
@@ -324,8 +356,8 @@ graph TD
   GERALDDUCK --> ACCEPT
   ACCEPT --> APESL["TALK monos izq.: réplicas 1 y 2"]
   ACCEPT --> APESR["TALK monos der.: réplicas 3 y 4"]
-  POOL --> BOT["TALK B.O.T.: pedir The Liquidation, réplica 5"]
-  POOL --> BOOK["LOOK libro Art of the Rug: réplica 6"]
+  POOL --> BOT["TALK B.O.T.: pedir The Liquidation, réplicas 5 y 6"]
+  POOL --> BOOK["LOOK libro Art of the Rug: pista de las tres fuentes"]
   POOL --> DOOR["Puerta DEEP LIQUIDITY: MemeLAB"]
   GL["obj glasses_3d del cap. 3"] --> CLEAR["Dos gafas al revés se anulan: visión clara"]
   DOOR --> CLEAR
@@ -342,14 +374,14 @@ graph TD
 | # | Puzle | Objetos | Hotspots | Flags | Pista justa | Chiste | Motor |
 |---|---|---|---|---|---|---|---|
 | 4.1 | Keycard revocada | `keycard` | `clinic_exterior.hs_main_entrance` | — | — | Gwei: «Adrian's card has been revoked. Since the incident. We don't talk about the incident.» | Hoy |
-| 4.2 | Pruebas de admisión | `empty_can` (insomnio), `clinic_note` (pérdida: «Day 47: still believing»); se escanean y se devuelven | `hs_visitor_box` (combos), `hs_trash_can` | `intake_insomnia`, `intake_loss`, `intake_evidence` (lo pone el segundo combo si ya está el primero) | Gwei: «Patients must submit proof of symptoms. Insomnia. Loss. And denial — I'll test that one myself.» | La lata: «Proof of insomnia: one empty can of BULL RUN, 500 mg. Accepted.» | Hoy |
+| 4.2 | Pruebas de admisión | una lata (`empty_can` de la papelera o cualquiera del cap. 2: `energy_drink`, `rainwater_can`) para el insomnio y `clinic_note` («Day 47: still believing») para la pérdida; se escanean y se devuelven | `hs_visitor_box` (combos), `hs_trash_can` (PICK da la nota y, si Dex no lleva lata, una vacía) | `intake_insomnia`, `intake_loss`, `intake_evidence` (lo pone el segundo combo si ya está el primero) | Gwei: «Patients must submit proof of symptoms. Insomnia. Loss. And denial — I'll test that one myself.» | La lata: «Proof of insomnia: one empty can of BULL RUN, 500 mg. Accepted.» | Hoy |
 | 4.3 | Cuestionario de negación | `patient_wristband` | `hs_main_entrance` → árbol `gwei_intake` (opción final con `flag: intake_evidence`) | `admitted`, `clinic_unlocked` | Gwei avisa de que «denial» la evalúa ella. | Respuesta honesta («Maybe I have a problem») suspende: «Too self-aware. Come back worse.» La correcta: «I can stop whenever I want. I just don't want to.» — «Textbook. Welcome home.» | Hoy |
 | 4.4 | Satoshi pone la condición | — | `npc_dr_satoshi` | `satoshi_needs_chad`, `satoshi_pool_hint` | Satoshi: «Nobody enters the treatment room without graduating group therapy. Group meets downstairs. Chad runs it. Nobody beats Chad without listening to the others first.» | «And how does that make you feel? ...Write that down.» | Hoy |
 | 4.5 | Que los monos te acepten (dos soluciones) | `ape_costume` **o** `rubber_duck` | `hs_pool_group_left/right`, `hs_trash_pile`, `hs_rubber_duck` | `ape_costume_worn` **o** `duck_reunion` → `pool_accepted` | Monos: «Not one of us, old chap.» Gerald: «You need at least a rubber duck offering to approach.» (existe) | El pato junto a Gerald: «The prophecy... two ducks.» Los monos se apartan con reverencia. | Hoy |
-| 4.6 | Aprender réplicas | — | `hs_pool_group_left` (R1, R2), `hs_pool_group_right` (R3, R4), `hs_robot_bartender` (R5 al pedir «The Liquidation»), `hs_brown_book` (R6) | `fud_r1` … `fud_r6` | Cada fuente es un mini-duelo que Dex pierde y en el que oye la réplica buena. El diario (A2.9) apunta las réplicas aprendidas. | Ver tabla del duelo. | Hoy (árboles de diálogo con `setFlag`) |
+| 4.6 | Aprender réplicas | — | `hs_pool_group_left` (R1, R2), `hs_pool_group_right` (R3, R4), `hs_robot_bartender` (R5, R6 al pedir «The Liquidation»), `hs_brown_book` (pista) | `fud_r1` … `fud_r6` | Cada fuente es un mini-duelo que Dex pierde y en el que oye las dos réplicas buenas. El libro «The Art of the Rug», cap. 3: «Comebacks are learned at the shallow end, the deep end, and the bar.» El diario (A2.9) apunta las réplicas aprendidas. | Ver tabla del duelo. | Hoy (árboles de diálogo con `setFlag`) |
 | 4.7 | MemeLAB | `glasses_3d`, `pepememe` | `memelab.*` (combos existentes) | `memelab_clear_vision`, `found_pepememe` | Dex ya lleva gafas 3D: «My glasses are prescription. This room needs a second opinion.» | «Two wrong glasses make a right. First time in my life.» El Pepe: «SPECIMEN #001 — by P.Z. Do not expose to normies.» | Hoy |
-| 4.8 | **Duelo de FUD** con Chad | `pepememe` (no se gasta), `sobriety_chip` | `hs_chad` (nuevo, sobre el mono del flotador de diamante) → árbol `chad_fud` | `beat_chad`, `has_sobriety_chip` | Satoshi y B.O.T. («Chad has one weakness: he has never made anything.») | Ver abajo. Premio: «A sobriety token. Worth nothing. That's the point.» | Hoy (opciones con `flag`); ocultar réplicas no aprendidas: A2.6 |
-| 4.9 | Autorización | `sobriety_chip` | `npc_dr_satoshi` (opción con `flag: beat_chad`) | `treatment_room_unlocked`, `chapter_4_complete` | — | Satoshi: «You beat Chad? Nobody beats Chad. Chad doesn't even beat Chad.» | Hoy; el logro desde el onEnter del nodo requiere A1.9 (o ponerlo en el primer USE de la puerta del tratamiento) |
+| 4.8 | **Duelo de FUD** con Chad | `pepememe` (no se gasta), `sobriety_chip` | `hs_chad` (nuevo, sobre el mono del flotador de diamante) → árbol `chad_fud` | `beat_chad`, `has_sobriety_chip`, `chad_losses_1`, `chad_losses_2` | Satoshi y B.O.T. («Chad has one weakness: he has never made anything.») A la segunda derrota, Chad dice qué fuente falta («Even the posh apes in the shallow end have better comebacks, bro.»). | Ver abajo. Premio: «A sobriety token. Worth nothing. That's the point.» | Hoy, salvo ocultar las réplicas no aprendidas: **A2.6a** (imprescindible) |
+| 4.9 | Autorización | `sobriety_chip` | `npc_dr_satoshi` (opción con `flag: has_sobriety_chip`) | `treatment_room_unlocked`, `chapter_4_complete` | Chad: «Show the Doc. He collects these.» | Satoshi: «You beat Chad? Nobody beats Chad. Chad doesn't even beat Chad.» | Hoy la autorización; retirar la ficha y el logro desde el onEnter del nodo requieren A1.9 (mientras, el logro va en el primer USE de la puerta del tratamiento) |
 | 4.10 (lore) | El sobre de Adrian | `mystery_envelope` | `npc_dr_satoshi` (opción con `flag: found_envelope`) | `envelope_opened` | — | «The original referral. Signed by Adrian. The patient's name is under a coffee stain.» (el café de Penny) | Hoy |
 
 #### El duelo de FUD (puzle de diálogo tipo duelo de insultos)
@@ -365,14 +397,19 @@ gana, se ríe, y se puede repetir al momento (sin coste). Chad usa siempre **I3,
 | I3 | "You bought the top so hard, they named it after you." | "And you sold the bottom so often, they gave you a loyalty card." | monos der. |
 | I4 | "Nobody in this pool has ever heard of you." | "Then today they'll hear you lose." | monos der. |
 | I5 | "Your roadmap is a napkin with a frowny face on it." | "Still more detail than your exit plan." | B.O.T. |
-| I6 | "I've been liquidated by better people than you." | "I can tell. They left the receipts floating in the pool." | libro «The Art of the Rug» |
+| I6 | "I've been liquidated by better people than you." | "I can tell. They left the receipts floating in the pool." | B.O.T. |
 | I7 | "Name ONE thing you've built that anyone still wants." | *[Show the Rare Pepe]* "This." — Chad: "...Specimen #001? By P.Z.? Bro. BRO." | MemeLAB |
 
-Implementación hoy: un solo árbol `chad_fud`; cada ronda es un nodo con las 6 réplicas (cada una con su
-`flag: fud_rN`) más «Show him the Rare Pepe» (`flag: found_pepememe`) en la última; acierto → nodo
-siguiente; fallo → nodo `lose` con `end`. El nodo `win` pone `beat_chad` y da `sobriety_chip` en su onEnter
-(`setFlag` y `addItem` ya funcionan hoy). Con A2.6 las réplicas no aprendidas se ocultan en vez de salir con
-candado.
+Para ganar a Chad (I3, I1, I5) hacen falta R3, R1 y R5, que solo se aprenden visitando las tres fuentes; como
+cada fuente enseña un par, quien gana a Chad tiene las seis réplicas que PZ-BOT pedirá en el capítulo 5.
+
+Implementación: un solo árbol `chad_fud`; cada ronda es un nodo con **4 opciones** (la buena y 3 réplicas de
+otros pares, siempre las mismas en esa ronda; móvil en vertical), cada una con su `flag: fud_rN`, más «Show him
+the Rare Pepe» (`flag: found_pepememe`) en la última; acierto → nodo siguiente; fallo → nodo `lose` con `end`
+y `setFlag` del contador de derrotas. Réplicas ≤ 12 palabras. El nodo `win` pone `beat_chad` y da
+`sobriety_chip` en su onEnter (`setFlag` y `addItem` ya funcionan hoy). **Requiere A2.6a**: hoy las réplicas
+no aprendidas saldrían con candado y su texto, y el puzle desaparece.
+
 
 **Bonus Web3**: rama VIP de Satoshi (ver §7: salta una ronda del duelo, no el capítulo), lectura de stats en
 el ordenador de recepción con la caja de floppies (existe).
@@ -383,7 +420,8 @@ el ordenador de recepción con la caja de floppies (existe).
 respaldo («RESTORE FROM COLD STORAGE: INSERT BACKUP») y que el paciente esté sentado. Al restaurar, el
 monitor muestra el expediente: la wallet del jugador si está conectada; si no, la de Dex. PZ-BOT, desde el
 monitor, intenta convencer a Dex de volver a operar: **duelo final** con su propia voz. Al ganar, Dex apaga el
-bot. Suena un teléfono al otro lado del cristal: Anon es Adrian. Epílogo al amanecer. 20 min.
+bot. Suena un teléfono al otro lado del cristal: Anon es Adrian. Epílogo al amanecer. 20 min. Hitos:
+revelación, PZ-BOT apagado, Adrian, créditos.
 
 ```mermaid
 graph TD
@@ -407,7 +445,7 @@ graph TD
 | 5.1 | Respaldo | `floppy_disk` | `hs_monitor` | `backup_loaded` | LOOK monitor. | «BACKUP — DO NOT LOSE. I didn't. For once.» | Hoy |
 | 5.2 | Consentimiento | — | `hs_chair` | `patient_seated` | El monitor lo pide; el sillón tiene correas: «Comfy. Restraints optional. Hopefully.» | Las correas se cierran solas: «Optional, they said.» | Hoy (sin animación de sentarse; con A2.10 actor sentado) |
 | 5.3 | Revelación | — | `hs_monitor` | `monitor_revealed`, `patient_zero_revealed` | — | Con wallet: historial real (`monitorReveal`). Sin wallet: expediente de Dex con guiños (`02:14 BUY $GERALD`, `03:00 BUY THE DIP`). | Hoy (`monitorReveal`); el expediente ficticio cambia `buildPatientFileLines` (código, A3.7) |
-| 5.4 | Duelo final | — | `hs_monitor` → árbol `pzbot_final` | `pzbot_off` | Las réplicas son las del cap. 4 que Chad no usó; la última (`"I'm not you anymore."`) la desbloquea la propia revelación. | PZ-BOT: «YOU USED TO BE FUN.» — Dex: «I used to be you.» *apagado* | Hoy |
+| 5.4 | Duelo final | — | `hs_monitor` → árbol `pzbot_final` | `pzbot_off` | Las réplicas son las del cap. 4 que Chad no usó (R2, R4, R6: garantizadas, ver el duelo); la última (`"I'm not you anymore."`) la desbloquea la propia revelación. | PZ-BOT: «YOU USED TO BE FUN.» — Dex: «I used to be you.» *apagado* | Hoy |
 | 5.5 | Adrian | — | `hs_observation_window` (TALK) | `met_adrian` | El teléfono suena tras el cristal. | Adrian: «You took your time.» — Dex: «I was being patient. Apparently that's my thing now.» | Hoy (silueta como `conditionalOverlay` con `flag: met_adrian`) |
 | 5.6 | Nota y salida | `adrian_note` | `hs_adrian_note`, `hs_exit_door` | `found_adrian_note` | Existe. | Nota reescrita (abajo). | Hoy |
 | E.1 | Epílogo | `leaky_pen` | `epilogue_outside.hs_now_hiring_sign` | `signed_up`, `game_complete` | LOOK cartel: «Apply within. Bring your own pen.» | «Mt. Gox pen. Still leaking. Still useful. There's hope for all of us.» | Hoy |
@@ -430,10 +468,19 @@ says hi. — A."
    remate (13), «Not an NFT», «Decentralized/Decentralization X» (13), «Proof-of-X» (12), «X is the
    original Y». Una fórmula puede volver **una vez en todo el juego** si es un callback consciente.
 4. **El remate al final** y en ≤ 20 palabras. Un LOOK no pasa de 2 frases.
-5. **Cada personaje tiene su motor de humor** (§3): Penny = burocracia y cotilleo; Satoshi = jerga de
+5. **Sin muros de texto**: un nodo de diálogo ≤ 25 palabras; ≤ 3 `say` seguidos fuera de cinemáticas; el
+   lore largo va detrás de una opción «Tell me more» que nadie está obligado a elegir. Los nodos actuales de
+   Satoshi y B.O.T. (40–60 palabras) y los 4 `say` de `clinic_exterior.hs_posters` se recortan en A3.6.
+6. **La sátira cripto es el tono del juego; lo que se va es la fórmula.** Se quedan (y se buscan más como
+   estos) los chistes cripto de dentro, con personaje o con callback: el boli de Mt. Gox que aún gotea;
+   «BUY $GERALD»; Gerald nacido en el genesis block; la ficha de sobriedad «worth nothing, that's the point»;
+   los diagnósticos de la clínica («Chronic Airdrop Dependency», «Terminal FOMO»); B.O.T. ex-HFT; el
+   «Proof of Stake required» del escáner; los pacientes famosos de la hoja de visitas; DOORIS pidiendo tres factores a
+   un pato. Se va el remate genérico intercambiable («…like my portfolio») que valdría para cualquier objeto.
+7. **Cada personaje tiene su motor de humor** (§3): Penny = burocracia y cotilleo; Satoshi = jerga de
    terapia; B.O.T. = literalidad; DOORIS = seguridad paranoica y amable; Gwei = trámite hospitalario; Chad =
    autoayuda bro; PZ-BOT = Dex sin frenos; Anon = silencio.
-6. **Callbacks**: cada capítulo recupera al menos dos elementos de capítulos anteriores.
+8. **Callbacks**: cada capítulo recupera al menos dos elementos de capítulos anteriores.
 
 ### Gags recurrentes
 
@@ -508,7 +555,7 @@ paso como máximo por capítulo** y ver contenido extra; nunca saltarse un capí
 | Cap. | Condición | Qué da | Qué NO hace |
 |---|---|---|---|
 | 1 | AdrianZERO | Graffiti «ZERO WAS HERE» tras los arbustos (existe) | — |
-| 1–2 | AdrianZERO (rama VIP de Penny) | Penny revela la trampilla del felpudo: atajo al sótano que ahorra la veleta | No da la keycard ni la antena: el cap. 3 las pide igual, y desde el sótano se sube al lobby |
+| 1–2 | AdrianZERO (rama VIP de Penny) | Penny revela la trampilla del felpudo: atajo al sótano que ahorra la veleta y la pizza | La trampilla tiene el mismo lector y la misma cerradura que la escotilla: pide keycard y terminal_key. No da la antena (el cap. 3 la pide; desde el sótano se sube al lobby) |
 | 2 | AdrianPunks / AdrianZERO | Pósters del lobby (existen) | — |
 | 2 | ≥ 1000 $ZERO | Panel TraitLab del mining rig (existe) | — |
 | 2 | Golden Token (en juego) | Founder Mode con stats reales del Diamond (si hay wallet; si no, stats de ejemplo) | — |
@@ -519,21 +566,34 @@ paso como máximo por capítulo** y ver contenido extra; nunca saltarse un capí
 | 5 | ≥ cierta cantidad de $ZERO | Placa de fundador con tu wallet (`web3Visuals`, existe) | — |
 | Todos | Wallet | `mintAchievement` de logros y coleccionables: opcional, en segundo plano, nunca bloquea (A1.1) | — |
 
+**Cuándo se entera el jugador** (sin calzador):
+
+- Al cerrar cada capítulo, el logro visual aparece siempre; con wallet, el toast ofrece el badge on-chain
+  (`mintAchievement` en segundo plano). Sin wallet, una línea en el diario: «Badge available — connect a
+  wallet to keep it (optional).»
+- **Antes del capítulo 5**, un aviso no bloqueante: Satoshi al autorizar («The monitor reads whatever wallet
+  you bring. Bring yours, if you dare.») y Anon en su llamada. El jugador decide antes de entrar.
+- Los holders ven sus extras donde ocurren (póster, opción VIP con su etiqueta), nunca en un menú de ventas.
+
 Cambios respecto a hoy: (1) `STORY_PLAN.md` decía que el treatment room exige wallet y que el NFT del
-capítulo N es la puerta del N+1: se elimina; (2) la rama VIP de Satoshi deja de saltarse el capítulo; (3) la
-trampilla VIP se mantiene como atajo de un paso.
+capítulo N es la puerta del N+1: se elimina; (2) la rama VIP de Satoshi deja de saltarse el capítulo y se
+queda en «empezar el duelo en la última ronda»; (3) la trampilla VIP se mantiene como atajo de un paso y pide
+keycard y terminal_key.
+
 
 ---
 
 ## 8. Arte necesario frente a disponible
 
 El juego funciona sin nada de la columna «Arte pendiente». Rutas relativas a `assets/`.
+`ASSET_GENERATION_PLAN.md` (PixelLab/SpriteCook) queda en suspenso por la decisión D2: lo de la columna
+«Arte pendiente» alimenta el registro de A4.6 y solo se genera con el OK de Adrián.
 
 | Elemento | ¿Existe? | Cómo se hace sin coste | Arte pendiente (especificación) |
 |---|---|---|---|
 | Dex andando/reposo | Sí: `sprites/player/Idle-*`, `Walk-*`, `Left/Right` | — | — |
 | Dex de frente y de espaldas | Sí, sin usar: `Front-Left/Right`, `Back-Left/Right` | A4.1 | — |
-| Dex sentado en el sillón (cap. 5) | No | Ocultar al jugador (`hidePlayer` no; script que lo ocupa) y overlay del sillón con correas cerradas recortado del fondo con sharp | 32×60 px, 2 frames (sentado, sentado hablando), paleta del sprite del jugador, `treatment_room` |
+| Dex sentado en el sillón (cap. 5) | No | Sin pose: Dex se queda junto al sillón y un overlay de correas cerradas (recortado del fondo y retocado con sharp, `flag: patient_seated`) cuenta que está sentado; con A2.10 (opcodes de actor) se puede ocultar al jugador durante la escena | 32×60 px, 2 frames (sentado, sentado hablando), paleta del sprite del jugador, `treatment_room` |
 | Disfraz de mono | Sí: `Ape-*` | — | — |
 | Penny | Sí: `npcs/receptionist.png` + `_talk` | A4.2 | Cuerpo entero 25×103, 4 frames idle + 2 talk |
 | Dr. Satoshi | Sí: `npcs/dr_satoshi.png` + `_talk` | A4.2 | Cuerpo entero 25×103 |
@@ -543,7 +603,7 @@ El juego funciona sin nada de la columna «Arte pendiente». Rutas relativas a `
 | DOORIS | Hotspot `hs_keypad` | LED: overlay recortado del teclado con sharp + `flicker` | — |
 | Nurse Gwei | No | Solo voz por interfono; la cámara (`hs_security_camera`) parpadea con overlay + `flicker` | Silueta 37×37 tras el vidrio de la puerta |
 | PZ-BOT | Terminal pintada | Solo voz y texto | **Requiere motor (opcional)**: texto sobre una pantalla de la escena |
-| Iconos nuevos de inventario (64×64, `sprites/items/<id>.png`) | No | Por código (sharp): `note_half_a/b` = recortes de `code_note.png`; `vet_bill` = `receipt.png` teñido; `empty_can`/`rainwater_can` = `energy_drink.png` desaturado / teñido azul; `fake_alpha` = `receipt.png` + texto; `marked_map` = `printout.png` + X roja; `patient_wristband` = `keycard.png` teñido; `sobriety_chip` = `golden_token.png` en bronce; `fence_plank`, `pizza_slice`, `leaky_pen`, `extension_cord` = pixel art 64×64 dibujado en SVG por script y rasterizado con sharp | Versiones dibujadas a mano, 64×64, contorno negro de 1 px, paleta de los iconos actuales |
+| Iconos nuevos de inventario (64×64, `sprites/items/<id>.png`) | No | Por código (sharp): `note_half_a/b` = recortes de `code_note.png`; `vet_bill` = `receipt.png` teñido; `empty_can`/`rainwater_can` = `energy_drink.png` desaturado / teñido azul; `fake_alpha` = `receipt.png` + texto; `marked_map` = `printout.png` + X roja; `scrap_paper` = recorte de `printout.png`; `patient_wristband` = `keycard.png` teñido; `sobriety_chip` = `golden_token.png` en bronce; `fence_plank`, `pizza_slice`, `leaky_pen`, `extension_cord` = pixel art 64×64 dibujado en SVG por script y rasterizado con sharp | Versiones dibujadas a mano, 64×64, contorno negro de 1 px, paleta de los iconos actuales |
 | Polillas, polvo, LEDs | No | A4.3 (partículas por código) | — |
 | Nido cayendo | No | Tween del icono `note_half_b` o solo texto | — |
 | Pato chirriando, interfono, teléfono | No | A4.4 (síntesis con ffmpeg/sox) | — |
@@ -554,57 +614,86 @@ El juego funciona sin nada de la columna «Arte pendiente». Rutas relativas a `
 
 ## Checkpoints derivados
 
-Para que el orquestador los añada al estado. Todos usan `qa/walkthrough.json` (ruta crítica) y
-`qa/sequence-breaks.json` (atajos). Las voces nuevas se generan con la etiqueta `voices` (A0.3).
+Para que el orquestador los añada al estado. Formato: id · título · deps · zona. Todos actualizan
+`qa/walkthrough.json` (ruta crítica) y `qa/sequence-breaks.json` (atajos con `attempt` y `expect`/`rejects`,
+ver `qa/README.md`); las voces nuevas se generan con la etiqueta `voices` (A0.3); los objetos nuevos llevan
+icono en `assets/sprites/items/` (por sharp, §8) y entrada en `PreloadScene` (si no, error (f) del linter).
+Si una flag se renombra, migración en `src/systems/SaveMigration.ts`; si una flag vieja deja de tener sentido
+(p. ej. `has_printout` como llave de la montaña), la partida a medias se respeta: la condición nueva acepta
+también la vieja (`marked_map` **o** `chapter_3_complete`).
+
+**Motor y sistemas (afinan A2.6 y A2.9; van antes que A3.3)**
+- `A2.6a` Opciones de diálogo **ocultas** (no en gris) si su `flag`/objeto no se cumple, y condición negada
+  (`notFlag`). Lo necesitan DOORIS, el PIN del Ledger y los dos duelos de FUD · deps: A2.6 · zona: ui.
+- `A2.9a` Diario = móvil de Dex con «Call Anon»: escalera de 3 pistas por puzle elegida por flags (tabla
+  de pistas en un JSON por capítulo), hitos con tic · deps: A2.9 · zona: ui.
 
 **Capítulo 1 (A3.3)**
 - `A3.3a` Premisa coherente en los textos: narrativa de `outside` (onEnter y `tr_game_opening`) e
-  `introLines` de `ChapterManager` sin «el creador es Patient Zero» (A3.2 los convierte luego en cinemática).
-- `A3.3b` Voces nuevas en `scripts/voices/voices.json`: `dooris` (af_nicole), `anon` (am_onyx, también
-  «adrian»), `gwei` (bf_emma), `chad` (am_puck), `pzbot` (am_michael 1.25, regla antes de «b.o.t»), regla
-  «penny» → `recep`.
-- `A3.3c` PIN partido: lámpara (apagar/coger), tablón de la valla, nido de urraca, combo de mitades; iconos
-  por sharp.
-- `A3.3d` DOORIS: árbol `dooris_auth` (PIN + pregunta), factura de Gerald en el buzón, «voice match 87 %»,
-  primera llamada de Anon; felpudo con tablón → Ledger.
-- `A3.3e` QA: walkthrough del cap. 1; atajos `puerta-sin-pregunta` (PIN sin `knows_gerald`),
-  `puerta-sin-pin` (Gerald sin nota), `nota-con-lampara-encendida`; migración de partidas con
-  `door_unlocked`.
+  `introLines` de `ChapterManager` sin «el creador es Patient Zero»; mensaje de Adrian con la recompensa (A3.2
+  lo convierte luego en cinemática) · zona: contenido.
+- `A3.3b` Voces nuevas en `scripts/voices/voices.json`: `dooris` (af_nicole), `anon` (am_onyx; regla también
+  para «adrian»), `gwei` (bf_emma), `chad` (am_puck), `pzbot` (am_michael 1.25; regla antes de «b.o.t»),
+  regla «penny» → `recep`; renombrar la NPC a Penny · zona: contenido.
+- `A3.3c` PIN partido: lámpara (apagar y coger), tablón de la valla, nido de urraca, combo de mitades; iconos
+  `note_half_a/b`, `fence_plank` por sharp · zona: contenido.
+- `A3.3d` DOORIS: árbol `dooris_auth` (PIN + pregunta, opciones falsas con burla), buzón con factura de
+  Gerald y sobre en un solo OPEN, «voice match 87 %», primera llamada de Anon; felpudo pegado + tablón →
+  Ledger · zona: contenido.
+- `A3.3e` QA del cap. 1: walkthrough nuevo; atajos `puerta-sin-pregunta` (PIN sin `knows_gerald`),
+  `puerta-sin-pin` (Gerald sin `code_note`), `nota-con-lampara-encendida`, `ledger-sin-tablon` · zona: ci.
 
 **Capítulo 2 (A3.4)**
-- `A3.4a` Penny reescrita (árbol con nodo central A2.6, pista del giro, RRHH, Fernando); abrigo vigilado y
-  sobre en el escritorio → keycard + `leaky_pen`.
-- `A3.4b` Veleta oxidada con grasa de pizza; el capítulo acaba al bajar por la escotilla.
-- `A3.4c` Cajón de Terms & Conditions (árbol `tos_drawer`) → `terminal_key`.
-- `A3.4d` Cadena opcional de Fernando: Penny prohíbe la cafeína, rig, parabólica, Golden Token.
-- `A3.4e` QA: atajos `abrigo-con-penny-mirando`, `escotilla-sin-grasa`, `planta-con-cafeina`; walkthrough.
+- `A3.4a` Penny reescrita (árbol con nodo central, RRHH, Fernando, «refundable face»); abrigo vigilado con la
+  pista del sobre; sobre en el escritorio → keycard + `leaky_pen`; Penny devuelve el sobre · zona: contenido.
+- `A3.4b` Escotilla de tres cierres (lector, pestillo, cerradura) y veleta oxidada con grasa de pizza; el
+  capítulo acaba al bajar (no al mirar la luz) · zona: contenido.
+- `A3.4c` Cajón de Terms & Conditions (árbol `tos_drawer`) → `terminal_key`; texto del recibo sin
+  coordenadas · zona: contenido.
+- `A3.4d` Cadena opcional de Fernando (Penny prohíbe la cafeína, rig, parabólica, Golden Token); trampilla
+  VIP con keycard y terminal_key · zona: contenido.
+- `A3.4e` QA del cap. 2: atajos `abrigo-con-penny-mirando`, `escotilla-sin-grasa`,
+  `escotilla-sin-terminal-key`, `trampilla-vip-sin-keycard` (con wallet simulada si el runner lo permite; si
+  no, test unitario del script), `planta-con-cafeina`; actualizar `sotano-sin-keycard` · zona: ci.
 
 **Capítulo 3 (A3.5)**
-- `A3.5a` CRT: alargador del conducto, PIN del Ledger (árbol `ledger_pin`), disquete que vuelve al
-  inventario.
-- `A3.5b` PZ-BOT en la terminal: alfa falsa (recibo + boli) → `server_log`; despedida al apagar.
-- `A3.5c` Interruptor y mapa marcado (printout + boli con `coords_known`); salidas de la montaña con
-  `marked_map`.
-- `A3.5d` QA: atajos `crt-sin-corriente`, `mapa-sin-coordenadas`; actualizar `clinica-sin-printout`,
-  `recepcion-clinica-sin-capitulo-3` y las dos de la montaña al nuevo objeto.
+- `A3.5a` CRT: alargador + gafas bajo el suelo técnico, PIN del Ledger (árbol `ledger_pin`), disquete que
+  vuelve al inventario, `scrap_paper` en la mesa; iconos `extension_cord`, `scrap_paper` · zona: contenido.
+- `A3.5b` PZ-BOT en la terminal: bloqueo del interruptor, alfa falsa (papel + boli), `server_log`, SAI
+  («running on battery») · zona: contenido.
+- `A3.5c` Interruptor con `switch_unlocked` y cristal; mapa marcado (printout + boli con `coords_known`);
+  salidas de la montaña con `marked_map` o `chapter_3_complete` · zona: contenido.
+- `A3.5d` QA del cap. 3: atajos `crt-sin-corriente`, `interruptor-sin-pzbot`, `mapa-sin-coordenadas`;
+  actualizar `clinica-sin-printout`, `recepcion-clinica-sin-capitulo-3` y las dos de la montaña al nuevo
+  objeto · zona: ci.
 
 **Capítulo 4 (A3.6)**
-- `A3.6a` Nurse Gwei: interfono, pruebas en el buzón de visitas, cuestionario de negación → pulsera.
-- `A3.6b` Dr. Satoshi reescrito: condición de Chad, sobre de Adrian, autorización con `beat_chad`; rama VIP
-  cambiada a «última ronda».
-- `A3.6c` Piscina: aceptación por disfraz o pato; fuentes de réplicas `fud_r1..6`.
-- `A3.6d` MemeLAB: gafas al revés, Pepe «by P.Z.».
-- `A3.6e` Duelo de FUD: `hs_chad`, árbol `chad_fud`, overlay de Chad por sharp, `sobriety_chip`.
-- `A3.6f` QA: atajos `tratamiento-sin-chad`, `chad-sin-pepe`, `clinica-sin-pruebas`,
-  `piscina-sin-disfraz-ni-pato`; walkthrough hasta `chapter_4_complete`.
+- `A3.6a` Nurse Gwei: interfono, keycard revocada, pruebas en el buzón de visitas (lata local + nota),
+  cuestionario de negación → `patient_wristband`; la hoja de visitas queda como lore con la letra de Dex ·
+  zona: contenido.
+- `A3.6b` Dr. Satoshi reescrito (≤ 25 palabras por nodo): condición de Chad, sobre de Adrian, autorización con
+  la ficha, aviso de wallet antes del cap. 5; rama VIP → «última ronda» · zona: contenido.
+- `A3.6c` Piscina: aceptación por disfraz o pato; fuentes de réplicas por pares (`fud_r1..6`); libro como
+  pista · zona: contenido.
+- `A3.6d` MemeLAB: gafas al revés que se anulan, Pepe «by P.Z.» · zona: contenido.
+- `A3.6e` Duelo de FUD: `hs_chad`, árbol `chad_fud` (4 opciones por ronda), burla-pista a la segunda derrota,
+  overlay de Chad por sharp, `sobriety_chip` · deps: A2.6a · zona: contenido · visual.
+- `A3.6f` QA del cap. 4: atajos `clinica-sin-pruebas`, `piscina-sin-disfraz-ni-pato`, `chad-sin-pepe`,
+  `tratamiento-sin-chad`; walkthrough hasta `chapter_4_complete` · zona: ci.
 
 **Capítulo 5 y epílogo (A3.7)**
-- `A3.7a` Monitor: respaldo + sillón → `monitorReveal`; expediente ficticio de Dex sin wallet.
-- `A3.7b` Duelo final con PZ-BOT (árbol `pzbot_final`).
-- `A3.7c` Adrian: teléfono tras el cristal, silueta por overlay, nota reescrita.
-- `A3.7d` Epílogo: firma del NOW HIRING con el boli; créditos.
-- `A3.7e` QA: atajos `monitor-sin-disquete`, `epilogo-sin-revelacion`; walkthrough completo.
+- `A3.7a` Monitor: respaldo + sillón → `monitorReveal`; expediente ficticio de Dex sin wallet en
+  `buildPatientFileLines` · zona: contenido.
+- `A3.7b` Duelo final con PZ-BOT (árbol `pzbot_final`, I2/I4/I6 + «I'm not you anymore») · deps: A2.6a ·
+  zona: contenido.
+- `A3.7c` Adrian: teléfono tras el cristal, silueta por overlay (sharp desde `Idle-1`), nota reescrita y
+  posdata por perfil on-chain · zona: contenido · visual.
+- `A3.7d` Epílogo: firma del NOW HIRING con el boli; créditos; escena post-créditos `lobby_epilogue`
+  (opcional) · zona: contenido.
+- `A3.7e` QA del cap. 5: atajos `monitor-sin-disquete`, `monitor-sin-sentarse`, `epilogo-sin-revelacion`;
+  walkthrough completo hasta créditos · zona: ci.
 
-**Motor (fuera de A3.3–A3.7)**
-- `A4.2a` Requiere motor: `NPCData.sprite` + `tint` + `flipX` para reutilizar sprites como NPC.
-- `A4.3a` Requiere motor: tinte por escena para `outside_night` y `mountain_dawn`.
+**Motor opcional (no bloquea nada de lo anterior)**
+- `A4.2a` Requiere motor: `NPCData.sprite` + `tint` + `flipX` para reutilizar sprites como NPC (Chad y la
+  silueta de Adrian como NPC con hablar animado en vez de overlay) · deps: A4.2 · zona: motor.
+- `A4.3a` Requiere motor: tinte por escena (`outside_night`, `mountain_dawn`) · deps: A4.3 · zona: motor.
