@@ -28,7 +28,7 @@ hasta el hotspot, combos, gates y diálogos). Nunca pone flags ni da objetos.
 | `callAnon()` | A2.9: llama a Anon como el jugador (abre el diario si hace falta, pestaña Call Anon, botón de llamar, espera a que conteste y lo vuelve a cerrar si lo abrió ella); la llamada queda en `state().journal.anon` |
 | `previewCostume(costume)` | A4.1: enseña el juego de sprites del disfraz de mono (`'ape'`) o el normal (`'player'`) en la escena actual, para ver sus animaciones; `null` vuelve al de la partida. Solo los sprites: no da el disfraz ni toca inventario ni flags, y se pierde al cambiar de escena. Ver § Animación del protagonista |
 | `isWalkable(x, y)` | A2.1: si el punto (en %) se pisa en la escena actual (`walkableAreas` menos `blockedAreas`); síncrona |
-| `state()` | Escena, inventario, flags, visitadas, hotspots visibles, elecciones, avisos, log (`logTotal`: líneas apuntadas desde que cargó) `actions` (verbos que llegaron a ejecutarse) y `resizeListeners` (A1.10: listeners de `resize` del ScaleManager) y `path` (A2.1: última ruta calculada al andar: origen, puntos de paso y destino), `facing` (A2.2: `left`/`right`/`front`/`back`) y `walkTarget` (A2.2: último acercamiento a un hotspot/NPC: `target`, `verb`, `walkTo` —null si no anduvo— y `face`), y (A2.4) `verb` (verbo del panel), `highlightedHotspots` (resaltados con Tab), `verbKeyHints` (verbos con su tecla pintada en el panel) e `inputListeners` (listeners de teclado y del lienzo), (A2.10) `cinematic` (ver § Cinemáticas) y (A2.7) `prefetch` (precarga de las escenas vecinas: `scene`, `neighbors`, `done`, `pending`, `inFlight`, `failed`, `disabled`) y `lastTransition` (último cambio de escena: `from`, `to`, `ms`, `loadMs`, `at`, `mode` `full`/`indicator`/`instant`, `loadingScreen`, `fadeMs`) y (A2.9) `journal` (ver § Diario) y (A2.8) `pixel` (ver § Densidad de píxel) y (A4.1) `anim` (ver § Animación del protagonista) y (A2.5) `lastFailResponse` (última respuesta de fallo: `{ kind, item, target, verb, text, bag }`, ver § Respuestas de fallo) |
+| `state()` | Escena, inventario, flags, visitadas, hotspots visibles, elecciones, avisos, log (`logTotal`: líneas apuntadas desde que cargó) `actions` (verbos que llegaron a ejecutarse) y `resizeListeners` (A1.10: listeners de `resize` del ScaleManager) y `path` (A2.1: última ruta calculada al andar: origen, puntos de paso y destino), `facing` (A2.2: `left`/`right`/`front`/`back`) y `walkTarget` (A2.2: último acercamiento a un hotspot/NPC: `target`, `verb`, `walkTo` —null si no anduvo— y `face`), y (A2.4) `verb` (verbo del panel), `highlightedHotspots` (resaltados con Tab), `verbKeyHints` (verbos con su tecla pintada en el panel) e `inputListeners` (listeners de teclado y del lienzo), (A2.10) `cinematic` (ver § Cinemáticas) y (A2.7) `prefetch` (precarga de las escenas vecinas: `scene`, `neighbors`, `done`, `pending`, `inFlight`, `failed`, `disabled`) y `lastTransition` (último cambio de escena: `from`, `to`, `ms`, `loadMs`, `at`, `mode` `full`/`indicator`/`instant`, `loadingScreen`, `fadeMs`) y (A2.9) `journal` (ver § Diario) y (A2.8) `pixel` (ver § Densidad de píxel) y (A4.1) `anim` (ver § Animación del protagonista), (A4.2) `npcLife` (ver § Vida en las NPC) y (A2.5) `lastFailResponse` (última respuesta de fallo: `{ kind, item, target, verb, text, bag }`, ver § Respuestas de fallo) |
 
 Todas (salvo `state()` e `isWalkable()`) esperan a que el juego quede quieto y devuelven `state()`. Los errores empiezan por `[qa:blocked]`
 (el juego no deja hacerlo) o `[qa:error]` (id inexistente, tiempo agotado).
@@ -71,7 +71,9 @@ ya es de `p1_door` y no de `p1_combine`. A2.8 añade `expect.pixel`
 lo usa en outside, lobby y clinic_interior. A4.1 añade `expect.anim` (`dir` left|right|up|down del último tramo, `talking`,
 `moving`, `gesture`, `texture` como expresión regular sin mayúsculas, `costume` y `rest`: sin tween y con la escala base de
 A2.8); la ruta crítica anda en vertical en el lobby tras coger el abrigo (abajo: `dir` `down`, de frente; arriba: `up`, de
-espaldas). Cada paso admite `expect` con `scene`, `has`, `lacks`, `flags`, `unsetFlags`, `visited`,
+espaldas). A4.2 añade `expect.npc` (un objeto o una lista, por `id`: `mirrored`, `facing`, `talking`, `engaged`, `mouthOpen`,
+`rest`, `minBlinks`, `minTurns`, `minMouthMoves` y `lastTalk` `{ facedPlayer, faced, voice, minLines, minMouthMoves }`); la ruta
+crítica lo usa al hablar con Penny (habla mirando a Dex y mueve la boca en sus frases) y en el paso siguiente (reposo). Cada paso admite `expect` con `scene`, `has`, `lacks`, `flags`, `unsetFlags`, `visited`,
 `achievements`, `lastChoices`, `facing` (A2.2: hacia dónde mira el personaje al acabar el paso) y `noListenerGrowth`, y `rejects`: expresión regular (sin distinguir mayúsculas) que tiene que salir en los textos
 mostrados durante ese paso, p. ej. la frase con la que el juego rechaza la acción. Las rutas llevan un `goal` con
 el mismo formato que `expect`.
@@ -553,6 +555,37 @@ y si la escena está libre. Sin arte nuevo: los PNG de `assets/sprites/player`.
 - **QA**: `state().anim` = `{ texture, moving, dir, vertical, talking, gesture, idleTick, idleTicks, costume, preview,
   angle, liftPx, scale, baseScale, rest }`; `expect.anim` (ver § Rutas); `__qa.previewCostume('ape' | 'player' | null)`.
   Demo: `scripts/demo-a4-1-player-anim.mjs`.
+
+# Vida en las NPC (A4.2)
+
+Lógica pura en `src/systems/NpcLife.ts` (`tests/npc-life.test.mjs`, en `npm run test:engine`); `NPC.ts` solo aplica lo que
+decide cada frame (`GameScene.updateNpcLife` → `NPC.updateLife`), sin tweens ni temporizadores propios: al cerrar la escena no
+queda nada vivo y no se añade ningún listener. Sin arte nuevo: `receptionist(_talk)` y `dr_satoshi(_talk)` (PreloadScene ya
+carga también `dr_satoshi_talk`).
+
+- **Respirar**: 1 píxel de arte arriba durante el 45 % de un ciclo de 3,6 s, a saltos enteros y con un desfase por id (Penny y
+  el Dr. Satoshi no respiran a la vez). Se mueve el cuerpo dentro del Container, que lleva la escala entera de A2.8: el
+  Container no se mueve y la cabeza del texto (`GameScene.speakerHead`) no salta con la respiración.
+- **Parpadear**: el primero a los 1,5-4 s y luego cada 3-7 s (semilla fija con `?qa=1`). Con una textura `<id>_blink` se usa
+  esa; si no (hoy ninguna: Penny y el doctor llevan gafas), el cuerpo se aplasta exactamente 1 píxel de arte durante 110 ms
+  (escala Y = (alto − 1) / alto con los pies fijos: el alto en pantalla sigue siendo entero). La escala del Container no se toca.
+- **Girarse hacia el jugador**: al pulsarla para hablar, dar o usar algo (desde que Dex echa a andar), durante el diálogo o
+  la respuesta y siempre que tiene su texto en pantalla, mira hacia el lado en el que está Dex (`left` = sprite espejado). Se
+  suelta 500 ms después de que la escena quede libre y vuelve a su orientación por defecto: `npcs[].facing` de scene.json
+  (`left`|`right`; por defecto `right`, como están dibujados). Un `actorFace` de cinemática manda hasta que acaba la cinemática.
+- **Boca con la voz**: `<id>_talk` solo mientras la NPC tiene su texto en pantalla (antes: todo el diálogo, cada 200 ms, también
+  mientras Dex elegía). Con el clip de esa frase sonando (`VoiceSystem.clipInfo()`, que ahora dice de qué texto es), sílabas
+  pseudoaleatorias de 80-220 ms con pausas cerradas de 220-380 ms; si Web Audio deja medir (`VoiceSystem.level()`: un
+  `AnalyserNode` colgado del nodo de volumen del sonido de Phaser), solo abre con señal y cierra en los silencios del clip; si el
+  analizador no oye nada en 350 ms (contexto suspendido, audio HTML5) se queda el patrón. Clip descargándose: cerrada (hasta
+  600 ms); clip terminado con el texto aún abierto: cerrada. Sin clip (frase sin voz o sonido apagado): alterna cada 120-200 ms
+  lo que se tardaría en decirlo (55 ms por carácter, 0,9-6 s) y se cierra. `actorAnim talk` de una cinemática fuerza hablar
+  (con las mismas reglas) hasta `actorAnim idle` o el final de la cinemática; con una pose fija (`actorAnim <textura>`) la boca no cambia la textura.
+- **QA**: `state().npcLife` = `[{ id, mirrored, facing, defaultFacing, engaged, talking, mouthOpen, breathPx, blinking,
+  blinkCount, turns, mouthMoves, talkMs, lastTalk, rest, faceLocked }]`; `lastTalk` (última conversación) = `{ faced,
+  facedPlayer, lines, ms, mouthMoves, voice: clip|text, level }`. `expect.npc` (ver § Rutas). Demo:
+  `scripts/demo-a4-2-npc-life.mjs` (con el sonido activado: Penny en el lobby, reposo, el Dr. Satoshi girándose a los dos lados
+  en clinic_interior, porque en el lobby Penny está a la izquierda de toda la zona que se pisa, y una captura en 390x844).
 
 # Respuestas de fallo (A2.5)
 

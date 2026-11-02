@@ -22,6 +22,7 @@ import { Verb, type GameState } from '@/types/game.types';
 import type { LastTransition } from '@/scenes/PreloadScene';
 import type { ScenePrefetcher } from '@/systems/ScenePrefetcher';
 import type { PlayerAnimQa } from '@/objects/Player';
+import type { NpcLifeQa } from '@/objects/NPC';
 import type { FailResponse } from '@/systems/FailResponses';
 import { failResponses } from '@/systems/FailResponsesData';
 
@@ -136,6 +137,12 @@ export interface QaState {
    * aún no ha habido ninguna.
    */
   lastFailResponse: FailResponse | null;
+  /**
+   * A4.2: vida de cada NPC de la escena (src/systems/NpcLife.ts): `{ id, mirrored, facing, defaultFacing, engaged,
+   * talking, mouthOpen, breathPx, blinking, blinkCount, turns, mouthMoves, talkMs, lastTalk, rest, faceLocked }`;
+   * `lastTalk` = última conversación `{ faced, facedPlayer, lines, ms, mouthMoves, voice, level }`. Ver § Vida en las NPC.
+   */
+  npcLife: NpcLifeQa[];
 }
 
 /** A2.8: ver QaState.pixel */
@@ -432,6 +439,7 @@ export function installQa(game: Phaser.Game): void {
       pixel: scene ? scene.qaPixel() : null,
       anim: scene ? scene.qaAnim() : null,
       lastFailResponse: failResponses.last ? { ...failResponses.last } : null,
+      npcLife: scene ? scene.qaNpcLife() : [],
     };
   };
 

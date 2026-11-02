@@ -149,6 +149,11 @@ export interface NPCData {
   walkTo?: { x: number; y: number };
   /** A2.2: orientación del jugador al llegar; por defecto, de perfil hacia la NPC */
   face?: 'left' | 'right' | 'front' | 'back';
+  /**
+   * A4.2: orientación por defecto de la NPC (`left` = sprite espejado). Por defecto `right`, como están dibujados. Se
+   * gira hacia el jugador al hablar y vuelve a esta al acabar.
+   */
+  facing?: 'left' | 'right';
 }
 
 export interface NPCItemDialogue {

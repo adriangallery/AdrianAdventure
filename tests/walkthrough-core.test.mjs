@@ -6,7 +6,7 @@ import { readFileSync } from 'node:fs';
 import {
   attemptIndex, check, checkAttemptRan, checkCinematic, checkFailResponse, checkHighlighted, checkJournal, checkLastChoices, checkListenerGrowth, checkRejects, checkWalkTarget, classify,
   describe, kindOf, newLogLines, routeDefects, runScriptDefects, selftestDefects, selftestMismatch, tapsScene,
-  checkPixel, notePixel, checkAnim,
+  checkPixel, notePixel, checkAnim, checkNpc,
 } from '../scripts/lib/walkthrough-core.mjs';
 
 const readJson = (p) => JSON.parse(readFileSync(new URL(`../${p}`, import.meta.url), 'utf8'));
@@ -492,6 +492,45 @@ test('A4.1: la ruta crítica anda en vertical en el lobby (abajo de frente, arri
   const i = route.steps.indexOf(withAnim[0]);
   assert.equal(route.steps[i - 1].target, 'hs_coat');
   assert.equal(route.steps[i + 2].npc, 'npc_receptionist');
+});
+
+const npcL = (extra = {}) => ({
+  id: 'npc_receptionist', mirrored: false, facing: 'right', defaultFacing: 'right', engaged: false, talking: false, mouthOpen: false,
+  breathPx: 1, blinking: false, blinkCount: 2, turns: 1, mouthMoves: 9, talkMs: 2400, rest: true, faceLocked: false,
+  lastTalk: { faced: 'right', facedPlayer: true, lines: 3, ms: 2400, mouthMoves: 9, voice: 'clip', level: false }, ...extra,
+});
+
+test('A4.2: expect.npc comprueba giro, boca, reposo, parpadeos y la última conversación', () => {
+  const s = st({ npcLife: [npcL()] });
+  assert.deepEqual(checkNpc({ id: 'npc_receptionist', facing: 'right', mirrored: false, rest: true, talking: false, minBlinks: 2, minTurns: 1, minMouthMoves: 9,
+    lastTalk: { facedPlayer: true, faced: 'right', voice: 'clip', minLines: 3, minMouthMoves: 9 } }, s), []);
+  assert.match(checkNpc({ id: 'npc_receptionist', facing: 'left' }, s)[0], /mira «right», se esperaba «left»/);
+  assert.match(checkNpc({ id: 'npc_receptionist', talking: true }, s)[0], /talking = false, se esperaba true/);
+  assert.match(checkNpc({ id: 'npc_receptionist', minBlinks: 3 }, s)[0], /blinkCount = 2, se esperaban al menos 3/);
+  assert.match(checkNpc({ id: 'npc_receptionist', lastTalk: { facedPlayer: false } }, s)[0], /facedPlayer = true/);
+  assert.match(checkNpc({ id: 'npc_receptionist', lastTalk: { minLines: 4 } }, s)[0], /dijo 3 línea/);
+  assert.match(checkNpc({ id: 'npc_receptionist', lastTalk: { minMouthMoves: 10 } }, s)[0], /abrió la boca 9/);
+  assert.match(checkNpc({ id: 'npc_receptionist', lastTalk: { faced: 'right' } }, st({ npcLife: [npcL({ lastTalk: null })] }))[0], /no ha hablado/);
+  assert.match(checkNpc({ id: 'npc_x' }, s)[0], /«npc_x»: no está en la escena \(npc_receptionist\)/);
+  assert.match(checkNpc({ id: 'npc_receptionist' }, st())[0], /anterior a A4\.2/);
+  // Lista de NPC y por check()
+  assert.equal(checkNpc([{ id: 'npc_receptionist', rest: false }, { id: 'npc_dr_satoshi' }], s).length, 2);
+  assert.equal(check({ npc: { id: 'npc_receptionist', engaged: true } }, s).length, 1);
+  assert.deepEqual(check({ scene: 'outside' }, s), [], 'sin expect.npc no se mira');
+});
+
+test('A4.2: la ruta crítica comprueba que Penny habla mirando a Dex y vuelve al reposo después', () => {
+  const route = readJson('qa/walkthrough.json').routes.find((r) => r.id === 'ruta-critica');
+  const withNpc = route.steps.filter((s) => s.expect?.npc);
+  assert.deepEqual(withNpc.map((s) => [s.do, s.npc ?? s.target, s.expect.npc.id]), [
+    ['talk', 'npc_receptionist', 'npc_receptionist'],
+    ['act', 'hs_poster', 'npc_receptionist'],
+  ]);
+  assert.equal(withNpc[0].expect.npc.lastTalk.facedPlayer, true);
+  assert.ok(withNpc[0].expect.npc.lastTalk.minMouthMoves >= 1);
+  assert.equal(withNpc[1].expect.npc.rest, true);
+  // La comprobación de reposo va justo después de la charla
+  assert.equal(route.steps.indexOf(withNpc[1]), route.steps.indexOf(withNpc[0]) + 1);
 });
 
 test('A2.5: expect.failResponse contra state().lastFailResponse', () => {

@@ -11,7 +11,7 @@ import type { MusicManager } from '@/systems/MusicManager';
 import { CinematicOverlay } from '@/ui/CinematicOverlay';
 import { Web3VisualSystem } from '@/systems/Web3VisualSystem';
 import { WEB3_ENABLED } from '@/config/platform';
-import { NPC } from '@/objects/NPC';
+import { NPC, type NpcLifeQa } from '@/objects/NPC';
 import type { SceneData, HotspotData } from '@/types/scene.types';
 import { type GameState, type InventoryItem, Verb, createInitialState } from '@/types/game.types';
 import { TWP, FONT, LAYOUT } from '@/config/theme';
@@ -35,6 +35,8 @@ import { addNote, callAnon } from '@/systems/Journal';
 import { JOURNAL_CHAPTERS, journalChapter, journalProgress, journalWorld } from '@/systems/JournalData';
 import { spriteScale, worldToArt, isIntegerScale } from '@/systems/PixelScale';
 import { wantsGesture } from '@/systems/PlayerAnim';
+import { defaultFacing, lifeSeed, type VoiceState } from '@/systems/NpcLife';
+import type { VoiceSystem } from '@/systems/VoiceSystem';
 import { failResponses } from '@/systems/FailResponsesData';
 
 /** A2.4 (QA): cómo pulsa la API de QA: botón derecho o clic de ratón (cuenta para el doble clic). */
@@ -62,6 +64,11 @@ export class GameScene extends Phaser.Scene {
   private transactionToast!: TransactionToast;
   private web3VisualSystem?: Web3VisualSystem;
   private npcs: NPC[] = [];
+  /**
+   * A4.2: hora (la `time` de update, reloj real) del último frame de vida de las NPC. La boca sigue a un clip de voz que
+   * suena en tiempo real: con el `delta` suavizado de Phaser, en un frame lento iría por detrás del audio.
+   */
+  private lifeClock = 0;
   private gameState!: GameState;
   private bgFill!: Phaser.GameObjects.Image;
   private bg!: Phaser.GameObjects.Image;
@@ -312,12 +319,14 @@ export class GameScene extends Phaser.Scene {
 
     // NPCs
     this.npcs = [];
+    this.lifeClock = 0;
     // V6: estado de las pistas por inactividad (por escena)
     this.touchedHotspots = new Set<string>();
     this.progressSig = '';
     this.lastProgressAt = Date.now();
     this.lastHintAt = 0;
     if (sceneData.npcs) {
+      const qaMode = new URLSearchParams(window.location.search).get('qa') === '1';
       for (const nd of sceneData.npcs) {
         const npcScreen = this.coordSystem.pctToScreen(nd.position.x, nd.position.y);
         const npc = new NPC(this, npcScreen.x, npcScreen.y, nd.id, nd.name, nd.dialogueTreeId, nd.color ? parseInt(nd.color, 16) : undefined);
@@ -325,7 +334,8 @@ export class GameScene extends Phaser.Scene {
         npc.artScale = nd.artScale ?? 1;
         npc.pctPosition = { x: nd.position.x, y: nd.position.y }; // store for resize repositioning
         npc.setScale(this.npcPixelScale(npc));
-        npc.startIdle();
+        // A4.2: respira, parpadea, se gira hacia el jugador y mueve la boca con la voz (semilla fija con ?qa=1)
+        npc.startLife(lifeSeed(nd.id, qaMode, Math.random()), defaultFacing(nd.facing));
         this.npcs.push(npc);
       }
     }
@@ -454,6 +464,9 @@ export class GameScene extends Phaser.Scene {
   update(time: number, delta: number): void {
     this.player.setAnimContext(this.playerAnimContext());
     this.player.update(time, delta);
+    const lifeDt = this.lifeClock ? Math.min(250, Math.max(0, time - this.lifeClock)) : delta;
+    this.lifeClock = time;
+    this.updateNpcLife(lifeDt);
 
     // Refresh conditional overlays when flags change (A1.4: un flicker en marcha manda sobre la flag)
     for (const co of this.conditionalOverlays) {
@@ -702,6 +715,8 @@ export class GameScene extends Phaser.Scene {
     const plan: Approach = verb === Verb.LOOK
       ? { walkTo: null, face: lookFacing(target, this.playerPct(), this.facingOpts()), aim: null }
       : approachTalk(target, this.playerPct(), this.reachPct, this.facingOpts());
+    // A4.2: va a hablarle o a darle/usar algo con ella: se gira hacia el jugador mientras se acerca y dura la charla
+    if (verb !== Verb.LOOK) npc.engage();
     // GIVE/USE item on NPC — show fun response instead of dialogue
     if (selectedItem && (verb === Verb.USE || verb === Verb.GIVE)) {
       scummUI?.clearSelectedItem?.();
@@ -802,6 +817,45 @@ export class GameScene extends Phaser.Scene {
       && !this.registry.get('dialogueActive') && !this.registry.get('dialogueShowing')
       && !this.registry.get('cinematicMode') && !this.registry.get('journalOpen');
     return { talking, idleFree };
+  }
+
+  /**
+   * A4.2: un frame de vida de cada NPC (NpcLife): quién tiene su texto en pantalla (A2.3: speaker = su nombre o su id),
+   * el clip de voz de esa frase (VoiceSystem: sonando, descargándose, ya sonó o sin voz; y el nivel de señal si hay
+   * analizador), dónde está el jugador (para girarse) y si la conversación sigue en marcha.
+   */
+  private updateNpcLife(delta: number): void {
+    if (!this.npcs.length) return;
+    const ui = this.scene.isActive('UIScene') ? (this.scene.get('UIScene') as UIScene) : null;
+    const speech = ui?.getSpeech() ?? null;
+    const voice = this.registry.get('voiceSystem') as VoiceSystem | undefined;
+    const clip = voice?.clipInfo();
+    const busy = !!this.pending || !!this.registry.get('dialogueActive') || !!this.registry.get('dialogueShowing')
+      || !!this.scriptEngine?.isRunning();
+    const cinematic = !!this.registry.get('cinematicMode');
+    const p = this.player;
+    const playerX = p?.active && p.visible ? p.x : null;
+    for (const npc of this.npcs) {
+      if (!npc.active) continue;
+      const who = speech?.kind === 'npc' ? (speech.speaker ?? '').trim().toLowerCase() : '';
+      const line = speech && who !== '' && (who === npc.npcId.toLowerCase() || who === npc.npcName.toLowerCase()) ? speech.text : null;
+      const talking = line !== null;
+      let state: VoiceState = 'none';
+      let level: number | null = null;
+      if (line !== null && clip && clip.text === line) {
+        if (clip.playing) {
+          state = 'playing';
+          level = voice?.level() ?? null;
+        } else if (clip.loading) state = 'loading';
+        else if (clip.durationMs !== null) state = 'done';
+      }
+      npc.updateLife(delta, { playerX, talking, line: line ?? '', voice: state, level, busy, cinematic });
+    }
+  }
+
+  /** A4.2 (QA): vida de cada NPC de la escena (respiración, parpadeos, boca, giro, última conversación) */
+  qaNpcLife(): NpcLifeQa[] {
+    return this.npcs.filter((n) => n.active).map((n) => n.getLifeState());
   }
 
   /**

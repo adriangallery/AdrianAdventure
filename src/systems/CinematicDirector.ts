@@ -668,7 +668,8 @@ export class CinematicDirector {
     const dir = op.dir ?? op.face;
     if (!a || !isActorFacing(dir)) return;
     if (a.kind === 'player') a.player.face(dir);
-    else if (dir === 'left' || dir === 'right') a.npc.setMirrored(dir === 'left');
+    // A4.2: la cara que fija la cinemática manda sobre el giro hacia el jugador hasta que acabe
+    else if (dir === 'left' || dir === 'right') a.npc.faceFromCinematic(dir);
   }
 
   /** { op: "actorAnim", actor: "npc_receptionist", anim: "talk"|"idle"|"walk"|<clave de textura> } */

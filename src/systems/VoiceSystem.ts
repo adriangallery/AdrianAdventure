@@ -31,6 +31,15 @@ export class VoiceSystem {
    * ya está cargado, y si se está descargando o sonando.
    */
   private clip: { key: string | null; durationMs: number | null; loading: boolean } = { key: null, durationMs: null, loading: false };
+  /** A4.2: texto de la última frase pedida con `play` (la boca de la NPC solo sigue al clip si es el de su frase) */
+  private clipText: string | null = null;
+  /**
+   * A4.2: analizador de nivel sobre el clip que suena (Web Audio), para abrir la boca de la NPC solo con señal. null si
+   * el juego va con audio HTML5 o sin contexto; `levelBuf` se reutiliza (sin basura por frame).
+   */
+  private analyser: AnalyserNode | null = null;
+  private levelBuf: Float32Array<ArrayBuffer> | null = null;
+  private analysed: Phaser.Sound.BaseSound | null = null;
 
   /** Text→voiceKey lookup. */
   private textMap = new Map<string, string>();
@@ -53,6 +62,7 @@ export class VoiceSystem {
    */
   play(text: string, explicitKey?: string): void {
     this.clip = { key: null, durationMs: null, loading: false };
+    this.clipText = text;
     if (!this.enabled) return;
     this.stop();
     if (this.soundOff()) return;
@@ -143,6 +153,9 @@ export class VoiceSystem {
 
   destroy(): void {
     this.stop();
+    this.analysed = null;
+    try { this.analyser?.disconnect(); } catch { /* ya desconectado */ }
+    this.analyser = null;
     this.textMap.clear();
     this.loading.clear();
   }
@@ -151,12 +164,49 @@ export class VoiceSystem {
    * A2.10: clip de la última frase de `play`: `durationMs` (null si no tiene voz o aún no ha cargado), `loading` (se
    * está descargando) y `playing` (sonando ahora).
    */
-  clipInfo(): { durationMs: number | null; loading: boolean; playing: boolean } {
+  clipInfo(): { durationMs: number | null; loading: boolean; playing: boolean; text: string | null } {
     return {
       durationMs: this.clip.durationMs,
       loading: this.clip.loading,
       playing: !!this.currentSound && this.currentSound.isPlaying,
+      text: this.clipText,
     };
+  }
+
+  /**
+   * A4.2: nivel RMS (0-1) del clip que suena ahora, o null si no se puede medir (nada sonando, audio HTML5, contexto
+   * suspendido). El analizador cuelga del nodo de volumen del sonido de Phaser (una rama más: lo que se oye no cambia)
+   * y Phaser lo desconecta al destruir el sonido.
+   */
+  level(): number | null {
+    const sound = this.currentSound;
+    if (!sound || !sound.isPlaying) return null;
+    const an = this.analyserFor(sound);
+    if (!an || !this.levelBuf) return null;
+    an.getFloatTimeDomainData(this.levelBuf);
+    let sum = 0;
+    for (let i = 0; i < this.levelBuf.length; i++) sum += this.levelBuf[i] * this.levelBuf[i];
+    return Math.sqrt(sum / this.levelBuf.length);
+  }
+
+  private analyserFor(sound: Phaser.Sound.BaseSound): AnalyserNode | null {
+    try {
+      const ctx = (this.scene.sound as unknown as { context?: AudioContext }).context;
+      const node = (sound as unknown as { volumeNode?: AudioNode }).volumeNode;
+      if (!ctx || !node || ctx.state !== 'running') return null;
+      if (!this.analyser) {
+        this.analyser = ctx.createAnalyser();
+        this.analyser.fftSize = 512;
+        this.levelBuf = new Float32Array(this.analyser.fftSize);
+      }
+      if (this.analysed !== sound) {
+        node.connect(this.analyser);
+        this.analysed = sound;
+      }
+      return this.analyser;
+    } catch {
+      return null;
+    }
   }
 
   private playKey(key: string, textLength: number): void {
