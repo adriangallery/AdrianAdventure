@@ -61,6 +61,11 @@ export interface GameState {
   firedTriggers: string[];
   /** Dialogue trees completed per NPC: npcId → completedTreeIds */
   dialogueProgress: Record<string, string[]>;
+  /**
+   * A2.6: opciones de diálogo ya elegidas, por árbol: treeId → claves (`DialogueSystem.choiceKey`). Se pintan en gris.
+   * Opcional: las partidas anteriores a A2.6 no lo traen y cargan igual (sin opciones usadas).
+   */
+  dialogueUsed?: Record<string, string[]>;
   /** Achievement IDs that have been earned */
   achievements: string[];
   /** Timestamp of last save */

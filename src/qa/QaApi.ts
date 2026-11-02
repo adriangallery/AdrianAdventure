@@ -18,7 +18,8 @@ import type { HotspotData, SceneData } from '@/types/scene.types';
 import { Verb, type GameState } from '@/types/game.types';
 
 type Point = { x: number; y: number };
-interface Choice { text: string; enabled: boolean }
+/** A2.6: `used` = ya elegida antes en ese árbol (gris). Las ocultas (`when`, `once`) no salen. */
+interface Choice { text: string; enabled: boolean; used?: boolean }
 
 export interface QaState {
   /** Escena cargada (null en el menú o cargando) */
@@ -43,6 +44,11 @@ export interface QaState {
   triggers: { id: string; bounds: { x: number; y: number; w: number; h: number } }[];
   /** Opciones en pantalla si el diálogo espera una elección */
   choices: Choice[] | null;
+  /**
+   * A2.6: opciones de la ÚLTIMA elección que salió durante el último paso (act/use/talk), antes de responderla;
+   * null si el paso no pidió elegir. Para comprobar opciones usadas en gris u ocultas.
+   */
+  lastChoices: Choice[] | null;
   /** Últimas acciones y textos mostrados, para diagnosticar */
   log: string[];
   /** A0.5: líneas que se han apuntado en `log` desde que arrancó la página (el log solo guarda las 60 últimas) */
@@ -84,7 +90,8 @@ class QaError extends Error {
 }
 
 const sleep = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms));
-const fmtChoices = (options: Choice[]) => options.map((o) => (o.enabled ? o.text : `${o.text} (bloqueada)`)).join(' | ');
+const fmtChoices = (options: Choice[]) =>
+  options.map((o) => (!o.enabled ? `${o.text} (bloqueada)` : o.used ? `${o.text} (usada)` : o.text)).join(' | ');
 
 type Target = { kind: 'hotspot'; hotspot: HotspotData } | { kind: 'npc'; id: string };
 
@@ -92,6 +99,8 @@ export function installQa(game: Phaser.Game): void {
   const registry = game.registry;
   const log: string[] = [];
   let logTotal = 0;
+  /** A2.6: ver QaState.lastChoices */
+  let lastChoices: Choice[] | null = null;
   const note = (line: string) => {
     logTotal++;
     log.push(line);
@@ -148,6 +157,7 @@ export function installQa(game: Phaser.Game): void {
    */
   const settle = async (choices: string[] = [], timeoutMs = SETTLE_TIMEOUT_MS): Promise<void> => {
     const queue = [...choices];
+    lastChoices = null;
     const t0 = Date.now();
     let calm = 0;
     while (calm < CALM_POLLS) {
@@ -160,6 +170,7 @@ export function installQa(game: Phaser.Game): void {
         calm = 0;
         const choicePanel = ui().getChoicePanel();
         const options = choicePanel.getOptions();
+        lastChoices = options.map((o) => ({ ...o }));
         const want = queue.shift();
         if (want === undefined) throw new QaError('error', `el diálogo pide elegir y el paso no trae más respuestas: ${fmtChoices(options)}`);
         const idx = options.findIndex((o) => o.text.toLowerCase().includes(want.toLowerCase()));
@@ -280,6 +291,7 @@ export function installQa(game: Phaser.Game): void {
       npcs: scene ? scene.qaNpcIds() : [],
       triggers: scene ? scene.qaTriggers() : [],
       choices: choicePanel?.isAwaitingChoice() ? choicePanel.getOptions() : null,
+      lastChoices: lastChoices ? lastChoices.map((o) => ({ ...o })) : null,
       log: [...log],
       logTotal,
       actions: (registry.get('qaActions') as number | undefined) ?? 0,

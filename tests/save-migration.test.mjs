@@ -66,3 +66,19 @@ test('envoltorios de partida (slot local, wallet, nube) y estados incompletos', 
 test('ningún nombre nuevo es a su vez un nombre viejo (no hay cadenas ni ciclos)', () => {
   for (const newName of Object.values(RENAMED_FLAGS)) assert.equal(newName in RENAMED_FLAGS, false, newName);
 });
+
+test('A2.6: una partida sin dialogueUsed carga igual (sin opciones usadas) y no se le inventa el campo', () => {
+  const s = migrateGameState(oldState({}));
+  assert.equal('dialogueUsed' in s, false);
+});
+
+test('A2.6: dialogueUsed válido se conserva; lo corrupto se limpia', () => {
+  const ok = migrateGameState({ ...oldState({}), dialogueUsed: { lobby_tree: ['hub:Hi'] } });
+  assert.deepEqual(ok.dialogueUsed, { lobby_tree: ['hub:Hi'] });
+  const mixed = migrateGameState({ ...oldState({}), dialogueUsed: { a: ['x', 3, null], b: 'nope' } });
+  assert.deepEqual(mixed.dialogueUsed, { a: ['x'] });
+  for (const bad of [null, 'x', 7, ['a']]) {
+    const s = migrateGameState({ ...oldState({}), dialogueUsed: bad });
+    assert.equal('dialogueUsed' in s, false, `descarta ${JSON.stringify(bad)}`);
+  }
+});

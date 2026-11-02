@@ -44,6 +44,11 @@
 //       NPC          textura = id del NPC; PreloadScene carga npc_<x> de assets/sprites/npcs/<x>.png
 //       escena       assets/scenes/<sceneId>/scene.json
 //       diálogo      dialogues[treeId] de la MISMA escena (UIScene.startDialogueFromScene)
+//   - Diálogos (A2.6, src/systems/DialogueSystem.ts), como errores de (f): `start`, `next` de nodos y elecciones que
+//     apunten a nodos que existen; elecciones sin `next` solo si son salidas (`exit: true`); `when` (nodos y
+//     elecciones) con la sintaxis de CONDITION_RE (`flag`, `!flag`, `flag:x`, `item:id`, `!item:id`);
+//     npcs[].itemDialogues con árbol de la misma escena (`tree` o el dialogueTreeId de la NPC) y `node` dentro de
+//     él. Para (a) y (b): `when` lee flags y usa objetos; itemDialogues usa su objeto y escribe su `setFlag`.
 //   - Caminable: Player.isWalkablePct → isWalkableIn de src/systems/Pathfinding.ts (rectángulos de walkableAreas,
 //     bordes incluidos, menos los de blockedAreas, bordes incluidos también; sin walkableAreas se anda por todas partes). Hotspots: GameScene.hitTestAt manda el PRIMER hotspot de la lista que contiene el punto.
 
@@ -204,6 +209,30 @@ function walkBlocks(ops, base, fn, sayBefore = false) {
   });
 }
 
+/** A2.6a: misma sintaxis que CONDITION_RE de src/systems/DialogueSystem.ts */
+export const CONDITION_RE = /^(!?)(?:(flag|item):)?([A-Za-z0-9_.-]+)$/;
+const conditionList = (when) => (when === undefined || when === null ? [] : Array.isArray(when) ? when : [when]);
+/** Condiciones válidas de un `when`: [{ kind: 'flag'|'item', name, negated }]; las mal escritas van en `bad`. */
+export function parseWhen(when) {
+  const ok = [];
+  const bad = [];
+  for (const raw of conditionList(when)) {
+    const m = typeof raw === 'string' ? CONDITION_RE.exec(raw.trim()) : null;
+    if (m) ok.push({ kind: m[2] === 'item' ? 'item' : 'flag', name: m[3], negated: m[1] === '!' });
+    else bad.push(raw);
+  }
+  return { ok, bad };
+}
+
+/** Nodos de diálogo de una escena: { treeId, tree, nodeId, node, where }. */
+function dialogueNodes(s) {
+  const out = [];
+  for (const [treeId, tree] of Object.entries(s.dialogues ?? {})) {
+    for (const [nodeId, node] of Object.entries(tree?.nodes ?? {})) out.push({ treeId, tree, nodeId, node, where: `dialogues.${treeId}.${nodeId}` });
+  }
+  return out;
+}
+
 function dialogueChoices(s) {
   const out = [];
   for (const [treeId, tree] of Object.entries(s.dialogues ?? {})) {
@@ -272,6 +301,13 @@ export function lintProject(project) {
     for (const { c, where } of dialogueChoices(s)) {
       note(reads, c.flag, `${id}.${where}.flag`);
       note(writes, c.setFlag, `${id}.${where}.setFlag`);
+      for (const cond of parseWhen(c.when).ok) if (cond.kind === 'flag') note(reads, cond.name, `${id}.${where}.when`);
+    }
+    for (const { node, where } of dialogueNodes(s)) {
+      for (const cond of parseWhen(node?.when).ok) if (cond.kind === 'flag') note(reads, cond.name, `${id}.${where}.when`);
+    }
+    for (const n of s.npcs ?? []) {
+      for (const [item, d] of Object.entries(n.itemDialogues ?? {})) note(writes, d?.setFlag, `${id}.npcs.${n.id}.itemDialogues.${item}.setFlag`);
     }
   }
   const sceneOf = (where) => where.split('.')[0];
@@ -302,7 +338,10 @@ export function lintProject(project) {
     for (const n of s.npcs ?? []) {
       for (const k of Object.keys(n.giveResponses ?? {})) itemUses.add(k);
       for (const k of Object.keys(n.useResponses ?? {})) itemUses.add(k);
+      for (const k of Object.keys(n.itemDialogues ?? {})) itemUses.add(k);
     }
+    for (const { c } of dialogueChoices(s)) for (const cond of parseWhen(c.when).ok) if (cond.kind === 'item') itemUses.add(cond.name);
+    for (const { node } of dialogueNodes(s)) for (const cond of parseWhen(node?.when).ok) if (cond.kind === 'item') itemUses.add(cond.name);
   }
   for (const [item, where] of acquired) {
     if (itemUses.has(item) || mentionedIn(srcFiles, item, SRC_SKIP_ITEMS)) continue;
@@ -436,6 +475,37 @@ export function lintProject(project) {
       if (n.dialogueTreeId && !s.dialogues?.[n.dialogueTreeId]) {
         push('f', 'error', id, n.dialogueTreeId, `${id}.npcs.${n.id}.dialogueTreeId`, `NPC ${n.id}: el diálogo «${n.dialogueTreeId}» no está en dialogues de ${id}`);
       }
+      // A2.6: NPC que reaccionan a objetos (GameScene.dispatchNpcTap)
+      for (const [item, d] of Object.entries(n.itemDialogues ?? {})) {
+        const where = `${id}.npcs.${n.id}.itemDialogues.${item}`;
+        const treeId = d?.tree ?? n.dialogueTreeId;
+        if (!treeId) {
+          push('f', 'error', id, item, where, `NPC ${n.id}: itemDialogues.${item} sin "tree" y la NPC no tiene dialogueTreeId`);
+          continue;
+        }
+        const tree = s.dialogues?.[treeId];
+        if (!tree) push('f', 'error', id, treeId, where, `NPC ${n.id}: itemDialogues.${item}: el árbol «${treeId}» no está en dialogues de ${id}`);
+        else if (d?.node && !tree.nodes?.[d.node]) push('f', 'error', id, d.node, where, `NPC ${n.id}: itemDialogues.${item}: el nodo «${d.node}» no está en el árbol «${treeId}»`);
+        if (!n.dialogueTreeId) push('f', 'warning', id, item, where, `NPC ${n.id} sin dialogueTreeId: no se puede pulsar (GameScene.hitTestAt), así que itemDialogues.${item} nunca salta`);
+      }
+    }
+    // A2.6: estructura de los árboles de diálogo (DialogueSystem.run)
+    for (const [treeId, tree] of Object.entries(s.dialogues ?? {})) {
+      if (!tree?.nodes?.[tree?.start]) push('f', 'error', id, treeId, `${id}.dialogues.${treeId}.start`, `diálogo ${treeId}: el nodo de inicio «${tree?.start}» no existe`);
+    }
+    for (const { treeId, tree, nodeId, node, where } of dialogueNodes(s)) {
+      const nodes = tree.nodes;
+      if (node?.next !== undefined && !nodes[node.next]) push('f', 'error', id, node.next, `${id}.${where}.next`, `diálogo ${treeId}.${nodeId}: next «${node.next}» no existe`);
+      for (const bad of parseWhen(node?.when).bad) push('f', 'error', id, String(bad), `${id}.${where}.when`, `diálogo ${treeId}.${nodeId}: condición «${bad}» no válida (flag, !flag, item:id, !item:id)`);
+      (node?.choices ?? []).forEach((c, i) => {
+        const cw = `${id}.${where}.choices[${i}]`;
+        if (c?.next === undefined) {
+          if (!c?.exit) push('f', 'error', id, `${treeId}.${nodeId}`, cw, `diálogo ${treeId}.${nodeId}: la opción «${c?.text}» no tiene next (solo una salida, exit: true, puede ir sin next)`);
+        } else if (!nodes[c.next]) {
+          push('f', 'error', id, c.next, `${cw}.next`, `diálogo ${treeId}.${nodeId}: la opción «${c?.text}» va a «${c.next}», que no existe`);
+        }
+        for (const bad of parseWhen(c?.when).bad) push('f', 'error', id, String(bad), `${cw}.when`, `diálogo ${treeId}.${nodeId}: condición «${bad}» no válida en «${c?.text}» (flag, !flag, item:id, !item:id)`);
+      });
     }
     for (const it of s.items?.sceneItems ?? []) {
       if (it.sprite && !exists(`assets/sprites/items/${it.sprite}.png`) && !exists(`${base}/${it.sprite}.png`) && !exists(it.sprite)) {

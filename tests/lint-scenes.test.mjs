@@ -2,7 +2,7 @@
 // node --test tests/lint-scenes.test.mjs
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { lintProject, applyPolicy, parseStringArray } from '../scripts/lint-scenes.mjs';
+import { lintProject, applyPolicy, parseStringArray, parseWhen } from '../scripts/lint-scenes.mjs';
 
 /** Escena mínima válida: fondo, un área caminable de todo el suelo y el spawn dentro. */
 function scene(id, extra = {}) {
@@ -286,4 +286,100 @@ test('(f) A1.4: flicker sin overlay, o con un overlay de otra escena, es error',
   ]);
   // flicker es presentación: no cuenta como escritura de la flag del overlay ni como estado tras say (d)
   assert.deepEqual(only(lintProject(project([a, b], { files: ['assets/scenes/a/o.png'] })), 'd'), []);
+});
+
+// ── A2.6: árboles de diálogo ──
+const NPC_FILES = ['assets/sprites/npcs/bob.png'];
+const tree = (nodes, start = 'greeting') => ({ t: { id: 't', start, nodes } });
+
+test('(f) A2.6: start, next de nodo y de elección que no existen; elección sin next solo si es salida', () => {
+  const s = scene('x', {
+    dialogues: {
+      ...tree({
+        greeting: { text: 'Hi', next: 'hub' },
+        hub: { choices: [
+          { text: 'A', next: 'a' },
+          { text: 'Roto', next: 'nope' },
+          { text: 'Sin next' },
+          { text: 'Bye', exit: true },
+        ] },
+        a: { text: 'A!', next: 'missing_node' },
+      }),
+      t2: { id: 't2', start: 'ghost', nodes: { x: { text: 'x', end: true } } },
+    },
+  });
+  const f = only(lintProject(project([s])), 'f').filter((x) => x.where.includes('dialogues'));
+  assert.ok(f.every((x) => x.severity === 'error'));
+  const msgs = f.map((x) => x.message).sort();
+  assert.equal(msgs.length, 4, msgs.join('\n'));
+  assert.ok(msgs.some((m) => /next «missing_node» no existe/.test(m)));
+  assert.ok(msgs.some((m) => /«Roto» va a «nope», que no existe/.test(m)));
+  assert.ok(msgs.some((m) => /«Sin next» no tiene next/.test(m)));
+  assert.ok(msgs.some((m) => /t2: el nodo de inicio «ghost» no existe/.test(m)));
+});
+
+test('(f) A2.6a: sintaxis de `when` en nodos y elecciones', () => {
+  assert.deepEqual(parseWhen(['knows_gerald', '!beat_chad', 'item:pepememe', '!item:keycard', 'flag:x']).ok, [
+    { kind: 'flag', name: 'knows_gerald', negated: false },
+    { kind: 'flag', name: 'beat_chad', negated: true },
+    { kind: 'item', name: 'pepememe', negated: false },
+    { kind: 'item', name: 'keycard', negated: true },
+    { kind: 'flag', name: 'x', negated: false },
+  ]);
+  assert.deepEqual(parseWhen('solo_una').ok.map((c) => c.name), ['solo_una']);
+  assert.deepEqual(parseWhen(['!!x', 'item:', 'obj:x', 'a b', 3]).bad, ['!!x', 'item:', 'obj:x', 'a b', 3]);
+  const s = scene('x', {
+    dialogues: tree({
+      greeting: { text: 'Hi', when: ['ok_flag', 'mal escrita'], next: 'hub' },
+      hub: { choices: [{ text: 'A', next: 'greeting', when: ['!ok_flag', 'item:'] }, { text: 'Bye', exit: true }] },
+    }),
+  });
+  const f = only(lintProject(project([s])), 'f').filter((x) => x.where.includes('.when'));
+  assert.deepEqual(f.map((x) => [x.severity, x.id]).sort(), [['error', 'item:'], ['error', 'mal escrita']]);
+});
+
+test('(a)/(b) A2.6a: `when` lee flags y usa objetos; itemDialogues usa su objeto y escribe su setFlag', () => {
+  const s = scene('x', {
+    regions: { hotspots: [hs('hs_a', { USE: [{ op: 'addItem', id: 'pepememe' }, { op: 'addItem', id: 'vet_bill' }, { op: 'setFlag', flag: 'knows_gerald', value: true }] })], triggers: [] },
+    npcs: [{ id: 'npc_bob', name: 'Bob', position: { x: 1, y: 1 }, dialogueTreeId: 't', itemDialogues: { vet_bill: { node: 'hub', setFlag: 'showed_bill' } } }],
+    dialogues: tree({
+      greeting: { text: 'Hi', next: 'hub' },
+      hub: { choices: [{ text: 'Gerald', next: 'greeting', when: ['knows_gerald', 'item:pepememe', '!showed_bill', '!never_set_flag'] }, { text: 'Bye', exit: true }] },
+    }),
+  });
+  const findings = lintProject(project([s], { files: NPC_FILES }));
+  assert.deepEqual(only(findings, 'b').map((x) => x.id), [], 'pepememe (when) y vet_bill (itemDialogues) se usan');
+  assert.deepEqual(only(findings, 'a').map((x) => x.id), ['never_set_flag'], 'knows_gerald y showed_bill emparejadas');
+});
+
+test('(f) A2.6: itemDialogues con árbol o nodo inexistente, o en una NPC sin diálogo', () => {
+  const s = scene('x', {
+    npcs: [
+      { id: 'npc_bob', name: 'Bob', position: { x: 1, y: 1 }, dialogueTreeId: 't', itemDialogues: {
+        ok: { node: 'hub' }, ok2: { tree: 't' }, bad_node: { node: 'nope' }, bad_tree: { tree: 'otro' },
+      } },
+      { id: 'npc_bob2', name: 'Bob2', position: { x: 1, y: 1 }, itemDialogues: { sin_arbol: {}, con_arbol: { tree: 't' } } },
+    ],
+    dialogues: tree({ greeting: { text: 'Hi', next: 'hub' }, hub: { choices: [{ text: 'Bye', exit: true }] } }),
+  });
+  const f = only(lintProject(project([s], { files: [...NPC_FILES, 'assets/sprites/npcs/bob2.png'] })), 'f').filter((x) => x.where.includes('itemDialogues'));
+  assert.deepEqual(f.map((x) => [x.severity, x.where.split('.').slice(-2).join('.')]).sort(), [
+    ['error', 'itemDialogues.bad_node'],
+    ['error', 'itemDialogues.bad_tree'],
+    ['error', 'itemDialogues.sin_arbol'],
+    ['warning', 'itemDialogues.con_arbol'],
+  ]);
+});
+
+test('A2.6: los árboles reales del juego pasan las reglas nuevas', async () => {
+  const fs = await import('node:fs');
+  for (const id of ['lobby', 'clinic_interior', 'recovery_pool']) {
+    const data = JSON.parse(fs.readFileSync(new URL(`../assets/scenes/${id}/scene.json`, import.meta.url), 'utf8'));
+    const f = only(lintProject(project([{ ...data, id }])), 'f').filter((x) => x.where.includes('dialogues') || x.where.includes('itemDialogues'));
+    assert.deepEqual(f, [], id);
+    for (const t of Object.values(data.dialogues)) {
+      assert.ok(t.nodes.hub, `${id}: el árbol ${t.id} tiene hub`);
+      assert.ok(t.nodes.hub.choices.some((c) => c.exit), `${id}: el hub de ${t.id} tiene salida explícita`);
+    }
+  }
 });

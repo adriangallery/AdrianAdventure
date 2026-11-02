@@ -580,6 +580,17 @@ export class GameScene extends Phaser.Scene {
       scummUI?.clearSelectedItem?.();
       const sceneData = this.registry.get('sceneData') as SceneData;
       const npcData = sceneData.npcs?.find(n => n.id === npc.npcId);
+      // A2.6: la NPC reacciona a ese objeto con un árbol (o un nodo de su árbol) en vez de una frase suelta
+      const itemDialogue = npcData?.itemDialogues?.[selectedItem.id];
+      const itemTree = itemDialogue ? (itemDialogue.tree ?? npc.dialogueTreeId) : null;
+      if (itemDialogue && itemTree && sceneData.dialogues?.[itemTree]) {
+        if (itemDialogue.setFlag) {
+          this.gameState = { ...this.gameState, flags: { ...this.gameState.flags, [itemDialogue.setFlag]: true } };
+          this.registry.set('gameState', this.gameState);
+        }
+        this.events.emit('npc:tapped', npc.npcId, itemTree, itemDialogue.node);
+        return;
+      }
       const responseMap = verb === Verb.GIVE
         ? npcData?.giveResponses
         : npcData?.useResponses;

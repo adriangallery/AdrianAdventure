@@ -117,6 +117,17 @@ export interface NPCData {
   /** Fun responses when the player GIVEs/USEs an item on the NPC (key = item id or _default) */
   giveResponses?: Record<string, string>;
   useResponses?: Record<string, string>;
+  /**
+   * A2.6: GIVE/USE de ese objeto con la NPC lanza un árbol (`tree`, de la misma escena; por defecto el de la NPC)
+   * desde su `start` o desde `node`, en vez del texto de giveResponses/useResponses. `setFlag` se pone antes.
+   */
+  itemDialogues?: Record<string, NPCItemDialogue>;
+}
+
+export interface NPCItemDialogue {
+  tree?: string;
+  node?: string;
+  setFlag?: string;
 }
 
 export interface DialogueTreeData {
@@ -127,19 +138,31 @@ export interface DialogueTreeData {
 
 export interface DialogueNodeData {
   speaker?: string;
-  text: string;
+  /** A2.6: un nodo sin texto (el hub) solo enseña sus opciones */
+  text?: string;
   choices?: DialogueChoiceData[];
   next?: string;
   onEnter?: ScriptOp[];
   end?: boolean;
+  /** A2.6a: condiciones (`flag`, `!flag`, `item:id`, `!item:id`); si falla alguna, el nodo se salta */
+  when?: string | string[];
 }
 
+/** A2.6: ver src/systems/DialogueSystem.ts (DialogueChoice) para la semántica de cada campo */
 export interface DialogueChoiceData {
+  id?: string;
   text: string;
-  next: string;
+  /** Obligatorio salvo en las salidas (`exit: true`) */
+  next?: string;
   gate?: { type: string; contract?: string; tokenId?: number; minBalance?: number | string };
+  /** Sin cumplir: opción visible y bloqueada (con `hideIfLocked`, oculta) */
   flag?: string;
   setFlag?: string;
+  /** A2.6a: sin cumplir, la opción se OCULTA */
+  when?: string | string[];
+  hideIfLocked?: boolean;
+  once?: boolean;
+  exit?: boolean;
 }
 
 export interface MaskMapping {
