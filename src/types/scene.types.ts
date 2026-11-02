@@ -21,7 +21,7 @@ export interface SceneData {
   player: {
     spawn: { x: number; y: number };
     speed: number;
-    /** Per-scene player scale override. Takes precedence over global playerScale. */
+    /** Antiguo (antes de A2.8): se lee como `pixelScale` de la escena si no lo hay. Usa `pixelScale`. */
     playerScale?: number;
     /** Hide player sprite (for closeup/cinematic scenes) */
     hidePlayer?: boolean;
@@ -69,6 +69,13 @@ export interface SceneData {
   conditionalOverlays?: ConditionalOverlayData[];
   /** Camera post-processing effect (e.g., anaglyph for MemeLAB) */
   cameraEffect?: { type: string; disableFlag?: string };
+  /**
+   * A2.8: unidad de píxel del mundo: píxeles de fondo por píxel de arte de personaje (jugador, mono y NPC). Por defecto
+   * DEFAULT_PIXEL_SCALE (src/systems/PixelScale.ts). Rango 1-12.
+   */
+  pixelScale?: number;
+  /** A2.8: escala por profundidad lineal en y (factor de `scaleTop` en `yTop` a `scaleBottom` en `yBottom`, en %) */
+  depthScale?: { yTop: number; yBottom: number; scaleTop: number; scaleBottom: number };
 }
 
 export interface ConditionalOverlayData {
@@ -117,8 +124,13 @@ export interface NPCData {
   position: { x: number; y: number };
   color?: string;
   dialogueTreeId?: string;
-  /** Custom scale multiplier for this NPC (default: 1.0) */
+  /**
+   * Antiguo (antes de A2.8): escala a mano. Se ignora: las NPC usan la unidad de píxel de la escena (`pixelScale`).
+   * El linter avisa si aparece.
+   */
   scale?: number;
+  /** A2.8: densidad de la hoja respecto a la del jugador (1 = la misma, por defecto). Rango 0,25-4. */
+  artScale?: number;
   /** Fun responses when the player GIVEs/USEs an item on the NPC (key = item id or _default) */
   giveResponses?: Record<string, string>;
   useResponses?: Record<string, string>;

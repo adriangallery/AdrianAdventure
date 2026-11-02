@@ -1,5 +1,5 @@
 {
-  "playerScale": 5,
+  "pixelScale": 5.5,
   "itemCombos": [
     {
       "item1": "mystery_envelope",

@@ -28,9 +28,9 @@
       "y": 97.7
     },
     "speed": 120,
-    "sprite": null,
-    "playerScale": 2
+    "sprite": null
   },
+  "pixelScale": 2,
   "ui": {
     "verbs": [
       "LOOK",

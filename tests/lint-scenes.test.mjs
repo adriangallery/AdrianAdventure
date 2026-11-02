@@ -2,7 +2,8 @@
 // node --test tests/lint-scenes.test.mjs
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { lintProject, applyPolicy, parseStringArray, parseWhen } from '../scripts/lint-scenes.mjs';
+import { readFileSync } from 'node:fs';
+import { lintProject, applyPolicy, parseStringArray, parseWhen, depthScaleDefects, PIXEL_RANGES } from '../scripts/lint-scenes.mjs';
 
 /** Escena mínima válida: fondo, un área caminable de todo el suelo y el spawn dentro. */
 function scene(id, extra = {}) {
@@ -439,4 +440,44 @@ test('(h) errores: JSON inválido, capítulo repetido, ids repetidos, condición
   has(/exactamente 3 textos/);
   has(/anonIdle/);
   has(/journalNote: la nota «no_such_note»/);
+});
+
+// ── (i) densidad de píxel (A2.8) ──
+
+test('i: scale a mano en NPC y playerScale antiguo avisan', () => {
+  const npc = (extra) => ({ id: 'npc_x', name: 'X', position: { x: 50, y: 90 }, ...extra });
+  const f = only(lintProject(project([
+    scene('a', { npcs: [npc({ scale: 6.29 })], player: { spawn: { x: 50, y: 95 }, playerScale: 6 } }),
+  ])), 'i');
+  assert.equal(f.length, 2);
+  assert.ok(f.every((x) => x.severity === 'warning'));
+  assert.ok(f.some((x) => x.where === 'a.npcs.npc_x.scale' && /a mano/.test(x.message)));
+  assert.ok(f.some((x) => x.where === 'a.player.playerScale'));
+  // Sin scale ni playerScale, con artScale válido: nada
+  assert.deepEqual(only(lintProject(project([scene('b', { npcs: [npc({ artScale: 1 })] })])), 'i'), []);
+});
+
+test('i: pixelScale, depthScale y artScale fuera de rango avisan', () => {
+  const npc = { id: 'npc_x', name: 'X', position: { x: 50, y: 90 }, artScale: 9 };
+  const f = only(lintProject(project([
+    scene('a', { pixelScale: 40, depthScale: { yTop: 90, yBottom: 80, scaleTop: 0.05, scaleBottom: 1 }, npcs: [npc] }),
+    scene('b', { pixelScale: 5.5, depthScale: { yTop: 80, yBottom: 91, scaleTop: 0.45, scaleBottom: 1 } }),
+    scene('c', { depthScale: 'mucho' }),
+  ])), 'i');
+  assert.ok(f.some((x) => x.where === 'a.pixelScale'));
+  assert.ok(f.some((x) => x.where === 'a.depthScale' && /menor/.test(x.message)));
+  assert.ok(f.some((x) => x.where === 'a.depthScale' && /scaleTop = 0.05/.test(x.message)));
+  assert.ok(f.some((x) => x.where === 'a.npcs.npc_x.artScale'));
+  assert.ok(f.some((x) => x.where === 'c.depthScale'));
+  assert.ok(!f.some((x) => x.scene === 'b'), 'la escena válida no avisa');
+  assert.deepEqual(depthScaleDefects({ yTop: 0, yBottom: 100, scaleTop: 0.2, scaleBottom: 2 }), []);
+  assert.equal(depthScaleDefects({ yTop: 0, yBottom: 101, scaleTop: 1, scaleBottom: 1 }).length, 1);
+});
+
+test('i: los rangos del linter son los de src/systems/PixelScale.ts', () => {
+  const ts = readFileSync(new URL('../src/systems/PixelScale.ts', import.meta.url), 'utf8');
+  const num = (name) => Number(ts.match(new RegExp(`export const ${name} = ([0-9.]+);`))[1]);
+  assert.deepEqual(PIXEL_RANGES.pixelScale, [num('PIXEL_SCALE_MIN'), num('PIXEL_SCALE_MAX')]);
+  assert.deepEqual(PIXEL_RANGES.depthFactor, [num('DEPTH_FACTOR_MIN'), num('DEPTH_FACTOR_MAX')]);
+  assert.deepEqual(PIXEL_RANGES.artScale, [num('ART_SCALE_MIN'), num('ART_SCALE_MAX')]);
 });

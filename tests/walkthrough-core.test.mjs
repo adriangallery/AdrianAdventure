@@ -6,6 +6,7 @@ import { readFileSync } from 'node:fs';
 import {
   attemptIndex, check, checkAttemptRan, checkCinematic, checkHighlighted, checkJournal, checkLastChoices, checkListenerGrowth, checkRejects, checkWalkTarget, classify,
   describe, kindOf, newLogLines, routeDefects, runScriptDefects, selftestDefects, selftestMismatch, tapsScene,
+  checkPixel, notePixel,
 } from '../scripts/lib/walkthrough-core.mjs';
 
 const readJson = (p) => JSON.parse(readFileSync(new URL(`../${p}`, import.meta.url), 'utf8'));
@@ -412,4 +413,44 @@ test('A2.9: la ruta crítica comprueba el tic de un objetivo, la escalera de Ano
   // Los pasos del diario van entre la puerta sin nota y el felpudo, sin tocar el resto de la ruta
   const i = steps.findIndex((s) => s.do === 'callAnon');
   assert.equal(steps[i - 1].target, 'hs_front_door');
+});
+
+// A2.8: densidad de píxel
+const px = (extra = {}) => ({
+  pixelScale: 5.5, playerScale: 3, playerBase: 3, snapped: true, integer: true, depth: 1, playerHeightPct: 57.2,
+  worldHeightPct: 49.18, coordScale: 0.46875, npcs: [{ id: 'npc_receptionist', scale: 3, integer: true, heightPct: 20.6 }], ...extra,
+});
+
+test('A2.8: expect.pixel comprueba escala entera, unidad y alto', () => {
+  assert.deepEqual(checkPixel({ integer: true, pixelScale: 5.5, heightPct: { min: 40, max: 60 } }, st({ pixel: px() })), []);
+  assert.match(checkPixel({ integer: true }, st({ pixel: px({ playerScale: 2.58, integer: false }) }))[0], /no es un múltiplo entero/);
+  assert.match(checkPixel({ integer: true }, st({ pixel: px({ npcs: [{ id: 'n', scale: 1.38, integer: false }] }) }))[0], /escala de n/);
+  assert.match(checkPixel({ pixelScale: 6 }, st({ pixel: px() }))[0], /unidad de píxel 5.5/);
+  assert.match(checkPixel({ heightPct: { max: 50 } }, st({ pixel: px() }))[0], /57.2 %/);
+  assert.match(checkPixel({ integer: true }, st())[0], /no expone `pixel`/);
+  assert.match(checkPixel({ integer: true }, st({ pixel: null }))[0], /sin densidad/);
+  // Va por check()
+  assert.equal(check({ pixel: { integer: true } }, st({ pixel: px({ integer: false }) })).length, 1);
+});
+
+test('A2.8: sameHeightAs compara con el alto apuntado en otra escena (±tol) y notePixel ignora la profundidad', () => {
+  const refs = {};
+  notePixel(refs, st({ scene: 'outside', pixel: px({ depth: 0.6, playerHeightPct: 30 }) }));
+  assert.deepEqual(refs, {}, 'con profundidad no se apunta');
+  notePixel(refs, st({ scene: 'outside', pixel: px() }));
+  assert.equal(refs.outside.heightPct, 57.2);
+  const lobby = st({ scene: 'lobby', pixel: px({ playerHeightPct: 60 }) });
+  assert.deepEqual(check({ pixel: { sameHeightAs: 'outside' } }, lobby, { pixelRefs: refs }), []);
+  assert.match(check({ pixel: { sameHeightAs: 'outside', tol: 0.02 } }, lobby, { pixelRefs: refs })[0], /medía el 57.2 %/);
+  assert.match(check({ pixel: { sameHeightAs: ['outside', 'lobby'] } }, lobby, { pixelRefs: refs })[0], /sin altura de referencia de «lobby»/);
+  assert.equal(notePixel(undefined, lobby), undefined);
+});
+
+test('A2.8: la ruta crítica comprueba la escala entera y el mismo alto en outside, lobby y clinic_interior', () => {
+  const route = readJson('qa/walkthrough.json').routes.find((r) => r.id === 'ruta-critica');
+  const withPixel = route.steps.filter((s) => s.expect?.pixel);
+  assert.deepEqual(withPixel.map((s) => s.expect.scene), ['outside', 'lobby', 'clinic_interior']);
+  for (const s of withPixel) assert.equal(s.expect.pixel.integer, true);
+  assert.deepEqual([withPixel[2].expect.pixel.sameHeightAs].flat(), ['outside', 'lobby']);
+  assert.ok(withPixel.slice(1).every((s) => (s.expect.pixel.tol ?? 0.1) <= 0.1));
 });

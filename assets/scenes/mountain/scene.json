@@ -33,9 +33,9 @@
       "sheet": null,
       "idle": null,
       "walk": null
-    },
-    "playerScale": 4.85
+    }
   },
+  "depthScale": { "yTop": 59, "yBottom": 86.5, "scaleTop": 0.5, "scaleBottom": 1 },
   "ui": {
     "verbs": [
       "LOOK",

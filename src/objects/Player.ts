@@ -3,6 +3,7 @@ import type { SceneData } from '@/types/scene.types';
 import type { CoordSystem } from '@/systems/CoordSystem';
 import { NavGrid, type Point } from '@/systems/Pathfinding';
 import type { Facing } from '@/systems/Facing';
+import { resolvePixelScale, spriteScale, artHeightPct, type DepthScale, type PixelGlobalConfig } from '@/systems/PixelScale';
 
 const WALK_FRAME_MS = 180;
 const IDLE_FRAME_MS = 400;
@@ -33,8 +34,11 @@ export class Player extends Phaser.GameObjects.Sprite {
    */
   onStep: (() => boolean) | null = null;
 
-  /** Global scale multiplier from config */
-  private playerScaleMultiplier: number;
+  /** A2.8: unidad de píxel de la escena (píxeles de fondo por píxel de arte) y escala por profundidad */
+  private pixelScale: number;
+  private depthScale: DepthScale | null;
+  /** A2.8: última escala calculada (para la API de QA) */
+  private lastScale = { scale: 1, base: 1, snapped: false, depth: 1 };
 
   /** Current position in % coords */
   pctX: number;
@@ -74,16 +78,17 @@ export class Player extends Phaser.GameObjects.Sprite {
     this.pctY = spawnPctY;
     this.nav = new NavGrid(sceneData.walkableAreas, sceneData.blockedAreas);
 
-    // Per-scene playerScale overrides global config
-    const globalConfig = scene.cache.json.get('globalConfig') as { playerScale?: number } | undefined;
-    this.playerScaleMultiplier = sceneData.player.playerScale ?? globalConfig?.playerScale ?? 1.0;
+    // A2.8: unidad de píxel de la escena (pixelScale; si no, el playerScale antiguo, el global o el de por defecto)
+    const globalConfig = scene.cache.json.get('globalConfig') as PixelGlobalConfig | undefined;
+    this.pixelScale = resolvePixelScale(sceneData, globalConfig);
+    this.depthScale = sceneData.depthScale ?? null;
 
     // Speed: convert from pixels/sec to %/sec (relative to image height)
     const rawSpeed = sceneData.player.speed ?? 200;
     this.pctSpeed = (rawSpeed / coordSystem.imgH) * 100;
 
     this.setOrigin(0.5, 1); // bottom-center (feet = position)
-    this.setScale(coordSystem.getScale() * this.playerScaleMultiplier);
+    this.applyPixelScale();
     this.setDepth(10);
 
     scene.add.existing(this);
@@ -176,7 +181,41 @@ export class Player extends Phaser.GameObjects.Sprite {
     this.coordSystem = coordSystem;
     const screen = coordSystem.pctToScreen(this.pctX, this.pctY);
     this.setPosition(screen.x, screen.y);
-    this.setScale(coordSystem.getScale() * this.playerScaleMultiplier);
+    this.applyPixelScale();
+  }
+
+  /**
+   * A2.8: escala = unidad de píxel × escala del fondo, redondeada a un entero de pantalla cuando se puede, × el factor
+   * de profundidad en la y de los pies (src/systems/PixelScale.ts). Los pies no se mueven: el origen está en ellos.
+   */
+  private applyPixelScale(): void {
+    this.lastScale = spriteScale({
+      pixelScale: this.pixelScale, coordScale: this.coordSystem.getScale(), depth: this.depthScale, yPct: this.pctY,
+    });
+    if (this.scaleX !== this.lastScale.scale || this.scaleY !== this.lastScale.scale) this.setScale(this.lastScale.scale);
+  }
+
+  /** A2.8: unidad de píxel de la escena */
+  getPixelScale(): number {
+    return this.pixelScale;
+  }
+
+  /** A2.8: escala por profundidad de la escena (null si no tiene) */
+  getDepthScale(): DepthScale | null {
+    return this.depthScale;
+  }
+
+  /** A2.8: escala aplicada (píxeles de pantalla por píxel de arte), base redondeada, si es entera y factor de profundidad */
+  getScaleInfo(): { scale: number; base: number; snapped: boolean; depth: number } {
+    return { ...this.lastScale };
+  }
+
+  /**
+   * A2.8: altura del personaje en % del alto del fondo según el mundo (unidad de píxel × profundidad, sin el redondeo
+   * de pantalla), para Facing: girarse no depende del tamaño de la ventana. 103 = alto de la hoja de idle.
+   */
+  getWorldHeightPct(): number {
+    return artHeightPct(this.frame?.realHeight || 103, this.pixelScale, this.coordSystem.imgH, this.lastScale.depth);
   }
 
   update(_time: number, delta: number): void {
@@ -291,6 +330,8 @@ export class Player extends Phaser.GameObjects.Sprite {
   private syncScreenPosition(): void {
     const screen = this.coordSystem.pctToScreen(this.pctX, this.pctY);
     this.setPosition(screen.x, screen.y);
+    // A2.8: con depthScale la escala cambia con la y de los pies
+    if (this.depthScale) this.applyPixelScale();
   }
 
   /** A2.10 (actorTeleport y el salto de actorMove): coloca al personaje en un punto (en %) sin andar. */

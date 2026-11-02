@@ -32,8 +32,7 @@
       "sheet": null,
       "idle": null,
       "walk": null
-    },
-    "playerScale": 4.85
+    }
   },
   "ui": {
     "verbs": [
@@ -1106,7 +1105,6 @@
         "y": 69.9
       },
       "dialogueTreeId": "dr_satoshi_intro",
-      "scale": 5.34,
       "giveResponses": {
         "_default": "'I appreciate the gesture, but I can't accept {item}. Medical ethics. Also, I don't have pockets.'",
         "code_note": "'A code? I deal in diagnoses, not digits. Well... both are digits, technically.'",

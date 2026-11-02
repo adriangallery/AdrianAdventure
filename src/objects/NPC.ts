@@ -9,8 +9,11 @@ export class NPC extends Phaser.GameObjects.Container {
   public npcId: string;
   public npcName: string;
   public dialogueTreeId: string | null;
-  /** Scale multiplier and position (%) from the scene data, kept for repositioning on resize */
-  public dataScale = 1;
+  /**
+   * A2.8: densidad de la hoja respecto a la del jugador (`artScale` de npcs[], 1 por defecto) y posición (%) de la
+   * escena, para recolocarla y reescalarla al cambiar el tamaño (GameScene.npcPixelScale)
+   */
+  public artScale = 1;
   public pctPosition: { x: number; y: number } | null = null;
   private npcBody: Phaser.GameObjects.Rectangle | Phaser.GameObjects.Image;
   private label: Phaser.GameObjects.Text;
@@ -77,7 +80,9 @@ export class NPC extends Phaser.GameObjects.Container {
       duration: 1200,
       yoyo: true,
       repeat: -1,
-      ease: 'Sine.easeInOut',
+      // A2.8: a saltos de un píxel de arte entero (0, -1, -2), no a medio píxel
+      ease: 'Stepped',
+      easeParams: [2],
     });
   }
 
