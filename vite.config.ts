@@ -52,6 +52,25 @@ function editorSavePlugin(): Plugin {
   };
 }
 
+/**
+ * A2.7: `vite preview` (smoke, walkthrough y demos del CI) con las mismas cabeceras de caché que nginx.conf en
+ * producción: /assets/ un año e immutable (las URLs llevan ?v=<build>), index.html y version.txt sin caché. Sin
+ * esto preview manda `no-cache` y cada imagen precargada se revalida al entrar en la escena.
+ */
+function previewCacheHeadersPlugin(): Plugin {
+  return {
+    name: 'preview-cache-headers',
+    configurePreviewServer(server) {
+      server.middlewares.use((req, res, next) => {
+        const url = (req.url ?? '').split('?')[0];
+        if (url.startsWith('/assets/')) res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+        else if (url === '/' || url === '/index.html' || url === '/version.txt') res.setHeader('Cache-Control', 'no-store, max-age=0');
+        next();
+      });
+    },
+  };
+}
+
 const BUILD_HASH = Date.now().toString(36);
 
 /** Replace __BUILD__ in index.html, expose as define constant, and write version.txt */
@@ -70,7 +89,7 @@ function buildHashPlugin(): Plugin {
 }
 
 export default defineConfig({
-  plugins: [editorSavePlugin(), buildHashPlugin()],
+  plugins: [editorSavePlugin(), buildHashPlugin(), previewCacheHeadersPlugin()],
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
