@@ -1453,6 +1453,7 @@ export class GameScene extends Phaser.Scene {
   shutdown(): void {
     // A1.4: corta un flicker en marcha (el contexto ya no toca overlays de la escena que viene)
     this.scriptEngine?.cancelEffects();
+    this.dialogueScripts?.cancelEffects();
     this.overlayOverrides.clear();
     this.cancelTouchHold();
     this.endFastForward();

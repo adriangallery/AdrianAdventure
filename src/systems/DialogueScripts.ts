@@ -54,6 +54,11 @@ export class DialogueScriptRunner {
     return this.engine.isRunning();
   }
 
+  /** A1.4 + A1.9: corta un `flicker` lanzado desde un onEnter cuando la escena se cierra (SHUTDOWN). */
+  cancelEffects(): void {
+    this.engine.cancelEffects();
+  }
+
   setFastForward(on: boolean): void {
     this.engine.setFastForward(on);
   }
