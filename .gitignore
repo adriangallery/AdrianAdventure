@@ -21,3 +21,7 @@ demo-out/
 # Linter de escenas (A0.4)
 lint-scenes-report.json
 lint-scenes-report.md
+
+# Cobertura de voces (A0.3)
+voice-coverage-report.json
+voice-coverage-report.md

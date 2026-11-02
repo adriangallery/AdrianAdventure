@@ -6,6 +6,8 @@ on:
   pull_request:
   push:
     branches: [main]
+  # A0.3: voices.yml lo lanza tras su commit (un push con GITHUB_TOKEN no dispara workflows)
+  workflow_dispatch:
 
 concurrency:
   group: lint-${{ github.ref }}
@@ -33,6 +35,8 @@ jobs:
         run: npm run test:engine
       - name: Pruebas del linter de escenas (A0.4)
         run: npm run test:lint
+      - name: Pruebas de la cobertura de voces (A0.3)
+        run: npm run test:voices
       - name: ESLint
         run: |
           set -o pipefail
@@ -67,5 +71,25 @@ jobs:
           path: |
             lint-scenes-report.json
             lint-scenes-report.md
+          if-no-files-found: ignore
+          retention-days: 30
+      # A0.3: todo texto hablado tiene su mp3 y voice.config.ts está al día (scripts/voices). Excepciones con
+      # motivo en qa/voice-coverage-allow.json. Si falla: etiqueta la PR con `voices` y el CI genera los clips.
+      - name: Cobertura de voces (A0.3)
+        if: ${{ !cancelled() }}
+        run: |
+          set +e
+          node scripts/voice-coverage.mjs
+          rc=$?
+          [ -f voice-coverage-report.md ] && cat voice-coverage-report.md >> "$GITHUB_STEP_SUMMARY"
+          exit $rc
+      - name: Informe de cobertura de voces (artefacto)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: voice-coverage-report
+          path: |
+            voice-coverage-report.json
+            voice-coverage-report.md
           if-no-files-found: ignore
           retention-days: 30
