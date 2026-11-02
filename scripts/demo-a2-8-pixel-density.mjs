@@ -134,8 +134,9 @@ for (const vp of VIEWPORTS) {
 
   // 2) clinic_interior, junto al Dr. Satoshi (el spawn ya está junto al mostrador)
   await open('clinic_interior', vp);
-  const clinicErr = await walkFilming(85, 98, `${label} · clinic_interior: junto al Dr. Satoshi`);
-  if (clinicErr) problems.push(`${label} clinic_interior: walk falló: ${clinicErr}`);
+  // La zona caminable de la derecha es la franja y 96-100 %, que en 844x390 queda bajo el panel de verbos (el clic
+  // de `walk` no llega): el spawn (89, 98) ya está junto al Dr. Satoshi, así que no hace falta andar.
+  await demo.film(400);
   await demo.settle({ tap: [Math.round(vp.width / 2), 40] });
   const clinic = await pixel();
   checkScene(`${label} clinic_interior`, clinic, { npc: 'npc_dr_satoshi' });
