@@ -20,6 +20,7 @@ import { getWalletState } from '@/web3/wallet';
 import { loadPatientFile } from '@/web3/tx-history';
 import { checkGatingRule, type GatingRule } from '@/web3/gating';
 import type { Address } from 'viem';
+import { bindShutdown } from './lifecycle';
 
 /**
  * UI overlay — LucasArts SCUMM-style bottom panel.
@@ -49,6 +50,9 @@ export class UIScene extends Phaser.Scene {
   }
 
   create(): void {
+    // A1.10: GameScene para UIScene (scene.stop) en cada cambio de escena y la relanza (scene.launch) en su create():
+    // todo lo que se crea aquí se limpia en shutdown(), que Phaser no llama solo
+    bindShutdown(this);
     const inventorySystem = this.registry.get('inventorySystem') as InventorySystem;
 
     const { width, height } = this.scale;
@@ -163,7 +167,7 @@ export class UIScene extends Phaser.Scene {
     const gameScene = this.scene.get('GameScene');
 
     // A0.1 (hallazgo del walkthrough): los emisores de eventos de GameScene y UIScene sobreviven a stop/launch
-    // y Phaser no llama a shutdown() solo, pero create() se ejecuta en cada cambio de escena. Sin esto cada
+    // y create() se ejecuta en cada cambio de escena (desde A1.10 shutdown() también los quita). Sin esto cada
     // escena nueva añadía otra copia de estos listeners: en la escena N cada acción se ejecutaba N veces, y el
     // sayBrief duplicado de un cambio de escena dejaba `dialogueShowing` colgado y la escena siguiente sin
     // aceptar toques. También se limpia el estado de texto/diálogo que pudo quedar de la escena anterior.
@@ -344,6 +348,11 @@ export class UIScene extends Phaser.Scene {
     this.events.emit('dialogueComplete');
   }
 
+  /**
+   * A1.10: enganchado a SHUTDOWN en create() (`bindShutdown`). Idempotente. Quita los listeners del ScaleManager
+   * (global) de ScummUI, DialogueBox y WalletButton, la suscripción a la wallet, los temporizadores y la voz en
+   * curso, y los listeners que esta escena puso en los eventos de GameScene y en los suyos.
+   */
   shutdown(): void {
     this.voiceSystem?.destroy();
     this.scummUI?.destroy();
@@ -353,5 +362,8 @@ export class UIScene extends Phaser.Scene {
     this.walletButton?.destroy();
     this.cinematicOverlay?.destroy();
     this.badgePanel?.destroy();
+    const gameScene = this.scene.get('GameScene');
+    if (gameScene) for (const ev of UIScene.GAME_SCENE_EVENTS) gameScene.events.removeAllListeners(ev);
+    for (const ev of UIScene.OWN_EVENTS) this.events.removeAllListeners(ev);
   }
 }

@@ -84,6 +84,12 @@ export class ScriptEngine {
    * abandonada deja de avanzar en cuanto se resuelve lo que esperaba, así nunca corre a la vez que la siguiente.
    */
   private generation = 0;
+  /**
+   * A1.10: resuelve la promesa de `execute()` de la ejecución en curso. `forceReset` la llama para que quien
+   * esperaba ese script (p. ej. el onEnter de `GameScene.create`, que quita la cortina negra y lanza los triggers
+   * de spawn al terminar) no se quede esperando para siempre a un op colgado que ya no se va a resolver.
+   */
+  private abandonCurrent: (() => void) | null = null;
   /** A1.1: pila de bloques del script en curso (el último es el más interno) */
   private frames: Frame[] = [];
   private currentLabel = '';
@@ -169,6 +175,8 @@ export class ScriptEngine {
     this.frames = [];
     this.currentLabel = '';
     this.stallMs = 0;
+    const abandon = this.abandonCurrent;
+    this.abandonCurrent = null;
 
     const applied: string[] = [];
     for (const block of current) {
@@ -180,6 +188,8 @@ export class ScriptEngine {
       const summary = applied.length ? `${applied.length} op(s) de estado aplicadas (${applied.join(', ')})` : 'sin ops de estado pendientes';
       console.warn(`[ScriptEngine] forceReset: ${reason} · ${summary}; ${queued.length} script(s) en cola`);
     }
+    // A1.10: después del rescate, para que quien esperaba el script vea ya el estado con las ops aplicadas
+    abandon?.();
   }
 
   /** Aplica solo las operaciones de estado de `ops` (ramas incluidas). Devuelve true si encontró `stop`. */
@@ -275,15 +285,11 @@ export class ScriptEngine {
     this.currentLabel = label;
     this.stallMs = 0;
 
+    // A1.10: si forceReset abandona esta ejecución, la promesa se resuelve igual (el op colgado puede no
+    // resolverse nunca y la ejecución vieja ya no avanza aunque se resuelva)
+    const abandoned = new Promise<void>((resolve) => { this.abandonCurrent = resolve; });
     try {
-      await this.runOps(ops, gen);
-      // Drain queued scripts (FIFO)
-      while (gen === this.generation && this.pendingQueue.length > 0) {
-        this.stopped = false;
-        const next = this.pendingQueue.shift()!;
-        this.currentLabel = next.label;
-        await this.runOps(next.ops, gen);
-      }
+      await Promise.race([this.drain(ops, gen), abandoned]);
     } finally {
       // Una ejecución abandonada por forceReset no toca el estado de la que vino después
       if (gen === this.generation) {
@@ -291,11 +297,26 @@ export class ScriptEngine {
         this.stopped = false;
         this.frames = [];
         this.currentLabel = '';
+        this.abandonCurrent = null;
       }
     }
   }
 
+  /** El script y después los que llegaron a la cola mientras tanto (FIFO), mientras siga siendo la generación viva. */
+  private async drain(ops: ScriptOp[], gen: number): Promise<void> {
+    await this.runOps(ops, gen);
+    while (gen === this.generation && this.pendingQueue.length > 0) {
+      this.stopped = false;
+      const next = this.pendingQueue.shift()!;
+      this.currentLabel = next.label;
+      await this.runOps(next.ops, gen);
+    }
+  }
+
   private async runOps(ops: ScriptOp[], gen: number): Promise<void> {
+    // A1.10: una ejecución abandonada que entra en una rama tras resolverse lo que esperaba (web3Require, mintNFT)
+    // no apila su bloque en la pila de la generación viva: el watchdog y el rescate de forceReset lo leerían
+    if (gen !== this.generation) return;
     const frame: Frame = { ops, index: 0 };
     this.frames.push(frame);
     try {

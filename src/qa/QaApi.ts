@@ -47,6 +47,11 @@ export interface QaState {
   logTotal: number;
   /** A0.5: verbos que han llegado a ejecutarse sobre un hotspot o NPC (player:arrived o al momento) */
   actions: number;
+  /**
+   * A1.10: listeners de `resize` del ScaleManager (es del juego: sobrevive a los cambios de escena). Si alguna
+   * escena o componente no los quita en shutdown, crece con cada cambio de escena.
+   */
+  resizeListeners: number;
 }
 
 export interface QaApi {
@@ -273,6 +278,7 @@ export function installQa(game: Phaser.Game): void {
       log: [...log],
       logTotal,
       actions: (registry.get('qaActions') as number | undefined) ?? 0,
+      resizeListeners: game.scale.listenerCount('resize'),
     };
   };
 

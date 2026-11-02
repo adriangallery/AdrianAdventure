@@ -151,7 +151,10 @@ export class Web3VisualSystem {
 
   destroy(): void {
     this.unsubscribe?.();
+    this.unsubscribe = null;
     for (const tween of this.glowTimers.values()) {
+      // A1.10: desde SHUTDOWN el TweenManager de la escena ya los ha destruido
+      if (tween.isDestroyed()) continue;
       tween.stop();
       tween.destroy();
     }

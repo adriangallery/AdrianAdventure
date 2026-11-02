@@ -4,8 +4,8 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import {
-  attemptIndex, check, checkAttemptRan, checkRejects, classify, kindOf, newLogLines, routeDefects, selftestDefects,
-  selftestMismatch,
+  attemptIndex, check, checkAttemptRan, checkListenerGrowth, checkRejects, classify, describe, kindOf, newLogLines,
+  routeDefects, selftestDefects, selftestMismatch,
 } from '../scripts/lib/walkthrough-core.mjs';
 
 const readJson = (p) => JSON.parse(readFileSync(new URL(`../${p}`, import.meta.url), 'utf8'));
@@ -184,4 +184,34 @@ test('las rutas reales (walkthrough y atajos) siguen bien definidas', () => {
   for (const file of ['qa/walkthrough.json', 'qa/sequence-breaks.json']) {
     for (const r of readJson(file).routes) assert.deepEqual(routeDefects(r), [], `${file} · ${r.id}`);
   }
+});
+
+test('A1.10: noListenerGrowth compara los listeners de resize con los del primer paso', () => {
+  const exp = { scene: 'rooftop', noListenerGrowth: true };
+  assert.deepEqual(check(exp, st({ scene: 'rooftop', resizeListeners: 9 }), { listenersBaseline: 9 }), []);
+  assert.deepEqual(check(exp, st({ scene: 'rooftop', resizeListeners: 8 }), { listenersBaseline: 9 }), [], 'bajar no es fuga');
+  const grown = check(exp, st({ scene: 'rooftop', resizeListeners: 18 }), { listenersBaseline: 9 });
+  assert.equal(grown.length, 1);
+  assert.match(grown[0], /18, tras el primer paso había 9/);
+  assert.match(check(exp, st({ scene: 'rooftop' }), { listenersBaseline: 9 })[0], /no expone `resizeListeners`/);
+  assert.match(check(exp, st({ scene: 'rooftop', resizeListeners: 9 }))[0], /sin recuento de referencia/);
+  assert.deepEqual(check({ scene: 'rooftop' }, st({ scene: 'rooftop', resizeListeners: 99 }), { listenersBaseline: 1 }), [], 'sin la clave no se mira');
+  assert.deepEqual(checkListenerGrowth({ resizeListeners: 3 }, 3), []);
+});
+
+test('A1.10: resize necesita width y height enteros positivos', () => {
+  const wt = (step) => ({ id: 'w', steps: [NEW, step] });
+  assert.deepEqual(routeDefects(wt({ do: 'resize', width: 844, height: 390 })), []);
+  assert.equal(describe({ do: 'resize', width: 844, height: 390 }), 'RESIZE 844x390');
+  for (const bad of [{ width: 844 }, { width: 0, height: 390 }, { width: '844', height: 390 }, { width: 844.5, height: 390 }]) {
+    const d = routeDefects(wt({ do: 'resize', ...bad }));
+    assert.equal(d.length, 1, JSON.stringify(bad));
+    assert.match(d[0], /"resize" necesita "width" y "height"/);
+  }
+});
+
+test('A1.10: la ruta crítica comprueba los listeners de resize tras varios cambios de escena', () => {
+  const route = readJson('qa/walkthrough.json').routes.find((r) => r.id === 'ruta-critica');
+  const checks = route.steps.filter((s) => s.do === 'resize' && s.expect?.noListenerGrowth);
+  assert.ok(checks.length >= 2, 'al menos una redimensión con noListenerGrowth');
 });

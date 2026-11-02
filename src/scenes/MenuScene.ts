@@ -4,6 +4,7 @@ import type { MusicManager } from '@/systems/MusicManager';
 import { TWP, FONT } from '@/config/theme';
 import { ACHIEVEMENTS } from '@/config/achievements.config';
 import { resolveEnsMany } from '@/web3/ens';
+import { bindShutdown } from './lifecycle';
 
 /** Fila del leaderboard de save.zerothetoken.com */
 interface LeaderboardPlayer {
@@ -37,6 +38,7 @@ export class MenuScene extends Phaser.Scene {
   }
 
   create(): void {
+    bindShutdown(this); // A1.10: Phaser no llama a shutdown() solo
     this.buildMenu();
     this.resizeHandler = () => {
       if (!this.scene.isActive('MenuScene')) return;

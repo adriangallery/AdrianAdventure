@@ -19,7 +19,7 @@ hasta el hotspot, combos, gates y diálogos). Nunca pone flags ni da objetos.
 | `walk(x, y)` | Andar a un punto (en % del fondo); así se prueban las salidas por trigger |
 | `goto(sceneId, spawn?)` | Cambiar de escena como `gotoScene` (solo en rutas del selftest con `allowGoto`, ver abajo) |
 | `dismissAll()` | Cerrar textos y cinemáticas hasta que el juego quede quieto |
-| `state()` | Escena, inventario, flags, visitadas, hotspots visibles, elecciones, avisos, log (`logTotal`: líneas apuntadas desde que cargó) y `actions` (verbos que llegaron a ejecutarse) |
+| `state()` | Escena, inventario, flags, visitadas, hotspots visibles, elecciones, avisos, log (`logTotal`: líneas apuntadas desde que cargó) `actions` (verbos que llegaron a ejecutarse) y `resizeListeners` (A1.10: listeners de `resize` del ScaleManager) |
 
 Todas esperan a que el juego quede quieto y devuelven `state()`. Los errores empiezan por `[qa:blocked]`
 (el juego no deja hacerlo) o `[qa:error]` (id inexistente, tiempo agotado).
@@ -41,10 +41,21 @@ y la ruta falla. Un hotspot que el ratón no alcanza es un fallo, nunca un «el 
 jugador que se distrae, y falla si el script deja de estar en marcha durante la espera. La ruta crítica lo usa
 en `PICK hs_mailbox` (35 s, más que los 30 s del watchdog, con `addItem` y `setFlag` pendientes tras el texto).
 
-Pasos: `newGame`, `act`, `use`, `combine`, `talk`, `walk`, `goto`, `dismissAll`, `wait` (`ms`). Cada paso
-admite `expect` con `scene`, `has`, `lacks`, `flags`, `visited` y `achievements`, y `rejects`: expresión
-regular (sin distinguir mayúsculas) que tiene que salir en los textos mostrados durante ese paso, p. ej. la
-frase con la que el juego rechaza la acción. Las rutas llevan un `goal` con el mismo formato que `expect`.
+Pasos: `newGame`, `act`, `use`, `combine`, `talk`, `walk`, `goto`, `dismissAll`, `wait` (`ms`), `resize`
+(`width`, `height`). Cada paso admite `expect` con `scene`, `has`, `lacks`, `flags`, `visited`, `achievements` y
+`noListenerGrowth`, y `rejects`: expresión regular (sin distinguir mayúsculas) que tiene que salir en los textos
+mostrados durante ese paso, p. ej. la frase con la que el juego rechaza la acción. Las rutas llevan un `goal` con
+el mismo formato que `expect`.
+
+`resize` (A1.10) cambia el viewport con `page.setViewport` (salta el `resize` del ScaleManager, de `window` y de
+`visualViewport`) y espera `settleMs` (1200 ms por defecto: el rebuild con debounce del panel y los reintentos de
+`GameScene.scheduleResize`). Un `console.error` o `pageerror` de un listener que quedó vivo de una escena anterior
+hace fallar la ruta como cualquier error del juego. `expect.noListenerGrowth: true` exige que
+`state().resizeListeners` no supere el valor tras el primer paso de la ruta (New Game, con GameScene y UIScene ya
+creadas una vez): si una escena o un componente no quita su listener en `shutdown()`, crece con cada cambio de
+escena. La ruta crítica lo comprueba en `rooftop` (3 cambios de escena, móvil apaisado 844x390) y en
+`clinic_interior` (11 cambios, móvil vertical 390x844), y vuelve a 1280x720 en ambos casos. El log del job
+`walkthrough` muestra el recuento en esos pasos («listeners de resize N (tras el primer paso M)»).
 
 `goto` se salta puertas y gates, así que ninguna ruta de `walkthrough.json` ni de `sequence-breaks.json` puede
 usarlo (sale ERROR, «mal definida»): la preparación de un atajo se hace jugando. Solo lo admiten las rutas del

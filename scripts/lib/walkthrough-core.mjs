@@ -14,12 +14,16 @@ export function describe(s) {
     case 'walk': return `WALK ${s.x},${s.y}${s.trigger ? ` (${s.trigger})` : ''}${s.untilScene ? ` → ${s.untilScene}` : ''}`;
     case 'goto': return `GOTO ${s.scene}`;
     case 'wait': return `WAIT ${s.ms} ms`;
+    case 'resize': return `RESIZE ${s.width}x${s.height}`;
     default: return s.do;
   }
 }
 
-/** Comprobaciones de estado: scene, has, lacks, flags, visited, achievements. Devuelve los fallos. */
-export function check(expect, st) {
+/**
+ * Comprobaciones de estado: scene, has, lacks, flags, visited, achievements y (A1.10) noListenerGrowth, que compara
+ * `st.resizeListeners` con `ctx.listenersBaseline` (lo que había tras el primer paso de la ruta). Devuelve los fallos.
+ */
+export function check(expect, st, ctx = {}) {
   if (!expect) return [];
   if (!st) return ['sin estado del juego'];
   const f = [];
@@ -31,7 +35,22 @@ export function check(expect, st) {
   }
   for (const id of expect.visited ?? []) if (!st.visited.includes(id)) f.push(`no se visitó «${id}»`);
   for (const id of expect.achievements ?? []) if (!st.achievements.includes(id)) f.push(`falta el logro «${id}»`);
+  if (expect.noListenerGrowth) f.push(...checkListenerGrowth(st, ctx.listenersBaseline));
   return f;
+}
+
+/**
+ * A1.10: los listeners de `resize` del ScaleManager no pueden crecer con los cambios de escena. `baseline` es el
+ * recuento tras el primer paso de la ruta (New Game: GameScene y UIScene ya creadas una vez).
+ */
+export function checkListenerGrowth(st, baseline) {
+  const n = st?.resizeListeners;
+  if (typeof n !== 'number') return ['el juego no expone `resizeListeners` en state() (API de QA anterior a A1.10)'];
+  if (typeof baseline !== 'number') return ['sin recuento de referencia de listeners de resize (se toma tras el primer paso)'];
+  if (n > baseline) {
+    return [`listeners de resize del ScaleManager: ${n}, tras el primer paso había ${baseline}: se acumulan con los cambios de escena`];
+  }
+  return [];
 }
 
 /** Líneas del log de la API de QA que aparecieron entre dos estados (usa `logTotal`, el log es circular). */
@@ -99,6 +118,9 @@ export function routeDefects(route, opts = {}) {
   const steps = route.steps ?? [];
   if (!steps.length) out.push('no tiene pasos');
   steps.forEach((s, i) => {
+    if (s.do === 'resize' && !(Number.isInteger(s.width) && Number.isInteger(s.height) && s.width > 0 && s.height > 0)) {
+      out.push(`paso ${i + 1} (${describe(s)}): "resize" necesita "width" y "height" enteros positivos`);
+    }
     if (s.do === 'goto' && !opts.allowGoto) {
       out.push(`paso ${i + 1} (${describe(s)}): "goto" se salta puertas y gates; solo vale en rutas del selftest con "allowGoto"`);
     }

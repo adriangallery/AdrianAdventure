@@ -1,5 +1,5 @@
 // A0.1 (plan SCUMM): recorrido automático y pruebas de atajos con la API de QA del juego (?qa=1).
-// Ejecuta rutas declarativas de qa/*.json (newGame, act, use, combine, talk, walk, goto, dismissAll, wait)
+// Ejecuta rutas declarativas de qa/*.json (newGame, act, use, combine, talk, walk, goto, dismissAll, wait, resize)
 // con comprobaciones de escena, inventario y flags. Cada ruta va en un navegador limpio (sin partidas
 // guardadas). Deja una captura por paso y un informe en walkthrough-shots/ (report.json + resumen de CI).
 //
@@ -60,6 +60,14 @@ const callQa = (page, step) => page.evaluate(async (s) => {
 async function runStep(page, step) {
   if (step.do === 'wait') {
     await sleep(step.ms ?? 1000);
+    return page.evaluate(() => window.__qa.state());
+  }
+  // A1.10: redimensiona el viewport (dispara el resize del ScaleManager, de window y de visualViewport) y espera a que
+  // pasen los rebuild con debounce de la interfaz (300 ms) y los reintentos de GameScene.scheduleResize (400 ms).
+  // Un console.error o pageerror de un listener que quedó de una escena anterior hace fallar la ruta como siempre.
+  if (step.do === 'resize') {
+    await page.setViewport({ width: step.width, height: step.height });
+    await sleep(step.settleMs ?? 1200);
     return page.evaluate(() => window.__qa.state());
   }
   // walk con untilScene: volver a pulsar el mismo punto si un trigger intermedio paró al personaje. Si no
@@ -128,6 +136,8 @@ async function runRoute(file, route) {
   let state = null;
   let stopped = null;
   let goalReached = false;
+  // A1.10: listeners de resize tras el primer paso, para `expect.noListenerGrowth`
+  let listenersBaseline;
 
   try {
     await page.goto(`${BASE}/?qa=1`, { waitUntil: 'domcontentloaded', timeout: 90_000 });
@@ -145,9 +155,10 @@ async function runRoute(file, route) {
     let fails = [];
     try {
       state = await runStep(page, step);
+      if (listenersBaseline === undefined && typeof state?.resizeListeners === 'number') listenersBaseline = state.resizeListeners;
       // Un atajo abierto manda aunque fallen las comprobaciones del paso
       if (route.goal && check(route.goal, state).length === 0) goalReached = true;
-      fails = [...check(step.expect, state), ...checkRejects(step, before, state)];
+      fails = [...check(step.expect, state, { listenersBaseline }), ...checkRejects(step, before, state)];
       if (seqBreak && i === attempt && !goalReached) fails.push(...checkAttemptRan(step, before, state));
     } catch (err) {
       error = err.message.split('\n')[0];
@@ -155,7 +166,7 @@ async function runRoute(file, route) {
     }
     await page.screenshot({ path: `${dir}/${String(i + 1).padStart(2, '0')}-${slug(label)}.jpg`, type: 'jpeg', quality: 60 }).catch(() => {});
     const secs = Number(((Date.now() - ts) / 1000).toFixed(1));
-    result.steps.push({ index: i + 1, label, secs, scene: state?.scene ?? null, error, fails, note: step.note ?? null });
+    result.steps.push({ index: i + 1, label, secs, scene: state?.scene ?? null, resizeListeners: state?.resizeListeners ?? null, error, fails, note: step.note ?? null });
     if (seqBreak && goalReached) {
       console.log(`    ⚑ ${i + 1}. ${label} (${secs} s) · ${state.scene}: objetivo alcanzado`);
       result.farthest = { index: i + 1, label, scene: state.scene };
@@ -167,7 +178,8 @@ async function runRoute(file, route) {
       break;
     }
     result.farthest = { index: i + 1, label, scene: state.scene };
-    console.log(`    ✓ ${i + 1}. ${label} (${secs} s) · ${state.scene}`);
+    const listeners = step.expect?.noListenerGrowth ? ` · listeners de resize ${state.resizeListeners} (tras el primer paso ${listenersBaseline})` : '';
+    console.log(`    ✓ ${i + 1}. ${label} (${secs} s) · ${state.scene}${listeners}`);
   }
 
   result.secs = Number(((Date.now() - t0) / 1000).toFixed(1));
