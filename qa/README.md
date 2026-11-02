@@ -19,9 +19,10 @@ hasta el hotspot, combos, gates y diálogos). Nunca pone flags ni da objetos.
 | `walk(x, y)` | Andar a un punto (en % del fondo); así se prueban las salidas por trigger |
 | `goto(sceneId, spawn?)` | Cambiar de escena como `gotoScene` (solo en rutas del selftest con `allowGoto`, ver abajo) |
 | `dismissAll()` | Cerrar textos y cinemáticas hasta que el juego quede quieto |
-| `state()` | Escena, inventario, flags, visitadas, hotspots visibles, elecciones, avisos, log (`logTotal`: líneas apuntadas desde que cargó) `actions` (verbos que llegaron a ejecutarse) y `resizeListeners` (A1.10: listeners de `resize` del ScaleManager) |
+| `isWalkable(x, y)` | A2.1: si el punto (en %) se pisa en la escena actual (`walkableAreas` menos `blockedAreas`); síncrona |
+| `state()` | Escena, inventario, flags, visitadas, hotspots visibles, elecciones, avisos, log (`logTotal`: líneas apuntadas desde que cargó) `actions` (verbos que llegaron a ejecutarse) y `resizeListeners` (A1.10: listeners de `resize` del ScaleManager) y `path` (A2.1: última ruta calculada al andar: origen, puntos de paso y destino) |
 
-Todas esperan a que el juego quede quieto y devuelven `state()`. Los errores empiezan por `[qa:blocked]`
+Todas (salvo `state()` e `isWalkable()`) esperan a que el juego quede quieto y devuelven `state()`. Los errores empiezan por `[qa:blocked]`
 (el juego no deja hacerlo) o `[qa:error]` (id inexistente, tiempo agotado).
 
 Los clics se resuelven con el mismo hit-test que el ratón (`GameScene.hitTestAt`): zona del panel, botones
