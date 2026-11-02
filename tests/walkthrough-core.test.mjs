@@ -4,8 +4,8 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import {
-  attemptIndex, check, checkAttemptRan, checkHighlighted, checkLastChoices, checkListenerGrowth, checkRejects, checkWalkTarget, classify,
-  describe, kindOf, newLogLines, routeDefects, selftestDefects, selftestMismatch, tapsScene,
+  attemptIndex, check, checkAttemptRan, checkCinematic, checkHighlighted, checkLastChoices, checkListenerGrowth, checkRejects, checkWalkTarget, classify,
+  describe, kindOf, newLogLines, routeDefects, runScriptDefects, selftestDefects, selftestMismatch, tapsScene,
 } from '../scripts/lib/walkthrough-core.mjs';
 
 const readJson = (p) => JSON.parse(readFileSync(new URL(`../${p}`, import.meta.url), 'utf8'));
@@ -311,4 +311,60 @@ test('A2.4: la ruta de escritorio prueba Tab, una tecla de verbo, el clic derech
   assert.ok(steps.some((s) => s.do === 'rightclick' && /^npc_/.test(s.target) && s.expect?.walkTarget?.verb === 'TALK'), 'clic derecho en NPC = hablar');
   const dbl = steps.find((s) => s.do === 'doubleclick');
   assert.ok(dbl && dbl.expect?.scene && dbl.expect.noListenerGrowth, 'doble clic en una salida cambia de escena y no deja listeners');
+});
+
+test('A2.10: paso runScript: descripción, ops válidos y sin atajos que cambien la partida', () => {
+  const ok = { do: 'runScript', ops: [{ op: 'cinematicStart' }, { op: 'setFlag', flag: 'qa_x', value: true }, { op: 'cinematicEnd' }], skipAfterMs: 800 };
+  assert.equal(describe(ok), 'RUNSCRIPT 3 op(s) (Esc a los 800 ms)');
+  assert.deepEqual(routeDefects({ id: 'r', steps: [NEW, ok] }), []);
+  assert.deepEqual(runScriptDefects(ok.ops), []);
+  assert.match(runScriptDefects([])[0], /lista de ops no vacía/);
+  assert.match(runScriptDefects([{ op: 'addItem', id: 'keycard' }])[0], /cambia la partida/);
+  assert.match(runScriptDefects([{ op: 'setFlag', flag: 'chapter_1_complete', value: true }])[0], /solo flags qa_/);
+  // También dentro de las ramas
+  assert.equal(runScriptDefects([{ op: 'ifFlag', flag: 'a', then: [{ op: 'gotoScene', sceneId: 'x' }], else: [{ op: 'achievement' }] }]).length, 2);
+  const bad = routeDefects({ id: 'r', steps: [NEW, { do: 'runScript', ops: [{ op: 'fadeToScene', sceneId: 'x' }], skipAfterMs: -1 }] });
+  assert.equal(bad.length, 2);
+  assert.match(bad[1], /skipAfterMs/);
+});
+
+test('A2.10: expect.cinematic y expect.playerNear', () => {
+  const cinematic = { active: false, letterbox: false, chromeHidden: false, camera: { x: 0, y: 0, zoom: 1, following: true }, transition: 'none', covered: false, skipped: true, ended: 2, animating: false, ducked: false };
+  const want = { active: false, letterbox: false, following: true, zoom: 1, transition: 'none', skipped: true, endedMin: 2, ducked: false };
+  assert.deepEqual(check({ cinematic: want }, st({ cinematic })), []);
+  const midway = { ...cinematic, active: true, letterbox: true, camera: { x: 120, y: 30, zoom: 2, following: false }, transition: 'iris', skipped: false, ended: 1 };
+  const f = checkCinematic(want, st({ cinematic: midway }));
+  assert.equal(f.length, 7);
+  assert.ok(f.some((m) => /zoom de la cámara 2, se esperaba 1/.test(m)));
+  assert.ok(f.some((m) => /no sigue al jugador/.test(m)));
+  assert.match(checkCinematic({ active: false }, st())[0], /anterior a A2\.10/);
+  assert.match(checkCinematic({ active: false }, st({ cinematic: null }))[0], /sin estado de cinemáticas/);
+  assert.deepEqual(check({ playerNear: { x: 52, y: 92 } }, st({ player: { x: 52.4, y: 91.5 } })), []);
+  assert.match(check({ playerNear: { x: 52, y: 92 } }, st({ player: { x: 80, y: 95 } }))[0], /se esperaba cerca de 52,92/);
+});
+
+test('A2.10: la ruta cinematica ve la cinemática entera y saltada con Esc y exige el mismo estado final', () => {
+  const route = readJson('qa/walkthrough.json').routes.find((r) => r.id === 'cinematica');
+  assert.ok(route, 'existe la ruta cinematica');
+  assert.deepEqual(routeDefects(route), []);
+  const runs = route.steps.filter((s) => s.do === 'runScript' && s.ops.some((o) => o.op === 'cinematicStart'));
+  assert.equal(runs.length, 2, 'una entera y otra saltada');
+  const [full, skipped] = runs;
+  assert.equal(full.skipAfterMs, undefined);
+  assert.ok(typeof skipped.skipAfterMs === 'number');
+  assert.deepEqual(full.ops, skipped.ops, 'la misma cinemática');
+  for (const op of ['cameraPan', 'cameraZoom', 'actorMove', 'actorFace', 'say', 'cameraShake', 'iris', 'cinematicEnd']) {
+    assert.ok(full.ops.some((o) => o.op === op), `usa ${op}`);
+  }
+  // Mismo estado final (salvo `skipped`) y todo restaurado
+  const strip = (e) => ({ ...e, cinematic: { ...e.cinematic, skipped: undefined, endedMin: undefined }, noListenerGrowth: undefined });
+  assert.deepEqual(strip(full.expect), strip(skipped.expect));
+  assert.equal(full.expect.cinematic.skipped, false);
+  assert.equal(skipped.expect.cinematic.skipped, true);
+  for (const e of [full.expect, skipped.expect]) {
+    assert.equal(e.cinematic.active, false);
+    assert.equal(e.cinematic.letterbox, false);
+    assert.equal(e.cinematic.following, true);
+    assert.equal(e.cinematic.zoom, 1);
+  }
 });

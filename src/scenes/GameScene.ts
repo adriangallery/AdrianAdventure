@@ -27,6 +27,8 @@ import type { ScummUI } from '@/ui/ScummUI';
 import type { UIScene } from '@/scenes/UIScene';
 import { approachHotspot, approachTalk, lookFacing, type Approach, type ApproachTarget, type Facing, type FacingOptions } from '@/systems/Facing';
 import { defaultVerbFor, exitVerbFor, focusOf, isDoubleClick, keyAction, primaryVerb } from '@/systems/DesktopControls';
+import { CinematicDirector, type CinematicQaState, type CinematicUi } from '@/systems/CinematicDirector';
+import { parseTransition, worldToScreen, type TransitionSpec } from '@/systems/Cinematics';
 
 /** A2.4 (QA): cómo pulsa la API de QA: botón derecho o clic de ratón (cuenta para el doble clic). */
 type QaClick = { button?: 'left' | 'right'; mouse?: boolean };
@@ -48,6 +50,8 @@ export class GameScene extends Phaser.Scene {
   private saveSystem!: SaveLoadSystem;
   private musicManager!: MusicManager;
   private cinematicOverlay!: CinematicOverlay;
+  /** A2.10: cinemáticas (cámara, franjas, actores, transiciones); uno por escena, se destruye en SHUTDOWN */
+  private cinema?: CinematicDirector;
   private transactionToast!: TransactionToast;
   private web3VisualSystem?: Web3VisualSystem;
   private npcs: NPC[] = [];
@@ -243,7 +247,14 @@ export class GameScene extends Phaser.Scene {
 
     // Camera setup based on orientation
     this.setupCamera();
-    if (!this.isTrailer) this.cameras.main.fadeIn(400, 0, 0, 0);
+    // A2.10: director de cinemáticas de esta escena (las NPC se le dan por función: se crean más abajo)
+    this.cinema?.destroy();
+    this.cinema = new CinematicDirector(this.cinematicHost());
+    // A2.10: la escena entra con la transición con la que salió la anterior (fadeToScene con `transition`)
+    const transitionIn = this.registry.get('transitionIn') as TransitionSpec | undefined;
+    this.registry.remove('transitionIn');
+    if (transitionIn && !this.isTrailer) void this.cinema.transitionIn(transitionIn);
+    else if (!this.isTrailer) this.cameras.main.fadeIn(400, 0, 0, 0);
 
     // Cinematic overlay (full-screen story moments)
     this.cinematicOverlay = new CinematicOverlay(this);
@@ -517,6 +528,8 @@ export class GameScene extends Phaser.Scene {
 
   private handlePointerDown(pointer: Phaser.Input.Pointer): void {
     if (this.emittingSynthetic) return;
+    // A2.10: un toque en cinemática enseña cómo saltarla (mantener pulsado; con ratón, también Esc)
+    if (this.cinema?.isActive()) this.cinema.noteTap(pointer.wasTouch);
     const blocked = this.scriptEngine.isRunning() || !!this.registry.get('dialogueActive') || !!this.registry.get('dialogueShowing');
     if (blocked) this.beginFastForwardHold(pointer);
     if (this.scriptEngine.isRunning()) return;
@@ -873,8 +886,9 @@ export class GameScene extends Phaser.Scene {
 
     this.web3VisualSystem?.onResize(this.coordSystem);
 
-    // Update camera for new orientation
-    this.setupCamera();
+    // Update camera for new orientation. A2.10: en cinemática la cámara es del director (la recoloca él)
+    if (this.cinema?.cameraOwned()) this.bgFill.setVisible(!(this.coordSystem.isPortrait || this.coordSystem.isPanoramic));
+    else this.setupCamera();
 
     const sceneData = this.registry.get('sceneData') as SceneData;
     if (sceneData) this.drawDebugBounds(sceneData);
@@ -914,6 +928,9 @@ export class GameScene extends Phaser.Scene {
     if (!this.fastForward) return;
     this.scriptEngine.setFastForward(true);
     this.dialogueScripts.setFastForward(true);
+    // A2.10: en una cinemática, mantener pulsado o Esc la saltan entera (estado final aplicado, nada a medias)
+    this.scriptEngine.skipCinematic();
+    this.dialogueScripts.skipCinematic();
     this.fastForward.label = this.add.text(this.scale.width - 12, 12, '>> FAST', {
       fontFamily: FONT.FAMILY, fontSize: '12px', color: TWP.HINT_TEXT, backgroundColor: TWP.HINT_BG, padding: { x: 6, y: 3 },
     }).setOrigin(1, 0).setDepth(400).setScrollFactor(0);
@@ -1090,11 +1107,13 @@ export class GameScene extends Phaser.Scene {
     if (!action) return;
     if (action.kind === 'highlight') {
       e.preventDefault(); // que Tab no mueva el foco fuera del juego
-      if (!e.repeat && !this.highlight) this.showHighlights();
+      if (!e.repeat && !this.highlight && !this.cinema?.isActive()) this.showHighlights();
       return;
     }
     e.preventDefault();
     if (e.repeat) return;
+    // A2.10: en cinemática la interfaz está oculta: solo Esc (saltar)
+    if (this.cinema?.isActive() && action.kind !== 'skip') return;
     const scummUI = this.uiSelection().scummUI;
     switch (action.kind) {
       case 'verb': scummUI?.selectVerb(action.verb as Verb); break;
@@ -1376,19 +1395,26 @@ export class GameScene extends Phaser.Scene {
       sayBrief: (text, durationMs, speaker) => new Promise<void>((resolve) => {
         this.scene.get('UIScene').events.emit('sayBrief', text, durationMs, speaker, resolve);
       }),
-      gotoScene: (sceneId, spawn) => {
+      gotoScene: (sceneId, spawn, transition) => {
         // A0.1: marca de cambio de escena en curso (la quita create() de la escena nueva)
         this.registry.set('sceneTransition', sceneId);
         // Clear player position on scene transition (new scene uses its own spawn)
         this.gameState.playerPosition = undefined;
         this.saveSystem.autoSave(this.gameState, this.sceneDataLoader.getSceneData().title);
-        this.cameras.main.fadeOut(400, 0, 0, 0);
-        this.cameras.main.once('camerafadeoutcomplete', () => {
+        const go = () => {
           this.registry.set('currentSceneId', sceneId);
           if (spawn) this.registry.set('spawnOverride', spawn);
           this.scene.stop('UIScene');
           this.scene.start('PreloadScene');
-        });
+        };
+        // A2.10: `transition` (iris o cortinilla) en vez del fundido; la escena nueva entra con la misma
+        if (transition && transition.type !== 'fade' && this.cinema) {
+          this.registry.set('transitionIn', transition);
+          void this.cinema.transitionOut(transition).then(go);
+          return;
+        }
+        this.cameras.main.fadeOut(400, 0, 0, 0);
+        this.cameras.main.once('camerafadeoutcomplete', go);
       },
       addItem: (id, name) => {
         this.inventorySystem.addItem(id, name);
@@ -1464,6 +1490,45 @@ export class GameScene extends Phaser.Scene {
         return new Promise<void>((resolve) => {
           ui.events.emit('showMonitorReveal', resolve);
         });
+      },
+      // A2.10: cinemáticas. Se resuelve al llamar: un script de la escena anterior no toca el director de esta
+      cinema: this.cinemaHooks(run),
+      parseTransition,
+    };
+  }
+
+  /** A2.10: puente del ScriptEngine con el director de cinemáticas de ESTA escena (`run` = su create()). */
+  private cinemaHooks(run: number): NonNullable<ScriptContext['cinema']> {
+    const live = () => (run === this.sceneRun ? this.cinema : undefined);
+    return {
+      handles: (name) => live()?.hooks().handles(name) ?? false,
+      skipAction: (op) => live()?.hooks().skipAction(op) ?? 'skip',
+      begin: () => live()?.begin(),
+      end: (opts) => live()?.end(opts),
+      run: (op, instant) => live()?.run(op, instant) ?? Promise.resolve(),
+      finishAll: () => live()?.finishAll(),
+    };
+  }
+
+  /** A2.10: lo que el director de cinemáticas necesita de la escena. */
+  private cinematicHost(): ConstructorParameters<typeof CinematicDirector>[0] {
+    return {
+      scene: this,
+      player: () => this.player,
+      npcs: () => this.npcs,
+      coords: () => this.coordSystem,
+      panelHeight: () => this.getEffectivePanelHeight(),
+      restoreCamera: () => this.setupCamera(),
+      ui: () => (this.scene.isActive('UIScene') ? (this.scene.get('UIScene') as unknown as CinematicUi) : null),
+      music: () => this.musicManager ?? null,
+      walkSpeedPct: () => {
+        const data = this.registry.get('sceneData') as SceneData | undefined;
+        return ((data?.player.speed ?? 200) / this.coordSystem.imgH) * 100;
+      },
+      onBegin: () => {
+        this.cancelTouchHold();
+        this.hideHighlights();
+        this.pending = null;
       },
     };
   }
@@ -1755,16 +1820,38 @@ export class GameScene extends Phaser.Scene {
     if (this.isTrailer) return null;
     const cam = this.cameras?.main;
     if (!cam) return null;
+    // A2.10: con el zoom de una cinemática (pantalla = (mundo − scroll − centro)·zoom + centro)
+    const view = { scrollX: cam.scrollX, scrollY: cam.scrollY, zoom: cam.zoom, width: cam.width, height: cam.height };
+    const anchor = (id: string, x: number, topY: number, footY: number) => {
+      const head = worldToScreen({ x, y: topY }, view);
+      return { id, x: head.x, headY: head.y, footY: worldToScreen({ x, y: footY }, view).y };
+    };
     if (who === 'player') {
       const p = this.player;
       if (!p?.active || !p.visible || p.alpha === 0) return null;
-      return { id: 'player', x: p.x - cam.scrollX, headY: p.y - p.displayHeight - cam.scrollY, footY: p.y - cam.scrollY };
+      return anchor('player', p.x, p.y - p.displayHeight, p.y);
     }
     const key = who.trim().toLowerCase();
     const npc = this.npcs.find((n) => n.active && n.visible && (n.npcId.toLowerCase() === key || n.npcName.toLowerCase() === key));
     if (!npc) return null;
     const h = npc.height * npc.scaleY;
-    return { id: npc.npcId, x: npc.x - cam.scrollX, headY: npc.y - h - cam.scrollY, footY: npc.y - cam.scrollY };
+    return anchor(npc.npcId, npc.x, npc.y - h, npc.y);
+  }
+
+  /** A2.10 (QA): estado del sistema de cinemáticas */
+  qaCinematic(): CinematicQaState | null {
+    return this.cinema?.qaState() ?? null;
+  }
+
+  /**
+   * A2.10 (QA): ejecuta un script arbitrario por el ScriptEngine principal (el mismo que hotspots y onEnter). Se
+   * resuelve cuando termina; si el motor está ocupado, se encola detrás (y se resuelve al encolarlo: la API espera).
+   */
+  qaRunScript(ops: import('@/types/scene.types').ScriptOp[]): Promise<void> {
+    this.scriptEngine.updateContext(this.buildScriptContext());
+    return this.scriptEngine.execute(ops, 'qa/runScript').finally(() => {
+      this.inputCooldownFrames = 2;
+    });
   }
 
   qaNpcIds(): string[] {
@@ -1790,7 +1877,10 @@ export class GameScene extends Phaser.Scene {
    * llega, los plugins de la escena ya han destruido cámaras, objetos, tweens y relojes (ver lifecycle.ts).
    */
   shutdown(): void {
-    // A1.4: corta un flicker en marcha (el contexto ya no toca overlays de la escena que viene)
+    // A1.4: corta un flicker en marcha (el contexto ya no toca overlays de la escena que viene). A2.10: y cierra la
+    // cinemática de estos motores; el director suelta sus animaciones (la escena nueva arranca sin franjas)
+    this.cinema?.destroy();
+    this.cinema = undefined;
     this.scriptEngine?.cancelEffects();
     this.dialogueScripts?.cancelEffects();
     this.overlayOverrides.clear();

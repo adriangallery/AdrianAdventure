@@ -20,13 +20,15 @@ export function describe(s) {
     case 'click': return `CLICK ${s.target}`;
     case 'rightclick': return `RIGHTCLICK ${s.target}`;
     case 'doubleclick': return `DOUBLECLICK ${s.target}`;
+    // A2.10: script de QA por el ScriptEngine (cinemáticas)
+    case 'runScript': return `RUNSCRIPT ${Array.isArray(s.ops) ? s.ops.length : '?'} op(s)${s.skipAfterMs !== undefined ? ` (Esc a los ${s.skipAfterMs} ms)` : ''}`;
     default: return s.do;
   }
 }
 
 /**
  * Comprobaciones de estado: scene, has, lacks, flags, unsetFlags, visited, achievements, (A2.6) lastChoices, (A2.2) facing,
- * (A2.4) verb, walkTarget y highlighted, y (A1.10) noListenerGrowth, que
+ * (A2.4) verb, walkTarget y highlighted, (A2.10) cinematic y playerNear, y (A1.10) noListenerGrowth, que
  * compara `st.resizeListeners` con `ctx.listenersBaseline` (lo que había tras el primer paso de la ruta). `flags` trata
  * una flag ausente como false; (A1.4) `unsetFlags` exige que la flag no esté en la partida, ni a false: nadie la ha
  * escrito (p. ej. un parpadeo que antes se hacía encendiendo y apagando la flag). Devuelve los fallos.
@@ -60,7 +62,61 @@ export function check(expect, st, ctx = {}) {
   if (expect.highlighted) f.push(...checkHighlighted(expect.highlighted, st));
   if (expect.noListenerGrowth) f.push(...checkListenerGrowth(st, ctx.listenersBaseline, ctx.inputListenersBaseline));
   if (expect.lastChoices) f.push(...checkLastChoices(expect.lastChoices, st));
+  if (expect.cinematic) f.push(...checkCinematic(expect.cinematic, st));
+  // A2.10: el personaje acabó cerca de un punto (en %), p. ej. tras un actorMove andado o saltado
+  if (expect.playerNear) {
+    const { x, y, tol = 1.5 } = expect.playerNear;
+    if (!st.player) f.push('sin posición del personaje');
+    else if (Math.hypot(st.player.x - x, st.player.y - y) > tol) f.push(`el personaje está en ${fmtPoint(st.player)}, se esperaba cerca de ${x},${y} (±${tol})`);
+  }
   return f;
+}
+
+/**
+ * A2.10: `expect.cinematic` contra `st.cinematic`: booleanos `active`, `letterbox`, `chromeHidden`, `following`
+ * (cámara), `skipped`, `covered` y `ducked`; `zoom` (número, ±0,01); `transition` (none|iris|wipe); `endedMin`
+ * (cinemáticas terminadas en la escena, como mínimo).
+ */
+export function checkCinematic(want, st) {
+  const c = st.cinematic;
+  if (c === undefined) return ['el juego no expone `cinematic` en state() (API de QA anterior a A2.10)'];
+  if (!c) return ['sin estado de cinemáticas (no hay escena de juego)'];
+  const f = [];
+  for (const k of ['active', 'letterbox', 'chromeHidden', 'skipped', 'covered', 'ducked']) {
+    if (want[k] !== undefined && Boolean(c[k]) !== want[k]) f.push(`cinemática: ${k} = ${Boolean(c[k])}, se esperaba ${want[k]}`);
+  }
+  if (want.following !== undefined && Boolean(c.camera?.following) !== want.following) {
+    f.push(`cinemática: la cámara ${c.camera?.following ? 'sigue' : 'no sigue'} al jugador, se esperaba que ${want.following ? 'sí' : 'no'}`);
+  }
+  if (typeof want.zoom === 'number' && !(Math.abs((c.camera?.zoom ?? NaN) - want.zoom) <= 0.01)) {
+    f.push(`cinemática: zoom de la cámara ${c.camera?.zoom}, se esperaba ${want.zoom}`);
+  }
+  if (want.transition !== undefined && c.transition !== want.transition) f.push(`cinemática: transición «${c.transition}», se esperaba «${want.transition}»`);
+  if (typeof want.endedMin === 'number' && !(c.ended >= want.endedMin)) f.push(`cinemática: ${c.ended} terminada(s) en la escena, se esperaban al menos ${want.endedMin}`);
+  return f;
+}
+
+/** A2.10: ops que un `runScript` de una ruta no puede llevar: cambiarían la partida por un atajo (como `goto`). */
+const RUNSCRIPT_FORBIDDEN = new Set(['addItem', 'removeItem', 'gotoScene', 'fadeToScene', 'setCostume', 'mintNFT', 'mintAchievement', 'achievement', 'dialogue', 'web3Require']);
+
+/**
+ * A2.10: defectos de los ops de un paso `runScript`: lista no vacía de `{ op }`, sin ops que cambien la partida
+ * (objetos, escena, disfraz, logros, mints, diálogos) y `setFlag` solo de flags `qa_*` (de la prueba, no del juego).
+ * Recorre las ramas `then`/`else`.
+ */
+export function runScriptDefects(ops) {
+  if (!Array.isArray(ops) || !ops.length) return ['"runScript" necesita "ops": una lista de ops no vacía'];
+  const out = [];
+  const walk = (list) => {
+    for (const op of list) {
+      if (!op || typeof op.op !== 'string') { out.push('cada op necesita "op"'); continue; }
+      if (RUNSCRIPT_FORBIDDEN.has(op.op)) out.push(`el op «${op.op}» cambia la partida: no vale en runScript`);
+      if (op.op === 'setFlag' && !/^qa_/.test(String(op.flag))) out.push(`setFlag «${op.flag}»: en runScript solo flags qa_* (de la prueba)`);
+      for (const k of ['then', 'else']) if (Array.isArray(op[k])) walk(op[k]);
+    }
+  };
+  walk(ops);
+  return out;
 }
 
 /**
@@ -213,6 +269,12 @@ export function routeDefects(route, opts = {}) {
     }
     if (['click', 'rightclick', 'doubleclick'].includes(s.do) && (typeof s.target !== 'string' || !s.target)) {
       out.push(`paso ${i + 1} (${describe(s)}): "${s.do}" necesita "target"`);
+    }
+    if (s.do === 'runScript') {
+      for (const d of runScriptDefects(s.ops)) out.push(`paso ${i + 1} (${describe(s)}): ${d}`);
+      if (s.skipAfterMs !== undefined && !(typeof s.skipAfterMs === 'number' && s.skipAfterMs >= 0)) {
+        out.push(`paso ${i + 1} (${describe(s)}): "skipAfterMs" tiene que ser un número ≥ 0`);
+      }
     }
     if (s.do === 'goto' && !opts.allowGoto) {
       out.push(`paso ${i + 1} (${describe(s)}): "goto" se salta puertas y gates; solo vale en rutas del selftest con "allowGoto"`);

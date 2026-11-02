@@ -293,6 +293,31 @@ export class Player extends Phaser.GameObjects.Sprite {
     this.setPosition(screen.x, screen.y);
   }
 
+  /** A2.10 (actorTeleport y el salto de actorMove): coloca al personaje en un punto (en %) sin andar. */
+  teleportPct(pctX: number, pctY: number): void {
+    this.halt();
+    this.pctX = pctX;
+    this.pctY = pctY;
+    this.syncScreenPosition();
+  }
+
+  /**
+   * A2.10 (actorAnim): deja al personaje en una textura quieta que ya exista (`key`) hasta que ande o se gire;
+   * `walk` = primer fotograma de andar hacia donde mira; null = la de su orientación (idle animado de frente).
+   * Devuelve false si la textura no existe.
+   */
+  pose(key: string | null): boolean {
+    if (key === null) {
+      this.applyFacing();
+      return true;
+    }
+    const tex = key === 'walk' ? `${this.spritePrefix}_walk_${this.lastSide === 'right' ? 'left' : 'right'}_0` : key;
+    if (!this.scene.textures.exists(tex)) return false;
+    this.staticKey = tex;
+    this.setTexture(tex);
+    return true;
+  }
+
   /** ¿Se puede pisar el punto? (walkableAreas menos blockedAreas; sin áreas, sí) */
   isWalkablePct(px: number, py: number): boolean {
     return this.nav.isWalkable(px, py);

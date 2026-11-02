@@ -26,6 +26,12 @@ export class VoiceSystem {
   /** Incremented on stop() to cancel any running playSequence loop. */
   private sequenceGen = 0;
 
+  /**
+   * A2.10: clip de la última frase pedida con `play` (subtítulos sincronizados en cinemática): duración en ms cuando
+   * ya está cargado, y si se está descargando o sonando.
+   */
+  private clip: { key: string | null; durationMs: number | null; loading: boolean } = { key: null, durationMs: null, loading: false };
+
   /** Text→voiceKey lookup. */
   private textMap = new Map<string, string>();
 
@@ -46,6 +52,7 @@ export class VoiceSystem {
    * Only ducks music for lines longer than DUCK_THRESHOLD characters.
    */
   play(text: string, explicitKey?: string): void {
+    this.clip = { key: null, durationMs: null, loading: false };
     if (!this.enabled) return;
     this.stop();
     if (this.soundOff()) return;
@@ -64,11 +71,13 @@ export class VoiceSystem {
     }
 
     // Lazy load then play
+    this.clip = { key, durationMs: null, loading: true };
     if (this.loading.has(key)) return;
     this.loading.add(key);
     this.scene.load.audio(key, voicePath(key));
     this.scene.load.once('complete', () => {
       this.loading.delete(key);
+      if (this.clip.key === key) this.clip.loading = false;
       if (this.scene.cache.audio.has(key)) {
         this.playKey(key, text.length);
       }
@@ -138,12 +147,28 @@ export class VoiceSystem {
     this.loading.clear();
   }
 
+  /**
+   * A2.10: clip de la última frase de `play`: `durationMs` (null si no tiene voz o aún no ha cargado), `loading` (se
+   * está descargando) y `playing` (sonando ahora).
+   */
+  clipInfo(): { durationMs: number | null; loading: boolean; playing: boolean } {
+    return {
+      durationMs: this.clip.durationMs,
+      loading: this.clip.loading,
+      playing: !!this.currentSound && this.currentSound.isPlaying,
+    };
+  }
+
   private playKey(key: string, textLength: number): void {
     const shouldDuck = textLength >= DUCK_THRESHOLD;
     if (shouldDuck) this.duckMusic();
 
     try {
       this.currentSound = this.scene.sound.add(key, { volume: 1.0 });
+      const secs = this.currentSound.duration;
+      if (this.clip.key === key || this.clip.key === null) {
+        this.clip = { key, durationMs: Number.isFinite(secs) && secs > 0 ? secs * 1000 : null, loading: false };
+      }
       this.currentSound.once('complete', () => {
         this.currentSound?.destroy();
         this.currentSound = null;

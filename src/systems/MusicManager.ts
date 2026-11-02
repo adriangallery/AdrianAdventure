@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { getMusicLevel, musicVolumeFor } from '@/systems/Settings';
 import { MUTED_STORAGE_KEY, mutedFromStored, shouldFetchAudio } from '@/systems/AudioPolicy';
+import { DUCK_FADE_MS, duckGainFor } from '@/systems/Cinematics';
 
 // Inyectado por vite.config.ts (define); mismo patrón que PreloadScene.
 declare const __BUILD_HASH__: string;
@@ -28,6 +29,13 @@ export class MusicManager {
   private game: Phaser.Game;
   private context: AudioContext;
   private masterGain: GainNode;
+  /**
+   * A2.10: ducking aparte del volumen (masterGain → duckGain → salida): bajo la voz y en cinemática la música baja a
+   * DUCK_LEVEL con un fundido de DUCK_FADE_MS. El silencio y el volumen de los ajustes siguen en masterGain, así que
+   * el ducking nunca los pisa (en silencio sigue sin sonar nada).
+   */
+  private duckGain: GainNode;
+  private duckSources = new Set<string>();
   private currentTrack: ManagedTrack | null = null;
   private fadingTrack: ManagedTrack | null = null;
   private currentKey: string | null = null;
@@ -40,9 +48,11 @@ export class MusicManager {
     const sm = game.sound as Phaser.Sound.WebAudioSoundManager;
     this.context = sm.context;
 
-    // Master gain → destination
+    // Master gain → duck gain (A2.10) → destination
+    this.duckGain = this.context.createGain();
+    this.duckGain.connect(this.context.destination);
     this.masterGain = this.context.createGain();
-    this.masterGain.connect(this.context.destination);
+    this.masterGain.connect(this.duckGain);
     this.masterGain.gain.value = this.musicVolume;
 
     // Restore mute state — default to muted (OFF) on first visit so user must
@@ -220,22 +230,40 @@ export class MusicManager {
     }
   }
 
-  /** Duck music volume for voice playback (fade to ~10% over 0.5s) */
+  /** Duck music under a voice clip. A2.10: ~35 % with a 200 ms fade (same as during a cinematic) */
   duck(): void {
-    if (this.muted) return;
-    const now = this.context.currentTime;
-    const current = Math.max(this.masterGain.gain.value, 0.001);
-    this.masterGain.gain.setValueAtTime(current, now);
-    this.masterGain.gain.exponentialRampToValueAtTime(this.musicVolume * 0.05, now + 0.5);
+    this.setDuck('voice', true);
   }
 
-  /** Restore music volume after voice finishes (fade back over 1.2s) */
+  /** Restore music after the voice clip (200 ms fade), unless a cinematic still ducks it */
   unduck(): void {
-    if (this.muted) return;
-    const now = this.context.currentTime;
-    const current = Math.max(this.masterGain.gain.value, 0.001);
-    this.masterGain.gain.setValueAtTime(current, now);
-    this.masterGain.gain.exponentialRampToValueAtTime(this.musicVolume, now + 1.2);
+    this.setDuck('voice', false);
+  }
+
+  /**
+   * A2.10: ducking por fuentes (`voice`, `cinematic`): mientras alguna lo pida, la música a DUCK_LEVEL; al soltarlo la
+   * última, vuelve. Rampa lineal de DUCK_FADE_MS sobre duckGain (independiente del silencio y del volumen).
+   */
+  setDuck(source: string, on: boolean): void {
+    const before = duckGainFor(this.duckSources);
+    if (on) this.duckSources.add(source);
+    else this.duckSources.delete(source);
+    const target = duckGainFor(this.duckSources);
+    if (target === before) return;
+    try {
+      const now = this.context.currentTime;
+      const g = this.duckGain.gain;
+      g.cancelScheduledValues(now);
+      g.setValueAtTime(g.value, now);
+      g.linearRampToValueAtTime(target, now + DUCK_FADE_MS / 1000);
+    } catch {
+      this.duckGain.gain.value = target;
+    }
+  }
+
+  /** A2.10 (QA): fuentes que bajan la música ahora mismo */
+  getDuckSources(): string[] {
+    return [...this.duckSources];
   }
 
   destroy(): void {
@@ -245,6 +273,7 @@ export class MusicManager {
     this.fadingTrack = null;
     this.currentKey = null;
     this.masterGain.disconnect();
+    this.duckGain.disconnect();
   }
 
   // ─── Private ──────────────────────────────

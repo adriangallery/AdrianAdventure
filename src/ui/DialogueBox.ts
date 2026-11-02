@@ -211,8 +211,10 @@ export class DialogueBox {
     const anchor = isAnchorOnScreen(head, vp) ? head : null;
     const wrap = speechWrapWidth(vp, anchor ? 'head' : 'top');
     if (cur.wrap !== wrap) this.measure(wrap);
-    const panelH = (this.scene.registry.get('scummPanelHeight') as number | undefined) ?? 0;
-    const p = placeSpeech({ head: anchor, vp, textW: cur.w, textH: cur.h, bottomInset: panelH });
+    // A2.10: en cinemática el panel está oculto bajo la franja inferior, que es la banda de subtítulos
+    const band = (this.scene.registry.get('cinematicBand') as { top: number; bottom: number } | null | undefined) ?? null;
+    const panelH = band ? 0 : ((this.scene.registry.get('scummPanelHeight') as number | undefined) ?? 0);
+    const p = placeSpeech({ head: anchor, vp, textW: cur.w, textH: cur.h, bottomInset: panelH, band });
 
     cur.mode = p.mode;
     cur.head = p.mode === 'head' && anchor ? { x: anchor.x, headY: anchor.headY, footY: anchor.footY } : null;
@@ -221,8 +223,8 @@ export class DialogueBox {
       this.text.setPosition(Math.round(p.x), Math.round(p.y));
       return;
     }
-    // Arriba-centro, como antes de A2.3: con el nombre de quien habla encima (si no es el jugador)
-    const y = topY(vp);
+    // Arriba-centro, como antes de A2.3 (o A2.10: en la franja inferior): con el nombre de quien habla encima
+    const y = p.mode === 'band' ? p.y : topY(vp);
     if (this.speakerText.text) {
       this.speakerText.setPosition(p.x, y - 4).setVisible(true);
       this.text.setPosition(p.x, y + 2);
@@ -330,6 +332,26 @@ export class DialogueBox {
 
   isVisible(): boolean {
     return this.visible;
+  }
+
+  /**
+   * A2.10: subtítulo de cinemática que avanza solo: si `text` sigue en pantalla, lo completa y lo cierra como un
+   * toque. Devuelve false si ya no está (lo cerró un toque o lo sustituyó otro texto).
+   */
+  advanceIfShowing(text: string): boolean {
+    if (!this.visible || this.fullMessage !== text) return false;
+    this.dismiss();
+    return true;
+  }
+
+  /** A2.10: salto de cinemática: cierra el texto en pantalla al momento (resuelve el `say` que lo esperaba). */
+  skip(): void {
+    if (this.visible) this.dismiss();
+  }
+
+  /** A2.10: objetos del texto (UIScene no los oculta con el resto de la interfaz en cinemática). */
+  getObjects(): Phaser.GameObjects.GameObject[] {
+    return [this.text, this.speakerText];
   }
 
   private handleResize(): void {

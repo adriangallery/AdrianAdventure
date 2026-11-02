@@ -11,7 +11,8 @@
  *   no está en la escena, no se ve (hidePlayer, closeups, tráiler) o se ha salido de la pantalla.
  */
 
-export type SpeechMode = 'head' | 'top';
+/** A2.10: `band` = subtítulo en la franja inferior del letterbox (cinemática y quien habla no se ve). */
+export type SpeechMode = 'head' | 'top' | 'band';
 
 /** Quién habla, resuelto a partir del `speaker` del texto. */
 export type SpeakerKind = 'player' | 'npc' | 'narrator';
@@ -81,7 +82,7 @@ export function speechStroke(fontSize: number): number {
  */
 export function speechWrapWidth(vp: Viewport, mode: SpeechMode = 'head'): number {
   const avail = Math.max(1, vp.width - SPEECH_MARGIN * 2);
-  if (mode === 'top') return Math.max(1, Math.min(vp.width - TOP_WRAP_PAD, TOP_WRAP_MAX));
+  if (mode === 'top' || mode === 'band') return Math.max(1, Math.min(vp.width - TOP_WRAP_PAD, TOP_WRAP_MAX));
   const ratio = vp.height > vp.width ? HEAD_WRAP_RATIO_PORTRAIT : HEAD_WRAP_RATIO;
   const want = clamp(vp.width * ratio, HEAD_WRAP_MIN, HEAD_WRAP_MAX);
   return Math.floor(Math.min(avail, want));
@@ -110,6 +111,18 @@ export interface PlaceOptions {
   bottomInset?: number;
   margin?: number;
   gap?: number;
+  /**
+   * A2.10: franjas del letterbox en pantalla (cinemática). Sin cabeza visible el texto va centrado en la de abajo
+   * (modo `band`); sobre la cabeza no pisa ninguna de las dos.
+   */
+  band?: { top: number; bottom: number } | null;
+}
+
+/** A2.10: Y del subtítulo en la franja inferior: centrado en ella, sin salirse por abajo. */
+export function bandY(vp: Viewport, bandBottom: number, textH: number, margin = SPEECH_MARGIN): number {
+  const top = vp.height - bandBottom;
+  const centered = top + (bandBottom - textH) / 2;
+  return Math.max(top + 2, Math.min(centered, vp.height - margin - textH));
 }
 
 /** Coloca el bloque de texto: sobre la cabeza y dentro de pantalla, o arriba-centro si no hay cabeza visible. */
@@ -118,7 +131,11 @@ export function placeSpeech(o: PlaceOptions): SpeechPlacement {
   const margin = o.margin ?? SPEECH_MARGIN;
   const gap = o.gap ?? SPEECH_GAP;
   const none = { left: false, right: false, top: false, bottom: false };
-  if (!isAnchorOnScreen(o.head, vp)) return { mode: 'top', x: vp.width / 2, y: topY(vp), clamped: none };
+  const band = o.band && o.band.bottom > 0 ? o.band : null;
+  if (!isAnchorOnScreen(o.head, vp)) {
+    if (band) return { mode: 'band', x: vp.width / 2, y: bandY(vp, band.bottom, o.textH, margin), clamped: none };
+    return { mode: 'top', x: vp.width / 2, y: topY(vp), clamped: none };
+  }
 
   const head = o.head;
   const halfW = o.textW / 2;
@@ -137,13 +154,14 @@ export function placeSpeech(o: PlaceOptions): SpeechPlacement {
   }
 
   let y = head.headY - gap - o.textH;
-  const maxY = vp.height - (o.bottomInset ?? 0) - margin - o.textH;
+  const maxY = vp.height - Math.max(o.bottomInset ?? 0, band?.bottom ?? 0) - margin - o.textH;
+  const minY = (band?.top ?? 0) + margin;
   if (y > maxY) {
     y = maxY;
     clamped.bottom = true;
   }
-  if (y < margin) {
-    y = margin;
+  if (y < minY) {
+    y = minY;
     clamped.top = true;
   }
   return { mode: 'head', x, y, clamped };

@@ -1,11 +1,32 @@
 import type { ScriptOp } from '@/types/scene.types';
 import type { GameState } from '@/types/game.types';
 import type { GatingRule } from '@/web3/gating';
+import type { SkipAction, TransitionSpec } from './Cinematics';
 
 export interface MintResult {
   status: 'success' | 'pending' | 'failed' | 'not-configured';
   txHash?: string;
   error?: string;
+}
+
+/**
+ * A2.10: puente del ScriptEngine con el director de cinemáticas (`src/systems/CinematicDirector.ts`, en GameScene).
+ * El motor solo decide el orden y el salto; la cámara, las franjas y los actores son cosa del director. La lógica
+ * pura (qué op es de cinemática, qué hace cada uno al saltar) está en `src/systems/Cinematics.ts`.
+ */
+export interface CinemaHooks {
+  /** ¿Es un op de cámara, transición o actor (`CINEMATIC_OPS`)? */
+  handles: (opName: string) => boolean;
+  /** Qué hacer con el op al saltar la cinemática (`skipActionFor`) */
+  skipAction: (op: ScriptOp) => SkipAction;
+  /** Entra en modo cinemática: franjas, interfaz oculta, entrada bloqueada, música baja. Idempotente. */
+  begin: () => void;
+  /** Sale del modo cinemática y lo deja todo como estaba (cámara incluida). `instant` = sin animar. Idempotente. */
+  end: (opts: { instant: boolean; skipped: boolean }) => void;
+  /** Ejecuta un op de `handles`; con `instant` aplica su estado final al momento. Siempre termina. */
+  run: (op: ScriptOp, instant: boolean) => Promise<void>;
+  /** Termina de golpe las animaciones en curso (estado final) y cierra el texto en pantalla: el salto. */
+  finishAll: () => void;
 }
 
 export interface ScriptContext {
@@ -18,7 +39,8 @@ export interface ScriptContext {
   setState: (updater: (s: GameState) => GameState) => void;
   say: (text: string, speaker?: string) => Promise<void>;
   sayBrief?: (text: string, durationMs?: number, speaker?: string) => Promise<void>;
-  gotoScene: (sceneId: string, spawn?: { x: number; y: number }) => void;
+  /** A2.10: `transition` opcional (iris, cortinilla o fundido) del op `fadeToScene`/`gotoScene` */
+  gotoScene: (sceneId: string, spawn?: { x: number; y: number }, transition?: TransitionSpec | null) => void;
   addItem: (id: string, name: string) => void;
   removeItem: (id: string) => void;
   playSound?: (key: string) => void;
@@ -48,6 +70,10 @@ export interface ScriptContext {
   setOverlayOverride?: (overlayId: string, visible: boolean | null) => boolean;
   /** A1.4: quita todos los forzados de overlays (los deja como dicte su flag). */
   clearOverlayOverrides?: () => void;
+  /** A2.10: cinemáticas (cámara, franjas, actores, transiciones). Sin él, esos ops no hacen nada. */
+  cinema?: CinemaHooks;
+  /** A2.10: `transition` de un op ya validada (Cinematics.parseTransition); sin ella, null */
+  parseTransition?: (raw: unknown) => TransitionSpec | null;
 }
 
 /**
@@ -66,7 +92,7 @@ export const WATCHDOG_MS = 30_000;
  * tiempo y sin nada en pantalla del juego. `mintAchievement` ya no bloquea el script, y un `mintNFT` que
  * pasa de 30 s se abandona como cualquier cuelgue, pero su resultado tardío sigue ejecutando onSuccess/onFail.
  */
-const SELF_RESOLVING_OPS = new Set(['wait', 'web3Require', 'flicker']);
+const SELF_RESOLVING_OPS = new Set(['wait', 'web3Require', 'flicker', 'cinematic', 'cinematicStart', 'cinematicEnd']);
 
 /**
  * A1.4: patrón de `flicker` ya validado: duraciones (ms) finitas y no negativas. Devuelve null si `pattern` no es
@@ -128,6 +154,13 @@ export class ScriptEngine {
    * cuanto ve que cambió.
    */
   private effectsEpoch = 0;
+  /**
+   * A2.10: este motor abrió el modo cinemática (`cinematic`/`cinematicStart`) y aún no lo ha cerrado. Al acabar el
+   * script, en `forceReset` y en `cancelEffects` se cierra solo: nunca se quedan las franjas puestas.
+   */
+  private cinematicOwned = false;
+  /** A2.10: el jugador saltó la cinemática: hasta su fin, cada op va por `runSkipped` (Cinematics.skipActionFor) */
+  private skipping = false;
 
   constructor(ctx: ScriptContext) {
     this.ctx = ctx;
@@ -145,11 +178,38 @@ export class ScriptEngine {
     this.fastForward = on;
   }
 
+  /** A2.10: hay una cinemática abierta por este motor. */
+  inCinematic(): boolean {
+    return this.cinematicOwned;
+  }
+
+  /**
+   * A2.10: salta la cinemática en curso (mantener pulsado o Esc). Las animaciones terminan en su estado final, el
+   * texto en pantalla se cierra, y el resto de ops hasta su fin se resuelve sin esperar: los de estado se aplican,
+   * los de cámara y actores saltan a su estado final y la presentación se omite. Devuelve false si no hay
+   * cinemática de este motor o ya se está saltando.
+   */
+  skipCinematic(): boolean {
+    if (!this.running || !this.cinematicOwned || this.skipping) return false;
+    this.skipping = true;
+    this.ctx.cinema?.finishAll();
+    return true;
+  }
+
+  /** A2.10: cierra la cinemática de este motor (fin explícito, fin del script, reinicio o cierre de escena). */
+  private endCinematic(instant: boolean): void {
+    if (!this.cinematicOwned) return;
+    const skipped = this.skipping;
+    this.cinematicOwned = false;
+    this.skipping = false;
+    this.ctx.cinema?.end({ instant: instant || skipped, skipped });
+  }
+
   /** Espera ms milisegundos, o menos si se activa el avance rápido (o, A1.4, si `cancelled()` pasa a true). */
   private sleep(ms: number, cancelled?: () => boolean): Promise<void> {
     return new Promise<void>((resolve) => {
       const end = Date.now() + ms;
-      const tick = () => (this.fastForward || Date.now() >= end || cancelled?.() ? resolve() : setTimeout(tick, 50));
+      const tick = () => (this.fastForward || this.skipping || Date.now() >= end || cancelled?.() ? resolve() : setTimeout(tick, 50));
       tick();
     });
   }
@@ -161,6 +221,8 @@ export class ScriptEngine {
   cancelEffects(): void {
     this.effectsEpoch++;
     this.ctx.clearOverlayOverrides?.();
+    // A2.10: ni franjas ni cámara a medias tras un reinicio o al cerrar la escena
+    this.endCinematic(true);
   }
 
   /** Op que el script está esperando ahora mismo (el del bloque más interno). */
@@ -181,7 +243,8 @@ export class ScriptEngine {
       return false;
     }
     const op = this.currentOp();
-    if (presenting || (op && SELF_RESOLVING_OPS.has(op.op))) {
+    // A2.10: los ops de cámara, actores y transiciones terminan solos (tween o tope de tiempo): no son un cuelgue
+    if (presenting || (op && (SELF_RESOLVING_OPS.has(op.op) || this.ctx.cinema?.handles(op.op)))) {
       this.stallMs = 0;
       return false;
     }
@@ -219,7 +282,7 @@ export class ScriptEngine {
     this.stallMs = 0;
     const abandon = this.abandonCurrent;
     this.abandonCurrent = null;
-    // A1.4: un flicker colgado o abandonado no deja el overlay a medias
+    // A1.4: un flicker colgado o abandonado no deja el overlay a medias. A2.10: y cierra la cinemática al momento
     this.cancelEffects();
 
     const applied: string[] = [];
@@ -274,9 +337,13 @@ export class ScriptEngine {
         this.ctx.removeItem(op.id as string);
         return true;
       case 'gotoScene':
-      case 'fadeToScene':
-        this.ctx.gotoScene(op.sceneId as string, op.spawn as { x: number; y: number } | undefined);
+      case 'fadeToScene': {
+        // A2.10: `transition` opcional: "iris" | "wipe" | "fade" | { type, at, dir, ms }
+        const transition = op.transition !== undefined ? this.ctx.parseTransition?.(op.transition) ?? null : null;
+        if (transition) this.ctx.gotoScene(op.sceneId as string, op.spawn as { x: number; y: number } | undefined, transition);
+        else this.ctx.gotoScene(op.sceneId as string, op.spawn as { x: number; y: number } | undefined);
         return true;
+      }
       case 'achievement':
         // { op: "achievement", text: "Chapter 1 Complete" } — non-blocking
         this.ctx.showAchievement?.(op.text as string);
@@ -337,6 +404,7 @@ export class ScriptEngine {
     } finally {
       // Una ejecución abandonada por forceReset no toca el estado de la que vino después
       if (gen === this.generation) {
+        this.endCinematic(false);
         this.running = false;
         this.stopped = false;
         this.frames = [];
@@ -349,11 +417,14 @@ export class ScriptEngine {
   /** El script y después los que llegaron a la cola mientras tanto (FIFO), mientras siga siendo la generación viva. */
   private async drain(ops: ScriptOp[], gen: number): Promise<void> {
     await this.runOps(ops, gen);
+    // A2.10: un script que abre una cinemática y no la cierra no deja las franjas a los que vienen en cola
+    if (gen === this.generation) this.endCinematic(false);
     while (gen === this.generation && this.pendingQueue.length > 0) {
       this.stopped = false;
       const next = this.pendingQueue.shift()!;
       this.currentLabel = next.label;
       await this.runOps(next.ops, gen);
+      if (gen === this.generation) this.endCinematic(false);
     }
   }
 
@@ -411,6 +482,48 @@ export class ScriptEngine {
   }
 
   private async runOp(op: ScriptOp, gen: number): Promise<void> {
+    if (this.skipping && gen === this.generation) {
+      await this.runSkipped(op, gen);
+      return;
+    }
+    await this.runOpNormal(op, gen);
+  }
+
+  /**
+   * A2.10: un op mientras se salta la cinemática (ver `SkipAction` en Cinematics.ts): estado se aplica, ramas se
+   * evalúan, cámara/actores/transiciones saltan a su estado final, lo que espera algo que el salto no decide
+   * (diálogo, web3) se ejecuta normal, la presentación se omite, y el fin de la cinemática deja de saltar.
+   */
+  private async runSkipped(op: ScriptOp, gen: number): Promise<void> {
+    const action: SkipAction = this.ctx.cinema?.skipAction(op) ?? 'skip';
+    switch (action) {
+      case 'state':
+        this.applyStateOp(op);
+        return;
+      case 'branch': {
+        const branch = this.branchOf(op);
+        if (branch) await this.runOps(branch, gen);
+        return;
+      }
+      case 'end':
+        this.endCinematic(true);
+        return;
+      case 'instant':
+        // `cinematic {on:true}` dentro de la misma cinemática: ya está abierta
+        if (this.ctx.cinema?.handles(op.op)) await this.ctx.cinema.run(op, true);
+        return;
+      case 'run':
+        await this.runOpNormal(op, gen);
+        return;
+      case 'stop':
+        if (gen === this.generation) this.stopped = true;
+        return;
+      default:
+        return;
+    }
+  }
+
+  private async runOpNormal(op: ScriptOp, gen: number): Promise<void> {
     if (this.applyStateOp(op)) return;
     const branch = this.branchOf(op);
     if (branch) {
@@ -570,6 +683,23 @@ export class ScriptEngine {
         break;
       }
 
+      // ─── A2.10: modo cinemática ───────────────────────
+      case 'cinematic':
+      case 'cinematicStart':
+      case 'cinematicEnd': {
+        // { op: "cinematic", on: true|false } o { op: "cinematicStart" } / { op: "cinematicEnd" }
+        const start = op.op === 'cinematicStart' || (op.op === 'cinematic' && op.on !== false);
+        if (gen !== this.generation) break;
+        if (start) {
+          if (!this.ctx.cinema) break;
+          this.cinematicOwned = true;
+          this.ctx.cinema.begin();
+        } else {
+          this.endCinematic(false);
+        }
+        break;
+      }
+
       case 'stop':
         if (gen === this.generation) this.stopped = true;
         return;
@@ -582,6 +712,11 @@ export class ScriptEngine {
         break;
 
       default:
+        // A2.10: cámara, transiciones y actores (CINEMATIC_OPS) van al director de cinemáticas
+        if (this.ctx.cinema?.handles(op.op)) {
+          await this.ctx.cinema.run(op, false);
+          break;
+        }
         console.warn(`ScriptEngine: unknown opcode "${op.op}"`);
     }
   }
