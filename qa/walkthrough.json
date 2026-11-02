@@ -82,6 +82,53 @@
         { "do": "key", "key": "Escape", "note": "Esc sin cinemática suelta el verbo elegido", "expect": { "verb": "WALK" } },
         { "do": "doubleclick", "target": "hs_stairs_up", "note": "doble clic en una salida: sube sin andar hasta la escalera (la API falla si el personaje se mueve)", "expect": { "scene": "upstairs", "noListenerGrowth": true } }
       ]
+    },
+    {
+      "id": "cinematica",
+      "kind": "walkthrough",
+      "title": "A2.10: cinemática de ejemplo en el lobby (franjas, pan a la recepcionista, zoom, el jugador anda y se gira, subtítulos, sacudida e iris) vista entera y saltada con Esc: mismo estado final y todo restaurado",
+      "goal": {"scene": "lobby", "flags": {"qa_cinematic_done": true}},
+      "steps": [
+        {"do": "newGame", "expect": {"scene": "outside"}},
+        {"do": "act", "verb": "PICK", "target": "hs_porch_light", "expect": {"has": ["code_note"]}},
+        {"do": "use", "item": "code_note", "target": "hs_keypad", "expect": {"scene": "lobby"}},
+        {"do": "runScript", "note": "la cinemática entera: los textos avanzan solos (voz o caracteres)", "ops": [
+          {"op": "cinematicStart"},
+          {"op": "cameraPan", "actor": "npc_receptionist", "ms": 900},
+          {"op": "cameraZoom", "zoom": 2, "ms": 700},
+          {"op": "say", "speaker": "Narrator", "text": "Only the receptionist remains at her post."},
+          {"op": "cameraFollow", "ms": 600},
+          {"op": "actorMove", "actor": "player", "x": 52, "y": 92},
+          {"op": "actorFace", "actor": "player", "dir": "left"},
+          {"op": "say", "text": "A tall plant in a ceramic pot. It looks thirsty. Really thirsty."},
+          {"op": "setFlag", "flag": "qa_cinematic_done", "value": true},
+          {"op": "cameraShake", "intensity": 0.01, "ms": 350},
+          {"op": "iris", "mode": "out", "actor": "player", "ms": 700},
+          {"op": "cinematicEnd"}
+        ],
+          "expect": {"flags": {"qa_cinematic_done": true}, "facing": "left", "playerNear": {"x": 52, "y": 92}, "cinematic": {"active": false, "letterbox": false, "chromeHidden": false, "following": true, "zoom": 1, "transition": "none", "ducked": false, "skipped": false, "endedMin": 1}} },
+        {"do": "runScript", "note": "deshace lo de la prueba fuera de cinemática: el jugador a la derecha y la flag de la prueba a false", "ops": [
+          {"op": "actorTeleport", "actor": "player", "x": 80, "y": 95},
+          {"op": "actorFace", "actor": "player", "dir": "right"},
+          {"op": "setFlag", "flag": "qa_cinematic_done", "value": false}
+        ],
+          "expect": {"flags": {"qa_cinematic_done": false}, "facing": "right", "playerNear": {"x": 80, "y": 95}} },
+        {"do": "runScript", "note": "la misma cinemática saltada con Esc a mitad del zoom: el mismo estado final, nada a medias", "skipAfterMs": 1500, "ops": [
+          {"op": "cinematicStart"},
+          {"op": "cameraPan", "actor": "npc_receptionist", "ms": 900},
+          {"op": "cameraZoom", "zoom": 2, "ms": 700},
+          {"op": "say", "speaker": "Narrator", "text": "Only the receptionist remains at her post."},
+          {"op": "cameraFollow", "ms": 600},
+          {"op": "actorMove", "actor": "player", "x": 52, "y": 92},
+          {"op": "actorFace", "actor": "player", "dir": "left"},
+          {"op": "say", "text": "A tall plant in a ceramic pot. It looks thirsty. Really thirsty."},
+          {"op": "setFlag", "flag": "qa_cinematic_done", "value": true},
+          {"op": "cameraShake", "intensity": 0.01, "ms": 350},
+          {"op": "iris", "mode": "out", "actor": "player", "ms": 700},
+          {"op": "cinematicEnd"}
+        ],
+          "expect": {"flags": {"qa_cinematic_done": true}, "facing": "left", "playerNear": {"x": 52, "y": 92}, "cinematic": {"active": false, "letterbox": false, "chromeHidden": false, "following": true, "zoom": 1, "transition": "none", "ducked": false, "skipped": true, "endedMin": 2}, "noListenerGrowth": true} }
+      ]
     }
   ]
 }

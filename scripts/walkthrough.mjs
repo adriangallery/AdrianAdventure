@@ -1,6 +1,6 @@
 // A0.1 (plan SCUMM): recorrido automático y pruebas de atajos con la API de QA del juego (?qa=1).
 // Ejecuta rutas declarativas de qa/*.json (newGame, act, use, combine, talk, walk, goto, dismissAll, wait, resize y,
-// desde A2.4, key, click, rightclick y doubleclick)
+// desde A2.4, key, click, rightclick y doubleclick; desde A2.10, runScript)
 // con comprobaciones de escena, inventario y flags. Cada ruta va en un navegador limpio (sin partidas
 // guardadas). Deja una captura por paso y un informe en walkthrough-shots/ (report.json + resumen de CI).
 //
@@ -59,6 +59,8 @@ const callQa = (page, step) => page.evaluate(async (s) => {
     case 'click': return q.click(s.target, s.choices ?? []);
     case 'rightclick': return q.rightClick(s.target, s.choices ?? []);
     case 'doubleclick': return q.doubleClick(s.target);
+    // A2.10: script de QA por el ScriptEngine principal (cinemáticas); Esc a los `skipAfterMs` para saltarla
+    case 'runScript': return q.runScript(s.ops, s.skipAfterMs !== undefined ? { skipAfterMs: s.skipAfterMs } : {});
     default: throw new Error(`[qa:error] paso desconocido «${s.do}»`);
   }
 }, step);

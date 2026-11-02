@@ -23,8 +23,9 @@ hasta el hotspot, combos, gates y diálogos). Nunca pone flags ni da objetos.
 | `click(id, choices?)` | A2.4: clic izquierdo de ratón con el verbo que ya tenga el panel (no lo elige: p. ej. tras `press('l')`) |
 | `rightClick(id, choices?)` | A2.4: clic derecho: verbo por defecto del hotspot (ver `src/systems/DesktopControls.ts`) o TALK en una NPC |
 | `doubleClick(id)` | A2.4: doble clic en una salida con Walk en el panel; `[qa:error]` si el personaje anda, `[qa:blocked]` si no cambia de escena en 4 s |
+| `runScript(ops, { skipAfterMs? })` | A2.10: ejecuta `ops` por el ScriptEngine principal (como un script de hotspot) y espera a que termine; los textos de una cinemática avanzan solos y los de fuera se cierran con el toque sintético. `skipAfterMs`: pulsa Esc (tecla real) a ese tiempo, para saltar la cinemática. Ver § Cinemáticas |
 | `isWalkable(x, y)` | A2.1: si el punto (en %) se pisa en la escena actual (`walkableAreas` menos `blockedAreas`); síncrona |
-| `state()` | Escena, inventario, flags, visitadas, hotspots visibles, elecciones, avisos, log (`logTotal`: líneas apuntadas desde que cargó) `actions` (verbos que llegaron a ejecutarse) y `resizeListeners` (A1.10: listeners de `resize` del ScaleManager) y `path` (A2.1: última ruta calculada al andar: origen, puntos de paso y destino), `facing` (A2.2: `left`/`right`/`front`/`back`) y `walkTarget` (A2.2: último acercamiento a un hotspot/NPC: `target`, `verb`, `walkTo` —null si no anduvo— y `face`), y (A2.4) `verb` (verbo del panel), `highlightedHotspots` (resaltados con Tab), `verbKeyHints` (verbos con su tecla pintada en el panel) e `inputListeners` (listeners de teclado y del lienzo) |
+| `state()` | Escena, inventario, flags, visitadas, hotspots visibles, elecciones, avisos, log (`logTotal`: líneas apuntadas desde que cargó) `actions` (verbos que llegaron a ejecutarse) y `resizeListeners` (A1.10: listeners de `resize` del ScaleManager) y `path` (A2.1: última ruta calculada al andar: origen, puntos de paso y destino), `facing` (A2.2: `left`/`right`/`front`/`back`) y `walkTarget` (A2.2: último acercamiento a un hotspot/NPC: `target`, `verb`, `walkTo` —null si no anduvo— y `face`), y (A2.4) `verb` (verbo del panel), `highlightedHotspots` (resaltados con Tab), `verbKeyHints` (verbos con su tecla pintada en el panel) e `inputListeners` (listeners de teclado y del lienzo), y (A2.10) `cinematic` (ver § Cinemáticas) |
 
 Todas (salvo `state()` e `isWalkable()`) esperan a que el juego quede quieto y devuelven `state()`. Los errores empiezan por `[qa:blocked]`
 (el juego no deja hacerlo) o `[qa:error]` (id inexistente, tiempo agotado).
@@ -52,7 +53,11 @@ Pasos: `newGame`, `act`, `use`, `combine`, `talk`, `walk`, `goto`, `dismissAll`,
 último acercamiento) y `highlighted` (`{ min, max, includes, excludes }` sobre `state().highlightedHotspots`, lo resaltado
 con Tab); `noListenerGrowth` también exige que `state().inputListeners` (teclado y lienzo de GameScene) no crezca. La
 ruta `controles-escritorio` de `walkthrough.json` los usa en el lobby, y el smoke repite Esc, Tab, el doble clic y el
-clic derecho con el teclado y el ratón reales de Chrome. Cada paso admite `expect` con `scene`, `has`, `lacks`, `flags`, `unsetFlags`, `visited`,
+clic derecho con el teclado y el ratón reales de Chrome. A2.10 añade el paso `runScript` (`ops`, `skipAfterMs`) y
+`expect.cinematic` (`active`, `letterbox`, `chromeHidden`, `following`, `zoom`, `transition`, `skipped`, `covered`, `ducked`,
+`endedMin`) y `expect.playerNear` (`{ x, y, tol }`, en %); un `runScript` de una ruta no puede llevar ops que cambien la
+partida (objetos, escena, disfraz, logros, mints, diálogos) y solo pone flags `qa_*`. La ruta `cinematica` ve una
+cinemática entera y luego la misma saltada con Esc y exige el mismo estado final. Cada paso admite `expect` con `scene`, `has`, `lacks`, `flags`, `unsetFlags`, `visited`,
 `achievements`, `lastChoices`, `facing` (A2.2: hacia dónde mira el personaje al acabar el paso) y `noListenerGrowth`, y `rejects`: expresión regular (sin distinguir mayúsculas) que tiene que salir en los textos
 mostrados durante ese paso, p. ej. la frase con la que el juego rechaza la acción. Las rutas llevan un `goal` con
 el mismo formato que `expect`.
@@ -225,6 +230,58 @@ Renombrar una flag que ya está en partidas guardadas exige migración: `src/sys
 (`SAVE_VERSION`, `RENAMED_FLAGS`) migra al cargar los slots locales, la partida de la wallet, la de la nube y la
 importada, y `GameScene.create` lo repite como red de seguridad. Pruebas en `tests/save-migration.test.mjs`
 (`npm run test:engine`, Node 22). Renombradas: `found_hw_wallet` → `found_terminal_key` (A1.4).
+
+# Cinemáticas (A2.10)
+
+Ops de `src/systems/ScriptEngine.ts`; la cámara, las franjas y los actores los hace `src/systems/CinematicDirector.ts`
+(uno por escena, en GameScene) y la lógica pura (geometría, cámara, salto) está en `src/systems/Cinematics.ts`
+(`tests/cinematics.test.mjs`, en `npm run test:engine`). Coordenadas en % del fondo, como el resto de las escenas.
+
+```jsonc
+{ "op": "cinematicStart" }                       // o { "op": "cinematic", "on": true }
+{ "op": "cameraPan", "actor": "npc_receptionist", "ms": 900, "ease": "sine" }   // o "x": 24, "y": 60
+{ "op": "cameraZoom", "zoom": 2, "ms": 700 }     // opcional "actor" o "x"/"y": acerca hacia ese punto a la vez
+{ "op": "cameraShake", "intensity": 0.01, "ms": 350 }
+{ "op": "cameraFollow", "ms": 600 }              // vuelve al jugador y lo sigue (opcional "zoom")
+{ "op": "actorMove", "actor": "player", "x": 52, "y": 92 }   // NPC: se desliza a velocidad andante ("ms" la fija)
+{ "op": "actorFace", "actor": "player", "dir": "left" }      // left | right | front | back
+{ "op": "actorAnim", "actor": "npc_receptionist", "anim": "talk" }   // idle | walk | talk | <clave de textura>
+{ "op": "actorShow", "actor": "npc_x", "ms": 400 }  /  { "op": "actorHide", "actor": "npc_x" }
+{ "op": "actorTeleport", "actor": "player", "x": 80, "y": 95, "dir": "right" }
+{ "op": "iris", "mode": "out", "actor": "player", "ms": 700 }  // out = se cierra; in = se abre; o "x"/"y"
+{ "op": "wipe", "mode": "out", "dir": "left", "ms": 500 }      // left | right | up | down
+{ "op": "fadeToScene", "sceneId": "upstairs", "transition": "iris" }  // o { "type": "wipe", "dir": "up", "ms": 400 }
+{ "op": "cinematicEnd" }                         // o { "op": "cinematic", "on": false }
+```
+
+- **Modo cinemática** (`cinematicStart` … `cinematicEnd`): franjas negras con tween (la de abajo tapa el panel y es la
+  banda de subtítulos), interfaz de UIScene oculta (sin entrada: panel, Save, Wallet, trofeos; teclado salvo Esc),
+  música al 35 % y la cámara pasa al director. Al salir todo vuelve como estaba: franjas fuera, interfaz, música y la
+  cámara de siempre con zoom 1 (con una vuelta animada al jugador). Idempotente. Si el script acaba sin
+  `cinematicEnd`, se cierra solo; también en `forceReset` del watchdog y en el SHUTDOWN de la escena: un
+  `fadeToScene` dentro de una cinemática deja la escena nueva limpia (si debe seguir, su `onEnter` abre otra).
+- **Cámara**: `cameraPan`/`cameraZoom`/`cameraFollow` solo dentro de una cinemática (fuera se omiten con aviso);
+  respetan los límites del fondo (no enseñan nada fuera de él). `cameraShake` vale en cualquier script.
+- **Actores**: `player` (o sin `actor`) es el jugador; si no, id o nombre de una NPC de `npcs[]`. `actorMove` del
+  jugador usa el pathfinding (A2.1) y espera a que llegue; las NPC no tienen sprites de andar y se deslizan. Valen
+  también fuera de cinemática. NPC: `actorFace` `left` = sprite espejado.
+- **Transiciones**: iris y cortinilla con Graphics (sin máscaras ni assets). Una iris `out` deja la pantalla en negro
+  hasta un `in`, un `fadeToScene` o el fin de la cinemática (que la abre). `fadeToScene` con `transition` sale con
+  ella y la escena nueva entra con la misma abriéndose.
+- **Subtítulos**: en cinemática `say` avanza solo cuando acaba su clip de voz (`VoiceSystem.clipInfo`) o, sin voz,
+  al tiempo de escribirlo y leerlo; un toque lo adelanta. Sobre la cabeza de quien habla si se ve (con el zoom); si
+  no (narrador, fuera de pantalla), en la franja inferior (`speech.mode = band`).
+- **Salto**: mantener pulsado (600 ms) o Esc. Lo que está en curso termina en su estado final, el texto se cierra, y hasta el
+  fin de la cinemática los ops se resuelven al momento (`skipActionFor`): los de estado (`setFlag`, `addItem`,
+  `removeItem`, cambios de escena, logros, disfraz) se aplican; condicionales se evalúan; cámara, actores y
+  transiciones saltan a su estado final (el jugador aparece donde iba); `dialogue`/web3 se ejecutan normal; textos,
+  esperas, sonidos, sacudidas, `titleCard`/`narrative`/`monitorReveal`/`credits` se omiten. Lo de después del fin
+  sigue normal. Un toque corto en cinemática enseña «HOLD TO SKIP» (con ratón, «ESC / HOLD TO SKIP»).
+- **Watchdog**: los ops de cámara, actores y transiciones terminan solos (tween o tope de tiempo), así que no
+  cuentan como cuelgue; un op ajeno colgado dentro de una cinemática sí se rescata, y el rescate cierra la cinemática.
+- **QA**: `__qa.runScript(ops, { skipAfterMs })` y `state().cinematic` = `{ active, letterbox, chromeHidden,
+  camera: { x, y, zoom, following }, transition, covered, skipped, ended, animating, ducked }`. Demo:
+  `scripts/demo-a2-10-cinematics.mjs`; ruta `cinematica` de `walkthrough.json`.
 
 # Linter de escenas (A0.4)
 
