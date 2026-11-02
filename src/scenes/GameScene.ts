@@ -31,6 +31,8 @@ import { CinematicDirector, type CinematicQaState, type CinematicUi } from '@/sy
 import { parseTransition, worldToScreen, type TransitionSpec } from '@/systems/Cinematics';
 import { overlayTransform, type PctRect } from '@/systems/OverlayPlacement';
 import { FADE_FIRST_MS, FADE_SHORT_MS } from '@/systems/ScenePrefetch';
+import { addNote, callAnon } from '@/systems/Journal';
+import { JOURNAL_CHAPTERS, journalChapter, journalProgress, journalWorld } from '@/systems/JournalData';
 
 /** A2.4 (QA): cómo pulsa la API de QA: botón derecho o clic de ratón (cuenta para el doble clic). */
 type QaClick = { button?: 'left' | 'right'; mouse?: boolean };
@@ -530,6 +532,8 @@ export class GameScene extends Phaser.Scene {
 
   private handlePointerDown(pointer: Phaser.Input.Pointer): void {
     if (this.emittingSynthetic) return;
+    // A2.9: con el diario abierto el HTML tapa el lienzo; por si acaso, la escena no recibe toques
+    if (this.registry.get('journalOpen')) return;
     // A2.10: un toque en cinemática enseña cómo saltarla (mantener pulsado; con ratón, también Esc)
     if (this.cinema?.isActive()) this.cinema.noteTap(pointer.wasTouch);
     const blocked = this.scriptEngine.isRunning() || !!this.registry.get('dialogueActive') || !!this.registry.get('dialogueShowing');
@@ -1126,6 +1130,12 @@ export class GameScene extends Phaser.Scene {
     }
     e.preventDefault();
     if (e.repeat) return;
+    // A2.9: con el diario abierto, Esc y J lo cierran y ninguna otra tecla llega al juego
+    const journal = this.scene.isActive('UIScene') ? (this.scene.get('UIScene') as UIScene).getJournal?.() : undefined;
+    if (journal?.isOpen()) {
+      if (action.kind === 'skip' || action.kind === 'journal') journal.close();
+      return;
+    }
     // A2.10: en cinemática la interfaz está oculta: solo Esc (saltar)
     if (this.cinema?.isActive() && action.kind !== 'skip') return;
     const scummUI = this.uiSelection().scummUI;
@@ -1133,6 +1143,8 @@ export class GameScene extends Phaser.Scene {
       case 'verb': scummUI?.selectVerb(action.verb as Verb); break;
       case 'inventory': scummUI?.toggle(); break;
       case 'skip': this.handleEscape(); break;
+      // A2.9: J abre el diario (no se abre si hay cinemática, diálogo, texto o script: lo decide UIScene)
+      case 'journal': journal?.open(); break;
     }
   }
 
@@ -1219,7 +1231,8 @@ export class GameScene extends Phaser.Scene {
     const now = Date.now();
     const sig = this.currentProgressSig();
     if (sig !== this.progressSig) { this.progressSig = sig; this.lastProgressAt = now; return; }
-    if (this.scriptEngine.isRunning() || this.registry.get('dialogueShowing') || this.registry.get('dialogueActive')) {
+    // A2.9: leyendo el diario tampoco cuenta como atascado
+    if (this.scriptEngine.isRunning() || this.registry.get('dialogueShowing') || this.registry.get('dialogueActive') || this.registry.get('journalOpen')) {
       this.lastProgressAt = Math.max(this.lastProgressAt, now - 1000);
       return;
     }
@@ -1510,6 +1523,24 @@ export class GameScene extends Phaser.Scene {
       // A2.10: cinemáticas. Se resuelve al llamar: un script de la escena anterior no toca el director de esta
       cinema: this.cinemaHooks(run),
       parseTransition,
+      // A2.9: op journalNote (apunta una nota del diario; estado) y op callAnon (Anon da la pista del puzle abierto)
+      journalNote: (id) => {
+        const { progress, added } = addNote(JOURNAL_CHAPTERS, journalProgress(this.gameState), id);
+        if (added) {
+          this.gameState = { ...this.gameState, journal: progress };
+          this.registry.set('gameState', this.gameState);
+        }
+        return added || journalProgress(this.gameState).notes.includes(id);
+      },
+      callAnon: async () => {
+        const { call, progress } = callAnon(JOURNAL_CHAPTERS, journalChapter(this.gameState), journalWorld(this.gameState), journalProgress(this.gameState));
+        this.gameState = { ...this.gameState, journal: progress };
+        this.registry.set('gameState', this.gameState);
+        this.registry.set('journalLastCall', call);
+        await new Promise<void>((resolve) => {
+          this.scene.get('UIScene').events.emit('say', call.text, 'Anon', resolve);
+        });
+      },
     };
   }
 
@@ -1684,6 +1715,8 @@ export class GameScene extends Phaser.Scene {
   /** Lo mismo que comprueba handlePointerDown antes de aceptar un toque en la escena. */
   qaIsInputBlocked(): boolean {
     if (this.scriptEngine.isRunning() || this.inputCooldownFrames > 0) return true;
+    // A2.9: el diario abierto tapa la escena
+    if (this.registry.get('journalOpen')) return true;
     if (this.registry.get('dialogueActive') || this.registry.get('dialogueShowing')) return true;
     const dismissedAt = this.registry.get('dialogueDismissedAt') as number | undefined;
     return dismissedAt !== undefined && this.time.now - dismissedAt < 50;

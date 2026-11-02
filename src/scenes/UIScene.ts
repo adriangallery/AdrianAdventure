@@ -7,6 +7,7 @@ import { SaveButton } from '@/ui/SaveButton';
 import { VerbWheel } from '@/ui/VerbWheel';
 import { CinematicOverlay } from '@/ui/CinematicOverlay';
 import { BadgePanel } from '@/ui/BadgePanel';
+import { JournalPanel } from '@/ui/JournalPanel';
 import { DialogueSystem, type DialogueTree } from '@/systems/DialogueSystem';
 import { VoiceSystem } from '@/systems/VoiceSystem';
 import type { InventorySystem } from '@/systems/InventorySystem';
@@ -38,6 +39,8 @@ export class UIScene extends Phaser.Scene {
   private voiceSystem!: VoiceSystem;
   private cinematicOverlay!: CinematicOverlay;
   private badgePanel!: BadgePanel;
+  /** A2.9: el diario (móvil de Dex): botón en la barra de arriba y panel con objetivos, notas y «Call Anon» */
+  private journal!: JournalPanel;
   private isMobile = false;
   /** A2.10: objetos de la interfaz que oculta el modo cinemática (y que vuelve a enseñar al salir) */
   private hiddenChrome: Phaser.GameObjects.GameObject[] | null = null;
@@ -159,6 +162,15 @@ export class UIScene extends Phaser.Scene {
     // Badge panel (trophy button for viewing/minting achievements)
     this.badgePanel = new BadgePanel(this);
 
+    // A2.9: diario = móvil de Dex (a la derecha del botón de trofeos). No se abre con cinemática, diálogo, texto,
+    // script en marcha ni cambio de escena; las notas se apuntan solas en cuanto se cumple su condición (refresh)
+    this.journal = new JournalPanel(this, {
+      blockedReason: () => this.journalBlockedReason(),
+      playVoice: (text) => this.voiceSystem.play(text),
+      stopVoice: () => this.voiceSystem.stop(),
+    });
+    this.time.addEvent({ delay: 400, loop: true, callback: () => this.journal?.refresh() });
+
     // Store panel height for GameScene camera adjustment
     this.registry.set('scummPanelHeight', this.scummUI.getPanelHeight());
 
@@ -229,6 +241,8 @@ export class UIScene extends Phaser.Scene {
 
     // Say requests from ScriptEngine
     this.events.on('say', (text: string, speaker?: string, resolve?: () => void) => {
+      // A2.9: un texto hablado (p. ej. un trigger con temporizador) cierra el diario: el móvil no tapa a quien habla
+      this.journal?.close();
       this.voiceSystem.play(text);
       const shown = this.dialogueBox.say(text, speaker);
       // A2.10: en cinemática el texto avanza solo al ritmo de su voz (o por caracteres); un toque lo adelanta
@@ -246,6 +260,7 @@ export class UIScene extends Phaser.Scene {
 
     // Dialogue requests (from ScriptEngine opcode)
     this.events.on('startDialogue', (_npcId: string, treeId: string) => {
+      this.journal?.close();
       this.registry.set('dialogueActive', true);
       this.startDialogueFromScene(treeId).finally(() => {
         this.registry.set('dialogueActive', false);
@@ -357,6 +372,8 @@ export class UIScene extends Phaser.Scene {
    */
   setCinematicChrome(hidden: boolean, keep: Phaser.GameObjects.GameObject[] = []): void {
     if (hidden) {
+      // A2.9: el diario no se queda abierto encima de una cinemática
+      this.journal?.close();
       if (this.hiddenChrome) return;
       const skip = new Set<Phaser.GameObjects.GameObject>([...keep, ...(this.dialogueBox?.getObjects() ?? [])]);
       const root = this.choicePanel?.getRoot();
@@ -400,6 +417,21 @@ export class UIScene extends Phaser.Scene {
   uiButtonAt(x: number, y: number): string | null {
     if (this.saveButton?.contains(x, y)) return 'el botón Save';
     if (this.walletButton?.contains(x, y)) return 'el botón Wallet';
+    if (this.journal?.containsButton(x, y)) return 'el botón del diario';
+    return null;
+  }
+
+  /** A2.9: el diario (GameScene lo abre y cierra con J/Esc; la API de QA lo lee). */
+  getJournal(): JournalPanel { return this.journal; }
+
+  /** A2.9: por qué no se puede abrir el diario ahora (null = se puede). */
+  private journalBlockedReason(): string | null {
+    if (this.hiddenChrome || this.registry.get('cinematicMode') || ((this.registry.get('cinematicActive') as number | undefined) ?? 0) > 0) return 'cinemática';
+    if (this.registry.get('dialogueActive') || this.choicePanel?.isAwaitingChoice()) return 'diálogo';
+    if (this.registry.get('dialogueShowing')) return 'texto en pantalla';
+    if (this.registry.get('sceneTransition')) return 'cambio de escena';
+    if (!this.scene.isActive('GameScene')) return 'sin partida';
+    if ((this.scene.get('GameScene') as GameScene).qaBusy().script) return 'script en marcha';
     return null;
   }
 
@@ -472,6 +504,7 @@ export class UIScene extends Phaser.Scene {
     this.walletButton?.destroy();
     this.cinematicOverlay?.destroy();
     this.badgePanel?.destroy();
+    this.journal?.destroy();
     const gameScene = this.scene.get('GameScene');
     if (gameScene) for (const ev of UIScene.GAME_SCENE_EVENTS) gameScene.events.removeAllListeners(ev);
     for (const ev of UIScene.OWN_EVENTS) this.events.removeAllListeners(ev);
