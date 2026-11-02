@@ -23,6 +23,7 @@ const { page, browser } = demo;
 // Lienzo fijo para los fotogramas del GIF
 const stage = await browser.newPage();
 await stage.setViewport({ ...STAGE, deviceScaleFactor: 1 });
+await page.bringToFront();
 let frame = 0;
 async function stageFrame(png, caption) {
   const src = `data:image/png;base64,${Buffer.from(png).toString('base64')}`;
@@ -31,6 +32,8 @@ async function stageFrame(png, caption) {
     <div style="margin-bottom:12px">${caption}</div>
     <img src="${src}" style="max-width:${STAGE.width - 40}px;max-height:${STAGE.height - 60}px;outline:1px solid #504878"></body></html>`);
   await stage.screenshot({ path: join(demo.dir, 'frames', `${String(frame++).padStart(3, '0')}.png`) });
+  // Una pestaña en segundo plano frena requestAnimationFrame y el bucle de Phaser: el juego vuelve al frente
+  await page.bringToFront();
 }
 
 /** Geometría del menú en pantalla (coordenadas del juego = CSS px con Scale.RESIZE). */
