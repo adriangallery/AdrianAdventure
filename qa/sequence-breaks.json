@@ -24,7 +24,7 @@
         { "do": "walk", "x": 1.5, "y": 95, "trigger": "tr_mountain", "untilScene": "mountain", "gate": true, "expect": { "scene": "mountain" } },
         { "do": "walk", "x": 21, "y": 65, "trigger": "tr_to_clinic", "untilScene": "clinic_exterior", "gate": true, "expect": { "scene": "clinic_exterior" } },
         { "do": "act", "verb": "PICK", "target": "hs_visitor_box", "expect": { "scene": "clinic_exterior", "has": ["sign_in_sheet"], "flags": { "found_sign_in_sheet": true } } },
-        { "do": "act", "verb": "USE", "target": "hs_main_entrance", "attempt": true }
+        { "do": "act", "verb": "USE", "target": "hs_main_entrance", "attempt": true, "expect": { "scene": "clinic_exterior" } }
       ]
     },
     {
@@ -76,7 +76,7 @@
         { "do": "act", "verb": "USE", "target": "hs_stairs_up", "expect": { "scene": "upstairs", "lacks": ["keycard"] } },
         { "do": "act", "verb": "USE", "target": "hs_roof_hatch", "expect": { "scene": "rooftop" } },
         { "do": "act", "verb": "USE", "target": "hs_weather_vane", "expect": { "scene": "rooftop", "flags": { "vane_turned": true, "has_keycard": false } } },
-        { "do": "act", "verb": "USE", "target": "hs_roof_access_panel", "attempt": true }
+        { "do": "act", "verb": "USE", "target": "hs_roof_access_panel", "attempt": true, "rejects": "keycard reader still blinks red", "expect": { "scene": "rooftop", "lacks": ["keycard"] } }
       ]
     }
   ]

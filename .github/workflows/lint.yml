@@ -37,6 +37,8 @@ jobs:
         run: npm run test:lint
       - name: Pruebas de la cobertura de voces (A0.3)
         run: npm run test:voices
+      - name: Pruebas de la lógica del runner de walkthrough (A0.5)
+        run: npm run test:walkthrough:unit
       - name: ESLint
         run: |
           set -o pipefail

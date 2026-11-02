@@ -1,4 +1,4 @@
-# QA automática (A0.1)
+# QA automática (A0.1, A0.5)
 
 El CI (job `walkthrough` de `.github/workflows/build.yml`) juega la partida con Chrome headless contra el
 build real y comprueba el estado paso a paso. Capturas e informe en el artefacto `walkthrough-shots`.
@@ -17,15 +17,16 @@ hasta el hotspot, combos, gates y diálogos). Nunca pone flags ni da objetos.
 | `combine(itemA, itemB)` | Combinar dos objetos del inventario |
 | `talk(npcId, choices[])` | Hablar y responder las elecciones en orden (texto contenido, sin mayúsculas) |
 | `walk(x, y)` | Andar a un punto (en % del fondo); así se prueban las salidas por trigger |
-| `goto(sceneId, spawn?)` | Cambiar de escena como `gotoScene` (solo para preparar pruebas, no en rutas) |
+| `goto(sceneId, spawn?)` | Cambiar de escena como `gotoScene` (solo en rutas del selftest con `allowGoto`, ver abajo) |
 | `dismissAll()` | Cerrar textos y cinemáticas hasta que el juego quede quieto |
-| `state()` | Escena, inventario, flags, visitadas, hotspots visibles, elecciones, avisos y log |
+| `state()` | Escena, inventario, flags, visitadas, hotspots visibles, elecciones, avisos, log (`logTotal`: líneas apuntadas desde que cargó) y `actions` (verbos que llegaron a ejecutarse) |
 
 Todas esperan a que el juego quede quieto y devuelven `state()`. Los errores empiezan por `[qa:blocked]`
 (el juego no deja hacerlo) o `[qa:error]` (id inexistente, tiempo agotado).
 
-Los clics se resuelven con el mismo hit-test que el ratón (`GameScene.hitTestAt`): zona del panel, fuera
-del fondo, NPC con diálogo antes que hotspots y hotspot oculto que tapa a otro. La API busca un punto del
+Los clics se resuelven con el mismo hit-test que el ratón (`GameScene.hitTestAt`): zona del panel, botones
+de `UIScene` (Save y Wallet se quedan el clic antes que la escena, A0.5), fuera del fondo, NPC con diálogo
+antes que hotspots y hotspot oculto que tapa a otro. La API busca un punto del
 hotspot (o del sprite del NPC) donde el clic caiga en ese mismo objetivo; si no lo hay, lanza `[qa:error]`
 y la ruta falla. Un hotspot que el ratón no alcanza es un fallo, nunca un «el juego no deja».
 
@@ -41,8 +42,13 @@ jugador que se distrae, y falla si el script deja de estar en marcha durante la 
 en `PICK hs_mailbox` (35 s, más que los 30 s del watchdog, con `addItem` y `setFlag` pendientes tras el texto).
 
 Pasos: `newGame`, `act`, `use`, `combine`, `talk`, `walk`, `goto`, `dismissAll`, `wait` (`ms`). Cada paso
-admite `expect` con `scene`, `has`, `lacks`, `flags`, `visited` y `achievements`. Las rutas llevan un
-`goal` con el mismo formato.
+admite `expect` con `scene`, `has`, `lacks`, `flags`, `visited` y `achievements`, y `rejects`: expresión
+regular (sin distinguir mayúsculas) que tiene que salir en los textos mostrados durante ese paso, p. ej. la
+frase con la que el juego rechaza la acción. Las rutas llevan un `goal` con el mismo formato que `expect`.
+
+`goto` se salta puertas y gates, así que ninguna ruta de `walkthrough.json` ni de `sequence-breaks.json` puede
+usarlo (sale ERROR, «mal definida»): la preparación de un atajo se hace jugando. Solo lo admiten las rutas del
+selftest que lleven `"allowGoto": true`, y solo con `--selftest`.
 
 `walk` con `untilScene` repite el clic si un trigger intermedio paró al personaje. Si no llega a esa
 escena lanza `[qa:error]`. Con `trigger` (id de un trigger cuyo rectángulo contiene `x,y`) distingue dos
@@ -53,6 +59,12 @@ casos:
 Reglas de las rutas `sequence-break`, para no dar por cerrada una ruta sin haber probado el atajo:
 - el paso que intenta el atajo lleva `"attempt": true` (si ninguno lo lleva, es el último);
 - todos los pasos anteriores al intento llevan `expect`; si falta, la ruta sale ERROR («mal definida»);
+- el intento lleva `expect` o `rejects` (A0.5), para que el rechazo sea observable; solo se libra un `walk`
+  con `trigger` y `untilScene`, que ya exige pisar el trigger. Además, si el intento es un clic en la escena
+  (`act`, `talk`, `use` sobre un hotspot), la acción tiene que haberse ejecutado (`state().actions` sube al
+  saltar `player:arrived`, o al momento si no hace falta andar): si el personaje se quedó por el camino, o
+  si falla el `expect`/`rejects` del intento, la ruta sale ERROR y no «cerrada»;
+- si se cumple el `goal` manda el atajo abierto (FALLO o XFAIL), aunque falle el `expect` de ese paso;
 - la ruta solo sale cerrada si la para el intento o un paso con `"gate": true` (un gate que el checkpoint
   que cierra el atajo puede poner antes, como las salidas de la montaña);
 - un `[qa:blocked]` o un `expect` fallido en cualquier otro paso es ERROR, igual que un `[qa:error]` en
@@ -79,6 +91,46 @@ mismo capítulo o anteriores y están silenciadas en `qa/lint-scenes-allow.json`
 - Contra producción: Actions → build → Run workflow → `BASE_URL=https://adventure.zerothetoken.com`. Lanza
   smoke y walkthrough sin compilar. La API solo existe si ese despliegue ya incluye A0.1.
 - Una sola ruta: `WALKTHROUGH_ONLY=<id>`.
+
+## Selftest del runner (A0.5)
+
+`qa/selftest.json` tiene una ruta por cada rama de clasificación de `scripts/walkthrough.mjs`, contra el juego
+real y sin tocar escenas. Cada ruta dice qué resultado espera (`expectStatus`: `pass`/`fail`/`xfail`/`xpass`/
+`error`) y opcionalmente `expectDetail` (expresión regular del detalle). `npm run test:walkthrough:selftest`
+(`--selftest`) falla si alguna clasificación no coincide; en CI va en el job `walkthrough` justo después de las
+rutas reales (aunque fallen), con el mismo `BASE_URL`, y deja capturas en el artefacto
+`walkthrough-selftest-shots`.
+
+| Ruta | Espera | Rama |
+|---|---|---|
+| `st-pass-walkthrough` | PASS | walkthrough que sale bien |
+| `st-fail-expect` | FAIL | `expect` imposible en un walkthrough |
+| `st-fail-sin-objetivo` | FAIL | pasos bien, `goal` sin cumplir |
+| `st-fail-atajo-abierto` | FAIL | se cumple el `goal` en el intento (aunque falle su `expect`) |
+| `st-xfail-atajo-conocido` | XFAIL | el mismo atajo con `knownBreak` |
+| `st-pass-trigger-pisado` | PASS | `[qa:blocked]` en el intento: pisa `outside.tr_game_opening`, que no cambia de escena |
+| `st-xpass-ya-cerrado` | XPASS | lo mismo con `knownBreak` |
+| `st-pass-rechazo-visible` | PASS | intento con `rejects` («INVALID CODE» de `hs_keypad`) y acción ejecutada |
+| `st-error-sin-rechazo` | ERROR | el intento no muestra el `rejects` pedido |
+| `st-error-preparacion-expect` | ERROR | `expect` imposible en un paso de preparación |
+| `st-error-preparacion-bloqueada` | ERROR | `[qa:blocked]` por trigger pisado en un paso de preparación sin `gate` |
+| `st-error-trigger-fuera` | ERROR | `walk` con `trigger` cuyas coordenadas caen fuera de sus bounds |
+| `st-error-hotspot-tapado` | ERROR | `[qa:error]`: el ratón no alcanza `clinic_interior.hs_dr_coat`, tapado por la hitbox de `npc_dr_satoshi` (usa `goto` con `allowGoto`) |
+| `st-fail-boton-wallet` | FAIL | `[qa:error]`: el clic de `walk 97,3.5` en `outside` cae bajo el botón Wallet |
+| `st-def-goto` | ERROR | mal definida: `goto` sin `allowGoto` |
+| `st-def-preparacion-sin-expect` | ERROR | mal definida: paso anterior al intento sin `expect` |
+| `st-def-intento-sin-evidencia` | ERROR | mal definida: intento sin `expect` ni `rejects` |
+
+Notas: `upstairs.hs_paper_tray` (tapado al 87 % por `hs_desk`, aviso del linter A0.4) no sirve para la rama de
+hotspot inalcanzable: la fila de abajo de su rejilla de 7×7 queda fuera de `hs_desk` y el clic llega. Ningún
+hotspot cae entero bajo el panel ni bajo Save/Wallet (los fondos ocupan justo la zona de juego), así que esa
+rama se prueba con un `walk` a un punto bajo el botón Wallet (mismo `hitTestAt`). El caso «el personaje no llegó
+al hotspot del intento» no tiene ruta real: lo cubren las pruebas unitarias.
+
+La lógica pura (definición de rutas, comprobaciones, clasificación y veredicto del selftest) vive en
+`scripts/lib/walkthrough-core.mjs` y se prueba sin navegador con `npm run test:walkthrough:unit`
+(`tests/walkthrough-core.test.mjs`, job `lint`), que también comprueba que `qa/selftest.json` cubre las cinco
+clasificaciones y que las rutas reales siguen bien definidas.
 
 # Demos visuales (A0.2)
 

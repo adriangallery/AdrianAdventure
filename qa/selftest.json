@@ -1,0 +1,211 @@
+{
+  "title": "Selftest del runner (A0.5): cada rama de clasificación con una ruta contra el juego real",
+  "routes": [
+    {
+      "id": "st-pass-walkthrough",
+      "kind": "walkthrough",
+      "title": "PASS: walkthrough corto que sale bien",
+      "expectStatus": "pass",
+      "goal": { "has": ["code_note"] },
+      "steps": [
+        { "do": "newGame", "expect": { "scene": "outside" } },
+        { "do": "act", "verb": "PICK", "target": "hs_porch_light", "expect": { "has": ["code_note"] } }
+      ]
+    },
+    {
+      "id": "st-fail-expect",
+      "kind": "walkthrough",
+      "title": "FAIL: comprobación imposible en un walkthrough",
+      "expectStatus": "fail",
+      "expectDetail": "^paso 1: escena «outside», se esperaba «lobby»",
+      "steps": [
+        { "do": "newGame", "expect": { "scene": "lobby" } }
+      ]
+    },
+    {
+      "id": "st-fail-sin-objetivo",
+      "kind": "walkthrough",
+      "title": "FAIL: los pasos pasan pero no se llega al objetivo",
+      "expectStatus": "fail",
+      "expectDetail": "^sin objetivo: falta «keycard»",
+      "goal": { "has": ["keycard"] },
+      "steps": [
+        { "do": "newGame", "expect": { "scene": "outside" } }
+      ]
+    },
+    {
+      "id": "st-fail-atajo-abierto",
+      "kind": "sequence-break",
+      "title": "FAIL: atajo abierto sin knownBreak (el objetivo se cumple en el intento)",
+      "expectStatus": "fail",
+      "expectDetail": "^atajo abierto: se llega antes de tiempo$",
+      "goal": { "has": ["code_note"] },
+      "steps": [
+        { "do": "newGame", "expect": { "scene": "outside", "lacks": ["code_note"] } },
+        { "do": "act", "verb": "PICK", "target": "hs_porch_light", "attempt": true, "expect": { "scene": "outside", "lacks": ["code_note"] }, "note": "el expect del intento falla, pero manda el objetivo alcanzado" }
+      ]
+    },
+    {
+      "id": "st-xfail-atajo-conocido",
+      "kind": "sequence-break",
+      "knownBreak": "selftest",
+      "title": "XFAIL: el mismo atajo abierto, marcado como conocido",
+      "expectStatus": "xfail",
+      "expectDetail": "lo cierra selftest",
+      "goal": { "has": ["code_note"] },
+      "steps": [
+        { "do": "newGame", "expect": { "scene": "outside", "lacks": ["code_note"] } },
+        { "do": "act", "verb": "PICK", "target": "hs_porch_light", "attempt": true, "expect": { "scene": "outside" } }
+      ]
+    },
+    {
+      "id": "st-pass-trigger-pisado",
+      "kind": "sequence-break",
+      "title": "PASS: [qa:blocked] en el intento — se pisa un trigger que no cambia de escena",
+      "why": "tr_game_opening (outside) es la cinemática inicial: pisarlo no lleva a ninguna parte",
+      "expectStatus": "pass",
+      "expectDetail": "^cerrado \\(paso 2 \\(intento\\): \\[qa:blocked\\] llegó a tr_game_opening",
+      "goal": { "scene": "lobby" },
+      "steps": [
+        { "do": "newGame", "expect": { "scene": "outside" } },
+        { "do": "walk", "x": 70, "y": 95, "trigger": "tr_game_opening", "untilScene": "lobby", "tries": 2, "attempt": true }
+      ]
+    },
+    {
+      "id": "st-xpass-ya-cerrado",
+      "kind": "sequence-break",
+      "knownBreak": "selftest",
+      "title": "XPASS: lleva knownBreak pero el atajo ya no llega",
+      "expectStatus": "xpass",
+      "expectDetail": "quita \"knownBreak\" de la ruta",
+      "goal": { "scene": "lobby" },
+      "steps": [
+        { "do": "newGame", "expect": { "scene": "outside" } },
+        { "do": "walk", "x": 70, "y": 95, "trigger": "tr_game_opening", "untilScene": "lobby", "tries": 2, "attempt": true }
+      ]
+    },
+    {
+      "id": "st-pass-rechazo-visible",
+      "kind": "sequence-break",
+      "title": "PASS: el intento muestra la frase de rechazo (rejects) y la acción se ejecutó",
+      "expectStatus": "pass",
+      "expectDetail": "^cerrado \\(el intento \\(paso 2\\) terminó sin cumplir",
+      "goal": { "scene": "lobby" },
+      "steps": [
+        { "do": "newGame", "expect": { "scene": "outside", "lacks": ["code_note"] } },
+        { "do": "act", "verb": "USE", "target": "hs_keypad", "attempt": true, "rejects": "INVALID CODE" }
+      ]
+    },
+    {
+      "id": "st-error-sin-rechazo",
+      "kind": "sequence-break",
+      "title": "ERROR: el intento no muestra el rechazo que pide (rejects)",
+      "expectStatus": "error",
+      "expectDetail": "^paso 2 \\(intento\\): no hubo un rechazo observable.*no apareció el rechazo",
+      "goal": { "scene": "lobby" },
+      "steps": [
+        { "do": "newGame", "expect": { "scene": "outside" } },
+        { "do": "act", "verb": "USE", "target": "hs_keypad", "attempt": true, "rejects": "esta frase no sale en el juego" }
+      ]
+    },
+    {
+      "id": "st-error-preparacion-expect",
+      "kind": "sequence-break",
+      "title": "ERROR: expect imposible en un paso de preparación",
+      "expectStatus": "error",
+      "expectDetail": "^paso de preparación 1 \\(newGame\\) .*falta «keycard»",
+      "goal": { "scene": "lobby" },
+      "steps": [
+        { "do": "newGame", "expect": { "scene": "outside", "has": ["keycard"] } },
+        { "do": "act", "verb": "USE", "target": "hs_keypad", "attempt": true, "rejects": "INVALID CODE" }
+      ]
+    },
+    {
+      "id": "st-error-preparacion-bloqueada",
+      "kind": "sequence-break",
+      "title": "ERROR: [qa:blocked] por trigger pisado en un paso de preparación (sin gate)",
+      "expectStatus": "error",
+      "expectDetail": "^paso de preparación 2 .*\\[qa:blocked\\] llegó a tr_game_opening",
+      "goal": { "scene": "lobby" },
+      "steps": [
+        { "do": "newGame", "expect": { "scene": "outside" } },
+        { "do": "walk", "x": 70, "y": 95, "trigger": "tr_game_opening", "untilScene": "lobby", "tries": 2, "expect": { "scene": "lobby" } },
+        { "do": "act", "verb": "USE", "target": "hs_keypad", "attempt": true, "rejects": "INVALID CODE" }
+      ]
+    },
+    {
+      "id": "st-error-trigger-fuera",
+      "kind": "sequence-break",
+      "title": "ERROR: walk con trigger cuyas coordenadas caen fuera de sus bounds",
+      "expectStatus": "error",
+      "expectDetail": "^paso 2: \\[qa:error\\] ruta mal definida: 50,95 no cae dentro de tr_mountain",
+      "goal": { "scene": "mountain" },
+      "steps": [
+        { "do": "newGame", "expect": { "scene": "outside" } },
+        { "do": "walk", "x": 50, "y": 95, "trigger": "tr_mountain", "untilScene": "mountain", "attempt": true }
+      ]
+    },
+    {
+      "id": "st-error-hotspot-tapado",
+      "kind": "sequence-break",
+      "allowGoto": true,
+      "title": "ERROR: [qa:error] el ratón no alcanza hs_dr_coat (lo tapa el sprite de npc_dr_satoshi)",
+      "why": "En clinic_interior la hitbox de Dr. Satoshi (37 px × 5.34) cubre toda la rejilla de 7×7 de hs_dr_coat; solo queda libre una franja de ~0,3 % del borde derecho",
+      "expectStatus": "error",
+      "expectDetail": "^paso 3: \\[qa:error\\] el ratón no puede pulsar «hs_dr_coat».*el NPC npc_dr_satoshi",
+      "goal": { "has": ["dr_satoshi_badge"] },
+      "steps": [
+        { "do": "newGame", "expect": { "scene": "outside" } },
+        { "do": "goto", "scene": "clinic_interior", "expect": { "scene": "clinic_interior" } },
+        { "do": "act", "verb": "LOOK", "target": "hs_dr_coat", "attempt": true, "rejects": "coat" }
+      ]
+    },
+    {
+      "id": "st-fail-boton-wallet",
+      "kind": "walkthrough",
+      "title": "FAIL: [qa:error] el clic cae bajo el botón Wallet de UIScene",
+      "why": "A 1280×720 outside es panorámica y la cámara queda en scrollX 460 con el personaje en el spawn: 97 %, 3,5 % cae bajo el botón Wallet (arriba a la derecha)",
+      "expectStatus": "fail",
+      "expectDetail": "^paso 2: \\[qa:error\\] no se puede hacer clic para andar a 97,3.5: el punto cae en el botón Wallet",
+      "steps": [
+        { "do": "newGame", "expect": { "scene": "outside" } },
+        { "do": "walk", "x": 97, "y": 3.5 }
+      ]
+    },
+    {
+      "id": "st-def-goto",
+      "kind": "walkthrough",
+      "title": "ERROR (definición): goto sin allowGoto",
+      "expectStatus": "error",
+      "expectDetail": "^ruta mal definida: paso 2 \\(GOTO lobby\\): \"goto\" se salta puertas y gates",
+      "steps": [
+        { "do": "newGame", "expect": { "scene": "outside" } },
+        { "do": "goto", "scene": "lobby", "expect": { "scene": "lobby" } }
+      ]
+    },
+    {
+      "id": "st-def-preparacion-sin-expect",
+      "kind": "sequence-break",
+      "title": "ERROR (definición): paso anterior al intento sin expect",
+      "expectStatus": "error",
+      "expectDetail": "^ruta mal definida: paso 1 \\(newGame\\): los pasos anteriores al intento necesitan \"expect\"",
+      "goal": { "scene": "lobby" },
+      "steps": [
+        { "do": "newGame" },
+        { "do": "act", "verb": "USE", "target": "hs_keypad", "attempt": true, "rejects": "INVALID CODE" }
+      ]
+    },
+    {
+      "id": "st-def-intento-sin-evidencia",
+      "kind": "sequence-break",
+      "title": "ERROR (definición): intento sin expect ni rejects",
+      "expectStatus": "error",
+      "expectDetail": "^ruta mal definida: paso 2 \\(USE hs_keypad\\): el intento necesita \"expect\" o \"rejects\"",
+      "goal": { "scene": "lobby" },
+      "steps": [
+        { "do": "newGame", "expect": { "scene": "outside" } },
+        { "do": "act", "verb": "USE", "target": "hs_keypad", "attempt": true }
+      ]
+    }
+  ]
+}

@@ -228,6 +228,7 @@ export class GameScene extends Phaser.Scene {
         const verb = this.pendingVerb ?? undefined;
         this.pendingHotspot = null;
         this.pendingVerb = null;
+        this.noteQaAction();
         this.events.emit('hotspot:tapped', hotspot, verb);
       }
     });
@@ -492,6 +493,10 @@ export class GameScene extends Phaser.Scene {
   private hitTestAt(wx: number, wy: number, screenY: number, wasTouch: boolean): TapHit {
     // Panel check uses SCREEN Y (panel is fixed to bottom of screen)
     if (screenY >= this.scale.height - this.getEffectivePanelHeight()) return { kind: 'none', reason: 'el panel de verbos' };
+    // A0.5: los botones de UIScene (Save, Wallet) se quedan el clic antes que la escena (Phaser entrega el toque solo a
+    // la escena de arriba). Para un clic real esto ya no llega aquí; la API de QA lo necesita para no pulsar debajo.
+    const uiButton = this.uiButtonAt(wx - this.cameras.main.scrollX, screenY);
+    if (uiButton) return { kind: 'none', reason: uiButton };
     // Game area check uses WORLD coords (accounts for camera scroll)
     if (!this.coordSystem.isInBgArea(wx, wy)) return { kind: 'none', reason: 'fuera del fondo' };
 
@@ -517,6 +522,13 @@ export class GameScene extends Phaser.Scene {
     return { kind: 'scene', pct, hotspot, rawHotspot };
   }
 
+  /** Botón interactivo de UIScene bajo ese punto de pantalla (Save, Wallet), o null. */
+  private uiButtonAt(screenX: number, screenY: number): string | null {
+    if (!this.scene.isActive('UIScene')) return null;
+    const ui = this.scene.get('UIScene') as unknown as UIScene;
+    return ui.uiButtonAt?.(screenX, screenY) ?? null;
+  }
+
   /** Verbo y objeto elegidos en el panel SCUMM (WALK y ninguno si el panel aún no existe). */
   private uiSelection(): { scummUI: ScummUI | undefined; verb: Verb; selectedItem: InventoryItem | null } {
     const uiScene = this.scene.get('UIScene') as Phaser.Scene;
@@ -530,6 +542,7 @@ export class GameScene extends Phaser.Scene {
 
   /** Toque sobre un NPC ya localizado: dar o usar el objeto elegido, o empezar su diálogo. */
   private dispatchNpcTap(npc: NPC, verb: Verb, selectedItem: InventoryItem | null, scummUI: ScummUI | undefined): void {
+    this.noteQaAction();
     // GIVE/USE item on NPC — show fun response instead of dialogue
     if (selectedItem && (verb === Verb.USE || verb === Verb.GIVE)) {
       scummUI?.clearSelectedItem?.();
@@ -563,6 +576,7 @@ export class GameScene extends Phaser.Scene {
   ): void {
     // Item combo mode: USE [item] with [hotspot]
     if (selectedItem && hotspot) {
+      this.noteQaAction();
       const item = selectedItem;
       const hs = hotspot;
       scummUI?.clearSelectedItem?.();
@@ -584,12 +598,14 @@ export class GameScene extends Phaser.Scene {
     } else if (verb === Verb.LOOK || verb === Verb.TALK) {
       // LOOK/TALK: execute immediately (no walk needed)
       this.pendingHotspot = null;
+      this.noteQaAction();
       this.events.emit('hotspot:tapped', hotspot);
     } else {
       // USE, PICK, OPEN, CLOSE: walk to hotspot, execute on arrival
       if (!hotspot.bounds) {
         // No explicit bounds — execute immediately without walking
         this.pendingHotspot = null;
+        this.noteQaAction();
         this.events.emit('hotspot:tapped', hotspot);
         return;
       }
@@ -602,6 +618,7 @@ export class GameScene extends Phaser.Scene {
         this.player.walkToPct(targetX, targetY);
       } else {
         this.pendingHotspot = null;
+        this.noteQaAction();
         this.events.emit('hotspot:tapped', hotspot);
       }
     }
@@ -1230,6 +1247,15 @@ export class GameScene extends Phaser.Scene {
   }
 
   // ─── A0.1: puente para la API de QA (solo lo usa src/qa/QaApi.ts con ?qa=1) ───
+
+  /**
+   * A0.5: cuenta (en el registry, sobrevive al cambio de escena) cada verbo que llega a ejecutarse sobre un hotspot o
+   * NPC: al saltar player:arrived o al momento si no hace falta andar. La API de QA lo expone como `actions` para que
+   * el runner sepa si el intento de un atajo se llegó a ejecutar o el personaje se quedó por el camino.
+   */
+  private noteQaAction(): void {
+    this.registry.set('qaActions', ((this.registry.get('qaActions') as number | undefined) ?? 0) + 1);
+  }
 
   /** Lo mismo que comprueba handlePointerDown antes de aceptar un toque en la escena. */
   qaIsInputBlocked(): boolean {

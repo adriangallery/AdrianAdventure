@@ -301,6 +301,13 @@ export class UIScene extends Phaser.Scene {
   getScummUI(): ScummUI { return this.scummUI; }
   getChoicePanel(): ChoicePanel { return this.choicePanel; }
 
+  /** A0.5: botón interactivo bajo ese punto de pantalla (se queda el clic antes que GameScene), o null. */
+  uiButtonAt(x: number, y: number): string | null {
+    if (this.saveButton?.contains(x, y)) return 'el botón Save';
+    if (this.walletButton?.contains(x, y)) return 'el botón Wallet';
+    return null;
+  }
+
   private async startDialogueFromScene(treeId: string): Promise<void> {
     const sceneData = this.registry.get('sceneData') as SceneData;
     const treeData = sceneData.dialogues?.[treeId];
