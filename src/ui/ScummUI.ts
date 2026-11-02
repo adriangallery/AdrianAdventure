@@ -36,6 +36,8 @@ export class ScummUI {
   private onItemCombo: ((item1: InventoryItem, item2: InventoryItem) => void) | null = null;
   private renderInvTimer: ReturnType<typeof setTimeout> | null = null;
   private rebuildTimer: ReturnType<typeof setTimeout> | null = null;
+  /** A1.10: tras destroy() (UIScene parada) no se repinta nada aunque el inventario cambie durante la transición */
+  private destroyed = false;
 
   /** Mobile collapsible state */
   /** V6: el panel plegado en móvil se recuerda entre partidas */
@@ -50,17 +52,20 @@ export class ScummUI {
     this.container = scene.add.container(0, 0).setDepth(500).setScrollFactor(0);
     this.detectMobile();
     this.build();
-    scene.scale.on('resize', () => {
-      this.detectMobile();
-      // Debounce rebuilds — DOM overlays (wallet modals) trigger spurious
-      // resize events on mobile Safari, causing rapid text destroy/create
-      // cycles that corrupt Phaser's canvas text cache.
-      if (this.rebuildTimer) clearTimeout(this.rebuildTimer);
-      this.rebuildTimer = setTimeout(() => {
-        this.rebuildTimer = null;
-        this.rebuild();
-      }, 300);
-    });
+    // A1.10: con referencia, para quitarlo en destroy() (el ScaleManager es del juego y sobrevive a UIScene)
+    scene.scale.on('resize', this.handleResize, this);
+  }
+
+  private handleResize(): void {
+    this.detectMobile();
+    // Debounce rebuilds — DOM overlays (wallet modals) trigger spurious
+    // resize events on mobile Safari, causing rapid text destroy/create
+    // cycles that corrupt Phaser's canvas text cache.
+    if (this.rebuildTimer) clearTimeout(this.rebuildTimer);
+    this.rebuildTimer = setTimeout(() => {
+      this.rebuildTimer = null;
+      this.rebuild();
+    }, 300);
   }
 
   private detectMobile(): void {
@@ -710,6 +715,7 @@ export class ScummUI {
 
   /** Debounce inventory re-renders to avoid canvas text corruption on mobile */
   private scheduleRenderInventory(): void {
+    if (this.destroyed) return;
     if (this.renderInvTimer) clearTimeout(this.renderInvTimer);
     this.renderInvTimer = setTimeout(() => {
       this.renderInvTimer = null;
@@ -787,7 +793,14 @@ export class ScummUI {
   getPanelHeight(): number { return this.panelHeight; }
   isExpanded(): boolean { return !this.collapsed; }
 
+  /** A1.10: idempotente (lo llama UIScene.shutdown en cada cambio de escena). */
   destroy(): void {
+    this.destroyed = true;
+    this.scene.scale.off('resize', this.handleResize, this);
+    if (this.rebuildTimer) clearTimeout(this.rebuildTimer);
+    if (this.renderInvTimer) clearTimeout(this.renderInvTimer);
+    this.rebuildTimer = null;
+    this.renderInvTimer = null;
     this.container.destroy();
   }
 }

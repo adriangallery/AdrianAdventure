@@ -313,3 +313,55 @@ test('web3Require (lectura RPC lenta) sigue sin contar como cuelgue', async () =
   await done;
   assert.equal(ctx.getState().flags.gated_ok, true);
 });
+
+test('A1.10: forceReset resuelve la promesa de la ejecución abandonada (onEnter de GameScene.create)', async () => {
+  const ctx = makeCtx();
+  const engine = new ScriptEngine(ctx);
+  let resolved = false;
+  const onEnter = engine.execute([{ op: 'say', text: 'nunca se cierra' }, { op: 'setFlag', flag: 'tras_texto', value: true }], 'outside/onEnter');
+  onEnter.then(() => { resolved = true; });
+  await flush();
+  assert.equal(resolved, false, 'mientras el texto sigue esperando, la promesa no se resuelve');
+  await withWarnings(async () => {
+    assert.equal(ticks(engine, WATCHDOG_MS / TICK, false), 1);
+  });
+  await flush();
+  assert.equal(resolved, true, 'tras el reinicio, quien esperaba el onEnter sigue (quita la cortina, triggers de spawn)');
+  assert.equal(ctx.getState().flags.tras_texto, true, 'y ya ve las ops de estado rescatadas');
+  // La ejecución vieja termina tarde sin tocar nada ni resolver dos veces
+  const logBefore = ctx.log.length;
+  ctx.says[0].resolve();
+  await flush();
+  assert.equal(ctx.log.length, logBefore);
+  assert.equal(engine.isRunning(), false);
+  // forceReset sin nada en marcha no rompe (idempotente)
+  engine.forceReset('prueba');
+  await engine.execute([{ op: 'setFlag', flag: 'fresh', value: true }]);
+  assert.equal(ctx.getState().flags.fresh, true);
+});
+
+test('A1.10: una ejecución abandonada que entra en una rama no apila su bloque en la generación viva', async () => {
+  const read = deferred();
+  const ctx = makeCtx();
+  ctx.checkGating = () => read.promise;
+  const engine = new ScriptEngine(ctx);
+  engine.execute([
+    // La rama del script viejo: un `wait` (no cuenta como cuelgue) y un setFlag que el rescate no debe aplicar
+    { op: 'web3Require', rule: { type: 'ERC721' }, then: [{ op: 'wait', ms: 10 }, { op: 'setFlag', flag: 'rama_vieja', value: true }] },
+  ], 'viejo');
+  await flush();
+  await withWarnings(async () => engine.forceReset('prueba'));
+  // Script nuevo colgado en un texto perdido, sin nada en pantalla
+  engine.execute([{ op: 'say', text: 'colgado' }], 'nuevo');
+  await flush();
+  // Ahora se resuelve la lectura del script viejo y entra en su rama `then`
+  read.resolve(true);
+  await flush();
+  await flush();
+  const warnings = await withWarnings(async () => {
+    assert.equal(ticks(engine, WATCHDOG_MS / TICK, false), 1, 'el watchdog ve el `say` del script nuevo, no el `wait` del viejo');
+  });
+  assert.match(warnings[0], /«say» en nuevo/);
+  assert.equal(ctx.getState().flags.rama_vieja, undefined, 'el rescate no aplica la rama del script abandonado');
+  assert.equal(engine.isRunning(), false);
+});

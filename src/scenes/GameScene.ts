@@ -18,6 +18,7 @@ import { checkGatingRule, checkGatingRuleCached, type GatingRule } from '@/web3/
 import { mintItem, mintAchievement, type MintResult } from '@/web3/contracts';
 import { TransactionToast } from '@/ui/TransactionToast';
 import { getAchievementByText } from '@/config/achievements.config';
+import { bindShutdown } from './lifecycle';
 import type { Address } from 'viem';
 import type { ScummUI } from '@/ui/ScummUI';
 import type { UIScene } from '@/scenes/UIScene';
@@ -83,6 +84,8 @@ export class GameScene extends Phaser.Scene {
   }
 
   create(): void {
+    // A1.10: Phaser no llama a shutdown() solo; sin esto cada cambio de escena dejaba vivos los listeners de resize
+    bindShutdown(this);
     const sceneId = this.registry.get('currentSceneId') as string;
     // A0.1: la API de QA espera a que termine el cambio de escena y a que pasen onEnter y los triggers de spawn
     this.registry.remove('sceneTransition');
@@ -293,7 +296,7 @@ export class GameScene extends Phaser.Scene {
     // Listen for panel toggle (mobile collapse/expand)
     const uiEvents = this.scene.get('UIScene').events;
     uiEvents.removeAllListeners('panel:toggled');
-    uiEvents.on('panel:toggled', () => this.handleResize());
+    uiEvents.on('panel:toggled', this.handleResize, this);
 
     if (!this.isTrailer) {
       this.showSceneTitle(sceneData.title);
@@ -337,11 +340,13 @@ export class GameScene extends Phaser.Scene {
     // Force correct dimensions on initial create (iOS Safari workaround)
     this.forceCanvasResize();
 
-    // Resize listeners
-    this.scale.on('resize', () => this.handleResize());
+    // Resize listeners. A1.10: el ScaleManager es del juego, no de la escena: con referencia para quitarlo en shutdown
+    this.scale.off('resize', this.handleResize, this);
+    this.scale.on('resize', this.handleResize, this);
 
     // iOS Safari: visualViewport is more reliable than Phaser's scale manager
     // Store bound reference so we can remove listeners on shutdown
+    this.removeViewportListeners();
     this.boundScheduleResize = () => this.scheduleResize();
     const vv = window.visualViewport;
     if (vv) {
@@ -1382,17 +1387,28 @@ export class GameScene extends Phaser.Scene {
     return this.npcs.filter((n) => n.dialogueTreeId).map((n) => n.npcId);
   }
 
+  private removeViewportListeners(): void {
+    if (!this.boundScheduleResize) return;
+    window.removeEventListener('orientationchange', this.boundScheduleResize);
+    window.removeEventListener('resize', this.boundScheduleResize);
+    const vv = window.visualViewport;
+    if (vv) vv.removeEventListener('resize', this.boundScheduleResize);
+    this.boundScheduleResize = null;
+  }
+
+  /**
+   * A1.10: enganchado a SHUTDOWN en create() (`bindShutdown`). Idempotente: llamarlo dos veces no rompe. Cuando
+   * llega, los plugins de la escena ya han destruido cámaras, objetos, tweens y relojes (ver lifecycle.ts).
+   */
   shutdown(): void {
     this.cancelTouchHold();
     this.endFastForward();
-    // Remove window listeners to prevent memory leaks
-    if (this.boundScheduleResize) {
-      window.removeEventListener('orientationchange', this.boundScheduleResize);
-      window.removeEventListener('resize', this.boundScheduleResize);
-      const vv = window.visualViewport;
-      if (vv) vv.removeEventListener('resize', this.boundScheduleResize);
-      this.boundScheduleResize = null;
-    }
+    // Listeners fuera de la escena: ScaleManager (global), UIScene, window y visualViewport
+    this.scale.off('resize', this.handleResize, this);
+    this.scene.get('UIScene')?.events.off('panel:toggled', this.handleResize, this);
+    this.input.off('pointerdown', this.handlePointerDown, this);
+    this.input.off('pointermove', this.handlePointerMove, this);
+    this.removeViewportListeners();
     if (this.resizeTimer) {
       clearTimeout(this.resizeTimer);
       this.resizeTimer = null;
@@ -1400,9 +1416,12 @@ export class GameScene extends Phaser.Scene {
     this.cinematicOverlay?.destroy();
     this.transactionToast?.destroy();
     this.web3VisualSystem?.destroy();
+    this.web3VisualSystem = undefined;
     this.walletUnsub?.();
+    this.walletUnsub = null;
     if (this.activeCameraEffect) {
-      this.cameras.main.removePostPipeline('AnaglyphPipeline');
+      // La cámara principal ya no existe si el CameraManager se cerró antes (siempre, al venir de SHUTDOWN)
+      this.cameras.main?.removePostPipeline('AnaglyphPipeline');
       this.activeCameraEffect = null;
     }
   }

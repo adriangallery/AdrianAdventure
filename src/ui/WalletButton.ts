@@ -44,7 +44,12 @@ export class WalletButton {
     const current = getWalletState();
     if (current.connected) this.updateDisplay(true, current.address);
 
-    scene.scale.on('resize', (gs: Phaser.Structs.Size) => this.container.setPosition(gs.width - 8, 8));
+    // A1.10: con referencia, para quitarlo en destroy() (el ScaleManager es del juego y sobrevive a UIScene)
+    scene.scale.on('resize', this.handleResize, this);
+  }
+
+  private handleResize(gs: Phaser.Structs.Size): void {
+    if (this.container.active) this.container.setPosition(gs.width - 8, 8);
   }
 
   setInventory(inv: InventorySystem): void { this.inventory = inv; }
@@ -335,8 +340,11 @@ export class WalletButton {
     });
   }
 
+  /** A1.10: idempotente (lo llama UIScene.shutdown en cada cambio de escena). */
   destroy(): void {
+    this.scene.scale.off('resize', this.handleResize, this);
     this.unsubscribe?.();
+    this.unsubscribe = null;
     this.container.destroy();
     // Clean up any lingering picker overlay
     document.getElementById('wallet-picker-overlay')?.remove();

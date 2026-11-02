@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { FONT } from '@/config/theme';
 import { createInitialState, type GameState } from '@/types/game.types';
 import type { Player } from '@/objects/Player';
+import { bindShutdown } from './lifecycle';
 
 /**
  * 30-second cinematic trailer — orchestrates real GameScene + UIScene.
@@ -117,6 +118,7 @@ export class TrailerScene extends Phaser.Scene {
   // ─── Create ─────────────────────────────────────────────
 
   create(): void {
+    bindShutdown(this); // A1.10: Phaser no llama a shutdown() solo
     this.cameras.main.transparent = true;
     this.registry.set('trailerMode', true);
 
