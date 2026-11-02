@@ -12846,12 +12846,6 @@
    "nar_mountain_0",
    "nar_mountain_1"
   ],
-  "outside:narrative": [
-   "nar_outside_0",
-   "nar_outside_1",
-   "nar_outside_2",
-   "nar_outside_3"
-  ],
   "treatment_room:narrative": [
    "nar_treatment_room_0",
    "nar_treatment_room_1",

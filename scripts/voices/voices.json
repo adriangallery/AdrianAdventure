@@ -14,13 +14,23 @@
     "bot":     { "voice": "am_adam",    "lang": "a", "speed": 0.9,  "why": "B.O.T.: la misma voz que sus 26 clips de recovery_pool (generate_memelab_voices.py) para que no cambie a mitad de partida. Comparte timbre con Satoshi pero no coinciden nunca en escena (recovery_pool frente a clinic_interior). Kokoro no tiene voz robótica." },
     "nar":     { "voice": "bm_george",  "lang": "b", "speed": 0.9,  "why": "Narrador de las cinemáticas (op narrative): británico grave, el mismo del tráiler (generate_trailer_voices.py); un poco más rápido que el tráiler (0.82) porque son párrafos." },
     "npc":     { "voice": "bm_lewis",   "lang": "b", "speed": 1.0,  "why": "Hueco para personajes nuevos sin voz propia: británico, distinto de todos los anteriores. Dale a cada personaje con peso su propio speaker." },
-    "anon":    { "voice": "am_onyx",    "lang": "a", "speed": 0.9,  "why": "A2.9 (adelanta A3.3b): Anon, la voz al teléfono de Dex (es Adrian). Grave y distinta de Dex (am_michael) y de Satoshi/B.O.T. (am_adam), como pide la biblia (§3.2). Dice las pistas de «Call Anon» (assets/journal)." }
+    "anon":    { "voice": "am_onyx",    "lang": "a", "speed": 0.9,  "why": "A2.9 (adelanta A3.3b): Anon, la voz al teléfono de Dex (es Adrian). Grave y distinta de Dex (am_michael) y de Satoshi/B.O.T. (am_adam), como pide la biblia (§3.2). Dice las pistas de «Call Anon» (assets/journal)." },
+    "dooris":  { "voice": "af_nicole",  "lang": "a", "speed": 1.0,  "why": "A3.3b: DOORIS, la cerradura inteligente de la casa de Adrian (cap. 1). af_nicole es la voz susurrada (tipo ASMR) de Kokoro: paranoica y educadísima (biblia §3.2)." },
+    "gwei":    { "voice": "bf_emma",    "lang": "b", "speed": 1.0,  "why": "A3.3b: Nurse Gwei, enfermera de admisión por interfono (cap. 4). Británica y estricta, distinta de la voz femenina de Penny (af_heart)." },
+    "chad":    { "voice": "am_puck",    "lang": "a", "speed": 1.0,  "why": "A3.3b: Chad, el paciente «que ganó dinero» y rival del duelo de FUD (cap. 4). am_puck es enérgica, de bro motivacional." },
+    "pzbot":   { "voice": "am_michael", "lang": "a", "speed": 1.25, "why": "A3.3b: PZ-BOT, el bot de trading de Dex (cap. 3 y 5). La MISMA voz que Dex (player, am_michael) pero acelerada: es una pista del giro (biblia §1)." }
   },
   "match": [
+    { "contains": "pz-bot",  "speaker": "pzbot" },
+    { "contains": "pzbot",   "speaker": "pzbot" },
     { "contains": "b.o.t",   "speaker": "bot" },
     { "contains": "satoshi", "speaker": "satoshi" },
     { "contains": "recep",   "speaker": "recep" },
     { "contains": "anon",    "speaker": "anon" },
-    { "contains": "adrian",  "speaker": "anon" }
+    { "contains": "adrian",  "speaker": "anon" },
+    { "contains": "penny",   "speaker": "recep" },
+    { "contains": "dooris",  "speaker": "dooris" },
+    { "contains": "gwei",    "speaker": "gwei" },
+    { "contains": "chad",    "speaker": "chad" }
   ]
 }

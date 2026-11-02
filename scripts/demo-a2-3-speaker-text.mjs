@@ -172,10 +172,10 @@ for (const vp of VIEWPORTS) {
   }, NPC);
   const talkWhy = await page.evaluate(() => window.__demoTalk);
   if (talkWhy) problems.push(`${label} TALK: el clic no llegó a la recepcionista: ${talkWhy}`);
-  const talk = await waitSpeech(NPC, (s) => s.speaker === 'Receptionist', cap('TALK recepcionista'), { advance: true });
+  const talk = await waitSpeech(NPC, (s) => s.speaker === 'Penny', cap('TALK recepcionista'), { advance: true });
   await demo.sleep(500);
   const talkR = await probe(NPC);
-  checkSpeech(`${label} TALK`, talkR.speech ? talkR : talk ?? talkR, { who: NPC, color: COLORS.receptionist, speaker: 'Receptionist' });
+  checkSpeech(`${label} TALK`, talkR.speech ? talkR : talk ?? talkR, { who: NPC, color: COLORS.receptionist, speaker: 'Penny' });
   await demo.still(`${label}-talk`);
   for (let i = 0; i < 6; i++) await stageFrame(cap('TALK: texto sobre la recepcionista, en su color'));
   if (!(await closeDialogue())) problems.push(`${label} TALK: el diálogo no se pudo cerrar`);
