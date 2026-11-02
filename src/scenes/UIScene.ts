@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import { ScummUI } from '@/ui/ScummUI';
-import { DialogueBox } from '@/ui/DialogueBox';
+import { DialogueBox, type SpeechState } from '@/ui/DialogueBox';
 import { ChoicePanel } from '@/ui/ChoicePanel';
 import { WalletButton } from '@/ui/WalletButton';
 import { SaveButton } from '@/ui/SaveButton';
@@ -65,8 +65,11 @@ export class UIScene extends Phaser.Scene {
     // VerbWheel — mobile-first radial menu for hotspot interaction
     this.verbWheel = new VerbWheel(this);
 
-    // Dialogue box (overlays on top of panel)
-    this.dialogueBox = new DialogueBox(this);
+    // Dialogue box (overlays on top of panel). A2.3: el texto va sobre la cabeza de quien habla (GameScene la da)
+    this.dialogueBox = new DialogueBox(this, (who) => {
+      if (!this.scene.isActive('GameScene')) return null;
+      return (this.scene.get('GameScene') as GameScene).speakerHead(who);
+    });
     this.choicePanel = new ChoicePanel(this);
 
     // Wallet button (top-right, small) — hidden on Steam where Web3 is disabled
@@ -311,6 +314,8 @@ export class UIScene extends Phaser.Scene {
   /** A0.1 (QA): panel SCUMM y panel de elecciones, para la API de QA (?qa=1). */
   getScummUI(): ScummUI { return this.scummUI; }
   getChoicePanel(): ChoicePanel { return this.choicePanel; }
+  /** A2.3 (QA): texto hablado en pantalla y su colocación (null si no hay). */
+  getSpeech(): SpeechState | null { return this.dialogueBox?.getSpeech() ?? null; }
 
   /** A0.5: botón interactivo bajo ese punto de pantalla (se queda el clic antes que GameScene), o null. */
   uiButtonAt(x: number, y: number): string | null {

@@ -1519,6 +1519,26 @@ export class GameScene extends Phaser.Scene {
     return this.player.isWalkablePct(pctX, pctY);
   }
 
+  /**
+   * A2.3: cabeza y pies en pantalla de quien habla (`who` = 'player' o nombre/id de una NPC), para el texto sobre
+   * la cabeza de UIScene (DialogueBox). null si no está en la escena o no se ve (hidePlayer, oculto, tráiler).
+   */
+  speakerHead(who: string): { id: string; x: number; headY: number; footY: number } | null {
+    if (this.isTrailer) return null;
+    const cam = this.cameras?.main;
+    if (!cam) return null;
+    if (who === 'player') {
+      const p = this.player;
+      if (!p?.active || !p.visible || p.alpha === 0) return null;
+      return { id: 'player', x: p.x - cam.scrollX, headY: p.y - p.displayHeight - cam.scrollY, footY: p.y - cam.scrollY };
+    }
+    const key = who.trim().toLowerCase();
+    const npc = this.npcs.find((n) => n.active && n.visible && (n.npcId.toLowerCase() === key || n.npcName.toLowerCase() === key));
+    if (!npc) return null;
+    const h = npc.height * npc.scaleY;
+    return { id: npc.npcId, x: npc.x - cam.scrollX, headY: npc.y - h - cam.scrollY, footY: npc.y - cam.scrollY };
+  }
+
   qaNpcIds(): string[] {
     return this.npcs.filter((n) => n.dialogueTreeId).map((n) => n.npcId);
   }

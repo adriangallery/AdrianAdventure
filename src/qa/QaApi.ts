@@ -14,6 +14,7 @@
 import type Phaser from 'phaser';
 import type { GameScene } from '@/scenes/GameScene';
 import type { UIScene } from '@/scenes/UIScene';
+import type { SpeechState } from '@/ui/DialogueBox';
 import type { HotspotData, SceneData } from '@/types/scene.types';
 import { Verb, type GameState } from '@/types/game.types';
 
@@ -67,6 +68,12 @@ export interface QaState {
    * escena o componente no los quita en shutdown, crece con cada cambio de escena.
    */
   resizeListeners: number;
+  /**
+   * A2.3: texto hablado en pantalla ahora mismo (null si no hay): texto, speaker, color, modo (`head` = sobre la
+   * cabeza de quien habla, `top` = arriba-centro: narrador o quien no se ve), centro x y borde superior y del
+   * bloque en pantalla, su tamaño (w, h) y la cabeza de quien habla en pantalla (solo en modo head).
+   */
+  speech: SpeechState | null;
 }
 
 export interface QaApi {
@@ -305,6 +312,7 @@ export function installQa(game: Phaser.Game): void {
       logTotal,
       actions: (registry.get('qaActions') as number | undefined) ?? 0,
       resizeListeners: game.scale.listenerCount('resize'),
+      speech: playing ? ui().getSpeech() : null,
     };
   };
 
