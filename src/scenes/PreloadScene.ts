@@ -2,6 +2,8 @@ import type { SceneData } from '@/types/scene.types';
 import Phaser from 'phaser';
 // Voice audio is lazy-loaded by VoiceSystem on demand
 import { FONT } from '@/config/theme';
+import type { MusicManager } from '@/systems/MusicManager';
+import { loadingTipsFor, musicToPreload } from '@/systems/AudioPolicy';
 
 declare const __BUILD_HASH__: string;
 const v = typeof __BUILD_HASH__ !== 'undefined' ? `?v=${__BUILD_HASH__}` : '';
@@ -41,6 +43,9 @@ export class PreloadScene extends Phaser.Scene {
   preload(): void {
     const sceneId = this.registry.get('currentSceneId') as string;
     const basePath = `assets/scenes/${sceneId}`;
+    // A1.5: con el sonido apagado no se precarga música (ni se prometen voces en los consejos de carga).
+    const musicManager = this.registry.get('musicManager') as MusicManager | undefined;
+    const muted = musicManager ? musicManager.isMuted() : this.sound.mute;
 
     // Global config (player scale, etc.)
     if (!this.cache.json.has('globalConfig')) {
@@ -139,11 +144,10 @@ export class PreloadScene extends Phaser.Scene {
     // Audio
     // V5 (14-sep-2026): solo la pista de la escena inicial. Las otras 5 (~21 MB) las carga
     // MusicManager al entrar en la escena que las usa.
+    // A1.5: en silencio, ninguna; MusicManager la pide al activar el sonido.
     const musicTracks = ['retro-adventure'];
-    for (const track of musicTracks) {
-      if (!this.cache.audio.has(track)) {
-        this.load.audio(track, `assets/audio/music/${track}.mp3${v}`);
-      }
+    for (const track of musicToPreload(musicTracks, muted, (k) => this.cache.audio.has(k))) {
+      this.load.audio(track, `assets/audio/music/${track}.mp3${v}`);
     }
 
     // SFX
@@ -190,7 +194,7 @@ export class PreloadScene extends Phaser.Scene {
     }).setOrigin(0.5, 1);
 
     // Shuffle tips
-    const tips = [...LOADING_TIPS].sort(() => Math.random() - 0.5);
+    const tips = loadingTipsFor(LOADING_TIPS, muted).sort(() => Math.random() - 0.5);
     let tipIndex = 0;
     tipText.setText(tips[0]);
 

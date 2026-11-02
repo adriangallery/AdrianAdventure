@@ -166,7 +166,7 @@ export class SaveButton {
     const sepSettings = document.createElement('hr');
     sepSettings.style.cssText = 'border: none; border-top: 1px solid #333; margin: 12px 0;';
     modal.appendChild(sepSettings);
-    const music = this.scene.game.registry.get('musicManager') as { toggleMute(): boolean; isMuted(): boolean; setMusicVolume(v: number): void } | null;
+    const music = this.scene.game.registry.get('musicManager') as { toggleMute(): boolean; isMuted(): boolean; setMusicVolume(v: number): void; unlockFromGesture(): void } | null;
     const speedLabel = () => `\u2699 Text speed: ${TEXT_SPEED_LABEL[getTextSpeed()]}`;
     const speedBtn: HTMLButtonElement = makeBtn(speedLabel(), true, () => {
       const next = TEXT_SPEEDS[(TEXT_SPEEDS.indexOf(getTextSpeed()) + 1) % TEXT_SPEEDS.length];
@@ -177,7 +177,13 @@ export class SaveButton {
     modal.appendChild(speedBtn);
     if (music) {
       const muteLabel = () => `\u266A Music: ${music.isMuted() ? 'Off' : 'On'}`;
-      const muteBtn: HTMLButtonElement = makeBtn(muteLabel(), true, () => { music.toggleMute(); muteBtn.textContent = muteLabel(); });
+      // A1.5: al activar el sonido, este clic es el gesto que desbloquea el AudioContext (como «Enable Sound»
+      // del menú) y MusicManager descarga entonces la música de la escena; en silencio no se había pedido.
+      const muteBtn: HTMLButtonElement = makeBtn(muteLabel(), true, () => {
+        if (music.isMuted()) music.unlockFromGesture();
+        music.toggleMute();
+        muteBtn.textContent = muteLabel();
+      });
       muteBtn.dataset.setting = 'music';
       modal.appendChild(muteBtn);
       const volLabel = () => `\u266A Volume: ${MUSIC_LEVEL_LABEL[getMusicLevel() ?? 'low']}`;

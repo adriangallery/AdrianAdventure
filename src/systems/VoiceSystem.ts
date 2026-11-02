@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import type { MusicManager } from '@/systems/MusicManager';
 import { voicePath } from '@/config/voice.config';
+import { shouldFetchAudio } from '@/systems/AudioPolicy';
 
 /** Only duck music for lines longer than this (short quips play over the music). */
 const DUCK_THRESHOLD = 60;
@@ -12,6 +13,9 @@ const DUCK_THRESHOLD = 60;
  * a line is spoken, then cached by Phaser for subsequent plays.
  *
  * Automatically ducks background music while voice is playing.
+ *
+ * A1.5: con el sonido apagado no se pide ni se reproduce ningún clip (ni al hablar ni en secuencias); al
+ * activarlo, la siguiente frase ya se descarga bajo demanda.
  */
 export class VoiceSystem {
   private scene: Phaser.Scene;
@@ -44,6 +48,7 @@ export class VoiceSystem {
   play(text: string, explicitKey?: string): void {
     if (!this.enabled) return;
     this.stop();
+    if (this.soundOff()) return;
 
     const norm = this.normalise(text);
     const key = explicitKey ?? this.textMap.get(norm);
@@ -86,10 +91,12 @@ export class VoiceSystem {
   async playSequence(keys: string[], gapMs = 300): Promise<void> {
     this.stop(); // cancel any previous sequence
     const gen = this.sequenceGen; // snapshot — if stop() is called, gen changes
+    if (this.soundOff()) return;
 
     this.duckMusic();
     for (const key of keys) {
       if (this.sequenceGen !== gen) return; // cancelled
+      if (this.soundOff()) break; // sonido apagado a mitad de secuencia: no se piden más clips
 
       // Lazy load if needed
       if (!this.scene.cache.audio.has(key)) {
@@ -151,7 +158,7 @@ export class VoiceSystem {
 
   private lazyLoad(key: string): Promise<void> {
     return new Promise<void>((resolve) => {
-      if (this.scene.cache.audio.has(key)) { resolve(); return; }
+      if (this.scene.cache.audio.has(key) || this.soundOff()) { resolve(); return; }
       this.scene.load.audio(key, voicePath(key));
       this.scene.load.once('complete', () => resolve());
       this.scene.load.start();
@@ -168,6 +175,12 @@ export class VoiceSystem {
     if (!this.ducked) return;
     this.ducked = false;
     this.getMusicManager()?.unduck();
+  }
+
+  /** Sonido apagado: manda MusicManager (adrian_adventure_muted); sin él, el mute de Phaser. */
+  private soundOff(): boolean {
+    const music = this.getMusicManager();
+    return !shouldFetchAudio(music ? music.isMuted() : this.scene.sound.mute);
   }
 
   private getMusicManager(): MusicManager | null {
