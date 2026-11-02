@@ -39,6 +39,8 @@ jobs:
         run: npm run test:voices
       - name: Pruebas de la lógica del runner de walkthrough (A0.5)
         run: npm run test:walkthrough:unit
+      - name: Pruebas de privacidad del leaderboard (A1.6)
+        run: npm run test:server
       - name: ESLint
         run: |
           set -o pipefail

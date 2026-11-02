@@ -8,7 +8,10 @@ import { bindShutdown } from './lifecycle';
 
 /** Fila del leaderboard de save.zerothetoken.com */
 interface LeaderboardPlayer {
+  /** A1.6: truncada por el servidor (`0x13fc…7f23`); un servidor (o caché) antiguo aún puede mandarla completa */
   address: string;
+  /** A1.6: nombre ENS resuelto en el servidor (null si no tiene o aún no está resuelto) */
+  ens?: string | null;
   score?: number;
   chapters?: number;
   sceneName?: string;
@@ -19,6 +22,11 @@ interface LeaderboardPlayer {
   lastSaved: number | string;
   holderBadges?: string[];
   achievements?: string[];
+}
+
+/** Texto del servidor que va a innerHTML */
+function escapeHtml(s: string): string {
+  return s.replace(/[&<>"']/g, (ch) => `&#${ch.charCodeAt(0)};`);
 }
 
 /**
@@ -330,26 +338,25 @@ export class MenuScene extends Phaser.Scene {
       // Top 5 only
       const top = data.players.slice(0, 5);
 
-      // Resolve ENS names in parallel (non-blocking — updates DOM when ready)
-      const addresses = top.map((p) => p.address);
-      const ensMap: Record<string, string | null> = {};
-      resolveEnsMany(addresses).then((map) => {
-        Object.assign(ensMap, map);
-        // Update displayed names
-        for (const [addr, name] of Object.entries(map)) {
-          if (name) {
-            const el = table.querySelector(`[data-addr="${addr.toLowerCase()}"]`);
+      // A1.6: el servidor manda la dirección truncada y el ENS. Compatibilidad con un servidor antiguo (dirección
+      // completa, sin `ens`): se trunca aquí y solo entonces se resuelve el ENS en el cliente.
+      const shorten = (a: string) => (a.length === 42 ? a.slice(0, 6) + '\u2026' + a.slice(-4) : a);
+      const legacy = top.filter((p) => p.address.length === 42 && !p.ens).map((p) => p.address.toLowerCase());
+      if (legacy.length > 0) {
+        resolveEnsMany(legacy).then((map) => {
+          for (const [full, name] of Object.entries(map)) {
+            if (!name) continue;
+            const el = table.querySelector(`[data-addr="${shorten(full)}"] .lb-name`);
             if (el) el.textContent = name;
           }
-        }
-      });
+        }).catch(() => {});
+      }
 
       top.forEach((p, i) => {
         const row = document.createElement('div');
         const medal = i === 0 ? '\u{1F947}' : i === 1 ? '\u{1F948}' : i === 2 ? '\u{1F949}' : `#${i + 1}`;
-        const shortAddr = p.address.slice(0, 6) + '...' + p.address.slice(-4);
-        const cachedEns = ensMap[p.address.toLowerCase()];
-        const addr = cachedEns || shortAddr;
+        const shortAddr = shorten(p.address.toLowerCase());
+        const addr = escapeHtml(p.ens || shortAddr);
         const sceneName = (p.sceneName || 'Unknown').replace(/^(The |AdrianLAB )/, '');
         const complete = p.gameComplete ? ' \u{2B50}' : '';
         const items = p.items ?? 0;
@@ -390,7 +397,7 @@ export class MenuScene extends Phaser.Scene {
         row.innerHTML = `
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 6px;">
             <span style="font-size:16px;">${medal}</span>
-            <span data-addr="${p.address.toLowerCase()}" style="font-size:11px; color:#e8d5f5; flex:1; margin-left:8px;">${addr}${complete}</span>
+            <span data-addr="${escapeHtml(shortAddr)}" style="font-size:11px; color:#e8d5f5; flex:1; margin-left:8px;"><span class="lb-name">${addr}</span>${complete}</span>
             <span style="font-size:14px; color:#f8e848;">${p.score} pts</span>
           </div>
           <div style="display:flex; gap:10px; font-size:9px; color:#999;">
