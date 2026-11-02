@@ -46,6 +46,12 @@ await page.touchscreen.touchStart(target.x, target.y);
 await demo.film(700);
 await page.touchscreen.touchEnd();
 await demo.film(2200);
+// A3.2: tras la apertura Dex queda junto a la puerta y puede tener que cruzar la calle hasta el objeto: la acción llega
+// al terminar de andar, así que se espera (hasta 20 s) a que llegue un verbo nuevo
+for (let t0 = Date.now(); Date.now() - t0 < 20000;) {
+  if ((await page.evaluate((n) => window.__verbs.length > n, afterTap.length))) break;
+  await demo.film(500);
+}
 const afterHold = await page.evaluate(() => window.__verbs.slice());
 await demo.still('full');
 await demo.end();
