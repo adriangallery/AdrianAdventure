@@ -9,7 +9,7 @@
 //   3) clinic_interior: el Dr. Satoshi dice su saludo con Dex a su derecha y luego a su izquierda y se gira cada vez; y
 //      una conversación de verdad empezando desde su derecha (Dex acaba a su izquierda: le sigue con la mirada). En el
 //      lobby no se puede: Penny está detrás del mostrador, a la izquierda de toda la zona que se pisa;
-//   4) 390x844: lobby, Penny hablando (captura fija).
+//   4) 390x844: lobby, Penny dice su saludo en una cinemática con la cámara sobre ella (captura fija).
 // Comprueba por la API de QA (`state().npcLife`, `state().speech`, `state().pixel`) que:
 //   - mientras Penny tiene su texto en pantalla `talking` es true, la boca se abre y se cierra (≥ 4 aperturas) y mira a
 //     Dex; con el clip ya terminado y el texto aún abierto, la boca está cerrada; al acabar vuelve al reposo;
@@ -22,14 +22,15 @@
 import { readFileSync } from 'node:fs';
 import { startDemo, sleep } from './lib/demo.mjs';
 
-const CLIP = { width: 960, height: 540 };
+const CLIP = { width: 1280, height: 540 }; // la escena entera (el panel de verbos, debajo, fuera)
 /** Respuestas de reserva si no queda ninguna de las pedidas (salidas de los árboles) */
 const EXITS = ['come back later', 'goodbye', 'interesting. thanks', 'forget i asked'];
 const scene = (id) => JSON.parse(readFileSync(new URL(`../assets/scenes/${id}/scene.json`, import.meta.url), 'utf8'));
 // Frases que ya existen (con su clip de voz): el saludo del Dr. Satoshi
 const SATOSHI_LINE = scene('clinic_interior').dialogues.dr_satoshi_intro.nodes.greeting.text;
+const PENNY_LINE = scene('lobby').dialogues.receptionist_intro.nodes.greeting.text;
 
-const demo = await startDemo(import.meta.url, { fps: 6, width: 640, viewport: { width: 1280, height: 720, isMobile: false, hasTouch: true } });
+const demo = await startDemo(import.meta.url, { fps: 6, width: 800, viewport: { width: 1280, height: 720, isMobile: false, hasTouch: true } });
 const { page } = demo;
 const pageErrors = [];
 page.on('pageerror', (e) => pageErrors.push(String(e?.message || e)));
@@ -88,9 +89,10 @@ async function capture(label, npcId, { shot = filming } = {}) {
     cap.style.top = `${y + h - 52}px`;
     cap.textContent = `${label}\n${n ? `${n.id.replace('npc_', '')}: mira ${n.facing} · ${n.talking ? 'HABLA' : 'calla'} · boca ${n.mouthOpen ? 'ABIERTA' : 'cerrada'} · resp ${n.breathPx}px · parpadeos ${n.blinkCount}${n.blinking ? ' *' : ''}` : ''}${voz ? ` · ${voz}` : ''}`;
     // Cabeza del texto en coordenadas del mundo (sin el movimiento de la cámara): no puede moverse con la respiración
-    const head = st.speech?.head;
-    const headWorldY = head ? (head.headY - cam.height / 2) / cam.zoom + cam.height / 2 + cam.scrollY : null;
-    return { st, clip, headWorldY, playerX: st.player?.x ?? null, npcOnScreen: nx >= 0 && nx <= vw, region: { x, y, width: w, height: h } };
+    // El ancla de la cabeza que usa el texto (speakerHead: Container, en el mundo) y el borde de arriba del cuerpo dibujado
+    const body = npc?.list?.[0];
+    const anchor = npc ? { head: npc.y - npc.height * npc.scaleY, top: npc.y + (body.y - body.displayHeight) * npc.scaleY } : null;
+    return { st, clip, anchor, playerX: st.player?.x ?? null, npcOnScreen: nx >= 0 && nx <= vw, region: { x, y, width: w, height: h } };
   }, label, npcId, CLIP.width, CLIP.height);
   if (shot) await demo.shot({ clip: r.region });
   return r;
@@ -133,7 +135,7 @@ async function converse(tag, label, npcId, { choices = [], say = null, maxMs = 9
   let idle = 0;
   const t0 = Date.now();
   while (Date.now() - t0 < maxMs) {
-    const { st, clip, region, headWorldY, playerX } = await capture(label, npcId);
+    const { st, clip, region, anchor, playerX } = await capture(label, npcId);
     const n = npcOf(st, npcId);
     seen.start ??= n;
     const sp = st.speech;
@@ -148,7 +150,7 @@ async function converse(tag, label, npcId, { choices = [], say = null, maxMs = 9
       seen.colors.add(sp.color);
       seen.modes.add(sp.mode);
       const heads = seen.lines.get(sp.text) ?? [];
-      if (headWorldY !== null) heads.push({ y: headWorldY, breath: n.breathPx });
+      if (anchor) heads.push({ y: anchor.head, top: anchor.top, breath: n.breathPx });
       seen.lines.set(sp.text, heads);
       if (!seen.still && n.mouthOpen) { seen.still = true; await demo.still(tag, { clip: region }); }
     }
@@ -196,8 +198,10 @@ async function converse(tag, label, npcId, { choices = [], say = null, maxMs = 9
   const lt = end?.lastTalk;
   // Solo cuenta en las frases en las que la respiración cambió (si no, no prueba nada)
   const breathing = [...seen.lines.values()].filter((h) => new Set(h.map((p) => p.breath)).size > 1);
-  const headSpread = Math.max(0, ...breathing.map((h) => Math.max(...h.map((p) => p.y)) - Math.min(...h.map((p) => p.y))));
-  console.log(`${tag}: líneas ${seen.lines.size} (con clip ${seen.voiced}, sin voz ${seen.unvoiced}) · fotogramas hablando ${seen.talkingFrames} (boca abierta ${seen.openFrames}, cerrada ${seen.closedFrames}) · tras el clip: cerrada ${seen.closedAfterClip}, abierta ${seen.openAfterClip} · miraba ${[...seen.faced].join('/')} · color ${[...seen.colors].join('/')} · modo ${[...seen.modes].join('/')} · cabeza del texto (mundo) en ${breathing.length} frase(s) con respiración: oscilación máx ${headSpread.toFixed(2)} px · Dex en x ${seen.playerX?.toFixed?.(1)}`);
+  const spread = (h, k) => Math.max(...h.map((p) => p[k])) - Math.min(...h.map((p) => p[k]));
+  const headSpread = Math.max(0, ...breathing.map((h) => spread(h, 'y')));
+  const bodySpread = Math.max(0, ...breathing.map((h) => spread(h, 'top')));
+  console.log(`${tag}: líneas ${seen.lines.size} (con clip ${seen.voiced}, sin voz ${seen.unvoiced}) · fotogramas hablando ${seen.talkingFrames} (boca abierta ${seen.openFrames}, cerrada ${seen.closedFrames}) · tras el clip: cerrada ${seen.closedAfterClip}, abierta ${seen.openAfterClip} · miraba ${[...seen.faced].join('/')} · color ${[...seen.colors].join('/')} · modo ${[...seen.modes].join('/')} · en ${breathing.length} frase(s) con respiración: el cuerpo sube y baja ${bodySpread.toFixed(1)} px y la cabeza del texto ${headSpread.toFixed(2)} px · Dex en x ${seen.playerX?.toFixed?.(1)}`);
   console.log(`${tag}: lastTalk ${JSON.stringify(lt)} → ${fmtN(end)}`);
   if (!seen.talkingFrames) problems.push(`${tag}: la NPC nunca tuvo talking = true con su texto en pantalla`);
   if (!lt) problems.push(`${tag}: sin lastTalk`);
@@ -207,7 +211,8 @@ async function converse(tag, label, npcId, { choices = [], say = null, maxMs = 9
   }
   if (!seen.openFrames || !seen.closedFrames) problems.push(`${tag}: la boca no alternó (abierta ${seen.openFrames}, cerrada ${seen.closedFrames} fotogramas)`);
   if (seen.openAfterClip > 1) problems.push(`${tag}: boca abierta en ${seen.openAfterClip} fotogramas con el clip ya terminado`);
-  if (headSpread > 1) problems.push(`${tag}: la cabeza del texto se movió ${headSpread.toFixed(2)} px dentro de una frase`);
+  if (headSpread > 0.01) problems.push(`${tag}: la cabeza del texto se movió ${headSpread.toFixed(2)} px con la respiración dentro de una frase`);
+  if (breathing.length && bodySpread < 1) problems.push(`${tag}: el cuerpo no subió con la respiración mientras hablaba (${bodySpread} px)`);
   if (wantHead && !seen.modes.has('head')) problems.push(`${tag}: el texto no fue sobre su cabeza (modos ${[...seen.modes].join('/')})`);
   if (!end?.rest || end.talking || end.mouthOpen) problems.push(`${tag}: no volvió al reposo (${fmtN(end)})`);
   if (end && end.facing !== end.defaultFacing) problems.push(`${tag}: al acabar mira ${end.facing}, su orientación por defecto es ${end.defaultFacing}`);
@@ -215,7 +220,7 @@ async function converse(tag, label, npcId, { choices = [], say = null, maxMs = 9
 }
 
 /** Reposo grabado: respiración y parpadeos */
-async function rest(tag, label, npcId, ms) {
+async function rest(tag, label, npcId, ms, { minBlinks = 1 } = {}) {
   const before = npcOf((await capture(label, npcId)).st, npcId);
   const breath = new Set();
   let blinkStill = false;
@@ -234,7 +239,7 @@ async function rest(tag, label, npcId, ms) {
   const blinks = (after?.blinkCount ?? 0) - (before?.blinkCount ?? 0);
   console.log(`${tag}: respiración ${[...breath].sort().join('/')} px · parpadeos ${blinks} en ${ms / 1000} s · pixel NPC ${JSON.stringify(st.pixel?.npcs)} → ${fmtN(after)}`);
   if (!(breath.has(0) && breath.has(1))) problems.push(`${tag}: la respiración no pasó por 0 y 1 px (${[...breath].join('/')})`);
-  if (blinks < 1) problems.push(`${tag}: ningún parpadeo en ${ms / 1000} s`);
+  if (blinks < minBlinks) problems.push(`${tag}: ${blinks} parpadeo(s) en ${ms / 1000} s, se esperaban ${minBlinks}`);
   if (mouth) problems.push(`${tag}: la boca se movió en reposo`);
   if (st.pixel?.npcs?.some((n) => !n.integer)) problems.push(`${tag}: escala de NPC no entera (${JSON.stringify(st.pixel.npcs)})`);
 }
@@ -287,26 +292,41 @@ for (const [tag, x, side] of [['satoshi-derecha', 90, 'right'], ['satoshi-izquie
     if (!r.seen.mirrored.has(true)) problems.push('satoshi-charla: no se espejó hacia Dex');
   }
 }
-await rest('reposo-clinica', '3) reposo', SAT, 3000);
+await rest('reposo-clinica', '3) reposo', SAT, 3000, { minBlinks: 0 }); // 3 s: puede no tocar parpadeo (cada 3-7 s)
 
 // ── 4) 390x844 (captura fija con Penny hablando) ────────────────────────────────────────────────────────────────
 filming = false;
 await page.setViewport({ width: 390, height: 844, deviceScaleFactor: 1, isMobile: true, hasTouch: true });
 await open('lobby', 390);
 {
+  // En vertical la cámara sigue a Dex y Penny queda fuera; como en la apertura del lobby (A3.2), una cinemática lleva la
+  // cámara hasta ella y dice su saludo: así se ve con la boca abierta y el texto rosa encima
   let shot = false;
-  await converse('390-penny', '390x844', 'npc_receptionist', {
-    choices: ['come back later'],
-    wantHead: false, // en vertical la cámara sigue a Dex: si Penny queda fuera, su texto va arriba (A2.3, modo top)
-    onTalk: async (st, n) => {
-      if (shot || !n.mouthOpen) return;
-      shot = true;
-      await demo.still('390x844');
-      const on = await page.evaluate(() => { const gs = window.__game.scene.getScene('GameScene'); const c = gs.cameras.main; const x = (gs.npcs[0].x - c.scrollX) * c.zoom; return x >= 0 && x <= window.innerWidth; });
-      console.log(`390x844: Penny ${on ? 'en pantalla' : 'fuera de pantalla (la cámara sigue a Dex)'} · texto «${st.speech?.text?.slice(0, 40)}…» modo ${st.speech?.mode} · ${fmtN(n)}`);
-    },
-  });
-  if (!shot) { await demo.still('390x844'); problems.push('390x844: Penny no llegó a hablar con la boca abierta'); }
+  const ops = [
+    { op: 'cinematicStart' },
+    { op: 'cameraPan', actor: 'npc_receptionist', ms: 600 },
+    { op: 'say', speaker: 'Penny', text: PENNY_LINE },
+    { op: 'cinematicEnd' },
+  ];
+  err = await (async () => {
+    await page.evaluate((ops) => window.__demoRun(window.__qa.runScript(ops)), ops);
+    const t0 = Date.now();
+    while (Date.now() - t0 < 30000) {
+      const { st } = await capture('390x844', 'npc_receptionist', { shot: false });
+      const n = npcOf(st, 'npc_receptionist');
+      if (!shot && n?.talking && n.mouthOpen && st.speech?.mode === 'head') {
+        shot = true;
+        await page.evaluate(() => document.getElementById('demo-cap')?.remove());
+        await demo.still('390x844');
+        console.log(`390x844: Penny habla en pantalla · texto «${st.speech.text.slice(0, 40)}…» color ${st.speech.color} modo ${st.speech.mode} · ${fmtN(n)}`);
+      }
+      if (await page.evaluate(() => window.__demoDone)) break;
+      await sleep(60);
+    }
+    return page.evaluate(() => window.__demoErr);
+  })();
+  if (err) problems.push(`390x844: la cinemática falló: ${err}`);
+  if (!shot) { await demo.still('390x844'); problems.push('390x844: no se vio a Penny hablando con la boca abierta y el texto sobre su cabeza'); }
 }
 await demo.end();
 
