@@ -24,6 +24,7 @@ import type { Address } from 'viem';
 import { bindShutdown } from './lifecycle';
 import { subtitleHoldMs } from '@/systems/Cinematics';
 import { charDelayMs } from '@/systems/Settings';
+import { failResponses } from '@/systems/FailResponsesData';
 
 /**
  * UI overlay — LucasArts SCUMM-style bottom panel.
@@ -186,7 +187,8 @@ export class UIScene extends Phaser.Scene {
         const gs = this.scene.get('GameScene') as GameScene;
         gs.executeItemComboScript(match.script);
       } else {
-        this.events.emit('say', `I can't use ${item1.name} with ${item2.name}. Creative, though.`);
+        // A2.5: pareja específica (fail-responses.json itemItem.pairs) o bolsa general, sin repetir la última
+        this.events.emit('say', failResponses.itemOnItem(item1.id, item2.id).text);
       }
     });
 

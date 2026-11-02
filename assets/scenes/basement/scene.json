@@ -55,6 +55,25 @@
     "hotspots": [
       {
         "id": "hs_main_computer",
+        "useResponses": {
+          "_default": [
+            "I look for somewhere to put it on the CRT. The CRT has no idea what that is.",
+            "I hold it up to the CRT. The screen hums. It's humming at me, not with me.",
+            "That doesn't go in a computer from 1997. Almost nothing does."
+          ],
+          "keycard": [
+            "No card reader on a computer this old. It predates cards. It barely postdates fire."
+          ],
+          "code_note": [
+            "I type 7314 into the CRT. Nothing. That's the front door's code, genius."
+          ],
+          "terminal_key": [
+            "I press the terminal key to the CRT. Wrong terminal. This one wants a different kind of persuasion."
+          ],
+          "golden_token": [
+            "There's no coin slot on the CRT. I checked twice. I really wanted there to be one."
+          ]
+        },
         "name": "CRT Computer",
         "bounds": {
           "x": 52.6,

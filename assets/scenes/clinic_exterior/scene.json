@@ -122,6 +122,19 @@
       },
       {
         "id": "hs_main_entrance",
+        "useResponses": {
+          "_default": [
+            "The intercom wants a person, not that.",
+            "I hold it up to the camera. Nobody buzzes me in. Rude, for a clinic.",
+            "That won't get me in. Clinics let in patients and doctors. Not props."
+          ],
+          "keycard": [
+            "I wave the keycard at the entrance. Nothing. Maybe I should just try the door with it in my pocket."
+          ],
+          "sign_in_sheet": [
+            "I hold the sign-in sheet up to the entrance. Paperwork works better if I just try the door. With it in my pocket."
+          ]
+        },
         "name": "Clinic Entrance",
         "bounds": {
           "x": 44.8,
@@ -250,6 +263,11 @@
       },
       {
         "id": "hs_visitor_box",
+        "useResponses": {
+          "sign_in_sheet": [
+            "I put the sheet back in the drop box. Then take it out again. Evidence first, manners later."
+          ]
+        },
         "name": "Visitor Drop Box",
         "bounds": {
           "x": 71.8,
@@ -412,6 +430,11 @@
       },
       {
         "id": "hs_security_camera",
+        "useResponses": {
+          "glasses_3d": [
+            "I show the camera my spare 3D glasses. It doesn't recognise me. Nobody does in these."
+          ]
+        },
         "name": "Security Camera",
         "bounds": {
           "x": 65.1,
@@ -630,6 +653,14 @@
       },
       {
         "id": "hs_trash_can",
+        "useResponses": {
+          "clinic_note": [
+            "I almost put the note back in the trash. Day 47 deserves better."
+          ],
+          "receipt": [
+            "I'm not throwing the receipt away. It's the saddest thing I own. I keep it for perspective."
+          ]
+        },
         "name": "Trash Can",
         "bounds": {
           "x": 29.7,

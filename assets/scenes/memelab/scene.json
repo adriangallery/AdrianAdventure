@@ -63,6 +63,11 @@
     "hotspots": [
       {
         "id": "hs_meme_tube",
+        "useResponses": {
+          "pepememe": [
+            "I hold Pepe up to his old tube. He doesn't want to go back. Neither would I."
+          ]
+        },
         "name": "Containment Tube",
         "bounds": {
           "x": 44.1,
@@ -421,6 +426,11 @@
       },
       {
         "id": "hs_pepememe",
+        "useResponses": {
+          "pepememe": [
+            "I put Pepe next to where Pepe was. Now there's a Pepe and the memory of a Pepe."
+          ]
+        },
         "name": "Rare Pepe",
         "bounds": {
           "x": 77.1,

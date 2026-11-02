@@ -28,7 +28,7 @@ hasta el hotspot, combos, gates y diálogos). Nunca pone flags ni da objetos.
 | `callAnon()` | A2.9: llama a Anon como el jugador (abre el diario si hace falta, pestaña Call Anon, botón de llamar, espera a que conteste y lo vuelve a cerrar si lo abrió ella); la llamada queda en `state().journal.anon` |
 | `previewCostume(costume)` | A4.1: enseña el juego de sprites del disfraz de mono (`'ape'`) o el normal (`'player'`) en la escena actual, para ver sus animaciones; `null` vuelve al de la partida. Solo los sprites: no da el disfraz ni toca inventario ni flags, y se pierde al cambiar de escena. Ver § Animación del protagonista |
 | `isWalkable(x, y)` | A2.1: si el punto (en %) se pisa en la escena actual (`walkableAreas` menos `blockedAreas`); síncrona |
-| `state()` | Escena, inventario, flags, visitadas, hotspots visibles, elecciones, avisos, log (`logTotal`: líneas apuntadas desde que cargó) `actions` (verbos que llegaron a ejecutarse) y `resizeListeners` (A1.10: listeners de `resize` del ScaleManager) y `path` (A2.1: última ruta calculada al andar: origen, puntos de paso y destino), `facing` (A2.2: `left`/`right`/`front`/`back`) y `walkTarget` (A2.2: último acercamiento a un hotspot/NPC: `target`, `verb`, `walkTo` —null si no anduvo— y `face`), y (A2.4) `verb` (verbo del panel), `highlightedHotspots` (resaltados con Tab), `verbKeyHints` (verbos con su tecla pintada en el panel) e `inputListeners` (listeners de teclado y del lienzo), (A2.10) `cinematic` (ver § Cinemáticas) y (A2.7) `prefetch` (precarga de las escenas vecinas: `scene`, `neighbors`, `done`, `pending`, `inFlight`, `failed`, `disabled`) y `lastTransition` (último cambio de escena: `from`, `to`, `ms`, `loadMs`, `at`, `mode` `full`/`indicator`/`instant`, `loadingScreen`, `fadeMs`) y (A2.9) `journal` (ver § Diario) y (A2.8) `pixel` (ver § Densidad de píxel) y (A4.1) `anim` (ver § Animación del protagonista) |
+| `state()` | Escena, inventario, flags, visitadas, hotspots visibles, elecciones, avisos, log (`logTotal`: líneas apuntadas desde que cargó) `actions` (verbos que llegaron a ejecutarse) y `resizeListeners` (A1.10: listeners de `resize` del ScaleManager) y `path` (A2.1: última ruta calculada al andar: origen, puntos de paso y destino), `facing` (A2.2: `left`/`right`/`front`/`back`) y `walkTarget` (A2.2: último acercamiento a un hotspot/NPC: `target`, `verb`, `walkTo` —null si no anduvo— y `face`), y (A2.4) `verb` (verbo del panel), `highlightedHotspots` (resaltados con Tab), `verbKeyHints` (verbos con su tecla pintada en el panel) e `inputListeners` (listeners de teclado y del lienzo), (A2.10) `cinematic` (ver § Cinemáticas) y (A2.7) `prefetch` (precarga de las escenas vecinas: `scene`, `neighbors`, `done`, `pending`, `inFlight`, `failed`, `disabled`) y `lastTransition` (último cambio de escena: `from`, `to`, `ms`, `loadMs`, `at`, `mode` `full`/`indicator`/`instant`, `loadingScreen`, `fadeMs`) y (A2.9) `journal` (ver § Diario) y (A2.8) `pixel` (ver § Densidad de píxel) y (A4.1) `anim` (ver § Animación del protagonista) y (A2.5) `lastFailResponse` (última respuesta de fallo: `{ kind, item, target, verb, text, bag }`, ver § Respuestas de fallo) |
 
 Todas (salvo `state()` e `isWalkable()`) esperan a que el juego quede quieto y devuelven `state()`. Los errores empiezan por `[qa:blocked]`
 (el juego no deja hacerlo) o `[qa:error]` (id inexistente, tiempo agotado).
@@ -481,6 +481,38 @@ y si la escena está libre. Sin arte nuevo: los PNG de `assets/sprites/player`.
   angle, liftPx, scale, baseScale, rest }`; `expect.anim` (ver § Rutas); `__qa.previewCostume('ape' | 'player' | null)`.
   Demo: `scripts/demo-a4-1-player-anim.mjs`.
 
+# Respuestas de fallo (A2.5)
+
+Cuando algo no funciona, Dex lo dice con una frase con personalidad y con voz, nunca con una plantilla. Motor puro
+`src/systems/FailResponses.ts` (sin Phaser; tests en `tests/fail-responses.test.mjs`, `npm run test:engine`), una sola
+instancia para la partida en `src/systems/FailResponsesData.ts`. Datos:
+
+| Dónde | Campo | Cuándo |
+|---|---|---|
+| `assets/config/fail-responses.json` | `verbDefaults.<VERBO>` (≥ 3 frases) | verbo sin script en un hotspot (antes `GameScene.VERB_DEFAULTS`) |
+| | `itemVerbDefaults.<VERBO>` (≥ 3) | verbo sobre un objeto del inventario sin respuesta propia en `ScummUI.ITEM_VERB_RESPONSES` (LOOK si no hay `ITEM_DESCS`) |
+| | `items.<idObjeto>` (≥ 3) | bolsa de «mal uso» del objeto: usarlo en algo que no toca |
+| | `itemHotspot` (≥ 5), `itemNpc.USE` / `itemNpc.GIVE` (≥ 3) | último recurso si el objeto no tiene bolsa |
+| | `itemItem.default` (≥ 5) y `itemItem.pairs[{ items: [a, b], lines }]` | objeto + objeto sin combo de `global.json` (la pareja, sin orden, manda) |
+| `scene.json` | `regions.hotspots[].useResponses` = `{ _default: [...], <idObjeto>: [...] }` | objeto sobre ese hotspot sin combo: `<idObjeto>` = el intento tentador que no es la solución; `_default` = cualquier otro objeto (puertas, pantallas, agua) |
+| | `npcs[].useResponses` / `giveResponses` (frase o lista) | USE/GIVE de un objeto a la NPC sin `itemDialogues`; `_default` es una bolsa |
+
+Prioridad (objeto sobre hotspot o NPC): pareja específica > `_default` del hotspot/NPC > `items.<id>` > bolsa genérica.
+Cada bolsa no repite su última frase (al azar entre las demás); **con `?qa=1` va en ronda desde 0** (frase 0, 1, 2…),
+así que el primer intento de una ruta dice la frase 0 de su bolsa y el walkthrough puede comprobarlo con `rejects`. Las
+bolsas de un hotspot se identifican por escena + id (los ids se repiten entre escenas). Ningún texto lleva marcadores
+(`{item}`, `${…}`): todo es literal, para que tenga clip (`scripts/voices/extract.mjs` lo extrae con hablante `player`).
+Voz: Dex Malone (biblia § 2 y § 5): mantiene la intención del verbo, remate al final, chiste cripto como mucho uno de
+cada cuatro y siempre de Dex; callbacks a Fernando (la planta), Gerald, Penny, las gafas «prescription».
+
+QA: `state().lastFailResponse` = `{ kind, item, target, verb, text, bag }` (`kind`: `item-hotspot`, `item-npc`,
+`item-item`, `verb`, `item-verb`; `bag`: `hotspot:<escena>/<id>:<objeto|_default>`, `npc:<escena>/<id>:<USE|GIVE>:<objeto|_default>`,
+`item:<id>`, `itemHotspot`, `itemNpc:<VERBO>`, `itemItem:<a>+<b>`, `itemItem`, `verb:<VERBO>`, `itemVerb:<VERBO>`;
+`last-resort` si no hay ninguna bolsa). `expect.failResponse` de las rutas compara `kind`, `item`, `target`, `verb`, `bag`
+(iguales) y `text` (expresión regular). La ruta crítica lo usa en el lobby: PUSH/PULL/GIVE sin script sobre `hs_poster`
+(frase 0 de `verbDefaults`), la keycard en el abrigo (pareja específica) y el sobre en el póster (bolsa del objeto),
+sin cambiar la partida. El smoke comprueba que dos PUSH seguidos dicen las frases 0 y 1. Linter: regla (j).
+
 # Linter de escenas (A0.4)
 
 `scripts/lint-scenes.mjs` revisa el contenido de `assets/scenes/<id>/scene.json` sin compilar ni abrir el
@@ -499,6 +531,7 @@ deja la tabla en el resumen del job y sube `lint-scenes-report.json` y `.md` com
 | (g) | hotspots solapados; aviso fuerte si uno contiene a otro (si el que contiene va antes en la lista, el clic nunca llega al de dentro) | aviso |
 | (h) | A2.9, diario (`assets/journal/*.json`): fichero inválido, capítulo o id repetidos, campos que faltan, condición mal escrita, `hints` que no son 3 y `journalNote` a una nota que no existe (**error**); flags que el diario lee y nada pone, objetos que mira y nada da (aviso). Las flags que lee el diario cuentan como leídas para (a) | **error** / aviso |
 | (i) | A2.8: `scale` a mano en `npcs[]` o `player.playerScale` (fuera del sistema de densidad de píxel) y `pixelScale`, `depthScale` o `npcs[].artScale` fuera de rango | aviso |
+| (j) | A2.5, respuestas de fallo: `useResponses` de un hotspot o `useResponses`/`giveResponses` de una NPC con un objeto que no existe, bolsa vacía o con una frase con marcador (`{item}`, `${…}`: no tendría voz), y `assets/config/fail-responses.json` inválido (bolsas de verbo con < 3 frases, objeto + objeto con < 5, parejas mal formadas o con objetos que no existen) (**error**); objeto del inventario con < 3 frases de mal uso y pareja de un hotspot que es un combo (nunca se dice) (aviso) | **error** / aviso |
 
 Las rutas que comprueba (f) son las que resuelve el código, no el nombre del JSON: el fondo es siempre
 `background.webp`, el primer plano `foreground.webp`, los iconos `assets/sprites/items/<id>.png` y además
@@ -537,16 +570,18 @@ Actions** (`.github/workflows/voices.yml`); nunca en local.
 `--missing` deja solo lo que no tiene MP3. Cuenta como hablado lo que UIScene pasa a `VoiceSystem`:
 
 - Escenas y `assets/config/global.json`: toda op `say`/`sayBrief` (en cualquier bloque anidado), el texto
-  de cada nodo de diálogo, `npcs[].giveResponses`/`useResponses` (salvo `_default`, que lleva `{item}`) y
-  las líneas de las ops `narrative` (suenan por escena con `NARRATOR_SEQUENCES['<escena>:narrative']`).
+  de cada nodo de diálogo, `npcs[].giveResponses`/`useResponses` (A2.5: frase o lista, `_default` incluido; una
+  cadena con marcador se salta), `regions.hotspots[].useResponses` (A2.5) y las líneas de las ops `narrative`
+  (suenan por escena con `NARRATOR_SEQUENCES['<escena>:narrative']`).
+- A2.5, `assets/config/fail-responses.json`: todas las bolsas de respuestas de fallo, con hablante `player`.
 - Código (`CODE_SOURCES` en `extract.mjs`): las tablas de frases de `ScummUI` (`ITEM_DESCS`,
-  `ITEM_VERB_RESPONSES`, `DEFAULT_ITEM_VERB_RESPONSES`), `GameScene.VERB_DEFAULTS` y los literales que se
-  emiten como `say` (`ScummUI`, `GameScene`, `UIScene`, `ScriptEngine`).
+  `ITEM_VERB_RESPONSES`), `LAST_RESORT` de `src/systems/FailResponses.ts` y los literales que se emiten como
+  `say` (`ScummUI`, `GameScene`, `UIScene`, `ScriptEngine`).
 - Diario (A2.9, `assets/journal/*.json`): las pistas de Anon (`puzzles[].hints`) y sus frases de relleno (`anonIdle`), con
   hablante `anon`; y la frase de reserva `ANON_FALLBACK` de `src/systems/Journal.ts` (`CODE_SOURCES` con `speaker`).
   Objetivos y notas no (solo se leen).
-- Fuera, a propósito: las plantillas con `${…}` («I can't use X with Y», «It's X. Nothing special…», «X
-  doesn't want Y»: dependen de pares de objetos), `choices[].text` (no se leen en voz alta), `titleCard`
+- Fuera, a propósito: las plantillas con `${…}` (desde A2.5 ya no queda ninguna respuesta de fallo con
+  plantilla: «I can't use X with Y», «It's X. Nothing special…» y «X doesn't want Y» son bolsas literales), `choices[].text` (no se leen en voz alta), `titleCard`
   (UIScene tiene esa voz desactivada), logros y textos de interfaz. `sayBrief` sí se extrae aunque hoy
   UIScene no le pone voz, para que el clip ya exista si se activa.
 

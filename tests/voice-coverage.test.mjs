@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { normalise, keyFor, speakerFor, extractScene, extractCode, extractJournal, extractProject, resolve, loadVoices, CODE_SOURCES } from '../scripts/voices/extract.mjs';
+import { normalise, keyFor, speakerFor, extractScene, extractCode, extractJournal, extractFailResponses, extractProject, resolve, loadVoices, CODE_SOURCES, FAIL_RESPONSES_FILE } from '../scripts/voices/extract.mjs';
 import { buildConfig } from '../scripts/voices/build-config.mjs';
 import { checkCoverage, applyAllow } from '../scripts/voice-coverage.mjs';
 
@@ -185,4 +185,72 @@ test('A2.9: el proyecto real extrae todas las pistas de assets/journal con voz d
     for (const g of data.goals ?? []) assert.ok(!raw.some((e) => e.text === g.text), `un objetivo no se dice: ${g.text}`);
   }
   assert.ok(raw.some((e) => e.speaker === 'anon' && /Nothing to say\. Keep walking\./.test(e.text)));
+});
+
+test('A2.5: respuestas de fallo — bolsas de NPC (_default incluido), useResponses de hotspots y fail-responses.json, sin marcadores', () => {
+  const s = {
+    regions: {
+      hotspots: [{ id: 'hs_door', scripts: {}, useResponses: { _default: ['Door one.', 'Door two.'], key: ['The key is not it.'], bad: ['Uses {item} here.'] } }],
+      triggers: [],
+    },
+    npcs: [{
+      id: 'npc_y', name: 'Y',
+      giveResponses: { _default: ['Gift one.', 'Gift {item} two.', 'Gift three.'], duck: 'Single duck line.' },
+      useResponses: { _default: 'Old {item} template.', key: ['Key on Y.'] },
+    }],
+  };
+  const out = extractScene('s', s, voices);
+  assert.deepEqual(out.map((e) => e.text).sort(), ['Door one.', 'Door two.', 'Gift one.', 'Gift three.', 'Key on Y.', 'Single duck line.', 'The key is not it.'].sort());
+  assert.ok(out.every((e) => e.speaker === 'player'));
+  assert.ok(out.some((e) => e.where === 'regions.hotspots.hs_door.useResponses._default[1]'));
+  assert.ok(out.some((e) => e.where === 'npcs.npc_y.giveResponses._default[2]'));
+
+  const data = {
+    verbDefaults: { PUSH: ['Push one.', 'Push two.'] },
+    itemVerbDefaults: { OPEN: ['Open one.'] },
+    itemHotspot: ['Generic hotspot.'],
+    itemNpc: { USE: ['Generic npc use.'], GIVE: ['Generic npc give.'] },
+    itemItem: { default: ['Generic pair.'], pairs: [{ items: ['a', 'b'], lines: ['A and B.', 'A with {item}.'] }] },
+    items: { duck: ['Duck misuse.'] },
+  };
+  const g = extractFailResponses(FAIL_RESPONSES_FILE, data);
+  assert.deepEqual(g.map((e) => e.text).sort(), ['A and B.', 'Duck misuse.', 'Generic hotspot.', 'Generic npc give.', 'Generic npc use.', 'Generic pair.', 'Open one.', 'Push one.', 'Push two.'].sort());
+  assert.ok(g.every((e) => e.speaker === 'player' && e.where.startsWith(`${FAIL_RESPONSES_FILE}: `)));
+});
+
+test('A2.5: el proyecto real extrae todas las frases de fail-responses.json y de los useResponses de las escenas', () => {
+  const raw = extractProject(ROOT, voices);
+  const texts = new Set(raw.map((e) => e.text));
+  const data = JSON.parse(fs.readFileSync(path.join(ROOT, FAIL_RESPONSES_FILE), 'utf8'));
+  const all = [
+    ...Object.values(data.verbDefaults).flat(), ...Object.values(data.itemVerbDefaults).flat(), ...data.itemHotspot,
+    ...Object.values(data.itemNpc).flat(), ...data.itemItem.default, ...data.itemItem.pairs.flatMap((p) => p.lines),
+    ...Object.values(data.items).flat(),
+  ];
+  assert.ok(all.length >= 150, `solo ${all.length} frases globales`);
+  for (const t of all) assert.ok(texts.has(t), `sin extraer: ${t}`);
+  const scenesDir = path.join(ROOT, 'assets/scenes');
+  let local = 0;
+  for (const id of fs.readdirSync(scenesDir)) {
+    const f = path.join(scenesDir, id, 'scene.json');
+    if (!fs.existsSync(f)) continue;
+    const s = JSON.parse(fs.readFileSync(f, 'utf8'));
+    for (const hs of s.regions?.hotspots ?? []) {
+      for (const v of Object.values(hs.useResponses ?? {})) for (const t of [v].flat()) { local++; assert.ok(texts.has(t), `${id}.${hs.id}: sin extraer: ${t}`); }
+    }
+    for (const n of s.npcs ?? []) {
+      for (const field of ['giveResponses', 'useResponses']) {
+        for (const t of [n[field]?._default ?? []].flat()) {
+          assert.ok(!/\{[^{}]*\}/.test(t), `${id}.${n.id}.${field}._default lleva marcador: ${t}`);
+          assert.ok(texts.has(t), `sin extraer: ${t}`);
+        }
+      }
+    }
+  }
+  assert.ok(local >= 100, `solo ${local} frases en useResponses de hotspots`);
+  // Las plantillas viejas ya no están en el código
+  for (const file of ['src/scenes/GameScene.ts', 'src/scenes/UIScene.ts', 'src/ui/ScummUI.ts']) {
+    const src = fs.readFileSync(path.join(ROOT, file), 'utf8');
+    assert.ok(!/I can't use \$\{|doesn't want \$\{|Nothing special about it\.`/.test(src), `${file} aún tiene una plantilla de fallo`);
+  }
 });

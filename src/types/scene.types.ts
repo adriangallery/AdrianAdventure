@@ -1,3 +1,5 @@
+import type { ResponseMap } from '@/systems/FailResponses';
+
 export interface SceneData {
   version: number;
   id: string;
@@ -131,9 +133,13 @@ export interface NPCData {
   scale?: number;
   /** A2.8: densidad de la hoja respecto a la del jugador (1 = la misma, por defecto). Rango 0,25-4. */
   artScale?: number;
-  /** Fun responses when the player GIVEs/USEs an item on the NPC (key = item id or _default) */
-  giveResponses?: Record<string, string>;
-  useResponses?: Record<string, string>;
+  /**
+   * Respuesta cuando el jugador da (GIVE) o usa (USE) un objeto con la NPC: clave = id del objeto o `_default`. A2.5: cada
+   * valor es una frase o una lista (bolsa: no repite la última; ronda fija con ?qa=1). Sin marcadores (`{item}`): todo
+   * literal, para que tenga voz. Prioridad y bolsas de reserva: src/systems/FailResponses.ts.
+   */
+  giveResponses?: ResponseMap;
+  useResponses?: ResponseMap;
   /**
    * A2.6: GIVE/USE de ese objeto con la NPC lanza un árbol (`tree`, de la misma escena; por defecto el de la NPC)
    * desde su `start` o desde `node`, en vez del texto de giveResponses/useResponses. `setFlag` se pone antes.
@@ -213,6 +219,12 @@ export interface HotspotData {
   walkTo?: { x: number; y: number };
   /** A2.2: orientación del jugador al llegar; por defecto, hacia el hotspot (ver src/systems/Facing.ts) */
   face?: 'left' | 'right' | 'front' | 'back';
+  /**
+   * A2.5: respuestas de fallo al usar un objeto aquí sin combo: `<itemId>` = pareja específica (el intento tentador que
+   * no es la solución), `_default` = cualquier otro objeto. Cada valor, una frase o una lista (bolsa). Prioridad:
+   * pareja > `_default` > bolsa del objeto (assets/config/fail-responses.json `items`) > bolsa genérica. Sin marcadores.
+   */
+  useResponses?: ResponseMap;
 }
 
 export interface TriggerData {

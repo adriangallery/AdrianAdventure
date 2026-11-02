@@ -35,6 +35,7 @@ import { addNote, callAnon } from '@/systems/Journal';
 import { JOURNAL_CHAPTERS, journalChapter, journalProgress, journalWorld } from '@/systems/JournalData';
 import { spriteScale, worldToArt, isIntegerScale } from '@/systems/PixelScale';
 import { wantsGesture } from '@/systems/PlayerAnim';
+import { failResponses } from '@/systems/FailResponsesData';
 
 /** A2.4 (QA): cómo pulsa la API de QA: botón derecho o clic de ratón (cuenta para el doble clic). */
 type QaClick = { button?: 'left' | 'right'; mouse?: boolean };
@@ -718,14 +719,10 @@ export class GameScene extends Phaser.Scene {
         });
         return;
       }
-      const responseMap = verb === Verb.GIVE
-        ? npcData?.giveResponses
-        : npcData?.useResponses;
-      const response = responseMap?.[selectedItem.id]
-        ?? responseMap?._default?.replace('{item}', selectedItem.name)
-        ?? (verb === Verb.GIVE
-          ? `${npc.npcName} doesn't want ${selectedItem.name}.`
-          : `I can't use ${selectedItem.name} on ${npc.npcName}.`);
+      // A2.5: pareja específica > _default de la NPC > bolsa del objeto > bolsa genérica (src/systems/FailResponses.ts)
+      const npcVerb = verb === Verb.GIVE ? 'GIVE' : 'USE';
+      const responses = npcVerb === 'GIVE' ? npcData?.giveResponses : npcData?.useResponses;
+      const response = failResponses.itemOnNpc(npcVerb, selectedItem.id, { id: npc.npcId, responses }, this.currentSceneId()).text;
       this.approachAndRun(npc.npcId, verb, plan, () => this.scene.get('UIScene').events.emit('say', response, npc.npcName));
       return;
     }
@@ -733,6 +730,11 @@ export class GameScene extends Phaser.Scene {
   }
 
   // ─── A2.2: acercarse y mirar hacia el objetivo ───
+
+  /** A2.5: id de la escena cargada (las bolsas de fallo de un hotspot se identifican por escena + id) */
+  private currentSceneId(): string {
+    return (this.registry.get('currentSceneId') as string | undefined) ?? '';
+  }
 
   private playerPct(): { x: number; y: number } {
     return { x: this.player.pctX, y: this.player.pctY };
@@ -828,7 +830,8 @@ export class GameScene extends Phaser.Scene {
         if (combo) {
           this.runScript(combo.script, `combo ${item.id}+${hs.id}`);
         } else {
-          this.scene.get('UIScene').events.emit('say', `I can't use ${item.name} with ${hs.name}.`);
+          // A2.5: pareja específica del hotspot > su _default > bolsa del objeto > bolsa genérica
+          this.scene.get('UIScene').events.emit('say', failResponses.itemOnHotspot(item.id, hs, this.currentSceneId()).text);
         }
       });
       return;
@@ -1347,19 +1350,6 @@ export class GameScene extends Phaser.Scene {
 
   // ─── Verb execution ───────────────────────
 
-  private static VERB_DEFAULTS: Record<string, string> = {
-    [Verb.LOOK]: 'Nothing special about it.',
-    [Verb.USE]: "I can't use that.",
-    [Verb.TALK]: "I don't think it wants to talk.",
-    [Verb.PICK]: "I can't pick that up.",
-    [Verb.OPEN]: "It doesn't open.",
-    [Verb.CLOSE]: "It's not something I can close.",
-    [Verb.PUSH]: "I can't push that.",
-    [Verb.PULL]: "I can't pull that.",
-    [Verb.GIVE]: "I have nobody to give that to.",
-    [Verb.WALK]: "I'll walk there.",
-  };
-
   private static readonly WATCHDOG_TICK_MS = 1000;
 
   /**
@@ -1427,8 +1417,8 @@ export class GameScene extends Phaser.Scene {
     if (scripts?.length) {
       this.runScript(scripts, `${hotspot.id}/${verb}`);
     } else {
-      const fallback = GameScene.VERB_DEFAULTS[verb] || 'Nothing interesting happens.';
-      this.scene.get('UIScene').events.emit('say', fallback);
+      // A2.5: bolsa del verbo (assets/config/fail-responses.json verbDefaults), sin repetir la última
+      this.scene.get('UIScene').events.emit('say', failResponses.verb(verb, hotspot.id).text);
     }
   }
 

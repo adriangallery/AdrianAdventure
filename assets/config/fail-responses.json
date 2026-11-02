@@ -1,0 +1,295 @@
+{
+  "_doc": "A2.5: respuestas de fallo en la voz de Dex (src/systems/FailResponses.ts). Todo literal, sin {item} ni ${…}: cada frase tiene clip (scripts/voices/extract.mjs, hablante player). Lo de cada hotspot/NPC va en su scene.json (useResponses). Linter: regla j.",
+  "verbDefaults": {
+    "LOOK": [
+      "I look at it. It looks back. Neither of us learns anything.",
+      "Nothing jumps out. Which is exactly what a clue would want me to think.",
+      "I stare at it for a while. Patience, they said. Still nothing.",
+      "Perfectly ordinary. Suspiciously ordinary. No. Just ordinary."
+    ],
+    "USE": [
+      "I poke at it. It doesn't do anything. I respect the commitment.",
+      "I try using it. Nothing. Some things just exist, Dex.",
+      "No obvious way to use that. And I've tried the non-obvious ones too.",
+      "I give it a firm, professional nudge. It remains unbothered."
+    ],
+    "TALK": [
+      "I say hello. It says nothing. Honestly, a better listener than most of my followers.",
+      "I clear my throat and wait. It doesn't want to talk. Detectives get that a lot.",
+      "'Seen anything suspicious lately?' Silence. Classic witness."
+    ],
+    "PICK": [
+      "I'd love to take it. It would love to stay. It wins.",
+      "That's not coming with me. My pockets have standards. Low ones, but still.",
+      "I try to pick it up. It's very attached to where it is.",
+      "Not pocket-sized. Not pocket-shaped. Not happening."
+    ],
+    "OPEN": [
+      "It doesn't open. A closed case. I'd recognise one, if I'd ever closed one.",
+      "No lid, no door, no hinge. Nothing to open here but my mind.",
+      "I look for a way to open it. It's a very private object."
+    ],
+    "CLOSE": [
+      "It's not open. I can't close what isn't open. That's just philosophy.",
+      "Nothing to close here. Closing things isn't my strong suit anyway. Ask my case files.",
+      "I try to close it. It's already as closed as it gets."
+    ],
+    "PUSH": [
+      "I push it. It doesn't move. I feel pushed back, emotionally.",
+      "I lean on it with my full weight. My full weight is not enough.",
+      "I give it a shove. It holds. Strong support level. ...It's just heavy, Dex."
+    ],
+    "PULL": [
+      "I pull. It doesn't budge. My lower back files a complaint.",
+      "I tug at it. Nothing comes loose except my dignity.",
+      "I yank it. It stays exactly where it was. Respect."
+    ],
+    "GIVE": [
+      "Give it to whom? It's not a person. I checked.",
+      "I hold out my hand to it. Nobody takes anything. Awkward for both of us.",
+      "There's nobody here to give anything to. I'll save my generosity for later."
+    ]
+  },
+  "itemVerbDefaults": {
+    "LOOK": [
+      "I turn it over in my hands. It's exactly what it looks like.",
+      "I squint at it. My 3D glasses add nothing. They never do.",
+      "I examine it closely. Same as before. Reassuring, in a way."
+    ],
+    "OPEN": [
+      "I don't think I can open this.",
+      "I check for a hidden compartment. None. Adrian didn't think of everything.",
+      "I try to open it. It's not that kind of thing. Most things aren't."
+    ],
+    "CLOSE": [
+      "Not the kind of thing you close.",
+      "It's already as closed as a pocket thing can be.",
+      "I close my hand around it. That's as much closing as it gets."
+    ],
+    "PUSH": [
+      "I push it around in my pocket. Thrilling.",
+      "I press on it. It doesn't click, beep or confess.",
+      "I nudge it. Still in my pocket. Mission accomplished, I guess."
+    ],
+    "PULL": [
+      "I tug on it. Nothing happens. As expected.",
+      "I pull it out, stare at it, put it back. Detective work.",
+      "I give it a pull. It doesn't unfold into a clue."
+    ],
+    "TALK": [
+      "I hold it to my ear. Silence. It's not a seashell.",
+      "'Talk to me.' It doesn't. Witnesses never do.",
+      "I ask it where Patient Zero is. It plays dumb. Very convincing."
+    ],
+    "GIVE": [
+      "Nobody here to give it to.",
+      "I offer it to the empty air. The air politely declines.",
+      "I'd give it away, but there's nobody around to impress."
+    ],
+    "PICK": [
+      "Already in my inventory. Mission accomplished.",
+      "I already have it. Picking it up twice doesn't make two.",
+      "It's in my pocket. I check twice. Still there."
+    ]
+  },
+  "itemHotspot": [
+    "That doesn't go there. I can feel it. Mostly in my ego.",
+    "I try it. Nothing happens. Bold idea, though.",
+    "Wrong tool, wrong place. Story of my career.",
+    "I press the two together. Neither of them is impressed.",
+    "Not like that. Not even close. Probably."
+  ],
+  "itemNpc": {
+    "USE": [
+      "I wave it at them. They wait for me to stop. I stop.",
+      "They look at it, then at me. Mostly at me. Not kindly.",
+      "Using things on people. Not my finest investigative technique."
+    ],
+    "GIVE": [
+      "They don't want it. I can tell. People make a face.",
+      "I hold it out. They hold out nothing. A clear no.",
+      "'No thanks,' says their face. Their face is very articulate."
+    ]
+  },
+  "itemItem": {
+    "default": [
+      "I rub them together. No sparks. No magic. Just friction.",
+      "Those two don't go together. Like me and early nights.",
+      "I try combining them. They refuse to be a team.",
+      "Nothing happens. In my head it was brilliant.",
+      "I mash them together. My pockets disapprove.",
+      "Not a combo. Not even a cute accident. Next."
+    ],
+    "pairs": [
+      { "items": ["code_note", "keycard"], "lines": ["I hold the code against the keycard. Numbers on a card. They don't merge. The keypad wants the note, not the card."] },
+      { "items": ["floppy_disk", "ledger"], "lines": ["I try to back up the Ledger onto the floppy. One point four four megabytes. My trust issues alone are bigger."] },
+      { "items": ["glasses_3d", "printout"], "lines": ["I read the printout through the 3D glasses. The map pops out. Slightly. Not helpfully."] },
+      { "items": ["glasses_3d", "pepememe"], "lines": ["Pepe already wears tiny 3D glasses. A second pair would just be showing off."] },
+      { "items": ["water_bottle", "energy_drink"], "lines": ["Spring water and BULL RUN. A balanced diet. I'm not mixing them. I'm not a monster."] },
+      { "items": ["water_bottle", "burned_chip"], "lines": ["I'm not pouring water on a burned chip. Water and chips are how it got burned. Probably."] },
+      { "items": ["golden_token", "ledger"], "lines": ["I press the golden token against the Ledger. It doesn't absorb it. It's a hardware wallet, not a piggy bank."] },
+      { "items": ["keycard", "terminal_key"], "lines": ["A keycard and a key fob. Two keys, no door. I'm basically a janitor."] },
+      { "items": ["rubber_duck", "glasses_3d"], "lines": ["I put the 3D glasses on the duck. He looks like an influencer. I take them back before he gets a following."] },
+      { "items": ["antenna", "ledger"], "lines": ["I hold the antenna to the Ledger. More bars. Same balance."] },
+      { "items": ["mystery_envelope", "code_note"], "lines": ["I tuck the code into the envelope. Now it's a mystery with a spoiler. I take it back out."] },
+      { "items": ["clinic_note", "adrian_note"], "lines": ["Two notes, two handwritings, one theme: everybody knew something except me."] }
+    ]
+  },
+  "items": {
+    "printout": [
+      "I hold the printout up to it. No match. The map is of somewhere else.",
+      "I compare them. The printout disagrees. The printout usually wins.",
+      "I'm not wasting fading thermal paper on that. It's my only map."
+    ],
+    "floppy_disk": [
+      "I look for a floppy slot. There isn't one. It's not 1997 in here.",
+      "I'm not sliding my BACKUP into random things. That's how backups die.",
+      "I tap the floppy on it. Nothing loads. Nothing ever loads first try."
+    ],
+    "monkey_sticker": [
+      "I almost stick the monkey on it. Then I picture all three heads judging me.",
+      "The sticker would look great there. That's not a clue. That's decorating.",
+      "A three-headed monkey won't solve that. It would make it funnier."
+    ],
+    "broken_mouse": [
+      "I click the broken mouse at it. It doesn't click back. It's done clicking.",
+      "Wrong kind of mouse for this. Also, the wrong kind of working.",
+      "I dangle the mouse by its cable over it. A sad little pendulum. Nothing else."
+    ],
+    "sign_in_sheet": [
+      "I hold the sign-in sheet up to it. Nobody on the list matches. Not even it.",
+      "I'm not signing that in. It's not a patient. I think.",
+      "The sheet flutters uselessly. Those diagnoses are wasted on furniture."
+    ],
+    "clinic_note": [
+      "I show it Dr. Satoshi's note. It doesn't care about Day 47. Nobody did. That's the sad part.",
+      "I smooth the note out against it. Still crumpled. Still sad.",
+      "It's a note, not a key. Even if it reads like a confession."
+    ],
+    "clinic_sign_in_sheet": [
+      "I wave the clinic's sign-in sheet at it. It doesn't sign in.",
+      "No pen, no patient, no point. The sheet stays with me.",
+      "I check whether it's on the clinic's list. It isn't. Lucky it."
+    ],
+    "clinic_photo": [
+      "I hold the old photo next to it. Happier times for the photo. Same times for this.",
+      "I compare the grand opening photo with this. Things were tidier back then. Everything was.",
+      "It's evidence, not a bookmark. The photo stays with me."
+    ],
+    "dr_satoshi_badge": [
+      "I flash the badge at it. It doesn't salute. Rude, for a medical facility.",
+      "'Doctor coming through.' Nothing comes through. Including me.",
+      "Out here the badge has the authority of a sticky note. Possibly less."
+    ],
+    "keycard": [
+      "I swipe the keycard over it. No reader. Just me, swiping air like an idiot.",
+      "No slot, no beep. The card goes back in my pocket, where it's appreciated.",
+      "I tap the card on it. Adrian's photo stares back, disappointed."
+    ],
+    "vip_floppy": [
+      "The VIP floppy is too exclusive for that. It has a velvet rope. A metaphorical one.",
+      "I look for a slot. No slot. VIP access denied by geometry.",
+      "I'm not wasting the VIP disc on that. It's VIP. I'm barely P."
+    ],
+    "golden_token": [
+      "I look for a slot to drop the token in. There's no slot. There's never a slot.",
+      "I tap the golden token on it. It rings. Nothing opens. Lovely ring, though.",
+      "It's the shiniest thing I own. It's not going in there."
+    ],
+    "pepememe": [
+      "I show it the Rare Pepe. It doesn't get it. Normies.",
+      "The Pepe is too rare for this. It's a specimen, not a spatula.",
+      "I hold up Pepe. Pepe holds up his tiny 3D glasses. Nothing happens. Classic Pepe."
+    ],
+    "water_bottle": [
+      "I splash a little water on it. Now it's wet. That's the whole result.",
+      "I'm saving this water. Something around here is thirsty. I can feel it.",
+      "Pouring mountain water on that would be a waste. Of the water, and of the hike."
+    ],
+    "code_note": [
+      "I hold 7314 up to it. No keypad. Numbers are useless without buttons.",
+      "I read the code to it. 'Seven. Three. One. Four.' It isn't listening.",
+      "The code goes in a keypad. That isn't a keypad. Even I can see that."
+    ],
+    "mystery_envelope": [
+      "I'm not posting the envelope into that. It's CONFIDENTIAL. It says so. In capitals.",
+      "I wave the envelope at it. Confidential things don't like being waved.",
+      "The envelope stays sealed and stays with me. Somebody around here would love to read it."
+    ],
+    "mystery_envelope_opened": [
+      "The torn envelope has nothing left to give. Unlike me. I'm full of gifts.",
+      "I wave the empty envelope at it. Empty gestures. My speciality.",
+      "It's an envelope with a hole in it. It doesn't open anything else."
+    ],
+    "ledger": [
+      "I look for a USB port. No port. The Ledger stays unplugged and smug.",
+      "I hold the Ledger up to it. The screen says nothing. Hardware wallets are very discreet.",
+      "Not your keys, not your coins. Not your port, not my problem."
+    ],
+    "rubber_duck": [
+      "I squeak the duck at it. It doesn't squeak back. No sense of humour.",
+      "I set the duck on it, then take him back. He didn't like it there.",
+      "The duck looks at it, then at me. Even the duck knows that's not it."
+    ],
+    "antenna": [
+      "I poke it with the antenna. Two bars. Zero results.",
+      "I wave the antenna around. I pick up a faint radio station and no clues.",
+      "I tap it with the antenna. Tink. Not the useful kind of tink."
+    ],
+    "burned_chip": [
+      "I hold the burned chip to it. Smells like ambition. Does nothing.",
+      "That chip already gave everything it had. Let it rest.",
+      "I'm not sticking a scorched chip in that. One fire per day."
+    ],
+    "server_log": [
+      "I read the server log to it. Error, error, timeout. It doesn't care either.",
+      "I slap the log against it. Paperwork never solved anything. Except crimes.",
+      "Logs explain what went wrong. They don't fix it. Story of the internet."
+    ],
+    "glasses_3d": [
+      "I look at it through the spare 3D glasses. It's still there. Now in red and cyan.",
+      "I hold the spare glasses up to it. It doesn't need a second opinion.",
+      "Two pairs of 3D glasses on one detective. Still nothing. My eyes file a complaint."
+    ],
+    "adrian_note": [
+      "I'm not using Adrian's note as a tool. It's the only thing he left me in person.",
+      "I hold the note against it. The handwriting doesn't change. Neither does that.",
+      "Adrian's note stays folded. Some paper is for reading, not for poking."
+    ],
+    "terminal_key": [
+      "I look for a keyhole. No keyhole. The fob blinks green anyway. Very supportive.",
+      "I press the key fob against it. The LED blinks. Nothing else does.",
+      "Wrong terminal. Wrong everything. The fob blinks politely."
+    ],
+    "energy_drink": [
+      "I'm not pouring BULL RUN on that. It's not that tired.",
+      "I offer it the energy drink. It's an object. It runs on zero energy. Admirable.",
+      "Five hundred milligrams of caffeine, wasted on that? Something around here needs it more."
+    ],
+    "receipt": [
+      "I hold the receipt up to it. 'One BTC at three fifty.' It looks sad too.",
+      "A receipt is proof that something happened. Nothing is happening here.",
+      "I'm not wiping anything with this. It's a historical document of pain."
+    ],
+    "ape_costume": [
+      "I drape the ape costume over it. It doesn't fit. I take it back before anyone sees.",
+      "The costume is for wearing, not for rubbing on things. I've been told.",
+      "I hold the ape costume against it. Bad fit. The costume prefers me."
+    ],
+    "luxury_watch": [
+      "I tap the watch on it. Tick. Tick. Nothing. Time isn't the problem here.",
+      "I'm not scratching a watch that expensive on that.",
+      "I check the watch instead. It's wrong-idea o'clock."
+    ],
+    "floppy_box": [
+      "No drive here. The holographic floppies glow at it anyway. Showing off.",
+      "I'm not wasting an AdrianLAB floppy on that. They need a computer. A real one.",
+      "I hold up the box of floppies. It rattles. Nothing loads. Still beautiful."
+    ],
+    "patient_file": [
+      "The file's seal stays on. Not on that. Not today.",
+      "I'm not breaking Patient Zero's seal against that. This needs a proper desk.",
+      "'PATIENT ZERO', in red. It deserves better than being rubbed on things."
+    ]
+  }
+}

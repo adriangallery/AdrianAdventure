@@ -121,6 +121,11 @@
       },
       {
         "id": "hs_server_rack_b",
+        "useResponses": {
+          "burned_chip": [
+            "I try to slot the burned chip back into the dead rack. They could be dead together. No. I need it."
+          ]
+        },
         "name": "Dead Server Rack",
         "bounds": {
           "x": 33.1,
@@ -209,6 +214,22 @@
       },
       {
         "id": "hs_terminal",
+        "useResponses": {
+          "_default": [
+            "The terminal only takes commands. That isn't a command.",
+            "I wave it at the terminal. The cursor blinks. Judgementally.",
+            "Not a USB stick, not a password. Not happening."
+          ],
+          "keycard": [
+            "I swipe the keycard on the terminal. No reader. Server rooms trust nobody. Smart."
+          ],
+          "floppy_disk": [
+            "No floppy drive on the terminal. Thirty years of progress, and this is what we lost."
+          ],
+          "ledger": [
+            "I go to plug the Ledger in. There's no port. Adrian sealed it. Paranoid. Correct."
+          ]
+        },
         "name": "Server Terminal",
         "bounds": {
           "x": 49.4,
@@ -319,6 +340,14 @@
       },
       {
         "id": "hs_cooling_system",
+        "useResponses": {
+          "water_bottle": [
+            "I'm not pouring spring water into a server cooler. Electricity and water. I've seen that movie."
+          ],
+          "energy_drink": [
+            "Caffeine in the coolant. Tempting. The servers are jittery enough."
+          ]
+        },
         "name": "Cooling System",
         "bounds": {
           "x": 62.8,
@@ -385,6 +414,16 @@
       },
       {
         "id": "hs_emergency_switch",
+        "useResponses": {
+          "_default": [
+            "That's not heavy enough to break the glass. Or long enough. Or anything enough.",
+            "I tap the glass with it. The glass stays. I need something I can swing.",
+            "Emergency glass, non-emergency object. Doesn't work."
+          ],
+          "broken_mouse": [
+            "I swing the mouse by its cable at the glass. It bounces off. I need something stiffer."
+          ]
+        },
         "name": "Emergency Switch",
         "bounds": {
           "x": 81.3,
@@ -626,6 +665,11 @@
       },
       {
         "id": "hs_raised_floor",
+        "useResponses": {
+          "glasses_3d": [
+            "I put the glasses back under the floor. No. Whoever hid them wanted them found. By me, apparently."
+          ]
+        },
         "name": "Raised Floor Tiles",
         "bounds": {
           "x": 31.2,

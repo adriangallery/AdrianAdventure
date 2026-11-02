@@ -55,6 +55,14 @@
     "hotspots": [
       {
         "id": "hs_satellite_dish",
+        "useResponses": {
+          "water_bottle": [
+            "I pour a little water into the dish. It's already full of rain. Now it's a slightly fuller birdbath."
+          ],
+          "energy_drink": [
+            "I'm not pouring BULL RUN into a satellite dish. The pigeons have enough energy."
+          ]
+        },
         "name": "Satellite Dish",
         "bounds": {
           "x": 28.9,
@@ -125,6 +133,11 @@
       },
       {
         "id": "hs_antenna_array",
+        "useResponses": {
+          "antenna": [
+            "I try to slot the antenna back in. It won't stay. It's had a taste of freedom."
+          ]
+        },
         "name": "Antenna Array",
         "bounds": {
           "x": 19.8,
@@ -704,6 +717,19 @@
       },
       {
         "id": "hs_roof_access_panel",
+        "useResponses": {
+          "_default": [
+            "The hatch has a card reader. That isn't a card.",
+            "I press it against the hatch. The reader blinks red. Unimpressed.",
+            "The hatch wants to see some ID. That isn't ID. That barely counts as stuff."
+          ],
+          "terminal_key": [
+            "I look for a keyhole for the terminal key. The hatch only has a card reader. Wrong key, right idea."
+          ],
+          "code_note": [
+            "No keypad on this hatch. 7314 stays in my pocket. The hatch wants a card."
+          ]
+        },
         "name": "Service Shaft Hatch",
         "bounds": {
           "x": 58.4,
@@ -924,6 +950,11 @@
       },
       {
         "id": "hs_roof_door",
+        "useResponses": {
+          "keycard": [
+            "No reader on the roof door. It's a door. I just use it."
+          ]
+        },
         "name": "Roof Door",
         "bounds": {
           "x": 88,

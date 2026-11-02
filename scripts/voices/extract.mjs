@@ -13,12 +13,14 @@
 //     escena con NARRATOR_SEQUENCES['<escena>:narrative'].
 //   - Escenas (assets/scenes/*/scene.json) y assets/config/global.json: toda op say/sayBrief en cualquier
 //     sitio (hotspots, triggers, combos, onEnter, then/else, onSuccess/onFail, onEnter de nodos…), el texto
-//     de cada nodo de diálogo, npcs[].giveResponses/useResponses (salvo _default, que lleva {item}) y las
-//     líneas de cada op narrative.
+//     de cada nodo de diálogo, npcs[].giveResponses/useResponses (A2.5: cada valor, frase o lista, `_default`
+//     incluido; una cadena con marcador como {item} se salta), regions.hotspots[].useResponses (A2.5: listas, con
+//     `_default`) y las líneas de cada op narrative.
 //     sayBrief se incluye aunque hoy UIScene no le pone voz (plan A0.3: así el clip ya existe si se activa).
-//   - Código (CODE_SOURCES, abajo): tablas de frases de ScummUI y GameScene y los literales que se emiten como
-//     `say`. Solo literales: las plantillas con ${…} («I can't use X with Y», «It's X. Nothing special…»,
-//     «X doesn't want Y») dependen de pares de objetos y quedan fuera.
+//   - A2.5, assets/config/fail-responses.json (respuestas de fallo, src/systems/FailResponses.ts): todas las bolsas
+//     (verbDefaults, itemVerbDefaults, itemHotspot, itemNpc, itemItem.default y .pairs[].lines, items.<id>).
+//   - Código (CODE_SOURCES, abajo): tablas de frases de ScummUI y los literales que se emiten como `say`. Solo
+//     literales: una plantilla con ${…} queda fuera (desde A2.5 ninguna respuesta de fallo es plantilla).
 //   - Diario (A2.9, assets/journal/*.json): lo que dice Anon por teléfono (puzzles[].hints y anonIdle), con speaker
 //     «Anon» → hablante anon. Los objetivos y las notas solo se leen en pantalla: sin voz. La frase de relleno de
 //     src/systems/Journal.ts (ANON_FALLBACK) va en CODE_SOURCES con `speaker: 'anon'`.
@@ -26,7 +28,8 @@
 //     achievement, textos de interfaz y TrailerScene.
 //
 // Hablante (voices.json → match): speaker del op o del nodo en minúsculas; sin speaker = player. Las
-// respuestas de NPC a objetos las dice el narrador-protagonista (son acotaciones con citas): player.
+// respuestas de NPC a objetos las dice el narrador-protagonista (son acotaciones con citas): player. Las respuestas
+// de fallo (A2.5: useResponses de hotspots y fail-responses.json) también: player.
 // Clave: <speaker>_<6 primeras palabras normalizadas>_<md5(texto completo) 8>, igual que
 // generate_memelab_voices.py. Si el texto ya tiene clip en el mapa anterior a A0.3 (fixed-keys.json, mismas
 // reglas de búsqueda que VoiceSystem) se usa esa clave, aunque siga un esquema viejo.
@@ -44,15 +47,20 @@ export const VOICE_DIR = 'assets/audio/voice';
 export const CODE_SOURCES = [
   {
     file: 'src/ui/ScummUI.ts',
-    blocks: ['ITEM_DESCS: Record<string, string> =', 'DEFAULT_ITEM_VERB_RESPONSES: Partial<Record<Verb, string>> =', 'ITEM_VERB_RESPONSES: Record<string, Partial<Record<Verb, string>>> ='],
+    blocks: ['ITEM_DESCS: Record<string, string> =', 'ITEM_VERB_RESPONSES: Record<string, Partial<Record<Verb, string>>> ='],
     emitSay: true,
   },
-  { file: 'src/scenes/GameScene.ts', blocks: ['VERB_DEFAULTS: Record<string, string> =', 'const fallback ='], emitSay: true },
+  { file: 'src/scenes/GameScene.ts', blocks: [], emitSay: true },
+  // A2.5: frase de último recurso si una respuesta de fallo no encuentra bolsa
+  { file: 'src/systems/FailResponses.ts', blocks: ['LAST_RESORT ='] },
   { file: 'src/scenes/UIScene.ts', blocks: [], emitSay: true },
   { file: 'src/systems/ScriptEngine.ts', blocks: [], ctxSay: true },
   // A2.9: frase de relleno de Anon si un capítulo del diario no trae anonIdle
   { file: 'src/systems/Journal.ts', blocks: ['ANON_FALLBACK ='], speaker: 'anon' },
 ];
+
+/** A2.5: respuestas de fallo globales (src/systems/FailResponses.ts). */
+export const FAIL_RESPONSES_FILE = 'assets/config/fail-responses.json';
 
 /** A2.9: carpeta del diario (un JSON por capítulo) y quién habla en él. */
 export const JOURNAL_DIR = 'assets/journal';
@@ -91,6 +99,10 @@ export function speakerFor(raw, voices) {
 }
 
 const hasWords = (t) => typeof t === 'string' && normalise(t) !== '';
+/** A2.5: marcador o interpolación ({item}, ${…}): ese texto depende del objeto y no puede tener clip */
+export const hasMarker = (t) => /\$\{|\{[^{}]*\}/.test(t);
+/** A2.5: frase o lista de frases (useResponses/giveResponses) → [[texto, sufijo de ruta]] con voz posible */
+const responseLines = (v) => (Array.isArray(v) ? v.map((t, i) => [t, `[${i}]`]) : [[v, '']]).filter(([t]) => hasWords(t) && !hasMarker(t));
 
 // ── escenas ───────────────────────────────────────────────────────────────────────────────────────────────
 
@@ -125,13 +137,31 @@ export function extractScene(sceneId, data, voices) {
   }
   for (const npc of data.npcs ?? []) {
     for (const field of ['giveResponses', 'useResponses']) {
-      for (const [itemId, text] of Object.entries(npc?.[field] ?? {})) {
-        if (itemId === '_default' || !hasWords(text)) continue;
-        out.push({ kind: 'line', speaker: 'player', text, where: `npcs.${npc.id}.${field}.${itemId}` });
+      for (const [itemId, value] of Object.entries(npc?.[field] ?? {})) {
+        for (const [text, i] of responseLines(value)) out.push({ kind: 'line', speaker: 'player', text, where: `npcs.${npc.id}.${field}.${itemId}${i}` });
       }
     }
     walk(npc?.scripts ?? [], `npcs.${npc?.id}.scripts`);
   }
+  // A2.5: respuestas de fallo de cada hotspot (pareja específica o _default)
+  for (const hs of data.regions?.hotspots ?? []) {
+    for (const [itemId, value] of Object.entries(hs?.useResponses ?? {})) {
+      for (const [text, i] of responseLines(value)) out.push({ kind: 'line', speaker: 'player', text, where: `regions.hotspots.${hs.id}.useResponses.${itemId}${i}` });
+    }
+  }
+  return out;
+}
+
+/** A2.5: todas las frases de assets/config/fail-responses.json (las dice Dex: player). */
+export function extractFailResponses(file, data) {
+  const out = [];
+  const push = (v, where) => { for (const [text, i] of responseLines(v)) out.push({ kind: 'line', speaker: 'player', text, where: `${file}: ${where}${i}` }); };
+  for (const field of ['verbDefaults', 'itemVerbDefaults', 'itemNpc', 'items']) {
+    for (const [k, v] of Object.entries(data?.[field] ?? {})) push(v, `${field}.${k}`);
+  }
+  push(data?.itemHotspot ?? [], 'itemHotspot');
+  push(data?.itemItem?.default ?? [], 'itemItem.default');
+  (data?.itemItem?.pairs ?? []).forEach((p, i) => push(p?.lines ?? [], `itemItem.pairs[${i}].lines`));
   return out;
 }
 
@@ -294,6 +324,8 @@ export function extractProject(root = DEFAULT_ROOT, voices = loadVoices(root)) {
   if (fs.existsSync(global)) {
     for (const e of extractScene('global', JSON.parse(fs.readFileSync(global, 'utf8')), voices)) raw.push({ ...e, where: `global.json: ${e.where}` });
   }
+  const fail = path.join(root, FAIL_RESPONSES_FILE);
+  if (fs.existsSync(fail)) raw.push(...extractFailResponses(FAIL_RESPONSES_FILE, JSON.parse(fs.readFileSync(fail, 'utf8'))));
   const journalDir = path.join(root, JOURNAL_DIR);
   if (fs.existsSync(journalDir)) {
     for (const name of fs.readdirSync(journalDir).filter((f) => f.endsWith('.json')).sort()) {

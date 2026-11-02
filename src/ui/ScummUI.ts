@@ -7,6 +7,7 @@ import type { InventoryItem, GameState } from '@/types/game.types';
 import { TWP, FONT, LAYOUT } from '@/config/theme';
 import { hasFinePointer } from '@/config/platform';
 import { VERB_KEYS } from '@/systems/DesktopControls';
+import { failResponses } from '@/systems/FailResponsesData';
 
 export const SCUMM_PANEL_MIN_HEIGHT: number = LAYOUT.PANEL_MIN_HEIGHT;
 const COLLAPSED_HEIGHT = 36;
@@ -434,7 +435,8 @@ export class ScummUI {
   private selectInventoryItem(item: InventoryItem): void {
     // LOOK: describe the item
     if (this.selectedVerb === Verb.LOOK) {
-      const desc = ScummUI.ITEM_DESCS[item.id] ?? `It's ${item.name}. Nothing special about it.`;
+      // A2.5: sin descripción propia, la bolsa itemVerbDefaults.LOOK (sin plantillas: todo con voz)
+      const desc = ScummUI.ITEM_DESCS[item.id] ?? failResponses.itemVerb(Verb.LOOK, item.id).text;
       this.scene.events.emit('say', desc);
       return;
     }
@@ -447,7 +449,7 @@ export class ScummUI {
       if (this.onItemCombo) {
         this.onItemCombo(item1, item);
       } else {
-        this.scene.events.emit('say', `I can't use ${item1.name} with ${item.name}.`);
+        this.scene.events.emit('say', failResponses.itemOnItem(item1.id, item.id).text);
       }
       return;
     }
@@ -500,10 +502,10 @@ export class ScummUI {
     }
 
     // Other verbs (OPEN, CLOSE, PUSH, PULL, TALK, GIVE, PICK): show per-item response
+    // A2.5: lo propio del objeto o la bolsa del verbo (assets/config/fail-responses.json itemVerbDefaults)
     const verbKey = this.selectedVerb;
     const response = ScummUI.ITEM_VERB_RESPONSES[item.id]?.[verbKey]
-      ?? ScummUI.DEFAULT_ITEM_VERB_RESPONSES[verbKey]
-      ?? `I can't ${VERB_LABELS[verbKey].toLowerCase()} ${item.name}.`;
+      ?? failResponses.itemVerb(verbKey, item.id).text;
     this.scene.events.emit('say', response);
   }
 
@@ -533,17 +535,13 @@ export class ScummUI {
     burned_chip: "A scorched chip from the AdrianAuctions server. Whatever happened, it happened fast and hot.",
     glasses_3d: "Retro 3D glasses with red and cyan lenses. Found under the server room floor. Someone hid these for a reason.",
     pepememe: "A rare Pepe printout from the MemeLAB. It wears tiny 3D glasses. The back reads: 'SPECIMEN #001 \u2014 THE ORIGINAL'. Feels warm to the touch.",
+    // A2.5: objetos que no tenían descripción (antes, plantilla sin voz)
+    energy_drink: "A can of BULL RUN. Five hundred milligrams of caffeine. The small print says 'Not for humans'. Or plants.",
+    luxury_watch: "A heavy gold watch fished out of an armchair. Still ticking. Adrian never had time for it.",
+    vip_floppy: "A VIP floppy disc with a gold label. Holders only. I'm not sure I'm a holder. The floppy seems sure.",
+    clinic_sign_in_sheet: "The clinic's own sign-in sheet. Names, dates, diagnoses. The handwriting gets worse with every patient.",
+    mystery_envelope: "A sealed envelope: 'CONFIDENTIAL — PATIENT ZERO'. Somebody around here would love to read it. Not me. Mostly.",
     ape_costume: "A full ape costume from the Alpha Pack. Realistic fur, expressive face, diamond-shaped buttons. When worn, I blend in with the Liquidity Pool apes. USE to put it on or take it off.",
-  };
-
-  private static readonly DEFAULT_ITEM_VERB_RESPONSES: Partial<Record<Verb, string>> = {
-    [Verb.OPEN]: "I don't think I can open this.",
-    [Verb.CLOSE]: "Not the kind of thing you close.",
-    [Verb.PUSH]: "I push it around in my pocket. Thrilling.",
-    [Verb.PULL]: "I tug on it. Nothing happens. As expected.",
-    [Verb.TALK]: "I hold it to my ear. Silence. It's not a seashell.",
-    [Verb.GIVE]: "Nobody here to give it to.",
-    [Verb.PICK]: "Already in my inventory. Mission accomplished.",
   };
 
   private static readonly ITEM_VERB_RESPONSES: Record<string, Partial<Record<Verb, string>>> = {

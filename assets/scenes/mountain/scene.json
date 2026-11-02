@@ -57,6 +57,11 @@
     "hotspots": [
       {
         "id": "hs_sign",
+        "useResponses": {
+          "printout": [
+            "I compare the sign to the printout. They agree. That's a first for this investigation."
+          ]
+        },
         "name": "Clinic Sign",
         "bounds": {
           "x": 35.7,
@@ -123,6 +128,11 @@
       },
       {
         "id": "hs_winding_path",
+        "useResponses": {
+          "printout": [
+            "I hold up the map. The path matches. I don't need to wave it at the path, though. I can just walk."
+          ]
+        },
         "name": "Winding Path",
         "bounds": {
           "x": 64.6,
@@ -358,6 +368,19 @@
       },
       {
         "id": "hs_spring",
+        "useResponses": {
+          "_default": [
+            "I dip it in the spring. Now it's wet and cold. Like me, on this hike.",
+            "The spring doesn't want that. It's a spring. It wants nothing. Very zen.",
+            "I'm not dropping that in the spring. It's the cleanest thing for miles."
+          ],
+          "water_bottle": [
+            "The bottle's already full. Fresh mountain water. Fernando would weep."
+          ],
+          "energy_drink": [
+            "I'm not mixing BULL RUN into a mountain spring. The fish have enough problems."
+          ]
+        },
         "name": "Mountain Spring",
         "bounds": {
           "x": 16.1,

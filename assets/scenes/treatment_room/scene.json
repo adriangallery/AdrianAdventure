@@ -56,6 +56,11 @@
     "hotspots": [
       {
         "id": "hs_chair",
+        "useResponses": {
+          "ape_costume": [
+            "I sit the ape costume in the chair. Now it looks like a patient. A furry one. I take it back."
+          ]
+        },
         "name": "The Chair",
         "bounds": {
           "x": 37.5,
@@ -122,6 +127,19 @@
       },
       {
         "id": "hs_monitor",
+        "useResponses": {
+          "_default": [
+            "The monitor wants something it can read. That isn't readable.",
+            "I hold it up to the screen. The screen reflects me. I look tired.",
+            "Nothing to plug in here. The monitor waits. It's good at waiting."
+          ],
+          "glasses_3d": [
+            "I look at the monitor through the spare 3D glasses. Double the glasses, half the picture."
+          ],
+          "keycard": [
+            "I swipe the keycard over the monitor. It's a monitor. It monitors. It doesn't swipe."
+          ]
+        },
         "name": "The Monitor",
         "bounds": {
           "x": 62.9,
@@ -325,6 +343,11 @@
       },
       {
         "id": "hs_exit_door",
+        "useResponses": {
+          "keycard": [
+            "No reader on the exit. Getting out is free. Getting in was the expensive part."
+          ]
+        },
         "name": "Exit Door",
         "bounds": {
           "x": 87.6,
@@ -797,6 +820,11 @@
       },
       {
         "id": "hs_observation_window",
+        "useResponses": {
+          "glasses_3d": [
+            "I look through the window with the spare 3D glasses. Somebody watched from in there. In red and cyan, probably."
+          ]
+        },
         "name": "Observation Window",
         "bounds": {
           "x": 5.7,
