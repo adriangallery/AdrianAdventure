@@ -1834,8 +1834,8 @@
         },
         {
           "op": "cameraPan",
-          "x": 37,
-          "y": 45,
+          "x": 62,
+          "y": 50,
           "ms": 0
         },
         {
@@ -1846,14 +1846,16 @@
           "wait": false
         },
         {
-          "op": "say",
-          "speaker": "Narrator",
-          "text": "Adrian, creator of ZERO, vanished three weeks ago."
+          "op": "cameraPan",
+          "x": 37,
+          "y": 45,
+          "ms": 5000,
+          "wait": false
         },
         {
           "op": "say",
           "speaker": "Narrator",
-          "text": "Tonight, his wallet sent Dex one message."
+          "text": "Three weeks after Adrian, creator of ZERO, vanished, his wallet messaged Dex."
         },
         {
           "op": "say",

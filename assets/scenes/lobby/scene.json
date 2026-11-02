@@ -1267,12 +1267,12 @@
         {
           "op": "cameraPan",
           "actor": "npc_receptionist",
-          "ms": 900
+          "ms": 700
         },
         {
           "op": "say",
           "speaker": "Narrator",
-          "text": "Inside, the lab still hums. Only Penny stayed."
+          "text": "Inside, only Penny stayed."
         },
         {
           "op": "say",
@@ -1282,8 +1282,7 @@
         {
           "op": "titleCard",
           "chapter": "CHAPTER 2",
-          "title": "The Receptionist",
-          "subtitle": "Trust is earned, not minted."
+          "title": "The Receptionist"
         },
         {
           "op": "cinematicEnd"

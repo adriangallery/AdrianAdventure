@@ -360,11 +360,12 @@ partida queda igual. El narrador (`speaker: "Narrator"` → hablante `nar`) habl
 cabeza. Si la escena tiene `onEnter`, GameScene la tapa con una cortina negra hasta que acaba; al abrirse una cinemática
 la cortina se funde (`onBegin`), para que se vea.
 
-- `outside`: franjas → la cámara en la casa → Dex entra andando desde el coche (`actorMove` con `wait: false`) mientras
-  el narrador dice 2 líneas → Dex lee el mensaje de Adrian y remata → tarjeta «CHAPTER 1 / Breaking & Entering» → Dex
-  libre junto a la puerta (39, 93) mirando a la izquierda. ≤ 20 s (biblia § 4).
-- `lobby`: franjas → pan a Penny → 1 línea del narrador → Penny (el guiño a lo que parpadea abajo) → tarjeta del capítulo
-  2 → la cámara vuelve a Dex. ≤ 12 s.
+- `outside`: franjas → la cámara en el camino junto al coche; Dex entra andando (`actorMove` con `wait: false`) y la
+  cámara recorre la casa hasta la puerta (`cameraPan` de 5 s con `wait: false`) mientras el narrador dice 1 línea → Dex
+  lee el mensaje de Adrian y remata → tarjeta «CHAPTER 1 / Breaking & Entering» → Dex libre junto a la puerta (39, 93)
+  mirando a la izquierda. ≤ 20 s (biblia § 4).
+- `lobby`: franjas → pan a Penny → 1 línea del narrador → Penny (el guiño a lo que parpadea abajo) → tarjeta «CHAPTER 2 /
+  The Receptionist» → la cámara vuelve a Dex. ≤ 12 s.
 
 QA: la ruta crítica comprueba tras `newGame` (y al entrar en el lobby) `expect.cinematic` (`active: false`, `endedMin: 1`,
 `skipped: false`, cámara de siempre) y en outside `expect.playerNear` + `facing`; el smoke salta la del lobby con una

@@ -164,12 +164,12 @@
       "id": "st-fail-boton-wallet",
       "kind": "walkthrough",
       "title": "FAIL: [qa:error] el clic cae bajo el botón Wallet de UIScene",
-      "why": "A 1280×720 outside es panorámica y la cámara queda en scrollX 460 con el personaje en el spawn: 97 %, 3,5 % cae bajo el botón Wallet (arriba a la derecha)",
+      "why": "A 1280×720 outside es panorámica; tras la apertura (A3.2) Dex queda junto a la puerta (39, 93) y la cámara en scrollX 38: 72,5 %, 3,5 % cae bajo el botón Wallet (arriba a la derecha). Antes, con el personaje en el spawn y scrollX 460, era 97 %",
       "expectStatus": "fail",
-      "expectDetail": "^paso 2: \\[qa:error\\] no se puede hacer clic para andar a 97,3.5: el punto cae en el botón Wallet",
+      "expectDetail": "^paso 2: \\[qa:error\\] no se puede hacer clic para andar a 72.5,3.5: el punto cae en el botón Wallet",
       "steps": [
         { "do": "newGame", "expect": { "scene": "outside" } },
-        { "do": "walk", "x": 97, "y": 3.5 }
+        { "do": "walk", "x": 72.5, "y": 3.5 }
       ]
     },
     {
