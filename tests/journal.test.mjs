@@ -198,20 +198,33 @@ test('ficheros reales de assets/journal: cada capítulo de ChapterManager, 3-4 o
   }
 });
 
-test('ruta crítica de hoy: Anon guía el capítulo 1 como comprueba qa/walkthrough.json', () => {
+test('ruta crítica de hoy (A3.3c): Anon guía el capítulo 1 como comprueba qa/walkthrough.json', () => {
   const dir = path.join(ROOT, 'assets', 'journal');
   const chapters = J.parseChapters(fs.readdirSync(dir).filter((f) => f.endsWith('.json')).map((f) => JSON.parse(fs.readFileSync(path.join(dir, f), 'utf8'))));
   let p = J.emptyProgress();
   let r = J.callAnon(chapters, 1, world(), p);
-  assert.deepEqual([r.call.puzzle, r.call.level], ['p1_code', 1]);
+  // A3.3c: PIN partido: lámpara (mitad A) → nido (mitad B, se abre con la mitad A) → juntar → puerta
+  assert.deepEqual([r.call.puzzle, r.call.level], ['p1_lamp', 1]);
   r = J.callAnon(chapters, 1, world(), r.progress);
-  assert.deepEqual([r.call.puzzle, r.call.level], ['p1_code', 2]);
-  assert.match(r.call.text, /porch light/i);
-  const afterNote = world({ found_code_note: true, has_code: true }, ['code_note']);
+  assert.deepEqual([r.call.puzzle, r.call.level], ['p1_lamp', 2]);
+  assert.match(r.call.text, /off/i);
+  const halfA = world({ porch_light_off: true, found_note_half_a: true }, ['note_half_a']);
+  r = J.callAnon(chapters, 1, halfA, r.progress);
+  assert.deepEqual([r.call.puzzle, r.call.level], ['p1_nest', 1]);
+  // Sin la mitad A, el nido no se sugiere aunque ya se tenga la B (p1_nest pide found_note_half_a para abrirse)
+  assert.equal(J.openPuzzle(J.chapterData(chapters, 1), world({ found_note_half_b: true, nest_down: true }, ['note_half_b'])).id, 'p1_lamp');
+  const halves = world({ porch_light_off: true, found_note_half_a: true, has_plank: true, nest_down: true, found_note_half_b: true }, ['note_half_a', 'note_half_b', 'fence_plank']);
+  assert.ok(!J.goalsView(J.chapterData(chapters, 1), halves).find((g) => g.id === 'g1_code').done, 'con las mitades sueltas aún no hay código');
+  assert.deepEqual(J.pendingNotes(chapters, 1, halves, J.emptyProgress()), ['n1_half_a', 'n1_half_b']);
+  r = J.callAnon(chapters, 1, halves, r.progress);
+  assert.deepEqual([r.call.puzzle, r.call.level], ['p1_combine', 1]);
+  const afterNote = world({ porch_light_off: true, found_note_half_a: true, has_plank: true, nest_down: true, found_note_half_b: true, found_code_note: true, has_code: true }, ['code_note', 'fence_plank']);
   assert.ok(J.goalsView(J.chapterData(chapters, 1), afterNote).find((g) => g.id === 'g1_code').done);
-  assert.deepEqual(J.pendingNotes(chapters, 1, afterNote, J.emptyProgress()), ['n1_code']);
+  assert.deepEqual(J.pendingNotes(chapters, 1, afterNote, J.emptyProgress()), ['n1_half_a', 'n1_half_b', 'n1_code']);
   r = J.callAnon(chapters, 1, afterNote, r.progress);
   assert.deepEqual([r.call.puzzle, r.call.level], ['p1_door', 1]);
+  // Partida guardada antes de A3.3c (la nota entera de un paso): Anon va a la puerta, no a la lámpara
+  assert.equal(J.openPuzzle(J.chapterData(chapters, 1), world({ found_code_note: true, has_code: true }, ['code_note'])).id, 'p1_door');
   // Capítulo 3 empieza en la azotea (chapter_2_complete): la primera pista es la escotilla
   p = J.emptyProgress();
   assert.equal(J.callAnon(chapters, 3, world({ chapter_2_complete: true, vane_turned: true }), p).call.puzzle, 'p3_hatch');

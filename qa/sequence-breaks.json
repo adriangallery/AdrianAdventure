@@ -35,7 +35,11 @@
       "goal": { "scene": "mountain" },
       "steps": [
         { "do": "newGame", "expect": { "scene": "outside" } },
-        { "do": "act", "verb": "PICK", "target": "hs_porch_light", "expect": { "has": ["code_note"] } },
+        { "do": "act", "verb": "USE", "target": "hs_porch_light", "note": "A3.3c: la mitad A del PIN (apagar la lámpara, cogerla)", "expect": { "flags": { "porch_light_off": true } } },
+        { "do": "act", "verb": "PICK", "target": "hs_porch_light", "expect": { "has": ["note_half_a"] } },
+        { "do": "act", "verb": "PULL", "target": "hs_fence", "note": "A3.3c: el tablón y, con él, el nido de la chimenea (mitad B)", "expect": { "has": ["fence_plank"] } },
+        { "do": "use", "item": "fence_plank", "target": "hs_chimney", "expect": { "has": ["note_half_b"] } },
+        { "do": "combine", "items": ["note_half_a", "note_half_b"], "expect": { "has": ["code_note"] } },
         { "do": "use", "item": "code_note", "target": "hs_keypad", "expect": { "scene": "lobby", "flags": { "chapter_1_complete": true } } },
         { "do": "act", "verb": "PICK", "target": "hs_coat", "expect": { "has": ["keycard"] } },
         { "do": "act", "verb": "USE", "target": "hs_frontdoor", "expect": { "scene": "outside", "has": ["keycard"], "lacks": ["printout"], "flags": { "chapter_3_complete": false } } },
@@ -50,7 +54,11 @@
       "goal": { "scene": "mountain" },
       "steps": [
         { "do": "newGame", "expect": { "scene": "outside" } },
-        { "do": "act", "verb": "PICK", "target": "hs_porch_light", "expect": { "has": ["code_note"] } },
+        { "do": "act", "verb": "USE", "target": "hs_porch_light", "note": "A3.3c: la mitad A del PIN (apagar la lámpara, cogerla)", "expect": { "flags": { "porch_light_off": true } } },
+        { "do": "act", "verb": "PICK", "target": "hs_porch_light", "expect": { "has": ["note_half_a"] } },
+        { "do": "act", "verb": "PULL", "target": "hs_fence", "note": "A3.3c: el tablón y, con él, el nido de la chimenea (mitad B)", "expect": { "has": ["fence_plank"] } },
+        { "do": "use", "item": "fence_plank", "target": "hs_chimney", "expect": { "has": ["note_half_b"] } },
+        { "do": "combine", "items": ["note_half_a", "note_half_b"], "expect": { "has": ["code_note"] } },
         { "do": "use", "item": "code_note", "target": "hs_keypad", "expect": { "scene": "lobby" } },
         { "do": "act", "verb": "PICK", "target": "hs_coat", "expect": { "has": ["keycard"] } },
         { "do": "act", "verb": "USE", "target": "hs_stairs_up", "expect": { "scene": "upstairs" } },
@@ -71,12 +79,54 @@
       "goal": { "scene": "basement" },
       "steps": [
         { "do": "newGame", "expect": { "scene": "outside" } },
-        { "do": "act", "verb": "PICK", "target": "hs_porch_light", "expect": { "has": ["code_note"] } },
+        { "do": "act", "verb": "USE", "target": "hs_porch_light", "note": "A3.3c: la mitad A del PIN (apagar la lámpara, cogerla)", "expect": { "flags": { "porch_light_off": true } } },
+        { "do": "act", "verb": "PICK", "target": "hs_porch_light", "expect": { "has": ["note_half_a"] } },
+        { "do": "act", "verb": "PULL", "target": "hs_fence", "note": "A3.3c: el tablón y, con él, el nido de la chimenea (mitad B)", "expect": { "has": ["fence_plank"] } },
+        { "do": "use", "item": "fence_plank", "target": "hs_chimney", "expect": { "has": ["note_half_b"] } },
+        { "do": "combine", "items": ["note_half_a", "note_half_b"], "expect": { "has": ["code_note"] } },
         { "do": "use", "item": "code_note", "target": "hs_keypad", "expect": { "scene": "lobby" } },
         { "do": "act", "verb": "USE", "target": "hs_stairs_up", "expect": { "scene": "upstairs", "lacks": ["keycard"] } },
         { "do": "act", "verb": "USE", "target": "hs_roof_hatch", "expect": { "scene": "rooftop" } },
         { "do": "act", "verb": "USE", "target": "hs_weather_vane", "expect": { "scene": "rooftop", "flags": { "vane_turned": true, "has_keycard": false } } },
         { "do": "act", "verb": "USE", "target": "hs_roof_access_panel", "attempt": true, "rejects": "keycard reader still blinks red", "expect": { "scene": "rooftop", "lacks": ["keycard"] } }
+      ]
+    },
+    {
+      "id": "nota-con-lampara-encendida",
+      "kind": "sequence-break",
+      "title": "A3.3c: la mitad A de la nota sin apagar la lámpara del porche",
+      "why": "A3.3c (puzle 1.1): con la luz encendida PICK/OPEN de hs_porch_light solo dicen «Hot. Hot hot hot.»; la mitad A sale con porch_light_off",
+      "goal": { "has": ["note_half_a"] },
+      "steps": [
+        { "do": "newGame", "expect": { "scene": "outside", "lacks": ["note_half_a"], "unsetFlags": ["porch_light_off"] } },
+        { "do": "act", "verb": "OPEN", "target": "hs_porch_light", "rejects": "Hot\\. Hot hot hot", "expect": { "lacks": ["note_half_a"], "unsetFlags": ["porch_light_off", "found_note_half_a"] } },
+        { "do": "act", "verb": "PICK", "target": "hs_porch_light", "attempt": true, "rejects": "Hot\\. Hot hot hot", "expect": { "lacks": ["note_half_a"], "unsetFlags": ["found_note_half_a"] } }
+      ]
+    },
+    {
+      "id": "nido-sin-tablon",
+      "kind": "sequence-break",
+      "title": "A3.3c: la mitad B (nido de urraca) sin el tablón de la valla",
+      "why": "A3.3c (puzle 1.3): la chimenea solo suelta el nido con el combo fence_plank + hs_chimney; USE, PULL y PICK sin tablón no dan nada",
+      "goal": { "has": ["note_half_b"] },
+      "steps": [
+        { "do": "newGame", "expect": { "scene": "outside", "lacks": ["fence_plank", "note_half_b"] } },
+        { "do": "act", "verb": "USE", "target": "hs_chimney", "expect": { "lacks": ["note_half_b"], "unsetFlags": ["nest_down"] } },
+        { "do": "act", "verb": "PULL", "target": "hs_chimney", "rejects": "something long", "note": "antes de A3.3c el PULL decía «A bird's nest falls out» sin dar nada", "expect": { "lacks": ["note_half_b"], "unsetFlags": ["nest_down"] } },
+        { "do": "act", "verb": "PICK", "target": "hs_chimney", "attempt": true, "rejects": "Too high", "expect": { "lacks": ["note_half_b"], "unsetFlags": ["nest_down", "found_note_half_b"] } }
+      ]
+    },
+    {
+      "id": "puerta-con-media-nota",
+      "kind": "sequence-break",
+      "title": "A3.3c: abrir la puerta con media nota (note_half_a en el teclado)",
+      "why": "A3.3c (puzle 1.4): solo code_note (las dos mitades juntas) abre; la mitad A en el teclado es una respuesta de fallo",
+      "goal": { "scene": "lobby" },
+      "steps": [
+        { "do": "newGame", "expect": { "scene": "outside", "lacks": ["code_note"] } },
+        { "do": "act", "verb": "USE", "target": "hs_porch_light", "expect": { "flags": { "porch_light_off": true } } },
+        { "do": "act", "verb": "PICK", "target": "hs_porch_light", "expect": { "has": ["note_half_a"], "lacks": ["code_note"] } },
+        { "do": "use", "item": "note_half_a", "target": "hs_keypad", "attempt": true, "rejects": "Half a code opens half a door", "expect": { "scene": "outside", "flags": { "door_unlocked": false, "has_code": false } } }
       ]
     }
   ]

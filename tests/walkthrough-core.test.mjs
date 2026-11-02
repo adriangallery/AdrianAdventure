@@ -407,8 +407,10 @@ test('A2.9: expect.journal (abierto, capítulo, objetivos con y sin tic, notas, 
 test('A2.9: la ruta crítica comprueba el tic de un objetivo, la escalera de Anon (1 y 2) y que no repite un puzle resuelto', () => {
   const steps = readJson('qa/walkthrough.json').routes.find((r) => r.id === 'ruta-critica').steps;
   const calls = steps.filter((s) => s.do === 'callAnon').map((s) => s.expect?.journal?.anon);
-  assert.deepEqual(calls.slice(0, 2).map((a) => [a.puzzle, a.level]), [['p1_code', 1], ['p1_code', 2]]);
-  assert.ok(calls.some((a) => a.puzzle === 'p1_door' && a.notPuzzle === 'p1_code'));
+  // A3.3c: el PIN partido: la escalera empieza por p1_lamp y sigue la ruta (p1_nest, p1_combine) hasta p1_door
+  assert.deepEqual(calls.slice(0, 2).map((a) => [a.puzzle, a.level]), [['p1_lamp', 1], ['p1_lamp', 2]]);
+  assert.deepEqual(calls.slice(2, 5).map((a) => a.puzzle), ['p1_nest', 'p1_combine', 'p1_door']);
+  assert.ok(calls.some((a) => a.puzzle === 'p1_door' && a.notPuzzle === 'p1_combine'));
   assert.ok(steps.some((s) => s.do === 'journal' && s.expect?.journal?.done?.includes('g1_code')));
   // Los pasos del diario van entre la puerta sin nota y el felpudo, sin tocar el resto de la ruta
   const i = steps.findIndex((s) => s.do === 'callAnon');
@@ -505,7 +507,7 @@ test('A2.5: expect.failResponse contra state().lastFailResponse', () => {
 
 test('A2.5: los rejects de respuestas de fallo de la ruta crítica casan con la frase 0 de su bolsa (ronda fija con ?qa=1)', () => {
   const fail = readJson('assets/config/fail-responses.json');
-  const lobby = readJson('assets/scenes/lobby/scene.json');
+  const sceneOf = (id) => readJson(`assets/scenes/${id}/scene.json`);
   const steps = readJson('qa/walkthrough.json').routes.find((r) => r.id === 'ruta-critica').steps.filter((s) => s.expect?.failResponse);
   assert.ok(steps.length >= 5, 'PUSH/PULL/GIVE por defecto, una pareja específica y una bolsa de objeto');
   const bagText = (bag) => {
@@ -514,7 +516,8 @@ test('A2.5: los rejects de respuestas de fallo de la ruta crítica casan con la 
     if (kind === 'item') return fail.items[rest][0];
     if (kind === 'hotspot') {
       const [where, item] = rest.split(':');
-      const hs = lobby.regions.hotspots.find((h) => `lobby/${h.id}` === where);
+      const [sceneId, hsId] = where.split('/');
+      const hs = sceneOf(sceneId).regions.hotspots.find((h) => h.id === hsId);
       return hs.useResponses[item][0];
     }
     throw new Error(`bolsa no prevista en la prueba: ${bag}`);

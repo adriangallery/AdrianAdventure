@@ -62,6 +62,15 @@
           ],
           "golden_token": [
             "I look for a coin slot in the front door. Nope. Shame. I'd pay to get in."
+          ],
+          "fence_plank": [
+            "I could pry the door open with the plank. That's the breaking part. I'd rather skip to the entering."
+          ],
+          "note_half_a": [
+            "Half a code opens half a door. Doors don't work like that."
+          ],
+          "note_half_b": [
+            "Two digits. The door wants four. I'm exactly halfway to a door."
           ]
         },
         "name": "Front Door",
@@ -110,7 +119,7 @@
                     },
                     {
                       "op": "ifFlag",
-                      "flag": "found_code_note",
+                      "flag": "porch_light_off",
                       "then": [],
                       "else": [
                         {
@@ -165,7 +174,7 @@
                     },
                     {
                       "op": "ifFlag",
-                      "flag": "found_code_note",
+                      "flag": "porch_light_off",
                       "then": [],
                       "else": [
                         {
@@ -228,6 +237,14 @@
       },
       {
         "id": "hs_porch_light",
+        "useResponses": {
+          "fence_plank": [
+            "I could knock the note loose with the plank. And the bulb. And my eyebrows. There's a switch, Dex."
+          ],
+          "note_half_b": [
+            "I hold the other half up to the light. Still ..14. The light doesn't fill in the rest."
+          ]
+        },
         "name": "Porch Light",
         "bounds": {
           "x": 34.5,
@@ -238,24 +255,54 @@
         "scripts": {
           "LOOK": [
             {
-              "op": "say",
-              "text": "A warm porch light. Something small is wedged behind the lamp bracket."
+              "op": "ifFlag",
+              "flag": "found_note_half_a",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "Just a lamp now. Off, for the first time in three weeks. It looks relieved."
+                }
+              ],
+              "else": [
+                {
+                  "op": "ifFlag",
+                  "flag": "found_code_note",
+                  "then": [
+                    {
+                      "op": "say",
+                      "text": "Just a lamp now. Off, for the first time in three weeks. It looks relieved."
+                    }
+                  ],
+                  "else": [
+                    {
+                      "op": "ifFlag",
+                      "flag": "porch_light_off",
+                      "then": [
+                        {
+                          "op": "say",
+                          "text": "Off now. The bracket's cooling down. Whatever's wedged back there is all mine."
+                        }
+                      ],
+                      "else": [
+                        {
+                          "op": "say",
+                          "text": "Something's wedged behind the bracket. The bulb's been on for three weeks. I'm not touching that."
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
             }
           ],
           "USE": [
             {
-              "op": "say",
-              "text": "Click. The moths scatter."
-            }
-          ],
-          "PICK": [
-            {
               "op": "ifFlag",
-              "flag": "found_code_note",
+              "flag": "porch_light_off",
               "then": [
                 {
                   "op": "say",
-                  "text": "Nothing else behind the lamp."
+                  "text": "It's off. It's been on for three weeks. Let it have this."
                 }
               ],
               "else": [
@@ -275,22 +322,68 @@
                 },
                 {
                   "op": "setFlag",
-                  "flag": "found_code_note",
+                  "flag": "porch_light_off",
                   "value": true
-                },
-                {
-                  "op": "setFlag",
-                  "flag": "has_code",
-                  "value": true
-                },
-                {
-                  "op": "addItem",
-                  "id": "code_note",
-                  "name": "Code Note (7314)"
                 },
                 {
                   "op": "say",
-                  "text": "I reach behind the lamp... a crumpled note! It reads: 'ACCESS CODE: 7314'"
+                  "text": "Click. The moths drift over to the side window. They'll find another light. Everyone does."
+                }
+              ]
+            }
+          ],
+          "PICK": [
+            {
+              "op": "ifFlag",
+              "flag": "found_code_note",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "Nothing else behind the lamp. Just a bracket and three weeks of moth history."
+                }
+              ],
+              "else": [
+                {
+                  "op": "ifFlag",
+                  "flag": "found_note_half_a",
+                  "then": [
+                    {
+                      "op": "say",
+                      "text": "Nothing else behind the lamp. Just a bracket and three weeks of moth history."
+                    }
+                  ],
+                  "else": [
+                    {
+                      "op": "ifFlag",
+                      "flag": "porch_light_off",
+                      "then": [
+                        {
+                          "op": "setFlag",
+                          "flag": "found_note_half_a",
+                          "value": true
+                        },
+                        {
+                          "op": "addItem",
+                          "id": "note_half_a",
+                          "name": "Note Half (73..)"
+                        },
+                        {
+                          "op": "say",
+                          "text": "I reach behind the bracket. Still warm, not lethal. A torn scrap of paper."
+                        },
+                        {
+                          "op": "say",
+                          "text": "'73..' and then: 'The other half is with the birds. They never sell.'"
+                        }
+                      ],
+                      "else": [
+                        {
+                          "op": "say",
+                          "text": "Hot. Hot hot hot."
+                        }
+                      ]
+                    }
+                  ]
                 }
               ]
             }
@@ -308,50 +401,71 @@
               "then": [
                 {
                   "op": "say",
-                  "text": "Nothing else behind the lamp."
+                  "text": "Nothing else behind the lamp. Just a bracket and three weeks of moth history."
                 }
               ],
               "else": [
                 {
-                  "op": "flicker",
-                  "overlay": "lamp_empty",
-                  "pattern": [
-                    80,
-                    120,
-                    50,
-                    200,
-                    60,
-                    90,
-                    40,
-                    300
+                  "op": "ifFlag",
+                  "flag": "found_note_half_a",
+                  "then": [
+                    {
+                      "op": "say",
+                      "text": "Nothing else behind the lamp. Just a bracket and three weeks of moth history."
+                    }
+                  ],
+                  "else": [
+                    {
+                      "op": "ifFlag",
+                      "flag": "porch_light_off",
+                      "then": [
+                        {
+                          "op": "setFlag",
+                          "flag": "found_note_half_a",
+                          "value": true
+                        },
+                        {
+                          "op": "addItem",
+                          "id": "note_half_a",
+                          "name": "Note Half (73..)"
+                        },
+                        {
+                          "op": "say",
+                          "text": "I pry the bracket open. A torn scrap of paper falls into my hand. Half a note."
+                        },
+                        {
+                          "op": "say",
+                          "text": "'73..' and then: 'The other half is with the birds. They never sell.'"
+                        }
+                      ],
+                      "else": [
+                        {
+                          "op": "say",
+                          "text": "Hot. Hot hot hot."
+                        }
+                      ]
+                    }
                   ]
-                },
-                {
-                  "op": "setFlag",
-                  "flag": "found_code_note",
-                  "value": true
-                },
-                {
-                  "op": "setFlag",
-                  "flag": "has_code",
-                  "value": true
-                },
-                {
-                  "op": "addItem",
-                  "id": "code_note",
-                  "name": "Code Note (7314)"
-                },
-                {
-                  "op": "say",
-                  "text": "I pry open the lamp bracket... a crumpled note falls out! It reads: 'ACCESS CODE: 7314'"
                 }
               ]
             }
           ],
           "CLOSE": [
             {
-              "op": "say",
-              "text": "It stays on."
+              "op": "ifFlag",
+              "flag": "porch_light_off",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "Already off. The moths have filed for relocation."
+                }
+              ],
+              "else": [
+                {
+                  "op": "say",
+                  "text": "No shade to close. There's a switch, though. Switches I can do."
+                }
+              ]
             }
           ],
           "PUSH": [
@@ -362,8 +476,20 @@
           ],
           "PULL": [
             {
-              "op": "say",
-              "text": "I pull the lamp bracket. Something might be behind it..."
+              "op": "ifFlag",
+              "flag": "porch_light_off",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "I wiggle the bracket. Something papery rustles behind it."
+                }
+              ],
+              "else": [
+                {
+                  "op": "say",
+                  "text": "I grab the bracket. Ow. Hot. The bulb's been on for three weeks and it's proud of it."
+                }
+              ]
             }
           ],
           "GIVE": [
@@ -508,6 +634,16 @@
       },
       {
         "id": "hs_chimney",
+        "useResponses": {
+          "_default": [
+            "I could throw it up the drainpipe. I'd miss, and then it'd be up there too.",
+            "Too short. Anything I poke up there has to be long.",
+            "I wave it at the chimney. The chimney doesn't wave back. Chimneys don't do that."
+          ],
+          "note_half_a": [
+            "I'm not offering the magpies the other half. They'd want the set."
+          ]
+        },
         "name": "Chimney",
         "bounds": {
           "x": 43.2,
@@ -518,8 +654,20 @@
         "scripts": {
           "LOOK": [
             {
-              "op": "say",
-              "text": "Brick chimney. No smoke \u2014 upgraded to a more efficient consensus mechanism."
+              "op": "ifFlag",
+              "flag": "nest_down",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "Brick chimney. The drainpipe's nest-free now. The magpies are drafting a complaint."
+                }
+              ],
+              "else": [
+                {
+                  "op": "say",
+                  "text": "Magpies nesting in the drainpipe, way too high to reach. They steal anything shiny."
+                }
+              ]
             }
           ],
           "USE": [
@@ -541,8 +689,20 @@
           ],
           "PICK": [
             {
-              "op": "say",
-              "text": "Firmly attached to the building."
+              "op": "ifFlag",
+              "flag": "nest_down",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "Firmly attached to the building. The nest wasn't. That's the difference."
+                }
+              ],
+              "else": [
+                {
+                  "op": "say",
+                  "text": "Too high. I'd need something long."
+                }
+              ]
             }
           ],
           "OPEN": [
@@ -565,8 +725,20 @@
           ],
           "PULL": [
             {
-              "op": "say",
-              "text": "I pull on the drainpipe. A bird's nest falls out."
+              "op": "ifFlag",
+              "flag": "nest_down",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "I pull on the drainpipe. No nest left to fall. Just rust."
+                }
+              ],
+              "else": [
+                {
+                  "op": "say",
+                  "text": "I jump for the drainpipe. I miss by a lot. The magpies watch. I'd need something long."
+                }
+              ]
             }
           ],
           "GIVE": [
@@ -1353,6 +1525,15 @@
           ],
           "mystery_envelope": [
             "The code isn't in the envelope. Probably. And I'm not opening confidential mail on a doorstep."
+          ],
+          "note_half_a": [
+            "Half a code opens half a door. Doors don't work like that."
+          ],
+          "note_half_b": [
+            "I type 1, 4. The keypad waits for the rest. So do I. The rest is somewhere else."
+          ],
+          "fence_plank": [
+            "I could whack the keypad with the plank. It would still want four digits. Just angrier."
           ]
         },
         "name": "Keypad",
@@ -1499,6 +1680,16 @@
       },
       {
         "id": "hs_fence",
+        "useResponses": {
+          "_default": [
+            "I lean it against the fence. The fence doesn't need help. It needs a plank back.",
+            "The fence takes nothing. It only gives. One plank, specifically.",
+            "I tap it on the fence. Wood says hello. Nothing else happens."
+          ],
+          "fence_plank": [
+            "I try to put the plank back. It doesn't fit anymore. Some things you can't undo. I'm keeping it."
+          ]
+        },
         "name": "Wooden Fence",
         "bounds": {
           "x": 0,
@@ -1506,11 +1697,28 @@
           "w": 5,
           "h": 30
         },
+        "walkTo": {
+          "x": 5.5,
+          "y": 94
+        },
+        "face": "left",
         "scripts": {
           "LOOK": [
             {
-              "op": "say",
-              "text": "A weathered wooden fence marking the property line. Some planks are missing. Like gaps in a liquidity pool."
+              "op": "ifFlag",
+              "flag": "has_plank",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "The fence, minus one plank. Adrian will notice. Eventually. Probably."
+                }
+              ],
+              "else": [
+                {
+                  "op": "say",
+                  "text": "A weathered wooden fence. One plank hangs on by a single nail. It's basically asking."
+                }
+              ]
             }
           ],
           "USE": [
@@ -1527,8 +1735,20 @@
           ],
           "PICK": [
             {
-              "op": "say",
-              "text": "I pull a loose splinter off. Ouch. Not worth the gas fees."
+              "op": "ifFlag",
+              "flag": "has_plank",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "I've got my plank. I'm not taking the whole fence. I'm a detective, not a demolition crew."
+                }
+              ],
+              "else": [
+                {
+                  "op": "say",
+                  "text": "One plank is barely hanging on. Picking won't do it. That needs a good pull."
+                }
+              ]
             }
           ],
           "OPEN": [
@@ -1551,8 +1771,30 @@
           ],
           "PULL": [
             {
-              "op": "say",
-              "text": "I pull a plank. It comes loose. Now there's an exploit in the perimeter."
+              "op": "ifFlag",
+              "flag": "has_plank",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "One plank is enough. I'm a detective, not a demolition crew."
+                }
+              ],
+              "else": [
+                {
+                  "op": "setFlag",
+                  "flag": "has_plank",
+                  "value": true
+                },
+                {
+                  "op": "addItem",
+                  "id": "fence_plank",
+                  "name": "Fence Plank"
+                },
+                {
+                  "op": "say",
+                  "text": "I pull a plank. It comes loose. Now there's an exploit in the perimeter. I'm the exploit."
+                }
+              ]
             }
           ],
           "GIVE": [
@@ -1685,6 +1927,67 @@
     "sceneItems": []
   },
   "combos": [
+    {
+      "items": [
+        "fence_plank",
+        "hs_chimney"
+      ],
+      "result": "nest_down",
+      "script": [
+        {
+          "op": "ifFlag",
+          "flag": "nest_down",
+          "then": [
+            {
+              "op": "say",
+              "text": "The nest's already down. Poking the chimney now would just be petty."
+            }
+          ],
+          "else": [
+            {
+              "op": "ifFlag",
+              "flag": "found_code_note",
+              "then": [
+                {
+                  "op": "setFlag",
+                  "flag": "nest_down",
+                  "value": true
+                },
+                {
+                  "op": "say",
+                  "text": "I poke the nest down. Twigs, a bottle cap, a gum wrapper. Nothing I still need."
+                }
+              ],
+              "else": [
+                {
+                  "op": "setFlag",
+                  "flag": "nest_down",
+                  "value": true
+                },
+                {
+                  "op": "setFlag",
+                  "flag": "found_note_half_b",
+                  "value": true
+                },
+                {
+                  "op": "addItem",
+                  "id": "note_half_b",
+                  "name": "Note Half (..14)"
+                },
+                {
+                  "op": "say",
+                  "text": "I poke the nest with the plank. It drops at my feet. Twigs, a bottle cap... and a scrap of paper wrapped in foil."
+                },
+                {
+                  "op": "say",
+                  "text": "Magpies steal anything shiny. Finally, someone with my investment thesis."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
     {
       "items": [
         "code_note",
@@ -1911,7 +2214,7 @@
         "w": 18.8039,
         "h": 33.5069
       },
-      "flag": "found_code_note",
+      "flag": "porch_light_off",
       "depth": 5
     }
   ]

@@ -2,6 +2,20 @@
   "pixelScale": 5.5,
   "itemCombos": [
     {
+      "item1": "note_half_a",
+      "item2": "note_half_b",
+      "result": "code_note",
+      "script": [
+        { "op": "removeItem", "id": "note_half_a" },
+        { "op": "removeItem", "id": "note_half_b" },
+        { "op": "addItem", "id": "code_note", "name": "Code Note (7314)" },
+        { "op": "setFlag", "flag": "found_code_note", "value": true },
+        { "op": "setFlag", "flag": "has_code", "value": true },
+        { "op": "say", "text": "I line up the torn edges. 73... 14. It reads: '7314. If you found both halves, you're patient enough. \u2014 A.'" },
+        { "op": "say", "text": "Patient. Me. Ha." }
+      ]
+    },
+    {
       "item1": "mystery_envelope",
       "item2": "terminal_key",
       "result": null,

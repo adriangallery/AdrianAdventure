@@ -64,8 +64,9 @@ cinemática entera y luego la misma saltada con Esc y exige el mismo estado fina
 (`action` open|close, `tab`) y `callAnon`, y `expect.journal` (`open`, `chapter`, `done`/`pending`: objetivos con y sin tic,
 `notes`/`noNotes`: notas apuntadas o no, `anon`: `{ puzzle, level, notPuzzle, text }` de la última llamada); `runScript` no
 admite `journalNote` ni `callAnon` (cambian la partida). La ruta crítica llama dos veces a Anon con la puerta cerrada
-(nivel 1 y 2 de `p1_code`), comprueba el tic de `g1_code` y la nota `n1_code` tras coger la nota, y que la siguiente
-llamada ya es de `p1_door` y no de `p1_code`. A2.8 añade `expect.pixel`
+(nivel 1 y 2 de `p1_lamp`; A3.3c), después sigue la escalera por `p1_nest` y `p1_combine`, comprueba las notas de las
+dos mitades sin tic en `g1_code`, el tic de `g1_code` y la nota `n1_code` tras juntar la nota, y que la siguiente llamada
+ya es de `p1_door` y no de `p1_combine`. A2.8 añade `expect.pixel`
 (`integer`, `pixelScale`, `heightPct` `{ min, max }`, `sameHeightAs` + `tol`, ver § Densidad de píxel); la ruta crítica
 lo usa en outside, lobby y clinic_interior. A4.1 añade `expect.anim` (`dir` left|right|up|down del último tramo, `talking`,
 `moving`, `gesture`, `texture` como expresión regular sin mayúsculas, `costume` y `rest`: sin tween y con la escala base de
@@ -135,6 +136,14 @@ Desde A1.2 las dos salidas a la montaña piden lo mismo que `hs_winding_path`: e
 y `montana-con-capitulo-3-a-medias` comprueban que ni la keycard ni haber bajado al sótano abren la montaña.
 `sotano-sin-keycard` es de control: debe quedarse fuera. Las demás salidas sin gate son vueltas a escenas del
 mismo capítulo o anteriores y están silenciadas en `qa/lint-scenes-allow.json` con su motivo.
+
+A3.3c (PIN partido, capítulo 1) añade tres rutas que deben quedarse fuera: `nota-con-lampara-encendida` (OPEN y PICK de
+la lámpara sin apagarla: «Hot. Hot hot hot.» y ninguna mitad), `nido-sin-tablon` (USE, PULL y PICK de la chimenea sin
+`fence_plank`: el nido no cae) y `puerta-con-media-nota` (`note_half_a` en el teclado: respuesta de fallo, la puerta sigue
+cerrada). Las rutas que pasan por el capítulo 1 hacia el lobby (`controles-escritorio`, `cinematica`, las de la montaña y
+`sotano-sin-keycard`) hacen la ruta corta del PIN: USE y PICK de la lámpara, PULL de la valla, tablón en la chimenea y
+`combine` de las mitades. El selftest del runner usa ahora PULL `hs_fence` (un paso, un objeto: `fence_plank`) donde
+antes cogía la nota de la lámpara en un paso.
 
 ### Parámetros de depuración de la URL (A1.8)
 
@@ -440,6 +449,40 @@ openPuzzle: { puzzle, level } | null, unseen, calling }` (`anon` es la última l
 `puzzle: null` = relleno). `__qa.openJournal()/closeJournal()/callAnon()`; pasos `journal` y `callAnon`. El smoke abre y
 cierra el diario con toques reales en 390×844 (y con J/Esc) y comprueba que el SHUTDOWN no deja el panel colgado. Demo:
 `scripts/demo-a2-9-journal.mjs`.
+# PIN partido del capítulo 1 (A3.3c)
+
+Puzles 1.1–1.4 de la biblia (`docs/DESIGN_BIBLE.md` § 4), todo en `assets/scenes/outside/scene.json` salvo el objeto +
+objeto, que va en `assets/config/global.json`:
+
+| Puzle | Cómo | Flags | Objeto |
+|---|---|---|---|
+| 1.1 Lámpara caliente | USE `hs_porch_light` la apaga (parpadeo con `flicker` y luego el overlay); PICK/OPEN con luz: «Hot. Hot hot hot.»; apagada, da la mitad A | `porch_light_off`, `found_note_half_a` | `note_half_a` («73..») |
+| 1.2 Tablón | PULL `hs_fence`, una sola vez (PICK lo anuncia). `walkTo` (5.5, 94) fuera de `tr_mountain` | `has_plank` | `fence_plank` (no se gasta: felpudo en A3.3d) |
+| 1.3 Nido de urraca | combo de escena `fence_plank` + `hs_chimney` (LOOK/PICK/PULL lo anuncian) | `nest_down`, `found_note_half_b` | `note_half_b` («..14», en papel de aluminio) |
+| 1.4 Nota entera | `itemCombos` `note_half_a` + `note_half_b`: `removeItem` ×2, `addItem code_note`, flags | `found_code_note`, `has_code` | `code_note` (7314) |
+
+- **Objeto + objeto que da un objeto**: el motor ya lo admite sin cambios. `UIScene.onCombo` ejecuta el `script` del
+  `itemCombos` con el ScriptEngine (con `addItem`/`removeItem`/`setFlag`); `result` es informativo (nada lo lee), así que
+  la combinación vive en el script. En QA es el paso `combine` (`items: [a, b]`), que ya existía; no hay pasos nuevos.
+- **Overlay `lamp_empty`** (el porche con la lámpara apagada): ahora lo enciende `porch_light_off` (antes
+  `found_code_note`). Los `conditionalOverlays` solo admiten una `flag` (más `invert`), así que no hay condición
+  compuesta. El parpadeo de USE/OPEN de la puerta sigue mientras la luz esté encendida (`ifFlag porch_light_off`) y la
+  rama ya excluye `has_code` (nota entera).
+- **Partidas viejas**: no se renombra ninguna flag. Con `found_code_note` ya puesto, la lámpara dice que no queda nada
+  (no da la mitad A aunque se apague) y el nido cae sin dar la mitad B; el diario sigue a `p1_door`. Sin migración.
+- **Diario** (`assets/journal/chapter-1.json`): `g1_code` «…It's in two halves, because of course it is.» con
+  `doneWhen: found_code_note`; notas `n1_half_a`, `n1_half_b` y `n1_code`; puzles en orden `p1_lamp` (sin `openWhen`) →
+  `p1_nest` (`openWhen: found_note_half_a`: la mitad A dice que la otra está «with the birds») → `p1_combine` (las dos
+  mitades) → `p1_door`, cada uno con su escalera de 3 pistas.
+- **Iconos**: `node scripts/make-item-icons.mjs` (Node puro, sin dependencias: decodifica y codifica PNG con `zlib`)
+  escribe `note_half_a.png` y `note_half_b.png` (de `code_note.png` cortado entre «73» y «14», borde rasgado; la B con
+  papel de aluminio) y `fence_plank.png` (dibujado en una rejilla de 64 y escalado ×2) en `assets/sprites/items/`, a
+  128×128 como los demás iconos, registrados en `itemIds` de `PreloadScene.ts`. Determinista: repetirlo no cambia nada.
+- **Respuestas de fallo**: bolsas `items.note_half_a`, `items.note_half_b`, `items.fence_plank` y parejas objeto +
+  objeto en `fail-responses.json`; `useResponses` en `hs_keypad`, `hs_front_door`, `hs_porch_light`, `hs_fence` y
+  `hs_chimney` para los intentos tentadores (media nota en el teclado: «Half a code opens half a door. Doors don't work
+  like that.»).
+
 # Densidad de píxel (A2.8)
 
 Lógica pura en `src/systems/PixelScale.ts` (`tests/pixel-scale.test.mjs`, en `npm run test:engine`); la aplican
