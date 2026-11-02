@@ -5345,7 +5345,6 @@ export const NARRATOR_SEQUENCES: Record<string, string[]> = {
   'epilogue_outside:narrative': ['nar_epilogue_outside_0', 'nar_epilogue_outside_1'],
   'lobby:narrative': ['nar_lobby_0', 'nar_lobby_1'],
   'mountain:narrative': ['nar_mountain_0', 'nar_mountain_1'],
-  'outside:narrative': ['nar_outside_0', 'nar_outside_1', 'nar_outside_2', 'nar_outside_3'],
   'treatment_room:narrative': ['nar_treatment_room_0', 'nar_treatment_room_1', 'nar_treatment_room_2'],
   'basement:titleCard': ['nar_basement_title'],
   'clinic_interior:titleCard': ['nar_clinic_interior_title'],

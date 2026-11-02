@@ -32,9 +32,9 @@ export const CHAPTERS: ChapterDef[] = [
     introLines: [
       "Adrian, creator of the ZERO ecosystem, has disappeared.",
       "His laboratory sits abandoned. The servers still hum.",
-      "An anonymous message brought you here:",
-      "\"The ecosystem is in danger. Go to the lab.\"",
-      "\"The door is not as locked as it seems.\"",
+      "A scheduled message from his wallet brought Dex Malone here:",
+      "\"Find Patient Zero. Bring them home.\"",
+      "\"Everything in the lab is yours. \u2014 A.\"",
     ],
     completionFlag: "chapter_1_complete",
     gateFlag: null,
@@ -156,23 +156,20 @@ export class ChapterManager {
     return chapter;
   }
 
-  /** Get the opening premise lines (shown at very first game start) */
+  /** Get the opening premise lines (shown at very first game start; mirror of the outside narrative, A3.3a) */
   static getPremise(): string[] {
     return [
-      "Somewhere on Base chain, block 18,247,391...",
+      "Adrian, creator of ZERO, is three weeks gone.",
       "",
-      "The ZERO ecosystem thrives. Tokens flow.",
-      "NFTs trade. The FloorEngine sweeps.",
+      "Tonight his wallet sends a scheduled message:",
+      '"Find Patient Zero. Bring them home."',
+      '"Everything in the lab is yours. \u2014 A."',
       "",
-      "But its creator has vanished.",
+      "The forums say Patient Zero is a saboteur.",
+      "A bot that trades at 3 AM.",
       "",
-      'They call the missing person "Patient Zero" \u2014',
-      "the first crypto addict, the original degen.",
-      "",
-      "A message arrives in your wallet:",
-      '"Find Patient Zero. Save the ecosystem."',
-      "",
-      "You trace the signal to a house on the outskirts of town...",
+      "Dex Malone. On-chain detective. Zero cases.",
+      'He read "everything" and got in the car.',
     ];
   }
 
