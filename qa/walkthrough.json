@@ -48,7 +48,7 @@
         { "do": "act", "verb": "USE", "target": "hs_main_entrance", "expect": { "scene": "clinic_interior" } },
         { "do": "resize", "width": 390, "height": 844, "note": "A1.10: tras 11 cambios de escena, otra redimensión (móvil vertical) sin errores y sin listeners acumulados", "expect": { "scene": "clinic_interior", "noListenerGrowth": true } },
         { "do": "resize", "width": 1280, "height": 720, "note": "A1.10: vuelta al viewport de la ruta", "expect": { "scene": "clinic_interior", "noListenerGrowth": true } },
-        { "do": "talk", "npc": "npc_dr_satoshi", "choices": ["confidential documents", "In a mailbox"], "expect": { "flags": { "treatment_room_unlocked": true, "chapter_4_complete": true } } },
+        { "do": "talk", "npc": "npc_dr_satoshi", "choices": ["confidential documents", "In a mailbox"], "note": "A1.9: el onEnter de evidence_accepted quita el sobre y da el logro del capítulo 4 en el momento (antes solo ponía los flags)", "expect": { "flags": { "treatment_room_unlocked": true, "chapter_4_complete": true }, "lacks": ["mystery_envelope"], "achievements": ["ch4_complete"] } },
 
         { "do": "act", "verb": "USE", "target": "hs_treatment_door", "expect": { "scene": "treatment_room", "flags": { "chapter_5_intro_shown": true } } },
         { "do": "act", "verb": "USE", "target": "hs_monitor", "expect": { "flags": { "monitor_revealed": true, "patient_zero_revealed": true, "chapter_5_complete": true } } },

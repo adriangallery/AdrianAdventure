@@ -1,10 +1,13 @@
-// A1.1 (plan SCUMM): pruebas del watchdog de ScriptEngine sin navegador.
+// A1.1 (plan SCUMM): pruebas del watchdog de ScriptEngine sin navegador. A1.9: onEnter de nodos de diálogo.
 // CI (Node 22): node --experimental-strip-types --test tests/script-engine.test.mjs
 // SCRIPT_ENGINE_PATH permite apuntar a una copia ya transpilada a JS (Node sin type stripping).
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 
 const { ScriptEngine, WATCHDOG_MS, flickerPattern } = await import(process.env.SCRIPT_ENGINE_PATH ?? '../src/systems/ScriptEngine.ts');
+// A1.9: onEnter de los nodos de diálogo
+const { DialogueSystem } = await import(process.env.DIALOGUE_SYSTEM_PATH ?? '../src/systems/DialogueSystem.ts');
+const { DialogueScriptRunner } = await import(process.env.DIALOGUE_SCRIPTS_PATH ?? '../src/systems/DialogueScripts.ts');
 
 const TICK = 1000;
 
@@ -503,4 +506,145 @@ test('A1.4: cancelEffects (SHUTDOWN de la escena) corta el flicker y el script s
   assert.deepEqual(ctx.overlayCalls.map((c) => c.visible), [true, null]);
   assert.equal(ctx.overlayCalls[1].id, '*');
   assert.equal(ctx.getState().flags.after, true);
+});
+
+// ─── A1.9: onEnter de los nodos de diálogo ───────────────────
+
+/**
+ * Monta lo mismo que GameScene + UIScene: el motor principal, cuyo `startDialogue` corre un árbol en un
+ * DialogueSystem, y el DialogueScriptRunner (motor aparte) para los onEnter. `say` del árbol se cierra solo y
+ * las elecciones toman la primera; el `say` de los scripts lo resuelve la prueba (o nunca).
+ */
+function makeDialogueRig(trees, ctx = makeCtx()) {
+  const runner = new DialogueScriptRunner(new ScriptEngine(ctx), () => ctx);
+  const shown = [];
+  const dialogue = new DialogueSystem({
+    say: async (text) => { shown.push(text); },
+    showChoices: async () => 0,
+    runScripts: (ops, where) => runner.run(ops, where),
+  });
+  ctx.startDialogue = async (_npcId, treeId) => {
+    try {
+      await dialogue.run(trees[treeId]);
+    } finally {
+      runner.finishTree();
+    }
+  };
+  return { ctx, runner, shown, main: new ScriptEngine(ctx) };
+}
+
+/** Falla si `promise` no termina en `ms` (un bloqueo sale como fallo, no como prueba colgada). */
+function within(promise, ms, what) {
+  let timer;
+  return Promise.race([
+    promise.finally(() => clearTimeout(timer)),
+    new Promise((_, reject) => { timer = setTimeout(() => reject(new Error(`bloqueado: ${what}`)), ms); }),
+  ]);
+}
+
+const EVIDENCE_TREE = {
+  id: 'dr_satoshi_intro',
+  start: 'evidence_accepted',
+  nodes: {
+    evidence_accepted: {
+      speaker: 'Dr. Satoshi',
+      text: 'Treatment room access granted.',
+      onEnter: [
+        { op: 'setFlag', flag: 'treatment_room_unlocked', value: true },
+        { op: 'setFlag', flag: 'chapter_4_complete', value: true },
+        { op: 'removeItem', id: 'mystery_envelope' },
+        { op: 'achievement', text: 'Chapter 4 Complete: The Mountain Path' },
+        { op: 'ifHasItem', id: 'mystery_envelope', then: [{ op: 'setFlag', flag: 'sobre_sigue', value: true }], else: [{ op: 'setFlag', flag: 'sobre_entregado', value: true }] },
+      ],
+      end: true,
+    },
+  },
+};
+
+test('A1.9: onEnter con removeItem + achievement desde un diálogo lanzado por el op `dialogue` de un script en curso', async () => {
+  const { ctx, main, runner } = makeDialogueRig({ dr_satoshi_intro: EVIDENCE_TREE });
+  ctx.addItem('mystery_envelope', 'Mystery Envelope');
+  await within(main.execute([
+    { op: 'dialogue', npcId: 'npc_dr_satoshi', treeId: 'dr_satoshi_intro' },
+    { op: 'setFlag', flag: 'tras_dialogo', value: true },
+  ], 'hs_x/USE'), 2000, 'el script que lanzó el diálogo');
+  const st = ctx.getState();
+  assert.equal(st.flags.treatment_room_unlocked, true);
+  assert.equal(st.flags.chapter_4_complete, true);
+  assert.equal(st.inventory.some((i) => i.id === 'mystery_envelope'), false, 'removeItem se ejecuta');
+  assert.ok(ctx.log.includes('achievement Chapter 4 Complete: The Mountain Path'), 'achievement se ejecuta');
+  assert.equal(st.flags.sobre_entregado, true, 'ifHasItem ve el estado vivo tras el removeItem');
+  assert.equal(st.flags.tras_dialogo, true, 'el script principal sigue tras el diálogo');
+  assert.equal(main.isRunning(), false);
+  assert.equal(runner.isRunning(), false);
+});
+
+test('A1.9: el onEnter con texto espera al jugador sin bloquear y el árbol sigue después', async () => {
+  const tree = {
+    id: 't', start: 'a',
+    nodes: {
+      a: { text: 'A', onEnter: [{ op: 'say', text: 'en onEnter' }, { op: 'addItem', id: 'llave', name: 'Llave' }], next: 'b' },
+      b: { text: 'B', end: true },
+    },
+  };
+  const { ctx, main, shown } = makeDialogueRig({ t: tree });
+  const done = main.execute([{ op: 'dialogue', npcId: 'n', treeId: 't' }]);
+  await flush();
+  assert.deepEqual(shown, [], 'el texto del nodo sale después de su onEnter');
+  assert.equal(ticks(main, 60, true), 0, 'el motor principal no cuenta mientras hay diálogo');
+  ctx.says[0].resolve();
+  await within(done, 2000, 'diálogo con texto en onEnter');
+  assert.deepEqual(shown, ['A', 'B']);
+  assert.equal(ctx.getState().inventory.some((i) => i.id === 'llave'), true);
+});
+
+test('A1.9: un onEnter colgado sin nada en pantalla lo corta su watchdog sin perder ops de estado y el árbol sigue', async () => {
+  const lost = deferred();
+  const ctx = makeCtx();
+  ctx.showNarrative = () => lost.promise; // promesa perdida de la UI
+  const tree = {
+    id: 't', start: 'a',
+    nodes: { a: { text: 'A', onEnter: [{ op: 'narrative', lines: ['x'] }, { op: 'removeItem', id: 'sobre' }], end: true } },
+  };
+  const { main, runner, shown } = makeDialogueRig({ t: tree }, ctx);
+  ctx.addItem('sobre', 'Sobre');
+  const done = main.execute([{ op: 'dialogue', npcId: 'n', treeId: 't' }]);
+  await flush();
+  const warnings = await withWarnings(async () => {
+    assert.equal(runner.watchdogTick(WATCHDOG_MS, false), true);
+  });
+  assert.match(warnings[0], /t\.a\/onEnter/);
+  await within(done, 2000, 'árbol tras el reinicio del motor de onEnter');
+  assert.deepEqual(shown, ['A']);
+  assert.equal(ctx.getState().inventory.length, 0, 'el rescate aplica el removeItem pendiente');
+});
+
+test('A1.9: gotoScene en un onEnter se aplaza al cierre del árbol; `dialogue` anidado se omite con aviso', async () => {
+  const tree = {
+    id: 't', start: 'a',
+    nodes: {
+      a: {
+        text: 'A',
+        onEnter: [
+          { op: 'fadeToScene', sceneId: 'treatment_room' },
+          { op: 'dialogue', npcId: 'n', treeId: 'otro' },
+          { op: 'setFlag', flag: 'tras_goto', value: true },
+        ],
+        next: 'b',
+      },
+      b: { text: 'B', end: true },
+    },
+  };
+  const { ctx, main, shown } = makeDialogueRig({ t: tree, otro: { id: 'otro', start: 'x', nodes: { x: { text: 'NO', end: true } } } });
+  let gotoAt = -1;
+  const origGoto = ctx.gotoScene;
+  ctx.gotoScene = (id) => { gotoAt = shown.length; origGoto(id); };
+  const warnings = await withWarnings(async () => {
+    await within(main.execute([{ op: 'dialogue', npcId: 'n', treeId: 't' }]), 2000, 'árbol con gotoScene y dialogue');
+  });
+  assert.deepEqual(shown, ['A', 'B'], 'el árbol llega a su final y no se abre el anidado');
+  assert.equal(gotoAt, 2, 'el cambio de escena llega al cerrar el árbol');
+  assert.ok(ctx.log.includes('goto treatment_room'));
+  assert.equal(ctx.getState().flags.tras_goto, true);
+  assert.ok(warnings.some((w) => /«dialogue» \(n\/otro\)/.test(w)), 'aviso del dialogue anidado');
 });

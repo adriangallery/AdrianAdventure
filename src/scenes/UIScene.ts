@@ -106,20 +106,11 @@ export class UIScene extends Phaser.Scene {
           this.registry.set('gameState', state);
         }
       },
-      runScripts: async (ops) => {
-        // Execute simple ops (setFlag, addItem) directly to avoid ScriptEngine deadlock
-        // when dialogue is initiated from within a running script
-        for (const op of ops as Array<{ op: string; flag: string; value: boolean; text: string; speaker?: string; id: string; name: string }>) {
-          if (op.op === 'setFlag') {
-            const state = this.registry.get('gameState') as GameState | undefined;
-            if (state) { state.flags[op.flag] = op.value; this.registry.set('gameState', state); }
-          } else if (op.op === 'say') {
-            await this.dialogueBox.say(op.text, op.speaker);
-          } else if (op.op === 'addItem') {
-            const inv = this.registry.get('inventorySystem') as InventorySystem | undefined;
-            inv?.addItem(op.id, op.name);
-          }
-        }
+      // A1.9: los onEnter de nodo se ejecutan con todos los opcodes de ScriptEngine, en el motor de diálogo de
+      // GameScene (aparte del principal: un diálogo lanzado por el op `dialogue` de un script en curso no se bloquea)
+      runScripts: (ops, where) => {
+        const gs = this.scene.get('GameScene') as GameScene;
+        return gs.runDialogueScripts(ops as ScriptOp[], where);
       },
       onDialogueComplete: (treeId) => {
         const state = this.registry.get('gameState') as import('@/types/game.types').GameState | undefined;
@@ -343,7 +334,12 @@ export class UIScene extends Phaser.Scene {
       };
     }
 
-    await this.dialogueSystem.run(tree);
+    try {
+      await this.dialogueSystem.run(tree);
+    } finally {
+      // A1.9: el cambio de escena aplazado de un onEnter se aplica al cerrar el árbol
+      (this.scene.get('GameScene') as GameScene).finishDialogueScripts();
+    }
     this.voiceSystem.stop();
     this.events.emit('dialogueComplete');
   }
