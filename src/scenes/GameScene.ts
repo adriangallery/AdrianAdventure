@@ -33,6 +33,7 @@ import { overlayTransform, type PctRect } from '@/systems/OverlayPlacement';
 import { FADE_FIRST_MS, FADE_SHORT_MS } from '@/systems/ScenePrefetch';
 import { addNote, callAnon } from '@/systems/Journal';
 import { JOURNAL_CHAPTERS, journalChapter, journalProgress, journalWorld } from '@/systems/JournalData';
+import { spriteScale, worldToArt, isIntegerScale } from '@/systems/PixelScale';
 
 /** A2.4 (QA): cómo pulsa la API de QA: botón derecho o clic de ratón (cuenta para el doble clic). */
 type QaClick = { button?: 'left' | 'right'; mouse?: boolean };
@@ -316,14 +317,18 @@ export class GameScene extends Phaser.Scene {
       for (const nd of sceneData.npcs) {
         const npcScreen = this.coordSystem.pctToScreen(nd.position.x, nd.position.y);
         const npc = new NPC(this, npcScreen.x, npcScreen.y, nd.id, nd.name, nd.dialogueTreeId, nd.color ? parseInt(nd.color, 16) : undefined);
-        const npcScale = this.coordSystem.getScale() * (nd.scale ?? 1);
-        npc.setScale(npcScale);
-        npc.dataScale = nd.scale ?? 1; // store for resize
+        // A2.8: misma unidad de píxel que el jugador (× artScale de la hoja); el `scale` a mano antiguo se ignora
+        npc.artScale = nd.artScale ?? 1;
         npc.pctPosition = { x: nd.position.x, y: nd.position.y }; // store for resize repositioning
+        npc.setScale(this.npcPixelScale(npc));
         npc.startIdle();
         this.npcs.push(npc);
       }
     }
+
+    // A2.8: el arte de la escena (fondo, primer plano, overlays, sprites web3) se filtra en lineal; los personajes,
+    // en nearest (pixelArt). Ver applySceneArtFilter.
+    this.applySceneArtFilter(sceneId, sceneData);
 
     // Web3 dynamic visuals (conditional sprites based on wallet/NFT state)
     if (WEB3_ENABLED && sceneData.web3Visuals?.length) {
@@ -650,13 +655,7 @@ export class GameScene extends Phaser.Scene {
     // NPC click detection — use actual sprite bounds for accurate hit testing
     for (const npc of this.npcs) {
       if (!npc.dialogueTreeId) continue;
-      const npcScreen = npc.getWorldTransformMatrix();
-      const npcScale = npc.scale;
-      const bodyW = (npc.width * npcScale) / 2;
-      const bodyH = npc.height * npcScale;
-      const dx = wx - npcScreen.tx;
-      const dy = wy - npcScreen.ty;
-      if (Math.abs(dx) < bodyW && dy > -bodyH && dy < 10 * npcScale) return { kind: 'npc', npc };
+      if (this.npcHit(npc, wx, wy)) return { kind: 'npc', npc };
     }
 
     const pct = this.coordSystem.screenToPct(wx, wy);
@@ -743,7 +742,8 @@ export class GameScene extends Phaser.Scene {
     const bgH = this.coordSystem.bgH;
     return {
       aspect: this.coordSystem.imgW / this.coordSystem.imgH,
-      playerHeight: bgH > 0 ? (this.player.displayHeight / bgH) * 100 : undefined,
+      // A2.8: altura del mundo (unidad de píxel × profundidad), no la de pantalla: no depende del tamaño de la ventana
+      playerHeight: bgH > 0 ? this.player.getWorldHeightPct() : undefined,
     };
   }
 
@@ -832,13 +832,7 @@ export class GameScene extends Phaser.Scene {
     // Check NPC hover first (same hitbox as click detection)
     for (const npc of this.npcs) {
       if (!npc.dialogueTreeId) continue;
-      const npcScreen = npc.getWorldTransformMatrix();
-      const npcScale = npc.scale;
-      const bodyW = (npc.width * npcScale) / 2;
-      const bodyH = npc.height * npcScale;
-      const dx = wx - npcScreen.tx;
-      const dy = wy - npcScreen.ty;
-      if (Math.abs(dx) < bodyW && dy > -bodyH && dy < 10 * npcScale) {
+      if (this.npcHit(npc, wx, wy)) {
         this.events.emit('hotspot:hover', npc.npcName);
         return;
       }
@@ -876,13 +870,12 @@ export class GameScene extends Phaser.Scene {
     this.player.onResize(this.coordSystem);
 
     for (const npc of this.npcs) {
-      const npcDataScale = npc.dataScale;
       const npcPctPos = npc.pctPosition;
       if (npcPctPos) {
         const newPos = this.coordSystem.pctToScreen(npcPctPos.x, npcPctPos.y);
         npc.setPosition(newPos.x, newPos.y);
       }
-      npc.setScale(this.coordSystem.getScale() * npcDataScale);
+      npc.setScale(this.npcPixelScale(npc));
     }
 
     // Conditional overlays follow background transform
@@ -1901,6 +1894,69 @@ export class GameScene extends Phaser.Scene {
     return this.scriptEngine.execute(ops, 'qa/runScript').finally(() => {
       this.inputCooldownFrames = 2;
     });
+  }
+
+  /**
+   * A2.8: filtro LINEAR para el arte de la escena: fondos de 3712×1152 pintados a ≈ 5 px por píxel de arte que se
+   * reducen a ×0,25-0,7. En nearest se pierden muestras: los cables y bordes de 1 píxel de arte salen a trozos y los
+   * tramados hacen moiré al mover la cámara. En lineal se ven continuos (capturas en la PR de A2.8). Los personajes
+   * (escala ≥ 1, entera cuando se puede) siguen en NEAREST, el de `pixelArt: true`. bgFill usa la misma textura.
+   */
+  private applySceneArtFilter(sceneId: string, sceneData: SceneData): void {
+    const keys = [`bg_${sceneId}`, `fg_${sceneId}`, ...(sceneData.conditionalOverlays ?? []).map((co) => `overlay_${sceneId}_${co.id}`)];
+    for (const v of sceneData.web3Visuals ?? []) keys.push(v.defaultSprite, ...(v.variants ?? []).map((x) => x.sprite));
+    for (const key of keys) {
+      if (this.textures.exists(key)) this.textures.get(key).setFilter(Phaser.Textures.FilterMode.LINEAR);
+    }
+  }
+
+  /**
+   * A2.8: escala de una NPC: la unidad de píxel de la escena × su artScale × la escala del fondo (redondeada a un
+   * entero de pantalla cuando se puede) × el factor de profundidad en la y de sus pies (src/systems/PixelScale.ts).
+   */
+  private npcPixelScale(npc: NPC): number {
+    return spriteScale({
+      pixelScale: this.player.getPixelScale(),
+      artScale: npc.artScale,
+      coordScale: this.coordSystem.getScale(),
+      depth: this.player.getDepthScale(),
+      yPct: npc.pctPosition?.y ?? 100,
+    }).scale;
+  }
+
+  /**
+   * A2.8: ¿el punto del mundo cae en el hitbox de la NPC? Su hoja (ancho × alto en píxeles de arte, pies abajo en el
+   * centro) más 10 píxeles de arte por debajo de los pies. Es la inversa de la escala, así vale con cualquier escala.
+   */
+  private npcHit(npc: NPC, wx: number, wy: number): boolean {
+    const m = npc.getWorldTransformMatrix();
+    return worldToArt({ x: wx, y: wy }, { x: m.tx, y: m.ty }, npc.scale, npc.width, npc.height, 10).inside;
+  }
+
+  /**
+   * A2.8 (QA): densidad de píxel: unidad de la escena, escala del jugador (píxeles de pantalla por píxel de arte), si
+   * es entera, factor de profundidad, alto del jugador en % del fondo (en pantalla y del mundo) y escala de cada NPC.
+   */
+  qaPixel(): {
+    pixelScale: number; playerScale: number; playerBase: number; snapped: boolean; integer: boolean; depth: number;
+    playerHeightPct: number; worldHeightPct: number; coordScale: number;
+    npcs: { id: string; scale: number; integer: boolean; heightPct: number }[];
+  } {
+    const info = this.player.getScaleInfo();
+    const bgH = this.coordSystem.bgH;
+    const pct = (px: number) => (bgH > 0 ? Math.round((px / bgH) * 10000) / 100 : 0);
+    return {
+      pixelScale: this.player.getPixelScale(),
+      playerScale: info.scale,
+      playerBase: info.base,
+      snapped: info.snapped,
+      integer: isIntegerScale(this.player.scaleY),
+      depth: info.depth,
+      playerHeightPct: pct(this.player.displayHeight),
+      worldHeightPct: Math.round(this.player.getWorldHeightPct() * 100) / 100,
+      coordScale: this.coordSystem.getScale(),
+      npcs: this.npcs.map((n) => ({ id: n.npcId, scale: n.scaleY, integer: isIntegerScale(n.scaleY), heightPct: pct(n.height * n.scaleY) })),
+    };
   }
 
   qaNpcIds(): string[] {

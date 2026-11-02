@@ -3,7 +3,7 @@
 //
 //   node scripts/lint-scenes.mjs [--strict] [--json] [--scene <id>] [--root <dir>] [--no-write]
 //
-// Recorre assets/scenes/<id>/scene.json y aplica siete reglas:
+// Recorre assets/scenes/<id>/scene.json y aplica ocho reglas:
 //   a  flags que se leen y nunca se ponen, o que se ponen y nunca se leen
 //   b  objetos que se consiguen (addItem) y no sirven para nada
 //   c  salidas (fadeToScene/gotoScene) en hotspots y triggers sin gate, para revisar a mano
@@ -14,6 +14,10 @@
 //   g  hotspots solapados (aviso fuerte si uno que va antes en la lista tapa entero a otro)
 //   h  diario (A2.9, assets/journal/chapter-<n>.json): fichero inválido o mal formado y `journalNote` a una nota que no
 //      existe = ERROR; flags que el diario lee y nada pone, u objetos que lee y nada da = aviso
+//   i  densidad de píxel (A2.8, aviso): `scale` a mano en npcs[] o `player.playerScale` (lo sustituye la unidad de
+//      píxel de la escena), y `pixelScale`, `depthScale` o `npcs[].artScale` fuera de rango. Rangos: los de
+//      src/systems/PixelScale.ts (pixelScale 1-12, factores de depthScale 0,2-2 con yTop < yBottom en 0-100,
+//      artScale 0,25-4); se repiten aquí porque el linter corre en Node sin type stripping
 //
 // Por defecto (f), los spawns fuera de zona de (e) y el diario mal formado de (h) son error; el resto, aviso. --strict lo convierte todo en error. Código de salida 1
 // solo si hay errores. Escribe lint-scenes-report.json y lint-scenes-report.md en la raíz del repo.
@@ -73,7 +77,27 @@ export const RULES = {
   f: 'assets inexistentes',
   g: 'hotspots solapados',
   h: 'diario',
+  i: 'densidad de píxel',
 };
+
+// A2.8: mismos rangos que src/systems/PixelScale.ts (tests/lint-scenes.test.mjs comprueba que coinciden)
+export const PIXEL_RANGES = { pixelScale: [1, 12], depthFactor: [0.2, 2], artScale: [0.25, 4] };
+const isNum = (v) => typeof v === 'number' && Number.isFinite(v);
+const inRange = (v, [lo, hi]) => isNum(v) && v >= lo && v <= hi;
+
+/** A2.8: defectos de un depthScale ({yTop, yBottom, scaleTop, scaleBottom}); vacío = válido */
+export function depthScaleDefects(d) {
+  if (!d || typeof d !== 'object') return ['tiene que ser un objeto {yTop, yBottom, scaleTop, scaleBottom}'];
+  const missing = ['yTop', 'yBottom', 'scaleTop', 'scaleBottom'].filter((k) => !isNum(d[k]));
+  if (missing.length) return missing.map((k) => `${k} no es un número`);
+  const out = [];
+  if (d.yTop < 0 || d.yBottom > 100) out.push('yTop/yBottom fuera de 0-100');
+  if (!(d.yTop < d.yBottom)) out.push('yTop tiene que ser menor que yBottom');
+  for (const k of ['scaleTop', 'scaleBottom']) {
+    if (!inRange(d[k], PIXEL_RANGES.depthFactor)) out.push(`${k} = ${d[k]} fuera de ${PIXEL_RANGES.depthFactor.join('-')}`);
+  }
+  return out;
+}
 
 const NESTED_KEYS = ['then', 'else', 'onSuccess', 'onFail'];
 const CONDITIONAL_OPS = new Set(['ifFlag', 'ifHasItem', 'ifVisited', 'ifWalletConnected', 'web3Require', 'mintNFT']);
@@ -683,6 +707,27 @@ export function lintProject(project) {
         push('h', 'error', c.scene, String(op.id), p, `journalNote: la nota «${op.id}» no está en assets/journal (notes[].id)`);
       }
     });
+  }
+
+  // ── (i) densidad de píxel (A2.8) ──
+  for (const [id, s] of Object.entries(scenes)) {
+    if (s.pixelScale !== undefined && !inRange(s.pixelScale, PIXEL_RANGES.pixelScale)) {
+      push('i', 'warning', id, 'pixelScale', `${id}.pixelScale`, `pixelScale = ${JSON.stringify(s.pixelScale)} fuera de ${PIXEL_RANGES.pixelScale.join('-')}: se usa el de por defecto`);
+    }
+    if (s.depthScale !== undefined) {
+      for (const d of depthScaleDefects(s.depthScale)) push('i', 'warning', id, 'depthScale', `${id}.depthScale`, `depthScale: ${d}; se ignora (sin escala por profundidad)`);
+    }
+    if (s.player?.playerScale !== undefined) {
+      push('i', 'warning', id, 'player.playerScale', `${id}.player.playerScale`, 'player.playerScale es anterior a A2.8: usa pixelScale (unidad de píxel de la escena para jugador y NPC)');
+    }
+    for (const n of s.npcs ?? []) {
+      if (n.scale !== undefined) {
+        push('i', 'warning', id, n.id, `${id}.npcs.${n.id}.scale`, `${n.id}: «scale» a mano (${n.scale}) fuera del sistema de densidad de píxel; se ignora. Si la hoja está dibujada a otra densidad, usa artScale`);
+      }
+      if (n.artScale !== undefined && !inRange(n.artScale, PIXEL_RANGES.artScale)) {
+        push('i', 'warning', id, n.id, `${id}.npcs.${n.id}.artScale`, `${n.id}: artScale = ${JSON.stringify(n.artScale)} fuera de ${PIXEL_RANGES.artScale.join('-')}; se usa 1`);
+      }
+    }
   }
 
   return findings;

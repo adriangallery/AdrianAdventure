@@ -27,7 +27,7 @@ hasta el hotspot, combos, gates y diálogos). Nunca pone flags ni da objetos.
 | `openJournal(tab?)` / `closeJournal()` | A2.9: abre el diario (móvil de Dex) pulsando su botón con el mismo manejador que el dedo (`[qa:blocked]` si ahora no se puede: cinemática, diálogo, texto o script) y lo cierra con su X. `tab`: `goals` (por defecto), `notes`, `anon`. Ver § Diario |
 | `callAnon()` | A2.9: llama a Anon como el jugador (abre el diario si hace falta, pestaña Call Anon, botón de llamar, espera a que conteste y lo vuelve a cerrar si lo abrió ella); la llamada queda en `state().journal.anon` |
 | `isWalkable(x, y)` | A2.1: si el punto (en %) se pisa en la escena actual (`walkableAreas` menos `blockedAreas`); síncrona |
-| `state()` | Escena, inventario, flags, visitadas, hotspots visibles, elecciones, avisos, log (`logTotal`: líneas apuntadas desde que cargó) `actions` (verbos que llegaron a ejecutarse) y `resizeListeners` (A1.10: listeners de `resize` del ScaleManager) y `path` (A2.1: última ruta calculada al andar: origen, puntos de paso y destino), `facing` (A2.2: `left`/`right`/`front`/`back`) y `walkTarget` (A2.2: último acercamiento a un hotspot/NPC: `target`, `verb`, `walkTo` —null si no anduvo— y `face`), y (A2.4) `verb` (verbo del panel), `highlightedHotspots` (resaltados con Tab), `verbKeyHints` (verbos con su tecla pintada en el panel) e `inputListeners` (listeners de teclado y del lienzo), (A2.10) `cinematic` (ver § Cinemáticas) y (A2.7) `prefetch` (precarga de las escenas vecinas: `scene`, `neighbors`, `done`, `pending`, `inFlight`, `failed`, `disabled`) y `lastTransition` (último cambio de escena: `from`, `to`, `ms`, `loadMs`, `at`, `mode` `full`/`indicator`/`instant`, `loadingScreen`, `fadeMs`) y (A2.9) `journal` (ver § Diario) |
+| `state()` | Escena, inventario, flags, visitadas, hotspots visibles, elecciones, avisos, log (`logTotal`: líneas apuntadas desde que cargó) `actions` (verbos que llegaron a ejecutarse) y `resizeListeners` (A1.10: listeners de `resize` del ScaleManager) y `path` (A2.1: última ruta calculada al andar: origen, puntos de paso y destino), `facing` (A2.2: `left`/`right`/`front`/`back`) y `walkTarget` (A2.2: último acercamiento a un hotspot/NPC: `target`, `verb`, `walkTo` —null si no anduvo— y `face`), y (A2.4) `verb` (verbo del panel), `highlightedHotspots` (resaltados con Tab), `verbKeyHints` (verbos con su tecla pintada en el panel) e `inputListeners` (listeners de teclado y del lienzo), (A2.10) `cinematic` (ver § Cinemáticas) y (A2.7) `prefetch` (precarga de las escenas vecinas: `scene`, `neighbors`, `done`, `pending`, `inFlight`, `failed`, `disabled`) y `lastTransition` (último cambio de escena: `from`, `to`, `ms`, `loadMs`, `at`, `mode` `full`/`indicator`/`instant`, `loadingScreen`, `fadeMs`) y (A2.9) `journal` (ver § Diario) y (A2.8) `pixel` (ver § Densidad de píxel) |
 
 Todas (salvo `state()` e `isWalkable()`) esperan a que el juego quede quieto y devuelven `state()`. Los errores empiezan por `[qa:blocked]`
 (el juego no deja hacerlo) o `[qa:error]` (id inexistente, tiempo agotado).
@@ -64,7 +64,9 @@ cinemática entera y luego la misma saltada con Esc y exige el mismo estado fina
 `notes`/`noNotes`: notas apuntadas o no, `anon`: `{ puzzle, level, notPuzzle, text }` de la última llamada); `runScript` no
 admite `journalNote` ni `callAnon` (cambian la partida). La ruta crítica llama dos veces a Anon con la puerta cerrada
 (nivel 1 y 2 de `p1_code`), comprueba el tic de `g1_code` y la nota `n1_code` tras coger la nota, y que la siguiente
-llamada ya es de `p1_door` y no de `p1_code`. Cada paso admite `expect` con `scene`, `has`, `lacks`, `flags`, `unsetFlags`, `visited`,
+llamada ya es de `p1_door` y no de `p1_code`. A2.8 añade `expect.pixel`
+(`integer`, `pixelScale`, `heightPct` `{ min, max }`, `sameHeightAs` + `tol`, ver § Densidad de píxel); la ruta crítica
+lo usa en outside, lobby y clinic_interior. Cada paso admite `expect` con `scene`, `has`, `lacks`, `flags`, `unsetFlags`, `visited`,
 `achievements`, `lastChoices`, `facing` (A2.2: hacia dónde mira el personaje al acabar el paso) y `noListenerGrowth`, y `rejects`: expresión regular (sin distinguir mayúsculas) que tiene que salir en los textos
 mostrados durante ese paso, p. ej. la frase con la que el juego rechaza la acción. Las rutas llevan un `goal` con
 el mismo formato que `expect`.
@@ -404,6 +406,44 @@ openPuzzle: { puzzle, level } | null, unseen, calling }` (`anon` es la última l
 `puzzle: null` = relleno). `__qa.openJournal()/closeJournal()/callAnon()`; pasos `journal` y `callAnon`. El smoke abre y
 cierra el diario con toques reales en 390×844 (y con J/Esc) y comprueba que el SHUTDOWN no deja el panel colgado. Demo:
 `scripts/demo-a2-9-journal.mjs`.
+# Densidad de píxel (A2.8)
+
+Lógica pura en `src/systems/PixelScale.ts` (`tests/pixel-scale.test.mjs`, en `npm run test:engine`); la aplican
+`Player` (jugador y disfraz de mono) y `GameScene` (NPC). Un **píxel de arte** es un píxel de la hoja del sprite (el
+jugador mide 103, la recepcionista y el Dr. Satoshi 37: los tres dibujados a la misma densidad).
+
+Campos opcionales de `scene.json` (junto a `walkableAreas`/`blockedAreas` y los `walkTo`/`face` de A2.2):
+
+```jsonc
+"pixelScale": 5.5,       // píxeles de fondo por píxel de arte de personaje: la unidad de píxel del mundo (1-12)
+"depthScale": { "yTop": 82.5, "yBottom": 91, "scaleTop": 0.45, "scaleBottom": 1 },  // factor 0,2-2, lineal en y (%)
+"npcs": [{ "id": "npc_x", "artScale": 1 }]   // hoja dibujada a otra densidad que la del jugador (0,25-4; 1 por defecto)
+```
+
+- **Unidad**: `pixelScale` de la escena; si no hay, `assets/config/global.json` → `pixelScale` (5,5, la media de los
+  `playerScale` que se habían ajustado a mano en los interiores; el jugador mide el 49 % del alto del fondo). El
+  `player.playerScale` y el `npcs[].scale` de antes ya no se usan (el linter avisa, regla i). Jugador, mono y NPC
+  comparten la unidad: no hay mezcla de resoluciones en una escena.
+- **Pantalla**: base = `pixelScale × artScale × coordSystem.scale`, redondeada al entero más cercano si eso no cambia
+  el tamaño más de un 20 % (`SNAP_TOLERANCE`): desde ×2 siempre (1280x720 → ×3, 1920x1080 → ×4), así a DPR 1 cada
+  píxel de arte mide lo mismo. En móvil apaisado (844x390 → 1,38) un entero cambiaría el tamaño un 28-45 % y se deja
+  exacta (ahí el lienzo va a DPR ≥ 2). Por debajo de ×1 (plano general de `epilogue_outside`) no hay entero posible.
+  Con la misma ventana todas las escenas con la unidad por defecto dan la misma escala, y el mismo alto.
+- **Profundidad**: `depthScale` multiplica la base ya redondeada por el factor de la y de los pies (constante fuera de
+  `yTop`-`yBottom`): en la franja del factor 1 la escala sigue entera y al andar crece o encoge sin saltos, como en
+  Monkey Island. Solo en caminos que se alejan: `outside` (porche), `mountain` (sendero) y `clinic_exterior`
+  (camino del monte). Los spawns están en la franja del factor 1. Pathfinding, triggers y `walkTo` van por los pies
+  (en %), que no se mueven; el hit-test de las NPC es la inversa de la escala (`worldToArt`), y Facing (A2.2) usa el
+  alto «del mundo» (sin el redondeo de pantalla), así girarse no depende del tamaño de la ventana.
+- **Filtros**: personajes en NEAREST (`pixelArt: true`, `roundPixels: true`); el arte de la escena (fondo, primer
+  plano, overlays, sprites web3) en LINEAR (`GameScene.applySceneArtFilter`): son pinturas de 3712 px a ≈ 5 px por
+  píxel de arte reducidas a ×0,25-0,7, y en nearest los cables y bordes finos salen a trozos y los tramados hacen
+  moiré al mover la cámara.
+- **QA**: `state().pixel` = `{ pixelScale, playerScale, playerBase, snapped, integer, depth, playerHeightPct,
+  worldHeightPct, coordScale, npcs: [{ id, scale, integer, heightPct }] }`. `expect.pixel`: `integer` (jugador y NPC
+  a escala entera), `pixelScale`, `heightPct` `{ min, max }` (alto del jugador en pantalla, % del fondo) y
+  `sameHeightAs` (escena o lista ya vista en la ruta, con el jugador en la franja sin profundidad) con `tol` relativa
+  (0,1). Demo: `scripts/demo-a2-8-pixel-density.mjs`.
 
 # Linter de escenas (A0.4)
 
@@ -422,6 +462,7 @@ deja la tabla en el resumen del job y sube `lint-scenes-report.json` y `.md` com
 | (f) | fondos, primeros planos, overlays, `web3Visuals`, música, `playSound`, iconos de objetos, sprites de NPC, escenas destino y árboles de diálogo que no existen | **error** |
 | (g) | hotspots solapados; aviso fuerte si uno contiene a otro (si el que contiene va antes en la lista, el clic nunca llega al de dentro) | aviso |
 | (h) | A2.9, diario (`assets/journal/*.json`): fichero inválido, capítulo o id repetidos, campos que faltan, condición mal escrita, `hints` que no son 3 y `journalNote` a una nota que no existe (**error**); flags que el diario lee y nada pone, objetos que mira y nada da (aviso). Las flags que lee el diario cuentan como leídas para (a) | **error** / aviso |
+| (i) | A2.8: `scale` a mano en `npcs[]` o `player.playerScale` (fuera del sistema de densidad de píxel) y `pixelScale`, `depthScale` o `npcs[].artScale` fuera de rango | aviso |
 
 Las rutas que comprueba (f) son las que resuelve el código, no el nombre del JSON: el fondo es siempre
 `background.webp`, el primer plano `foreground.webp`, los iconos `assets/sprites/items/<id>.png` y además

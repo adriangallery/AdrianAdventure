@@ -28,8 +28,7 @@
       "y": 100
     },
     "speed": 140,
-    "sprite": null,
-    "playerScale": 5.35
+    "sprite": null
   },
   "ui": {
     "verbs": [

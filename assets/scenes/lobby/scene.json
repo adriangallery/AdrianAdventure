@@ -33,8 +33,7 @@
       "sheet": null,
       "idle": null,
       "walk": null
-    },
-    "playerScale": 6
+    }
   },
   "ui": {
     "verbs": [
@@ -817,7 +816,6 @@
         "y": 65.3
       },
       "dialogueTreeId": "receptionist_intro",
-      "scale": 6.29,
       "giveResponses": {
         "_default": "She politely declines {item}. 'I have a strict no-gifts policy. HR was very clear about that.'",
         "code_note": "'I didn't see that code. I DEFINITELY didn't see that. This conversation never happened.'",

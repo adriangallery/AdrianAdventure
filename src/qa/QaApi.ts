@@ -110,7 +110,18 @@ export interface QaState {
    * fuera de la partida.
    */
   journal: JournalQaState | null;
+  /**
+   * A2.8: densidad de píxel: `pixelScale` (unidad de la escena: píxeles de fondo por píxel de arte), `playerScale`
+   * (píxeles de pantalla por píxel de arte del jugador), `playerBase` (la misma sin profundidad), `snapped` (la base se
+   * redondeó a un entero), `integer` (la escala aplicada es entera), `depth` (factor de depthScale en sus pies),
+   * `playerHeightPct` (alto en pantalla en % del fondo), `worldHeightPct` (el del mundo, sin redondeo), `coordScale` y
+   * `npcs` ({ id, scale, integer, heightPct }). null fuera de la partida.
+   */
+  pixel: PixelQaState | null;
 }
+
+/** A2.8: ver QaState.pixel */
+export type PixelQaState = ReturnType<GameScene['qaPixel']>;
 
 export interface QaApi {
   /** `holdTextMs` (A1.1): deja el primer texto del script en pantalla ese tiempo sin cerrarlo antes de seguir. */
@@ -392,6 +403,7 @@ export function installQa(game: Phaser.Game): void {
       prefetch: (registry.get('scenePrefetcher') as ScenePrefetcher | undefined)?.qaState() ?? null,
       lastTransition: (registry.get('lastTransition') as LastTransition | undefined) ?? null,
       journal: playing ? ui().getJournal?.()?.qaState() ?? null : null,
+      pixel: scene ? scene.qaPixel() : null,
     };
   };
 

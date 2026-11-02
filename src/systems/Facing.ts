@@ -3,7 +3,7 @@
 //
 // Coordenadas en % del fondo, como Pathfinding. Para comparar distancias horizontales con verticales se pasa
 // `aspect` (ancho / alto del fondo: 3712 / 1152 ≈ 3,2 en casi todas las escenas), así 1 % en x pesa lo que mide en
-// pantalla. `playerHeight` es la altura del personaje en % del alto del fondo (≈ 50 con playerScale 6).
+// pantalla. `playerHeight` es la altura del personaje en % del alto del fondo (≈ 49 con la unidad de píxel por defecto, A2.8).
 //
 // Campos opcionales en scene.json (HotspotData y NPCData):
 //   "walkTo": { "x": 34, "y": 84 }   punto (en %) al que va el personaje antes de actuar

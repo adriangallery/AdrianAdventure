@@ -31,7 +31,7 @@ export function describe(s) {
 
 /**
  * Comprobaciones de estado: scene, has, lacks, flags, unsetFlags, visited, achievements, (A2.6) lastChoices, (A2.2) facing,
- * (A2.4) verb, walkTarget y highlighted, (A2.10) cinematic y playerNear, y (A1.10) noListenerGrowth, que
+ * (A2.4) verb, walkTarget y highlighted, (A2.10) cinematic y playerNear, (A2.8) pixel, y (A1.10) noListenerGrowth, que
  * compara `st.resizeListeners` con `ctx.listenersBaseline` (lo que había tras el primer paso de la ruta). `flags` trata
  * una flag ausente como false; (A1.4) `unsetFlags` exige que la flag no esté en la partida, ni a false: nadie la ha
  * escrito (p. ej. un parpadeo que antes se hacía encendiendo y apagando la flag). Devuelve los fallos.
@@ -73,8 +73,57 @@ export function check(expect, st, ctx = {}) {
     if (!st.player) f.push('sin posición del personaje');
     else if (Math.hypot(st.player.x - x, st.player.y - y) > tol) f.push(`el personaje está en ${fmtPoint(st.player)}, se esperaba cerca de ${x},${y} (±${tol})`);
   }
+  // A2.8: densidad de píxel (escala entera, unidad de la escena, misma altura que en otras escenas de la ruta)
+  if (expect.pixel) f.push(...checkPixel(expect.pixel, st, ctx.pixelRefs));
   return f;
 }
+
+/**
+ * A2.8: `expect.pixel` contra `st.pixel`:
+ *  - `integer: true`: la escala del jugador y la de cada NPC son múltiplos enteros del píxel de arte;
+ *  - `pixelScale`: unidad de píxel de la escena (±0,01);
+ *  - `heightPct`: `{ min, max }` del alto del jugador en pantalla, en % del alto del fondo;
+ *  - `sameHeightAs`: escena (o lista) ya vista en la ruta; el alto del jugador tiene que coincidir con el que tuvo allí
+ *    (en la franja sin profundidad, ver `notePixel`) con una tolerancia relativa `tol` (0,1 por defecto).
+ */
+export function checkPixel(want, st, refs = {}) {
+  const p = st.pixel;
+  if (p === undefined) return ['el juego no expone `pixel` en state() (API de QA anterior a A2.8)'];
+  if (!p) return ['sin densidad de píxel (no hay escena de juego)'];
+  const f = [];
+  if (want.integer) {
+    if (!p.integer) f.push(`escala del jugador ${round3(p.playerScale)}: no es un múltiplo entero del píxel de arte`);
+    for (const n of p.npcs ?? []) if (!n.integer) f.push(`escala de ${n.id} ${round3(n.scale)}: no es un múltiplo entero del píxel de arte`);
+  }
+  if (typeof want.pixelScale === 'number' && !(Math.abs(p.pixelScale - want.pixelScale) <= 0.01)) {
+    f.push(`unidad de píxel ${p.pixelScale}, se esperaba ${want.pixelScale}`);
+  }
+  if (want.heightPct) {
+    const { min = -Infinity, max = Infinity } = want.heightPct;
+    if (!(p.playerHeightPct >= min && p.playerHeightPct <= max)) f.push(`el jugador mide el ${p.playerHeightPct} % del fondo, se esperaba entre ${min} y ${max}`);
+  }
+  const tol = typeof want.tol === 'number' ? want.tol : 0.1;
+  for (const scene of [want.sameHeightAs ?? []].flat()) {
+    const ref = refs?.[scene];
+    if (!ref) { f.push(`sin altura de referencia de «${scene}» (la ruta no ha pasado por allí con el jugador en la franja sin profundidad)`); continue; }
+    const rel = Math.abs(p.playerHeightPct - ref.heightPct) / ref.heightPct;
+    if (rel > tol) f.push(`el jugador mide el ${p.playerHeightPct} % del fondo y en «${scene}» medía el ${ref.heightPct} % (${Math.round(rel * 100)} % de diferencia, tolerancia ${Math.round(tol * 100)} %)`);
+  }
+  return f;
+}
+
+/**
+ * A2.8: apunta en `refs` el alto del jugador de la escena actual (para `expect.pixel.sameHeightAs`), solo si está en
+ * la franja sin profundidad (`depth` = 1): con depthScale el alto cambia con la y de los pies.
+ */
+export function notePixel(refs, st) {
+  const p = st?.pixel;
+  if (!refs || !p || !st.scene || Math.abs((p.depth ?? 1) - 1) > 1e-6) return refs;
+  refs[st.scene] = { heightPct: p.playerHeightPct, playerScale: p.playerScale };
+  return refs;
+}
+
+const round3 = (n) => Math.round(n * 1000) / 1000;
 
 /**
  * A2.10: `expect.cinematic` contra `st.cinematic`: booleanos `active`, `letterbox`, `chromeHidden`, `following`

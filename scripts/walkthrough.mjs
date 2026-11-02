@@ -23,7 +23,7 @@ import { appendFileSync, mkdirSync, readFileSync, rmSync, writeFileSync } from '
 import puppeteer from 'puppeteer';
 import {
   attemptIndex, check, checkAttemptRan, checkRejects, classify, describe, fmtPoint, inBounds, kindOf, routeDefects,
-  selftestDefects, selftestMismatch,
+  selftestDefects, selftestMismatch, notePixel,
 } from './lib/walkthrough-core.mjs';
 
 const ARGS = process.argv.slice(2);
@@ -151,6 +151,8 @@ async function runRoute(file, route) {
   let listenersBaseline;
   // A2.4: lo mismo con los listeners de teclado y del lienzo
   let inputListenersBaseline;
+  // A2.8: alto del jugador por escena (para `expect.pixel.sameHeightAs`)
+  const pixelRefs = {};
 
   try {
     await page.goto(`${BASE}/?qa=1`, { waitUntil: 'domcontentloaded', timeout: 90_000 });
@@ -172,7 +174,8 @@ async function runRoute(file, route) {
       if (inputListenersBaseline === undefined && typeof state?.inputListeners === 'number') inputListenersBaseline = state.inputListeners;
       // Un atajo abierto manda aunque fallen las comprobaciones del paso
       if (route.goal && check(route.goal, state).length === 0) goalReached = true;
-      fails = [...check(step.expect, state, { listenersBaseline, inputListenersBaseline }), ...checkRejects(step, before, state)];
+      fails = [...check(step.expect, state, { listenersBaseline, inputListenersBaseline, pixelRefs }), ...checkRejects(step, before, state)];
+      notePixel(pixelRefs, state);
       if (seqBreak && i === attempt && !goalReached) fails.push(...checkAttemptRan(step, before, state));
     } catch (err) {
       error = err.message.split('\n')[0];

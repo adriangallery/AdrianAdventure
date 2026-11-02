@@ -27,8 +27,11 @@ export const GAME_CONFIG: Phaser.Types.Core.GameConfig = {
     disableWebAudio: false,
   },
   render: {
+    // A2.8: personajes en NEAREST y posiciones redondeadas al píxel (pixelArt ya lo implica; explícito). El arte de
+    // cada escena pasa a LINEAR en GameScene.applySceneArtFilter.
     pixelArt: true,
     antialias: false,
+    roundPixels: true,
   },
   input: {
     activePointers: 2,

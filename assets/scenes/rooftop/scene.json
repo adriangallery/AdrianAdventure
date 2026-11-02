@@ -32,8 +32,7 @@
       "sheet": null,
       "idle": null,
       "walk": null
-    },
-    "playerScale": 6
+    }
   },
   "ui": {
     "verbs": [
