@@ -49,6 +49,11 @@ export class WalletButton {
 
   setInventory(inv: InventorySystem): void { this.inventory = inv; }
 
+  /** A0.5: si el punto de pantalla cae en el botón (lo usa el hit-test de la API de QA). */
+  contains(x: number, y: number): boolean {
+    return this.container.active && this.container.visible && this.bg.active && this.bg.getBounds().contains(x, y);
+  }
+
   /** Callback for external systems to run after wallet connects (e.g., cloud save check) */
   onConnectedCallback: ((address: string) => void) | null = null;
 

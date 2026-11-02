@@ -14,13 +14,14 @@ import { TWP } from '@/config/theme';
 export class SaveButton {
   private scene: Phaser.Scene;
   private container: Phaser.GameObjects.Container;
+  private bg: Phaser.GameObjects.Rectangle;
 
   constructor(scene: Phaser.Scene) {
     this.scene = scene;
 
     this.container = scene.add.container(8, 8).setDepth(600);
 
-    const bg = scene.add.rectangle(0, 0, 30, 24, TWP.WALLET_BG, 0.85)
+    const bg = this.bg = scene.add.rectangle(0, 0, 30, 24, TWP.WALLET_BG, 0.85)
       .setStrokeStyle(1, TWP.WALLET_BORDER, 0.6)
       .setOrigin(0, 0)
       .setInteractive({ useHandCursor: true });
@@ -31,6 +32,11 @@ export class SaveButton {
 
     this.container.add([bg, label]);
     bg.on('pointerdown', () => this.showMenu());
+  }
+
+  /** A0.5: si el punto de pantalla cae en el botón (lo usa el hit-test de la API de QA). */
+  contains(x: number, y: number): boolean {
+    return this.container.active && this.container.visible && this.bg.active && this.bg.getBounds().contains(x, y);
   }
 
   private async showMenu(): Promise<void> {

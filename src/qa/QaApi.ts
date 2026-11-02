@@ -43,6 +43,10 @@ export interface QaState {
   choices: Choice[] | null;
   /** Últimas acciones y textos mostrados, para diagnosticar */
   log: string[];
+  /** A0.5: líneas que se han apuntado en `log` desde que arrancó la página (el log solo guarda las 60 últimas) */
+  logTotal: number;
+  /** A0.5: verbos que han llegado a ejecutarse sobre un hotspot o NPC (player:arrived o al momento) */
+  actions: number;
 }
 
 export interface QaApi {
@@ -78,7 +82,9 @@ type Target = { kind: 'hotspot'; hotspot: HotspotData } | { kind: 'npc'; id: str
 export function installQa(game: Phaser.Game): void {
   const registry = game.registry;
   const log: string[] = [];
+  let logTotal = 0;
   const note = (line: string) => {
+    logTotal++;
     log.push(line);
     if (log.length > 60) log.shift();
   };
@@ -265,6 +271,8 @@ export function installQa(game: Phaser.Game): void {
       triggers: scene ? scene.qaTriggers() : [],
       choices: choicePanel?.isAwaitingChoice() ? choicePanel.getOptions() : null,
       log: [...log],
+      logTotal,
+      actions: (registry.get('qaActions') as number | undefined) ?? 0,
     };
   };
 

@@ -119,11 +119,24 @@ jobs:
         env:
           BASE_URL: ${{ inputs.BASE_URL || 'http://127.0.0.1:4173' }}
 
+      - name: Selftest del runner (A0.5)
+        # Aunque fallen las rutas reales: comprueba que el runner clasifica bien cada rama (qa/selftest.json)
+        if: ${{ !cancelled() }}
+        run: npm run test:walkthrough:selftest
+        env:
+          BASE_URL: ${{ inputs.BASE_URL || 'http://127.0.0.1:4173' }}
+
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: walkthrough-shots
           path: walkthrough-shots/
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: walkthrough-selftest-shots
+          path: walkthrough-selftest-shots/
 
   demo:
     # A0.2 (regla visual del plan): GIF de cada demo `scripts/demo-*.mjs` (grabación en scripts/lib/demo.mjs).
