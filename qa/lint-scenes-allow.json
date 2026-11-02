@@ -4,5 +4,107 @@
     "scene": "server_room",
     "id": "assets/audio/sfx/glass_break.mp3",
     "reason": "hallazgo A0.4, pendiente: el combo antena + interruptor de emergencia pide el sonido glass_break, que no existe (ni el mp3 ni la clave en sfxKeys de PreloadScene); hoy no suena nada. Falta el asset de audio, no es una errata de ruta."
+  },
+  {
+    "rule": "c",
+    "scene": "basement",
+    "id": "hs_stairs",
+    "reason": "A1.2, salida legítima: vuelta del sótano (cap. 3) al lobby (cap. 2), ya visitado; al sótano solo se entra por la escotilla de la azotea (vane_turned + has_keycard) o la trampilla VIP."
+  },
+  {
+    "rule": "c",
+    "scene": "basement",
+    "id": "tr_to_stairs",
+    "reason": "A1.2, salida legítima: vuelta a pie del sótano al lobby, mismo caso que hs_stairs."
+  },
+  {
+    "rule": "c",
+    "scene": "clinic_exterior",
+    "id": "tr_back_to_mountain",
+    "reason": "A1.2, salida legítima: vuelta de la clínica a la montaña (mismo capítulo 4); a la montaña solo se llega con el printout o chapter_3_complete."
+  },
+  {
+    "rule": "c",
+    "scene": "clinic_interior",
+    "id": "tr_to_mountain",
+    "reason": "A1.2, salida legítima: vuelta de la recepción de la clínica a la montaña (capítulo 4), ya visitada."
+  },
+  {
+    "rule": "c",
+    "scene": "lobby",
+    "id": "hs_stairs_up",
+    "reason": "A1.2, salida legítima: escaleras del lobby al piso de arriba, ambos del capítulo 2; al lobby solo se entra con door_unlocked (fin del capítulo 1)."
+  },
+  {
+    "rule": "c",
+    "scene": "lobby",
+    "id": "hs_frontdoor",
+    "reason": "A1.2, salida legítima: salir a la calle (capítulo 1, ya visitada); fuera, la montaña tiene su propio gate."
+  },
+  {
+    "rule": "c",
+    "scene": "lobby",
+    "id": "tr_to_frontdoor",
+    "reason": "A1.2, salida legítima: salir a la calle a pie, mismo caso que hs_frontdoor."
+  },
+  {
+    "rule": "c",
+    "scene": "memelab",
+    "id": "hs_exit_door",
+    "reason": "A1.2, salida legítima: vuelta del memelab a la piscina (capítulo 4); al memelab solo se entra desde recovery_pool."
+  },
+  {
+    "rule": "c",
+    "scene": "memelab",
+    "id": "tr_exit_left",
+    "reason": "A1.2, salida legítima: vuelta a pie del memelab a la piscina, mismo caso que hs_exit_door."
+  },
+  {
+    "rule": "c",
+    "scene": "mountain",
+    "id": "tr_to_outside",
+    "reason": "A1.2, salida legítima: bajar de la montaña a la calle (capítulo 1, ya visitada)."
+  },
+  {
+    "rule": "c",
+    "scene": "recovery_pool",
+    "id": "hs_stairs_up",
+    "reason": "A1.2, salida legítima: subir de la piscina a la recepción de la clínica, de donde se viene (capítulo 4)."
+  },
+  {
+    "rule": "c",
+    "scene": "rooftop",
+    "id": "hs_roof_door",
+    "reason": "A1.2, salida legítima: bajar de la azotea al piso de arriba (capítulo 2), de donde se viene."
+  },
+  {
+    "rule": "c",
+    "scene": "rooftop",
+    "id": "hs_lobbyhatch",
+    "reason": "A1.2, salida legítima: bajar de la azotea al lobby (capítulo 2), ya visitado."
+  },
+  {
+    "rule": "c",
+    "scene": "rooftop",
+    "id": "tr_to_upstairs",
+    "reason": "A1.2, salida legítima: bajar a pie de la azotea al piso de arriba, mismo caso que hs_roof_door."
+  },
+  {
+    "rule": "c",
+    "scene": "server_room",
+    "id": "tr_to_basement",
+    "reason": "A1.2, salida legítima: vuelta de la sala de servidores al sótano (capítulo 3), de donde se viene."
+  },
+  {
+    "rule": "c",
+    "scene": "upstairs",
+    "id": "hs_roof_hatch",
+    "reason": "A1.2, salida legítima: subir a la azotea, dentro del capítulo 2; los gates del capítulo están en la escotilla de servicio de la azotea."
+  },
+  {
+    "rule": "c",
+    "scene": "upstairs",
+    "id": "tr_to_lobby",
+    "reason": "A1.2, salida legítima: bajar al lobby (capítulo 2), de donde se viene."
   }
 ]

@@ -2639,7 +2639,9 @@ export const VOICE_AUDIO_KEYS: string[] = [
   'player_i_unfold_the_arms_the_lenses_1e4bbf05',
   'player_she_tries_on_the_3d_glasses_0d7c912c',
   'player_something_about_this_feels_locked_away_19434ded',
+  'player_that_trail_climbs_straight_into_the_3eaf2dbe',
   'player_the_floppy_disk_and_the_burnt_aeec5869',
+  'player_the_path_forks_every_ten_steps_94c9342b',
   'player_wallet_not_connected_cannot_mint_e7cee04c',
 ];
 
@@ -5211,7 +5213,9 @@ export const VOICE_TEXT_MAP: Array<{ text: string; key: string }> = [
   { text: 'I unfold the arms. The lenses catch the light — red on one side, cyan on the other. Old school 3D tech.', key: 'player_i_unfold_the_arms_the_lenses_1e4bbf05' },
   { text: 'She tries on the 3D glasses and squints at the lobby. \'Everything is red and cyan. So... a normal day on the charts.\'', key: 'player_she_tries_on_the_3d_glasses_0d7c912c' },
   { text: 'Something about this feels locked away...', key: 'player_something_about_this_feels_locked_away_19434ded' },
+  { text: 'That trail climbs straight into the mountains. No idea where it leads, and I\'m not hiking blind. My cardio is more bearish than my portfolio.', key: 'player_that_trail_climbs_straight_into_the_3eaf2dbe' },
   { text: 'The floppy disk and the burnt chip. One holds data, the other lost it forever. A cautionary tale about backups.', key: 'player_the_floppy_disk_and_the_burnt_aeec5869' },
+  { text: 'The path forks every ten steps up there. Without directions I would be wandering these slopes until the next halving.', key: 'player_the_path_forks_every_ten_steps_94c9342b' },
   { text: 'Wallet not connected. Cannot mint.', key: 'player_wallet_not_connected_cannot_mint_e7cee04c' },
 ];
 

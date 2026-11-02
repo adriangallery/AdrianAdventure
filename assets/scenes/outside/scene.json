@@ -1847,12 +1847,40 @@
         },
         "onEnter": [
           {
-            "op": "gotoScene",
-            "sceneId": "mountain",
-            "spawn": {
-              "x": 96.8,
-              "y": 91.5
-            }
+            "op": "ifHasItem",
+            "id": "printout",
+            "then": [
+              {
+                "op": "gotoScene",
+                "sceneId": "mountain",
+                "spawn": {
+                  "x": 96.8,
+                  "y": 91.5
+                }
+              }
+            ],
+            "else": [
+              {
+                "op": "ifFlag",
+                "flag": "chapter_3_complete",
+                "then": [
+                  {
+                    "op": "gotoScene",
+                    "sceneId": "mountain",
+                    "spawn": {
+                      "x": 96.8,
+                      "y": 91.5
+                    }
+                  }
+                ],
+                "else": [
+                  {
+                    "op": "say",
+                    "text": "That trail climbs straight into the mountains. No idea where it leads, and I'm not hiking blind. My cardio is more bearish than my portfolio."
+                  }
+                ]
+              }
+            ]
           }
         ]
       }
