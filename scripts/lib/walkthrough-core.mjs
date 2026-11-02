@@ -31,7 +31,7 @@ export function describe(s) {
 
 /**
  * Comprobaciones de estado: scene, has, lacks, flags, unsetFlags, visited, achievements, (A2.6) lastChoices, (A2.2) facing,
- * (A2.4) verb, walkTarget y highlighted, (A2.10) cinematic y playerNear, (A2.8) pixel, (A4.1) anim y (A1.10) noListenerGrowth, que
+ * (A2.4) verb, walkTarget y highlighted, (A2.10) cinematic y playerNear, (A2.8) pixel, (A4.1) anim, (A4.2) npc y (A1.10) noListenerGrowth, que
  * compara `st.resizeListeners` con `ctx.listenersBaseline` (lo que había tras el primer paso de la ruta). `flags` trata
  * una flag ausente como false; (A1.4) `unsetFlags` exige que la flag no esté en la partida, ni a false: nadie la ha
  * escrito (p. ej. un parpadeo que antes se hacía encendiendo y apagando la flag). Devuelve los fallos.
@@ -77,6 +77,8 @@ export function check(expect, st, ctx = {}) {
   if (expect.pixel) f.push(...checkPixel(expect.pixel, st, ctx.pixelRefs));
   // A4.1: animación del jugador (dirección del último tramo, cabeceo, textura, reposo)
   if (expect.anim) f.push(...checkAnim(expect.anim, st));
+  // A4.2: vida de las NPC (giro hacia el jugador, boca, respiración, parpadeos, última conversación)
+  if (expect.npc) f.push(...checkNpc(expect.npc, st));
   // A2.5: última respuesta de fallo (tipo, objeto, objetivo, verbo, bolsa y texto)
   if (expect.failResponse) f.push(...checkFailResponse(expect.failResponse, st));
   return f;
@@ -104,6 +106,42 @@ export function checkAnim(want, st) {
   }
   if (want.costume !== undefined && a.costume !== want.costume) f.push(`animación: disfraz «${a.costume}», se esperaba «${want.costume}»`);
   if (want.rest && !a.rest) f.push(`animación: no está en reposo (giro ${a.angle}°, elevación ${a.liftPx} px, escala ${a.scale} y base ${a.baseScale})`);
+  return f;
+}
+
+/**
+ * A4.2: `expect.npc` (un objeto o una lista) contra `st.npcLife` (la NPC con ese `id`):
+ *  - `mirrored`, `facing` (left | right), `talking`, `engaged`, `mouthOpen`, `rest` (sin conversación, boca cerrada y con
+ *    su orientación por defecto): iguales;
+ *  - `minBlinks`, `minTurns`, `minMouthMoves`: mínimos de `blinkCount`, `turns` y `mouthMoves` (en la escena);
+ *  - `lastTalk`: última conversación: `facedPlayer` y `faced` (iguales), `voice` (clip | text), `minLines` y `minMouthMoves`.
+ */
+export function checkNpc(want, st) {
+  const list = st.npcLife;
+  if (list === undefined) return ['el juego no expone `npcLife` en state() (API de QA anterior a A4.2)'];
+  const f = [];
+  for (const w of Array.isArray(want) ? want : [want]) {
+    const n = (list ?? []).find((x) => x.id === w.id);
+    if (!n) { f.push(`NPC «${w.id}»: no está en la escena (${(list ?? []).map((x) => x.id).join(', ') || 'ninguna'})`); continue; }
+    for (const k of ['mirrored', 'talking', 'engaged', 'mouthOpen', 'rest']) {
+      if (w[k] !== undefined && Boolean(n[k]) !== w[k]) f.push(`NPC «${w.id}»: ${k} = ${Boolean(n[k])}, se esperaba ${w[k]}`);
+    }
+    if (w.facing !== undefined && n.facing !== w.facing) f.push(`NPC «${w.id}»: mira «${n.facing}», se esperaba «${w.facing}»`);
+    for (const [k, field] of [['minBlinks', 'blinkCount'], ['minTurns', 'turns'], ['minMouthMoves', 'mouthMoves']]) {
+      if (w[k] !== undefined && !(n[field] >= w[k])) f.push(`NPC «${w.id}»: ${field} = ${n[field]}, se esperaban al menos ${w[k]}`);
+    }
+    if (w.lastTalk) {
+      const t = n.lastTalk;
+      if (!t) { f.push(`NPC «${w.id}»: no ha hablado`); continue; }
+      for (const k of ['facedPlayer', 'faced', 'voice']) {
+        if (w.lastTalk[k] !== undefined && t[k] !== w.lastTalk[k]) f.push(`NPC «${w.id}»: al hablar ${k} = ${t[k]}, se esperaba ${w.lastTalk[k]}`);
+      }
+      if (w.lastTalk.minLines !== undefined && !(t.lines >= w.lastTalk.minLines)) f.push(`NPC «${w.id}»: dijo ${t.lines} línea(s), se esperaban al menos ${w.lastTalk.minLines}`);
+      if (w.lastTalk.minMouthMoves !== undefined && !(t.mouthMoves >= w.lastTalk.minMouthMoves)) {
+        f.push(`NPC «${w.id}»: al hablar abrió la boca ${t.mouthMoves} vez/veces, se esperaban al menos ${w.lastTalk.minMouthMoves}`);
+      }
+    }
+  }
   return f;
 }
 

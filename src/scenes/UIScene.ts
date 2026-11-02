@@ -230,13 +230,12 @@ export class UIScene extends Phaser.Scene {
       // Prevent double-triggering while dialogue is active
       if (this.registry.get('dialogueActive')) return;
       if (this.cache.audio.has('npc_talk')) this.sound.play('npc_talk', { volume: 0.4 });
-      // Find the NPC and start talk animation
+      // A4.2: la NPC se gira hacia el jugador durante la charla; la boca ya no se mueve todo el diálogo a 200 ms fijos,
+      // solo con sus frases y al ritmo de su voz (GameScene.updateNpcLife)
       const npcs = (gameScene as unknown as { npcs?: import('@/objects/NPC').NPC[] }).npcs;
-      const npc = npcs?.find((n) => n.npcId === npcId);
-      npc?.startTalking();
+      npcs?.find((n) => n.npcId === npcId)?.engage();
       this.registry.set('dialogueActive', true);
       this.startDialogueFromScene(treeId, startNode).finally(() => {
-        npc?.stopTalking();
         this.registry.set('dialogueActive', false);
       });
     });
