@@ -72,9 +72,26 @@ export class MenuScene extends Phaser.Scene {
     const subSize = Math.max(10, Math.min(14, Math.floor(refSize * 0.014)));
     const rotateHintH = isPortrait ? 40 : 0;
 
-    // Reserve space for buttons at the bottom
+    // Subtitle — A1.7: el arte del título llega con los personajes hasta su borde inferior, así que el
+    // subtítulo va DEBAJO del arte (nunca encima). Se crea primero para medir su alto real (con el
+    // wordWrap puede ocupar dos líneas en vertical) y reservarle sitio antes de escalar la imagen.
+    const subtitle = this.add.text(width / 2, 0, 'A Point & Click Web3 Adventure on Base', {
+      fontFamily: FONT.FAMILY,
+      fontSize: `${subSize}px`,
+      color: TWP.MENU_SUBTITLE,
+      wordWrap: { width: width * 0.85 },
+      align: 'center',
+      lineSpacing: Math.round(subSize * 0.4),
+      stroke: '#000000',
+      strokeThickness: 4,
+      shadow: { offsetX: 0, offsetY: 0, color: '#000000', blur: 8, fill: true, stroke: true },
+    }).setOrigin(0.5, 0);
+    const subGap = Math.max(6, Math.round(subSize * 0.6));
+    const subBlockH = subtitle.height + subGap * 2;
+
+    // Reserve space for subtitle + buttons at the bottom
     const btnsH = btnCount * btnSpacing + 8;
-    const bottomZone = btnsH + rotateHintH + 16;
+    const bottomZone = btnsH + rotateHintH + 16 + subBlockH;
 
     // Logo image — fills full width, black bg blends with menu bg
     let imgBottomY = height * 0.5;
@@ -86,23 +103,14 @@ export class MenuScene extends Phaser.Scene {
       imgBottomY = img.height * scale;
     }
 
-    // Subtitle — overlays the bottom edge of the image with glow for readability
-    const subY = Math.min(imgBottomY - subSize * 0.5, height - bottomZone - subSize - 8);
-    this.add.text(width / 2, subY, 'A Point & Click Web3 Adventure on Base', {
-      fontFamily: FONT.FAMILY,
-      fontSize: `${subSize}px`,
-      color: TWP.MENU_SUBTITLE,
-      wordWrap: { width: width * 0.85 },
-      align: 'center',
-      stroke: '#000000',
-      strokeThickness: 4,
-      shadow: { offsetX: 0, offsetY: 0, color: '#000000', blur: 8, fill: true, stroke: true },
-    }).setOrigin(0.5);
+    // Subtitle just below the art (never over the characters)
+    subtitle.setY(imgBottomY + subGap).setName('menu-subtitle');
+    const subBottomY = imgBottomY + subBlockH;
 
-    // Buttons — centered in the space between image and bottom edge
+    // Buttons — centered in the space between subtitle and bottom edge
     const btnBlockH = btnCount * btnSpacing;
-    const spaceBelow = height - rotateHintH - imgBottomY;
-    const btnY = imgBottomY + (spaceBelow - btnBlockH) / 2;
+    const spaceBelow = height - rotateHintH - subBottomY;
+    const btnY = subBottomY + (spaceBelow - btnBlockH) / 2 + btnSpacing / 2;
 
     const startGame = (loadSave: boolean) => {
       if (loadSave) {
