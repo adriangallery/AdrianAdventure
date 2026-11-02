@@ -1632,57 +1632,6 @@
     ],
     "triggers": [
       {
-        "id": "tr_game_opening",
-        "once": true,
-        "bounds": {
-          "x": 60,
-          "y": 88,
-          "w": 25,
-          "h": 12
-        },
-        "onEnter": [
-          {
-            "op": "ifFlag",
-            "flag": "premise_shown",
-            "then": [],
-            "else": [
-              {
-                "op": "narrative",
-                "lines": [
-                  "Adrian, creator of ZERO, is three weeks gone.",
-                  "",
-                  "Tonight his wallet sends a scheduled message:",
-                  "\"Find Patient Zero. Bring them home.\"",
-                  "\"Everything in the lab is yours. \u2014 A.\"",
-                  "",
-                  "The forums say Patient Zero is a saboteur.",
-                  "A bot that trades at 3 AM.",
-                  "",
-                  "Dex Malone. On-chain detective. Zero cases.",
-                  "He read \"everything\" and got in the car."
-                ]
-              },
-              {
-                "op": "setFlag",
-                "flag": "premise_shown",
-                "value": true
-              },
-              {
-                "op": "titleCard",
-                "chapter": "CHAPTER 1",
-                "title": "Breaking & Entering",
-                "subtitle": "Someone left in a hurry..."
-              },
-              {
-                "op": "setFlag",
-                "flag": "chapter_1_intro_shown",
-                "value": true
-              }
-            ]
-          }
-        ]
-      },
-      {
         "id": "tr_mountain",
         "once": false,
         "bounds": {
@@ -1864,20 +1813,7 @@
       "then": [],
       "else": [
         {
-          "op": "narrative",
-          "lines": [
-            "Adrian, creator of ZERO, is three weeks gone.",
-            "",
-            "Tonight his wallet sends a scheduled message:",
-            "\"Find Patient Zero. Bring them home.\"",
-            "\"Everything in the lab is yours. \u2014 A.\"",
-            "",
-            "The forums say Patient Zero is a saboteur.",
-            "A bot that trades at 3 AM.",
-            "",
-            "Dex Malone. On-chain detective. Zero cases.",
-            "He read \"everything\" and got in the car."
-          ]
+          "op": "cinematicStart"
         },
         {
           "op": "setFlag",
@@ -1885,15 +1821,66 @@
           "value": true
         },
         {
-          "op": "titleCard",
-          "chapter": "CHAPTER 1",
-          "title": "Breaking & Entering",
-          "subtitle": "Someone left in a hurry..."
-        },
-        {
           "op": "setFlag",
           "flag": "chapter_1_intro_shown",
           "value": true
+        },
+        {
+          "op": "actorTeleport",
+          "actor": "player",
+          "x": 60,
+          "y": 95,
+          "dir": "left"
+        },
+        {
+          "op": "cameraPan",
+          "x": 37,
+          "y": 45,
+          "ms": 0
+        },
+        {
+          "op": "actorMove",
+          "actor": "player",
+          "x": 39,
+          "y": 93,
+          "wait": false
+        },
+        {
+          "op": "say",
+          "speaker": "Narrator",
+          "text": "Adrian, creator of ZERO, vanished three weeks ago."
+        },
+        {
+          "op": "say",
+          "speaker": "Narrator",
+          "text": "Tonight, his wallet sent Dex one message."
+        },
+        {
+          "op": "say",
+          "text": "\"Find Patient Zero. Bring them home. Everything in the lab is yours.\""
+        },
+        {
+          "op": "say",
+          "text": "Everything? I'm already at the door."
+        },
+        {
+          "op": "actorMove",
+          "actor": "player",
+          "x": 39,
+          "y": 93
+        },
+        {
+          "op": "actorFace",
+          "actor": "player",
+          "dir": "left"
+        },
+        {
+          "op": "titleCard",
+          "chapter": "CHAPTER 1",
+          "title": "Breaking & Entering"
+        },
+        {
+          "op": "cinematicEnd"
         }
       ]
     }

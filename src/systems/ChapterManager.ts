@@ -11,8 +11,6 @@ export interface ChapterDef {
   title: string;
   subtitle: string;
   scenes: string[];
-  /** Intro narrative lines shown before the chapter starts */
-  introLines: string[];
   /** Flag set when chapter is completed */
   completionFlag: string;
   /** Flag required to enter this chapter (from previous chapter) */
@@ -29,13 +27,6 @@ export const CHAPTERS: ChapterDef[] = [
     title: "Breaking & Entering",
     subtitle: "Someone left in a hurry...",
     scenes: ["outside"],
-    introLines: [
-      "Adrian, creator of the ZERO ecosystem, has disappeared.",
-      "His laboratory sits abandoned. The servers still hum.",
-      "A scheduled message from his wallet brought Dex Malone here:",
-      "\"Find Patient Zero. Bring them home.\"",
-      "\"Everything in the lab is yours. \u2014 A.\"",
-    ],
     completionFlag: "chapter_1_complete",
     gateFlag: null,
     achievementText: "Chapter 1 Complete: Breaking & Entering",
@@ -46,12 +37,6 @@ export const CHAPTERS: ChapterDef[] = [
     title: "The Receptionist",
     subtitle: "Trust is earned, not minted.",
     scenes: ["lobby", "upstairs", "rooftop"],
-    introLines: [
-      "Inside the lab, the air smells of burnt circuits and ambition.",
-      "Only the receptionist remains at her post.",
-      "Adrian's empire stretches upward \u2014 trading floors, antennas, dreams.",
-      "But something downstairs keeps blinking...",
-    ],
     completionFlag: "chapter_2_complete",
     gateFlag: "chapter_1_complete",
     achievementText: "Chapter 2 Complete: The Receptionist",
@@ -62,12 +47,6 @@ export const CHAPTERS: ChapterDef[] = [
     title: "Below the Surface",
     subtitle: "Every server has secrets.",
     scenes: ["basement", "server_room"],
-    introLines: [
-      "Beneath the lab, forgotten machines still process blocks.",
-      "A CRT monitor flickers with data from another era.",
-      "The patient roster... the escape... Patient Zero.",
-      "The answers are down here. Buried in code.",
-    ],
     completionFlag: "chapter_3_complete",
     gateFlag: "chapter_2_complete",
     achievementText: "Chapter 3 Complete: Below the Surface",
@@ -78,12 +57,6 @@ export const CHAPTERS: ChapterDef[] = [
     title: "The Mountain Path",
     subtitle: "The clinic is always open.",
     scenes: ["mountain", "clinic_exterior", "clinic_interior"],
-    introLines: [
-      "The printout shows coordinates. A clinic in the mountains.",
-      "\"Patient Zero Rehabilitation Clinic \u2014 Est. Block 0\"",
-      "Dr. Satoshi runs the operation. Treats on-chain addiction.",
-      "But Patient Zero escaped. And you're getting closer to finding out why.",
-    ],
     completionFlag: "chapter_4_complete",
     gateFlag: "chapter_3_complete",
     achievementText: "Chapter 4 Complete: The Mountain Path",
@@ -94,12 +67,6 @@ export const CHAPTERS: ChapterDef[] = [
     title: "Patient Zero",
     subtitle: "The blockchain doesn't lie.",
     scenes: ["treatment_room", "epilogue_outside"],
-    introLines: [
-      "The treatment room. One chair. One monitor.",
-      "Dr. Satoshi said not everyone is ready for what's inside.",
-      "The truth about Patient Zero...",
-      "...has been in your wallet all along.",
-    ],
     completionFlag: "chapter_5_complete",
     gateFlag: "chapter_4_complete",
     achievementText: "GAME COMPLETE: Patient Zero",
@@ -154,23 +121,6 @@ export class ChapterManager {
     if (!ChapterManager.isChapterUnlocked(chapter.id, flags)) return null;
 
     return chapter;
-  }
-
-  /** Get the opening premise lines (shown at very first game start; mirror of the outside narrative, A3.3a) */
-  static getPremise(): string[] {
-    return [
-      "Adrian, creator of ZERO, is three weeks gone.",
-      "",
-      "Tonight his wallet sends a scheduled message:",
-      '"Find Patient Zero. Bring them home."',
-      '"Everything in the lab is yours. \u2014 A."',
-      "",
-      "The forums say Patient Zero is a saboteur.",
-      "A bot that trades at 3 AM.",
-      "",
-      "Dex Malone. On-chain detective. Zero cases.",
-      'He read "everything" and got in the car.',
-    ];
   }
 
   /**

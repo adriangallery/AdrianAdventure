@@ -5985,7 +5985,6 @@ export const NARRATOR_SEQUENCES: Record<string, string[]> = {
   'basement:narrative': ['nar_basement_0', 'nar_basement_1'],
   'clinic_interior:narrative': ['nar_clinic_interior_0', 'nar_clinic_interior_1', 'nar_clinic_interior_2'],
   'epilogue_outside:narrative': ['nar_epilogue_outside_0', 'nar_epilogue_outside_1'],
-  'lobby:narrative': ['nar_lobby_0', 'nar_lobby_1'],
   'mountain:narrative': ['nar_mountain_0', 'nar_mountain_1'],
   'treatment_room:narrative': ['nar_treatment_room_0', 'nar_treatment_room_1', 'nar_treatment_room_2'],
   'basement:titleCard': ['nar_basement_title'],
@@ -5994,5 +5993,4 @@ export const NARRATOR_SEQUENCES: Record<string, string[]> = {
   'mountain:titleCard': ['nar_mountain_title'],
   'outside:titleCard': ['nar_outside_title'],
   'treatment_room:titleCard': ['nar_treatment_room_title'],
-  'outside:narrative': ['nar_adrian_creator_of_zero_is_three_fdde8bea', 'nar_tonight_his_wallet_sends_a_scheduled_1e407669', 'nar_find_patient_zero_bring_them_home_8703b946', 'nar_everything_in_the_lab_is_yours_455dc799', 'nar_the_forums_say_patient_zero_is_873b6d7b', 'nar_a_bot_that_trades_at_3_9b173e78', 'nar_dex_malone_onchain_detective_zero_cases_b148c08f', 'nar_he_read_everything_and_got_in_561e42f4'],
 };

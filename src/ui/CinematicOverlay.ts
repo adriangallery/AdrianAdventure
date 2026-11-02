@@ -54,8 +54,10 @@ export class CinematicOverlay {
   /**
    * Show a title card with chapter number and title.
    * Click to dismiss after text finishes typing.
+   * A3.2: con `autoMs` (dentro de una cinemática del motor) se cierra sola `autoMs` después de escribirse, sin
+   * «click to continue»; un toque la cierra antes, como siempre.
    */
-  showTitleCard(chapter: string, title: string, subtitle?: string): Promise<void> {
+  showTitleCard(chapter: string, title: string, subtitle?: string, autoMs?: number): Promise<void> {
     return new Promise<void>((resolve) => {
       const { width, height } = this.scene.scale;
 
@@ -100,7 +102,22 @@ export class CinematicOverlay {
       container.add(continueHint);
 
       let typingDone = false;
+      let dismissed = false;
       this.skipTyping = false;
+      const autoDelay = typeof autoMs === 'number' && Number.isFinite(autoMs) && autoMs >= 0 ? autoMs : null;
+
+      const dismiss = () => {
+        if (dismissed) return;
+        dismissed = true;
+        this.skipTyping = false;
+        this.scene.input.off('pointerdown', clickHandler);
+        this.fadeOutAndDestroy(container, resolve);
+      };
+      const onTyped = () => {
+        typingDone = true;
+        if (autoDelay !== null) this.scene.time.delayedCall(autoDelay, dismiss);
+        else this.pulseAlpha(continueHint);
+      };
 
       // Start typewriter sequence
       this.typewrite(chapterText, chapter, 40, () => {
@@ -108,14 +125,10 @@ export class CinematicOverlay {
           this.typewrite(titleText, title, 35, () => {
             if (subtitle) {
               this.scene.time.delayedCall(200, () => {
-                this.typewrite(subtitleText, subtitle, 30, () => {
-                  typingDone = true;
-                  this.pulseAlpha(continueHint);
-                });
+                this.typewrite(subtitleText, subtitle, 30, onTyped);
               });
             } else {
-              typingDone = true;
-              this.pulseAlpha(continueHint);
+              onTyped();
             }
           });
         });
@@ -124,9 +137,7 @@ export class CinematicOverlay {
       // Wait for click to dismiss
       const clickHandler = () => {
         if (!typingDone) { this.skipTyping = true; return; }
-        this.skipTyping = false;
-        this.scene.input.off('pointerdown', clickHandler);
-        this.fadeOutAndDestroy(container, resolve);
+        dismiss();
       };
       this.scene.input.on('pointerdown', clickHandler);
     });

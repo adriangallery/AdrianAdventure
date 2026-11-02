@@ -1257,13 +1257,27 @@
       "then": [],
       "else": [
         {
-          "op": "narrative",
-          "lines": [
-            "Inside the lab, the air smells of burnt circuits and ambition.",
-            "Only the receptionist remains at her post.",
-            "Adrian's empire stretches upward — trading floors, antennas, dreams.",
-            "But something downstairs keeps blinking..."
-          ]
+          "op": "cinematicStart"
+        },
+        {
+          "op": "setFlag",
+          "flag": "chapter_2_intro_shown",
+          "value": true
+        },
+        {
+          "op": "cameraPan",
+          "actor": "npc_receptionist",
+          "ms": 900
+        },
+        {
+          "op": "say",
+          "speaker": "Narrator",
+          "text": "Inside, the lab still hums. Only Penny stayed."
+        },
+        {
+          "op": "say",
+          "speaker": "Penny",
+          "text": "We're closed. Don't touch anything. Ignore the blinking downstairs."
         },
         {
           "op": "titleCard",
@@ -1272,9 +1286,7 @@
           "subtitle": "Trust is earned, not minted."
         },
         {
-          "op": "setFlag",
-          "flag": "chapter_2_intro_shown",
-          "value": true
+          "op": "cinematicEnd"
         }
       ]
     }

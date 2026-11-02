@@ -362,6 +362,9 @@ export function subtitleHoldMs(textLength: number, charDelayMs: number, voiceMs?
   return Math.max(SUBTITLE_MIN_MS, Math.round(len * Math.max(0, charDelayMs) + len * READ_MS_PER_CHAR + 600));
 }
 
+/** A3.2: una tarjeta de capítulo (`titleCard`) dentro de una cinemática se cierra sola este tiempo después de escribirse */
+export const TITLE_CARD_AUTO_MS = 800;
+
 /** Música bajo la voz y en cinemática: ~35 % del volumen, con un fundido de 200 ms (bajar y volver) */
 export const DUCK_LEVEL = 0.35;
 export const DUCK_FADE_MS = 200;

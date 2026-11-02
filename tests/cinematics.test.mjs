@@ -63,6 +63,44 @@ test('planSkip: aplica estado y estados finales hasta el fin de la cinemática; 
   assert.ok(!C.planSkip([{ op: 'say' }]).ended, 'sin fin explícito: hasta el final del script');
 });
 
+
+// A3.2: las aperturas de outside y del lobby son cinemáticas del onEnter. Saltadas desde el primer op (Esc al momento),
+// aplican sus flags y dejan a los actores en su estado final: lo mismo que vistas enteras.
+test('aperturas (A3.2): saltadas desde el principio dejan flags, Dex y la cámara como vistas enteras', async () => {
+  const fs = await import('node:fs');
+  const scene = (id) => JSON.parse(fs.readFileSync(new URL(`../assets/scenes/${id}/scene.json`, import.meta.url), 'utf8'));
+  const opening = (id, flag) => {
+    const first = scene(id).onEnter[0];
+    assert.equal(first.op, 'ifFlag');
+    assert.equal(first.flag, flag);
+    return first.else;
+  };
+  const out = opening('outside', 'premise_shown');
+  assert.equal(C.cinematicModeOf(out[0]), 'start');
+  assert.equal(C.cinematicModeOf(out[out.length - 1]), 'end');
+  const plan = C.planSkip(out, () => undefined, 1);
+  assert.ok(plan.ended && !plan.stopped);
+  const flags = plan.applied.filter((a) => a.op.op === 'setFlag').map((a) => a.op.flag);
+  assert.deepEqual(flags.sort(), ['chapter_1_intro_shown', 'premise_shown']);
+  // Dex acaba donde acaba andando (el último actorMove) y mirando a la izquierda
+  const moves = plan.applied.filter((a) => a.op.op === 'actorMove').map((a) => a.op);
+  assert.deepEqual({ x: moves.at(-1).x, y: moves.at(-1).y }, { x: 39, y: 93 });
+  assert.equal(plan.applied.filter((a) => a.op.op === 'actorFace').at(-1).op.dir, 'left');
+  // Narrador ≤ 3 líneas (biblia § 3) y nadie dice quién es Patient Zero
+  const says = out.filter((o) => o.op === 'say');
+  assert.ok(says.filter((o) => /narrator/i.test(o.speaker ?? '')).length <= 3);
+  assert.ok(!out.some((o) => o.op === 'narrative'), 'sin muro de texto (narrative)');
+  assert.ok(!scene('outside').regions.triggers.some((t) => t.id === 'tr_game_opening'), 'una sola fuente del guion');
+
+  const lob = opening('lobby', 'chapter_2_intro_shown');
+  const lplan = C.planSkip(lob, () => undefined, 1);
+  assert.ok(lplan.ended);
+  assert.deepEqual(lplan.applied.filter((a) => a.op.op === 'setFlag').map((a) => a.op.flag), ['chapter_2_intro_shown']);
+  assert.ok(lob.some((o) => o.op === 'cameraPan' && o.actor === 'npc_receptionist'), 'pan a Penny');
+  assert.ok(lob.filter((o) => o.op === 'say' && /narrator/i.test(o.speaker ?? '')).length <= 3);
+  assert.equal(C.TITLE_CARD_AUTO_MS > 0, true);
+});
+
 // ─── Letterbox ────────────────────────────────────────────────────────────────────────────────────────────
 
 test('letterboxBars: franja superior del 10 % (24–64 px) y la inferior tapa el panel', () => {

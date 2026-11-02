@@ -283,8 +283,8 @@ await step('silencio: sin música ni voces; al activar el sonido en ajustes, sí
 });
 
 // A2.4: controles de escritorio con teclado y ratón reales de Chrome (no eventos sintéticos de la API de QA). En el lobby
-// recién abierto (?qa=1&scene=lobby) el onEnter enseña una narrativa y un título de capítulo que esperan un clic:
-// Esc tiene que saltarlos sin tocar nada más. Luego mantener Tab resalta los hotspots, el menú contextual del lienzo
+// recién abierto (?qa=1&scene=lobby) el onEnter abre la apertura del capítulo 2 (A3.2: cinemática del motor con franjas,
+// pan a Penny, subtítulos y tarjeta): una pulsación de Esc tiene que saltarla entera sin tocar nada más. Luego mantener Tab resalta los hotspots, el menú contextual del lienzo
 // está cancelado, el doble clic en la puerta sale al momento (el personaje no anda) y en `outside` el clic derecho en
 // la lámpara del porche la coge (su verbo por defecto es PICK).
 await step('escritorio: Esc, Tab, doble clic en una salida y clic derecho (teclado y ratón reales)', async () => {
@@ -325,13 +325,21 @@ await step('escritorio: Esc, Tab, doble clic en una salida y clic derecho (tecla
   try {
     await p.goto(`${BASE}/?qa=1&scene=lobby`, { waitUntil: 'domcontentloaded' });
     await wait(() => !!window.__qa && window.__game?.scene?.isActive('GameScene') && window.__game.registry.get('currentSceneId') === 'lobby');
-    await wait(() => window.__game.registry.get('cinematicActive') > 0, undefined, 20000);
+    const cine = () => p.evaluate(() => window.__qa.state().cinematic);
+    await wait(() => window.__qa.state().cinematic?.active === true, undefined, 20000)
+      .catch(() => { throw new Error('la apertura del lobby (cinemática) no empezó en 20 s'); });
     await new Promise((r) => setTimeout(r, 1500));
-    if (!((await reg('cinematicActive')) > 0)) throw new Error('la narrativa del lobby se cerró sola antes de pulsar Esc');
-    // Una sola pulsación salta la narrativa y el título (el mismo avance rápido que mantener pulsado)
+    if (!(await cine())?.active) throw new Error('la apertura del lobby se cerró sola antes de pulsar Esc (debe durar más de 1,5 s)');
+    // Una sola pulsación salta la cinemática entera, tarjeta incluida (el mismo avance rápido que mantener pulsado)
     await p.keyboard.press('Escape');
-    await wait(() => window.__game.registry.get('gameState')?.flags?.chapter_2_intro_shown && !(window.__game.registry.get('cinematicActive') > 0), undefined, 20000)
-      .catch(() => { throw new Error('una pulsación de Esc no saltó la narrativa y el título del capítulo del lobby en 20 s'); });
+    await wait(() => {
+      const g = window.__game;
+      const c = window.__qa.state().cinematic;
+      return g.registry.get('gameState')?.flags?.chapter_2_intro_shown && c && !c.active && c.ended >= 1 && c.skipped
+        && !(g.registry.get('cinematicActive') > 0);
+    }, undefined, 20000)
+      .catch(() => { throw new Error('una pulsación de Esc no saltó la apertura del lobby (cinemática y tarjeta del capítulo) en 20 s'); });
+    console.log(`    Esc saltó la apertura del lobby: ${JSON.stringify(await cine())}`);
     await escUntilCalm('el lobby');
 
     await p.keyboard.down('Tab');
@@ -369,7 +377,7 @@ await step('escritorio: Esc, Tab, doble clic en una salida y clic derecho (tecla
     if (moved > 1) throw new Error(`con el doble clic el personaje anduvo ${moved.toFixed(1)} % antes de salir`);
     await wait(() => window.__game.scene.isActive('GameScene') && window.__game.registry.get('currentSceneId') === 'outside' && !window.__game.registry.get('sceneTransition'), undefined, 30000);
 
-    // outside abre con la premisa y el capítulo 1: también con Esc
+    // outside abre con la premisa y el capítulo 1 (A3.2: cinemática): también con Esc
     await new Promise((r) => setTimeout(r, 800));
     await escUntilCalm('outside');
     const lamp = await hotspotXY('hs_porch_light');

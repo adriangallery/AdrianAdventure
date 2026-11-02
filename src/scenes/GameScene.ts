@@ -1585,6 +1585,8 @@ export class GameScene extends Phaser.Scene {
         return ((data?.player.speed ?? 200) / this.coordSystem.imgH) * 100;
       },
       onBegin: () => {
+        // A3.2: una cinemática en el onEnter (la apertura) se ve: fuera la cortina negra que tapa la entrada a la escena
+        this.cinematicOverlay?.hideBlackCover();
         this.cancelTouchHold();
         this.hideHighlights();
         this.pending = null;
