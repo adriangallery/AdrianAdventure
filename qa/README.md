@@ -495,7 +495,7 @@ Campos opcionales de `scene.json` (junto a `walkableAreas`/`blockedAreas` y los 
 
 ```jsonc
 "pixelScale": 5.5,       // píxeles de fondo por píxel de arte de personaje: la unidad de píxel del mundo (1-12)
-"depthScale": { "yTop": 82.5, "yBottom": 91, "scaleTop": 0.45, "scaleBottom": 1 },  // factor 0,2-2, lineal en y (%)
+"depthScale": { "yTop": 82.5, "yBottom": 91, "scaleTop": 0.8, "scaleBottom": 1 },  // factor 0,2-2, lineal en y (%)
 "npcs": [{ "id": "npc_x", "artScale": 1 }]   // hoja dibujada a otra densidad que la del jugador (0,25-4; 1 por defecto)
 ```
 
