@@ -44,7 +44,7 @@ en `PICK hs_mailbox` (35 s, más que los 30 s del watchdog, con `addItem` y `set
 
 Pasos: `newGame`, `act`, `use`, `combine`, `talk`, `walk`, `goto`, `dismissAll`, `wait` (`ms`), `resize`
 (`width`, `height`). Cada paso admite `expect` con `scene`, `has`, `lacks`, `flags`, `unsetFlags`, `visited`,
-`achievements` y `noListenerGrowth`, y `rejects`: expresión regular (sin distinguir mayúsculas) que tiene que salir en los textos
+`achievements`, `lastChoices` y `noListenerGrowth`, y `rejects`: expresión regular (sin distinguir mayúsculas) que tiene que salir en los textos
 mostrados durante ese paso, p. ej. la frase con la que el juego rechaza la acción. Las rutas llevan un `goal` con
 el mismo formato que `expect`.
 
@@ -52,6 +52,13 @@ el mismo formato que `expect`.
 escrita (ni a `false`). La ruta crítica lo usa en `USE hs_front_door` antes de coger la nota: la lámpara parpadea
 con el op `flicker` y `found_code_note` no puede aparecer en la partida; y en `OPEN hs_desk`, para que nadie vuelva
 a escribir el nombre viejo `found_hw_wallet`.
+
+`choices` de `talk`/`act`/`use` elige por texto contenido (sin mayúsculas), en orden. Desde A2.6 los árboles vuelven
+a un hub tras cada rama, así que cada charla acaba con su salida explícita («I'll come back later.», «Goodbye,
+doctor.», «Thanks, B.O.T.»); si falta, el paso falla con «el diálogo pide elegir y el paso no trae más respuestas».
+`expect.lastChoices` (A2.6) mira la última elección que salió en el paso, antes de responderla
+(`state().lastChoices`): `used` (está en gris, ya elegida), `fresh` (está sin usar), `locked` (con candado) y
+`absent` (no está: oculta por `when`, `once` o `hideIfLocked`), también por texto contenido.
 
 `resize` (A1.10) cambia el viewport con `page.setViewport` (salta el `resize` del ScaleManager, de `window` y de
 `visualViewport`) y espera `settleMs` (1200 ms por defecto: el rebuild con debounce del panel y los reintentos de

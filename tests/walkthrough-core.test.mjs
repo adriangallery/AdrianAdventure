@@ -4,7 +4,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import {
-  attemptIndex, check, checkAttemptRan, checkListenerGrowth, checkRejects, classify, describe, kindOf, newLogLines,
+  attemptIndex, check, checkAttemptRan, checkLastChoices, checkListenerGrowth, checkRejects, classify, describe, kindOf, newLogLines,
   routeDefects, selftestDefects, selftestMismatch,
 } from '../scripts/lib/walkthrough-core.mjs';
 
@@ -217,4 +217,33 @@ test('A1.10: la ruta crítica comprueba los listeners de resize tras varios camb
   const route = readJson('qa/walkthrough.json').routes.find((r) => r.id === 'ruta-critica');
   const checks = route.steps.filter((s) => s.do === 'resize' && s.expect?.noListenerGrowth);
   assert.ok(checks.length >= 2, 'al menos una redimensión con noListenerGrowth');
+});
+
+test('A2.6: lastChoices comprueba opciones usadas, sin usar, bloqueadas y ocultas de la última elección', () => {
+  const lastChoices = [
+    { text: 'The tour, please.', enabled: true, used: false },
+    { text: 'What about Patient Zero?', enabled: true, used: true },
+    { text: '[Requires AdrianZERO] Show my badge.', enabled: false, used: false },
+    { text: "I'll come back later.", enabled: true, used: false },
+  ];
+  const want = { used: ['patient zero'], fresh: ['tour', 'come back'], locked: ['badge'], absent: ['confidential'] };
+  assert.deepEqual(check({ lastChoices: want }, st({ lastChoices })), []);
+  const bad = check({ lastChoices: { used: ['tour', 'nada'], fresh: ['Patient Zero'], locked: ['tour'], absent: ['badge'] } }, st({ lastChoices }));
+  assert.equal(bad.length, 5, bad.join('\n'));
+  assert.match(bad.join('\n'), /«The tour, please\.» debería salir en gris/);
+  assert.match(bad.join('\n'), /«nada» no salió en la última elección/);
+  assert.match(bad.join('\n'), /«What about Patient Zero\?» sale en gris/);
+  assert.match(bad.join('\n'), /«The tour, please\.» debería salir bloqueada/);
+  assert.match(bad.join('\n'), /no debería salir \(oculta\)/);
+  assert.match(check({ lastChoices: want }, st({ lastChoices: null }))[0], /no pidió elegir/);
+  assert.match(checkLastChoices(want, st())[0], /API de QA anterior a A2\.6/);
+  assert.deepEqual(check({ scene: 'outside' }, st()), [], 'sin la clave no se mira');
+});
+
+test('A2.6: la ruta crítica comprueba la opción usada en gris, la oculta por `when` y la salida explícita', () => {
+  const route = readJson('qa/walkthrough.json').routes.find((r) => r.id === 'ruta-critica');
+  const talks = route.steps.filter((s) => s.do === 'talk' && s.expect?.lastChoices);
+  assert.ok(talks.some((s) => s.expect.lastChoices.used?.length), 'una opción usada en gris');
+  assert.ok(talks.some((s) => s.expect.lastChoices.absent?.length), 'una opción oculta');
+  assert.ok(talks.every((s) => /come back later|goodbye/i.test(s.choices.at(-1))), 'cada charla termina por su salida explícita');
 });

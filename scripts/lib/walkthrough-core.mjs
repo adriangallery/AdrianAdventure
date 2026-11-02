@@ -20,7 +20,7 @@ export function describe(s) {
 }
 
 /**
- * Comprobaciones de estado: scene, has, lacks, flags, unsetFlags, visited, achievements y (A1.10) noListenerGrowth, que
+ * Comprobaciones de estado: scene, has, lacks, flags, unsetFlags, visited, achievements, (A2.6) lastChoices y (A1.10) noListenerGrowth, que
  * compara `st.resizeListeners` con `ctx.listenersBaseline` (lo que había tras el primer paso de la ruta). `flags` trata
  * una flag ausente como false; (A1.4) `unsetFlags` exige que la flag no esté en la partida, ni a false: nadie la ha
  * escrito (p. ej. un parpadeo que antes se hacía encendiendo y apagando la flag). Devuelve los fallos.
@@ -41,6 +41,41 @@ export function check(expect, st, ctx = {}) {
   for (const id of expect.visited ?? []) if (!st.visited.includes(id)) f.push(`no se visitó «${id}»`);
   for (const id of expect.achievements ?? []) if (!st.achievements.includes(id)) f.push(`falta el logro «${id}»`);
   if (expect.noListenerGrowth) f.push(...checkListenerGrowth(st, ctx.listenersBaseline));
+  if (expect.lastChoices) f.push(...checkLastChoices(expect.lastChoices, st));
+  return f;
+}
+
+/**
+ * A2.6: `expect.lastChoices` compara la última elección que salió en el paso (`st.lastChoices`, antes de responderla)
+ * por texto contenido, sin mayúsculas: `used` (está y en gris: ya elegida), `fresh` (está y sin usar), `locked`
+ * (está bloqueada, con candado) y `absent` (no está: oculta por `when`/`once`/`hideIfLocked`).
+ */
+export function checkLastChoices(want, st) {
+  if (st.lastChoices === undefined) return ['el juego no expone `lastChoices` en el estado (API de QA anterior a A2.6)'];
+  if (!st.lastChoices) return ['el paso no pidió elegir ninguna opción de diálogo'];
+  const opts = st.lastChoices;
+  const find = (needle) => opts.find((o) => o.text.toLowerCase().includes(String(needle).toLowerCase()));
+  const shown = () => opts.map((o) => `${o.text}${!o.enabled ? ' (bloqueada)' : o.used ? ' (usada)' : ''}`).join(' | ');
+  const f = [];
+  for (const t of want.used ?? []) {
+    const o = find(t);
+    if (!o) f.push(`la opción «${t}» no salió en la última elección (${shown()})`);
+    else if (!o.used) f.push(`la opción «${o.text}» debería salir en gris (usada) y sale sin usar`);
+  }
+  for (const t of want.fresh ?? []) {
+    const o = find(t);
+    if (!o) f.push(`la opción «${t}» no salió en la última elección (${shown()})`);
+    else if (o.used) f.push(`la opción «${o.text}» sale en gris (usada) y no debería`);
+  }
+  for (const t of want.locked ?? []) {
+    const o = find(t);
+    if (!o) f.push(`la opción «${t}» no salió en la última elección (${shown()})`);
+    else if (o.enabled) f.push(`la opción «${o.text}» debería salir bloqueada`);
+  }
+  for (const t of want.absent ?? []) {
+    const o = find(t);
+    if (o) f.push(`la opción «${o.text}» no debería salir (oculta) en la última elección`);
+  }
   return f;
 }
 

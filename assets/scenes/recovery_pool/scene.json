@@ -939,6 +939,9 @@
         "greeting": {
           "speaker": "B.O.T.",
           "text": "Welcome to the Liquidity Pool. I'm B.O.T. — Beverage Operations Terminal. Formerly a high-frequency trading algorithm. Now I mix drinks and watch apes provide liquidity. With their bodies. It's... a lateral move.",
+          "next": "hub"
+        },
+        "hub": {
           "choices": [
             {
               "text": "What is this place?",
@@ -956,6 +959,11 @@
             {
               "text": "I'll have a drink.",
               "next": "drink"
+            },
+            {
+              "text": "Thanks, B.O.T.",
+              "next": "farewell",
+              "exit": true
             }
           ]
         },
@@ -976,7 +984,7 @@
         "therapy_works": {
           "speaker": "B.O.T.",
           "text": "Define 'work'. They haven't checked their portfolios in 45 minutes. That's a clinic record. One of them even made eye contact with another human yesterday. Baby steps.",
-          "end": true
+          "next": "hub"
         },
         "patients": {
           "speaker": "B.O.T.",
@@ -995,7 +1003,7 @@
         "profitable": {
           "speaker": "B.O.T.",
           "text": "Survivor's guilt. He made money while his friends got liquidated. Now he floats here, pretending to be broke. It's the crypto version of a support group. 'Hi, I'm Chad, and I sold the top.' *gasps from the pool*",
-          "end": true
+          "next": "hub"
         },
         "patient_zero": {
           "speaker": "B.O.T.",
@@ -1017,11 +1025,12 @@
           "choices": [
             {
               "text": "Tell me something else.",
-              "next": "greeting"
+              "next": "hub"
             },
             {
               "text": "Thanks, B.O.T.",
-              "next": "farewell"
+              "next": "farewell",
+              "exit": true
             }
           ]
         },
@@ -1031,11 +1040,12 @@
           "choices": [
             {
               "text": "Tell me something else.",
-              "next": "greeting"
+              "next": "hub"
             },
             {
               "text": "Thanks, B.O.T.",
-              "next": "farewell"
+              "next": "farewell",
+              "exit": true
             }
           ]
         },
@@ -1045,11 +1055,12 @@
           "choices": [
             {
               "text": "Tell me something else.",
-              "next": "greeting"
+              "next": "hub"
             },
             {
               "text": "Thanks, B.O.T.",
-              "next": "farewell"
+              "next": "farewell",
+              "exit": true
             }
           ]
         },

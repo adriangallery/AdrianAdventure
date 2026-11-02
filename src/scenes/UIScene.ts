@@ -106,6 +106,21 @@ export class UIScene extends Phaser.Scene {
           this.registry.set('gameState', state);
         }
       },
+      // A2.6a: condiciones `item:` de las elecciones
+      hasItem: (itemId) => (this.registry.get('inventorySystem') as InventorySystem | undefined)?.hasItem(itemId) ?? false,
+      // A2.6: opciones usadas, en la partida (GameState.dialogueUsed, por árbol)
+      isChoiceUsed: (treeId, key) => {
+        const state = this.registry.get('gameState') as GameState | undefined;
+        return state?.dialogueUsed?.[treeId]?.includes(key) ?? false;
+      },
+      markChoiceUsed: (treeId, key) => {
+        const state = this.registry.get('gameState') as GameState | undefined;
+        if (!state) return;
+        if (!state.dialogueUsed) state.dialogueUsed = {};
+        const list = state.dialogueUsed[treeId] ?? (state.dialogueUsed[treeId] = []);
+        if (!list.includes(key)) list.push(key);
+        this.registry.set('gameState', state);
+      },
       // A1.9: los onEnter de nodo se ejecutan con todos los opcodes de ScriptEngine, en el motor de diálogo de
       // GameScene (aparte del principal: un diálogo lanzado por el op `dialogue` de un script en curso no se bloquea)
       runScripts: (ops, where) => {
@@ -185,7 +200,8 @@ export class UIScene extends Phaser.Scene {
     });
 
     // NPC tapped → start dialogue with talk animation
-    gameScene.events.on('npc:tapped', (npcId: string, treeId: string) => {
+    // A2.6: `startNode` (opcional) = nodo de entrada (NPC que reacciona a un objeto, `itemDialogues`)
+    gameScene.events.on('npc:tapped', (npcId: string, treeId: string, startNode?: string) => {
       // Prevent double-triggering while dialogue is active
       if (this.registry.get('dialogueActive')) return;
       if (this.cache.audio.has('npc_talk')) this.sound.play('npc_talk', { volume: 0.4 });
@@ -194,7 +210,7 @@ export class UIScene extends Phaser.Scene {
       const npc = npcs?.find((n) => n.npcId === npcId);
       npc?.startTalking();
       this.registry.set('dialogueActive', true);
-      this.startDialogueFromScene(treeId).finally(() => {
+      this.startDialogueFromScene(treeId, startNode).finally(() => {
         npc?.stopTalking();
         this.registry.set('dialogueActive', false);
       });
@@ -303,7 +319,7 @@ export class UIScene extends Phaser.Scene {
     return null;
   }
 
-  private async startDialogueFromScene(treeId: string): Promise<void> {
+  private async startDialogueFromScene(treeId: string, startNode?: string): Promise<void> {
     const sceneData = this.registry.get('sceneData') as SceneData;
     const treeData = sceneData.dialogues?.[treeId];
     if (!treeData) {
@@ -324,18 +340,29 @@ export class UIScene extends Phaser.Scene {
         next: nodeData.next,
         end: nodeData.end,
         onEnter: nodeData.onEnter,
+        when: nodeData.when,
         choices: nodeData.choices?.map((c) => ({
+          id: c.id,
           text: c.text,
           next: c.next,
           gate: c.gate as import('@/web3/gating').GatingRule | undefined,
           flag: c.flag,
           setFlag: c.setFlag,
+          when: c.when,
+          hideIfLocked: c.hideIfLocked,
+          once: c.once,
+          exit: c.exit,
         })),
       };
     }
 
+    if (startNode && !tree.nodes[startNode]) {
+      console.warn(`UIScene: el nodo «${startNode}» no está en el árbol «${treeId}»; se empieza por «${tree.start}»`);
+      startNode = undefined;
+    }
+
     try {
-      await this.dialogueSystem.run(tree);
+      await this.dialogueSystem.run(tree, startNode);
     } finally {
       // A1.9: el cambio de escena aplazado de un onEnter se aplica al cerrar el árbol
       (this.scene.get('GameScene') as GameScene).finishDialogueScripts();

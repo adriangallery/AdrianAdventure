@@ -7,6 +7,7 @@ import type { GameState } from '@/types/game.types';
  * Versiones:
  *   1  (implícita: partidas sin `saveVersion`) todo lo anterior a A1.4.
  *   2  A1.4: flags renombradas a nombres veraces (RENAMED_FLAGS).
+ *      A2.6: campo aditivo `dialogueUsed` (opcional; sin subir versión): si llega corrupto se descarta.
  *
  * Toda partida que entra en el juego pasa por aquí: los slots locales (`SaveLoadSystem.getAllSlots`), la
  * partida de la wallet en localStorage y la de la nube (`wallet-save`: `loadLocal`, `loadRemoteSlots`,
@@ -38,6 +39,19 @@ export function migrateGameState<T extends Partial<GameState> | null | undefined
       const merged = Boolean(flags[oldName]) || Boolean(flags[newName]);
       delete flags[oldName];
       flags[newName] = merged;
+    }
+  }
+  // A2.6: opciones de diálogo usadas. Solo se conserva lo que tenga forma de treeId → string[]
+  if (state.dialogueUsed !== undefined) {
+    const used = state.dialogueUsed as unknown;
+    if (!used || typeof used !== 'object' || Array.isArray(used)) {
+      delete state.dialogueUsed;
+    } else {
+      const clean: Record<string, string[]> = {};
+      for (const [treeId, keys] of Object.entries(used as Record<string, unknown>)) {
+        if (Array.isArray(keys)) clean[treeId] = keys.filter((k): k is string => typeof k === 'string');
+      }
+      state.dialogueUsed = clean;
     }
   }
   if (typeof state.saveVersion !== 'number' || state.saveVersion < SAVE_VERSION) state.saveVersion = SAVE_VERSION;

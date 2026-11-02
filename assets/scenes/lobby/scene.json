@@ -863,6 +863,9 @@
         "greeting": {
           "speaker": "Receptionist",
           "text": "Welcome to AdrianLAB! Are you here for the tour or the experiments?",
+          "next": "hub"
+        },
+        "hub": {
           "choices": [
             {
               "text": "The tour, please.",
@@ -884,13 +887,18 @@
                 "contract": "0x6e369bf0e4e0c106192d606fb6d85836d684da75",
                 "minBalance": 1
               }
+            },
+            {
+              "text": "I'll come back later.",
+              "next": "experiments_end",
+              "exit": true
             }
           ]
         },
         "tour": {
           "speaker": "Receptionist",
           "text": "The lobby connects to all areas. Upstairs is the trading floor. The entrance leads outside. Oh, and whoever left their coat on the rack should really clean out their pockets.",
-          "end": true
+          "next": "hub"
         },
         "experiments": {
           "speaker": "Receptionist",
@@ -909,7 +917,7 @@
         "experiments_end": {
           "speaker": "Receptionist",
           "text": "Anytime! Let me know if you need anything else.",
-          "end": true
+          "next": "hub"
         },
         "patient_zero": {
           "speaker": "Receptionist",
@@ -935,12 +943,12 @@
         "pz_nervous": {
           "speaker": "Receptionist",
           "text": "Nervous? Me? Ha! I just... look, some things in this building are above my pay grade. WAY above. If you want answers about... that... you'd need to go deeper. Literally.",
-          "end": true
+          "next": "hub"
         },
         "pz_forget": {
           "speaker": "Receptionist",
           "text": "Already forgotten! Ha ha... ha. Please don't mention that name again. Especially not near the basement.",
-          "end": true
+          "next": "hub"
         },
         "vip": {
           "speaker": "Receptionist",
@@ -952,7 +960,7 @@
               "value": true
             }
           ],
-          "end": true
+          "next": "hub"
         }
       }
     }

@@ -39,7 +39,7 @@ export const TWP = {
   // Choice panel (dialogue options)
   CHOICE_ENABLED:   '#48d8e8',
   CHOICE_HOVER:     '#80f0ff',
-  CHOICE_USED:      '#304858',
+  CHOICE_USED:      '#5f8090', // A2.6: opción ya usada (gris azulado, legible sobre CHOICE_BG)
   CHOICE_DISABLED:  '#383848',
   CHOICE_BG:        0x08080f,
   CHOICE_BORDER:    0x1a2a38,

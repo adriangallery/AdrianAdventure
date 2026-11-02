@@ -1152,6 +1152,9 @@
         "greeting": {
           "speaker": "Dr. Satoshi",
           "text": "I'm Dr. Satoshi. No, not THAT Satoshi. I run this clinic. We treat all forms of on-chain addiction here.",
+          "next": "hub"
+        },
+        "hub": {
           "choices": [
             {
               "text": "What happened to Patient Zero?",
@@ -1164,7 +1167,10 @@
             {
               "text": "I found confidential documents about Patient Zero.",
               "next": "evidence_path",
-              "flag": "found_envelope"
+              "when": [
+                "found_envelope",
+                "!treatment_room_unlocked"
+              ]
             },
             {
               "text": "[Requires AdrianZERO] I have VIP access.",
@@ -1181,7 +1187,8 @@
             },
             {
               "text": "Goodbye, doctor.",
-              "next": "goodbye"
+              "next": "goodbye",
+              "exit": true
             }
           ]
         },
@@ -1201,8 +1208,13 @@
               "next": "patient_zero"
             },
             {
+              "text": "Tell me something else.",
+              "next": "hub"
+            },
+            {
               "text": "Goodbye, doctor.",
-              "next": "goodbye"
+              "next": "goodbye",
+              "exit": true
             }
           ]
         },
@@ -1219,8 +1231,13 @@
               "next": "treatment_room"
             },
             {
+              "text": "Tell me something else.",
+              "next": "hub"
+            },
+            {
               "text": "Goodbye, doctor.",
-              "next": "goodbye"
+              "next": "goodbye",
+              "exit": true
             }
           ]
         },
@@ -1233,8 +1250,13 @@
               "next": "treatment_room"
             },
             {
+              "text": "Tell me something else.",
+              "next": "hub"
+            },
+            {
               "text": "Goodbye, doctor.",
-              "next": "goodbye"
+              "next": "goodbye",
+              "exit": true
             }
           ]
         },
@@ -1247,8 +1269,13 @@
               "next": "patient_zero"
             },
             {
+              "text": "Tell me something else.",
+              "next": "hub"
+            },
+            {
               "text": "Goodbye, doctor.",
-              "next": "goodbye"
+              "next": "goodbye",
+              "exit": true
             }
           ]
         },
@@ -1267,7 +1294,6 @@
               "value": true
             }
           ],
-          "end": true,
           "onComplete_DISABLED": [
             {
               "op": "say",
@@ -1281,7 +1307,8 @@
               "op": "wait",
               "ms": 3500
             }
-          ]
+          ],
+          "next": "hub"
         },
         "goodbye": {
           "speaker": "Dr. Satoshi",
@@ -1325,7 +1352,7 @@
               "text": "Chapter 4 Complete: The Mountain Path"
             }
           ],
-          "end": true
+          "next": "hub"
         }
       }
     }
