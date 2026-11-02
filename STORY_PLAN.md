@@ -1,26 +1,45 @@
 # ZEROadventure II — Story Plan & Release Roadmap
 
+> Alineado con `docs/DESIGN_BIBLE.md` (A3.1, plan ADVENTURE_SCUMM). La biblia es la fuente de verdad de
+> historia, personajes, puzles, humor y Web3; este documento resume capítulos, releases y la capa on-chain.
+> Si discrepan, manda la biblia.
+
 ## Filosofia de Diseno
 
-El publico Web3 tiene un attention span limitado. Cada sesion de juego debe dar **recompensas tangibles** (on-chain collectibles, achievements, tokens) y una **sensacion clara de progreso** y cierre. No basta con "buena historia" — necesitan dopamina frecuente.
+El publico Web3 tiene un attention span limitado. Cada sesion de juego debe dar **sensacion clara de
+progreso** y cierre, con recompensas tangibles opcionales (logros on-chain, coleccionables). La historia y
+los puzles van primero; lo on-chain es un bonus que nunca bloquea.
 
 ### Principios
-1. **Cada capitulo es autoconclusivo** — tiene su propio arco narrativo con inicio, climax y resolucion
-2. **Recompensa al completar** — cada capitulo mintea un Achievement NFT (ERC1155) al terminar
-3. **Collectibles opcionales** — items ocultos que rewarden la exploracion
-4. **Progresion visible** — achievement wall on-chain que muestra tu progreso
-5. **Capitulos cortos** — 15-20 minutos maximo por capitulo
-6. **Cada capitulo desbloquea el siguiente** — el Achievement NFT del Cap N es el gate del Cap N+1
+1. **Cada capitulo es autoconclusivo** — su propio arco con inicio, climax y resolucion
+2. **Ritmo** — algo que tocar en 30 s, primer objeto en 2 min, 3–4 hitos por capitulo (sonido, logro visual, tic en el diario)
+3. **Duracion** — 20–40 minutos por capitulo (cap. 1: 15–20; cap. 5 + epilogo: 20)
+4. **Puzles estilo Monkey Island** — 2–4 hilos en paralelo, combinaciones objeto+objeto, cadenas de intercambio, un duelo de FUD, pistas justas (escalera de pistas de Anon), sin callejones sin salida
+5. **Cada capitulo desbloquea el siguiente con flags locales** (`chapter_N_complete`). El logro NFT del capitulo es un recuerdo opcional, **no** la llave del siguiente
+6. **Collectibles opcionales** — objetos y logros ocultos que premian la exploracion
+7. **Web3 nunca bloquea la ruta principal** — wallet, NFT y tokens dan extras y como maximo un atajo de un paso por capitulo (ver biblia §7)
 
 ---
 
 ## Arco Narrativo General
 
-**Premisa**: Adrian, creador del ecosistema ZERO, ha desaparecido. Su laboratorio esta abandonado. Los rumores dicen que un "Paciente Cero" escapo de una clinica de rehabilitacion crypto y esta saboteando el ecosistema desde dentro. Tu mision: encontrar a Patient Zero y salvar el ecosistema.
+**Premisa**: Adrian, creador del ecosistema ZERO, lleva tres semanas desaparecido. Dex Malone, «detective
+on-chain» con cero casos resueltos, recibe en su wallet un mensaje programado desde la wallet de Adrian:
+"Find Patient Zero. Bring them home. Everything in the lab is yours if you do." En los foros, «Patient Zero»
+es un saboteador que opera a las 3 AM con dinero del ecosistema. La intro **no** dice quien es Patient Zero.
 
-**Twist central**: Patient Zero eres TU. Tu wallet, tu historial de transacciones, tu adiccion al blockchain — todo apunta a ti. Pero eso no se revela hasta el final.
+**Twist central**: Patient Zero es Dex (y, con wallet conectada, el propio jugador). Fue el primer paciente de
+la clinica del Dr. Satoshi; la terapia «Cold Storage» paso sus recuerdos de degen a un disquete de respaldo y
+el se escapo a mitad de tratamiento sin memoria. El «saboteador» es PZ-BOT, su viejo bot de trading, que
+sigue corriendo en el laboratorio. Adrian no desaparecio: monto el rastro de puzles para que Dex se
+encontrara a si mismo, y es la voz anonima («Anon») que le llama por telefono. Adrian **no** es Patient Zero.
 
-**Tono**: humor negro + satira crypto + nostalgia pixel art + mystery. Monkey Island meets Black Mirror meets DeFi.
+**Tono**: comedia de aventura + satira cripto de dentro + nostalgia pixel art + misterio. Monkey Island meets
+Black Mirror meets DeFi. Los chistes cripto son el sintoma del protagonista, no una formula (biblia §5).
+
+**Reparto**: Dex (protagonista), Penny (recepcionista), Dr. Satoshi, B.O.T., Gerald (pato de goma, gag
+recurrente) y, nuevos, DOORIS (cerradura inteligente), Anon/Adrian (telefono), PZ-BOT (terminal, con la voz de
+Dex), Nurse Gwei (interfono), Chad (rival del duelo de FUD) y el coro de monos de la piscina (biblia §3).
 
 ---
 
@@ -30,237 +49,189 @@ El publico Web3 tiene un attention span limitado. Cada sesion de juego debe dar 
 *Primera release. Debe enganchar inmediatamente.*
 
 ### RELEASE 2 — "The Underground" (Capitulos 3-4)
-*Deepens the mystery. Introduces on-chain economy.*
+*Profundiza el misterio. PZ-BOT, la clinica, el duelo de FUD.*
 
 ### RELEASE 3 — "The Revelation" (Capitulo 5 + Epilogo)
-*Grand finale. Maximum on-chain rewards.*
+*Gran final. El monitor con tu propia wallet.*
 
 ---
 
 ## CAPITULO 1: "Breaking & Entering"
-**Escenas**: outside, frontdoor
-**Duracion**: ~12-15 minutos
-**Release**: 1
+**Escenas**: outside (termina al cruzar la puerta al lobby; no hay escena `frontdoor`)
+**Duracion**: ~15-20 minutos · **Release**: 1
 
 ### Sinopsis
-Llegas a la casa de Adrian despues de recibir un mensaje anonimo: "El ecosistema esta en peligro. Ve al laboratorio. La puerta no esta tan cerrada como parece." Debes entrar al laboratorio encontrando pistas para el codigo de acceso.
+Atardecer en casa de Adrian. DOORIS, la cerradura inteligente, exige autenticacion de tres factores: PIN
+(partido en dos mitades: tras la lampara del porche y en un nido de urraca que se alcanza con un tablon de la
+valla), pregunta de seguridad (el mejor amigo de Adrian: Gerald, un pato de goma, segun una factura del
+veterinario en el buzon) y llave de hardware (el Ledger de Adrian, bajo un felpudo «HODL» pegado al suelo).
+Anon llama por primera vez. Puzles detallados: biblia §4, capitulo 1.
 
-### Beats narrativos
-1. **Apertura**: Exterior de la casa. Ambiente nocturno, pixelado, misterioso. Un cartel dice "AdrianLAB — Authorized Personnel Only"
-2. **Exploracion**: Examinar el buzon (facturas de electricidad astronomicas), el coche abandonado (motor aun caliente), la lampara del porche (pista del codigo)
-3. **Puzzle central**: Encontrar el codigo 7-3-1-4 combinando pistas del exterior
-4. **Mini-twist**: Debajo del felpudo encuentras el Ledger de Adrian — "Quien deja su hardware wallet bajo el felpudo?"
-5. **Cierre**: La puerta se abre. Interior oscuro. Fin del capitulo.
-
-### Items descubribles
+### Items
 | Item | Donde | Requerido | On-chain |
 |------|-------|-----------|----------|
-| code_note | Detras de lampara | Si | No |
-| ledger | Bajo felpudo | Si | No |
-| mystery_envelope | Buzon (oculto, requiere LOOK x2) | No | Si — Collectible #1 |
-
-### Elementos On-Chain
-
-| Elemento | Tipo | Contrato | Trigger |
-|----------|------|----------|---------|
-| **"Chapter 1 Complete" Achievement** | ERC1155 mint | AdrianLAB | Auto al entrar a frontdoor con exito |
-| **Mystery Envelope** (Collectible #1) | ERC1155 mint | AdrianLAB | Opcional: examinar buzon 2 veces |
-| **Wallet Connect prompt** | UI | — | Al iniciar el juego, opcional |
+| note_half_a / note_half_b → code_note | Lampara del porche / nido de urraca (combo) | Si | No |
+| fence_plank | Valla | Si | No |
+| vet_bill | Buzon | Si | No |
+| ledger | Bajo el felpudo (con el tablon) | Si (cap. 1 y 3) | No |
+| mystery_envelope | Buzon (mismo OPEN que la factura) | Si (cap. 2) | Si — Collectible #1 |
 
 ### Gating
-- **Entrada**: Ninguno (capitulo gratuito, accesible para todos)
-- **Bonus dialogue**: Holders de AdrianZERO ven graffiti extra en la pared: "ZERO WAS HERE"
+- **Entrada**: ninguno (capitulo gratuito)
+- **Bonus**: holders de AdrianZERO ven el graffiti «ZERO WAS HERE» tras los arbustos
 
 ---
 
 ## CAPITULO 2: "The Receptionist"
-**Escenas**: lobby, upstairs, rooftop
-**Duracion**: ~15-20 minutos
-**Release**: 1
+**Escenas**: lobby, upstairs, rooftop · **Duracion**: ~30-35 minutos · **Release**: 1
 
 ### Sinopsis
-Dentro del laboratorio, la recepcionista (unica persona presente) te recibe con sospecha. Debes ganarte su confianza para obtener acceso a las zonas restringidas. Arriba, descubres la sala de trading de Adrian y su obsesion con los mercados.
+Penny, la recepcionista (sola y sin cobrar desde hace tres semanas, cotilla incurable), vigila el abrigo de
+Adrian. Dejar el sobre CONFIDENCIAL en su escritorio la distrae y da la keycard y un boli de Mt. Gox que aun
+gotea. La escotilla de servicio de la azotea, que baja al sotano donde parpadea una luz, tiene tres cierres:
+lector (keycard), pestillo (la veleta Bitcoin, oxidada: se engrasa con pizza fosilizada) y cerradura
+(terminal_key, en un cajon con cerradura de «Terms & Conditions» que hay que leer de verdad). Opcional: revivir
+a Fernando, la planta del lobby, con agua de lluvia de la antena parabolica (Penny prohibe la cafeina) y
+activar Founder Mode con el Golden Token.
 
-### Beats narrativos
-1. **Lobby**: Recepcionista pregunta quien eres. Tres rutas de dialogo:
-   - **Tour**: Te muestra el lobby, menciona que Adrian no ha venido en dias
-   - **Directa**: "Busco a Patient Zero" — ella se pone nerviosa, cambia de tema
-   - **VIP** (gate AdrianZERO): "Ah, un holder. Adrian dejo instrucciones para ustedes..."
-2. **Puzzle del abrigo**: Encontrar la keycard en el bolsillo del abrigo de Adrian
-3. **Upstairs**: Trading floor. Tres monitores mostrando charts, mining rig activo, cajas etiquetadas ironicamente ("Moon Mission", "Diamond Hands", "Lambo Dreams")
-4. **Combo puzzle**: Regar la planta moribunda (water_bottle + planta) = brota un golden_token. Usarlo en el mining rig = activar Founder Mode (admin dashboard que muestra stats reales del ecosistema ZERO)
-5. **Rooftop**: Antena satelital corriendo un nodo de Base. Momento contemplativo. "847 dias de uptime. Adrian nunca apago esto."
-6. **Cierre**: Desde el rooftop ves una luz parpadeando en el sotano. Algo sigue encendido ahi abajo.
-
-### Items descubribles
+### Items
 | Item | Donde | Requerido | On-chain |
 |------|-------|-----------|----------|
-| keycard | Bolsillo del abrigo (lobby) | Si | No |
-| water_bottle | Dispensador (lobby) | No* | No |
-| golden_token | Combo: water + plant | No* | Si — Collectible #2 |
-| terminal_key | Cajon del escritorio (upstairs) | Si | No |
-| antenna | Equipo suelto (rooftop) | No | No |
-| monkey_sticker | Easter egg (4 flags ocultos) | No | Si — Collectible #3 (raro) |
-
-*No requerido para completar el capitulo, pero si para bonus content
+| keycard + leaky_pen | Abrigo de Adrian (con Penny distraida) | Si | No |
+| pizza_slice | Caja de pizza (upstairs) | Si | No |
+| terminal_key | Cajon de Terms & Conditions (upstairs) | Si (cap. 2 y 5) | No |
+| antenna | Antena suelta (rooftop) | No (alternativa en el cap. 3) | No |
+| ape_costume | Alpha Pack (upstairs) | No (alternativa en el cap. 4) | No |
+| receipt | Bandeja de papel (upstairs) | No (alternativa en el cap. 3) | No |
+| energy_drink → empty_can → rainwater_can | Upstairs / mining rig / parabolica | No | No |
+| golden_token | Fernando regado | No | Si — Collectible #2 |
+| luxury_watch | Sillon (con la antena) | No | Logro DIAMOND HANDS |
+| monkey_sticker | Easter egg (4 flags ocultas + sillon del sotano) | No | Si — Collectible #3 (raro) |
 
 ### Elementos On-Chain
-
 | Elemento | Tipo | Contrato | Trigger |
 |----------|------|----------|---------|
-| **"Chapter 2 Complete" Achievement** | ERC1155 mint | AdrianLAB | Ver la luz del sotano desde rooftop |
-| **Golden ZERO Token** (Collectible #2) | ERC1155 mint | AdrianLAB | Combo water_bottle + plant + mining_rig |
-| **Three-Headed Monkey Sticker** (Collectible #3) | ERC1155 mint | AdrianLAB | Easter egg: encontrar 4 debug flags |
-| **Founder Mode Dashboard** | Read-only | Diamond | Muestra stats reales de $ZERO on-chain |
+| **"Chapter 2 Complete"** | ERC1155 mint opcional | AdrianLAB | Bajar por la escotilla |
+| **Golden ZERO Token** (Collectible #2) | ERC1155 mint opcional | AdrianLAB | Fernando regado |
+| **Three-Headed Monkey Sticker** (Collectible #3) | ERC1155 mint opcional | AdrianLAB | Easter egg |
+| **Founder Mode Dashboard** | Read-only | Diamond | Golden Token en el mining rig (stats de ejemplo sin wallet) |
 
 ### Gating
-- **Entrada**: Achievement "Chapter 1 Complete"
-- **VIP dialogue**: Holders AdrianZERO (ruta de dialogo exclusiva con recepcionista)
-- **Founder Mode**: Requiere golden_token (in-game) — muestra datos reales del Diamond
+- **Entrada**: `chapter_1_complete` (flag local)
+- **VIP** (AdrianZERO): Penny revela la trampilla del felpudo; pide keycard y terminal_key y ahorra solo la veleta
+- **Mining rig**: 1000+ $ZERO ven el panel TraitLab
 
 ---
 
 ## CAPITULO 3: "Below the Surface"
-**Escenas**: basement, server_room
-**Duracion**: ~15-20 minutos
-**Release**: 2
+**Escenas**: basement, server_room · **Duracion**: ~30-35 minutos · **Release**: 2
 
 ### Sinopsis
-Desciendes al sotano y descubres el archivo de Adrian: un viejo CRT con registros encriptados, y detras de un rack de servidores, la sala secreta donde corre toda la infraestructura del ecosistema ZERO. Aqui encuentras la primera mencion directa de "Patient Zero" y su escape.
+En el sotano, un CRT sin corriente y el disquete «BACKUP — DO NOT LOSE». Tras el rack, la sala de servidores y
+PZ-BOT: el «saboteador», un bot que solo obedece a su dueño, habla con la voz de Dex y tiene bloqueado el
+interruptor de emergencia. El CRT se enciende con un alargador del suelo tecnico (donde tambien hay unas gafas
+3D al reves); el Ledger pide como PIN el cumpleaños de Gerald (0301, el genesis block); el disquete imprime el
+listado de pacientes («PATIENT ZERO — STATUS: ESCAPED») y un mapa sin marca. Una alfa falsa escrita con el
+boli («BUY $GERALD») cuelga a PZ-BOT, que suelta su log (dueño `0xDE…`) y libera el interruptor. Roto el
+cristal (antena o el raton roto como mayal), el interruptor muestra las coordenadas y Dex marca el mapa.
 
-### Beats narrativos
-1. **Descenso**: Bajas por la trampilla. Humedad. Olor a circuitos viejos. Un CRT parpadea con cursor verde.
-2. **Puzzle del CRT**: Insertar el Ledger de Adrian → se desbloquea el sistema. Base de datos de pacientes de una clinica de "rehabilitacion crypto"
-3. **Floppy disk**: Encontrar el backup escondido. Insertarlo → impresora escupe un roster:
-   - "Chronic Airdrop Dependency"
-   - "Acute Rug Pull Trauma"
-   - "Terminal FOMO"
-   - **"PATIENT ZERO — STATUS: ESCAPED"** (en rojo)
-4. **Server Room**: Mover el rack de equipos revela una puerta oculta. Dentro: servidores activos — FloorEngine, TraitLab, SweepBot corriendo 24/7. Uno quemado: "AdrianAuctions — OFFLINE (bidding war casualty)"
-5. **Emergency switch**: Detras de un vidrio de emergencia. Al activarlo, una pantalla oculta muestra coordenadas: "47.6062N, 122.3321W" y un mensaje: "La clinica existe. El paciente volvera."
-6. **Cierre**: El printout incluye un mapa con la ubicacion de la clinica. Esta en la montana, a poca distancia.
-
-### Items descubribles
+### Items
 | Item | Donde | Requerido | On-chain |
 |------|-------|-----------|----------|
-| floppy_disk | Debajo de papeles (basement) | Si | No |
-| printout | Impresora (tras insertar floppy) | Si | No |
-| server_log | Terminal en server_room | No | Si — Collectible #4 |
-| burned_chip | Server quemado de AdrianAuctions | No | Si — Collectible #5 |
+| extension_cord + glasses_3d | Suelo tecnico (server_room) | Si (gafas: cap. 4) | No |
+| floppy_disk + scrap_paper | Mesa del sotano | Si (disquete: cap. 3 y 5) | No |
+| printout → marked_map | CRT / combo con el boli | Si | No |
+| fake_alpha | Combo papel + boli | Si | No |
+| server_log | PZ-BOT colgado | Si (lore) | Si — Collectible #4 |
+| broken_mouse | Mesa del sotano | Alternativa a la antena | No |
+| burned_chip | Rack quemado de AdrianAuctions | No | Si — Collectible #5 |
 
 ### Elementos On-Chain
-
 | Elemento | Tipo | Contrato | Trigger |
 |----------|------|----------|---------|
-| **"Chapter 3 Complete" Achievement** | ERC1155 mint | AdrianLAB | Obtener el printout con el mapa |
-| **Server Log Extract** (Collectible #4) | ERC1155 mint | AdrianLAB | Examinar terminal del server room |
-| **Burned AdrianAuctions Chip** (Collectible #5) | ERC1155 mint | AdrianLAB | Examinar servidor quemado |
-| **FloorEngine Stats** | Read-only | Diamond | Server room muestra sweep stats reales |
-| **$ZERO Burn Counter** | Read-only | Diamond | Pantalla en server room con total burned |
+| **"Chapter 3 Complete"** | ERC1155 mint opcional | AdrianLAB | Mapa marcado |
+| **Server Log Extract** (Collectible #4) | ERC1155 mint opcional | AdrianLAB | PZ-BOT colgado |
+| **Burned AdrianAuctions Chip** (Collectible #5) | ERC1155 mint opcional | AdrianLAB | Rack quemado |
+| **FloorEngine Stats / $ZERO Burn Counter** | Read-only | Diamond | Pantallas de la sala de servidores (bonus) |
 
 ### Gating
-- **Entrada**: Achievement "Chapter 2 Complete"
-- **Server room detail**: Holders de $ZERO (1000+) ven stats adicionales del Diamond
-- **Emergency switch**: Requiere antenna del rooftop (Cap 2) como palanca improvisada
-
-### Nuevo para Release 2: $ZERO Rewards
-- Completar Cap 3 otorga **50 $ZERO** (claim via Diamond, una vez por wallet)
-- Tener los 3 achievements (Cap 1-3) otorga bonus de **100 $ZERO** extra
+- **Entrada**: `chapter_2_complete` (o el atajo VIP)
+- **Salida a la montaña**: `marked_map` o `chapter_3_complete`
+- **Bonus**: holders de $ZERO (1000+) ven stats adicionales; holders de floppies, el mensaje de Sector Zero
 
 ---
 
 ## CAPITULO 4: "The Mountain Path"
-**Escenas**: mountain, clinic_exterior (nueva), clinic_interior
-**Duracion**: ~15-20 minutos
-**Release**: 2
+**Escenas**: mountain, clinic_exterior, clinic_interior, recovery_pool, memelab · **Duracion**: ~35-40 minutos · **Release**: 2
 
 ### Sinopsis
-Sigues el mapa hacia la montana. El camino esta lleno de senales de advertencia y restos de otros "pacientes" que intentaron llegar a la clinica. Dentro, Dr. Satoshi dirige una operacion de rehabilitacion crypto con metodos... cuestionables.
+La clinica solo admite pacientes. Nurse Gwei, por el interfono, rechaza la keycard de Adrian («revoked since
+the incident») y pide pruebas de sintomas en el buzon de visitas (una lata vacia: insomnio; la nota de la
+papelera: perdida) y un cuestionario donde gana quien lo niega todo. Dentro, el Dr. Satoshi solo autoriza el
+treatment room a quien se gradue en la terapia de grupo de la piscina de liquidez (`recovery_pool`, tras el
+archivador). Los monos ignoran a los normies: disfraz de mono o un pato de goma junto a Gerald. Las replicas
+del **duelo de FUD** se aprenden de los monos y de B.O.T.; la ultima se gana con el Rare Pepe del MemeLAB
+(gafas 3D: dos pares al reves se anulan), firmado «Specimen #001 — by P.Z.». Chad, vencido, entrega una ficha
+de sobriedad; Satoshi autoriza. Pistas del giro: la letra de la hoja de visitas, la foto de inauguracion con
+una cara rayada y gafas 3D, el «The usual?» de B.O.T.
 
-### Beats narrativos
-1. **Montana**: Sendero empinado. Carteles de advertencia: "TURN BACK — PORTFOLIO AHEAD", "LAST CHANCE TO TAKE PROFIT". Naturaleza pixelada hermosa pero ominosa.
-2. **Clinic exterior** (escena nueva): Edificio brutalista. Cartel: "Patient Zero Rehabilitation Clinic — Est. Block 0". Puerta principal con scanner biometrico.
-3. **Puzzle de entrada**: El scanner pide "Proof of Stake" — debes usar la keycard + el sign_in_sheet que encuentras en un buzzon exterior
-4. **Clinic interior**: Dr. Satoshi te recibe. Dialogo extenso:
-   - Historia de Patient Zero: "adicto a mintear. Cada bloque, otra transaccion."
-   - "Cold wallet detox fallo. Hardware wallet rehab fallo."
-   - "Escapo con un exploit en nuestro propio smart contract de admision. Ironico."
-   - Posters en la pared: "ONE DAY AT A BLOCK", "SERENITY PRAYER" version crypto
-5. **Puzzle del archivo**: Dr. Satoshi no te deja entrar al treatment room directamente. Debes encontrar el expediente de Patient Zero en el archivo — pero esta codificado en Base64
-6. **Cierre**: Descifras el expediente. La foto del paciente esta corrupta — solo se ve un fragmento de una wallet address. Los primeros 4 caracteres coinciden con... tu wallet?
-
-### Items descubribles
+### Items
 | Item | Donde | Requerido | On-chain |
 |------|-------|-----------|----------|
-| sign_in_sheet | Buzon exterior de clinica | Si | No |
-| patient_file | Archivo de la clinica | Si | No |
-| dr_satoshi_badge | Easter egg: examinar bata 3 veces | No | Si — Collectible #6 |
-| clinic_photo | Pared del pasillo | No | Si — Collectible #7 |
+| clinic_note + lata vacia | Papelera de la clinica | Si | No |
+| patient_wristband | Admision de Nurse Gwei | Si | No |
+| rubber_duck | Basura de la piscina | Alternativa al disfraz | No |
+| pepememe | MemeLAB | Si | Logro MEME ACHIEVEMENT (B.O.T.) |
+| sobriety_chip | Chad vencido | Si | No |
+| sign_in_sheet, clinic_sign_in_sheet | Buzon de visitas / recepcion | No (lore) | No |
+| dr_satoshi_badge | Easter egg en la bata | No | Si — Collectible #6 |
+| clinic_photo | Pared de recepcion | No | Si — Collectible #7 |
 
 ### Elementos On-Chain
-
 | Elemento | Tipo | Contrato | Trigger |
 |----------|------|----------|---------|
-| **"Chapter 4 Complete" Achievement** | ERC1155 mint | AdrianLAB | Descifrar el expediente de Patient Zero |
-| **Dr. Satoshi Badge** (Collectible #6) | ERC1155 mint | AdrianLAB | Easter egg en la bata |
-| **Clinic Photograph** (Collectible #7) | ERC1155 mint | AdrianLAB | Examinar foto en el pasillo |
-| **Wallet Fragment Display** | Read-only | Wallet | Muestra los primeros chars de TU address |
-| **$ZERO Reward: 50 tokens** | Claim | Diamond | Al completar capitulo |
+| **"Chapter 4 Complete"** | ERC1155 mint opcional | AdrianLAB | Autorizacion de Satoshi |
+| **Dr. Satoshi Badge** (Collectible #6) | ERC1155 mint opcional | AdrianLAB | Easter egg |
+| **Clinic Photograph** (Collectible #7) | ERC1155 mint opcional | AdrianLAB | Foto de la pared |
+| **Meme Achievement** | ERC1155 mint opcional (id 20022) | AdrianLAB | Pepe + B.O.T. |
 
 ### Gating
-- **Entrada**: Achievement "Chapter 3 Complete"
-- **VIP dialogue con Dr. Satoshi**: Holders AdrianZERO desbloquean rama "What really happened"
-- **Treatment room tease**: Dr. Satoshi dice "Not without proper authorization" — setup para Cap 5
+- **Entrada**: `chapter_3_complete` (flag local)
+- **VIP con Dr. Satoshi** (AdrianZERO): «Chad te respeta» — el duelo empieza en la ultima ronda. Ya no autoriza el treatment room directamente
+- **Aviso de wallet** (no bloqueante): Satoshi y Anon avisan antes del cap. 5 de que el monitor lee la wallet que lleves
 
 ---
 
 ## CAPITULO 5: "Patient Zero"
-**Escenas**: treatment_room, epilogue_outside (nueva)
-**Duracion**: ~10-15 minutos
-**Release**: 3
+**Escenas**: treatment_room, epilogue_outside · **Duracion**: ~20 minutos (con epilogo) · **Release**: 3
 
 ### Sinopsis
-El capitulo final. Entras al treatment room. Un sillon frente a un monitor. El monitor se enciende y muestra... tu historial de transacciones. Cada chart en la pared es tu portfolio. Patient Zero siempre fuiste tu.
+El monitor pide el respaldo (el disquete) y al paciente sentado. Al restaurar, muestra el expediente: el
+historial real de la wallet conectada o, sin wallet, el expediente ficticio de Dex (`02:14 BUY $GERALD`).
+«Patient Zero... is ME?» PZ-BOT, desde el monitor, intenta que Dex vuelva a operar: duelo final con su propia
+voz (las tres replicas que Chad no uso + «I'm not you anymore»). Dex apaga el bot. Suena un telefono tras el
+cristal de observacion: Anon es Adrian. Nota de Adrian («You were never a saboteur. You were a patient who
+walked out too early.»). Epilogo al amanecer: Dex firma el «NOW HIRING» con el boli de Mt. Gox. Creditos.
 
-### Beats narrativos
-1. **Entrada al treatment room**: Puerta pesada. Interior minimalista. Un sillon. Un monitor apagado. Silencio.
-2. **El monitor se enciende**: Secuencia cinematica. Letras verdes tipo Matrix. Luego: tu wallet address. Tu historial de transacciones REAL (leido de la blockchain via Alchemy).
-3. **Las paredes**: Charts y graficos — tu portfolio historico con anotaciones manuscritas:
-   - "First mint — the beginning of the end"
-   - "Panic sold here — classic"
-   - "Aped in without reading the contract — typical"
-4. **Revelacion progresiva** (secuencia de dialogos):
-   - "Those are MY transactions."
-   - "The charts on the wall... that's MY portfolio."
-   - "Patient Zero... is ME?"
-   - "Congratulations. You found yourself. The first step to recovery is admitting you have a problem."
-   - "The second step? ...There is no second step in crypto."
-5. **Post-revelation**: Examinar la mesa junto al sillon. Una nota de Adrian:
-   - "Si estas leyendo esto, el juego funciono. No eres un paciente. Eres un builder. Los pacientes nunca llegan hasta aqui — se quedan en el lobby refreshing charts. Tu exploraste. Tu resolviste puzzles. Tu llegaste al final. Eso te hace diferente. Bienvenido al equipo."
-6. **Epilogo**: Sales de la clinica. Amanecer. El mundo pixelado se ve diferente ahora. Un nuevo cartel en la puerta: "PATIENT ZERO REHABILITATION CLINIC — NOW HIRING". Fundido a negro.
-
-### Items descubribles
+### Items
 | Item | Donde | Requerido | On-chain |
 |------|-------|-----------|----------|
+| floppy_disk (del cap. 3) | Monitor | Si | No |
 | adrian_note | Mesa del treatment room | Si (narrativo) | Si — Collectible #8 |
-| patient_zero_badge | Auto al completar revelacion | Auto | Si — Achievement especial |
+| patient_zero_badge | Auto al completar la revelacion | Auto | Logro especial |
 
 ### Elementos On-Chain
-
 | Elemento | Tipo | Contrato | Trigger |
 |----------|------|----------|---------|
-| **"PATIENT ZERO" Achievement** | ERC1155 mint (LEGENDARY) | AdrianLAB | Completar la revelacion |
-| **Adrian's Note** (Collectible #8) | ERC1155 mint | AdrianLAB | Leer la nota en la mesa |
-| **"Game Complete" Achievement** | ERC1155 mint (LEGENDARY) | AdrianLAB | Salir de la clinica |
-| **Transaction History Display** | Read-only | Alchemy API | Muestra TUS txs reales |
-| **Portfolio Chart** | Read-only | Alchemy API | Muestra tu balance historico |
-| **$ZERO Reward: 200 tokens** | Claim | Diamond | Al completar el juego |
-| **Completionist Bonus: 500 $ZERO** | Claim | Diamond | Tener TODOS los 8 collectibles |
+| **"PATIENT ZERO" Achievement** | ERC1155 mint opcional (LEGENDARY) | AdrianLAB | Revelacion |
+| **Adrian's Note** (Collectible #8) | ERC1155 mint opcional | AdrianLAB | Leer la nota |
+| **"Game Complete" Achievement** | ERC1155 mint opcional (LEGENDARY) | AdrianLAB | Firmar el NOW HIRING |
+| **Transaction History Display** | Read-only | Alchemy / Blockscout | Monitor (solo con wallet) |
+| **Founder's Plaque** | `web3Visuals` | Diamond | Placa con tu wallet si tienes $ZERO |
 
 ### Gating
-- **Entrada**: Achievement "Chapter 4 Complete"
-- **Treatment room**: Requiere wallet conectada (obligatorio para la revelacion)
-- **Adrian's note content**: Cambia segun tu perfil on-chain:
+- **Entrada**: `chapter_4_complete` (flag local). **La wallet NO es obligatoria**: sin ella el giro funciona con el expediente de Dex
+- **Posdata de la nota de Adrian** segun tu perfil on-chain (bonus):
   - Holder AdrianZERO: "You're OG. You believed before anyone else."
   - Holder $ZERO: "You voted with your wallet. Literally."
   - Holder de ambos: "Full degen. Full builder. Welcome home."
@@ -270,7 +241,9 @@ El capitulo final. Entras al treatment room. Un sillon frente a un monitor. El m
 
 ## Resumen de Collectibles & Achievements On-Chain
 
-### Achievements (requeridos para progresion)
+Todos opcionales: se muestran siempre como logro visual y, con wallet, se ofrecen como mint en segundo plano.
+
+### Achievements de capitulo
 | # | Nombre | Capitulo | Tipo |
 |---|--------|----------|------|
 | A1 | Chapter 1 Complete | 1 | Common |
@@ -280,19 +253,22 @@ El capitulo final. Entras al treatment room. Un sillon frente a un monitor. El m
 | A5 | PATIENT ZERO | 5 | Legendary |
 | A6 | Game Complete | 5 | Legendary |
 
-### Collectibles (opcionales, para completionists)
-| # | Nombre | Capitulo | Dificultad |
-|---|--------|----------|------------|
-| C1 | Mystery Envelope | 1 | Facil (examinar x2) |
-| C2 | Golden ZERO Token | 2 | Media (combo puzzle) |
-| C3 | Three-Headed Monkey Sticker | 2 | Dificil (4 flags ocultos) |
-| C4 | Server Log Extract | 3 | Facil (examinar terminal) |
-| C5 | Burned AdrianAuctions Chip | 3 | Facil (examinar servidor) |
-| C6 | Dr. Satoshi Badge | 4 | Media (examinar x3) |
-| C7 | Clinic Photograph | 4 | Facil (examinar foto) |
-| C8 | Adrian's Note | 5 | Auto (parte de la historia) |
+### Collectibles (para completionists)
+| # | Nombre | Capitulo | Como |
+|---|--------|----------|------|
+| C1 | Mystery Envelope | 1 | Buzon (parte de la ruta) |
+| C2 | Golden ZERO Token | 2 | Cadena opcional de Fernando |
+| C3 | Three-Headed Monkey Sticker | 2–4 | 4 flags ocultas (dificil) |
+| C4 | Server Log Extract | 3 | PZ-BOT colgado (parte de la ruta) |
+| C5 | Burned AdrianAuctions Chip | 3 | Rack quemado |
+| C6 | Dr. Satoshi Badge | 4 | Easter egg en la bata |
+| C7 | Clinic Photograph | 4 | Foto de inauguracion |
+| C8 | Adrian's Note | 5 | Parte de la historia |
 
-### $ZERO Token Rewards
+Logros de holder ya definidos en `src/config/achievements.config.ts` (VIP Floppy, VIP Access, Archivist, Alpha
+Leak, Genesis Miner, Sector Zero, Medical Records, Preserved) se mantienen como bonus.
+
+### $ZERO Token Rewards (propuesta, no implementada)
 | Trigger | Cantidad | Veces |
 |---------|----------|-------|
 | Completar Cap 3 | 50 $ZERO | 1x por wallet |
@@ -300,6 +276,8 @@ El capitulo final. Entras al treatment room. Un sillon frente a un monitor. El m
 | Completar Cap 5 (Game Complete) | 200 $ZERO | 1x por wallet |
 | Completionist (8/8 collectibles) | 500 $ZERO bonus | 1x por wallet |
 | **Total maximo** | **800 $ZERO** | |
+
+Los claims nunca condicionan la ruta. Quedan fuera del plan ADVENTURE_SCUMM (necesitan contrato y backend).
 
 ---
 
@@ -314,66 +292,64 @@ Funciones:
 - getCollectibles(address) — returns bitmask de collectibles
 ```
 
-**Proof system**: El juego genera una firma del servidor (o del frontend con una seed determinista) que prueba que el jugador realmente completo el puzzle. Evita exploits de mint directo.
+**Proof system**: firma del servidor que prueba que el jugador completo el puzzle. Evita exploits de mint
+directo.
 
 ### Opcion B: Off-chain signature + AdrianLAB mint
-Usar `AdrianLabAdmin.mintBatch()` con firmas EIP-712 generadas por un backend. Mas simple, usa contratos existentes.
+Usar `AdrianLabAdmin.mintBatch()` con firmas EIP-712 generadas por un backend. Mas simple, usa contratos
+existentes.
 
 ### Recomendacion
-**Opcion B para Release 1** (rapido, usa infraestructura existente). **Opcion A para Release 2+** (mas robusto, integrado en el Diamond).
+**Opcion B para Release 1** (rapido, usa infraestructura existente). **Opcion A para Release 2+**. En ambos
+casos el progreso del juego vive en la partida (flags), no en la cadena.
 
 ---
 
-## Escenas Necesarias por Release
+## Escenas por Release
 
-### Release 1 (ya existen, necesitan ajuste)
-- `outside` — existe, agregar mystery_envelope
-- `frontdoor` — existe, ajustar como final de Cap 1
-- `lobby` — existe, sin cambios mayores
-- `upstairs` — existe, sin cambios mayores
-- `rooftop` — existe, agregar trigger de cierre Cap 2
+Las 13 escenas existen (fondos en `assets/scenes/<id>/`). No hay escenas nuevas obligatorias.
 
-### Release 2 (parcialmente existentes)
-- `basement` — existe, ajustar como apertura Cap 3
-- `server_room` — existe, agregar collectibles y stats reales
-- `mountain` — existe, expandir con clinic_exterior
-- `clinic_exterior` — **NUEVA** (scanner biometrico, exterior brutalista)
-- `clinic_interior` — existe, expandir archivo y puzzle Base64
+| Release | Escenas | Cambios principales (biblia §4) |
+|---|---|---|
+| R1 | outside, lobby, upstairs, rooftop | DOORIS y PIN partido; Penny y el abrigo; escotilla de tres cierres |
+| R2 | basement, server_room, mountain, clinic_exterior, clinic_interior, recovery_pool, memelab | CRT con alargador, PZ-BOT, mapa marcado; Nurse Gwei; duelo de FUD con Chad; MemeLAB en la ruta |
+| R3 | treatment_room, epilogue_outside | Monitor con respaldo y sillon; duelo final con PZ-BOT; Adrian; NOW HIRING |
 
-### Release 3
-- `treatment_room` — existe, expandir con secuencia cinematica y Alchemy integration
-- `epilogue_outside` — **NUEVA** (exterior clinica, amanecer, cierre narrativo)
-
-**Total nuevas escenas a crear: 2** (clinic_exterior, epilogue_outside)
+Opcionales con fondos existentes: `lobby_epilogue` (post-creditos), `outside_night` y `mountain_dawn` (necesitan
+tinte por escena en el motor). Ver biblia §6.
 
 ---
 
-## Timeline Sugerido
+## Timeline
 
-| Release | Contenido | Estimado |
-|---------|-----------|----------|
-| **R1: "The Lab"** | Cap 1-2, wallet connect, 3 collectibles, 2 achievements | Prioridad alta |
-| **R2: "The Underground"** | Cap 3-4, $ZERO rewards, 4 collectibles, 2 achievements, 1 escena nueva | Despues de R1 feedback |
-| **R3: "The Revelation"** | Cap 5 + epilogo, Alchemy integration, 1 collectible, 2 legendary achievements | Gran finale |
+La implementacion va por los checkpoints A3.2–A3.9 del plan ADVENTURE_SCUMM (lista de subtareas en
+«Checkpoints derivados» de la biblia).
+
+| Release | Contenido |
+|---------|-----------|
+| **R1: "The Lab"** | Cap 1-2, apertura, voces nuevas, wallet connect opcional |
+| **R2: "The Underground"** | Cap 3-4, PZ-BOT, clinica, duelo de FUD |
+| **R3: "The Revelation"** | Cap 5 + epilogo, monitor con historial real, creditos |
 
 ---
 
 ## Notas de Diseno
 
 ### Para mantener engagement Web3
-- **Cada sesion de 15 min = algo nuevo en tu wallet**
+- **Cada capitulo cerrado = un badge** (visual siempre; on-chain si quieres)
 - **Progress board**: pagina web que muestra tu % de completion (lee on-chain)
 - **Leaderboard**: primeros 100 en completar cada capitulo obtienen un trait exclusivo
-- **Social proof**: "X wallets have completed Chapter N" counter en la pantalla de inicio
+- **Social proof**: "X wallets have completed Chapter N" en la pantalla de inicio
 
 ### Easter eggs cross-ecosistema
-- Holders de AdrianPunks ven sus Punks como retratos en la pared del lobby
-- Holders de Floppy Discs pueden usar los floppies en el CRT del basement
-- Stakers de $ZERO ven su staking stats en el Founder Mode dashboard
+- Holders de AdrianPunks ven el poster «BE REAL. BE ADRIAN.» en el lobby
+- Holders de Floppy Discs desbloquean secretos en los CRT (lobby, upstairs, basement, clinica, treatment room)
+- Stakers de $ZERO ven sus stats en el Founder Mode dashboard
 - Compradores via FloorEngine ven sweep history en el server room
 
 ### Rejugabilidad
-- Cada capitulo tiene rutas VIP (gate por NFT) con dialogo exclusivo
-- Collectibles ocultos incentivan replay
-- Diferentes mensajes de Adrian en Cap 5 segun tu perfil on-chain
+- Ramas VIP (gate por NFT) con dialogo exclusivo y un atajo de un paso
+- Collectibles ocultos
+- Posdata distinta de Adrian segun tu perfil on-chain
+- Dos soluciones en algunos puzles (disfraz o pato; antena o raton)
 - Speedrun mode: timer on-chain, leaderboard para completar todo el juego
