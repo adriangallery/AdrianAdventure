@@ -64,6 +64,11 @@ export class GameScene extends Phaser.Scene {
   private transactionToast!: TransactionToast;
   private web3VisualSystem?: Web3VisualSystem;
   private npcs: NPC[] = [];
+  /**
+   * A4.2: hora (la `time` de update, reloj real) del último frame de vida de las NPC. La boca sigue a un clip de voz que
+   * suena en tiempo real: con el `delta` suavizado de Phaser, en un frame lento iría por detrás del audio.
+   */
+  private lifeClock = 0;
   private gameState!: GameState;
   private bgFill!: Phaser.GameObjects.Image;
   private bg!: Phaser.GameObjects.Image;
@@ -314,6 +319,7 @@ export class GameScene extends Phaser.Scene {
 
     // NPCs
     this.npcs = [];
+    this.lifeClock = 0;
     // V6: estado de las pistas por inactividad (por escena)
     this.touchedHotspots = new Set<string>();
     this.progressSig = '';
@@ -458,7 +464,9 @@ export class GameScene extends Phaser.Scene {
   update(time: number, delta: number): void {
     this.player.setAnimContext(this.playerAnimContext());
     this.player.update(time, delta);
-    this.updateNpcLife(delta);
+    const lifeDt = this.lifeClock ? Math.min(250, Math.max(0, time - this.lifeClock)) : delta;
+    this.lifeClock = time;
+    this.updateNpcLife(lifeDt);
 
     // Refresh conditional overlays when flags change (A1.4: un flicker en marcha manda sobre la flag)
     for (const co of this.conditionalOverlays) {

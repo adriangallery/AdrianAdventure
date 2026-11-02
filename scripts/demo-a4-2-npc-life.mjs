@@ -302,6 +302,7 @@ await open('lobby', 390);
   // En vertical la cámara sigue a Dex y Penny queda fuera; como en la apertura del lobby (A3.2), una cinemática lleva la
   // cámara hasta ella y dice su saludo: así se ve con la boca abierta y el texto rosa encima
   let shot = false;
+  let talkSince = 0;
   const ops = [
     { op: 'cinematicStart' },
     { op: 'cameraPan', actor: 'npc_receptionist', ms: 600 },
@@ -314,7 +315,9 @@ await open('lobby', 390);
     while (Date.now() - t0 < 30000) {
       const { st } = await capture('390x844', 'npc_receptionist', { shot: false });
       const n = npcOf(st, 'npc_receptionist');
-      if (!shot && n?.talking && n.mouthOpen && st.speech?.mode === 'head') {
+      if (n?.talking) talkSince ||= Date.now();
+      // Con el typewriter ya avanzado (≥ 1,5 s de frase) y la boca abierta
+      if (!shot && n?.talking && n.mouthOpen && st.speech?.mode === 'head' && Date.now() - talkSince > 1500) {
         shot = true;
         await page.evaluate(() => document.getElementById('demo-cap')?.remove());
         await demo.still('390x844');
