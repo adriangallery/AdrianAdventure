@@ -1235,6 +1235,13 @@
     {
       "id": "plant_revived",
       "sprite": "overlay_plant_revived",
+      "format": "webp",
+      "bounds": {
+        "x": 38.389,
+        "y": 36.1111,
+        "w": 7.6239,
+        "h": 49.3056
+      },
       "flag": "plant_revived",
       "depth": 5
     }

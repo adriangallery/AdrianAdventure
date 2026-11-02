@@ -1863,12 +1863,26 @@
     {
       "id": "mailbox_empty",
       "sprite": "overlay_mailbox_empty",
+      "format": "webp",
+      "bounds": {
+        "x": 57.1121,
+        "y": 62.3264,
+        "w": 6.2769,
+        "h": 28.7326
+      },
       "flag": "found_envelope",
       "depth": 5
     },
     {
       "id": "lamp_empty",
       "sprite": "overlay_lamp_empty",
+      "format": "webp",
+      "bounds": {
+        "x": 22.6562,
+        "y": 27.2569,
+        "w": 18.8039,
+        "h": 33.5069
+      },
       "flag": "found_code_note",
       "depth": 5
     }

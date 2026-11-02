@@ -928,18 +928,39 @@
     {
       "id": "lights_out",
       "sprite": "overlay_lights_out",
+      "format": "webp",
+      "bounds": {
+        "x": 0,
+        "y": 0,
+        "w": 100,
+        "h": 100
+      },
       "flag": "emergency_switch_flipped",
       "depth": 3
     },
     {
       "id": "tiles_open",
       "sprite": "overlay_tiles_open",
+      "format": "webp",
+      "bounds": {
+        "x": 14.4666,
+        "y": 79.7743,
+        "w": 67.6455,
+        "h": 20.2257
+      },
       "flag": "tiles_opened",
       "depth": 3
     },
     {
       "id": "glass_broken",
       "sprite": "overlay_glass_broken",
+      "format": "webp",
+      "bounds": {
+        "x": 80.9537,
+        "y": 50.2604,
+        "w": 7.139,
+        "h": 31.4236
+      },
       "flag": "emergency_glass_broken",
       "depth": 3
     }
