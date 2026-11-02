@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { getMusicLevel, musicVolumeFor } from '@/systems/Settings';
+import { MUTED_STORAGE_KEY, mutedFromStored, shouldFetchAudio } from '@/systems/AudioPolicy';
 
 // Inyectado por vite.config.ts (define); mismo patrón que PreloadScene.
 declare const __BUILD_HASH__: string;
@@ -47,8 +48,9 @@ export class MusicManager {
     // Restore mute state — default to muted (OFF) on first visit so user must
     // explicitly tap the Sound toggle, which provides the native gesture needed
     // to unlock AudioContext on mobile browsers.
-    const stored = localStorage.getItem('adrian_adventure_muted');
-    this.muted = stored === null ? true : stored === 'true';
+    let stored: string | null = null;
+    try { stored = localStorage.getItem(MUTED_STORAGE_KEY); } catch { /* sin almacenamiento: silencio */ }
+    this.muted = mutedFromStored(stored);
     if (this.muted) {
       this.masterGain.gain.value = 0;
       game.sound.mute = true;
@@ -88,6 +90,12 @@ export class MusicManager {
     }
   }
 
+  /**
+   * A1.5: audio de la última escena pedida. En silencio no se descarga su pista; al activar el sonido
+   * (toggleMute) se vuelve a pedir la transición con esta configuración.
+   */
+  private lastAudio: SceneAudioConfig | null = null;
+
   /** Pista pedida que aún se está descargando (la última escena manda). */
   private pendingKey: string | null = null;
   private readonly loadingTracks = new Set<string>();
@@ -117,6 +125,8 @@ export class MusicManager {
 
   /** Main entry point — called on every scene transition */
   transitionToScene(audio: SceneAudioConfig): void {
+    this.lastAudio = audio;
+
     // If Phaser's sound system is still locked (no user gesture yet),
     // defer playback until the UNLOCKED event fires.
     if (this.game.sound.locked) {
@@ -152,6 +162,13 @@ export class MusicManager {
     // Different track — crossfade
     const buffer = this.getDecodedBuffer(newKey);
     if (!buffer) {
+      // A1.5: en silencio no se descarga nada. La pista anterior (sonando a volumen 0) se apaga para que,
+      // al activar el sonido, no se oiga la de otra escena mientras llega la buena.
+      if (!shouldFetchAudio(this.muted)) {
+        this.pendingKey = null;
+        this.fadeToSilence(0.1);
+        return;
+      }
       // V5: la pista aún no está descargada (solo se precarga la de la escena inicial).
       // Se pide ahora y, si seguimos en esa escena cuando llegue, se reintenta la transición.
       this.pendingKey = newKey;
@@ -168,7 +185,7 @@ export class MusicManager {
 
   toggleMute(): boolean {
     this.muted = !this.muted;
-    localStorage.setItem('adrian_adventure_muted', String(this.muted));
+    try { localStorage.setItem(MUTED_STORAGE_KEY, String(this.muted)); } catch { /* el ajuste dura la sesión */ }
 
     // Use direct value assignment instead of linearRamp — iOS Safari
     // often fails to execute Web Audio automation ramps when the
@@ -180,6 +197,8 @@ export class MusicManager {
     } else {
       this.masterGain.gain.value = this.musicVolume;
       this.game.sound.mute = false;
+      // A1.5: la música de la escena actual no se descargó en silencio: se pide ahora y suena al llegar.
+      if (this.lastAudio) this.transitionToScene(this.lastAudio);
     }
     return this.muted;
   }

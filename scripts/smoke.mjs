@@ -103,8 +103,8 @@ await step('guardar y cargar', async () => {
 
 // A1.5: arranque con «No thanks, silence is golden» en un perfil limpio. Se registran todas las peticiones y
 // falla si se pide algún mp3 de música o de voz (ni en la precarga, ni al cambiar de escena, ni al hablar).
-// Después se activa el sonido desde los ajustes del juego (`__qa.setSound(true)`, el mismo botón del menú del
-// disquete) y la música de la escena actual y la voz tienen que pedirse sin recargar la página.
+// Después se activa el sonido desde los ajustes del juego (botón «Music» del menú del disquete, con clics reales)
+// y la música de la escena actual (otra que la precargada) y la voz tienen que pedirse sin recargar la página.
 const AUDIO_RE = /\/assets\/audio\/(music|voice)\/[^/?]+\.mp3/;
 const SILENT_SCENE = 'mountain';
 const voiceKey = readFileSync('src/config/voice.config.ts', 'utf8').match(/VOICE_TEXT_MAP[\s\S]*?key: '([^']+)'/)?.[1];
@@ -115,15 +115,17 @@ await step('silencio: sin música ni voces; al activar el sonido en ajustes, sí
   p.on('pageerror', (err) => fail(`[silencio] error de página: ${err.message}`));
   let phase = 'silencio';
   const audioReqs = [];
+  const phaseOf = new WeakMap();
   const bytes = { silencio: 0, sonido: 0 };
   const audioBytes = { silencio: 0, sonido: 0 };
   p.on('request', (req) => {
+    phaseOf.set(req, phase);
     const m = req.url().match(AUDIO_RE);
     if (m) audioReqs.push({ phase, kind: m[1], url: req.url().replace(BASE, '') });
   });
   p.on('response', async (res) => {
     if (!res.url().startsWith(BASE)) return;
-    const ph = phase;
+    const ph = phaseOf.get(res.request()) ?? phase;
     let len = Number(res.headers()['content-length'] || 0);
     if (!len) { try { len = (await res.buffer()).length; } catch { len = 0; } }
     bytes[ph] += len;
@@ -146,8 +148,20 @@ await step('silencio: sin música ni voces; al activar el sonido en ajustes, sí
     await p.screenshot({ path: `${SHOTS}/zz-silencio.png` });
     if (silent.length) throw new Error(`con el sonido apagado se pidieron ${silent.length} mp3 de música/voz: ${silent.map((r) => r.url.split('?')[0]).join(', ')}`);
 
+    // Activar el sonido como el jugador: toque en el disquete (arriba a la izquierda, escala RESIZE = px CSS) y
+    // clic real en «Music» de los ajustes. El toque en el lienzo desbloquea el audio de Phaser: las transiciones
+    // aplazadas se ejecutan ahí, aún en silencio, y tampoco pueden descargar nada.
+    await p.mouse.click(22, 20);
+    const MUSIC_BTN = '#save-load-overlay button[data-setting="music"]';
+    await p.waitForSelector(MUSIC_BTN, { timeout: 15000 });
+    await new Promise((r) => setTimeout(r, 1500));
+    const late = audioReqs.filter((r) => r.phase === 'silencio');
+    if (late.length) throw new Error(`en silencio, al abrir los ajustes se pidieron: ${late.map((r) => r.url.split('?')[0]).join(', ')}`);
     phase = 'sonido';
-    await p.evaluate(() => window.__qa.setSound(true));
+    await p.click(MUSIC_BTN);
+    const label = await p.$eval(MUSIC_BTN, (b) => b.textContent);
+    await p.evaluate(() => document.getElementById('save-load-overlay')?.remove());
+    if (!/On/.test(label)) throw new Error(`el botón de ajustes no activó el sonido: «${label}»`);
     const music = await p.evaluate(() => window.__game.registry.get('sceneData')?.audio?.music);
     await wait((key) => {
       const mm = window.__game.registry.get('musicManager');
