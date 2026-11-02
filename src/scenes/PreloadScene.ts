@@ -4,9 +4,24 @@ import Phaser from 'phaser';
 import { FONT } from '@/config/theme';
 import type { MusicManager } from '@/systems/MusicManager';
 import { loadingTipsFor, musicToPreload } from '@/systems/AudioPolicy';
+import { ScenePrefetcher, ASSET_V as v } from '@/systems/ScenePrefetcher';
+import { FADE_FIRST_MS, FADE_SHORT_MS, sceneImageAssets, transitionMode, type TransitionMode } from '@/systems/ScenePrefetch';
 
-declare const __BUILD_HASH__: string;
-const v = typeof __BUILD_HASH__ !== 'undefined' ? `?v=${__BUILD_HASH__}` : '';
+/** A2.7: medida del último cambio de escena (`__qa.state().lastTransition`) */
+export interface LastTransition {
+  from: string | null;
+  to: string;
+  /** Desde que se pidió el cambio (gotoScene, antes del fundido de salida) hasta GameScene creada */
+  ms: number;
+  /** Momento en que quedó creada, en ms desde que se abrió la página (performance.now): tiempo hasta jugable */
+  at: number;
+  /** Lo que tardó PreloadScene (carga incluida) */
+  loadMs: number;
+  mode: TransitionMode;
+  /** true solo con la pantalla de carga completa (barra, porcentaje y frases) */
+  loadingScreen: boolean;
+  fadeMs: number;
+}
 
 const LOADING_TIPS: string[] = [
   'Calibrating pixel dimensions...',
@@ -40,9 +55,21 @@ const LOADING_TIPS: string[] = [
 export class PreloadScene extends Phaser.Scene {
   constructor() { super({ key: 'PreloadScene' }); }
 
+  /** A2.7: cómo se enseña esta carga y desde cuándo cuenta */
+  private mode: TransitionMode = 'full';
+  private startedAt = 0;
+  private requestedAt = 0;
+
   preload(): void {
     const sceneId = this.registry.get('currentSceneId') as string;
     const basePath = `assets/scenes/${sceneId}`;
+    // A2.7: la precarga de la escena anterior se para (salvo lo que esté bajando de esta escena)
+    const prefetcher = ScenePrefetcher.of(this.game);
+    prefetcher.cancel((url) => url.startsWith(`${basePath}/`));
+    this.startedAt = performance.now();
+    this.requestedAt = (this.registry.get('transitionRequestedAt') as number | undefined) ?? this.startedAt;
+    this.registry.remove('transitionRequestedAt');
+    const firstLoad = !this.registry.get('gameBooted');
     // A1.5: con el sonido apagado no se precarga música (ni se prometen voces en los consejos de carga).
     const musicManager = this.registry.get('musicManager') as MusicManager | undefined;
     const muted = musicManager ? musicManager.isMuted() : this.sound.mute;
@@ -52,23 +79,34 @@ export class PreloadScene extends Phaser.Scene {
       this.load.json('globalConfig', `assets/config/global.json${v}`);
     }
 
-    // Always reload scene JSON (may change between deploys)
-    this.cache.json.remove(`scene_${sceneId}`);
-    this.load.json(`scene_${sceneId}`, `${basePath}/scene.json${v}`);
-
-    if (!this.textures.exists(`bg_${sceneId}`)) {
-      this.load.image(`bg_${sceneId}`, `${basePath}/background.webp${v}`);
-    }
-
-    // Foreground layer — solo si el scene.json lo declara (`assets.foreground`). Antes se pedía
-    // siempre y en las 8 escenas sin primer plano dejaba un error de consola y una petición perdida
-    // (lo sacó el smoke test de V8). Se encola cuando llega el JSON; Phaser lo carga en esta pasada.
-    const fgKey = `fg_${sceneId}`;
-    this.load.once(`filecomplete-json-scene_${sceneId}`, (_key: string, _type: string, data: SceneData) => {
-      if (data?.assets?.foreground && !this.textures.exists(fgKey)) {
-        this.load.image(fgKey, `${basePath}/foreground.webp${v}`);
+    // Scene JSON. A2.7: si ya se tiene (visitada o precargada en esta sesión, mismo `?v=`) se usa una copia sin
+    // pedirlo; en desarrollo se pide siempre (el editor de hotspots lo reescribe).
+    const jsonKey = `scene_${sceneId}`;
+    this.cache.json.remove(jsonKey);
+    const known = import.meta.env.DEV ? undefined : prefetcher.sceneData<SceneData>(sceneId);
+    // Imágenes de la escena: fondo, primer plano (solo si `assets.foreground`; antes se pedía siempre y en las
+    // escenas sin primer plano dejaba un error de consola), overlays condicionales y sprites web3. A2.7: todo en
+    // esta pasada (antes los overlays y web3 iban en una segunda carga desde create()).
+    const queueImages = (data: SceneData | undefined) => {
+      for (const a of sceneImageAssets(sceneId, data, v)) {
+        if (!this.textures.exists(a.key)) this.load.image(a.key, a.url);
       }
-    });
+    };
+    if (known) {
+      this.cache.json.add(jsonKey, known);
+      queueImages(known);
+    } else {
+      this.load.json(jsonKey, `${basePath}/scene.json${v}`);
+      queueImages(undefined); // el fondo ya; el resto cuando llegue el JSON (Phaser lo carga en esta pasada)
+      this.load.once(`filecomplete-json-${jsonKey}`, (_key: string, _type: string, data: SceneData) => {
+        prefetcher.rememberScene(sceneId, data);
+        queueImages(data);
+      });
+    }
+    // A2.7: sin pantalla de carga si todo está ya en Phaser o en la caché HTTP (precargado); si falta algo, una
+    // barrita; la pantalla completa solo al arrancar el juego.
+    this.mode = transitionMode({ firstLoad, missing: known ? prefetcher.missingImages(sceneId, known).length : 1 });
+    this.registry.set('fadeInMs', this.mode === 'full' ? FADE_FIRST_MS : FADE_SHORT_MS);
 
     // Player sprites (load once)
     if (!this.textures.exists('player_idle1')) {
@@ -177,6 +215,12 @@ export class PreloadScene extends Phaser.Scene {
       console.warn(`[PreloadScene] Failed to load: ${file.key} (${file.url})`);
     });
 
+    if (this.mode === 'instant') return;
+    if (this.mode === 'indicator') {
+      this.showIndicator();
+      return;
+    }
+
     // Progress bar + funny loading tips
     const { width, height } = this.scale;
     const barW = Math.min(width * 0.5, 200);
@@ -232,7 +276,55 @@ export class PreloadScene extends Phaser.Scene {
     this.load.on('complete', cleanup);
   }
 
+  /** A2.7: barrita discreta abajo (sin texto) para una escena que aún no está en caché; sale a los 150 ms */
+  private showIndicator(): void {
+    const { width, height } = this.scale;
+    const w = Math.min(96, width * 0.2);
+    const y = height - 18;
+    const track = this.add.rectangle(width / 2, y, w, 3, 0x222222).setAlpha(0);
+    const fill = this.add.rectangle(width / 2 - w / 2, y, 0, 3, 0x5b3a8c).setOrigin(0, 0.5).setAlpha(0);
+    const reveal = this.time.delayedCall(150, () => { track.setAlpha(1); fill.setAlpha(1); });
+    const onProgress = (p: number) => { fill.width = w * p; };
+    this.load.on('progress', onProgress);
+    this.load.once('complete', () => {
+      reveal.remove();
+      this.load.off('progress', onProgress);
+      track.destroy();
+      fill.destroy();
+    });
+  }
+
+  /** A2.7: arranca GameScene; cuando está creada apunta la medida y, tras el primer frame, empieza la precarga. */
+  private startGame(): void {
+    const game = this.game;
+    const sceneId = this.registry.get('currentSceneId') as string;
+    const { mode, startedAt, requestedAt } = this;
+    const fadeMs = (this.registry.get('fadeInMs') as number | undefined) ?? FADE_FIRST_MS;
+    game.scene.getScene('GameScene').events.once(Phaser.Scenes.Events.CREATE, () => {
+      const now = performance.now();
+      const t: LastTransition = {
+        from: (game.registry.get('lastSceneId') as string | undefined) ?? null,
+        to: sceneId,
+        ms: Math.round(now - requestedAt),
+        at: Math.round(now),
+        loadMs: Math.round(now - startedAt),
+        mode,
+        loadingScreen: mode === 'full',
+        fadeMs,
+      };
+      game.registry.set('lastTransition', t);
+      game.registry.set('lastSceneId', sceneId);
+      game.registry.set('gameBooted', true);
+      if (game.registry.get('trailerMode')) return;
+      game.events.once(Phaser.Core.Events.POST_RENDER, () => {
+        if (game.registry.get('currentSceneId') === sceneId) ScenePrefetcher.of(game).start(sceneId);
+      });
+    });
+    this.scene.start('GameScene');
+  }
+
   create(): void {
+    // Red de seguridad (A2.7: preload() ya encola todo esto en la misma pasada; aquí normalmente no falta nada).
     // Load web3Visual sprites from scene JSON (requires scene data to be parsed first)
     const sceneId = this.registry.get('currentSceneId') as string;
     const sceneData = this.cache.json.get(`scene_${sceneId}`) as SceneData | undefined;
@@ -262,11 +354,11 @@ export class PreloadScene extends Phaser.Scene {
     }
 
     if (needsLoad) {
-      this.load.once('complete', () => this.scene.start('GameScene'));
+      this.load.once('complete', () => this.startGame());
       this.load.start();
       return;
     }
 
-    this.scene.start('GameScene');
+    this.startGame();
   }
 }

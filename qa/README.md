@@ -25,7 +25,7 @@ hasta el hotspot, combos, gates y diálogos). Nunca pone flags ni da objetos.
 | `doubleClick(id)` | A2.4: doble clic en una salida con Walk en el panel; `[qa:error]` si el personaje anda, `[qa:blocked]` si no cambia de escena en 4 s |
 | `runScript(ops, { skipAfterMs? })` | A2.10: ejecuta `ops` por el ScriptEngine principal (como un script de hotspot) y espera a que termine; los textos de una cinemática avanzan solos y los de fuera se cierran con el toque sintético. `skipAfterMs`: pulsa Esc (tecla real) a ese tiempo, para saltar la cinemática. Ver § Cinemáticas |
 | `isWalkable(x, y)` | A2.1: si el punto (en %) se pisa en la escena actual (`walkableAreas` menos `blockedAreas`); síncrona |
-| `state()` | Escena, inventario, flags, visitadas, hotspots visibles, elecciones, avisos, log (`logTotal`: líneas apuntadas desde que cargó) `actions` (verbos que llegaron a ejecutarse) y `resizeListeners` (A1.10: listeners de `resize` del ScaleManager) y `path` (A2.1: última ruta calculada al andar: origen, puntos de paso y destino), `facing` (A2.2: `left`/`right`/`front`/`back`) y `walkTarget` (A2.2: último acercamiento a un hotspot/NPC: `target`, `verb`, `walkTo` —null si no anduvo— y `face`), y (A2.4) `verb` (verbo del panel), `highlightedHotspots` (resaltados con Tab), `verbKeyHints` (verbos con su tecla pintada en el panel) e `inputListeners` (listeners de teclado y del lienzo), y (A2.10) `cinematic` (ver § Cinemáticas) |
+| `state()` | Escena, inventario, flags, visitadas, hotspots visibles, elecciones, avisos, log (`logTotal`: líneas apuntadas desde que cargó) `actions` (verbos que llegaron a ejecutarse) y `resizeListeners` (A1.10: listeners de `resize` del ScaleManager) y `path` (A2.1: última ruta calculada al andar: origen, puntos de paso y destino), `facing` (A2.2: `left`/`right`/`front`/`back`) y `walkTarget` (A2.2: último acercamiento a un hotspot/NPC: `target`, `verb`, `walkTo` —null si no anduvo— y `face`), y (A2.4) `verb` (verbo del panel), `highlightedHotspots` (resaltados con Tab), `verbKeyHints` (verbos con su tecla pintada en el panel) e `inputListeners` (listeners de teclado y del lienzo), (A2.10) `cinematic` (ver § Cinemáticas) y (A2.7) `prefetch` (precarga de las escenas vecinas: `scene`, `neighbors`, `done`, `pending`, `inFlight`, `failed`, `disabled`) y `lastTransition` (último cambio de escena: `from`, `to`, `ms`, `loadMs`, `at`, `mode` `full`/`indicator`/`instant`, `loadingScreen`, `fadeMs`) |
 
 Todas (salvo `state()` e `isWalkable()`) esperan a que el juego quede quieto y devuelven `state()`. Los errores empiezan por `[qa:blocked]`
 (el juego no deja hacerlo) o `[qa:error]` (id inexistente, tiempo agotado).
@@ -207,6 +207,49 @@ if (!ok) await demo.fail('Qué no se ve');                   // siempre con awai
 
 En local (con `npm ci` hecho, nunca en el portátil de 8 GB): `BASE_URL=… node scripts/lib/demo.mjs run <nombre>`.
 Sin puppeteer: `node scripts/lib/demo.mjs list [--changed <ref>]` y `node scripts/lib/demo.mjs gif <nombre>`.
+
+# Transiciones y precarga (A2.7)
+
+Cambiar de escena ya no pasa siempre por la pantalla de carga. `PreloadScene` decide el modo
+(`transitionMode` de `src/systems/ScenePrefetch.ts`):
+
+- `full`: barra, porcentaje y frases. Solo en la primera carga del juego.
+- `instant`: todo lo que necesita la escena (scene.json, fondo, primer plano, overlays y sprites web3) está ya en
+  Phaser o descargado en la caché HTTP. Fundido de 250 ms (`FADE_SHORT_MS`) sin nada encima.
+- `indicator`: falta algo por bajar. Una barrita discreta abajo que sale a los 150 ms.
+
+Al entrar en una escena, tras el primer frame jugable, `src/systems/ScenePrefetcher.ts` precarga las escenas
+vecinas (salidas `gotoScene`/`fadeToScene` de cualquier script del scene.json y `transitions.goto`): primero sus
+scene.json, luego sus imágenes y, solo con el sonido activado, su música. Las voces nunca (van bajo demanda en
+`VoiceSystem`). Baja un fichero cada vez con `fetch(…, { priority: 'low' })` a la caché HTTP (no decodifica
+texturas: la VRAM en móvil no da para tener las vecinas decodificadas), espera mientras haya un loader de Phaser
+trabajando o la pestaña esté oculta, se cancela al cambiar de escena y no hace nada con
+`navigator.connection.saveData` ni en 2G (en 3G, solo la primera salida). nginx sirve `/assets/` con `max-age=31536000, immutable` y las URLs
+llevan `?v=<build>`; `vite preview` imita esas cabeceras (`vite.config.ts`) para que el CI mida lo mismo.
+
+El smoke (paso «transiciones») abre `outside` en un perfil limpio, espera la precarga del lobby, va al lobby y
+vuelve: falla si alguna de las dos pasa por la pantalla de carga o tarda más de 1,5 s, si el lobby vuelve a bajar
+por la red lo precargado o si la vuelta pide algo de `assets/scenes/outside/`. Deja en el log los MB por la red y
+el tiempo de cada fase. La demo `scripts/demo-a2-7-transitions.mjs` graba las dos transiciones.
+
+## Overlays recortados
+
+Un `conditionalOverlays[]` puede llevar `bounds` (en % del fondo, como los hotspots): la imagen es solo esa caja
+y `GameScene` la coloca ahí (`src/systems/OverlayPlacement.ts`). Sin `bounds`, la imagen mide lo que el fondo:
+
+```json
+{ "id": "mailbox_empty", "sprite": "overlay_mailbox_empty", "format": "webp",
+  "bounds": { "x": 57.1121, "y": 62.3264, "w": 6.2769, "h": 28.7326 }, "flag": "found_envelope", "depth": 5 }
+```
+
+`node scripts/crop-overlays.mjs` (`npm run crop:overlays`, con `npm ci` hecho: usa sharp) recorta cada overlay a su
+caja con contenido (alfa > 4, más 2 px de margen), lo escribe en WebP sin pérdida, pone `format` y `bounds` en el
+scene.json sin reformatear el resto y borra el PNG viejo. Es idempotente. Para un overlay nuevo: exporta el PNG del
+tamaño del fondo, añádelo a `conditionalOverlays` sin `bounds` y pasa el script. Con `--check`
+(`npm run lint:overlays`, en el job `lint`) falla si un overlay se puede recortar, sigue en PNG o su `bounds` no
+cuadra con la imagen. Los sprites de `web3Visuals` ya van con `position`/`size`; solo se comprueba que no midan
+lo que el fondo. Pruebas: `npm run test:overlays` y, en `test:engine`, `tests/overlay-placement.test.mjs` y
+`tests/scene-prefetch.test.mjs`.
 
 # Efectos sin estado y migración de partidas (A1.4)
 

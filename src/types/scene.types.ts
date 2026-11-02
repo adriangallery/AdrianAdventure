@@ -76,6 +76,11 @@ export interface ConditionalOverlayData {
   /** Sprite file name (without extension) inside the scene folder */
   sprite: string;
   format?: 'png' | 'webp';
+  /**
+   * A2.7: caja de la imagen dentro del fondo, en % del fondo (como hotspots). Sin ella la imagen mide lo que el
+   * fondo y va encima entera. La escribe scripts/crop-overlays.mjs al recortar (ver src/systems/OverlayPlacement.ts).
+   */
+  bounds?: { x: number; y: number; w: number; h: number };
   flag: string;
   invert?: boolean;
   depth?: number;

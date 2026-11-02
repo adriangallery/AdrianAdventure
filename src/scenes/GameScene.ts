@@ -29,6 +29,8 @@ import { approachHotspot, approachTalk, lookFacing, type Approach, type Approach
 import { defaultVerbFor, exitVerbFor, focusOf, isDoubleClick, keyAction, primaryVerb } from '@/systems/DesktopControls';
 import { CinematicDirector, type CinematicQaState, type CinematicUi } from '@/systems/CinematicDirector';
 import { parseTransition, worldToScreen, type TransitionSpec } from '@/systems/Cinematics';
+import { overlayTransform, type PctRect } from '@/systems/OverlayPlacement';
+import { FADE_FIRST_MS, FADE_SHORT_MS } from '@/systems/ScenePrefetch';
 
 /** A2.4 (QA): cómo pulsa la API de QA: botón derecho o clic de ratón (cuenta para el doble clic). */
 type QaClick = { button?: 'left' | 'right'; mouse?: boolean };
@@ -59,7 +61,7 @@ export class GameScene extends Phaser.Scene {
   private bgFill!: Phaser.GameObjects.Image;
   private bg!: Phaser.GameObjects.Image;
   private fg?: Phaser.GameObjects.Image;
-  private conditionalOverlays: Array<{ id: string; sprite: Phaser.GameObjects.Image; flag: string; invert?: boolean }> = [];
+  private conditionalOverlays: Array<{ id: string; sprite: Phaser.GameObjects.Image; flag: string; invert?: boolean; bounds?: PctRect }> = [];
   /**
    * A1.4: visibilidad forzada por el op `flicker` (id del overlay → visible), por encima de la flag. Es solo
    * presentación: no se guarda. Se vacía al crear la escena y en SHUTDOWN.
@@ -235,13 +237,12 @@ export class GameScene extends Phaser.Scene {
       const key = `overlay_${sceneId}_${co.id}`;
       if (this.textures.exists(key)) {
         const overlay = this.add.image(0, 0, key).setOrigin(0, 0);
-        const ot = this.coordSystem.getBgTransform();
-        overlay.setPosition(ot.x, ot.y).setScale(ot.scaleX, ot.scaleY);
+        this.placeOverlay(overlay, co.bounds);
         overlay.setDepth(co.depth ?? 12);
         const flagVal = this.gameState.flags[co.flag] ?? false;
         const show = co.invert ? !flagVal : flagVal;
         overlay.setVisible(show);
-        this.conditionalOverlays.push({ id: co.id, sprite: overlay, flag: co.flag, invert: co.invert });
+        this.conditionalOverlays.push({ id: co.id, sprite: overlay, flag: co.flag, invert: co.invert, bounds: co.bounds });
       }
     }
 
@@ -250,11 +251,12 @@ export class GameScene extends Phaser.Scene {
     // A2.10: director de cinemáticas de esta escena (las NPC se le dan por función: se crean más abajo)
     this.cinema?.destroy();
     this.cinema = new CinematicDirector(this.cinematicHost());
+    // A2.7: si no, fundido corto entre escenas (PreloadScene deja `fadeInMs`; 400 ms al arrancar)
     // A2.10: la escena entra con la transición con la que salió la anterior (fadeToScene con `transition`)
     const transitionIn = this.registry.get('transitionIn') as TransitionSpec | undefined;
     this.registry.remove('transitionIn');
     if (transitionIn && !this.isTrailer) void this.cinema.transitionIn(transitionIn);
-    else if (!this.isTrailer) this.cameras.main.fadeIn(400, 0, 0, 0);
+    else if (!this.isTrailer) this.cameras.main.fadeIn((this.registry.get('fadeInMs') as number | undefined) ?? FADE_FIRST_MS, 0, 0, 0);
 
     // Cinematic overlay (full-screen story moments)
     this.cinematicOverlay = new CinematicOverlay(this);
@@ -881,7 +883,7 @@ export class GameScene extends Phaser.Scene {
 
     // Conditional overlays follow background transform
     for (const co of this.conditionalOverlays) {
-      co.sprite.setPosition(t.x, t.y).setScale(t.scaleX, t.scaleY);
+      this.placeOverlay(co.sprite, co.bounds);
     }
 
     this.web3VisualSystem?.onResize(this.coordSystem);
@@ -893,6 +895,18 @@ export class GameScene extends Phaser.Scene {
     const sceneData = this.registry.get('sceneData') as SceneData;
     if (sceneData) this.drawDebugBounds(sceneData);
 
+  }
+
+  /** A2.7: overlay condicional sobre el fondo; con `bounds` (recortado) en su caja, si no, entero como el fondo */
+  private placeOverlay(sprite: Phaser.GameObjects.Image, bounds?: PctRect): void {
+    const src = sprite.texture.getSourceImage() as { width: number; height: number };
+    const o = overlayTransform(
+      this.coordSystem.getBgTransform(),
+      { w: this.coordSystem.imgW, h: this.coordSystem.imgH },
+      { w: src.width, h: src.height },
+      bounds,
+    );
+    sprite.setPosition(o.x, o.y).setScale(o.scaleX, o.scaleY);
   }
 
   /** Get panel height — reads ScummUI effective height if available, falls back to formula */
@@ -1398,6 +1412,8 @@ export class GameScene extends Phaser.Scene {
       gotoScene: (sceneId, spawn, transition) => {
         // A0.1: marca de cambio de escena en curso (la quita create() de la escena nueva)
         this.registry.set('sceneTransition', sceneId);
+        // A2.7: desde aquí cuenta `lastTransition.ms` (PreloadScene)
+        this.registry.set('transitionRequestedAt', performance.now());
         // Clear player position on scene transition (new scene uses its own spawn)
         this.gameState.playerPosition = undefined;
         this.saveSystem.autoSave(this.gameState, this.sceneDataLoader.getSceneData().title);
@@ -1413,7 +1429,7 @@ export class GameScene extends Phaser.Scene {
           void this.cinema.transitionOut(transition).then(go);
           return;
         }
-        this.cameras.main.fadeOut(400, 0, 0, 0);
+        this.cameras.main.fadeOut(FADE_SHORT_MS, 0, 0, 0);
         this.cameras.main.once('camerafadeoutcomplete', go);
       },
       addItem: (id, name) => {

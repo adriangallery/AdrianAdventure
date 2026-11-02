@@ -1088,6 +1088,13 @@
     {
       "id": "no_energy_drink",
       "sprite": "overlay_no_energy_drink",
+      "format": "webp",
+      "bounds": {
+        "x": 44.4774,
+        "y": 83.941,
+        "w": 2.0474,
+        "h": 10.2431
+      },
       "flag": "has_energy_drink",
       "depth": 16,
       "invert": true

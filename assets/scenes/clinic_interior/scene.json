@@ -1442,6 +1442,13 @@
     {
       "id": "no_photo",
       "sprite": "overlay_no_photo",
+      "format": "webp",
+      "bounds": {
+        "x": 45.4741,
+        "y": 61.1979,
+        "w": 6.4116,
+        "h": 30.5556
+      },
       "flag": "found_clinic_photo",
       "depth": 5
     }

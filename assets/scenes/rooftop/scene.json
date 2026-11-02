@@ -1137,6 +1137,13 @@
     {
       "id": "vane_flipped",
       "sprite": "vane_flipped",
+      "format": "webp",
+      "bounds": {
+        "x": 64.278,
+        "y": 17.8819,
+        "w": 17.1067,
+        "h": 73.3507
+      },
       "flag": "vane_pushed",
       "depth": 5
     }

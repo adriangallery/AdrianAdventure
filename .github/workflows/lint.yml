@@ -41,6 +41,8 @@ jobs:
         run: npm run test:walkthrough:unit
       - name: Pruebas de privacidad del leaderboard (A1.6)
         run: npm run test:server
+      - name: Pruebas del recorte de overlays (A2.7)
+        run: npm run test:overlays
       - name: ESLint
         run: |
           set -o pipefail
@@ -97,3 +99,8 @@ jobs:
             voice-coverage-report.md
           if-no-files-found: ignore
           retention-days: 30
+      # A2.7: ningún overlay de escena vuelve a ser del tamaño del fondo sin necesidad, ni en PNG, ni con un `bounds`
+      # que no cuadra con su imagen (con sharp, mira los píxeles). Si falla: `npm run crop:overlays` y commit.
+      - name: Overlays recortados (A2.7)
+        if: ${{ !cancelled() }}
+        run: node scripts/crop-overlays.mjs --check

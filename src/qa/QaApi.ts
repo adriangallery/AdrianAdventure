@@ -18,6 +18,8 @@ import type { SpeechState } from '@/ui/DialogueBox';
 import type { HotspotData, SceneData, ScriptOp } from '@/types/scene.types';
 import type { CinematicQaState } from '@/systems/CinematicDirector';
 import { Verb, type GameState } from '@/types/game.types';
+import type { LastTransition } from '@/scenes/PreloadScene';
+import type { ScenePrefetcher } from '@/systems/ScenePrefetcher';
 
 type Point = { x: number; y: number };
 /** A2.6: `used` = ya elegida antes en ese árbol (gris). Las ocultas (`when`, `once`) no salen. */
@@ -93,6 +95,13 @@ export interface QaState {
    * escena), `animating` y `ducked` (música bajada por la cinemática). null fuera de la partida.
    */
   cinematic: CinematicQaState | null;
+  /**
+   * A2.7: precarga de las escenas vecinas (src/systems/ScenePrefetcher.ts): rutas sin `?v=` ya en la caché HTTP
+   * (`done`), en cola (`pending`), bajando (`inFlight`), fallidas, y `disabled` (saveData, 2g) si no precarga.
+   */
+  prefetch: ReturnType<ScenePrefetcher['qaState']> | null;
+  /** A2.7: último cambio de escena: ms desde que se pidió hasta GameScene creada, modo y si hubo pantalla de carga */
+  lastTransition: LastTransition | null;
 }
 
 export interface QaApi {
@@ -361,6 +370,8 @@ export function installQa(game: Phaser.Game): void {
       verbKeyHints: playing ? panel().getKeyHints() : [],
       inputListeners: (registry.get('qaInputListeners') as number | undefined) ?? 0,
       cinematic: scene ? scene.qaCinematic() : null,
+      prefetch: (registry.get('scenePrefetcher') as ScenePrefetcher | undefined)?.qaState() ?? null,
+      lastTransition: (registry.get('lastTransition') as LastTransition | undefined) ?? null,
     };
   };
 

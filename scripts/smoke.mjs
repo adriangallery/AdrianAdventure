@@ -3,6 +3,7 @@
 // A1.5 (plan SCUMM): con el sonido apagado no se piden música ni voces; al activarlo en ajustes, sí.
 // A1.8: las escenas se abren con ?qa=1&scene=<id>; sin ?qa=1 el build de producción ignora ?scene.
 // A2.4: controles de escritorio con teclado y ratón reales (Esc, Tab, doble clic en una salida, clic derecho).
+// A2.7: cambio de escena con la precarga hecha y vuelta: sin pantalla de carga y sin volver a descargar; MB y tiempos.
 // Uso: BASE_URL=http://127.0.0.1:4173 node scripts/smoke.mjs
 import { readdirSync, existsSync, mkdirSync, readFileSync } from 'node:fs';
 import puppeteer from 'puppeteer';
@@ -115,6 +116,91 @@ await step('guardar y cargar', async () => {
     return 'ok';
   }, second);
   if (ok !== 'ok') throw new Error(ok);
+});
+
+// A2.7: transiciones con precarga. Perfil limpio: primera carga de `outside` (pantalla completa), espera a que la
+// precarga baje el lobby, `outside → lobby` (primera vez, sin pantalla de carga: todo sale de la caché HTTP) y
+// `lobby → outside` (segunda vez: ni una petición a assets/scenes/outside/, todo está ya en Phaser). Deja en el log
+// los MB bajados por la red y el tiempo de cada fase (la tabla de la PR de A2.7 sale de aquí).
+const TRANSITION_MAX_MS = Number(process.env.SMOKE_TRANSITION_MAX_MS || 1500);
+await step('transiciones: precarga de vecinas, sin pantalla de carga y sin volver a descargar', async () => {
+  const ctx = await browser.createBrowserContext();
+  const p = await ctx.newPage();
+  await p.setViewport({ width: 1280, height: 720 });
+  p.on('pageerror', (err) => fail(`[transiciones] error de página: ${err.message}`));
+  let phase = 'primera carga outside';
+  const reqs = [];
+  const phaseOf = new WeakMap();
+  // Las descargas de la precarga (fetch) van aparte; las del juego son XHR del loader de Phaser
+  p.on('request', (req) => phaseOf.set(req, req.resourceType() === 'fetch' ? `precarga (${phase})` : phase));
+  p.on('requestfinished', async (req) => {
+    const res = req.response();
+    if (!res || !req.url().startsWith(BASE)) return;
+    let len = 0;
+    if (!res.fromCache()) {
+      len = Number(res.headers()['content-length'] || 0);
+      if (!len) { try { len = (await res.buffer()).length; } catch { len = 0; } }
+    }
+    reqs.push({ phase: phaseOf.get(req) ?? phase, url: req.url().replace(BASE, '').replace(/^\//, '').split('?')[0], cache: res.fromCache(), len });
+  });
+  const wait = (fn, arg, timeout = SCENE_TIMEOUT) => p.waitForFunction(fn, { timeout, polling: 200 }, arg);
+  const st = () => p.evaluate(() => window.__qa.state());
+  const mb = (n) => `${(n / 1048576).toFixed(2)} MB`;
+  const prefetched = async (scene, file) => {
+    await new Promise((r) => setTimeout(r, 1000));
+    await wait(({ s, f }) => {
+      const pf = window.__qa?.state().prefetch;
+      return !!pf && pf.scene === s && !pf.inFlight && pf.pending.length === 0 && (!f || pf.done.includes(f));
+    }, { s: scene, f: file }, 60000);
+  };
+  const summary = (name) => {
+    const list = reqs.filter((r) => r.phase === name);
+    const net = list.filter((r) => !r.cache);
+    return { list, net, bytes: net.reduce((a, r) => a + r.len, 0) };
+  };
+  const rows = [];
+  try {
+    await p.goto(`${BASE}/?qa=1&scene=outside`, { waitUntil: 'domcontentloaded' });
+    await wait(() => window.__qa?.state().lastTransition?.to === 'outside');
+    const first = (await st()).lastTransition;
+    if (!first.loadingScreen) throw new Error(`la primera carga del juego no enseñó la pantalla de carga (${JSON.stringify(first)})`);
+    await p.evaluate(() => window.__qa.dismissAll());
+    await prefetched('outside', 'assets/scenes/lobby/background.webp');
+    const pf = (await st()).prefetch;
+    console.log(`    precarga desde outside: vecinas ${pf.neighbors.join(', ')} · ${pf.done.length} ficheros`);
+
+    phase = 'outside → lobby (1.ª vez)';
+    await p.evaluate(() => window.__qa.goto('lobby'));
+    const toLobby = (await st()).lastTransition;
+    await p.screenshot({ path: `${SHOTS}/zz-transicion-lobby.png` });
+    await prefetched('lobby', null);
+
+    phase = 'lobby → outside (2.ª vez)';
+    await p.evaluate(() => window.__qa.goto('outside'));
+    const back = (await st()).lastTransition;
+    await p.screenshot({ path: `${SHOTS}/zz-transicion-vuelta.png` });
+
+    const a = summary('primera carga outside');
+    const b = summary('outside → lobby (1.ª vez)');
+    const c = summary('lobby → outside (2.ª vez)');
+    rows.push(['primera carga outside', a.bytes, `${first.at} ms hasta jugable`, first.mode]);
+    const pre = reqs.filter((r) => r.phase.startsWith('precarga') && !r.cache);
+    rows.push(['precarga (segundo plano)', pre.reduce((n, r) => n + r.len, 0), `${pre.length} ficheros`, '-']);
+    rows.push(['outside → lobby (1.ª vez)', b.bytes, `${toLobby.ms} ms (carga ${toLobby.loadMs} ms)`, toLobby.mode]);
+    rows.push(['lobby → outside (2.ª vez)', c.bytes, `${back.ms} ms (carga ${back.loadMs} ms)`, back.mode]);
+    for (const [name, bytes, time, mode] of rows) console.log(`    ${name.padEnd(28)} ${mb(bytes).padStart(9)} por red · ${time} · ${mode}`);
+
+    const lobbyNet = b.net.filter((r) => r.url.startsWith('assets/scenes/lobby/'));
+    if (toLobby.to !== 'lobby' || toLobby.loadingScreen) throw new Error(`outside → lobby con la precarga hecha pasó por la pantalla de carga (${JSON.stringify(toLobby)})`);
+    if (toLobby.mode !== 'instant') throw new Error(`outside → lobby: modo ${toLobby.mode}, se esperaba instant`);
+    if (lobbyNet.length) throw new Error(`outside → lobby volvió a bajar por la red lo precargado: ${lobbyNet.map((r) => r.url).join(', ')}`);
+    const outsideReqs = c.list.filter((r) => r.url.startsWith('assets/scenes/outside/'));
+    if (back.to !== 'outside' || back.loadingScreen || back.mode !== 'instant') throw new Error(`lobby → outside (segunda vez) no fue instantánea (${JSON.stringify(back)})`);
+    if (outsideReqs.length) throw new Error(`lobby → outside (segunda vez) pidió ${outsideReqs.map((r) => `${r.url}${r.cache ? ' (caché)' : ''}`).join(', ')}`);
+    for (const t of [toLobby, back]) if (t.ms > TRANSITION_MAX_MS) throw new Error(`${t.from} → ${t.to} tardó ${t.ms} ms (máx. ${TRANSITION_MAX_MS})`);
+  } finally {
+    await ctx.close();
+  }
 });
 
 // A1.5: arranque con «No thanks, silence is golden» en un perfil limpio. Se registran todas las peticiones y
