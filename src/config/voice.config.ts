@@ -2691,7 +2691,9 @@ export const VOICE_AUDIO_KEYS: string[] = [
   'nar_everything_in_the_lab_is_yours_455dc799',
   'nar_find_patient_zero_bring_them_home_8703b946',
   'nar_he_read_everything_and_got_in_561e42f4',
+  'nar_inside_only_penny_stayed_949015f6',
   'nar_the_forums_say_patient_zero_is_873b6d7b',
+  'nar_three_weeks_after_adrian_creator_of_eb1c2d30',
   'nar_tonight_his_wallet_sends_a_scheduled_1e407669',
   'nar_treatment_room_3',
   'nar_treatment_room_4',
@@ -2710,8 +2712,10 @@ export const VOICE_AUDIO_KEYS: string[] = [
   'player_caffeine_in_the_coolant_tempting_the_e8766618',
   'player_doctor_coming_through_nothing_comes_through_879982b6',
   'player_emergency_glass_nonemergency_object_doesnt_work_0305b0e6',
+  'player_everything_im_already_at_the_door_7e75447a',
   'player_fernando_only_drinks_water_i_dont_9d71bf18',
   'player_fernando_the_plant_doesnt_want_that_484e3007',
+  'player_find_patient_zero_bring_them_home_85e8904a',
   'player_five_hundred_milligrams_of_caffeine_wasted_95d3cacf',
   'player_gerald_doesnt_accept_offerings_like_that_16a44417',
   'player_give_it_to_whom_its_not_826013df',
@@ -3028,6 +3032,7 @@ export const VOICE_AUDIO_KEYS: string[] = [
   'player_wrong_kind_of_mouse_for_this_9e47a499',
   'player_wrong_terminal_wrong_everything_the_fob_6457f4c5',
   'player_wrong_tool_wrong_place_story_of_1300af94',
+  'recep_were_closed_dont_touch_anything_ignore_808a7e47',
 ];
 
 /** Get the asset path for a voice key. */
@@ -5646,6 +5651,8 @@ export const VOICE_TEXT_MAP: Array<{ text: string; key: string }> = [
   { text: 'You saw the light. Now find the way down.', key: 'anon_you_saw_the_light_now_find_8b948eee' },
   { text: 'Your keycard opens doors. The doctor likes envelopes.', key: 'anon_your_keycard_opens_doors_the_doctor_d183a982' },
   { text: 'You\'re inside. Stop calling.', key: 'anon_youre_inside_stop_calling_06c9f2e7' },
+  { text: 'Inside, only Penny stayed.', key: 'nar_inside_only_penny_stayed_949015f6' },
+  { text: 'Three weeks after Adrian, creator of ZERO, vanished, his wallet messaged Dex.', key: 'nar_three_weeks_after_adrian_creator_of_eb1c2d30' },
   { text: 'A can of BULL RUN. Five hundred milligrams of caffeine. The small print says \'Not for humans\'. Or plants.', key: 'player_a_can_of_bull_run_five_907db466' },
   { text: '\'A gift? And how does giving me that make you feel? ...Keep it.\'', key: 'player_a_gift_and_how_does_giving_ef5b6770' },
   { text: 'A heavy gold watch fished out of an armchair. Still ticking. Adrian never had time for it.', key: 'player_a_heavy_gold_watch_fished_out_32609eea' },
@@ -5661,8 +5668,10 @@ export const VOICE_TEXT_MAP: Array<{ text: string; key: string }> = [
   { text: 'Caffeine in the coolant. Tempting. The servers are jittery enough.', key: 'player_caffeine_in_the_coolant_tempting_the_e8766618' },
   { text: '\'Doctor coming through.\' Nothing comes through. Including me.', key: 'player_doctor_coming_through_nothing_comes_through_879982b6' },
   { text: 'Emergency glass, non-emergency object. Doesn\'t work.', key: 'player_emergency_glass_nonemergency_object_doesnt_work_0305b0e6' },
+  { text: 'Everything? I\'m already at the door.', key: 'player_everything_im_already_at_the_door_7e75447a' },
   { text: 'Fernando only drinks water. I don\'t know how I know that. I just do.', key: 'player_fernando_only_drinks_water_i_dont_9d71bf18' },
   { text: 'Fernando the plant doesn\'t want that. I\'ve decided his name is Fernando. He doesn\'t object.', key: 'player_fernando_the_plant_doesnt_want_that_484e3007' },
+  { text: '"Find Patient Zero. Bring them home. Everything in the lab is yours."', key: 'player_find_patient_zero_bring_them_home_85e8904a' },
   { text: 'Five hundred milligrams of caffeine, wasted on that? Something around here needs it more.', key: 'player_five_hundred_milligrams_of_caffeine_wasted_95d3cacf' },
   { text: 'Gerald doesn\'t accept offerings like that. Gerald has standards.', key: 'player_gerald_doesnt_accept_offerings_like_that_16a44417' },
   { text: 'Give it to whom? It\'s not a person. I checked.', key: 'player_give_it_to_whom_its_not_826013df' },
@@ -5979,13 +5988,13 @@ export const VOICE_TEXT_MAP: Array<{ text: string; key: string }> = [
   { text: 'Wrong kind of mouse for this. Also, the wrong kind of working.', key: 'player_wrong_kind_of_mouse_for_this_9e47a499' },
   { text: 'Wrong terminal. Wrong everything. The fob blinks politely.', key: 'player_wrong_terminal_wrong_everything_the_fob_6457f4c5' },
   { text: 'Wrong tool, wrong place. Story of my career.', key: 'player_wrong_tool_wrong_place_story_of_1300af94' },
+  { text: 'We\'re closed. Don\'t touch anything. Ignore the blinking downstairs.', key: 'recep_were_closed_dont_touch_anything_ignore_808a7e47' },
 ];
 
 export const NARRATOR_SEQUENCES: Record<string, string[]> = {
   'basement:narrative': ['nar_basement_0', 'nar_basement_1'],
   'clinic_interior:narrative': ['nar_clinic_interior_0', 'nar_clinic_interior_1', 'nar_clinic_interior_2'],
   'epilogue_outside:narrative': ['nar_epilogue_outside_0', 'nar_epilogue_outside_1'],
-  'lobby:narrative': ['nar_lobby_0', 'nar_lobby_1'],
   'mountain:narrative': ['nar_mountain_0', 'nar_mountain_1'],
   'treatment_room:narrative': ['nar_treatment_room_0', 'nar_treatment_room_1', 'nar_treatment_room_2'],
   'basement:titleCard': ['nar_basement_title'],
@@ -5994,5 +6003,4 @@ export const NARRATOR_SEQUENCES: Record<string, string[]> = {
   'mountain:titleCard': ['nar_mountain_title'],
   'outside:titleCard': ['nar_outside_title'],
   'treatment_room:titleCard': ['nar_treatment_room_title'],
-  'outside:narrative': ['nar_adrian_creator_of_zero_is_three_fdde8bea', 'nar_tonight_his_wallet_sends_a_scheduled_1e407669', 'nar_find_patient_zero_bring_them_home_8703b946', 'nar_everything_in_the_lab_is_yours_455dc799', 'nar_the_forums_say_patient_zero_is_873b6d7b', 'nar_a_bot_that_trades_at_3_9b173e78', 'nar_dex_malone_onchain_detective_zero_cases_b148c08f', 'nar_he_read_everything_and_got_in_561e42f4'],
 };

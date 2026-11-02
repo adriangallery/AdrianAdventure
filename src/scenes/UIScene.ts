@@ -22,7 +22,7 @@ import { loadPatientFile } from '@/web3/tx-history';
 import { checkGatingRule, type GatingRule } from '@/web3/gating';
 import type { Address } from 'viem';
 import { bindShutdown } from './lifecycle';
-import { subtitleHoldMs } from '@/systems/Cinematics';
+import { TITLE_CARD_AUTO_MS, subtitleHoldMs } from '@/systems/Cinematics';
 import { charDelayMs } from '@/systems/Settings';
 import { failResponses } from '@/systems/FailResponsesData';
 
@@ -276,7 +276,9 @@ export class UIScene extends Phaser.Scene {
       // const sceneId = this.registry.get('currentSceneId') as string;
       // const narKeys = NARRATOR_SEQUENCES[`${sceneId}:titleCard`];
       // if (narKeys) this.voiceSystem.playSequence(narKeys);
-      await this.duringCinematic(this.cinematicOverlay.showTitleCard(chapter, title, subtitle));
+      // A3.2: dentro de una cinemática del motor la tarjeta se cierra sola (como los subtítulos); fuera, con un toque
+      const autoMs = this.registry.get('cinematicMode') ? TITLE_CARD_AUTO_MS : undefined;
+      await this.duringCinematic(this.cinematicOverlay.showTitleCard(chapter, title, subtitle, autoMs));
       this.voiceSystem.stop();
       resolve?.();
     });

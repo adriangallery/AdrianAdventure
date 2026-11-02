@@ -226,6 +226,17 @@ export class CinematicDirector {
 
   async run(op: ScriptOp, instant: boolean): Promise<void> {
     if (!this.alive) return;
+    // A3.2: `wait: false` = el op arranca y el script sigue sin esperarlo (p. ej. el jugador anda mientras habla el
+    // narrador). Su animación queda en `anims` igualmente: el salto y el fin de la cinemática la terminan en su estado
+    // final, así que el resultado es el mismo que esperándolo. Al saltar (`instant`) se aplica al momento como siempre.
+    if (!instant && op.wait === false) {
+      void this.runOp(op, false);
+      return;
+    }
+    await this.runOp(op, instant);
+  }
+
+  private async runOp(op: ScriptOp, instant: boolean): Promise<void> {
     try {
       switch (op.op) {
         case 'cameraPan': return await this.cameraPan(op, instant);

@@ -166,7 +166,7 @@ rutas reales (aunque fallen), con el mismo `BASE_URL`, y deja capturas en el art
 | `st-fail-sin-objetivo` | FAIL | pasos bien, `goal` sin cumplir |
 | `st-fail-atajo-abierto` | FAIL | se cumple el `goal` en el intento (aunque falle su `expect`) |
 | `st-xfail-atajo-conocido` | XFAIL | el mismo atajo con `knownBreak` |
-| `st-pass-trigger-pisado` | PASS | `[qa:blocked]` en el intento: pisa `outside.tr_game_opening`, que no cambia de escena |
+| `st-pass-trigger-pisado` | PASS | `[qa:blocked]` en el intento: pisa `outside.tr_mountain` sin printout, que no cambia de escena (A3.2: antes `tr_game_opening`) |
 | `st-xpass-ya-cerrado` | XPASS | lo mismo con `knownBreak` |
 | `st-pass-rechazo-visible` | PASS | intento con `rejects` («INVALID CODE» de `hs_keypad`) y acción ejecutada |
 | `st-error-sin-rechazo` | ERROR | el intento no muestra el `rejects` pedido |
@@ -336,11 +336,41 @@ Ops de `src/systems/ScriptEngine.ts`; la cámara, las franjas y los actores los 
   transiciones saltan a su estado final (el jugador aparece donde iba); `dialogue`/web3 se ejecutan normal; textos,
   esperas, sonidos, sacudidas, `titleCard`/`narrative`/`monitorReveal`/`credits` se omiten. Lo de después del fin
   sigue normal. Un toque corto en cinemática enseña «HOLD TO SKIP» (con ratón, «ESC / HOLD TO SKIP»).
+- **Sin esperar** (A3.2): cualquier op de cámara, actor o transición con `"wait": false` arranca y el script sigue sin
+  esperarlo (p. ej. `actorMove` del jugador mientras habla el narrador). Su animación cuenta igual para el salto y para
+  el fin de la cinemática, que la terminan en su estado final: el resultado es el mismo que esperándolo. Para «esperar a
+  que llegue» después, repite el `actorMove` al mismo punto (vuelve al momento si ya está). No lances dos ops de cámara a
+  la vez.
+- **Tarjeta de capítulo** (A3.2): `titleCard` dentro de una cinemática se cierra sola `TITLE_CARD_AUTO_MS` (800 ms) después
+  de escribirse, sin «click to continue» (un toque la cierra antes); fuera de cinemática sigue esperando el toque. Al
+  saltar se omite, como siempre.
 - **Watchdog**: los ops de cámara, actores y transiciones terminan solos (tween o tope de tiempo), así que no
   cuentan como cuelgue; un op ajeno colgado dentro de una cinemática sí se rescata, y el rescate cierra la cinemática.
 - **QA**: `__qa.runScript(ops, { skipAfterMs })` y `state().cinematic` = `{ active, letterbox, chromeHidden,
   camera: { x, y, zoom, following }, transition, covered, skipped, ended, animating, ducked }`. Demo:
   `scripts/demo-a2-10-cinematics.mjs`; ruta `cinematica` de `walkthrough.json`.
+
+## Aperturas de capítulo (A3.2)
+
+Las aperturas de `outside` (capítulo 1) y del `lobby` (capítulo 2) son cinemáticas del motor en el `onEnter` de la escena
+(una sola fuente: A3.2 quitó `outside.tr_game_opening`, que repetía el mismo guion y solo corría como no-op al aparecer;
+el selftest usa ahora `tr_mountain` como «trigger que no cambia de escena»). Las flags (`premise_shown`,
+`chapter_1_intro_shown`, `chapter_2_intro_shown`) se ponen justo al abrir la cinemática: vista entera o saltada, la
+partida queda igual. El narrador (`speaker: "Narrator"` → hablante `nar`) habla en la franja; Dex y Penny sobre su
+cabeza. Si la escena tiene `onEnter`, GameScene la tapa con una cortina negra hasta que acaba; al abrirse una cinemática
+la cortina se funde (`onBegin`), para que se vea.
+
+- `outside`: franjas → la cámara en el camino junto al coche; Dex entra andando (`actorMove` con `wait: false`) y la
+  cámara recorre la casa hasta la puerta (`cameraPan` de 5 s con `wait: false`) mientras el narrador dice 1 línea → Dex
+  lee el mensaje de Adrian y remata → tarjeta «CHAPTER 1 / Breaking & Entering» → Dex libre junto a la puerta (39, 93)
+  mirando a la izquierda. ≤ 20 s (biblia § 4).
+- `lobby`: franjas → pan a Penny → 1 línea del narrador → Penny (el guiño a lo que parpadea abajo) → tarjeta «CHAPTER 2 /
+  The Receptionist» → la cámara vuelve a Dex. ≤ 12 s.
+
+QA: la ruta crítica comprueba tras `newGame` (y al entrar en el lobby) `expect.cinematic` (`active: false`, `endedMin: 1`,
+`skipped: false`, cámara de siempre) y en outside `expect.playerNear` + `facing`; el smoke salta la del lobby con una
+pulsación real de Esc (`state().cinematic.skipped`) y la de outside con Esc. Demo: `scripts/demo-a3-2-opening.mjs`
+(1280x720 entera y saltada, 390x844 entera, lobby entero y saltado; duración de cada apertura con y sin voz).
 
 # Diario = móvil de Dex (A2.9 + A2.9a)
 
@@ -606,7 +636,7 @@ su orden y detrás lo nuevo (`--check` solo compara).
 
 B.O.T. conserva la voz de sus 26 clips existentes (comparte timbre con Satoshi, pero nunca coinciden en
 escena). El hablante sale del campo `speaker` del op o del nodo (reglas `match`: contiene «b.o.t»,
-«satoshi», «recep», «anon», «adrian»); sin speaker es `player`, y un speaker desconocido es `npc`. Para dar voz propia a un
+«satoshi», «recep», «anon», «adrian»; A3.2: «narrator» → `nar`, el narrador de las cinemáticas con `say`); sin speaker es `player`, y un speaker desconocido es `npc`. Para dar voz propia a un
 personaje nuevo, añade un hablante y su regla `match` en `voices.json`.
 
 ## Lanzar la generación

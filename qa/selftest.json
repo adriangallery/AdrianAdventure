@@ -62,13 +62,13 @@
       "id": "st-pass-trigger-pisado",
       "kind": "sequence-break",
       "title": "PASS: [qa:blocked] en el intento — se pisa un trigger que no cambia de escena",
-      "why": "tr_game_opening (outside) es la cinemática inicial: pisarlo no lleva a ninguna parte",
+      "why": "A3.2: tr_mountain (outside) sin printout ni chapter_3_complete para al personaje y explica por qué no sigue: se pisa y no cambia de escena (antes era tr_game_opening, que A3.2 quitó por redundante con el onEnter)",
       "expectStatus": "pass",
-      "expectDetail": "^cerrado \\(paso 2 \\(intento\\): \\[qa:blocked\\] llegó a tr_game_opening",
-      "goal": { "scene": "lobby" },
+      "expectDetail": "^cerrado \\(paso 2 \\(intento\\): \\[qa:blocked\\] llegó a tr_mountain",
+      "goal": { "scene": "mountain" },
       "steps": [
         { "do": "newGame", "expect": { "scene": "outside" } },
-        { "do": "walk", "x": 70, "y": 95, "trigger": "tr_game_opening", "untilScene": "lobby", "tries": 2, "attempt": true }
+        { "do": "walk", "x": 1.5, "y": 95, "trigger": "tr_mountain", "untilScene": "mountain", "tries": 2, "attempt": true }
       ]
     },
     {
@@ -78,10 +78,10 @@
       "title": "XPASS: lleva knownBreak pero el atajo ya no llega",
       "expectStatus": "xpass",
       "expectDetail": "quita \"knownBreak\" de la ruta",
-      "goal": { "scene": "lobby" },
+      "goal": { "scene": "mountain" },
       "steps": [
         { "do": "newGame", "expect": { "scene": "outside" } },
-        { "do": "walk", "x": 70, "y": 95, "trigger": "tr_game_opening", "untilScene": "lobby", "tries": 2, "attempt": true }
+        { "do": "walk", "x": 1.5, "y": 95, "trigger": "tr_mountain", "untilScene": "mountain", "tries": 2, "attempt": true }
       ]
     },
     {
@@ -125,11 +125,11 @@
       "kind": "sequence-break",
       "title": "ERROR: [qa:blocked] por trigger pisado en un paso de preparación (sin gate)",
       "expectStatus": "error",
-      "expectDetail": "^paso de preparación 2 .*\\[qa:blocked\\] llegó a tr_game_opening",
+      "expectDetail": "^paso de preparación 2 .*\\[qa:blocked\\] llegó a tr_mountain",
       "goal": { "scene": "lobby" },
       "steps": [
         { "do": "newGame", "expect": { "scene": "outside" } },
-        { "do": "walk", "x": 70, "y": 95, "trigger": "tr_game_opening", "untilScene": "lobby", "tries": 2, "expect": { "scene": "lobby" } },
+        { "do": "walk", "x": 1.5, "y": 95, "trigger": "tr_mountain", "untilScene": "mountain", "tries": 2, "expect": { "scene": "mountain" } },
         { "do": "act", "verb": "USE", "target": "hs_keypad", "attempt": true, "rejects": "INVALID CODE" }
       ]
     },
@@ -164,12 +164,12 @@
       "id": "st-fail-boton-wallet",
       "kind": "walkthrough",
       "title": "FAIL: [qa:error] el clic cae bajo el botón Wallet de UIScene",
-      "why": "A 1280×720 outside es panorámica y la cámara queda en scrollX 460 con el personaje en el spawn: 97 %, 3,5 % cae bajo el botón Wallet (arriba a la derecha)",
+      "why": "A 1280×720 outside es panorámica; tras la apertura (A3.2) Dex queda junto a la puerta (39, 93) y la cámara en scrollX 38: 72,5 %, 3,5 % cae bajo el botón Wallet (arriba a la derecha). Antes, con el personaje en el spawn y scrollX 460, era 97 %",
       "expectStatus": "fail",
-      "expectDetail": "^paso 2: \\[qa:error\\] no se puede hacer clic para andar a 97,3.5: el punto cae en el botón Wallet",
+      "expectDetail": "^paso 2: \\[qa:error\\] no se puede hacer clic para andar a 72.5,3.5: el punto cae en el botón Wallet",
       "steps": [
         { "do": "newGame", "expect": { "scene": "outside" } },
-        { "do": "walk", "x": 97, "y": 3.5 }
+        { "do": "walk", "x": 72.5, "y": 3.5 }
       ]
     },
     {
