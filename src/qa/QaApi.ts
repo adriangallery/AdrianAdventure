@@ -27,6 +27,7 @@ import type { FailResponse } from '@/systems/FailResponses';
 import { failResponses } from '@/systems/FailResponsesData';
 import type { MusicManager, MusicQaState } from '@/systems/MusicManager';
 import type { SfxPlayer, SfxQaState } from '@/systems/Sfx';
+import { stingerLog, type StingerEvent } from '@/systems/StingerPlayer';
 
 type Point = { x: number; y: number };
 /** A2.6: `used` = ya elegida antes en ese árbol (gris). Las ocultas (`when`, `once`) no salen. */
@@ -149,7 +150,8 @@ export interface QaState {
    * A4.4: audio: `muted`, `music` ({ key, pending, gain }), `ambience` ({ key: el bucle que suena, requested: el que pide
    * la escena, pending: descargándose, gain, loop: { start, end } }), `duck` (fuentes que bajan la música) y `duckGain`;
    * `sfx` ({ last: últimas 40 peticiones { key, at, volume, detune, ok }, total, counts, missing }) y `footsteps`
-   * ({ count: pasos en la escena, surface: superficie bajo los pies, last: { surface, key, at } }). null fuera del juego.
+   * ({ count: pasos en la escena, surface: superficie bajo los pies, last: { surface, key, at } }). A4.5: `music.fading`
+   * (pista que se va en el fundido cruzado), `music.musicKey` (tonalidad) y `stingers` (últimos tocados). null fuera del juego.
    */
   audio: AudioQaState | null;
 }
@@ -158,6 +160,8 @@ export interface QaState {
 export interface AudioQaState extends MusicQaState {
   sfx: SfxQaState;
   footsteps: ReturnType<GameScene['qaFootsteps']> | null;
+  /** A4.5: últimos stingers tocados ({ kind, key, detune, music, at }) */
+  stingers: StingerEvent[];
 }
 
 /** A2.8: ver QaState.pixel */
@@ -464,7 +468,7 @@ export function installQa(game: Phaser.Game): void {
     const mm = registry.get('musicManager') as MusicManager | undefined;
     const sfx = registry.get('sfx') as SfxPlayer | undefined;
     if (!mm || !sfx) return null;
-    return { ...mm.qaState(), sfx: sfx.qaState(), footsteps: scene ? scene.qaFootsteps() : null };
+    return { ...mm.qaState(), sfx: sfx.qaState(), footsteps: scene ? scene.qaFootsteps() : null, stingers: stingerLog(game) };
   };
 
   /** A2.9: el diario de la UIScene viva (error si no hay partida). */

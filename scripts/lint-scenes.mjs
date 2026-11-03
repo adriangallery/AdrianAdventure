@@ -57,6 +57,7 @@
 //       pasos        A4.4: audio.footstep y audio.surfaces[].footstep → assets/audio/sfx/step_<superficie>_1.mp3 y
 //                    _2.mp3, y las dos claves en sfxKeys de PreloadScene
 //       playSound    assets/audio/sfx/<key>.mp3 y la clave en la lista sfxKeys de PreloadScene (si no, no suena)
+//       stinger      A4.5: { kind: item | puzzle | chapter | fail } (los clips stinger_* van en sfxKeys)
 //       icono objeto assets/sprites/items/<id>.png y el id en itemIds de PreloadScene (si no, emoji/letra)
 //       NPC          textura = id del NPC; PreloadScene carga npc_<x> de assets/sprites/npcs/<x>.png
 //       escena       assets/scenes/<sceneId>/scene.json
@@ -725,6 +726,10 @@ export function lintProject(project) {
         else if (!overlays.some((co) => co.id === op.overlay)) {
           push('f', 'error', c.scene, String(op.overlay), p, `flicker: el overlay «${op.overlay}» no está en conditionalOverlays de ${c.scene}`);
         }
+      }
+      // A4.5: op stinger ({ kind }) con una clase conocida (src/systems/Stingers.ts)
+      if (op.op === 'stinger' && !['item', 'puzzle', 'chapter', 'fail'].includes(op.kind)) {
+        push('f', 'error', c.scene, String(op.kind), p, `stinger: kind «${op.kind}» desconocido (item | puzzle | chapter | fail)`);
       }
       if (op.op === 'playSound' && typeof op.key === 'string') {
         const rel = `assets/audio/sfx/${op.key}.mp3`;

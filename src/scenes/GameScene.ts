@@ -40,6 +40,8 @@ import type { VoiceSystem } from '@/systems/VoiceSystem';
 import { failResponses } from '@/systems/FailResponsesData';
 import { surfaceAt, stepSound } from '@/systems/Footsteps';
 import { sfxOf } from '@/systems/Sfx';
+import { isStingerKind } from '@/systems/Stingers';
+import { playStinger } from '@/systems/StingerPlayer';
 
 /** A2.4 (QA): cómo pulsa la API de QA: botón derecho o clic de ratón (cuenta para el doble clic). */
 type QaClick = { button?: 'left' | 'right'; mouse?: boolean };
@@ -1530,8 +1532,10 @@ export class GameScene extends Phaser.Scene {
         this.cameras.main.once('camerafadeoutcomplete', go);
       },
       addItem: (id, name) => {
+        const isNew = !this.inventorySystem.hasItem(id);
         this.inventorySystem.addItem(id, name);
-        sfxOf(this)?.play('item_pickup', { volume: 0.6 });
+        // A4.5: objeto encontrado = stinger en la tonalidad de la música (antes, item_pickup a secas)
+        if (isNew) playStinger(this, 'item'); else sfxOf(this)?.play('item_pickup', { volume: 0.6 });
       },
       removeItem: (id) => this.inventorySystem.removeItem(id),
       isWalletConnected: () => getWalletState().connected,
@@ -1543,6 +1547,10 @@ export class GameScene extends Phaser.Scene {
       mintAchievement: async (achievementId): Promise<MintResult> => mintAchievement(achievementId),
       playSound: (key) => {
         sfxOf(this)?.play(key, { volume: 0.7 });
+      },
+      playStinger: (kind) => {
+        if (isStingerKind(kind)) playStinger(this, kind);
+        else console.warn(`[ScriptEngine] stinger: kind «${kind}» desconocido (item | puzzle | chapter | fail)`);
       },
       startDialogue: async (_npcId, treeId) => {
         const ui = this.scene.get('UIScene');

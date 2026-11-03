@@ -210,6 +210,7 @@ export class PreloadScene extends Phaser.Scene {
       'inv_open', 'inv_close', 'verb_select', 'journal_open', 'journal_close', 'journal_note', 'phone_ring', 'phone_pickup', 'phone_hangup',
       'duck_squeak', 'intercom_buzz', 'glass_break', 'paper_rustle', 'plank_pull', 'switch_flip', 'crt_on', 'floppy_insert',
       'splash', 'coin_ping', 'thud', 'nest_fall',
+      'stinger_item', 'stinger_puzzle_major', 'stinger_puzzle_minor', 'stinger_chapter_major', 'stinger_chapter_minor', 'stinger_fail',
     ];
     for (const key of sfxKeys) {
       if (!this.cache.audio.has(key)) {

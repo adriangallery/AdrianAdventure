@@ -785,3 +785,30 @@ tiene que tener sus dos `step_*` en disco y en `sfxKeys`.
   baldosa), con Penny (`npc_talk`) y en la escotilla (`hatch_metal`, viento). Demo: `scripts/demo-a4-4-sfx-ambience.mjs` (con el
   sonido activado: HUD de audio con medidores de nivel sobre el juego; grillos, porche de madera → grava, valla, fundido al lobby
   y vuelta, Gerald, server_room en 390x844).
+
+# Música: stingers, ducking y fundidos (A4.5)
+
+- **Stingers** (`src/systems/Stingers.ts`, puro; `StingerPlayer.ts` los toca): seis clips chiptune sintetizados en Do por
+  `scripts/audio/stinger-recipes.mjs` (van por `make-sfx.mjs` como un efecto más: `stinger_item`, `stinger_puzzle_major/minor`,
+  `stinger_chapter_major/minor`, `stinger_fail`). Se transportan con `detune` a la tónica de la pista que suena y siguen su modo
+  cuando tienen tercera. La tonalidad de cada pista la estima `scripts/audio/analyze-music.mjs` (cromagrama por Goertzel + perfiles
+  de Krumhansl-Kessler) y queda en `src/config/music.config.ts` (`MUSIC_KEYS`): retro-adventure Re mayor, vista Sol menor, clinical
+  y tension Mi menor, epilogue Do mayor, retroadrian La menor. `npm run lint:audio` comprueba que los dos configs generados
+  (ambiente y tonalidades) están al día; `npm run make:audio` regenera todo.
+- **Cuándo suenan**: objeto nuevo en el inventario (`addItem` → `item`; un objeto que ya se tenía sigue con `item_pickup`),
+  objetivo del diario cumplido (`puzzle`) y capítulo cerrado (`chapter`): `JournalPanel.refresh` (cada 400 ms y al abrir) compara
+  la instantánea `{ chapter, objetivos cumplidos }` con la anterior, guardada en el registry del juego para que un objetivo que
+  se cumple justo antes de cambiar de escena suene al entrar en la siguiente; la primera instantánea de la página solo apunta.
+  A demanda: `{ "op": "stinger", "kind": "item" | "puzzle" | "chapter" | "fail" }` (presentación: se omite al saltar una cinemática;
+  el linter (f) rechaza un `kind` desconocido). Mientras suena uno la música baja (fuente de ducking `stinger`).
+- **Ducking**: antes solo bajaba la música con frases de 60 caracteres o más; ahora con cualquier clip de voz (`VoiceSystem`,
+  `DUCK_THRESHOLD = 0`), y el ambiente (A4.4) baja con ella porque cuelga del mismo nodo. Fuentes: `voice`, `cinematic`, `stinger`;
+  nivel `DUCK_LEVEL` (0,35) con rampa de 200 ms.
+- **Fundido cruzado**: el de siempre (`MusicManager.crossfadeTo`, 4 s exponencial; misma pista entre salas = solo cambia la
+  variación de filtro y volumen). Ahora se ve por QA: `state().audio.music.fading` ({ key, gain } de la pista que se va) y
+  `music.musicKey`.
+- **QA**: `state().audio.stingers` (últimos 20: `{ kind, key, detune, music, at }`); `expect.audio.sfxPlayed` vale con los clips
+  `stinger_*` (la ruta crítica espera `stinger_item` + `stinger_puzzle_major` al juntar la nota y `stinger_chapter_major` al entrar
+  en el lobby; sin sonido no hay pista, así que todo va en Do mayor sin desafino). Demo: `scripts/demo-a4-5-music.mjs` (HUD con las
+  dos ganancias del fundido, la tonalidad, las fuentes de ducking y el último stinger: lámpara y nota en Re mayor, voz de Dex con
+  la música bajando, lobby → upstairs → rooftop con el cruce retro-adventure → vista).

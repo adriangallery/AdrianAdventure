@@ -1,6 +1,8 @@
 import Phaser from 'phaser';
 import { FONT, SPEECH_COLORS, TWP } from '@/config/theme';
 import { sfxOf } from '@/systems/Sfx';
+import { goalStingers, type GoalSnapshot } from '@/systems/Stingers';
+import { playStinger } from '@/systems/StingerPlayer';
 import type { GameState } from '@/types/game.types';
 import { CHAPTERS } from '@/systems/ChapterManager';
 import { JOURNAL_CHAPTERS, journalChapter, journalProgress, journalWorld } from '@/systems/JournalData';
@@ -262,6 +264,12 @@ export class JournalPanel {
       // A4.4: Dex apunta algo en el móvil (garabato) cuando aparece una nota nueva
       if (synced.notes.length > progress.notes.length) sfxOf(this.scene)?.play('journal_note', { volume: 0.35 });
     }
+    // A4.5: puzle resuelto (objetivo cumplido) o capítulo cerrado = stinger. La instantánea vive en el registry del juego, así
+    // un objetivo que se cumple justo antes de cambiar de escena suena al entrar en la siguiente; la primera vez solo apunta
+    const snapshot: GoalSnapshot = { chapter, done: goalsView(chapterData(JOURNAL_CHAPTERS, chapter), world).filter((g) => g.done).length };
+    const prev = this.scene.game.registry.get('stingerGoals') as GoalSnapshot | undefined;
+    for (const kind of goalStingers(prev, snapshot)) playStinger(this.scene, kind);
+    if (!prev || prev.chapter !== snapshot.chapter || prev.done !== snapshot.done) this.scene.game.registry.set('stingerGoals', snapshot);
     const unseen = this.overlay ? 0 : unseenIds(JOURNAL_CHAPTERS, chapter, world, synced).length;
     if (unseen > 0 && !this.dot.visible) {
       this.dot.setVisible(true).setScale(1);

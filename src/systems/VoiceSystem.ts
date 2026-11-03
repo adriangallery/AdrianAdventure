@@ -3,8 +3,11 @@ import type { MusicManager } from '@/systems/MusicManager';
 import { voicePath } from '@/config/voice.config';
 import { shouldFetchAudio } from '@/systems/AudioPolicy';
 
-/** Only duck music for lines longer than this (short quips play over the music). */
-const DUCK_THRESHOLD = 60;
+/**
+ * A4.5: la música (y el ambiente, A4.4) bajan con cualquier clip de voz, por corto que sea (antes solo con frases de 60
+ * caracteres o más: los remates cortos se perdían bajo la música). El fundido es de DUCK_FADE_MS (200 ms).
+ */
+const DUCK_THRESHOLD = 0;
 
 /**
  * VoiceSystem — plays character voice clips alongside dialogue text.

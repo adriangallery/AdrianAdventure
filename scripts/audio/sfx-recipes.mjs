@@ -9,10 +9,12 @@
 //   inv_*, verb_select, journal_*, phone_*   interfaz (cajón del inventario, verbo, móvil de Dex)
 //   duck_squeak, intercom_buzz, glass_break, paper_rustle, plank_pull, switch_flip, crt_on, floppy_insert, splash,
 //   coin_ping, thud          objetos y personajes de la biblia (Gerald, Nurse Gwei, el interruptor, el CRT…)
+//   stinger_*                A4.5: stingers musicales en Do (scripts/audio/stinger-recipes.mjs)
 import {
   secs, osc, noise, envelope, decay, mulIn, mix, placeIn, lowpass, highpass, bandpass, fadeIn, fadeOut, normalize,
   softClip, room, resample, vibrato, glide, silence,
 } from './synth.mjs';
+import { RECIPES as STINGERS } from './stinger-recipes.mjs';
 
 /** Golpe sordo: seno grave con caída rápida y un poco de ruido filtrado */
 function thump(random, { freq = 90, tau = 0.045, noiseTau = 0.02, noiseCut = 500, len = 0.2 } = {}) {
@@ -299,6 +301,9 @@ export const RECIPES = {
     placeIn(out, thump(random, { freq: 70, tau: 0.05, noiseCut: 400, len: 0.25 }), secs(0.42), 0.9);
     return normalize(out, 0.7);
   },
+
+  // ── A4.5: stingers musicales ─────────────────────────────────────────────────────────────────────────────
+  ...STINGERS,
 };
 
 export const SFX_KEYS = Object.keys(RECIPES);

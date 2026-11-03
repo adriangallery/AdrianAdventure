@@ -7,6 +7,7 @@ import {
   type AmbienceAudioConfig, type AmbienceRequest,
 } from '@/systems/Ambience';
 import { AMBIENCE_LOOPS, AMBIENCE_PAD_SEC } from '@/config/ambience.config';
+import { MUSIC_KEYS, type MusicKey } from '@/config/music.config';
 
 // Inyectado por vite.config.ts (define); mismo patrón que PreloadScene.
 declare const __BUILD_HASH__: string;
@@ -38,7 +39,8 @@ interface SceneAudioConfig extends AmbienceAudioConfig {
 /** A4.4 (QA): qué suena ahora (música y ambiente), qué se está pidiendo y quién baja la música */
 export interface MusicQaState {
   muted: boolean;
-  music: { key: string | null; pending: string | null; gain: number | null };
+  /** A4.5: `fading` = la pista que se va durante el fundido cruzado; `musicKey` = tonalidad de la que suena (music.config.ts) */
+  music: { key: string | null; pending: string | null; gain: number | null; fading: { key: string; gain: number } | null; musicKey: MusicKey | null };
   ambience: { key: string | null; requested: string | null; pending: string | null; gain: number | null; loop: { start: number; end: number } | null };
   duck: string[];
   duckGain: number;
@@ -312,12 +314,23 @@ export class MusicManager {
     }
   }
 
+  /** A4.5: tonalidad estimada de la pista que suena (null sin música o sin estimación) */
+  currentMusicKey(): MusicKey | null {
+    return this.currentKey ? (MUSIC_KEYS[this.currentKey] ?? null) : null;
+  }
+
   /** A4.4 (QA): música y ambiente que suenan, lo que se está pidiendo y el ducking */
   qaState(): MusicQaState {
     const amb = this.currentAmbience;
     return {
       muted: this.muted,
-      music: { key: this.currentKey, pending: this.pendingKey, gain: this.currentTrack ? round3(this.currentTrack.gainNode.gain.value) : null },
+      music: {
+        key: this.currentKey,
+        pending: this.pendingKey,
+        gain: this.currentTrack ? round3(this.currentTrack.gainNode.gain.value) : null,
+        fading: this.fadingTrack ? { key: this.fadingTrack.key, gain: round3(this.fadingTrack.gainNode.gain.value) } : null,
+        musicKey: this.currentMusicKey(),
+      },
       ambience: {
         key: amb?.key ?? null,
         requested: this.requestedAmbience,
