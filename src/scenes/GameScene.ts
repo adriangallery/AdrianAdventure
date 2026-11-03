@@ -858,6 +858,12 @@ export class GameScene extends Phaser.Scene {
     return this.npcs.filter((n) => n.active).map((n) => n.getLifeState());
   }
 
+  /** A5.1 (QA): tamaño lógico de la escena (el de las coordenadas en %) y tamaño real de la textura del fondo */
+  qaSceneArt(): { world: { w: number; h: number }; bgTexture: { w: number; h: number } } {
+    const src = this.bg.texture.getSourceImage() as { width: number; height: number };
+    return { world: { w: this.coordSystem.imgW, h: this.coordSystem.imgH }, bgTexture: { w: src.width, h: src.height } };
+  }
+
   /**
    * Toque en la escena ya resuelto (punto en % y hotspot visible bajo él, si hay): combo con el objeto
    * elegido, andar, mirar/hablar al momento o ir hasta el hotspot y actuar al llegar. A0.1: la API de QA

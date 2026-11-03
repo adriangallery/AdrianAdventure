@@ -55,6 +55,11 @@ export class ScenePrefetcher {
     if (!this.scenes[id] && data && typeof data === 'object') this.scenes[id] = structuredClone(data) as PrefetchScene;
   }
 
+  /** A5.1: scene.json que se conocen (visitados o precargados), solo lectura: para saber qué claves de textura son de qué escena */
+  knownScenes(): Readonly<Record<string, PrefetchScene>> {
+    return this.scenes;
+  }
+
   /** Copia del scene.json si ya se tiene, para meterla en la caché JSON de Phaser sin pedirlo. */
   sceneData<T>(id: string): T | undefined {
     const s = this.scenes[id];
