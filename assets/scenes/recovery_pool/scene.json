@@ -1251,5 +1251,86 @@
     }
   ],
   "web3Visuals": [],
-  "onEnter": []
+  "onEnter": [],
+  "ambient": [
+    {
+      "id": "pool_bubbles",
+      "kind": "rise",
+      "area": {
+        "x": 30,
+        "y": 60,
+        "w": 38,
+        "h": 25
+      },
+      "count": 10,
+      "size": 4.5,
+      "color": "#c8ffd0",
+      "alpha": 0.65,
+      "speed": 0.6,
+      "depth": 5
+    },
+    {
+      "id": "pool_shimmer",
+      "kind": "dust",
+      "area": {
+        "x": 31,
+        "y": 62,
+        "w": 36,
+        "h": 22
+      },
+      "count": 22,
+      "size": 5,
+      "color": "#e0ffe0",
+      "alpha": 0.35,
+      "speed": 0,
+      "depth": 5
+    },
+    {
+      "id": "tv_glow",
+      "kind": "glow",
+      "area": {
+        "x": 73,
+        "y": 21,
+        "w": 8,
+        "h": 18
+      },
+      "shape": "rect",
+      "color": "#40ff80",
+      "alpha": 0.2,
+      "alphaMin": 0.08,
+      "period": 2000
+    },
+    {
+      "id": "tv_scan",
+      "kind": "scan",
+      "area": {
+        "x": 73,
+        "y": 21,
+        "w": 8,
+        "h": 18
+      },
+      "color": "#c0ffd8",
+      "alpha": 0.15,
+      "period": 2300,
+      "size": 5
+    },
+    {
+      "id": "bot_eyes",
+      "kind": "leds",
+      "cells": [
+        {
+          "x": 84.6,
+          "y": 31.5
+        },
+        {
+          "x": 86.6,
+          "y": 31.5
+        }
+      ],
+      "colors": [
+        "#60e8ff"
+      ],
+      "period": 1400
+    }
+  ]
 }

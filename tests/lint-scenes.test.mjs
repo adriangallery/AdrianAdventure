@@ -3,7 +3,10 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { lintProject, applyPolicy, parseStringArray, parseWhen, depthScaleDefects, PIXEL_RANGES, FAIL_MIN, FAIL_VERBS, bagDefects, itemDescIds, loadProject } from '../scripts/lint-scenes.mjs';
+import {
+  lintProject, applyPolicy, parseStringArray, parseWhen, depthScaleDefects, PIXEL_RANGES, FAIL_MIN, FAIL_VERBS, bagDefects, itemDescIds, loadProject,
+  ambientDefects, AMBIENT_KINDS, AMBIENT_MAX_COUNT, AMBIENT_MAX_PER_SCENE, AMBIENT_ACTIONS,
+} from '../scripts/lint-scenes.mjs';
 
 /** Escena mínima válida: fondo, un área caminable de todo el suelo y el spawn dentro. */
 function scene(id, extra = {}) {
@@ -480,6 +483,59 @@ test('i: los rangos del linter son los de src/systems/PixelScale.ts', () => {
   assert.deepEqual(PIXEL_RANGES.pixelScale, [num('PIXEL_SCALE_MIN'), num('PIXEL_SCALE_MAX')]);
   assert.deepEqual(PIXEL_RANGES.depthFactor, [num('DEPTH_FACTOR_MIN'), num('DEPTH_FACTOR_MAX')]);
   assert.deepEqual(PIXEL_RANGES.artScale, [num('ART_SCALE_MIN'), num('ART_SCALE_MAX')]);
+});
+
+// ── (k) animación ambiental (A4.3) ──
+
+const AMB_OK = [{ id: 'moths', kind: 'moths', at: { x: 50, y: 50 }, when: '!lamp_off' }, { id: 'glow', kind: 'glow', area: { x: 1, y: 1, w: 10, h: 10 } }];
+
+test('(k) ambient válido: sin hallazgos; sus when cuentan como lectura de flag (a) y uso de objeto (b)', () => {
+  const s = scene('x', {
+    ambient: [...AMB_OK, { id: 'sway', kind: 'sway', when: 'item:ledger' }],
+    regions: { hotspots: [hs('hs_a', { USE: [{ op: 'setFlag', flag: 'lamp_off', value: true }, { op: 'addItem', id: 'ledger', name: 'Ledger' }, { op: 'ambient', id: 'moths', action: 'off' }] })], triggers: [] },
+  });
+  const p = project([s], { files: ['assets/sprites/items/ledger.png'], src: [['src/scenes/PreloadScene.ts', "const itemIds = ['ledger'];"]] });
+  const f = lintProject(p);
+  assert.deepEqual(only(f, 'k'), []);
+  assert.deepEqual(only(f, 'a'), [], 'lamp_off la lee el ambiente');
+  assert.deepEqual(only(f, 'b'), [], 'ledger lo mira el ambiente');
+});
+
+test('(k) elemento mal definido = error (y el resto sigue), escena con < 2 válidos = aviso, op ambient a un id ajeno = error', () => {
+  const s = scene('x', {
+    ambient: [AMB_OK[0], { id: 'bad', kind: 'laser' }, { id: 'glow', kind: 'glow' }],
+    regions: { hotspots: [hs('hs_a', { USE: [{ op: 'ambient', id: 'nope', action: 'burst' }, { op: 'ambient', id: 'moths', action: 'explode' }] })], triggers: [] },
+  });
+  const f = only(lintProject(project([s])), 'k');
+  assert.ok(f.some((x) => x.severity === 'error' && /kind «laser» desconocido/.test(x.message)));
+  assert.ok(f.some((x) => x.severity === 'error' && /glow necesita area/.test(x.message)));
+  assert.ok(f.some((x) => x.severity === 'warning' && /1 elemento\(s\) válido/.test(x.message)));
+  assert.ok(f.some((x) => x.severity === 'error' && /«nope» no está en ambient/.test(x.message)));
+  assert.ok(f.some((x) => x.severity === 'error' && /action «explode» no válida/.test(x.message)));
+  const none = scene('y');
+  assert.equal(only(lintProject(project([none])), 'k').filter((x) => x.severity === 'warning').length, 1, 'sin ambient: aviso');
+  assert.equal(ambientDefects({ not: 'a list' }, 'z').problems.length, 1);
+});
+
+test('k: los tipos, topes y acciones del linter son los de src/systems/Ambient.ts y ScriptEngine.ts', () => {
+  const ts = readFileSync(new URL('../src/systems/Ambient.ts', import.meta.url), 'utf8');
+  const kinds = ts.match(/export const AMBIENT_KINDS = \[([^\]]*)\]/)[1].match(/'([a-z]+)'/g).map((k) => k.replace(/'/g, ''));
+  assert.deepEqual(AMBIENT_KINDS, kinds);
+  const num = (name) => Number(ts.match(new RegExp(`export const ${name} = ([0-9.]+);`))[1]);
+  assert.equal(AMBIENT_MAX_COUNT, num('AMBIENT_MAX_COUNT'));
+  assert.equal(AMBIENT_MAX_PER_SCENE, num('AMBIENT_MAX_PER_SCENE'));
+  const engine = readFileSync(new URL('../src/systems/ScriptEngine.ts', import.meta.url), 'utf8');
+  const actions = engine.match(/export const AMBIENT_ACTIONS = new Set\(\[([^\]]*)\]\)/)[1].match(/'([a-z]+)'/g).map((k) => k.replace(/'/g, ''));
+  assert.deepEqual(AMBIENT_ACTIONS, actions);
+  // La validación del linter y la del motor coinciden en los casos de error de parseAmbient (tests/ambient.test.mjs)
+  const bad = [{ kind: 'moths', at: { x: 1, y: 1 } }, { id: 'a', kind: 'laser' }, { id: 'b', kind: 'moths' }, { id: 'c', kind: 'dust' }, { id: 'd', kind: 'drip', at: { x: 1, y: 50 } },
+    { id: 'd2', kind: 'drip', at: { x: 1, y: 50 }, floorY: 40 }, { id: 'e', kind: 'leds' }, { id: 'f', kind: 'glow', area: { x: 1, y: 1, w: 1, h: 1 }, when: 'mal escrita!' },
+    { id: 'g', kind: 'glow', area: { x: 1, y: 1, w: 1, h: 1 }, alpha: 2 }, { id: 'h', kind: 'glow', area: { x: 1, y: 1, w: 1, h: 1 }, alpha: 0.2, alphaMin: 0.5 },
+    { id: 'i', kind: 'dust', area: { x: 0, y: 0, w: 0, h: 10 } }, { id: 'j', kind: 'dust', area: { x: 1, y: 1, w: 1, h: 1 }, count: AMBIENT_MAX_COUNT + 1 },
+    { id: 'k', kind: 'leds', area: { x: 1, y: 1, w: 1, h: 1 }, colors: ['rojo'] }, { id: 'ok', kind: 'sway' }, { id: 'ok', kind: 'sway' }, 'texto'];
+  const r = ambientDefects(bad, 'x');
+  assert.deepEqual(r.ok.map((e) => e.id), ['ok']);
+  assert.equal(r.problems.length, bad.length - 1);
 });
 
 // ── (j) respuestas de fallo (A2.5) ──

@@ -78,6 +78,58 @@ export interface SceneData {
   pixelScale?: number;
   /** A2.8: escala por profundidad lineal en y (factor de `scaleTop` en `yTop` a `scaleBottom` en `yBottom`, en %) */
   depthScale?: { yTop: number; yBottom: number; scaleTop: number; scaleBottom: number };
+  /**
+   * A4.3: animación ambiental por código (src/systems/Ambient.ts): polillas, polvo, LEDs, niebla, nubes, luces que titilan o
+   * respiran, barrido de CRT, burbujas, goteras, pájaros y vaivén del primer plano. Cada elemento se enciende o apaga con
+   * `when` (gramática de A2.6a) y se dibuja sin assets. Un elemento mal definido se salta (aviso en consola y en el linter).
+   */
+  ambient?: AmbientElementData[];
+}
+
+/** A4.3: un elemento de `ambient[]` tal como va en el JSON (campos según `kind`; ver la cabecera de src/systems/Ambient.ts) */
+export interface AmbientElementData {
+  id: string;
+  kind: 'moths' | 'dust' | 'leds' | 'fog' | 'clouds' | 'flicker' | 'glow' | 'scan' | 'rise' | 'drip' | 'birds' | 'sway';
+  /** Condición para verse (`flag`, `!flag`, `item:id`, `!item:id`; lista = todas). Sin ella, siempre */
+  when?: string | string[];
+  /** Por defecto 12 (encima del jugador, debajo del primer plano); 5 = detrás del jugador; 16 = encima del primer plano */
+  depth?: number;
+  /** Alfa máxima (0-1) y mínima (glow, flicker; por defecto el 30 % de alpha) */
+  alpha?: number;
+  alphaMin?: number;
+  /** `#rrggbb` */
+  color?: string;
+  /** leds: paleta de las celdas */
+  colors?: string[];
+  count?: number;
+  /** Tamaño en píxeles del fondo (punto, grosor, alto de un banco de niebla, envergadura) */
+  size?: number;
+  /** Multiplicador de velocidad (1); 0 en dust = quietas, solo centellean */
+  speed?: number;
+  /** ms: ciclo (glow, scan, sway), tic (flicker), intervalo (leds, drip) */
+  period?: number;
+  /** Rectángulo en % del fondo (dust, fog, clouds, flicker, glow, scan, rise, birds; leds con cols/rows) */
+  area?: { x: number; y: number; w: number; h: number };
+  /** Punto en % del fondo (moths, drip) */
+  at?: { x: number; y: number };
+  /** moths: radio de la órbita en % del alto del fondo */
+  radius?: number;
+  /** fog, clouds: 1 = se mueve con el fondo; < 1 = más lejos */
+  parallax?: number;
+  blend?: 'normal' | 'add' | 'screen' | 'multiply';
+  shape?: 'rect' | 'ellipse';
+  /** drip: y (%) donde salpica la gota */
+  floorY?: number;
+  /** dust, rise: partículas extra que lanza el op `ambient` con action burst */
+  burst?: number;
+  /** rise: manchas suaves (vapor) en vez de puntos (burbujas) */
+  soft?: boolean;
+  /** leds: celdas explícitas (si no, `area` con `cols` × `rows`) */
+  cells?: Array<{ x: number; y: number }>;
+  cols?: number;
+  rows?: number;
+  /** sway: px del fondo de vaivén del primer plano */
+  amplitude?: number;
 }
 
 export interface ConditionalOverlayData {

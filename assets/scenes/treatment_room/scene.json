@@ -1215,5 +1215,76 @@
         }
       ]
     }
+  ],
+  "ambient": [
+    {
+      "id": "monitor_glow",
+      "kind": "glow",
+      "area": {
+        "x": 63.5,
+        "y": 26.5,
+        "w": 10,
+        "h": 22
+      },
+      "shape": "rect",
+      "color": "#40ff80",
+      "alpha": 0.22,
+      "alphaMin": 0.1,
+      "period": 2200
+    },
+    {
+      "id": "monitor_scan",
+      "kind": "scan",
+      "area": {
+        "x": 63.5,
+        "y": 26.5,
+        "w": 10,
+        "h": 22
+      },
+      "color": "#c0ffd8",
+      "alpha": 0.15,
+      "period": 2400,
+      "size": 5
+    },
+    {
+      "id": "tube_flicker",
+      "kind": "flicker",
+      "area": {
+        "x": 38,
+        "y": 8,
+        "w": 20,
+        "h": 7
+      },
+      "shape": "rect",
+      "color": "#d8f8ff",
+      "alpha": 0.16,
+      "alphaMin": 0.02,
+      "period": 55
+    },
+    {
+      "id": "lamp_dust",
+      "kind": "dust",
+      "area": {
+        "x": 36,
+        "y": 14,
+        "w": 28,
+        "h": 40
+      },
+      "count": 12,
+      "color": "#e8f8ff",
+      "alpha": 0.35,
+      "speed": 0.6
+    },
+    {
+      "id": "pipe_drip",
+      "kind": "drip",
+      "at": {
+        "x": 31,
+        "y": 6.5
+      },
+      "floorY": 90,
+      "period": 3500,
+      "color": "#a8d8ff"
+    }
   ]
 }

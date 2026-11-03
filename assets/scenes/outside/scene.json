@@ -1791,6 +1791,11 @@
                   "name": "Fence Plank"
                 },
                 {
+                  "op": "ambient",
+                  "id": "fence_dust",
+                  "action": "burst"
+                },
+                {
                   "op": "say",
                   "text": "I pull a plank. It comes loose. Now there's an exploit in the perimeter. I'm the exploit."
                 }
@@ -2216,6 +2221,101 @@
       },
       "flag": "porch_light_off",
       "depth": 5
+    }
+  ],
+  "ambient": [
+    {
+      "id": "lamp_moths",
+      "kind": "moths",
+      "at": {
+        "x": 36.4,
+        "y": 46.5
+      },
+      "radius": 4.5,
+      "count": 5,
+      "alpha": 1,
+      "when": "!porch_light_off"
+    },
+    {
+      "id": "lamp_glow",
+      "kind": "glow",
+      "area": {
+        "x": 32.5,
+        "y": 41,
+        "w": 8,
+        "h": 13
+      },
+      "shape": "ellipse",
+      "color": "#ffb347",
+      "alpha": 0.16,
+      "alphaMin": 0.08,
+      "period": 2400,
+      "when": "!porch_light_off"
+    },
+    {
+      "id": "window_moths",
+      "kind": "moths",
+      "at": {
+        "x": 17.6,
+        "y": 59
+      },
+      "radius": 3.2,
+      "count": 4,
+      "alpha": 1,
+      "when": "porch_light_off"
+    },
+    {
+      "id": "sky_clouds",
+      "kind": "clouds",
+      "area": {
+        "x": 0,
+        "y": 0,
+        "w": 100,
+        "h": 30
+      },
+      "count": 3,
+      "size": 150,
+      "color": "#fff4f8",
+      "alpha": 0.6,
+      "parallax": 0.6,
+      "speed": 0.8
+    },
+    {
+      "id": "sky_birds",
+      "kind": "birds",
+      "area": {
+        "x": 44,
+        "y": 2,
+        "w": 52,
+        "h": 22
+      },
+      "count": 2,
+      "size": 11,
+      "color": "#4a2a3a",
+      "alpha": 0.85,
+      "speed": 0.8
+    },
+    {
+      "id": "bush_sway",
+      "kind": "sway",
+      "amplitude": 3,
+      "period": 3800
+    },
+    {
+      "id": "fence_dust",
+      "kind": "dust",
+      "area": {
+        "x": 0,
+        "y": 50,
+        "w": 7,
+        "h": 25
+      },
+      "count": 0,
+      "burst": 14,
+      "color": "#c9b48a",
+      "size": 5,
+      "alpha": 0.8,
+      "blend": "normal"
     }
   ]
 }

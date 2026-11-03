@@ -963,5 +963,75 @@
         }
       ]
     }
+  ],
+  "ambient": [
+    {
+      "id": "valley_fog",
+      "kind": "fog",
+      "area": {
+        "x": 0,
+        "y": 58,
+        "w": 100,
+        "h": 20
+      },
+      "count": 5,
+      "size": 200,
+      "color": "#eee6ff",
+      "alpha": 0.42,
+      "speed": 0.7,
+      "parallax": 0.9
+    },
+    {
+      "id": "sky_clouds",
+      "kind": "clouds",
+      "area": {
+        "x": 0,
+        "y": 0,
+        "w": 100,
+        "h": 22
+      },
+      "count": 3,
+      "size": 160,
+      "color": "#fff0f6",
+      "alpha": 0.6,
+      "parallax": 0.5,
+      "speed": 0.7
+    },
+    {
+      "id": "birds",
+      "kind": "birds",
+      "area": {
+        "x": 28,
+        "y": 3,
+        "w": 46,
+        "h": 16
+      },
+      "count": 3,
+      "size": 11,
+      "color": "#3a2448",
+      "alpha": 0.85,
+      "speed": 0.9
+    },
+    {
+      "id": "cabin_glow",
+      "kind": "glow",
+      "area": {
+        "x": 74,
+        "y": 26,
+        "w": 7,
+        "h": 6
+      },
+      "shape": "rect",
+      "color": "#ffb050",
+      "alpha": 0.18,
+      "alphaMin": 0.08,
+      "period": 2800
+    },
+    {
+      "id": "bush_sway",
+      "kind": "sway",
+      "amplitude": 2.5,
+      "period": 4200
+    }
   ]
 }

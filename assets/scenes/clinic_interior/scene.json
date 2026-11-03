@@ -1505,5 +1505,82 @@
       "flag": "found_clinic_photo",
       "depth": 5
     }
+  ],
+  "ambient": [
+    {
+      "id": "tube_flicker",
+      "kind": "flicker",
+      "area": {
+        "x": 22,
+        "y": 4,
+        "w": 52,
+        "h": 8
+      },
+      "shape": "rect",
+      "color": "#c8ffe8",
+      "alpha": 0.18,
+      "alphaMin": 0.02,
+      "period": 50
+    },
+    {
+      "id": "red_lamp_glow",
+      "kind": "glow",
+      "area": {
+        "x": 34.5,
+        "y": 36,
+        "w": 6,
+        "h": 13
+      },
+      "shape": "ellipse",
+      "color": "#ff3030",
+      "alpha": 0.4,
+      "alphaMin": 0.06,
+      "period": 1300
+    },
+    {
+      "id": "pc_glow",
+      "kind": "glow",
+      "area": {
+        "x": 82,
+        "y": 54,
+        "w": 8,
+        "h": 11
+      },
+      "shape": "rect",
+      "color": "#40ff80",
+      "alpha": 0.2,
+      "alphaMin": 0.08,
+      "period": 2100
+    },
+    {
+      "id": "pc_scan",
+      "kind": "scan",
+      "area": {
+        "x": 82,
+        "y": 54,
+        "w": 8,
+        "h": 11
+      },
+      "color": "#c0ffd8",
+      "alpha": 0.15,
+      "period": 2500,
+      "size": 5
+    },
+    {
+      "id": "cooler_bubbles",
+      "kind": "rise",
+      "area": {
+        "x": 13.5,
+        "y": 41,
+        "w": 4,
+        "h": 11
+      },
+      "count": 3,
+      "size": 4,
+      "color": "#d0f0ff",
+      "alpha": 0.7,
+      "speed": 0.5,
+      "depth": 5
+    }
   ]
 }
