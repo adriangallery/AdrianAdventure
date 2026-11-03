@@ -1221,8 +1221,9 @@
         "x": 46.5,
         "y": 25
       },
-      "radius": 2.2,
+      "radius": 3.5,
       "count": 3,
+      "alpha": 1,
       "when": "porch_light_off"
     }
   ]

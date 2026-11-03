@@ -2231,8 +2231,9 @@
         "x": 36.4,
         "y": 46.5
       },
-      "radius": 2.6,
+      "radius": 4.5,
       "count": 5,
+      "alpha": 1,
       "when": "!porch_light_off"
     },
     {
@@ -2258,8 +2259,9 @@
         "x": 17.6,
         "y": 59
       },
-      "radius": 2.2,
+      "radius": 3.2,
       "count": 4,
+      "alpha": 1,
       "when": "porch_light_off"
     },
     {
@@ -2273,8 +2275,8 @@
       },
       "count": 3,
       "size": 150,
-      "color": "#fff0f4",
-      "alpha": 0.42,
+      "color": "#fff4f8",
+      "alpha": 0.6,
       "parallax": 0.6,
       "speed": 0.8
     },

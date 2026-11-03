@@ -995,8 +995,8 @@
       },
       "count": 2,
       "size": 130,
-      "color": "#ecd0ec",
-      "alpha": 0.4,
+      "color": "#f4e0f4",
+      "alpha": 0.55,
       "parallax": 0.6,
       "speed": 0.6
     },

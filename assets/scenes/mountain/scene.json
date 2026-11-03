@@ -976,8 +976,8 @@
       },
       "count": 5,
       "size": 200,
-      "color": "#e8dcff",
-      "alpha": 0.3,
+      "color": "#eee6ff",
+      "alpha": 0.42,
       "speed": 0.7,
       "parallax": 0.9
     },
@@ -992,8 +992,8 @@
       },
       "count": 3,
       "size": 160,
-      "color": "#ffe4ee",
-      "alpha": 0.42,
+      "color": "#fff0f6",
+      "alpha": 0.6,
       "parallax": 0.5,
       "speed": 0.7
     },
