@@ -6,6 +6,11 @@
 // scene.json (hotspots, gateFallback, triggers, onEnter, objetos, combos y nodos de diálogo, ramas incluidas;
 // el mismo recorrido que scripts/lint-scenes.mjs) y `transitions.goto[].targetScene`.
 
+// A5.1: iguales que en src/systems/SceneTextures.ts (sin import: este módulo se prueba en Node con type stripping, que
+// no resuelve imports sin extensión; tests/scene-textures.test.mjs comprueba que coinciden)
+export const DEFAULT_BG_VARIANT = 2048;
+export const variantFile = (name: string, width: number): string => `${name}@${width}.webp`;
+
 /** Lo justo de un scene.json para el grafo y los ficheros (SceneData lo cumple). */
 export interface PrefetchScene {
   assets?: { foreground?: string | null };
@@ -18,7 +23,7 @@ export interface PrefetchScene {
   combos?: Array<{ script?: unknown[] }>;
   dialogues?: Record<string, { nodes?: Record<string, { onEnter?: unknown[] }> }>;
   transitions?: { goto?: Array<{ targetScene?: string }> };
-  conditionalOverlays?: Array<{ id: string; sprite: string; format?: 'png' | 'webp' }>;
+  conditionalOverlays?: Array<{ id: string; sprite: string; format?: 'png' | 'webp'; bounds?: unknown }>;
   web3Visuals?: Array<{ defaultSprite: string; variants?: Array<{ sprite: string }> }>;
   audio?: { music?: string | null };
 }
@@ -69,15 +74,20 @@ export const musicUrl = (track: string, v: string): string => `assets/audio/musi
  * Imágenes de una escena con la clave de textura que les da PreloadScene: fondo, primer plano (si
  * `assets.foreground`), overlays condicionales (`overlay_<escena>_<id>`, png o webp según `format`) y sprites de
  * web3Visuals (por defecto y variantes; la clave es el nombre del sprite).
+ *
+ * A5.1: el arte a tamaño de fondo (fondo, primer plano y overlays sin `bounds`) se sirve en variantes
+ * `<nombre>@<ancho>.webp` (src/systems/SceneTextures.ts); `variant` es el ancho elegido para la sesión (DEFAULT_BG_VARIANT
+ * si no se pasa). Los overlays recortados (con `bounds`) y los sprites web3 van a su tamaño, como siempre.
  */
-export function sceneImageAssets(sceneId: string, scene: PrefetchScene | null | undefined, v: string): SceneAsset[] {
+export function sceneImageAssets(sceneId: string, scene: PrefetchScene | null | undefined, v: string, variant: number = DEFAULT_BG_VARIANT): SceneAsset[] {
   const base = `assets/scenes/${sceneId}`;
-  const out: SceneAsset[] = [{ key: `bg_${sceneId}`, url: `${base}/background.webp${v}` }];
+  const full = (name: string) => `${base}/${variantFile(name, variant)}${v}`;
+  const out: SceneAsset[] = [{ key: `bg_${sceneId}`, url: full('background') }];
   if (!scene) return out;
-  if (scene.assets?.foreground) out.push({ key: `fg_${sceneId}`, url: `${base}/foreground.webp${v}` });
+  if (scene.assets?.foreground) out.push({ key: `fg_${sceneId}`, url: full('foreground') });
   for (const co of scene.conditionalOverlays ?? []) {
     const ext = co.format === 'webp' ? 'webp' : 'png';
-    out.push({ key: `overlay_${sceneId}_${co.id}`, url: `${base}/${co.sprite}.${ext}${v}` });
+    out.push({ key: `overlay_${sceneId}_${co.id}`, url: co.bounds ? `${base}/${co.sprite}.${ext}${v}` : full(co.sprite) });
   }
   for (const w of scene.web3Visuals ?? []) {
     out.push({ key: w.defaultSprite, url: `${base}/${w.defaultSprite}.png${v}` });
@@ -127,6 +137,8 @@ export interface PlanInput {
   /** scene.json ya conocidos (los que faltan se piden primero) */
   scenes: Readonly<Record<string, PrefetchScene | undefined>>;
   v: string;
+  /** A5.1: ancho de la variante de fondo de la sesión */
+  variant?: number;
   /** URLs ya descargadas a la caché HTTP (o en curso) */
   done: ReadonlySet<string>;
   /** Textura (o audio) ya en Phaser */
@@ -157,7 +169,7 @@ export function planPrefetch(input: PlanInput): PrefetchTask[] {
   for (const id of neighbors) {
     const s = scenes[id];
     if (!s) continue;
-    for (const a of sceneImageAssets(id, s, v)) add({ scene: id, kind: 'image', url: a.url, key: a.key });
+    for (const a of sceneImageAssets(id, s, v, input.variant)) add({ scene: id, kind: 'image', url: a.url, key: a.key });
   }
   if (!muted) {
     for (const id of neighbors) {

@@ -5,7 +5,15 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 
 const T = await import(process.env.SCENE_TEXTURES_PATH ?? '../src/systems/SceneTextures.ts');
-const { textureBytes, textureReport, toMb, BIG_TEXTURE_BYTES } = T;
+const { textureBytes, textureReport, toMb, BIG_TEXTURE_BYTES, DEFAULT_BG_VARIANT, variantFile, BG_VARIANT_WIDTHS } = T;
+const P = await import(process.env.SCENE_PREFETCH_PATH ?? '../src/systems/ScenePrefetch.ts');
+
+test('A5.1: ScenePrefetch repite DEFAULT_BG_VARIANT y variantFile de SceneTextures, y la variante por defecto existe', () => {
+  assert.equal(P.DEFAULT_BG_VARIANT, DEFAULT_BG_VARIANT);
+  assert.equal(P.variantFile('background', 1280), variantFile('background', 1280));
+  assert.equal(variantFile('background', 2048), 'background@2048.webp');
+  assert.ok(BG_VARIANT_WIDTHS.includes(DEFAULT_BG_VARIANT));
+});
 
 test('textureBytes: RGBA de 8 bits sin mipmaps (un fondo de 3712×1152 son 16,3 MiB)', () => {
   assert.equal(textureBytes(3712, 1152), 3712 * 1152 * 4);
