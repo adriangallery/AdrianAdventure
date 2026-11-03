@@ -16,7 +16,7 @@
     "test:walkthrough:selftest": "node scripts/walkthrough.mjs --selftest qa/selftest.json",
     "test:walkthrough:unit": "node --test tests/walkthrough-core.test.mjs",
     "test:server": "node --test tests/leaderboard-privacy.test.mjs",
-    "test:engine": "node --experimental-strip-types --test tests/script-engine.test.mjs tests/audio-policy.test.mjs tests/save-migration.test.mjs tests/debug-params.test.mjs tests/pathfinding.test.mjs tests/dialogue-system.test.mjs tests/facing.test.mjs tests/speech-layout.test.mjs tests/desktop-controls.test.mjs tests/cinematics.test.mjs tests/scene-prefetch.test.mjs tests/overlay-placement.test.mjs tests/journal.test.mjs tests/pixel-scale.test.mjs tests/player-anim.test.mjs tests/fail-responses.test.mjs tests/npc-life.test.mjs",
+    "test:engine": "node --experimental-strip-types --test tests/script-engine.test.mjs tests/audio-policy.test.mjs tests/save-migration.test.mjs tests/debug-params.test.mjs tests/pathfinding.test.mjs tests/dialogue-system.test.mjs tests/facing.test.mjs tests/speech-layout.test.mjs tests/desktop-controls.test.mjs tests/cinematics.test.mjs tests/scene-prefetch.test.mjs tests/overlay-placement.test.mjs tests/journal.test.mjs tests/pixel-scale.test.mjs tests/player-anim.test.mjs tests/fail-responses.test.mjs tests/npc-life.test.mjs tests/footsteps.test.mjs tests/audio-ambience.test.mjs tests/audio-synth.test.mjs",
     "test:lint": "node --test tests/lint-scenes.test.mjs",
     "lint:scenes": "node scripts/lint-scenes.mjs",
     "test:voices": "node --test tests/voice-coverage.test.mjs",

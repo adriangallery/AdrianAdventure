@@ -241,6 +241,7 @@
               "text": "Back to the entrance.",
               "duration": 1000
             },
+            { "op": "playSound", "key": "door_creak" },
             {
               "op": "fadeToScene",
               "sceneId": "outside",
@@ -257,6 +258,7 @@
               "text": "Back to the entrance.",
               "duration": 1000
             },
+            { "op": "playSound", "key": "door_creak" },
             {
               "op": "fadeToScene",
               "sceneId": "outside",
@@ -291,6 +293,7 @@
               "text": "Back to the entrance.",
               "duration": 1000
             },
+            { "op": "playSound", "key": "door_creak" },
             {
               "op": "fadeToScene",
               "sceneId": "outside",
@@ -307,6 +310,7 @@
               "text": "Back to the entrance.",
               "duration": 1000
             },
+            { "op": "playSound", "key": "door_creak" },
             {
               "op": "fadeToScene",
               "sceneId": "outside",
@@ -833,6 +837,7 @@
           "h": 30
         },
         "onEnter": [
+          { "op": "playSound", "key": "door_creak" },
           {
             "op": "gotoScene",
             "sceneId": "outside",
@@ -1193,7 +1198,8 @@
       "filterFrequency": 3000,
       "volume": 0.9
     },
-    "ambience": null,
+    "ambience": "office_hum",
+    "footstep": "tile",
     "sfx": {}
   },
   "transitions": {

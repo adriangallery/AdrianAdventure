@@ -10,6 +10,7 @@ import { BadgePanel } from '@/ui/BadgePanel';
 import { JournalPanel } from '@/ui/JournalPanel';
 import { DialogueSystem, type DialogueTree } from '@/systems/DialogueSystem';
 import { VoiceSystem } from '@/systems/VoiceSystem';
+import { sfxOf } from '@/systems/Sfx';
 import type { InventorySystem } from '@/systems/InventorySystem';
 import type { SceneData, HotspotData, ScriptOp } from '@/types/scene.types';
 import type { Verb, GameState } from '@/types/game.types';
@@ -229,7 +230,7 @@ export class UIScene extends Phaser.Scene {
     gameScene.events.on('npc:tapped', (npcId: string, treeId: string, startNode?: string) => {
       // Prevent double-triggering while dialogue is active
       if (this.registry.get('dialogueActive')) return;
-      if (this.cache.audio.has('npc_talk')) this.sound.play('npc_talk', { volume: 0.4 });
+      sfxOf(this)?.play('npc_talk', { volume: 0.4 });
       // A4.2: la NPC se gira hacia el jugador durante la charla; la boca ya no se mueve todo el diálogo a 200 ms fijos,
       // solo con sus frases y al ritmo de su voz (GameScene.updateNpcLife)
       const npcs = (gameScene as unknown as { npcs?: import('@/objects/NPC').NPC[] }).npcs;
@@ -270,7 +271,7 @@ export class UIScene extends Phaser.Scene {
 
     // Cinematic events (so scripts running from UIScene context can trigger them)
     this.events.on('showTitleCard', async (chapter: string, title: string, subtitle?: string, resolve?: () => void) => {
-      if (this.cache.audio.has('chapter_transition')) this.sound.play('chapter_transition', { volume: 0.4 });
+      sfxOf(this)?.play('chapter_transition', { volume: 0.4 });
       // Title card narration disabled for now (kept for potential re-enable)
       // const sceneId = this.registry.get('currentSceneId') as string;
       // const narKeys = NARRATOR_SEQUENCES[`${sceneId}:titleCard`];

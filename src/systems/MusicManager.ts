@@ -2,6 +2,11 @@ import Phaser from 'phaser';
 import { getMusicLevel, musicVolumeFor } from '@/systems/Settings';
 import { MUTED_STORAGE_KEY, mutedFromStored, shouldFetchAudio } from '@/systems/AudioPolicy';
 import { DUCK_FADE_MS, duckGainFor } from '@/systems/Cinematics';
+import {
+  AMBIENCE_CROSSFADE_MS, ambienceCacheKey, ambienceLoopPoints, ambienceTransition, ambienceUrl, resolveAmbience,
+  type AmbienceAudioConfig, type AmbienceRequest,
+} from '@/systems/Ambience';
+import { AMBIENCE_LOOPS, AMBIENCE_PAD_SEC } from '@/config/ambience.config';
 
 // Inyectado por vite.config.ts (define); mismo patrón que PreloadScene.
 declare const __BUILD_HASH__: string;
@@ -15,15 +20,34 @@ interface ManagedTrack {
   key: string;
 }
 
-interface SceneAudioConfig {
+/** A4.4: bucle de ambiente sonando (source en bucle con loopStart/loopEnd → gain → ambienceGain) */
+interface AmbienceTrack {
+  source: AudioBufferSourceNode;
+  gainNode: GainNode;
+  key: string;
+  gain: number;
+  loop: { start: number; end: number };
+}
+
+interface SceneAudioConfig extends AmbienceAudioConfig {
   music: string | null;
   variation?: MusicVariation;
   crossfadeDuration?: number;
 }
 
+/** A4.4 (QA): qué suena ahora (música y ambiente), qué se está pidiendo y quién baja la música */
+export interface MusicQaState {
+  muted: boolean;
+  music: { key: string | null; pending: string | null; gain: number | null };
+  ambience: { key: string | null; requested: string | null; pending: string | null; gain: number | null; loop: { start: number; end: number } | null };
+  duck: string[];
+  duckGain: number;
+}
+
 const DEFAULT_CROSSFADE = 4000;
 const DEFAULT_VOLUME = 0.25;
 const BYPASS_FREQUENCY = 20000;
+const round3 = (n: number) => Math.round(n * 1000) / 1000;
 
 export class MusicManager {
   private game: Phaser.Game;
@@ -54,6 +78,9 @@ export class MusicManager {
     this.masterGain = this.context.createGain();
     this.masterGain.connect(this.duckGain);
     this.masterGain.gain.value = this.musicVolume;
+    // A4.4: el ambiente cuelga del mismo volumen (ajustes y silencio) y del mismo ducking que la música
+    this.ambienceGain = this.context.createGain();
+    this.ambienceGain.connect(this.masterGain);
 
     // Restore mute state — default to muted (OFF) on first visit so user must
     // explicitly tap the Sound toggle, which provides the native gesture needed
@@ -110,17 +137,38 @@ export class MusicManager {
   private pendingKey: string | null = null;
   private readonly loadingTracks = new Set<string>();
 
+  // A4.4: ambiente
+  private ambienceGain: GainNode;
+  private currentAmbience: AmbienceTrack | null = null;
+  private fadingAmbience: AmbienceTrack | null = null;
+  private pendingAmbience: string | null = null;
+  /** Último ambiente pedido por la escena (aunque no haya sonado: silencio, descargando) */
+  private requestedAmbience: string | null = null;
+
   /** Descarga una pista con el loader de la escena activa; `onReady` cuando está decodificada. */
   private loadTrack(key: string, onReady: () => void): void {
+    const v = typeof __BUILD_HASH__ !== 'undefined' ? `?v=${__BUILD_HASH__}` : '';
+    this.loadAudio(key, `assets/audio/music/${key}.mp3${v}`, onReady);
+  }
+
+  /** Descarga un fichero de audio (música o ambiente) con el loader de la escena activa, con una sola petición por clave. */
+  private loadAudio(key: string, url: string, onReady: () => void, attempt = 0): void {
     if (this.loadingTracks.has(key)) return;
-    const scene = this.game.scene.getScenes(true).find((sc) => !!sc.load);
+    // A4.4: al pedirlo desde GameScene.create la escena aún no cuenta como activa (está en CREATING): vale cualquier
+    // escena con loader que esté arrancando o en marcha (su loader procesa la cola en su siguiente update); si no hay
+    // ninguna (cambio de escena a medias), se reintenta un poco después
+    const running = (sc: Phaser.Scene) => sc.sys.settings.status >= Phaser.Scenes.INIT && sc.sys.settings.status <= Phaser.Scenes.RUNNING;
+    const scene = this.game.scene.getScenes(true).find((sc) => !!sc.load) ?? this.game.scene.getScenes(false).find((sc) => !!sc.load && running(sc));
     if (!scene) {
+      if (attempt < 10) {
+        setTimeout(() => this.loadAudio(key, url, onReady, attempt + 1), 200);
+        return;
+      }
       console.warn(`[MusicManager] no active scene to load "${key}"`);
       return;
     }
     this.loadingTracks.add(key);
-    const v = typeof __BUILD_HASH__ !== 'undefined' ? `?v=${__BUILD_HASH__}` : '';
-    scene.load.audio(key, `assets/audio/music/${key}.mp3${v}`);
+    scene.load.audio(key, url);
     scene.load.once(`filecomplete-audio-${key}`, () => {
       this.loadingTracks.delete(key);
       onReady();
@@ -136,6 +184,7 @@ export class MusicManager {
   /** Main entry point — called on every scene transition */
   transitionToScene(audio: SceneAudioConfig): void {
     this.lastAudio = audio;
+    this.requestedAmbience = audio.ambience ?? null;
 
     // If Phaser's sound system is still locked (no user gesture yet),
     // defer playback until the UNLOCKED event fires.
@@ -155,6 +204,133 @@ export class MusicManager {
       this.context.resume();
     }
 
+    this.transitionMusic(audio);
+    this.transitionAmbience(resolveAmbience(audio, AMBIENCE_LOOPS));
+  }
+
+  /**
+   * A4.4: el ambiente de la escena: sigue si es el mismo (solo ajusta el volumen), funde a otro o se apaga. Como la
+   * música (A1.5), en silencio no se descarga nada; al activar el sonido `toggleMute` vuelve a pedir la escena.
+   */
+  private transitionAmbience(next: AmbienceRequest | null): void {
+    const current = this.currentAmbience;
+    const fade = AMBIENCE_CROSSFADE_MS / 1000;
+    switch (ambienceTransition(current?.key ?? null, next)) {
+      case 'none':
+        this.pendingAmbience = null;
+        return;
+      case 'silence':
+        this.pendingAmbience = null;
+        this.fadeAmbienceOut(fade);
+        return;
+      case 'keep': {
+        this.pendingAmbience = null;
+        if (!current || !next) return;
+        current.gain = next.gain;
+        this.rampGain(current.gainNode.gain, next.gain, fade);
+        return;
+      }
+      case 'crossfade':
+        break;
+    }
+    if (!next) return;
+    const cacheKey = ambienceCacheKey(next.key);
+    const buffer = this.getDecodedBuffer(cacheKey);
+    if (!buffer) {
+      if (!shouldFetchAudio(this.muted)) {
+        this.pendingAmbience = null;
+        this.fadeAmbienceOut(0.1);
+        return;
+      }
+      this.pendingAmbience = next.key;
+      const v = typeof __BUILD_HASH__ !== 'undefined' ? `?v=${__BUILD_HASH__}` : '';
+      this.loadAudio(cacheKey, ambienceUrl(next.key, v), () => {
+        if (this.pendingAmbience === next.key) this.transitionAmbience(next);
+      });
+      return;
+    }
+    this.pendingAmbience = null;
+    const loop = ambienceLoopPoints(next.loopSec, buffer.duration, AMBIENCE_PAD_SEC);
+    const source = this.context.createBufferSource();
+    source.buffer = buffer;
+    source.loop = true;
+    source.loopStart = loop.start;
+    source.loopEnd = loop.end;
+    const gainNode = this.context.createGain();
+    gainNode.gain.value = 0.001;
+    source.connect(gainNode);
+    gainNode.connect(this.ambienceGain);
+    source.start(0, loop.start);
+    this.stopAmbience(this.fadingAmbience);
+    this.fadingAmbience = null;
+    if (current) {
+      this.rampGain(current.gainNode.gain, 0.001, fade);
+      this.fadingAmbience = current;
+      setTimeout(() => {
+        if (this.fadingAmbience === current) {
+          this.stopAmbience(current);
+          this.fadingAmbience = null;
+        }
+      }, AMBIENCE_CROSSFADE_MS + 200);
+    }
+    this.currentAmbience = { source, gainNode, key: next.key, gain: next.gain, loop };
+    this.rampGain(gainNode.gain, next.gain, current ? fade : 0.6);
+  }
+
+  private fadeAmbienceOut(fade: number): void {
+    const track = this.currentAmbience;
+    if (!track) return;
+    this.rampGain(track.gainNode.gain, 0.001, fade);
+    this.stopAmbience(this.fadingAmbience);
+    this.fadingAmbience = track;
+    this.currentAmbience = null;
+    setTimeout(() => {
+      if (this.fadingAmbience === track) {
+        this.stopAmbience(track);
+        this.fadingAmbience = null;
+      }
+    }, fade * 1000 + 100);
+  }
+
+  private stopAmbience(track: AmbienceTrack | null): void {
+    if (!track) return;
+    try { track.source.stop(); } catch { /* ya parado */ }
+    track.source.disconnect();
+    track.gainNode.disconnect();
+  }
+
+  /** Rampa exponencial (nunca a 0: el mínimo es 0.001) con un punto de partida fijado; sin automatización si falla */
+  private rampGain(param: AudioParam, target: number, secs: number): void {
+    const safe = Math.max(target, 0.001);
+    try {
+      const now = this.context.currentTime;
+      param.cancelScheduledValues(now);
+      param.setValueAtTime(Math.max(param.value, 0.001), now);
+      param.exponentialRampToValueAtTime(safe, now + Math.max(0.01, secs));
+    } catch {
+      param.value = safe;
+    }
+  }
+
+  /** A4.4 (QA): música y ambiente que suenan, lo que se está pidiendo y el ducking */
+  qaState(): MusicQaState {
+    const amb = this.currentAmbience;
+    return {
+      muted: this.muted,
+      music: { key: this.currentKey, pending: this.pendingKey, gain: this.currentTrack ? round3(this.currentTrack.gainNode.gain.value) : null },
+      ambience: {
+        key: amb?.key ?? null,
+        requested: this.requestedAmbience,
+        pending: this.pendingAmbience,
+        gain: amb ? round3(amb.gainNode.gain.value) : null,
+        loop: amb ? { start: round3(amb.loop.start), end: round3(amb.loop.end) } : null,
+      },
+      duck: [...this.duckSources],
+      duckGain: round3(this.duckGain.gain.value),
+    };
+  }
+
+  private transitionMusic(audio: SceneAudioConfig): void {
     const duration = (audio.crossfadeDuration ?? DEFAULT_CROSSFADE) / 1000;
     const newKey = audio.music;
     const variation = audio.variation;
@@ -269,9 +445,14 @@ export class MusicManager {
   destroy(): void {
     this.stopTrack(this.currentTrack);
     this.stopTrack(this.fadingTrack);
+    this.stopAmbience(this.currentAmbience);
+    this.stopAmbience(this.fadingAmbience);
+    this.currentAmbience = null;
+    this.fadingAmbience = null;
     this.currentTrack = null;
     this.fadingTrack = null;
     this.currentKey = null;
+    this.ambienceGain.disconnect();
     this.masterGain.disconnect();
     this.duckGain.disconnect();
   }

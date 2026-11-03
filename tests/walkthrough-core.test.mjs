@@ -6,7 +6,7 @@ import { readFileSync } from 'node:fs';
 import {
   attemptIndex, check, checkAttemptRan, checkCinematic, checkFailResponse, checkHighlighted, checkJournal, checkLastChoices, checkListenerGrowth, checkRejects, checkWalkTarget, classify,
   describe, kindOf, newLogLines, routeDefects, runScriptDefects, selftestDefects, selftestMismatch, tapsScene,
-  checkPixel, notePixel, checkAnim, checkNpc,
+  checkPixel, notePixel, checkAnim, checkNpc, checkAudio,
 } from '../scripts/lib/walkthrough-core.mjs';
 
 const readJson = (p) => JSON.parse(readFileSync(new URL(`../${p}`, import.meta.url), 'utf8'));
@@ -571,4 +571,25 @@ test('A2.5: los rejects de respuestas de fallo de la ruta crítica casan con la 
   for (const f of ['qa/walkthrough.json', 'qa/sequence-breaks.json', 'qa/selftest.json']) {
     for (const r of readJson(f).routes) for (const s of r.steps) if (s.rejects) assert.doesNotMatch(s.rejects, /can't (use|push|pull|pick)|nobody to give|doesn't want/i, `${f} ${r.id}`);
   }
+});
+
+test('checkAudio (A4.4): ambiente pedido, superficie, pasos y efectos pedidos durante el paso', () => {
+  const audio = (counts, extra = {}) => ({
+    muted: true, music: { key: null, pending: 'retro-adventure', gain: null },
+    ambience: { key: null, requested: 'crickets', pending: null, gain: null, loop: null }, duck: [], duckGain: 1,
+    sfx: { last: [], total: 3, counts, missing: [] }, footsteps: { count: 4, surface: 'gravel', last: null }, ...extra,
+  });
+  const before = st({ audio: audio({ step_gravel_1: 1 }) });
+  const after = st({ audio: audio({ step_gravel_1: 2, plank_pull: 1 }) });
+  assert.deepEqual(checkAudio({ ambience: 'crickets', surface: 'gravel', footstepsMin: 4, sfxPlayed: ['plank_pull', 'step_gravel_1'], sfxNotPlayed: ['door_creak'], missing: false, muted: true }, after, before), []);
+  assert.deepEqual(check({ audio: { ambience: 'crickets' } }, after, { before }), []);
+  const f = checkAudio({ ambience: 'wind', surface: 'wood', footstepsMin: 5, sfxPlayed: ['door_creak'], sfxNotPlayed: ['plank_pull'], muted: false }, after, before);
+  assert.equal(f.length, 6, f.join(' | '));
+  assert.match(f[0], /ambiente pedido «crickets», se esperaba «wind»/);
+  assert.match(f[3], /«door_creak» no se pidió durante el paso \(pedidos: step_gravel_1, plank_pull\)/);
+  // Sin estado de antes, cuenta todo lo pedido desde que arrancó la página
+  assert.deepEqual(checkAudio({ sfxPlayed: ['step_gravel_1'] }, after, undefined), []);
+  assert.deepEqual(checkAudio({ missing: false }, st({ audio: audio({}, { sfx: { last: [], total: 1, counts: { x: 1 }, missing: ['x'] } }) })), ['audio: efectos pedidos que no estaban en caché: x']);
+  assert.deepEqual(checkAudio({ ambience: null }, st({ audio: null })), ['sin estado de audio (no hay escena de juego)']);
+  assert.match(checkAudio({ ambience: null }, st()).join(), /anterior a A4.4/);
 });

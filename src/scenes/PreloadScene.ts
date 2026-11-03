@@ -197,12 +197,19 @@ export class PreloadScene extends Phaser.Scene {
     }
 
     // SFX
+    // A4.4: los nuevos (pasos por superficie, puertas, interfaz, objetos) los genera scripts/audio/make-sfx.mjs
     const sfxKeys = [
       'ui_click', 'ui_hover', 'ui_open', 'ui_close', 'ui_error',
       'item_pickup', 'item_use', 'item_combo', 'item_unlock',
       'door_open', 'door_locked', 'keypad_beep', 'keypad_success', 'keypad_fail', 'footstep',
       'achievement', 'chapter_transition', 'discovery',
       'wallet_connect', 'npc_talk', 'save_game', 'typewriter',
+      'step_wood_1', 'step_wood_2', 'step_gravel_1', 'step_gravel_2', 'step_concrete_1', 'step_concrete_2',
+      'step_tile_1', 'step_tile_2', 'step_metal_1', 'step_metal_2', 'step_carpet_1', 'step_carpet_2', 'step_grass_1', 'step_grass_2',
+      'door_creak', 'door_close', 'door_knock', 'hatch_metal', 'door_slide',
+      'inv_open', 'inv_close', 'verb_select', 'journal_open', 'journal_close', 'journal_note', 'phone_ring', 'phone_pickup', 'phone_hangup',
+      'duck_squeak', 'intercom_buzz', 'glass_break', 'paper_rustle', 'plank_pull', 'switch_flip', 'crt_on', 'floppy_insert',
+      'splash', 'coin_ping', 'thud', 'nest_fall',
     ];
     for (const key of sfxKeys) {
       if (!this.cache.audio.has(key)) {

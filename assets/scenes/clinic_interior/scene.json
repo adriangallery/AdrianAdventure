@@ -337,6 +337,7 @@
                   "op": "wait",
                   "ms": 500
                 },
+                { "op": "playSound", "key": "hatch_metal" },
                 {
                   "op": "fadeToScene",
                   "sceneId": "recovery_pool",
@@ -363,6 +364,7 @@
                   "op": "say",
                   "text": "I pull the cabinet toward me. It glides on hidden rails with a satisfying rumble, revealing a staircase spiraling down. Chlorine, bass music, and the unmistakable scent of bad decisions wafts up."
                 },
+                { "op": "playSound", "key": "hatch_metal" },
                 {
                   "op": "fadeToScene",
                   "sceneId": "recovery_pool",
@@ -468,6 +470,7 @@
                         }
                       ]
                     },
+                    { "op": "playSound", "key": "door_creak" },
                     {
                       "op": "fadeToScene",
                       "sceneId": "treatment_room",
@@ -550,6 +553,7 @@
                         }
                       ]
                     },
+                    { "op": "playSound", "key": "door_creak" },
                     {
                       "op": "fadeToScene",
                       "sceneId": "treatment_room",
@@ -1465,7 +1469,8 @@
       "filterFrequency": 2500,
       "volume": 0.7
     },
-    "ambience": null,
+    "ambience": "clinic_vent",
+    "footstep": "tile",
     "sfx": {}
   },
   "transitions": {

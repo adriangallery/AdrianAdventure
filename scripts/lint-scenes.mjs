@@ -52,6 +52,10 @@
 //       web3Visuals  assets/scenes/<id>/<sprite>.png (defaultSprite y variants[].sprite)
 //       overlays     assets/scenes/<id>/<sprite>.<format|png>
 //       música       assets/audio/music/<music>.mp3
+//       ambiente     A4.4: assets/audio/ambience/<audio.ambience>.mp3 y la clave en AMBIENCE_LOOPS de
+//                    src/config/ambience.config.ts (lo genera scripts/audio/make-ambience.mjs)
+//       pasos        A4.4: audio.footstep y audio.surfaces[].footstep → assets/audio/sfx/step_<superficie>_1.mp3 y
+//                    _2.mp3, y las dos claves en sfxKeys de PreloadScene
 //       playSound    assets/audio/sfx/<key>.mp3 y la clave en la lista sfxKeys de PreloadScene (si no, no suena)
 //       icono objeto assets/sprites/items/<id>.png y el id en itemIds de PreloadScene (si no, emoji/letra)
 //       NPC          textura = id del NPC; PreloadScene carga npc_<x> de assets/sprites/npcs/<x>.png
@@ -168,6 +172,13 @@ export function parseStringArray(text, name) {
   return [...m[1].matchAll(/['"`]([^'"`]+)['"`]/g)].map((x) => x[1]);
 }
 
+/** A4.4: claves de `AMBIENCE_LOOPS` de ambience.config.ts (una por línea: `  crickets: { loopSec: 16, gain: 0.55 },`). */
+export function parseAmbienceKeys(text) {
+  const m = /AMBIENCE_LOOPS[^=]*=\s*\{([\s\S]*?)\n\};/.exec(text ?? '');
+  if (!m) return null;
+  return [...m[1].matchAll(/^\s*([A-Za-z0-9_]+):\s*\{/gm)].map((x) => x[1]);
+}
+
 /** Pasos use/combine de las rutas de QA: objetos que la partida usa de verdad. */
 function qaItemUses(routesFile) {
   const uses = new Set();
@@ -237,6 +248,8 @@ export function loadProject(root) {
       items: parseStringArray(preloadText, 'itemIds'),
       npcs: parseStringArray(preloadText, 'npcIds'),
       sfx: parseStringArray(preloadText, 'sfxKeys'),
+      // A4.4: claves de AMBIENCE_LOOPS (`  <clave>: { loopSec`) de src/config/ambience.config.ts; null si no existe
+      ambience: parseAmbienceKeys(srcFiles.find((f) => f.file.endsWith('config/ambience.config.ts'))?.text),
     },
     exists: (rel) => fs.existsSync(path.join(root, rel)),
   };
@@ -605,13 +618,40 @@ export function lintProject(project) {
       else push('f', 'error', id, `${id}.conditionalOverlays.${co.id}`, `${id}.conditionalOverlays.${co.id}`, `overlay ${co.id} sin sprite`);
     }
     if (s.audio?.music) missing(id, `assets/audio/music/${s.audio.music}.mp3`, `${id}.audio.music`, 'música (MusicManager)');
-    const audioRefs = [];
-    if (s.audio?.ambience) audioRefs.push(['ambience', s.audio.ambience]);
-    for (const [k, v] of Object.entries(s.audio?.sfx ?? {})) audioRefs.push([`sfx.${k}`, v]);
-    for (const [k, v] of audioRefs) {
+    // A4.4: el bucle de ambiente tiene que existir y estar en ambience.config.ts (lo genera scripts/audio/make-ambience.mjs)
+    if (s.audio?.ambience) {
+      const amb = s.audio.ambience;
+      missing(id, `assets/audio/ambience/${amb}.mp3`, `${id}.audio.ambience`, 'bucle de ambiente (MusicManager, A4.4)');
+      if (preload.ambience && !preload.ambience.includes(amb) && exists(`assets/audio/ambience/${amb}.mp3`)) {
+        push('f', 'error', id, amb, `${id}.audio.ambience`, `audio.ambience «${amb}»: el mp3 existe pero no está en AMBIENCE_LOOPS de src/config/ambience.config.ts (node scripts/audio/make-ambience.mjs): no suena`);
+      }
+    }
+    if (s.audio?.ambienceVolume !== undefined && !(typeof s.audio.ambienceVolume === 'number' && s.audio.ambienceVolume >= 0 && s.audio.ambienceVolume <= 2)) {
+      push('f', 'warning', id, String(s.audio.ambienceVolume), `${id}.audio.ambienceVolume`, `audio.ambienceVolume «${s.audio.ambienceVolume}»: fuera de 0-2, se ignora`);
+    }
+    // A4.4: pasos por superficie: step_<superficie>_1/2 en assets/audio/sfx y en sfxKeys de PreloadScene
+    const surfaces = [];
+    if (s.audio?.footstep) surfaces.push(['footstep', s.audio.footstep]);
+    (s.audio?.surfaces ?? []).forEach((r, i) => {
+      const where = `${id}.audio.surfaces[${i}]`;
+      if (!r || typeof r !== 'object' || !['x', 'y', 'w', 'h'].every((k) => typeof r[k] === 'number') || typeof r.footstep !== 'string') {
+        push('f', 'error', id, where, where, `audio.surfaces[${i}]: hace falta { x, y, w, h, footstep }`);
+        return;
+      }
+      surfaces.push([`surfaces[${i}].footstep`, r.footstep]);
+    });
+    for (const [k, surface] of surfaces) {
+      for (const n of [1, 2]) {
+        const key = `step_${surface}_${n}`;
+        const rel = `assets/audio/sfx/${key}.mp3`;
+        if (!exists(rel)) push('f', 'error', id, rel, `${id}.audio.${k}`, `audio.${k} «${surface}»: no existe ${rel} (scripts/audio/make-sfx.mjs)`);
+        else if (preload.sfx && !preload.sfx.includes(key)) push('f', 'error', id, key, `${id}.audio.${k}`, `audio.${k} «${surface}»: ${key} no está en sfxKeys de PreloadScene, no suena`);
+      }
+    }
+    for (const [k, v] of Object.entries(s.audio?.sfx ?? {})) {
       if (typeof v !== 'string') continue;
       const cands = [v, `assets/audio/${v}`, `assets/audio/sfx/${v}.mp3`, `assets/audio/music/${v}.mp3`];
-      if (!cands.some((c) => exists(c))) push('f', 'error', id, v, `${id}.audio.${k}`, `audio.${k} «${v}»: no existe en assets/audio`);
+      if (!cands.some((c) => exists(c))) push('f', 'error', id, v, `${id}.audio.sfx.${k}`, `audio.sfx.${k} «${v}»: no existe en assets/audio`);
     }
     for (const n of s.npcs ?? []) {
       if (typeof n.id !== 'string') continue;

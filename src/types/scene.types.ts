@@ -48,7 +48,14 @@ export interface SceneData {
     music: string | null;
     variation?: MusicVariation;
     crossfadeDuration?: number;
+    /** A4.4: bucle de assets/audio/ambience/<clave>.mp3 (claves en src/config/ambience.config.ts); null = sin ambiente */
     ambience: string | null;
+    /** A4.4: multiplicador del volumen del ambiente en esta escena (0-2, por defecto 1) */
+    ambienceVolume?: number;
+    /** A4.4: superficie de los pasos (wood | gravel | concrete | tile | metal | carpet | grass); sin ella no suenan */
+    footstep?: string | null;
+    /** A4.4: zonas (en %) con otra superficie, p. ej. el porche de madera dentro del camino de grava */
+    surfaces?: Array<{ x: number; y: number; w: number; h: number; footstep: string }>;
     sfx: Record<string, string>;
   };
   transitions: {

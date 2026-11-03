@@ -31,7 +31,8 @@ export function describe(s) {
 
 /**
  * Comprobaciones de estado: scene, has, lacks, flags, unsetFlags, visited, achievements, (A2.6) lastChoices, (A2.2) facing,
- * (A2.4) verb, walkTarget y highlighted, (A2.10) cinematic y playerNear, (A2.8) pixel, (A4.1) anim, (A4.2) npc y (A1.10) noListenerGrowth, que
+ * (A2.4) verb, walkTarget y highlighted, (A2.10) cinematic y playerNear, (A2.8) pixel, (A4.1) anim, (A4.2) npc, (A4.4) audio
+ * (compara con `ctx.before`, el estado de antes del paso) y (A1.10) noListenerGrowth, que
  * compara `st.resizeListeners` con `ctx.listenersBaseline` (lo que había tras el primer paso de la ruta). `flags` trata
  * una flag ausente como false; (A1.4) `unsetFlags` exige que la flag no esté en la partida, ni a false: nadie la ha
  * escrito (p. ej. un parpadeo que antes se hacía encendiendo y apagando la flag). Devuelve los fallos.
@@ -81,6 +82,34 @@ export function check(expect, st, ctx = {}) {
   if (expect.npc) f.push(...checkNpc(expect.npc, st));
   // A2.5: última respuesta de fallo (tipo, objeto, objetivo, verbo, bolsa y texto)
   if (expect.failResponse) f.push(...checkFailResponse(expect.failResponse, st));
+  // A4.4: audio (ambiente pedido, superficie bajo los pies, pasos, efectos pedidos durante el paso)
+  if (expect.audio) f.push(...checkAudio(expect.audio, st, ctx.before));
+  return f;
+}
+
+/**
+ * A4.4: `expect.audio` contra `st.audio` (y el estado de antes del paso, para lo que sonó durante el paso):
+ *  - `ambience`: bucle que pide la escena (`audio.ambience.requested`; null = ninguno). Con el sonido apagado no suena
+ *    pero la petición se apunta igual;
+ *  - `surface`: superficie bajo los pies al acabar (null = muda);
+ *  - `footstepsMin`: pasos dados en la escena (como mínimo);
+ *  - `sfxPlayed` / `sfxNotPlayed`: claves de efectos que se pidieron (o no) durante el paso (sube `sfx.counts[clave]`);
+ *  - `missing: false`: ningún efecto pedido hasta ahora faltaba en la caché (`sfx.missing` vacío);
+ *  - `muted`: silencio activado o no.
+ */
+export function checkAudio(want, st, before) {
+  const a = st.audio;
+  if (a === undefined) return ['el juego no expone `audio` en state() (API de QA anterior a A4.4)'];
+  if (!a) return ['sin estado de audio (no hay escena de juego)'];
+  const f = [];
+  if (want.ambience !== undefined && a.ambience.requested !== want.ambience) f.push(`audio: ambiente pedido «${a.ambience.requested}», se esperaba «${want.ambience}»`);
+  if (want.surface !== undefined && (a.footsteps?.surface ?? null) !== want.surface) f.push(`audio: superficie «${a.footsteps?.surface ?? null}», se esperaba «${want.surface}»`);
+  if (want.footstepsMin !== undefined && (a.footsteps?.count ?? 0) < want.footstepsMin) f.push(`audio: ${a.footsteps?.count ?? 0} paso(s) en la escena, se esperaban al menos ${want.footstepsMin}`);
+  const played = (key) => (a.sfx.counts[key] ?? 0) - (before?.audio?.sfx?.counts?.[key] ?? 0);
+  for (const key of want.sfxPlayed ?? []) if (played(key) <= 0) f.push(`audio: el efecto «${key}» no se pidió durante el paso (pedidos: ${Object.keys(a.sfx.counts).filter((k) => played(k) > 0).join(', ') || 'ninguno'})`);
+  for (const key of want.sfxNotPlayed ?? []) if (played(key) > 0) f.push(`audio: el efecto «${key}» se pidió ${played(key)} vez/veces y no debía`);
+  if (want.missing === false && a.sfx.missing.length) f.push(`audio: efectos pedidos que no estaban en caché: ${a.sfx.missing.join(', ')}`);
+  if (want.muted !== undefined && a.muted !== want.muted) f.push(`audio: muted = ${a.muted}, se esperaba ${want.muted}`);
   return f;
 }
 

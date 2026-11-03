@@ -517,6 +517,7 @@
               "text": "Back to the pool.",
               "duration": 800
             },
+            { "op": "playSound", "key": "door_creak" },
             {
               "op": "fadeToScene",
               "sceneId": "recovery_pool",
@@ -532,6 +533,7 @@
               "text": "Back to the pool.",
               "duration": 800
             },
+            { "op": "playSound", "key": "door_creak" },
             {
               "op": "fadeToScene",
               "sceneId": "recovery_pool",
@@ -843,7 +845,8 @@
       "filterFrequency": 800,
       "volume": 0.4
     },
-    "ambience": null,
+    "ambience": "lab_bubbles",
+    "footstep": "concrete",
     "sfx": {}
   },
   "transitions": {

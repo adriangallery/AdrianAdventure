@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { DEFAULT_SCENE_ID } from '@/config/game.config';
 import { MusicManager } from '@/systems/MusicManager';
+import { SfxPlayer } from '@/systems/Sfx';
 import { AnaglyphPipeline } from '@/shaders/AnaglyphPipeline';
 import { gameUrlParams } from '@/config/debugParams';
 
@@ -30,6 +31,8 @@ export class BootScene extends Phaser.Scene {
     // Create persistent MusicManager (survives scene transitions)
     const musicManager = new MusicManager(this.game);
     this.game.registry.set('musicManager', musicManager);
+    // A4.4: efectos de sonido por un solo sitio (con registro para la API de QA)
+    this.game.registry.set('sfx', new SfxPlayer(this.game));
 
     // A1.8: ?scene solo en dev o con ?qa=1 (src/config/debugParams.ts); ?trailer vale siempre
     const params = gameUrlParams(window.location.search, import.meta.env.DEV);

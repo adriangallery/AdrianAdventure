@@ -25,6 +25,8 @@ import type { PlayerAnimQa } from '@/objects/Player';
 import type { NpcLifeQa } from '@/objects/NPC';
 import type { FailResponse } from '@/systems/FailResponses';
 import { failResponses } from '@/systems/FailResponsesData';
+import type { MusicManager, MusicQaState } from '@/systems/MusicManager';
+import type { SfxPlayer, SfxQaState } from '@/systems/Sfx';
 
 type Point = { x: number; y: number };
 /** A2.6: `used` = ya elegida antes en ese árbol (gris). Las ocultas (`when`, `once`) no salen. */
@@ -143,6 +145,19 @@ export interface QaState {
    * `lastTalk` = última conversación `{ faced, facedPlayer, lines, ms, mouthMoves, voice, level }`. Ver § Vida en las NPC.
    */
   npcLife: NpcLifeQa[];
+  /**
+   * A4.4: audio: `muted`, `music` ({ key, pending, gain }), `ambience` ({ key: el bucle que suena, requested: el que pide
+   * la escena, pending: descargándose, gain, loop: { start, end } }), `duck` (fuentes que bajan la música) y `duckGain`;
+   * `sfx` ({ last: últimas 40 peticiones { key, at, volume, detune, ok }, total, counts, missing }) y `footsteps`
+   * ({ count: pasos en la escena, surface: superficie bajo los pies, last: { surface, key, at } }). null fuera del juego.
+   */
+  audio: AudioQaState | null;
+}
+
+/** A4.4: ver QaState.audio */
+export interface AudioQaState extends MusicQaState {
+  sfx: SfxQaState;
+  footsteps: ReturnType<GameScene['qaFootsteps']> | null;
 }
 
 /** A2.8: ver QaState.pixel */
@@ -440,7 +455,16 @@ export function installQa(game: Phaser.Game): void {
       anim: scene ? scene.qaAnim() : null,
       lastFailResponse: failResponses.last ? { ...failResponses.last } : null,
       npcLife: scene ? scene.qaNpcLife() : [],
+      audio: qaAudio(scene),
     };
+  };
+
+  /** A4.4: música y ambiente (MusicManager), efectos pedidos (SfxPlayer) y pasos de la escena */
+  const qaAudio = (scene: GameScene | null): AudioQaState | null => {
+    const mm = registry.get('musicManager') as MusicManager | undefined;
+    const sfx = registry.get('sfx') as SfxPlayer | undefined;
+    if (!mm || !sfx) return null;
+    return { ...mm.qaState(), sfx: sfx.qaState(), footsteps: scene ? scene.qaFootsteps() : null };
   };
 
   /** A2.9: el diario de la UIScene viva (error si no hay partida). */

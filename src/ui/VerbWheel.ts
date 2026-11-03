@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { Verb, PANEL_VERBS, VERB_LABELS } from '@/types/game.types';
 import { TWP, FONT } from '@/config/theme';
+import { sfxOf } from '@/systems/Sfx';
 
 const WHEEL_RADIUS = 80;
 const BUTTON_RADIUS = 28;
@@ -109,6 +110,8 @@ export class VerbWheel {
     this.container.setScale(0);
     this.container.setAlpha(0);
     this.visible = true;
+    // A4.4: el ui_open de siempre (hasta ahora sin usar) al desplegar la rueda
+    sfxOf(this.scene)?.play('ui_open', { volume: 0.35 });
 
     this.scene.tweens.add({
       targets: this.container,

@@ -209,7 +209,8 @@ await step('transiciones: precarga de vecinas, sin pantalla de carga y sin volve
 // falla si se pide algún mp3 de música o de voz (ni en la precarga, ni al cambiar de escena, ni al hablar).
 // Después se activa el sonido desde los ajustes del juego (botón «Music» del menú del disquete, con clics reales)
 // y la música de la escena actual (otra que la precargada) y la voz tienen que pedirse sin recargar la página.
-const AUDIO_RE = /\/assets\/audio\/(music|voice)\/[^/?]+\.mp3/;
+// A4.4: tampoco los bucles de ambiente
+const AUDIO_RE = /\/assets\/audio\/(music|voice|ambience)\/[^/?]+\.mp3/;
 const SILENT_SCENE = 'mountain';
 const voiceKey = readFileSync('src/config/voice.config.ts', 'utf8').match(/VOICE_TEXT_MAP[\s\S]*?key: '([^']+)'/)?.[1];
 await step('silencio: sin música ni voces; al activar el sonido en ajustes, sí', async () => {
@@ -277,6 +278,14 @@ await step('silencio: sin música ni voces; al activar el sonido en ajustes, sí
     console.log(`    sonido activado en ajustes: ${loud.map((r) => r.url.split('?')[0]).join(', ') || 'nada'} (${mb(audioBytes.sonido)})`);
     if (!loud.some((r) => r.kind === 'music' && r.url.includes(`/${music}.mp3`))) throw new Error(`al activar el sonido no se pidió la música de la escena (${music})`);
     if (voiceKey && !loud.some((r) => r.kind === 'voice')) throw new Error('al activar el sonido la voz no se pidió');
+    // A4.4: y el bucle de ambiente de la escena (si lo tiene), que llega a sonar
+    const ambience = await p.evaluate(() => window.__game.registry.get('sceneData')?.audio?.ambience ?? null);
+    if (ambience) {
+      if (!loud.some((r) => r.kind === 'ambience' && r.url.includes(`/${ambience}.mp3`))) throw new Error(`al activar el sonido no se pidió el ambiente de la escena (${ambience})`);
+      await wait((key) => window.__qa.state().audio?.ambience?.key === key, ambience, 30000);
+      const a = await p.evaluate(() => window.__qa.state().audio.ambience);
+      console.log(`    ambiente ${a.key} sonando: gain ${a.gain} · bucle ${a.loop.start}-${a.loop.end} s`);
+    }
   } finally {
     await ctx.close();
   }

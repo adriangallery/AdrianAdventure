@@ -159,6 +159,7 @@
                   "text": "Keycard accepted. The scanner turns green.",
                   "duration": 1500
                 },
+                { "op": "playSound", "key": "door_slide" },
                 {
                   "op": "fadeToScene",
                   "sceneId": "clinic_interior",
@@ -182,6 +183,7 @@
                       "flag": "clinic_unlocked",
                       "value": true
                     },
+                    { "op": "playSound", "key": "door_slide" },
                     {
                       "op": "fadeToScene",
                       "sceneId": "clinic_interior",
@@ -206,6 +208,7 @@
               "op": "ifFlag",
               "flag": "clinic_unlocked",
               "then": [
+                { "op": "playSound", "key": "door_slide" },
                 {
                   "op": "fadeToScene",
                   "sceneId": "clinic_interior",
@@ -224,6 +227,7 @@
             }
           ],
           "TALK": [
+            { "op": "playSound", "key": "intercom_buzz" },
             {
               "op": "say",
               "text": "An intercom crackles: 'Visiting hours are... always. Please authenticate.'"
@@ -934,7 +938,9 @@
     "variation": {
       "volume": 0.8
     },
-    "ambience": null,
+    "ambience": "wind",
+    "ambienceVolume": 0.6,
+    "footstep": "gravel",
     "sfx": {}
   },
   "transitions": {

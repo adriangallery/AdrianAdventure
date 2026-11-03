@@ -908,7 +908,8 @@
       "filterFrequency": 3000,
       "volume": 0.6
     },
-    "ambience": null,
+    "ambience": "wind",
+    "footstep": "gravel",
     "sfx": {}
   },
   "transitions": {

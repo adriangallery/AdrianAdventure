@@ -606,7 +606,7 @@ El juego funciona sin nada de la columna «Arte pendiente». Rutas relativas a `
 | Iconos nuevos de inventario (64×64, `sprites/items/<id>.png`) | No | Por código (sharp): `note_half_a/b` = recortes de `code_note.png`; `vet_bill` = `receipt.png` teñido; `empty_can`/`rainwater_can` = `energy_drink.png` desaturado / teñido azul; `fake_alpha` = `receipt.png` + texto; `marked_map` = `printout.png` + X roja; `scrap_paper` = recorte de `printout.png`; `patient_wristband` = `keycard.png` teñido; `sobriety_chip` = `golden_token.png` en bronce; `fence_plank`, `pizza_slice`, `leaky_pen`, `extension_cord` = pixel art 64×64 dibujado en SVG por script y rasterizado con sharp | Versiones dibujadas a mano, 64×64, contorno negro de 1 px, paleta de los iconos actuales |
 | Polillas, polvo, LEDs | No | A4.3 (partículas por código) | — |
 | Nido cayendo | No | Tween del icono `note_half_b` o solo texto | — |
-| Pato chirriando, interfono, teléfono | No | A4.4 (síntesis con ffmpeg/sox) | — |
+| Pato chirriando, interfono, teléfono | Sí (A4.4): `duck_squeak`, `intercom_buzz`, `phone_ring`/`phone_pickup`, más pasos por superficie, puertas, interfaz y 9 bucles de ambiente, todo sintetizado en `scripts/audio/` | — | — |
 | Variantes noche/amanecer | No | **Requiere motor**: tinte por escena | Fondos propios 3712×1152 |
 | Fondos de las 13 escenas | Sí | — | — |
 

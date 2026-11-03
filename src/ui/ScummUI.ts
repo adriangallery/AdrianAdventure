@@ -8,6 +8,7 @@ import { TWP, FONT, LAYOUT } from '@/config/theme';
 import { hasFinePointer } from '@/config/platform';
 import { VERB_KEYS } from '@/systems/DesktopControls';
 import { failResponses } from '@/systems/FailResponsesData';
+import { sfxOf } from '@/systems/Sfx';
 
 export const SCUMM_PANEL_MIN_HEIGHT: number = LAYOUT.PANEL_MIN_HEIGHT;
 const COLLAPSED_HEIGHT = 36;
@@ -322,6 +323,7 @@ export class ScummUI {
     if (!this.isMobile || this.collapsed) return;
     this.collapsed = true;
     ScummUI.writeCollapsed(true);
+    sfxOf(this.scene)?.play('inv_close', { volume: 0.4 });
     this.animatePanel();
   }
 
@@ -329,6 +331,7 @@ export class ScummUI {
     if (!this.isMobile || !this.collapsed) return;
     this.collapsed = false;
     ScummUI.writeCollapsed(false);
+    sfxOf(this.scene)?.play('inv_open', { volume: 0.4 });
     this.animatePanel();
   }
 
@@ -352,6 +355,8 @@ export class ScummUI {
   }
 
   selectVerb(verb: Verb): void {
+    // A4.4: un tic suave al cambiar de verbo (no al volver a Walk desde el código: resetSelection, QA)
+    if (verb !== this.selectedVerb && verb !== Verb.WALK) sfxOf(this.scene)?.play('verb_select', { volume: 0.35 });
     // Toggle: clicking the already-active verb deselects it (resets to WALK)
     if (verb === this.selectedVerb && verb !== Verb.WALK) {
       this.selectedVerb = Verb.WALK;
@@ -462,7 +467,7 @@ export class ScummUI {
         state.flags['ape_costume_worn'] = !wearing;
         this.scene.registry.set('gameState', state);
         // Player.update() reads the flag each frame and swaps sprites automatically
-        this.scene.sound.play('item_use', { volume: 0.6 });
+        sfxOf(this.scene)?.play('item_use', { volume: 0.6 });
         this.scene.events.emit('say', !wearing
           ? "I put on the ape costume. The fur is warm. The mask smells like diamond hands and bad decisions. I look ridiculous. I look perfect."
           : "I take off the ape costume and stuff it back in my pocket. How does it even fit in there? Best not to question adventure game logic."

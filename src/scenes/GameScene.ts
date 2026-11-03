@@ -38,6 +38,8 @@ import { wantsGesture } from '@/systems/PlayerAnim';
 import { defaultFacing, lifeSeed, type VoiceState } from '@/systems/NpcLife';
 import type { VoiceSystem } from '@/systems/VoiceSystem';
 import { failResponses } from '@/systems/FailResponsesData';
+import { surfaceAt, stepSound } from '@/systems/Footsteps';
+import { sfxOf } from '@/systems/Sfx';
 
 /** A2.4 (QA): cómo pulsa la API de QA: botón derecho o clic de ratón (cuenta para el doble clic). */
 type QaClick = { button?: 'left' | 'right'; mouse?: boolean };
@@ -58,6 +60,8 @@ export class GameScene extends Phaser.Scene {
   private inventorySystem!: InventorySystem;
   private saveSystem!: SaveLoadSystem;
   private musicManager!: MusicManager;
+  /** A4.4 (QA): último paso (superficie bajo los pies y efecto que sonó, null si la superficie es muda) */
+  private lastFootstep: { surface: string | null; key: string | null; at: number } | null = null;
   private cinematicOverlay!: CinematicOverlay;
   /** A2.10: cinemáticas (cámara, franjas, actores, transiciones); uno por escena, se destruye en SHUTDOWN */
   private cinema?: CinematicDirector;
@@ -316,6 +320,20 @@ export class GameScene extends Phaser.Scene {
     // Audio — MusicManager persists across scenes (singleton on game.registry)
     this.musicManager = this.game.registry.get('musicManager') as MusicManager;
     this.musicManager.transitionToScene(sceneData.audio);
+
+    // A4.4: pasos según la superficie bajo los pies (audio.footstep / audio.surfaces); el mismo listener único que
+    // player:arrived (los eventos de la escena sobreviven al reinicio)
+    this.events.removeAllListeners('player:footstep');
+    this.lastFootstep = null;
+    this.events.on('player:footstep', (step: { x: number; y: number; foot: 0 | 1; depth: number }) => {
+      if (this.isTrailer) return;
+      const surface = surfaceAt(sceneData.audio, step.x, step.y);
+      this.lastFootstep = { surface, key: null, at: Math.round(performance.now()) };
+      if (!surface) return;
+      const sound = stepSound(surface, step.foot, Math.random(), step.depth);
+      this.lastFootstep.key = sound.key;
+      sfxOf(this)?.play(sound.key, { volume: sound.volume, detune: sound.detune });
+    });
 
     // NPCs
     this.npcs = [];
@@ -1513,7 +1531,7 @@ export class GameScene extends Phaser.Scene {
       },
       addItem: (id, name) => {
         this.inventorySystem.addItem(id, name);
-        if (this.cache.audio.has('item_pickup')) this.sound.play('item_pickup', { volume: 0.6 });
+        sfxOf(this)?.play('item_pickup', { volume: 0.6 });
       },
       removeItem: (id) => this.inventorySystem.removeItem(id),
       isWalletConnected: () => getWalletState().connected,
@@ -1524,7 +1542,7 @@ export class GameScene extends Phaser.Scene {
       mintItem: async (tokenId): Promise<MintResult> => mintItem({ tokenId }),
       mintAchievement: async (achievementId): Promise<MintResult> => mintAchievement(achievementId),
       playSound: (key) => {
-        if (this.cache.audio.has(key)) this.sound.play(key, { volume: 0.7 });
+        sfxOf(this)?.play(key, { volume: 0.7 });
       },
       startDialogue: async (_npcId, treeId) => {
         const ui = this.scene.get('UIScene');
@@ -1556,7 +1574,7 @@ export class GameScene extends Phaser.Scene {
             this.registry.set('gameState', this.gameState);
           }
         }
-        if (this.cache.audio.has('achievement')) this.sound.play('achievement', { volume: 0.6 });
+        sfxOf(this)?.play('achievement', { volume: 0.6 });
         const ui = this.scene.get('UIScene');
         ui.events.emit('showAchievement', text);
       },
@@ -1603,6 +1621,8 @@ export class GameScene extends Phaser.Scene {
         this.gameState = { ...this.gameState, journal: progress };
         this.registry.set('gameState', this.gameState);
         this.registry.set('journalLastCall', call);
+        // A4.4: Dex descuelga (el tono de llamada es cosa del móvil, JournalPanel.callAnon)
+        sfxOf(this)?.play('phone_pickup', { volume: 0.4 });
         await new Promise<void>((resolve) => {
           this.scene.get('UIScene').events.emit('say', call.text, 'Anon', resolve);
         });
@@ -2041,6 +2061,16 @@ export class GameScene extends Phaser.Scene {
   /** A4.1 (QA): animación del jugador (textura, dirección, hablar, gesto, tics, disfraz, giro y escala) */
   qaAnim(): PlayerAnimQa {
     return this.player.getAnimState();
+  }
+
+  /** A4.4 (QA): pasos dados en esta escena, superficie bajo los pies ahora y el último paso que sonó */
+  qaFootsteps(): { count: number; surface: string | null; last: { surface: string | null; key: string | null; at: number } | null } {
+    const audio = (this.registry.get('sceneData') as SceneData | undefined)?.audio;
+    return {
+      count: this.player.getFootstepCount(),
+      surface: surfaceAt(audio, this.player.pctX, this.player.pctY),
+      last: this.lastFootstep ? { ...this.lastFootstep } : null,
+    };
   }
 
   /** A4.1 (QA): enseña el juego de sprites del disfraz ('ape') o el normal sin tocar inventario ni flags; null = el de la partida */

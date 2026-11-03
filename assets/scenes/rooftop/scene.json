@@ -775,6 +775,7 @@
                       "flag": "basement_unlocked",
                       "value": true
                     },
+                    { "op": "playSound", "key": "hatch_metal" },
                     {
                       "op": "fadeToScene",
                       "sceneId": "basement",
@@ -831,6 +832,7 @@
                       "flag": "basement_unlocked",
                       "value": true
                     },
+                    { "op": "playSound", "key": "hatch_metal" },
                     {
                       "op": "fadeToScene",
                       "sceneId": "basement",
@@ -975,6 +977,7 @@
               "text": "I head back downstairs.",
               "duration": 800
             },
+            { "op": "playSound", "key": "door_creak" },
             {
               "op": "fadeToScene",
               "sceneId": "upstairs",
@@ -990,6 +993,7 @@
               "text": "Back to the trading floor.",
               "duration": 800
             },
+            { "op": "playSound", "key": "door_creak" },
             {
               "op": "fadeToScene",
               "sceneId": "upstairs",
@@ -1023,6 +1027,7 @@
               "text": "I push through the door and head back down.",
               "duration": 800
             },
+            { "op": "playSound", "key": "door_creak" },
             {
               "op": "fadeToScene",
               "sceneId": "upstairs",
@@ -1068,6 +1073,7 @@
               "text": "I lift the hatch and climb down the ladder into the lobby.",
               "duration": 1200
             },
+            { "op": "playSound", "key": "hatch_metal" },
             {
               "op": "fadeToScene",
               "sceneId": "lobby",
@@ -1095,6 +1101,7 @@
               "text": "I pull the hatch open and descend into the lobby.",
               "duration": 1200
             },
+            { "op": "playSound", "key": "hatch_metal" },
             {
               "op": "fadeToScene",
               "sceneId": "lobby",
@@ -1122,6 +1129,7 @@
               "text": "I pull the hatch open and lower myself into the lobby.",
               "duration": 1200
             },
+            { "op": "playSound", "key": "hatch_metal" },
             {
               "op": "fadeToScene",
               "sceneId": "lobby",
@@ -1229,7 +1237,8 @@
     "variation": {
       "volume": 0.8
     },
-    "ambience": null,
+    "ambience": "wind",
+    "footstep": "concrete",
     "sfx": {}
   },
   "transitions": {

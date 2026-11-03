@@ -741,3 +741,47 @@ Solo durante la transición: `qa/voice-coverage-allow.json` es una lista de
 `{ "key": "<clave>" | "text": "<principio del texto>", "reason": "…" }`. Sin `reason` no vale, y una entrada
 que ya no silencia nada sale como aviso para borrarla. Lo normal es no necesitarla: etiqueta la PR con
 `voices`.
+
+# Efectos y ambientes (A4.4)
+
+Todo el audio nuevo está **sintetizado por script** (decisión D2: nada descargado ni de pago). Los generadores viven en
+`scripts/audio/` y quedan en el repo para regenerar: `synth.mjs` (osciladores, ruido, envolventes, filtros, WAV; Node puro,
+determinista por semilla), `sfx-recipes.mjs` + `make-sfx.mjs` (40 efectos → `assets/audio/sfx/<clave>.mp3` con ffmpeg) y
+`ambience-recipes.mjs` + `make-ambience.mjs` (9 bucles → `assets/audio/ambience/<clave>.mp3` y `src/config/ambience.config.ts`).
+Los MP3 van en el repo (LAME no es reproducible byte a byte entre versiones); `node scripts/audio/make-ambience.mjs --check`
+comprueba que el config generado está al día y `tests/audio-synth.test.mjs` (en `test:engine`) que cada receta es determinista,
+no satura y tiene su mp3 en `sfxKeys` de PreloadScene.
+
+| Familia | Claves | Dónde suenan |
+|---|---|---|
+| Pasos | `step_<superficie>_1/2`: wood, gravel, concrete, tile, metal, carpet, grass | `audio.footstep` / `audio.surfaces` de cada escena |
+| Puertas | `door_creak`, `door_close`, `door_knock`, `hatch_metal`, `door_slide` | `playSound` antes de los `fadeToScene` de puertas y escotillas |
+| Interfaz | `inv_open`/`inv_close` (cajón del panel), `verb_select`, `ui_open` (rueda de verbos), `journal_open`/`journal_close`/`journal_note` (móvil), `phone_ring`/`phone_pickup`/`phone_hangup` (Call Anon) | ScummUI, VerbWheel, JournalPanel, op `callAnon` |
+| Objetos y personajes | `duck_squeak` (Gerald), `intercom_buzz` (Nurse Gwei), `glass_break` (ya lo pedía server_room y no existía), `paper_rustle`, `plank_pull`, `nest_fall`, `switch_flip`, `crt_on`, `floppy_insert`, `splash`, `coin_ping`, `thud` | `playSound` en los scene.json |
+| Ambientes (bucles de 16 s) | `crickets`, `wind`, `server_hum`, `basement_drip`, `clinic_vent`, `office_hum`, `pool_water`, `lab_bubbles`, `dawn_birds` | `audio.ambience` de cada escena |
+
+**scene.json** (`audio`): `ambience` (clave de `AMBIENCE_LOOPS`), `ambienceVolume` (0-2, por defecto 1), `footstep` (superficie
+por defecto) y `surfaces` (rectángulos en % con otra superficie: el porche de madera de `outside` dentro del camino de grava).
+Sin `footstep` la escena sigue muda. Linter (f): el bucle tiene que existir y estar en `ambience.config.ts`; cada superficie
+tiene que tener sus dos `step_*` en disco y en `sfxKeys`.
+
+- **Ambiente** (`src/systems/Ambience.ts`, puro; suena en `MusicManager`): un `AudioBufferSourceNode` en bucle por debajo de la
+  música, colgado del mismo volumen de ajustes, del silencio y del ducking. Al cambiar de escena sigue si es el mismo bucle (solo
+  ajusta el volumen), funde en 1,5 s a otro, o se apaga. A1.5: en silencio no se descarga; al activar el sonido se pide. El
+  prefetch de vecinas (A2.7) lo baja detrás de la música. Cada mp3 es «bucle + 0,25 s del principio repetido»: el fichero es
+  periódico y `loopStart`/`loopEnd` se centran en ese relleno, así el retardo del descodificador de MP3 no abre un hueco al cerrar
+  el bucle. Las recetas funden el final sobre el principio (`seamless`) antes de escribir.
+- **Pasos** (`src/systems/Footsteps.ts`, puro): `Player` acumula la distancia andada en píxeles de arte (A2.8: world px / unidad
+  de píxel / profundidad) y emite `player:footstep` cada 20 píxeles de arte (≈ 1,8 pasos/s), el primero tras media zancada; un
+  salto grande no cuenta. GameScene mira la superficie bajo los pies y toca `step_<s>_1`/`_2` alternando el pie, con un desafino
+  al azar de ±120 cents y un poco menos de volumen cuanto más lejos (depthScale). También en los `actorMove` de cinemática.
+- **Un solo reproductor** (`src/systems/Sfx.ts`, `SfxPlayer` en `registry.sfx`): comprueba la caché, toca con volumen/desafino y
+  apunta cada petición. Las llamadas sueltas a `this.sound.play` de GameScene/UIScene/ScummUI pasan por él.
+- **QA**: `state().audio` = `{ muted, music: { key, pending, gain }, ambience: { key, requested, pending, gain, loop }, duck, duckGain,
+  sfx: { last, total, counts, missing }, footsteps: { count, surface, last } }`. `expect.audio`: `ambience` (pedido por la escena,
+  aunque esté en silencio), `surface`, `footstepsMin`, `sfxPlayed`/`sfxNotPlayed` (claves pedidas durante el paso: compara
+  `sfx.counts` con el estado de antes del paso), `missing: false` (nada pedido faltaba en caché) y `muted`. La ruta crítica lo usa
+  en outside (grillos, `plank_pull`, `nest_fall`), al entrar al lobby (`door_creak`, `office_hum`, baldosa), al andar (dos pies de
+  baldosa), con Penny (`npc_talk`) y en la escotilla (`hatch_metal`, viento). Demo: `scripts/demo-a4-4-sfx-ambience.mjs` (con el
+  sonido activado: HUD de audio con medidores de nivel sobre el juego; grillos, porche de madera → grava, valla, fundido al lobby
+  y vuelta, Gerald, server_room en 390x844).

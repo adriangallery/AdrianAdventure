@@ -455,6 +455,7 @@
               "op": "ifFlag",
               "flag": "emergency_glass_broken",
               "then": [
+                { "op": "playSound", "key": "switch_flip" },
                 {
                   "op": "ifFlag",
                   "flag": "emergency_switch_flipped",
@@ -962,7 +963,8 @@
       "filterFrequency": 1200,
       "volume": 0.5
     },
-    "ambience": null,
+    "ambience": "server_hum",
+    "footstep": "metal",
     "sfx": {}
   },
   "transitions": {
