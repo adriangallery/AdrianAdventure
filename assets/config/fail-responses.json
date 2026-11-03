@@ -135,7 +135,11 @@
       { "items": ["rubber_duck", "glasses_3d"], "lines": ["I put the 3D glasses on the duck. He looks like an influencer. I take them back before he gets a following."] },
       { "items": ["antenna", "ledger"], "lines": ["I hold the antenna to the Ledger. More bars. Same balance."] },
       { "items": ["mystery_envelope", "code_note"], "lines": ["I tuck the code into the envelope. Now it's a mystery with a spoiler. I take it back out."] },
-      { "items": ["clinic_note", "adrian_note"], "lines": ["Two notes, two handwritings, one theme: everybody knew something except me."] }
+      { "items": ["clinic_note", "adrian_note"], "lines": ["Two notes, two handwritings, one theme: everybody knew something except me."] },
+      { "items": ["vet_bill", "ledger"], "lines": ["A vet bill and a hardware wallet. Gerald isn't covered. Nothing here is covered."] },
+      { "items": ["vet_bill", "code_note"], "lines": ["7314 and a duck. If that's Adrian's whole security model, I'm already in. ...I'm not already in."] },
+      { "items": ["vet_bill", "mystery_envelope"], "lines": ["They came out of the mailbox together. I'm not putting them back together. They've had enough."] },
+      { "items": ["fence_plank", "ledger"], "lines": ["The plank got the Ledger out. The Ledger doesn't owe it anything. That's not how leverage works."] }
     ]
   },
   "items": {
@@ -308,6 +312,11 @@
       "I poke it with the plank. It doesn't fall. Not everything is a nest.",
       "I'm not hitting that with a plank. I'm a detective. Mostly.",
       "The plank is long. That isn't high, low or stuck. Wrong job for a plank."
+    ],
+    "vet_bill": [
+      "I wave the vet bill at it. Gerald's clean bill of health impresses nobody but me.",
+      "Not a vet thing. Gerald's paperwork stays in my pocket, where confidential things go.",
+      "I hold up the bill. 'Diagnosis: perfect.' That's Gerald's. This isn't."
     ]
   }
 }

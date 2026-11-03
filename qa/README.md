@@ -485,6 +485,46 @@ objeto, que va en `assets/config/global.json`:
   `hs_chimney` para los intentos tentadores (media nota en el teclado: «Half a code opens half a door. Doors don't work
   like that.»).
 
+# DOORIS, buzón y felpudo (A3.3d) y QA del capítulo 1 (A3.3e)
+
+Puzles 1.5–1.8 de la biblia (`docs/DESIGN_BIBLE.md` § 4), en `assets/scenes/outside/scene.json`. La puerta ya no se abre con
+la nota: DOORIS, la cerradura, exige **tres factores** y el capítulo acaba cuando están los tres, en cualquier orden.
+
+| Puzle | Cómo | Flags | Objeto |
+|---|---|---|---|
+| 1.5 Pregunta de seguridad | OPEN/PICK/USE `hs_mailbox` da el sobre y la factura del veterinario de Gerald en un solo paso (una partida que ya tenía el sobre recibe solo la factura). En el árbol, «[The name on the vet bill]» solo aparece con la factura (`when: item:vet_bill`, A2.6a); «password123», «Satoshi.» y «His mom.» fallan con burla, `keypad_fail` y un segundo de «lockout» | `found_envelope`, `found_vet_bill`, `knows_gerald`, `dooris_question_ok` | `vet_bill` (icono por `scripts/make-item-icons.mjs`: `receipt.png` teñido con un sello de huella) |
+| 1.6 DOORIS | USE/TALK de `hs_keypad` o `hs_front_door` y los combos `code_note`/`ledger` → teclado o puerta abren el árbol `dooris_auth`. Primera vez: presentación, «Voice match: 87%», la llamada de Anon (1.8) y la pregunta; después, la pregunta si sigue sin responder, lo que falta (`missing_pin`, `missing_key`) y «Come back with everything. I'll be here. I'm a door.» Con los tres factores el nodo `gate` pone `door_unlocked` y `chapter_1_complete`, da el logro y cambia al lobby al cerrarse el árbol (A1.9). LOOK del teclado: tres LEDs con el estado de cada factor | `dooris_met`, `dooris_pin_ok`, `dooris_key_ok`, `door_unlocked`, `chapter_1_complete` | `code_note`, `ledger` (no se gastan) |
+| 1.7 Felpudo HODL | Pegado: PICK/OPEN/PULL/PUSH no lo levantan; combo `fence_plank` + `hs_doormat` da el Ledger (el tablón no se gasta). La trampilla VIP (`vip_rug_hint`) sigue en USE/OPEN/PUSH/PULL | `found_ledger` | `ledger` |
+| 1.8 Anon | Nodos `phone` → `phone_anon` (`speaker: "Anon"`) → `phone_click` dentro de la presentación de DOORIS, sea cual sea la entrada al árbol | `anon_call_1` | — |
+
+- **Árbol desde un hotspot sin NPC**: `{ "op": "dialogue", "npcId": "dooris", "treeId": "dooris_auth" }` funciona sin NPC
+  (`UIScene.startDialogueFromScene` solo mira `treeId`); el texto de DOORIS sale arriba-centro con su nombre y su color
+  (`SPEECH_COLORS.dooris`), y las frases sin `speaker` son de Dex. Los nodos de la presentación llevan `when: "!dooris_met"`
+  y el último pone la flag: una partida que ya conoce a DOORIS entra directa al `gate`/pregunta. `gate` lleva `when` con las
+  tres flags y `next: "ask"`: si falta algo se salta sin texto; `entering` (la frase de Dex) lleva `when: door_unlocked`.
+- **Motor** (A3.3e): `UIScene` emite `dialogueLine` (texto, speaker) por cada frase de un nodo de diálogo y `QaApi` lo apunta
+  en el log como un `say`: así `rejects` de una ruta puede exigir una frase de DOORIS («Lockout», «One factor was a duck»).
+  Hasta ahora las frases de los árboles no salían en el log.
+- **Diario** (`assets/journal/chapter-1.json`): objetivos `g1_mail` (`knows_gerald`), `g1_porch` (`found_ledger`), `g1_inside`
+  (`door_unlocked`); notas `n1_dooris`, `n1_anon`, `n1_vet_bill`, `n1_ledger`; puzles tras el PIN: `p1_door` (nota al
+  teclado, `doneWhen: dooris_pin_ok`), `p1_mat` y `p1_mail` (se abren con `dooris_met`), `p1_key` (`found_ledger`) y
+  `p1_question` (`dooris_met` + `knows_gerald`). Como Anon da el último puzle abierto de la lista, con DOORIS conocida
+  prefiere el buzón, luego la llave y la pregunta.
+- **Partidas viejas**: ninguna flag se renombra. Un Ledger cogido a mano antes de A3.3d vale igual; con el sobre ya cogido
+  el buzón da la factura sola; `found_code_note` sin DOORIS sigue en `p1_door`.
+- **Selftest** (`qa/selftest.json`): USE `hs_keypad` ya no dice «INVALID CODE» (abre el árbol); las rutas del runner usan
+  PICK `hs_keypad` («questionable morals»).
+
+QA (A3.3e): la ruta crítica juega el capítulo entero con `expect`/`rejects` en cada paso (presentación de DOORIS con
+`choices: ["come back"]` y `lastChoices.absent` de la respuesta buena, felpudo pegado, Ledger al teclado, buzón con
+`holdTextMs`, pregunta con un fallo y el acierto, y la nota al teclado como tercer factor que cambia de escena). Atajos:
+`puerta-sin-pregunta` (PIN y Ledger, las tres respuestas falsas con «Lockout»), `puerta-sin-pin` (Gerald y Ledger: «Still
+missing: a PIN»), `puerta-sin-llave` (PIN y Gerald: «Still missing: a hardware key») y `ledger-sin-tablon` (OPEN, PULL, PUSH y
+PICK del felpudo); las rutas que solo quieren llegar al lobby hacen la ruta corta de 9 pasos (PIN, felpudo, buzón, nota con
+«vet bill», Ledger). Demo: `scripts/demo-a3-3-chapter1.mjs` (GIF del final del capítulo en 844x390: la cadena por la API y el
+tercer factor filmado frase a frase con toques reales hasta el lobby; capturas `dooris-hello`, `dooris-open`,
+`dooris-question`, `lobby`).
+
 # Densidad de píxel (A2.8)
 
 Lógica pura en `src/systems/PixelScale.ts` (`tests/pixel-scale.test.mjs`, en `npm run test:engine`); la aplican

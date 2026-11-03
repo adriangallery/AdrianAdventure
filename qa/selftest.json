@@ -93,7 +93,7 @@
       "goal": { "scene": "lobby" },
       "steps": [
         { "do": "newGame", "expect": { "scene": "outside", "lacks": ["code_note"] } },
-        { "do": "act", "verb": "USE", "target": "hs_keypad", "attempt": true, "rejects": "INVALID CODE" }
+        { "do": "act", "verb": "PICK", "target": "hs_keypad", "attempt": true, "rejects": "questionable morals" }
       ]
     },
     {
@@ -105,7 +105,7 @@
       "goal": { "scene": "lobby" },
       "steps": [
         { "do": "newGame", "expect": { "scene": "outside" } },
-        { "do": "act", "verb": "USE", "target": "hs_keypad", "attempt": true, "rejects": "esta frase no sale en el juego" }
+        { "do": "act", "verb": "PICK", "target": "hs_keypad", "attempt": true, "rejects": "esta frase no sale en el juego" }
       ]
     },
     {
@@ -117,7 +117,7 @@
       "goal": { "scene": "lobby" },
       "steps": [
         { "do": "newGame", "expect": { "scene": "outside", "has": ["keycard"] } },
-        { "do": "act", "verb": "USE", "target": "hs_keypad", "attempt": true, "rejects": "INVALID CODE" }
+        { "do": "act", "verb": "PICK", "target": "hs_keypad", "attempt": true, "rejects": "questionable morals" }
       ]
     },
     {
@@ -130,7 +130,7 @@
       "steps": [
         { "do": "newGame", "expect": { "scene": "outside" } },
         { "do": "walk", "x": 1.5, "y": 95, "trigger": "tr_mountain", "untilScene": "mountain", "tries": 2, "expect": { "scene": "mountain" } },
-        { "do": "act", "verb": "USE", "target": "hs_keypad", "attempt": true, "rejects": "INVALID CODE" }
+        { "do": "act", "verb": "PICK", "target": "hs_keypad", "attempt": true, "rejects": "questionable morals" }
       ]
     },
     {
@@ -192,7 +192,7 @@
       "goal": { "scene": "lobby" },
       "steps": [
         { "do": "newGame" },
-        { "do": "act", "verb": "USE", "target": "hs_keypad", "attempt": true, "rejects": "INVALID CODE" }
+        { "do": "act", "verb": "PICK", "target": "hs_keypad", "attempt": true, "rejects": "questionable morals" }
       ]
     },
     {
@@ -200,11 +200,11 @@
       "kind": "sequence-break",
       "title": "ERROR (definición): intento sin expect ni rejects",
       "expectStatus": "error",
-      "expectDetail": "^ruta mal definida: paso 2 \\(USE hs_keypad\\): el intento necesita \"expect\" o \"rejects\"",
+      "expectDetail": "^ruta mal definida: paso 2 \\(PICK hs_keypad\\): el intento necesita \"expect\" o \"rejects\"",
       "goal": { "scene": "lobby" },
       "steps": [
         { "do": "newGame", "expect": { "scene": "outside" } },
-        { "do": "act", "verb": "USE", "target": "hs_keypad", "attempt": true }
+        { "do": "act", "verb": "PICK", "target": "hs_keypad", "attempt": true }
       ]
     }
   ]

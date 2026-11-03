@@ -31,7 +31,12 @@
     "speed": 140,
     "sprite": null
   },
-  "depthScale": { "yTop": 82.5, "yBottom": 91, "scaleTop": 0.8, "scaleBottom": 1 },
+  "depthScale": {
+    "yTop": 82.5,
+    "yBottom": 91,
+    "scaleTop": 0.8,
+    "scaleBottom": 1
+  },
   "ui": {
     "verbs": [
       "LOOK",
@@ -51,11 +56,8 @@
         "useResponses": {
           "_default": [
             "I try it on the door. The door has seen burglars with better ideas.",
-            "It's a door. It wants a key or a code, not whatever that is.",
+            "It's a door. It wants a PIN, an answer and a key, not whatever that is.",
             "I hold it against the door. The door stays shut. Doors are like that."
-          ],
-          "ledger": [
-            "I press the Ledger against the door. It's a hardware wallet, not a hardware key. ...Close, though."
           ],
           "keycard": [
             "I look for a card reader on the front door. There isn't one. Adrian's front door is old-fashioned. Rude."
@@ -71,6 +73,12 @@
           ],
           "note_half_b": [
             "Two digits. The door wants four. I'm exactly halfway to a door."
+          ],
+          "vet_bill": [
+            "I show the vet bill to the door. The door doesn't read. The door listens. I should talk to it."
+          ],
+          "mystery_envelope": [
+            "I slide the envelope under the door. It slides back out. Somebody in there has standards. Or a draft."
           ]
         },
         "name": "Front Door",
@@ -83,8 +91,32 @@
         "scripts": {
           "LOOK": [
             {
-              "op": "say",
-              "text": "A solid wooden door with a keypad. The display shows 4 empty digits waiting for a code."
+              "op": "ifFlag",
+              "flag": "door_unlocked",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "Open. DOORIS let me in. Three factors and a duck. I'm choosing to call that a win."
+                }
+              ],
+              "else": [
+                {
+                  "op": "ifFlag",
+                  "flag": "dooris_met",
+                  "then": [
+                    {
+                      "op": "say",
+                      "text": "A solid door with a keypad, a speaker grille and a name. DOORIS. It's listening. It's always listening."
+                    }
+                  ],
+                  "else": [
+                    {
+                      "op": "say",
+                      "text": "A solid wooden door with a keypad and a tiny speaker grille. Somebody put a lot of trust in that grille."
+                    }
+                  ]
+                }
+              ]
             }
           ],
           "USE": [
@@ -104,37 +136,26 @@
               ],
               "else": [
                 {
+                  "op": "dialogue",
+                  "npcId": "dooris",
+                  "treeId": "dooris_auth"
+                },
+                {
                   "op": "ifFlag",
-                  "flag": "has_code",
-                  "then": [
-                    {
-                      "op": "say",
-                      "text": "I have the code, but I need to USE it on the keypad. Maybe I should try the code note with the door."
-                    }
-                  ],
+                  "flag": "porch_light_off",
+                  "then": [],
                   "else": [
                     {
-                      "op": "say",
-                      "text": "Locked. The keypad blinks red. I need a 4-digit code."
-                    },
-                    {
-                      "op": "ifFlag",
-                      "flag": "porch_light_off",
-                      "then": [],
-                      "else": [
-                        {
-                          "op": "flicker",
-                          "overlay": "lamp_empty",
-                          "startVisible": false,
-                          "pattern": [
-                            400,
-                            100,
-                            150,
-                            60,
-                            250,
-                            80
-                          ]
-                        }
+                      "op": "flicker",
+                      "overlay": "lamp_empty",
+                      "startVisible": false,
+                      "pattern": [
+                        400,
+                        100,
+                        150,
+                        60,
+                        250,
+                        80
                       ]
                     }
                   ]
@@ -159,37 +180,26 @@
               ],
               "else": [
                 {
+                  "op": "dialogue",
+                  "npcId": "dooris",
+                  "treeId": "dooris_auth"
+                },
+                {
                   "op": "ifFlag",
-                  "flag": "has_code",
-                  "then": [
-                    {
-                      "op": "say",
-                      "text": "The door won't budge without the code. I should USE the code note on the keypad."
-                    }
-                  ],
+                  "flag": "porch_light_off",
+                  "then": [],
                   "else": [
                     {
-                      "op": "say",
-                      "text": "Locked tight. There's a keypad next to it. I need a code."
-                    },
-                    {
-                      "op": "ifFlag",
-                      "flag": "porch_light_off",
-                      "then": [],
-                      "else": [
-                        {
-                          "op": "flicker",
-                          "overlay": "lamp_empty",
-                          "startVisible": false,
-                          "pattern": [
-                            400,
-                            100,
-                            150,
-                            60,
-                            250,
-                            80
-                          ]
-                        }
+                      "op": "flicker",
+                      "overlay": "lamp_empty",
+                      "startVisible": false,
+                      "pattern": [
+                        400,
+                        100,
+                        150,
+                        60,
+                        250,
+                        80
                       ]
                     }
                   ]
@@ -199,8 +209,21 @@
           ],
           "TALK": [
             {
-              "op": "say",
-              "text": "The keypad beeps impatiently."
+              "op": "ifFlag",
+              "flag": "door_unlocked",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "Thanks for letting me in. ...I'm thanking a door. Three weeks of this and I'll be thanking the fence."
+                }
+              ],
+              "else": [
+                {
+                  "op": "dialogue",
+                  "npcId": "dooris",
+                  "treeId": "dooris_auth"
+                }
+              ]
             }
           ],
           "PICK": [
@@ -211,26 +234,72 @@
           ],
           "CLOSE": [
             {
-              "op": "say",
-              "text": "Already closed and locked."
+              "op": "ifFlag",
+              "flag": "door_unlocked",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "I'm not closing it. It took three factors to open."
+                }
+              ],
+              "else": [
+                {
+                  "op": "say",
+                  "text": "Already closed and locked. Thoroughly."
+                }
+              ]
             }
           ],
           "PUSH": [
             {
-              "op": "say",
-              "text": "I push the door. It's locked, not stuck."
+              "op": "ifFlag",
+              "flag": "door_unlocked",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "I push. It swings open. That's what unlocked doors do. I'd forgotten."
+                }
+              ],
+              "else": [
+                {
+                  "op": "say",
+                  "text": "I push the door."
+                },
+                {
+                  "op": "say",
+                  "text": "I felt that.",
+                  "speaker": "DOORIS"
+                }
+              ]
             }
           ],
           "PULL": [
             {
-              "op": "say",
-              "text": "I pull the handle. Still locked. The keypad judges me."
+              "op": "ifFlag",
+              "flag": "door_unlocked",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "I pull the handle. It opens. Revolutionary."
+                }
+              ],
+              "else": [
+                {
+                  "op": "say",
+                  "text": "I pull the handle."
+                },
+                {
+                  "op": "say",
+                  "text": "Still no.",
+                  "speaker": "DOORIS"
+                }
+              ]
             }
           ],
           "GIVE": [
             {
               "op": "say",
-              "text": "I'm not giving anything to a door."
+              "text": "I'm not giving anything to a door. Not until it gives me something first."
             }
           ]
         }
@@ -757,6 +826,9 @@
           ],
           "code_note": [
             "I'm not mailing the door code to anyone. That's how codes get leaked."
+          ],
+          "vet_bill": [
+            "I'm not mailing Gerald's bill back. Adrian can pay it when he turns up. If he turns up."
           ]
         },
         "name": "Mailbox",
@@ -766,31 +838,126 @@
           "w": 3.7,
           "h": 11.3
         },
-        "walkTo": { "x": 57, "y": 92 },
+        "walkTo": {
+          "x": 57,
+          "y": 92
+        },
         "face": "right",
         "scripts": {
           "LOOK": [
             {
               "op": "ifFlag",
-              "flag": "found_envelope",
+              "flag": "found_vet_bill",
               "then": [
                 {
                   "op": "say",
-                  "text": "A rusty mailbox. Empty now."
+                  "text": "A rusty mailbox. Empty now. I took the interesting mail. And the duck's medical history."
                 }
               ],
               "else": [
                 {
-                  "op": "say",
-                  "text": "A rusty mailbox overflowing with letters. Electric bills, mostly."
+                  "op": "ifFlag",
+                  "flag": "found_envelope",
+                  "then": [
+                    {
+                      "op": "say",
+                      "text": "A rusty mailbox. Something's still wedged at the bottom, under the bills."
+                    }
+                  ],
+                  "else": [
+                    {
+                      "op": "say",
+                      "text": "A rusty mailbox overflowing with letters. Electric bills, mostly. Nobody's opened it in weeks."
+                    }
+                  ]
                 }
               ]
             }
           ],
           "USE": [
             {
-              "op": "say",
-              "text": "I open the mailbox flap. Junk mail and... something else?"
+              "op": "ifFlag",
+              "flag": "found_vet_bill",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "Nothing else in the mailbox. Just old bills. Electric, not vet."
+                }
+              ],
+              "else": [
+                {
+                  "op": "ifFlag",
+                  "flag": "found_envelope",
+                  "then": [
+                    {
+                      "op": "say",
+                      "text": "Under the old bills, one more: a vet bill, stuck to the bottom. I almost missed it."
+                    },
+                    {
+                      "op": "addItem",
+                      "id": "vet_bill",
+                      "name": "Vet Bill"
+                    },
+                    {
+                      "op": "setFlag",
+                      "flag": "found_vet_bill",
+                      "value": true
+                    },
+                    {
+                      "op": "setFlag",
+                      "flag": "knows_gerald",
+                      "value": true
+                    },
+                    {
+                      "op": "say",
+                      "text": "PAWS & CLAWS VET. Patient: Gerald. Species: rubber duck, question mark. Owner: Adrian. Relationship: 'best friend'. Note: please stop bringing him in."
+                    },
+                    {
+                      "op": "say",
+                      "text": "Adrian's best friend is a rubber duck. ...I've had worse friends. Most of them were bots."
+                    }
+                  ],
+                  "else": [
+                    {
+                      "op": "say",
+                      "text": "I sift through the junk mail... a sealed envelope marked 'CONFIDENTIAL \u2014 PATIENT ZERO'. And, stuck to it, a vet bill."
+                    },
+                    {
+                      "op": "addItem",
+                      "id": "mystery_envelope",
+                      "name": "Mystery Envelope"
+                    },
+                    {
+                      "op": "setFlag",
+                      "flag": "found_envelope",
+                      "value": true
+                    },
+                    {
+                      "op": "addItem",
+                      "id": "vet_bill",
+                      "name": "Vet Bill"
+                    },
+                    {
+                      "op": "setFlag",
+                      "flag": "found_vet_bill",
+                      "value": true
+                    },
+                    {
+                      "op": "setFlag",
+                      "flag": "knows_gerald",
+                      "value": true
+                    },
+                    {
+                      "op": "say",
+                      "text": "PAWS & CLAWS VET. Patient: Gerald. Species: rubber duck, question mark. Owner: Adrian. Relationship: 'best friend'. Note: please stop bringing him in."
+                    },
+                    {
+                      "op": "say",
+                      "text": "Adrian's best friend is a rubber duck. ...I've had worse friends. Most of them were bots."
+                    }
+                  ]
+                }
+              ]
             }
           ],
           "TALK": [
@@ -802,27 +969,85 @@
           "PICK": [
             {
               "op": "ifFlag",
-              "flag": "found_envelope",
+              "flag": "found_vet_bill",
               "then": [
                 {
                   "op": "say",
-                  "text": "Nothing else in the mailbox. Just old bills."
+                  "text": "Nothing else in the mailbox. Just old bills. Electric, not vet."
                 }
               ],
               "else": [
                 {
-                  "op": "say",
-                  "text": "I sift through the junk mail... wait. A sealed envelope marked 'CONFIDENTIAL \u2014 PATIENT ZERO'. This looks important."
-                },
-                {
-                  "op": "addItem",
-                  "id": "mystery_envelope",
-                  "name": "Mystery Envelope"
-                },
-                {
-                  "op": "setFlag",
+                  "op": "ifFlag",
                   "flag": "found_envelope",
-                  "value": true
+                  "then": [
+                    {
+                      "op": "say",
+                      "text": "Under the old bills, one more: a vet bill, stuck to the bottom. I almost missed it."
+                    },
+                    {
+                      "op": "addItem",
+                      "id": "vet_bill",
+                      "name": "Vet Bill"
+                    },
+                    {
+                      "op": "setFlag",
+                      "flag": "found_vet_bill",
+                      "value": true
+                    },
+                    {
+                      "op": "setFlag",
+                      "flag": "knows_gerald",
+                      "value": true
+                    },
+                    {
+                      "op": "say",
+                      "text": "PAWS & CLAWS VET. Patient: Gerald. Species: rubber duck, question mark. Owner: Adrian. Relationship: 'best friend'. Note: please stop bringing him in."
+                    },
+                    {
+                      "op": "say",
+                      "text": "Adrian's best friend is a rubber duck. ...I've had worse friends. Most of them were bots."
+                    }
+                  ],
+                  "else": [
+                    {
+                      "op": "say",
+                      "text": "I sift through the junk mail... a sealed envelope marked 'CONFIDENTIAL \u2014 PATIENT ZERO'. And, stuck to it, a vet bill."
+                    },
+                    {
+                      "op": "addItem",
+                      "id": "mystery_envelope",
+                      "name": "Mystery Envelope"
+                    },
+                    {
+                      "op": "setFlag",
+                      "flag": "found_envelope",
+                      "value": true
+                    },
+                    {
+                      "op": "addItem",
+                      "id": "vet_bill",
+                      "name": "Vet Bill"
+                    },
+                    {
+                      "op": "setFlag",
+                      "flag": "found_vet_bill",
+                      "value": true
+                    },
+                    {
+                      "op": "setFlag",
+                      "flag": "knows_gerald",
+                      "value": true
+                    },
+                    {
+                      "op": "say",
+                      "text": "PAWS & CLAWS VET. Patient: Gerald. Species: rubber duck, question mark. Owner: Adrian. Relationship: 'best friend'. Note: please stop bringing him in."
+                    },
+                    {
+                      "op": "say",
+                      "text": "Adrian's best friend is a rubber duck. ...I've had worse friends. Most of them were bots."
+                    }
+                  ]
                 }
               ]
             }
@@ -830,27 +1055,85 @@
           "OPEN": [
             {
               "op": "ifFlag",
-              "flag": "found_envelope",
+              "flag": "found_vet_bill",
               "then": [
                 {
                   "op": "say",
-                  "text": "Nothing else in the mailbox. Just old bills."
+                  "text": "Nothing else in the mailbox. Just old bills. Electric, not vet."
                 }
               ],
               "else": [
                 {
-                  "op": "say",
-                  "text": "I swing open the mailbox flap. Junk mail cascades out... and a sealed envelope marked 'CONFIDENTIAL \u2014 PATIENT ZERO' slides into view."
-                },
-                {
-                  "op": "addItem",
-                  "id": "mystery_envelope",
-                  "name": "Mystery Envelope"
-                },
-                {
-                  "op": "setFlag",
+                  "op": "ifFlag",
                   "flag": "found_envelope",
-                  "value": true
+                  "then": [
+                    {
+                      "op": "say",
+                      "text": "Under the old bills, one more: a vet bill, stuck to the bottom. I almost missed it."
+                    },
+                    {
+                      "op": "addItem",
+                      "id": "vet_bill",
+                      "name": "Vet Bill"
+                    },
+                    {
+                      "op": "setFlag",
+                      "flag": "found_vet_bill",
+                      "value": true
+                    },
+                    {
+                      "op": "setFlag",
+                      "flag": "knows_gerald",
+                      "value": true
+                    },
+                    {
+                      "op": "say",
+                      "text": "PAWS & CLAWS VET. Patient: Gerald. Species: rubber duck, question mark. Owner: Adrian. Relationship: 'best friend'. Note: please stop bringing him in."
+                    },
+                    {
+                      "op": "say",
+                      "text": "Adrian's best friend is a rubber duck. ...I've had worse friends. Most of them were bots."
+                    }
+                  ],
+                  "else": [
+                    {
+                      "op": "say",
+                      "text": "I sift through the junk mail... a sealed envelope marked 'CONFIDENTIAL \u2014 PATIENT ZERO'. And, stuck to it, a vet bill."
+                    },
+                    {
+                      "op": "addItem",
+                      "id": "mystery_envelope",
+                      "name": "Mystery Envelope"
+                    },
+                    {
+                      "op": "setFlag",
+                      "flag": "found_envelope",
+                      "value": true
+                    },
+                    {
+                      "op": "addItem",
+                      "id": "vet_bill",
+                      "name": "Vet Bill"
+                    },
+                    {
+                      "op": "setFlag",
+                      "flag": "found_vet_bill",
+                      "value": true
+                    },
+                    {
+                      "op": "setFlag",
+                      "flag": "knows_gerald",
+                      "value": true
+                    },
+                    {
+                      "op": "say",
+                      "text": "PAWS & CLAWS VET. Patient: Gerald. Species: rubber duck, question mark. Owner: Adrian. Relationship: 'best friend'. Note: please stop bringing him in."
+                    },
+                    {
+                      "op": "say",
+                      "text": "Adrian's best friend is a rubber duck. ...I've had worse friends. Most of them were bots."
+                    }
+                  ]
                 }
               ]
             }
@@ -978,8 +1261,16 @@
       {
         "id": "hs_doormat",
         "useResponses": {
+          "_default": [
+            "I press it on the mat. The mat is glued down and unimpressed.",
+            "The mat says HODL. It's not taking anything. It's not giving anything either. Classic.",
+            "I rub it on the doormat. Cleaner now. Still mine. Still not useful here."
+          ],
           "ledger": [
             "I put the Ledger back under the mat. Then I take it out again. Nobody needs to know."
+          ],
+          "code_note": [
+            "I slide the code under the mat. For the next detective. ...No. Mine."
           ]
         },
         "name": "Doormat",
@@ -992,8 +1283,20 @@
         "scripts": {
           "LOOK": [
             {
-              "op": "say",
-              "text": "A worn doormat. Says 'HODL'."
+              "op": "ifFlag",
+              "flag": "found_ledger",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "The doormat, peeled back. HODL, it insists. It no longer has anything to hodl."
+                }
+              ],
+              "else": [
+                {
+                  "op": "say",
+                  "text": "HODL. Glued down. Something lumpy underneath."
+                }
+              ]
             }
           ],
           "USE": [
@@ -1003,7 +1306,7 @@
               "then": [
                 {
                   "op": "say",
-                  "text": "I slide the doormat aside. Underneath \u2014 a hidden trapdoor with the AdrianZERO logo etched into it. The receptionist wasn't kidding."
+                  "text": "I slide the doormat aside. Underneath \u2014 a hidden trapdoor with the AdrianZERO logo etched into it. Penny wasn't kidding."
                 },
                 {
                   "op": "achievement",
@@ -1021,7 +1324,7 @@
               "else": [
                 {
                   "op": "say",
-                  "text": "I wipe my feet."
+                  "text": "I wipe my feet. The mat appreciates it. The glue doesn't care either way."
                 }
               ]
             }
@@ -1033,23 +1336,13 @@
               "then": [
                 {
                   "op": "say",
-                  "text": "Nothing else under the mat."
+                  "text": "Nothing else under the mat. Just glue and a rectangle where the Ledger was."
                 }
               ],
               "else": [
                 {
-                  "op": "setFlag",
-                  "flag": "found_ledger",
-                  "value": true
-                },
-                {
-                  "op": "addItem",
-                  "id": "ledger",
-                  "name": "Adrian's Ledger"
-                },
-                {
                   "op": "say",
-                  "text": "Under the mat... Adrian's Ledger! Someone hid it here."
+                  "text": "It's glued down. It says HODL. It means it."
                 }
               ]
             }
@@ -1063,47 +1356,37 @@
           "OPEN": [
             {
               "op": "ifFlag",
-              "flag": "found_ledger",
+              "flag": "vip_rug_hint",
               "then": [
                 {
+                  "op": "say",
+                  "text": "I lift the doormat again. The hidden trapdoor with the AdrianZERO logo \u2014 VIP access to the basement."
+                },
+                {
+                  "op": "fadeToScene",
+                  "sceneId": "basement",
+                  "spawn": {
+                    "x": 50,
+                    "y": 90
+                  }
+                }
+              ],
+              "else": [
+                {
                   "op": "ifFlag",
-                  "flag": "vip_rug_hint",
+                  "flag": "found_ledger",
                   "then": [
                     {
                       "op": "say",
-                      "text": "I lift the doormat again. The hidden trapdoor with the AdrianZERO logo \u2014 VIP access to the basement."
-                    },
-                    {
-                      "op": "fadeToScene",
-                      "sceneId": "basement",
-                      "spawn": {
-                        "x": 50,
-                        "y": 90
-                      }
+                      "text": "Nothing else under the mat. Just glue and a rectangle where the Ledger was."
                     }
                   ],
                   "else": [
                     {
                       "op": "say",
-                      "text": "Nothing else under the mat."
+                      "text": "I get a fingernail under the corner. The corner stays. It's glued down. It says HODL. It means it."
                     }
                   ]
-                }
-              ],
-              "else": [
-                {
-                  "op": "setFlag",
-                  "flag": "found_ledger",
-                  "value": true
-                },
-                {
-                  "op": "addItem",
-                  "id": "ledger",
-                  "name": "Adrian's Ledger"
-                },
-                {
-                  "op": "say",
-                  "text": "I lift the doormat. Underneath: Adrian's hardware wallet. Hidden in the most obvious place possible."
                 }
               ]
             }
@@ -1111,7 +1394,7 @@
           "CLOSE": [
             {
               "op": "say",
-              "text": "I put it back."
+              "text": "I put it back. It never left."
             }
           ],
           "PUSH": [
@@ -1135,7 +1418,7 @@
               "else": [
                 {
                   "op": "say",
-                  "text": "I push the mat aside with my foot."
+                  "text": "I push the mat with my foot. It doesn't slide. It's bonded to the porch. Chemically and emotionally."
                 }
               ]
             }
@@ -1160,8 +1443,20 @@
               ],
               "else": [
                 {
-                  "op": "say",
-                  "text": "I pull the mat. Heavy for a doormat."
+                  "op": "ifFlag",
+                  "flag": "found_ledger",
+                  "then": [
+                    {
+                      "op": "say",
+                      "text": "Nothing else under the mat. Just glue and a rectangle where the Ledger was."
+                    }
+                  ],
+                  "else": [
+                    {
+                      "op": "say",
+                      "text": "I pull. The mat pulls back. Something lumpy under it shifts. I'd need leverage."
+                    }
+                  ]
                 }
               ]
             }
@@ -1517,9 +1812,6 @@
             "I mash it against the keypad. It doesn't even beep. That's how bad an idea it was.",
             "Keypads take codes. Not objects. Not hope."
           ],
-          "ledger": [
-            "I hold the Ledger up to the keypad. 'Hardware key,' I explain. The keypad only speaks digits."
-          ],
           "keycard": [
             "I swipe the card across the keypad. It's a keypad. It has no idea what a card is."
           ],
@@ -1534,6 +1826,9 @@
           ],
           "fence_plank": [
             "I could whack the keypad with the plank. It would still want four digits. Just angrier."
+          ],
+          "vet_bill": [
+            "I hold the vet bill up to the keypad. DOORIS doesn't read. DOORIS listens. I should talk to it."
           ]
         },
         "name": "Keypad",
@@ -1546,32 +1841,170 @@
         "scripts": {
           "LOOK": [
             {
-              "op": "say",
-              "text": "A numeric keypad with backlit buttons. The display reads '_ _ _ _'. Four digits stand between me and whatever Adrian's hiding."
+              "op": "ifFlag",
+              "flag": "door_unlocked",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "All three LEDs green. The door's open. The keypad looks smug about it."
+                }
+              ],
+              "else": [
+                {
+                  "op": "ifFlag",
+                  "flag": "dooris_met",
+                  "then": [
+                    {
+                      "op": "ifFlag",
+                      "flag": "dooris_pin_ok",
+                      "then": [
+                        {
+                          "op": "ifFlag",
+                          "flag": "dooris_question_ok",
+                          "then": [
+                            {
+                              "op": "ifFlag",
+                              "flag": "dooris_key_ok",
+                              "then": [
+                                {
+                                  "op": "say",
+                                  "text": "Three LEDs. PIN green, question green, key green. All green. Why am I still outside? ...Talk to the door, Dex."
+                                }
+                              ],
+                              "else": [
+                                {
+                                  "op": "say",
+                                  "text": "Three LEDs. PIN green, question green, key red. One to go. DOORIS is pretending very hard now."
+                                }
+                              ]
+                            }
+                          ],
+                          "else": [
+                            {
+                              "op": "ifFlag",
+                              "flag": "dooris_key_ok",
+                              "then": [
+                                {
+                                  "op": "say",
+                                  "text": "Three LEDs. PIN green, question red, key green. One to go. DOORIS is pretending very hard now."
+                                }
+                              ],
+                              "else": [
+                                {
+                                  "op": "say",
+                                  "text": "Three LEDs. PIN green, question red, key red. One down. DOORIS pretends not to notice."
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ],
+                      "else": [
+                        {
+                          "op": "ifFlag",
+                          "flag": "dooris_question_ok",
+                          "then": [
+                            {
+                              "op": "ifFlag",
+                              "flag": "dooris_key_ok",
+                              "then": [
+                                {
+                                  "op": "say",
+                                  "text": "Three LEDs. PIN red, question green, key green. One to go. DOORIS is pretending very hard now."
+                                }
+                              ],
+                              "else": [
+                                {
+                                  "op": "say",
+                                  "text": "Three LEDs. PIN red, question green, key red. One down. DOORIS pretends not to notice."
+                                }
+                              ]
+                            }
+                          ],
+                          "else": [
+                            {
+                              "op": "ifFlag",
+                              "flag": "dooris_key_ok",
+                              "then": [
+                                {
+                                  "op": "say",
+                                  "text": "Three LEDs. PIN red, question red, key green. One down. DOORIS pretends not to notice."
+                                }
+                              ],
+                              "else": [
+                                {
+                                  "op": "say",
+                                  "text": "Three LEDs. PIN red, question red, key red. Zero for three. I've had worse nights."
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ],
+                  "else": [
+                    {
+                      "op": "say",
+                      "text": "A keypad, a speaker grille and three tiny LEDs. All red. That's two more LEDs than a door needs."
+                    }
+                  ]
+                }
+              ]
             }
           ],
           "USE": [
             {
               "op": "ifFlag",
-              "flag": "has_code",
+              "flag": "door_unlocked",
               "then": [
                 {
                   "op": "say",
-                  "text": "I could type the code here... but the front door keypad is the one that matters."
+                  "text": "Green. I could keep typing. Or I could go in. Going in."
                 }
               ],
               "else": [
                 {
-                  "op": "say",
-                  "text": "I tap random buttons. *BZZZ* 'INVALID CODE.' Better find the real code first."
+                  "op": "ifFlag",
+                  "flag": "has_code",
+                  "then": [
+                    {
+                      "op": "say",
+                      "text": "I could type the code. The keypad has a speaker grille, though. It wants a word first."
+                    }
+                  ],
+                  "else": [
+                    {
+                      "op": "say",
+                      "text": "I tap a few buttons. The keypad doesn't want buttons. It wants a conversation."
+                    }
+                  ]
+                },
+                {
+                  "op": "dialogue",
+                  "npcId": "dooris",
+                  "treeId": "dooris_auth"
                 }
               ]
             }
           ],
           "TALK": [
             {
-              "op": "say",
-              "text": "I lean in and whisper 'password123'. The keypad blinks red. It's not amused."
+              "op": "ifFlag",
+              "flag": "door_unlocked",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "Thanks for the chat. ...I'm thanking a keypad now."
+                }
+              ],
+              "else": [
+                {
+                  "op": "dialogue",
+                  "npcId": "dooris",
+                  "treeId": "dooris_auth"
+                }
+              ]
             }
           ],
           "PICK": [
@@ -1589,13 +2022,18 @@
           "CLOSE": [
             {
               "op": "say",
-              "text": "The keypad is always on. Always waiting. Like a limit order I forgot about."
+              "text": "The keypad doesn't close. It doesn't sleep either. We have that in common."
             }
           ],
           "PUSH": [
             {
               "op": "say",
-              "text": "I press all the buttons at once. *BZZZ BZZZ BZZZ* That's not how keypads work."
+              "text": "I press all the buttons at once. *BZZZ BZZZ BZZZ*"
+            },
+            {
+              "op": "say",
+              "text": "Ow.",
+              "speaker": "DOORIS"
             }
           ],
           "PULL": [
@@ -1993,47 +2431,60 @@
         "code_note",
         "hs_keypad"
       ],
-      "result": "unlock_door",
+      "result": "dooris_pin_ok",
       "script": [
         {
-          "op": "say",
-          "text": "I hold the note up to the keypad. 7... 3... 1... 4..."
-        },
-        {
-          "op": "say",
-          "text": "*BEEP* Green light! The front door clicks open."
-        },
-        {
-          "op": "setFlag",
-          "flag": "has_code",
-          "value": true
-        },
-        {
-          "op": "setFlag",
+          "op": "ifFlag",
           "flag": "door_unlocked",
-          "value": true
-        },
-        {
-          "op": "setFlag",
-          "flag": "chapter_1_complete",
-          "value": true
-        },
-        {
-          "op": "achievement",
-          "text": "CHAPTER 1 COMPLETE \u2014 Breaking & Entering"
-        },
-        {
-          "op": "wait",
-          "ms": 1500
-        },
-        {
-          "op": "fadeToScene",
-          "sceneId": "lobby",
-          "spawn": {
-            "x": 86.1,
-            "y": 93.2
-          },
-          "duration": 600
+          "then": [
+            {
+              "op": "say",
+              "text": "Already open. Typing the code again won't open it more."
+            }
+          ],
+          "else": [
+            {
+              "op": "ifFlag",
+              "flag": "dooris_pin_ok",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "PIN already accepted. Typing it again is not a second factor.",
+                  "speaker": "DOORIS"
+                }
+              ],
+              "else": [
+                {
+                  "op": "playSound",
+                  "key": "keypad_success"
+                },
+                {
+                  "op": "setFlag",
+                  "flag": "dooris_pin_ok",
+                  "value": true
+                },
+                {
+                  "op": "setFlag",
+                  "flag": "has_code",
+                  "value": true
+                },
+                {
+                  "op": "say",
+                  "text": "7... 3... 1... 4."
+                },
+                {
+                  "op": "say",
+                  "text": "PIN accepted. Both halves. Somebody was patient.",
+                  "speaker": "DOORIS"
+                },
+                {
+                  "op": "dialogue",
+                  "npcId": "dooris",
+                  "treeId": "dooris_auth"
+                }
+              ]
+            }
+          ]
         }
       ]
     },
@@ -2042,47 +2493,217 @@
         "code_note",
         "hs_front_door"
       ],
-      "result": "unlock_door",
+      "result": "dooris_pin_ok",
       "script": [
         {
-          "op": "say",
-          "text": "I punch in the code from the note: 7-3-1-4..."
-        },
-        {
-          "op": "say",
-          "text": "*BEEP* The door clicks open!"
-        },
-        {
-          "op": "setFlag",
-          "flag": "has_code",
-          "value": true
-        },
-        {
-          "op": "setFlag",
+          "op": "ifFlag",
           "flag": "door_unlocked",
-          "value": true
-        },
+          "then": [
+            {
+              "op": "say",
+              "text": "Already open. Typing the code again won't open it more."
+            }
+          ],
+          "else": [
+            {
+              "op": "ifFlag",
+              "flag": "dooris_pin_ok",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "PIN already accepted. Typing it again is not a second factor.",
+                  "speaker": "DOORIS"
+                }
+              ],
+              "else": [
+                {
+                  "op": "playSound",
+                  "key": "keypad_success"
+                },
+                {
+                  "op": "setFlag",
+                  "flag": "dooris_pin_ok",
+                  "value": true
+                },
+                {
+                  "op": "setFlag",
+                  "flag": "has_code",
+                  "value": true
+                },
+                {
+                  "op": "say",
+                  "text": "7... 3... 1... 4."
+                },
+                {
+                  "op": "say",
+                  "text": "PIN accepted. Both halves. Somebody was patient.",
+                  "speaker": "DOORIS"
+                },
+                {
+                  "op": "dialogue",
+                  "npcId": "dooris",
+                  "treeId": "dooris_auth"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "items": [
+        "ledger",
+        "hs_keypad"
+      ],
+      "result": "dooris_key_ok",
+      "script": [
         {
-          "op": "setFlag",
-          "flag": "chapter_1_complete",
-          "value": true
-        },
+          "op": "ifFlag",
+          "flag": "door_unlocked",
+          "then": [
+            {
+              "op": "say",
+              "text": "The door's open. The Ledger can stay in my pocket, where hardware wallets belong."
+            }
+          ],
+          "else": [
+            {
+              "op": "ifFlag",
+              "flag": "dooris_key_ok",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "Hardware key already verified. Stop waving it at me.",
+                  "speaker": "DOORIS"
+                }
+              ],
+              "else": [
+                {
+                  "op": "playSound",
+                  "key": "keypad_beep"
+                },
+                {
+                  "op": "setFlag",
+                  "flag": "dooris_key_ok",
+                  "value": true
+                },
+                {
+                  "op": "say",
+                  "text": "I hold the Ledger up to the grille."
+                },
+                {
+                  "op": "say",
+                  "text": "Ledger detected. Please don't plug things into me without asking.",
+                  "speaker": "DOORIS"
+                },
+                {
+                  "op": "dialogue",
+                  "npcId": "dooris",
+                  "treeId": "dooris_auth"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "items": [
+        "ledger",
+        "hs_front_door"
+      ],
+      "result": "dooris_key_ok",
+      "script": [
         {
-          "op": "achievement",
-          "text": "CHAPTER 1 COMPLETE \u2014 Breaking & Entering"
-        },
+          "op": "ifFlag",
+          "flag": "door_unlocked",
+          "then": [
+            {
+              "op": "say",
+              "text": "The door's open. The Ledger can stay in my pocket, where hardware wallets belong."
+            }
+          ],
+          "else": [
+            {
+              "op": "ifFlag",
+              "flag": "dooris_key_ok",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "Hardware key already verified. Stop waving it at me.",
+                  "speaker": "DOORIS"
+                }
+              ],
+              "else": [
+                {
+                  "op": "playSound",
+                  "key": "keypad_beep"
+                },
+                {
+                  "op": "setFlag",
+                  "flag": "dooris_key_ok",
+                  "value": true
+                },
+                {
+                  "op": "say",
+                  "text": "I hold the Ledger up to the grille."
+                },
+                {
+                  "op": "say",
+                  "text": "Ledger detected. Please don't plug things into me without asking.",
+                  "speaker": "DOORIS"
+                },
+                {
+                  "op": "dialogue",
+                  "npcId": "dooris",
+                  "treeId": "dooris_auth"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "items": [
+        "fence_plank",
+        "hs_doormat"
+      ],
+      "result": "found_ledger",
+      "script": [
         {
-          "op": "wait",
-          "ms": 1500
-        },
-        {
-          "op": "fadeToScene",
-          "sceneId": "lobby",
-          "spawn": {
-            "x": 86.1,
-            "y": 93.2
-          },
-          "duration": 600
+          "op": "ifFlag",
+          "flag": "found_ledger",
+          "then": [
+            {
+              "op": "say",
+              "text": "The mat's already peeled back. Nothing under it but glue and regret."
+            }
+          ],
+          "else": [
+            {
+              "op": "playSound",
+              "key": "item_unlock"
+            },
+            {
+              "op": "setFlag",
+              "flag": "found_ledger",
+              "value": true
+            },
+            {
+              "op": "addItem",
+              "id": "ledger",
+              "name": "Adrian's Ledger"
+            },
+            {
+              "op": "say",
+              "text": "I wedge the plank under the mat and lean on it. Rrrrip. Glue, concrete, and a hardware wallet."
+            },
+            {
+              "op": "say",
+              "text": "Adrian's Ledger. Under the doormat. The most secure place in crypto: the obvious one."
+            }
+          ]
         }
       ]
     }
@@ -2217,5 +2838,237 @@
       "flag": "porch_light_off",
       "depth": 5
     }
-  ]
+  ],
+  "dialogues": {
+    "dooris_auth": {
+      "id": "dooris_auth",
+      "start": "hello",
+      "nodes": {
+        "hello": {
+          "speaker": "DOORIS",
+          "text": "Hi. I'm DOORIS. I keep Adrian safe. From people. Like you.",
+          "when": "!dooris_met",
+          "next": "factors"
+        },
+        "factors": {
+          "speaker": "DOORIS",
+          "text": "Three-factor authentication: PIN, security question, hardware key. For a door. Yes.",
+          "when": "!dooris_met",
+          "next": "voice"
+        },
+        "voice": {
+          "speaker": "DOORIS",
+          "text": "Voice match: 87%. Close. Suspiciously close. Still no.",
+          "when": "!dooris_met",
+          "next": "phone"
+        },
+        "phone": {
+          "text": "*bzzz* Unknown number. Nobody calls me. ...Hello?",
+          "when": "!dooris_met",
+          "next": "phone_anon"
+        },
+        "phone_anon": {
+          "speaker": "Anon",
+          "text": "A friend of Adrian. The door won't open for strangers. Be less of a stranger.",
+          "when": "!dooris_met",
+          "next": "phone_click"
+        },
+        "phone_click": {
+          "text": "Click. He hung up. Everyone in this case has boundaries except me.",
+          "when": "!dooris_met",
+          "onEnter": [
+            {
+              "op": "setFlag",
+              "flag": "dooris_met",
+              "value": true
+            },
+            {
+              "op": "setFlag",
+              "flag": "anon_call_1",
+              "value": true
+            }
+          ],
+          "next": "gate"
+        },
+        "gate": {
+          "speaker": "DOORIS",
+          "text": "Three-factor authentication complete. One factor was a duck.",
+          "when": [
+            "dooris_pin_ok",
+            "dooris_key_ok",
+            "dooris_question_ok"
+          ],
+          "onEnter": [
+            {
+              "op": "playSound",
+              "key": "door_open"
+            },
+            {
+              "op": "setFlag",
+              "flag": "door_unlocked",
+              "value": true
+            },
+            {
+              "op": "setFlag",
+              "flag": "chapter_1_complete",
+              "value": true
+            },
+            {
+              "op": "fadeToScene",
+              "sceneId": "lobby",
+              "spawn": {
+                "x": 86.1,
+                "y": 94.6
+              },
+              "duration": 600
+            }
+          ],
+          "next": "entering"
+        },
+        "entering": {
+          "text": "Three factors. One duck. Breaking and entering. Mostly entering.",
+          "when": "door_unlocked",
+          "end": true,
+          "next": "ask",
+          "onEnter": [
+            {
+              "op": "achievement",
+              "text": "CHAPTER 1 COMPLETE \u2014 Breaking & Entering"
+            }
+          ]
+        },
+        "ask": {
+          "speaker": "DOORIS",
+          "text": "Security question. The name of the owner's best friend. Take your time. I have forever.",
+          "when": "!dooris_question_ok",
+          "next": "ask_hub"
+        },
+        "ask_hub": {
+          "when": "!dooris_question_ok",
+          "next": "missing_pin",
+          "choices": [
+            {
+              "text": "password123",
+              "next": "wrong_password"
+            },
+            {
+              "text": "Satoshi.",
+              "next": "wrong_satoshi"
+            },
+            {
+              "text": "His mom.",
+              "next": "wrong_mom"
+            },
+            {
+              "text": "[The name on the vet bill]",
+              "when": "item:vet_bill",
+              "next": "right"
+            },
+            {
+              "text": "Can't you just scan my face?",
+              "once": true,
+              "next": "faceid"
+            },
+            {
+              "text": "I'll come back.",
+              "exit": true,
+              "next": "bye"
+            }
+          ]
+        },
+        "wrong_password": {
+          "speaker": "DOORIS",
+          "text": "That's a password, not a friend. Lockout: three seconds. I'm merciful.",
+          "onEnter": [
+            {
+              "op": "playSound",
+              "key": "keypad_fail"
+            },
+            {
+              "op": "wait",
+              "ms": 1000
+            }
+          ],
+          "next": "ask_hub"
+        },
+        "wrong_satoshi": {
+          "speaker": "DOORIS",
+          "text": "Satoshi. Everyone says Satoshi. Nobody has met Satoshi. Lockout: three seconds.",
+          "onEnter": [
+            {
+              "op": "playSound",
+              "key": "keypad_fail"
+            },
+            {
+              "op": "wait",
+              "ms": 1000
+            }
+          ],
+          "next": "ask_hub"
+        },
+        "wrong_mom": {
+          "speaker": "DOORIS",
+          "text": "Adrian's mother has her own door. Lockout: three seconds. She'd have wanted ten.",
+          "onEnter": [
+            {
+              "op": "playSound",
+              "key": "keypad_fail"
+            },
+            {
+              "op": "wait",
+              "ms": 1000
+            }
+          ],
+          "next": "ask_hub"
+        },
+        "faceid": {
+          "speaker": "DOORIS",
+          "text": "Remove your glasses for Face ID.",
+          "next": "prescription"
+        },
+        "prescription": {
+          "text": "They're prescription.",
+          "next": "faceid_no"
+        },
+        "faceid_no": {
+          "speaker": "DOORIS",
+          "text": "Then no Face ID. Three factors it is. Glasses stay on, stranger.",
+          "next": "ask_hub"
+        },
+        "right": {
+          "speaker": "DOORIS",
+          "text": "Gerald. Correct. He's a very good boy. He's a duck.",
+          "onEnter": [
+            {
+              "op": "playSound",
+              "key": "keypad_success"
+            },
+            {
+              "op": "setFlag",
+              "flag": "dooris_question_ok",
+              "value": true
+            }
+          ],
+          "next": "gate"
+        },
+        "missing_pin": {
+          "speaker": "DOORIS",
+          "text": "Still missing: a PIN. Four digits. Adrian hid them. He hides everything.",
+          "when": "!dooris_pin_ok",
+          "next": "missing_key"
+        },
+        "missing_key": {
+          "speaker": "DOORIS",
+          "text": "Still missing: a hardware key. Adrian keeps his somewhere obvious. He's not a details person.",
+          "when": "!dooris_key_ok",
+          "next": "bye"
+        },
+        "bye": {
+          "speaker": "DOORIS",
+          "text": "Come back with everything. I'll be here. I'm a door.",
+          "end": true
+        }
+      }
+    }
+  }
 }

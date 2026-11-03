@@ -35,12 +35,15 @@
       "goal": { "scene": "mountain" },
       "steps": [
         { "do": "newGame", "expect": { "scene": "outside" } },
-        { "do": "act", "verb": "USE", "target": "hs_porch_light", "note": "A3.3c: la mitad A del PIN (apagar la lámpara, cogerla)", "expect": { "flags": { "porch_light_off": true } } },
-        { "do": "act", "verb": "PICK", "target": "hs_porch_light", "expect": { "has": ["note_half_a"] } },
-        { "do": "act", "verb": "PULL", "target": "hs_fence", "note": "A3.3c: el tablón y, con él, el nido de la chimenea (mitad B)", "expect": { "has": ["fence_plank"] } },
-        { "do": "use", "item": "fence_plank", "target": "hs_chimney", "expect": { "has": ["note_half_b"] } },
-        { "do": "combine", "items": ["note_half_a", "note_half_b"], "expect": { "has": ["code_note"] } },
-        { "do": "use", "item": "code_note", "target": "hs_keypad", "expect": { "scene": "lobby", "flags": { "chapter_1_complete": true } } },
+        {"do": "act", "verb": "USE", "target": "hs_porch_light", "note": "A3.3c: la mitad A del PIN (apagar la lámpara, cogerla)", "expect": {"flags": {"porch_light_off": true}}},
+        {"do": "act", "verb": "PICK", "target": "hs_porch_light", "expect": {"has": ["note_half_a"]}},
+        {"do": "act", "verb": "PULL", "target": "hs_fence", "note": "A3.3c: el tablón y, con él, el nido de la chimenea (mitad B)", "expect": {"has": ["fence_plank"]}},
+        {"do": "use", "item": "fence_plank", "target": "hs_chimney", "expect": {"has": ["note_half_b"]}},
+        {"do": "combine", "items": ["note_half_a", "note_half_b"], "expect": {"has": ["code_note"]}},
+        {"do": "use", "item": "fence_plank", "target": "hs_doormat", "note": "A3.3d: el felpudo HODL está pegado; con el tablón sale el Ledger (llave de hardware)", "expect": {"has": ["ledger"], "flags": {"found_ledger": true}}},
+        {"do": "act", "verb": "OPEN", "target": "hs_mailbox", "note": "A3.3d: un solo OPEN da el sobre y la factura del veterinario (Gerald, la respuesta de la pregunta de seguridad)", "expect": {"has": ["vet_bill", "mystery_envelope"], "flags": {"knows_gerald": true}}},
+        {"do": "use", "item": "code_note", "target": "hs_keypad", "choices": ["vet bill"], "note": "A3.3d: PIN aceptado; DOORIS se presenta (primera vez), llama Anon y hace la pregunta de seguridad: la opción «[The name on the vet bill]» solo sale con la factura; aún falta la llave", "expect": {"scene": "outside", "flags": {"dooris_met": true, "anon_call_1": true, "dooris_pin_ok": true, "dooris_question_ok": true, "door_unlocked": false}}},
+        {"do": "use", "item": "ledger", "target": "hs_keypad", "note": "A3.3d: tercer factor: DOORIS abre («One factor was a duck») y el árbol cambia de escena al cerrarse", "expect": {"scene": "lobby", "flags": {"chapter_1_complete": true}}},
         { "do": "act", "verb": "PICK", "target": "hs_coat", "expect": { "has": ["keycard"] } },
         { "do": "act", "verb": "USE", "target": "hs_frontdoor", "expect": { "scene": "outside", "has": ["keycard"], "lacks": ["printout"], "flags": { "chapter_3_complete": false } } },
         { "do": "walk", "x": 1.5, "y": 95, "trigger": "tr_mountain", "untilScene": "mountain", "attempt": true }
@@ -54,12 +57,15 @@
       "goal": { "scene": "mountain" },
       "steps": [
         { "do": "newGame", "expect": { "scene": "outside" } },
-        { "do": "act", "verb": "USE", "target": "hs_porch_light", "note": "A3.3c: la mitad A del PIN (apagar la lámpara, cogerla)", "expect": { "flags": { "porch_light_off": true } } },
-        { "do": "act", "verb": "PICK", "target": "hs_porch_light", "expect": { "has": ["note_half_a"] } },
-        { "do": "act", "verb": "PULL", "target": "hs_fence", "note": "A3.3c: el tablón y, con él, el nido de la chimenea (mitad B)", "expect": { "has": ["fence_plank"] } },
-        { "do": "use", "item": "fence_plank", "target": "hs_chimney", "expect": { "has": ["note_half_b"] } },
-        { "do": "combine", "items": ["note_half_a", "note_half_b"], "expect": { "has": ["code_note"] } },
-        { "do": "use", "item": "code_note", "target": "hs_keypad", "expect": { "scene": "lobby" } },
+        {"do": "act", "verb": "USE", "target": "hs_porch_light", "note": "A3.3c: la mitad A del PIN (apagar la lámpara, cogerla)", "expect": {"flags": {"porch_light_off": true}}},
+        {"do": "act", "verb": "PICK", "target": "hs_porch_light", "expect": {"has": ["note_half_a"]}},
+        {"do": "act", "verb": "PULL", "target": "hs_fence", "note": "A3.3c: el tablón y, con él, el nido de la chimenea (mitad B)", "expect": {"has": ["fence_plank"]}},
+        {"do": "use", "item": "fence_plank", "target": "hs_chimney", "expect": {"has": ["note_half_b"]}},
+        {"do": "combine", "items": ["note_half_a", "note_half_b"], "expect": {"has": ["code_note"]}},
+        {"do": "use", "item": "fence_plank", "target": "hs_doormat", "note": "A3.3d: el felpudo HODL está pegado; con el tablón sale el Ledger (llave de hardware)", "expect": {"has": ["ledger"], "flags": {"found_ledger": true}}},
+        {"do": "act", "verb": "OPEN", "target": "hs_mailbox", "note": "A3.3d: un solo OPEN da el sobre y la factura del veterinario (Gerald, la respuesta de la pregunta de seguridad)", "expect": {"has": ["vet_bill", "mystery_envelope"], "flags": {"knows_gerald": true}}},
+        {"do": "use", "item": "code_note", "target": "hs_keypad", "choices": ["vet bill"], "note": "A3.3d: PIN aceptado; DOORIS se presenta (primera vez), llama Anon y hace la pregunta de seguridad: la opción «[The name on the vet bill]» solo sale con la factura; aún falta la llave", "expect": {"scene": "outside", "flags": {"dooris_met": true, "anon_call_1": true, "dooris_pin_ok": true, "dooris_question_ok": true, "door_unlocked": false}}},
+        {"do": "use", "item": "ledger", "target": "hs_keypad", "note": "A3.3d: tercer factor: DOORIS abre («One factor was a duck») y el árbol cambia de escena al cerrarse", "expect": {"scene": "lobby"}},
         { "do": "act", "verb": "PICK", "target": "hs_coat", "expect": { "has": ["keycard"] } },
         { "do": "act", "verb": "USE", "target": "hs_stairs_up", "expect": { "scene": "upstairs" } },
         { "do": "act", "verb": "USE", "target": "hs_roof_hatch", "expect": { "scene": "rooftop" } },
@@ -79,12 +85,15 @@
       "goal": { "scene": "basement" },
       "steps": [
         { "do": "newGame", "expect": { "scene": "outside" } },
-        { "do": "act", "verb": "USE", "target": "hs_porch_light", "note": "A3.3c: la mitad A del PIN (apagar la lámpara, cogerla)", "expect": { "flags": { "porch_light_off": true } } },
-        { "do": "act", "verb": "PICK", "target": "hs_porch_light", "expect": { "has": ["note_half_a"] } },
-        { "do": "act", "verb": "PULL", "target": "hs_fence", "note": "A3.3c: el tablón y, con él, el nido de la chimenea (mitad B)", "expect": { "has": ["fence_plank"] } },
-        { "do": "use", "item": "fence_plank", "target": "hs_chimney", "expect": { "has": ["note_half_b"] } },
-        { "do": "combine", "items": ["note_half_a", "note_half_b"], "expect": { "has": ["code_note"] } },
-        { "do": "use", "item": "code_note", "target": "hs_keypad", "expect": { "scene": "lobby" } },
+        {"do": "act", "verb": "USE", "target": "hs_porch_light", "note": "A3.3c: la mitad A del PIN (apagar la lámpara, cogerla)", "expect": {"flags": {"porch_light_off": true}}},
+        {"do": "act", "verb": "PICK", "target": "hs_porch_light", "expect": {"has": ["note_half_a"]}},
+        {"do": "act", "verb": "PULL", "target": "hs_fence", "note": "A3.3c: el tablón y, con él, el nido de la chimenea (mitad B)", "expect": {"has": ["fence_plank"]}},
+        {"do": "use", "item": "fence_plank", "target": "hs_chimney", "expect": {"has": ["note_half_b"]}},
+        {"do": "combine", "items": ["note_half_a", "note_half_b"], "expect": {"has": ["code_note"]}},
+        {"do": "use", "item": "fence_plank", "target": "hs_doormat", "note": "A3.3d: el felpudo HODL está pegado; con el tablón sale el Ledger (llave de hardware)", "expect": {"has": ["ledger"], "flags": {"found_ledger": true}}},
+        {"do": "act", "verb": "OPEN", "target": "hs_mailbox", "note": "A3.3d: un solo OPEN da el sobre y la factura del veterinario (Gerald, la respuesta de la pregunta de seguridad)", "expect": {"has": ["vet_bill", "mystery_envelope"], "flags": {"knows_gerald": true}}},
+        {"do": "use", "item": "code_note", "target": "hs_keypad", "choices": ["vet bill"], "note": "A3.3d: PIN aceptado; DOORIS se presenta (primera vez), llama Anon y hace la pregunta de seguridad: la opción «[The name on the vet bill]» solo sale con la factura; aún falta la llave", "expect": {"scene": "outside", "flags": {"dooris_met": true, "anon_call_1": true, "dooris_pin_ok": true, "dooris_question_ok": true, "door_unlocked": false}}},
+        {"do": "use", "item": "ledger", "target": "hs_keypad", "note": "A3.3d: tercer factor: DOORIS abre («One factor was a duck») y el árbol cambia de escena al cerrarse", "expect": {"scene": "lobby"}},
         { "do": "act", "verb": "USE", "target": "hs_stairs_up", "expect": { "scene": "upstairs", "lacks": ["keycard"] } },
         { "do": "act", "verb": "USE", "target": "hs_roof_hatch", "expect": { "scene": "rooftop" } },
         { "do": "act", "verb": "USE", "target": "hs_weather_vane", "expect": { "scene": "rooftop", "flags": { "vane_turned": true, "has_keycard": false } } },
@@ -127,6 +136,70 @@
         { "do": "act", "verb": "USE", "target": "hs_porch_light", "expect": { "flags": { "porch_light_off": true } } },
         { "do": "act", "verb": "PICK", "target": "hs_porch_light", "expect": { "has": ["note_half_a"], "lacks": ["code_note"] } },
         { "do": "use", "item": "note_half_a", "target": "hs_keypad", "attempt": true, "rejects": "Half a code opens half a door", "expect": { "scene": "outside", "flags": { "door_unlocked": false, "has_code": false } } }
+      ]
+    },
+    {
+      "id": "puerta-sin-pregunta",
+      "kind": "sequence-break",
+      "title": "A3.3d: la puerta con el PIN y el Ledger pero sin la factura del veterinario (pregunta de seguridad sin responder)",
+      "why": "A3.3d (puzle 1.5/1.6): DOORIS exige los tres factores; sin vet_bill la respuesta buena está oculta (when item:vet_bill, A2.6a) y las tres falsas fallan con lockout",
+      "goal": {"scene": "lobby"},
+      "steps": [
+        {"do": "newGame", "expect": {"scene": "outside", "lacks": ["vet_bill"]}},
+        {"do": "act", "verb": "USE", "target": "hs_porch_light", "expect": {"flags": {"porch_light_off": true}}},
+        {"do": "act", "verb": "PICK", "target": "hs_porch_light", "expect": {"has": ["note_half_a"]}},
+        {"do": "act", "verb": "PULL", "target": "hs_fence", "expect": {"has": ["fence_plank"]}},
+        {"do": "use", "item": "fence_plank", "target": "hs_chimney", "expect": {"has": ["note_half_b"]}},
+        {"do": "combine", "items": ["note_half_a", "note_half_b"], "expect": {"has": ["code_note"]}},
+        {"do": "use", "item": "fence_plank", "target": "hs_doormat", "expect": {"has": ["ledger"], "flags": {"found_ledger": true}}},
+        {"do": "use", "item": "ledger", "target": "hs_keypad", "choices": ["come back"], "note": "primer contacto con DOORIS (presentación + Anon) y llave verificada; sin factura, Dex se va", "expect": {"scene": "outside", "flags": {"dooris_met": true, "dooris_key_ok": true, "door_unlocked": false}, "lastChoices": {"absent": ["vet bill"]}}},
+        {"do": "use", "item": "code_note", "target": "hs_keypad", "choices": ["password123", "Satoshi", "His mom", "come back"], "attempt": true, "rejects": "Lockout", "note": "PIN aceptado, pero la pregunta sigue sin respuesta: las tres opciones falsas fallan y la buena no está", "expect": {"scene": "outside", "flags": {"dooris_pin_ok": true, "dooris_key_ok": true, "dooris_question_ok": false, "door_unlocked": false}, "lastChoices": {"absent": ["vet bill"], "used": ["password123", "Satoshi", "His mom"]}}}
+      ]
+    },
+    {
+      "id": "puerta-sin-pin",
+      "kind": "sequence-break",
+      "title": "A3.3d: la puerta con Gerald y el Ledger pero sin el PIN (code_note)",
+      "why": "A3.3d (puzle 1.6): pregunta y llave verificadas no abren sin el PIN; DOORIS enumera lo que falta",
+      "goal": {"scene": "lobby"},
+      "steps": [
+        {"do": "newGame", "expect": {"scene": "outside", "lacks": ["code_note"]}},
+        {"do": "act", "verb": "PULL", "target": "hs_fence", "expect": {"has": ["fence_plank"]}},
+        {"do": "use", "item": "fence_plank", "target": "hs_doormat", "expect": {"has": ["ledger"], "flags": {"found_ledger": true}}},
+        {"do": "act", "verb": "OPEN", "target": "hs_mailbox", "expect": {"has": ["vet_bill"], "flags": {"knows_gerald": true}}},
+        {"do": "use", "item": "ledger", "target": "hs_keypad", "choices": ["vet bill"], "note": "llave verificada y pregunta respondida (Gerald) en la misma conversación; falta el PIN", "expect": {"scene": "outside", "lacks": ["code_note"], "flags": {"dooris_key_ok": true, "dooris_question_ok": true, "dooris_pin_ok": false, "door_unlocked": false}}},
+        {"do": "act", "verb": "TALK", "target": "hs_keypad", "attempt": true, "rejects": "Still missing: a PIN", "expect": {"scene": "outside", "flags": {"door_unlocked": false}}}
+      ]
+    },
+    {
+      "id": "puerta-sin-llave",
+      "kind": "sequence-break",
+      "title": "A3.3d: la puerta con el PIN y Gerald pero sin el Ledger (llave de hardware)",
+      "why": "A3.3d (puzle 1.6/1.7): PIN y pregunta no abren sin la llave; el Ledger está pegado bajo el felpudo",
+      "goal": {"scene": "lobby"},
+      "steps": [
+        {"do": "newGame", "expect": {"scene": "outside", "lacks": ["ledger"]}},
+        {"do": "act", "verb": "USE", "target": "hs_porch_light", "expect": {"flags": {"porch_light_off": true}}},
+        {"do": "act", "verb": "PICK", "target": "hs_porch_light", "expect": {"has": ["note_half_a"]}},
+        {"do": "act", "verb": "PULL", "target": "hs_fence", "expect": {"has": ["fence_plank"]}},
+        {"do": "use", "item": "fence_plank", "target": "hs_chimney", "expect": {"has": ["note_half_b"]}},
+        {"do": "combine", "items": ["note_half_a", "note_half_b"], "expect": {"has": ["code_note"]}},
+        {"do": "act", "verb": "OPEN", "target": "hs_mailbox", "expect": {"has": ["vet_bill"], "flags": {"knows_gerald": true}}},
+        {"do": "use", "item": "code_note", "target": "hs_keypad", "choices": ["vet bill"], "attempt": true, "rejects": "Still missing: a hardware key", "expect": {"scene": "outside", "lacks": ["ledger"], "flags": {"dooris_pin_ok": true, "dooris_question_ok": true, "dooris_key_ok": false, "door_unlocked": false}}}
+      ]
+    },
+    {
+      "id": "ledger-sin-tablon",
+      "kind": "sequence-break",
+      "title": "A3.3d: el Ledger de debajo del felpudo sin el tablón de la valla",
+      "why": "A3.3d (puzle 1.7): el felpudo HODL está pegado; PICK, OPEN, PULL y PUSH no lo levantan, solo el combo fence_plank + hs_doormat",
+      "goal": {"has": ["ledger"]},
+      "steps": [
+        {"do": "newGame", "expect": {"scene": "outside", "lacks": ["ledger", "fence_plank"]}},
+        {"do": "act", "verb": "OPEN", "target": "hs_doormat", "rejects": "It means it", "expect": {"lacks": ["ledger"], "unsetFlags": ["found_ledger"]}},
+        {"do": "act", "verb": "PULL", "target": "hs_doormat", "rejects": "leverage", "expect": {"lacks": ["ledger"], "unsetFlags": ["found_ledger"]}},
+        {"do": "act", "verb": "PUSH", "target": "hs_doormat", "rejects": "bonded to the porch", "expect": {"lacks": ["ledger"], "unsetFlags": ["found_ledger"]}},
+        {"do": "act", "verb": "PICK", "target": "hs_doormat", "attempt": true, "rejects": "It means it", "expect": {"lacks": ["ledger"], "unsetFlags": ["found_ledger"]}}
       ]
     }
   ]

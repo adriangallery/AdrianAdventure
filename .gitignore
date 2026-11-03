@@ -25,3 +25,8 @@ lint-scenes-report.md
 # Cobertura de voces (A0.3)
 voice-coverage-report.json
 voice-coverage-report.md
+
+# Capturas de smoke y walkthrough (A0.1/A0.5): artefactos del CI, no del repo
+smoke-shots/
+walkthrough-shots/
+walkthrough-selftest-shots/
