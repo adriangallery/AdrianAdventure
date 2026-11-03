@@ -1,11 +1,5 @@
 [
   {
-    "rule": "f",
-    "scene": "server_room",
-    "id": "assets/audio/sfx/glass_break.mp3",
-    "reason": "hallazgo A0.4, pendiente: el combo antena + interruptor de emergencia pide el sonido glass_break, que no existe (ni el mp3 ni la clave en sfxKeys de PreloadScene); hoy no suena nada. Falta el asset de audio, no es una errata de ruta."
-  },
-  {
     "rule": "c",
     "scene": "basement",
     "id": "hs_stairs",

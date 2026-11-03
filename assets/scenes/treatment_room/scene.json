@@ -371,6 +371,7 @@
                   "op": "say",
                   "text": "Time to face the world. With the truth."
                 },
+                { "op": "playSound", "key": "door_creak" },
                 {
                   "op": "fadeToScene",
                   "sceneId": "epilogue_outside",
@@ -409,6 +410,7 @@
                   "op": "say",
                   "text": "Time to face the world. With the truth."
                 },
+                { "op": "playSound", "key": "door_creak" },
                 {
                   "op": "fadeToScene",
                   "sceneId": "epilogue_outside",
@@ -441,6 +443,7 @@
                   "op": "say",
                   "text": "Time to face the world. With the truth."
                 },
+                { "op": "playSound", "key": "door_creak" },
                 {
                   "op": "fadeToScene",
                   "sceneId": "epilogue_outside",
@@ -1148,7 +1151,9 @@
       "filterFrequency": 1200,
       "volume": 0.4
     },
-    "ambience": null,
+    "ambience": "clinic_vent",
+    "ambienceVolume": 0.7,
+    "footstep": "tile",
     "sfx": {}
   },
   "transitions": {

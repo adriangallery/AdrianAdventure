@@ -611,7 +611,8 @@
     "variation": {
       "volume": 0.7
     },
-    "ambience": null,
+    "ambience": "dawn_birds",
+    "footstep": "grass",
     "sfx": {}
   },
   "transitions": {

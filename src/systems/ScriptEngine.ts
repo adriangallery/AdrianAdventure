@@ -44,6 +44,8 @@ export interface ScriptContext {
   addItem: (id: string, name: string) => void;
   removeItem: (id: string) => void;
   playSound?: (key: string) => void;
+  /** A4.5: op `stinger` ({ kind: item | puzzle | chapter | fail }): un stinger en la tonalidad de la música. Presentación. */
+  playStinger?: (kind: string) => void;
   // Web3 callbacks (optional — only available when wallet connected)
   isWalletConnected?: () => boolean;
   checkGating?: (rule: GatingRule) => Promise<boolean>;
@@ -567,6 +569,10 @@ export class ScriptEngine {
 
       case 'playSound':
         this.ctx.playSound?.(op.key as string);
+        break;
+
+      case 'stinger':
+        this.ctx.playStinger?.(op.kind as string);
         break;
 
       case 'flicker':

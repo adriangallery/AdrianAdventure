@@ -92,6 +92,7 @@
               "op": "ifFlag",
               "flag": "door_unlocked",
               "then": [
+                { "op": "playSound", "key": "door_creak" },
                 {
                   "op": "fadeToScene",
                   "sceneId": "lobby",
@@ -147,6 +148,7 @@
               "op": "ifFlag",
               "flag": "door_unlocked",
               "then": [
+                { "op": "playSound", "key": "door_creak" },
                 {
                   "op": "fadeToScene",
                   "sceneId": "lobby",
@@ -828,6 +830,7 @@
             }
           ],
           "OPEN": [
+            { "op": "playSound", "key": "paper_rustle" },
             {
               "op": "ifFlag",
               "flag": "found_envelope",
@@ -1785,6 +1788,7 @@
                   "flag": "has_plank",
                   "value": true
                 },
+                { "op": "playSound", "key": "plank_pull" },
                 {
                   "op": "addItem",
                   "id": "fence_plank",
@@ -1969,6 +1973,7 @@
                   "flag": "found_note_half_b",
                   "value": true
                 },
+                { "op": "playSound", "key": "nest_fall" },
                 {
                   "op": "addItem",
                   "id": "note_half_b",
@@ -2026,6 +2031,7 @@
           "op": "wait",
           "ms": 1500
         },
+        { "op": "playSound", "key": "door_creak" },
         {
           "op": "fadeToScene",
           "sceneId": "lobby",
@@ -2075,6 +2081,7 @@
           "op": "wait",
           "ms": 1500
         },
+        { "op": "playSound", "key": "door_creak" },
         {
           "op": "fadeToScene",
           "sceneId": "lobby",
@@ -2089,7 +2096,9 @@
   ],
   "audio": {
     "music": "retro-adventure",
-    "ambience": null,
+    "ambience": "crickets",
+    "footstep": "gravel",
+    "surfaces": [{"x":30.9,"y":82.5,"w":16.3,"h":8.6,"footstep":"wood"}],
     "sfx": {}
   },
   "transitions": {

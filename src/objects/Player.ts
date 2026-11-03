@@ -4,6 +4,7 @@ import type { CoordSystem } from '@/systems/CoordSystem';
 import { NavGrid, type Point } from '@/systems/Pathfinding';
 import type { Facing } from '@/systems/Facing';
 import { resolvePixelScale, spriteScale, artHeightPct, type DepthScale, type PixelGlobalConfig } from '@/systems/PixelScale';
+import { FootstepTracker } from '@/systems/Footsteps';
 import {
   IdleTicker, QA_IDLE_SEED, facingForDir, facingTexture, gesturePose, idleTicPose, isVertical, moveDir, talkPose, walkPose,
   type AnimDir, type AnimPose, type IdleTic, type IdleTicKind, type Side,
@@ -64,6 +65,12 @@ export class Player extends Phaser.GameObjects.Sprite {
    * devuelve true (saltó uno y paró al personaje), se deja de mover en este frame.
    */
   onStep: (() => boolean) | null = null;
+
+  /**
+   * A4.4: pasos. Cuenta la distancia andada en píxeles de arte (world px / unidad de píxel, con la profundidad) y
+   * avisa de cada paso con `player:footstep` ({ x, y, foot }); GameScene elige la superficie y lo hace sonar.
+   */
+  private footsteps = new FootstepTracker();
 
   /** A2.8: unidad de píxel de la escena (píxeles de fondo por píxel de arte) y escala por profundidad */
   private pixelScale: number;
@@ -170,6 +177,7 @@ export class Player extends Phaser.GameObjects.Sprite {
     this.targetPctY = null;
     this.waypoints = [];
     this.walkDir = null;
+    this.footsteps.reset();
     this.endGesture();
     this.applyFacing();
   }
@@ -462,9 +470,16 @@ export class Player extends Phaser.GameObjects.Sprite {
       } else if (this.isWalkablePct(this.pctX, nextY)) {
         this.pctY = nextY;
       }
+      const movedPct = Math.hypot(this.pctX - fromX, this.pctY - fromY);
+      // A4.4: distancia en píxeles de arte (un píxel de arte mide pixelScale × profundidad píxeles de mundo)
+      if (movedPct > 0) {
+        const movedPx = Math.hypot(((this.pctX - fromX) / 100) * this.coordSystem.imgW, ((this.pctY - fromY) / 100) * this.coordSystem.imgH);
+        const foot = this.footsteps.advance(movedPx / (this.pixelScale * Math.max(0.2, this.lastScale.depth)));
+        if (foot !== null) this.scene.events.emit('player:footstep', { x: this.pctX, y: this.pctY, foot, depth: this.lastScale.depth });
+      }
       // Atascado (no avanza o solo se arrastra en el sitio): salta al siguiente punto de paso o, si era el último,
       // se para y avisa de la llegada (so pending actions fire)
-      if (Math.hypot(this.pctX - fromX, this.pctY - fromY) < move * 0.1) {
+      if (movedPct < move * 0.1) {
         const skip = this.waypoints.shift();
         if (skip) {
           this.targetPctX = skip.x;
@@ -474,6 +489,7 @@ export class Player extends Phaser.GameObjects.Sprite {
         this.targetPctX = null;
         this.targetPctY = null;
         this.walkDir = null;
+        this.footsteps.reset();
         this.applyFacing();
         this.syncScreenPosition();
         this.scene.events.emit('player:arrived');
@@ -485,6 +501,11 @@ export class Player extends Phaser.GameObjects.Sprite {
     this.syncScreenPosition();
   }
 
+  /** A4.4 (QA): pasos dados en esta escena */
+  getFootstepCount(): number {
+    return this.footsteps.count();
+  }
+
   private arrive(): void {
     this.pctX = this.targetPctX ?? this.pctX;
     this.pctY = this.targetPctY ?? this.pctY;
@@ -492,6 +513,7 @@ export class Player extends Phaser.GameObjects.Sprite {
     this.targetPctY = null;
     this.waypoints = [];
     this.walkDir = null;
+    this.footsteps.reset();
     this.applyFacing();
     this.syncScreenPosition();
     this.scene.events.emit('player:arrived');

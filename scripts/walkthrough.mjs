@@ -174,7 +174,7 @@ async function runRoute(file, route) {
       if (inputListenersBaseline === undefined && typeof state?.inputListeners === 'number') inputListenersBaseline = state.inputListeners;
       // Un atajo abierto manda aunque fallen las comprobaciones del paso
       if (route.goal && check(route.goal, state).length === 0) goalReached = true;
-      fails = [...check(step.expect, state, { listenersBaseline, inputListenersBaseline, pixelRefs }), ...checkRejects(step, before, state)];
+      fails = [...check(step.expect, state, { listenersBaseline, inputListenersBaseline, pixelRefs, before }), ...checkRejects(step, before, state)];
       notePixel(pixelRefs, state);
       if (seqBreak && i === attempt && !goalReached) fails.push(...checkAttemptRan(step, before, state));
     } catch (err) {

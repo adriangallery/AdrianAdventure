@@ -600,6 +600,7 @@
                   "text": "Back to the server room.",
                   "duration": 1000
                 },
+                { "op": "playSound", "key": "hatch_metal" },
                 {
                   "op": "fadeToScene",
                   "sceneId": "server_room",
@@ -629,6 +630,7 @@
                   "op": "wait",
                   "ms": 400
                 },
+                { "op": "playSound", "key": "hatch_metal" },
                 {
                   "op": "fadeToScene",
                   "sceneId": "server_room",
@@ -1335,6 +1337,7 @@
               "op": "ifFlag",
               "flag": "floppy_inserted",
               "then": [
+                { "op": "playSound", "key": "floppy_insert" },
                 {
                   "op": "say",
                   "text": "The floppy is already inserted. The patient roster is on screen."
@@ -1455,7 +1458,8 @@
       "filterFrequency": 2000,
       "volume": 0.7
     },
-    "ambience": null,
+    "ambience": "basement_drip",
+    "footstep": "concrete",
     "sfx": {}
   },
   "transitions": {

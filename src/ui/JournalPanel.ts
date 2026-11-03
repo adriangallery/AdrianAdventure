@@ -1,5 +1,8 @@
 import Phaser from 'phaser';
 import { FONT, SPEECH_COLORS, TWP } from '@/config/theme';
+import { sfxOf } from '@/systems/Sfx';
+import { goalStingers, type GoalSnapshot } from '@/systems/Stingers';
+import { playStinger } from '@/systems/StingerPlayer';
 import type { GameState } from '@/types/game.types';
 import { CHAPTERS } from '@/systems/ChapterManager';
 import { JOURNAL_CHAPTERS, journalChapter, journalProgress, journalWorld } from '@/systems/JournalData';
@@ -185,6 +188,7 @@ export class JournalPanel {
     this.showTab(tab);
     this.openedAt = performance.now();
     this.scene.registry.set('journalOpen', true);
+    sfxOf(this.scene)?.play('journal_open', { volume: 0.4 });
     return true;
   }
 
@@ -193,6 +197,7 @@ export class JournalPanel {
     this.ringTimer = null;
     this.calling = false;
     if (!this.overlay) return;
+    sfxOf(this.scene)?.play('journal_close', { volume: 0.35 });
     this.hooks.stopVoice();
     this.overlay.remove();
     this.overlay = null;
@@ -219,6 +224,8 @@ export class JournalPanel {
     if (this.tab !== 'anon') this.showTab('anon');
     this.calling = true;
     this.renderBody();
+    // A4.4: tono de llamada (phone_ring dura RING_MS) y descolgar al contestar
+    sfxOf(this.scene)?.play('phone_ring', { volume: 0.45 });
     return new Promise((resolve) => {
       this.ringTimer = setTimeout(() => {
         this.ringTimer = null;
@@ -233,6 +240,7 @@ export class JournalPanel {
         this.scene.registry.set('journalLastCall', call);
         this.calling = false;
         this.renderBody();
+        sfxOf(this.scene)?.play('phone_pickup', { volume: 0.4 });
         this.hooks.playVoice(call.text);
         resolve(call);
       }, RING_MS);
@@ -251,7 +259,17 @@ export class JournalPanel {
     const world = journalWorld(state);
     const progress = journalProgress(state);
     const synced = syncNotes(JOURNAL_CHAPTERS, chapter, world, progress);
-    if (synced !== progress) this.save(synced);
+    if (synced !== progress) {
+      this.save(synced);
+      // A4.4: Dex apunta algo en el móvil (garabato) cuando aparece una nota nueva
+      if (synced.notes.length > progress.notes.length) sfxOf(this.scene)?.play('journal_note', { volume: 0.35 });
+    }
+    // A4.5: puzle resuelto (objetivo cumplido) o capítulo cerrado = stinger. La instantánea vive en el registry del juego, así
+    // un objetivo que se cumple justo antes de cambiar de escena suena al entrar en la siguiente; la primera vez solo apunta
+    const snapshot: GoalSnapshot = { chapter, done: goalsView(chapterData(JOURNAL_CHAPTERS, chapter), world).filter((g) => g.done).length };
+    const prev = this.scene.game.registry.get('stingerGoals') as GoalSnapshot | undefined;
+    for (const kind of goalStingers(prev, snapshot)) playStinger(this.scene, kind);
+    if (!prev || prev.chapter !== snapshot.chapter || prev.done !== snapshot.done) this.scene.game.registry.set('stingerGoals', snapshot);
     const unseen = this.overlay ? 0 : unseenIds(JOURNAL_CHAPTERS, chapter, world, synced).length;
     if (unseen > 0 && !this.dot.visible) {
       this.dot.setVisible(true).setScale(1);

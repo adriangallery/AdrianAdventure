@@ -20,7 +20,7 @@ export interface PrefetchScene {
   transitions?: { goto?: Array<{ targetScene?: string }> };
   conditionalOverlays?: Array<{ id: string; sprite: string; format?: 'png' | 'webp' }>;
   web3Visuals?: Array<{ defaultSprite: string; variants?: Array<{ sprite: string }> }>;
-  audio?: { music?: string | null };
+  audio?: { music?: string | null; ambience?: string | null };
 }
 
 export interface SceneAsset {
@@ -64,6 +64,9 @@ export function sceneExits(scene: PrefetchScene | null | undefined, selfId?: str
 
 export const sceneJsonUrl = (sceneId: string, v: string): string => `assets/scenes/${sceneId}/scene.json${v}`;
 export const musicUrl = (track: string, v: string): string => `assets/audio/music/${track}.mp3${v}`;
+/** A4.4: bucles de ambiente (clave de caché `amb_<clave>`, como en MusicManager) */
+export const ambienceUrl = (key: string, v: string): string => `assets/audio/ambience/${key}.mp3${v}`;
+export const ambienceCacheKey = (key: string): string => `amb_${key}`;
 
 /**
  * Imágenes de una escena con la clave de textura que les da PreloadScene: fondo, primer plano (si
@@ -113,7 +116,7 @@ export function prefetchBudget(conn: ConnectionLike | null | undefined): { maxSc
 
 export interface PrefetchTask {
   scene: string;
-  kind: 'json' | 'image' | 'music';
+  kind: 'json' | 'image' | 'music' | 'ambience';
   url: string;
   /** Clave de textura o de audio en Phaser (para no pedir lo que ya está decodificado) */
   key?: string;
@@ -140,7 +143,7 @@ export interface PlanInput {
 /**
  * Cola de precarga para la escena actual, de una en una y en este orden: primero los scene.json de las vecinas que
  * faltan (sin ellos no se sabe qué imágenes tienen), luego las imágenes de cada vecina en orden de salida (fondo,
- * primer plano, overlays, web3) y al final su música si hay sonido. Nunca lo ya descargado ni lo ya decodificado
+ * primer plano, overlays, web3) y al final su música y su ambiente (A4.4) si hay sonido. Nunca lo ya descargado ni lo ya decodificado
  * en Phaser. El planificador se vuelve a llamar cuando llega un scene.json (así entran sus imágenes).
  */
 export function planPrefetch(input: PlanInput): PrefetchTask[] {
@@ -163,6 +166,11 @@ export function planPrefetch(input: PlanInput): PrefetchTask[] {
     for (const id of neighbors) {
       const track = scenes[id]?.audio?.music;
       if (track) add({ scene: id, kind: 'music', url: musicUrl(track, v), key: track });
+    }
+    // A4.4: y su ambiente (ligero: ~130 KB por bucle), detrás de la música
+    for (const id of neighbors) {
+      const amb = scenes[id]?.audio?.ambience;
+      if (amb) add({ scene: id, kind: 'ambience', url: ambienceUrl(amb, v), key: ambienceCacheKey(amb) });
     }
   }
   return tasks;

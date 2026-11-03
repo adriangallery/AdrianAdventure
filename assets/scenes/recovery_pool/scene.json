@@ -230,12 +230,14 @@
             }
           ],
           "TALK": [
+            { "op": "playSound", "key": "duck_squeak" },
             {
               "op": "say",
               "text": "I address the duck directly. 'Gerald, what's the alpha?' The duck says nothing. The apes gasp. 'He only speaks during bull markets,' one explains."
             }
           ],
           "USE": [
+            { "op": "playSound", "key": "duck_squeak" },
             {
               "op": "ifHasItem",
               "id": "rubber_duck",
@@ -259,6 +261,7 @@
             }
           ],
           "PICK": [
+            { "op": "playSound", "key": "duck_squeak" },
             {
               "op": "say",
               "text": "Gerald is too big to pick up. And the apes would riot. Never come between a degen and their inflatable."
@@ -619,6 +622,7 @@
                   "text": "Into the MemeLAB...",
                   "duration": 800
                 },
+                { "op": "playSound", "key": "door_creak" },
                 {
                   "op": "fadeToScene",
                   "sceneId": "memelab",
@@ -646,6 +650,7 @@
                   "op": "playSound",
                   "key": "door_open"
                 },
+                { "op": "playSound", "key": "door_creak" },
                 {
                   "op": "fadeToScene",
                   "sceneId": "memelab",
@@ -667,6 +672,7 @@
                   "text": "Into the MemeLAB...",
                   "duration": 800
                 },
+                { "op": "playSound", "key": "door_creak" },
                 {
                   "op": "fadeToScene",
                   "sceneId": "memelab",
@@ -694,6 +700,7 @@
                   "op": "playSound",
                   "key": "door_open"
                 },
+                { "op": "playSound", "key": "door_creak" },
                 {
                   "op": "fadeToScene",
                   "sceneId": "memelab",
@@ -733,6 +740,7 @@
                   "text": "Back to the MemeLAB.",
                   "duration": 800
                 },
+                { "op": "playSound", "key": "door_creak" },
                 {
                   "op": "fadeToScene",
                   "sceneId": "memelab",
@@ -756,6 +764,7 @@
                   "op": "playSound",
                   "key": "door_open"
                 },
+                { "op": "playSound", "key": "door_creak" },
                 {
                   "op": "fadeToScene",
                   "sceneId": "memelab",
@@ -777,6 +786,7 @@
                   "text": "Back to the MemeLAB.",
                   "duration": 800
                 },
+                { "op": "playSound", "key": "door_creak" },
                 {
                   "op": "fadeToScene",
                   "sceneId": "memelab",
@@ -800,6 +810,7 @@
                   "op": "playSound",
                   "key": "door_open"
                 },
+                { "op": "playSound", "key": "door_creak" },
                 {
                   "op": "fadeToScene",
                   "sceneId": "memelab",
@@ -1236,7 +1247,8 @@
       "filterFrequency": 1800,
       "volume": 0.6
     },
-    "ambience": null,
+    "ambience": "pool_water",
+    "footstep": "tile",
     "sfx": {}
   },
   "transitions": {

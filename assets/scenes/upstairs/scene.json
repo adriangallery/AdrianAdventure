@@ -432,6 +432,7 @@
               "text": "Cool night air rushes in.",
               "duration": 1200
             },
+            { "op": "playSound", "key": "hatch_metal" },
             {
               "op": "fadeToScene",
               "sceneId": "rooftop",
@@ -448,6 +449,7 @@
               "text": "Cool night air rushes in.",
               "duration": 1200
             },
+            { "op": "playSound", "key": "hatch_metal" },
             {
               "op": "fadeToScene",
               "sceneId": "rooftop",
@@ -488,6 +490,7 @@
               "text": "Cool night air rushes in.",
               "duration": 1200
             },
+            { "op": "playSound", "key": "hatch_metal" },
             {
               "op": "fadeToScene",
               "sceneId": "rooftop",
@@ -1103,7 +1106,9 @@
       "filterFrequency": 2500,
       "volume": 0.8
     },
-    "ambience": null,
+    "ambience": "office_hum",
+    "ambienceVolume": 0.8,
+    "footstep": "carpet",
     "sfx": {}
   },
   "transitions": {
