@@ -411,10 +411,22 @@ test('A2.9: la ruta crítica comprueba el tic de un objetivo, la escalera de Ano
   assert.deepEqual(calls.slice(0, 2).map((a) => [a.puzzle, a.level]), [['p1_lamp', 1], ['p1_lamp', 2]]);
   assert.deepEqual(calls.slice(2, 5).map((a) => a.puzzle), ['p1_nest', 'p1_combine', 'p1_door']);
   assert.ok(calls.some((a) => a.puzzle === 'p1_door' && a.notPuzzle === 'p1_combine'));
+  // A3.3d: conocida DOORIS se abren los hilos del buzón y del felpudo; con la factura y la llave, la pregunta
+  assert.deepEqual(calls.slice(5, 7).map((a) => [a.puzzle, a.notPuzzle]), [['p1_mail', 'p1_door'], ['p1_question', 'p1_mail']]);
   assert.ok(steps.some((s) => s.do === 'journal' && s.expect?.journal?.done?.includes('g1_code')));
-  // Los pasos del diario van entre la puerta sin nota y el felpudo, sin tocar el resto de la ruta
+  // Las llamadas empiezan nada más empezar (antes de tocar la puerta: así p1_lamp es el único puzle abierto)
   const i = steps.findIndex((s) => s.do === 'callAnon');
-  assert.equal(steps[i - 1].target, 'hs_front_door');
+  assert.equal(steps[i - 1].do, 'newGame');
+  // A3.3d: la puerta se abre con los tres factores y el último paso del capítulo llega al lobby
+  const door = steps.findIndex((s) => s.expect?.flags?.chapter_1_complete === true);
+  assert.ok(door > 0);
+  assert.equal(steps[door].expect.scene, 'lobby');
+  const before = steps.slice(0, door);
+  for (const f of ['dooris_pin_ok', 'dooris_key_ok', 'dooris_question_ok']) {
+    assert.ok(before.some((s) => s.expect?.flags?.[f] === true) || steps[door].expect.flags[f] === true, `la ruta comprueba ${f}`);
+  }
+  // Sin la factura, la respuesta buena no está (A2.6a): la ruta lo comprueba con lastChoices.absent
+  assert.ok(before.some((s) => s.expect?.lastChoices?.absent?.some((t) => /vet bill/i.test(t))));
 });
 
 // A2.8: densidad de píxel

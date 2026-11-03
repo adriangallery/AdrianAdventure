@@ -272,6 +272,8 @@ export function installQa(game: Phaser.Game): void {
     if (!events.listeners('say').includes(onSay)) {
       events.on('say', onSay);
       events.on('sayBrief', onSay);
+      // A3.3e: las frases de los nodos de diálogo (DialogueSystem → DialogueBox, sin pasar por `say`)
+      events.on('dialogueLine', onSay);
     }
   };
 
