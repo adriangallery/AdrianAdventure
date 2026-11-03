@@ -1132,5 +1132,98 @@
       "depth": 16,
       "invert": true
     }
+  ],
+  "ambient": [
+    {
+      "id": "rig_leds",
+      "kind": "leds",
+      "cells": [
+        {
+          "x": 10.5,
+          "y": 31.5
+        },
+        {
+          "x": 13,
+          "y": 31.5
+        },
+        {
+          "x": 15.5,
+          "y": 31.5
+        },
+        {
+          "x": 18,
+          "y": 31.5
+        },
+        {
+          "x": 20.5,
+          "y": 31.5
+        },
+        {
+          "x": 10.5,
+          "y": 58
+        },
+        {
+          "x": 13,
+          "y": 58
+        },
+        {
+          "x": 15.5,
+          "y": 58
+        },
+        {
+          "x": 18,
+          "y": 58
+        },
+        {
+          "x": 20.5,
+          "y": 58
+        }
+      ],
+      "colors": [
+        "#4cff6a",
+        "#ff4d4d"
+      ],
+      "period": 600
+    },
+    {
+      "id": "monitor_glow",
+      "kind": "glow",
+      "area": {
+        "x": 42,
+        "y": 42,
+        "w": 20,
+        "h": 15
+      },
+      "shape": "rect",
+      "color": "#a0ffc0",
+      "alpha": 0.1,
+      "alphaMin": 0.04,
+      "period": 2200
+    },
+    {
+      "id": "lamp_dust",
+      "kind": "dust",
+      "area": {
+        "x": 40,
+        "y": 28,
+        "w": 22,
+        "h": 30
+      },
+      "count": 12,
+      "color": "#ffe8b0",
+      "alpha": 0.4,
+      "speed": 0.7
+    },
+    {
+      "id": "desk_moths",
+      "kind": "moths",
+      "at": {
+        "x": 46.5,
+        "y": 25
+      },
+      "radius": 2.2,
+      "count": 3,
+      "when": "porch_light_off"
+    }
   ]
 }

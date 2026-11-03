@@ -36,6 +36,8 @@ import { JOURNAL_CHAPTERS, journalChapter, journalProgress, journalWorld } from 
 import { spriteScale, worldToArt, isIntegerScale } from '@/systems/PixelScale';
 import { wantsGesture } from '@/systems/PlayerAnim';
 import { defaultFacing, lifeSeed, type VoiceState } from '@/systems/NpcLife';
+import { AmbientLayer } from '@/systems/AmbientLayer';
+import type { AmbientQa } from '@/systems/Ambient';
 import type { VoiceSystem } from '@/systems/VoiceSystem';
 import { failResponses } from '@/systems/FailResponsesData';
 
@@ -64,6 +66,8 @@ export class GameScene extends Phaser.Scene {
   private transactionToast!: TransactionToast;
   private web3VisualSystem?: Web3VisualSystem;
   private npcs: NPC[] = [];
+  /** A4.3: animación ambiental de la escena (`ambient[]` de scene.json); se crea en create() y se suelta en SHUTDOWN */
+  private ambient?: AmbientLayer;
   /**
    * A4.2: hora (la `time` de update, reloj real) del último frame de vida de las NPC. La boca sigue a un clip de voz que
    * suena en tiempo real: con el `delta` suavizado de Phaser, en un frame lento iría por detrás del audio.
@@ -258,6 +262,18 @@ export class GameScene extends Phaser.Scene {
       }
     }
 
+    // A4.3: animación ambiental declarada en scene.json (`ambient[]`): polillas, polvo, LEDs, niebla, nubes, luces… Sin
+    // assets: Graphics y una textura radial generada. Con ?qa=1 las semillas son fijas (como la vida de las NPC)
+    const qaMode = new URLSearchParams(window.location.search).get('qa') === '1';
+    this.ambient?.destroy();
+    this.ambient = new AmbientLayer(this, sceneData.ambient, sceneId, {
+      coords: this.coordSystem,
+      fg: this.fg,
+      getFlag: (flag) => this.gameState.flags[flag] ?? false,
+      hasItem: (id) => this.inventorySystem.hasItem(id),
+      qa: qaMode,
+    });
+
     // Camera setup based on orientation
     this.setupCamera();
     // A2.10: director de cinemáticas de esta escena (las NPC se le dan por función: se crean más abajo)
@@ -326,7 +342,6 @@ export class GameScene extends Phaser.Scene {
     this.lastProgressAt = Date.now();
     this.lastHintAt = 0;
     if (sceneData.npcs) {
-      const qaMode = new URLSearchParams(window.location.search).get('qa') === '1';
       for (const nd of sceneData.npcs) {
         const npcScreen = this.coordSystem.pctToScreen(nd.position.x, nd.position.y);
         const npc = new NPC(this, npcScreen.x, npcScreen.y, nd.id, nd.name, nd.dialogueTreeId, nd.color ? parseInt(nd.color, 16) : undefined);
@@ -467,6 +482,8 @@ export class GameScene extends Phaser.Scene {
     const lifeDt = this.lifeClock ? Math.min(250, Math.max(0, time - this.lifeClock)) : delta;
     this.lifeClock = time;
     this.updateNpcLife(lifeDt);
+    // A4.3: la animación ambiental sigue el mismo reloj real (y el scroll de la cámara, para el parallax de nubes y niebla)
+    this.ambient?.update(lifeDt, this.cameras.main.scrollX);
 
     // Refresh conditional overlays when flags change (A1.4: un flicker en marcha manda sobre la flag)
     for (const co of this.conditionalOverlays) {
@@ -858,6 +875,11 @@ export class GameScene extends Phaser.Scene {
     return this.npcs.filter((n) => n.active).map((n) => n.getLifeState());
   }
 
+  /** A4.3 (QA): elementos de animación ambiental de la escena (condición, forzado, cosas dibujadas, firma del frame) */
+  qaAmbient(): AmbientQa[] {
+    return this.ambient?.qaState() ?? [];
+  }
+
   /**
    * Toque en la escena ya resuelto (punto en % y hotspot visible bajo él, si hay): combo con el objeto
    * elegido, andar, mirar/hablar al momento o ir hasta el hotspot y actuar al llegar. A0.1: la API de QA
@@ -968,6 +990,8 @@ export class GameScene extends Phaser.Scene {
     for (const co of this.conditionalOverlays) {
       this.placeOverlay(co.sprite, co.bounds);
     }
+    // A4.3: el ambiente se recoloca solo con la transformación del fondo; el vaivén del primer plano parte de la x nueva
+    this.ambient?.layout();
 
     this.web3VisualSystem?.onResize(this.coordSystem);
 
@@ -1574,6 +1598,12 @@ export class GameScene extends Phaser.Scene {
       clearOverlayOverrides: () => {
         if (run === this.sceneRun) this.overlayOverrides.clear();
       },
+      // A4.3: op ambient (forzar o ráfaga de un elemento de animación ambiental). Solo en la escena de este contexto
+      ambient: (id, action) => {
+        if (run !== this.sceneRun || !this.ambient) return false;
+        if (action === 'burst') return this.ambient.burst(id);
+        return this.ambient.setOverride(id, action === 'auto' ? null : action);
+      },
       showCredits: () => {
         const ui = this.scene.get('UIScene');
         return new Promise<void>((resolve) => {
@@ -2098,6 +2128,9 @@ export class GameScene extends Phaser.Scene {
     this.transactionToast?.destroy();
     this.web3VisualSystem?.destroy();
     this.web3VisualSystem = undefined;
+    // A4.3: sus Graphics e Images ya los destruyó la escena; solo se sueltan referencias
+    this.ambient?.destroy();
+    this.ambient = undefined;
     this.walletUnsub?.();
     this.walletUnsub = null;
     if (this.activeCameraEffect) {

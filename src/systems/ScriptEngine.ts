@@ -82,6 +82,12 @@ export interface ScriptContext {
   journalNote?: (id: string) => boolean;
   /** A2.9: op `callAnon` — una llamada a Anon (la pista del puzle abierto, `say` con speaker «Anon»). Presentación. */
   callAnon?: () => Promise<void>;
+  /**
+   * A4.3: op `ambient` — { op: "ambient", id: "<ambient[].id>", action: "on" | "off" | "auto" | "burst" }: fuerza un elemento de
+   * animación ambiental de la escena actual (encendido, apagado o según su `when`) o lanza una ráfaga (dust/rise con `burst`).
+   * Presentación pura: no toca la partida. Devuelve false si el elemento no existe (o su tipo no tiene ráfaga).
+   */
+  ambient?: (id: string, action: 'on' | 'off' | 'auto' | 'burst') => boolean;
 }
 
 /**
@@ -101,6 +107,8 @@ export const WATCHDOG_MS = 30_000;
  * pasa de 30 s se abandona como cualquier cuelgue, pero su resultado tardío sigue ejecutando onSuccess/onFail.
  */
 const SELF_RESOLVING_OPS = new Set(['wait', 'web3Require', 'flicker', 'cinematic', 'cinematicStart', 'cinematicEnd']);
+/** A4.3: acciones del op `ambient` */
+export const AMBIENT_ACTIONS = new Set(['on', 'off', 'auto', 'burst']);
 
 /**
  * A1.4: patrón de `flicker` ya validado: duraciones (ms) finitas y no negativas. Devuelve null si `pattern` no es
@@ -572,6 +580,19 @@ export class ScriptEngine {
       case 'flicker':
         await this.flicker(op, gen);
         break;
+
+      case 'ambient': {
+        // A4.3: { op: "ambient", id, action: on | off | auto | burst } — instantáneo, presentación pura
+        const action = op.action;
+        if (typeof op.id !== 'string' || !AMBIENT_ACTIONS.has(String(action))) {
+          console.warn(`ScriptEngine: ambient mal definido en ${this.currentLabel || 'script'} (id y action on|off|auto|burst)`);
+          break;
+        }
+        if (!this.ctx.ambient?.(op.id, action as 'on' | 'off' | 'auto' | 'burst')) {
+          console.warn(`ScriptEngine: ambient «${op.id}» no está en la escena (o no admite ${String(action)})`);
+        }
+        break;
+      }
 
       case 'callAnon':
         // A2.9: { op: "callAnon" } — Anon llama: la pista del puzle abierto más avanzado (o una frase de relleno)

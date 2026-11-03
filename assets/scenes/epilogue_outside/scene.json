@@ -624,5 +624,81 @@
       "w": 32.9,
       "h": 18.9
     }
+  ],
+  "ambient": [
+    {
+      "id": "birds",
+      "kind": "birds",
+      "area": {
+        "x": 33,
+        "y": 8,
+        "w": 32,
+        "h": 18
+      },
+      "count": 4,
+      "size": 13,
+      "color": "#3a3040",
+      "alpha": 0.9,
+      "speed": 0.8
+    },
+    {
+      "id": "valley_fog",
+      "kind": "fog",
+      "area": {
+        "x": 8,
+        "y": 50,
+        "w": 46,
+        "h": 30
+      },
+      "count": 5,
+      "size": 200,
+      "color": "#f4f4ff",
+      "alpha": 0.34,
+      "speed": 0.5,
+      "parallax": 0.9
+    },
+    {
+      "id": "sky_clouds",
+      "kind": "clouds",
+      "area": {
+        "x": 0,
+        "y": 0,
+        "w": 100,
+        "h": 32
+      },
+      "count": 3,
+      "size": 170,
+      "color": "#ffe8f2",
+      "alpha": 0.4,
+      "parallax": 0.5,
+      "speed": 0.5
+    },
+    {
+      "id": "sun_glow",
+      "kind": "glow",
+      "area": {
+        "x": 8,
+        "y": 6,
+        "w": 40,
+        "h": 32
+      },
+      "shape": "ellipse",
+      "color": "#ffd090",
+      "alpha": 0.1,
+      "alphaMin": 0.04,
+      "period": 5000,
+      "depth": 1
+    },
+    {
+      "id": "sun_moths",
+      "kind": "moths",
+      "at": {
+        "x": 24,
+        "y": 30
+      },
+      "radius": 4,
+      "count": 3,
+      "when": "porch_light_off"
+    }
   ]
 }

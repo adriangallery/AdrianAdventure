@@ -953,5 +953,58 @@
       "w": 8,
       "h": 19.8
     }
+  ],
+  "ambient": [
+    {
+      "id": "alarm_glow",
+      "kind": "glow",
+      "area": {
+        "x": 53.5,
+        "y": 50,
+        "w": 10,
+        "h": 25
+      },
+      "shape": "ellipse",
+      "color": "#ff4040",
+      "alpha": 0.3,
+      "alphaMin": 0.04,
+      "period": 1500
+    },
+    {
+      "id": "camera_led",
+      "kind": "leds",
+      "cells": [
+        {
+          "x": 66.6,
+          "y": 18.5
+        }
+      ],
+      "colors": [
+        "#ff3030"
+      ],
+      "period": 800
+    },
+    {
+      "id": "sky_clouds",
+      "kind": "clouds",
+      "area": {
+        "x": 0,
+        "y": 0,
+        "w": 40,
+        "h": 20
+      },
+      "count": 2,
+      "size": 130,
+      "color": "#ecd0ec",
+      "alpha": 0.4,
+      "parallax": 0.6,
+      "speed": 0.6
+    },
+    {
+      "id": "bush_sway",
+      "kind": "sway",
+      "amplitude": 3,
+      "period": 3600
+    }
   ]
 }

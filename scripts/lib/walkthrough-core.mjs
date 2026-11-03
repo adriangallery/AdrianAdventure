@@ -31,7 +31,7 @@ export function describe(s) {
 
 /**
  * Comprobaciones de estado: scene, has, lacks, flags, unsetFlags, visited, achievements, (A2.6) lastChoices, (A2.2) facing,
- * (A2.4) verb, walkTarget y highlighted, (A2.10) cinematic y playerNear, (A2.8) pixel, (A4.1) anim, (A4.2) npc y (A1.10) noListenerGrowth, que
+ * (A2.4) verb, walkTarget y highlighted, (A2.10) cinematic y playerNear, (A2.8) pixel, (A4.1) anim, (A4.2) npc, (A4.3) ambient y (A1.10) noListenerGrowth, que
  * compara `st.resizeListeners` con `ctx.listenersBaseline` (lo que había tras el primer paso de la ruta). `flags` trata
  * una flag ausente como false; (A1.4) `unsetFlags` exige que la flag no esté en la partida, ni a false: nadie la ha
  * escrito (p. ej. un parpadeo que antes se hacía encendiendo y apagando la flag). Devuelve los fallos.
@@ -79,6 +79,8 @@ export function check(expect, st, ctx = {}) {
   if (expect.anim) f.push(...checkAnim(expect.anim, st));
   // A4.2: vida de las NPC (giro hacia el jugador, boca, respiración, parpadeos, última conversación)
   if (expect.npc) f.push(...checkNpc(expect.npc, st));
+  // A4.3: animación ambiental (elemento presente, activo según su `when`, con cosas dibujadas)
+  if (expect.ambient) f.push(...checkAmbient(expect.ambient, st));
   // A2.5: última respuesta de fallo (tipo, objeto, objetivo, verbo, bolsa y texto)
   if (expect.failResponse) f.push(...checkFailResponse(expect.failResponse, st));
   return f;
@@ -140,6 +142,32 @@ export function checkNpc(want, st) {
       if (w.lastTalk.minMouthMoves !== undefined && !(t.mouthMoves >= w.lastTalk.minMouthMoves)) {
         f.push(`NPC «${w.id}»: al hablar abrió la boca ${t.mouthMoves} vez/veces, se esperaban al menos ${w.lastTalk.minMouthMoves}`);
       }
+    }
+  }
+  return f;
+}
+
+/**
+ * A4.3: `expect.ambient` (un objeto o una lista) contra `st.ambient` (el elemento con ese `id`):
+ *  - `active` (se ve: su `when` se cumple o está forzado), `conditionMet`, `kind`, `forced` (on | off | null): iguales;
+ *  - `minCount`: cosas dibujadas en el último frame, al menos; `minFrames` / `minBursts`: mínimos de los contadores;
+ *  - `absent: true`: no hay ningún elemento con ese id en la escena.
+ */
+export function checkAmbient(want, st) {
+  const list = st.ambient;
+  if (list === undefined) return ['el juego no expone `ambient` en state() (API de QA anterior a A4.3)'];
+  const f = [];
+  for (const w of Array.isArray(want) ? want : [want]) {
+    const a = (list ?? []).find((x) => x.id === w.id);
+    if (w.absent) { if (a) f.push(`ambiente «${w.id}»: está en la escena y se esperaba ausente`); continue; }
+    if (!a) { f.push(`ambiente «${w.id}»: no está en la escena (${(list ?? []).map((x) => x.id).join(', ') || 'ninguno'})`); continue; }
+    for (const k of ['active', 'conditionMet']) {
+      if (w[k] !== undefined && Boolean(a[k]) !== w[k]) f.push(`ambiente «${w.id}»: ${k} = ${Boolean(a[k])}, se esperaba ${w[k]}`);
+    }
+    if (w.kind !== undefined && a.kind !== w.kind) f.push(`ambiente «${w.id}»: kind «${a.kind}», se esperaba «${w.kind}»`);
+    if (w.forced !== undefined && a.forced !== w.forced) f.push(`ambiente «${w.id}»: forced = ${a.forced}, se esperaba ${w.forced}`);
+    for (const [k, field] of [['minCount', 'count'], ['minFrames', 'frames'], ['minBursts', 'bursts']]) {
+      if (w[k] !== undefined && !(a[field] >= w[k])) f.push(`ambiente «${w.id}»: ${field} = ${a[field]}, se esperaban al menos ${w[k]}`);
     }
   }
   return f;

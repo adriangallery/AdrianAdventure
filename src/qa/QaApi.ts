@@ -23,6 +23,7 @@ import type { LastTransition } from '@/scenes/PreloadScene';
 import type { ScenePrefetcher } from '@/systems/ScenePrefetcher';
 import type { PlayerAnimQa } from '@/objects/Player';
 import type { NpcLifeQa } from '@/objects/NPC';
+import type { AmbientQa } from '@/systems/Ambient';
 import type { FailResponse } from '@/systems/FailResponses';
 import { failResponses } from '@/systems/FailResponsesData';
 
@@ -143,6 +144,12 @@ export interface QaState {
    * `lastTalk` = última conversación `{ faced, facedPlayer, lines, ms, mouthMoves, voice, level }`. Ver § Vida en las NPC.
    */
   npcLife: NpcLifeQa[];
+  /**
+   * A4.3: animación ambiental de la escena (src/systems/Ambient.ts): `{ id, kind, conditionMet, forced, active, count, sig,
+   * frames, bursts }` por elemento de `ambient[]` del scene.json. `sig` es la firma del último frame dibujado (cambia cuando
+   * algo se mueve); `count`, cuántas cosas dibujó. Ver § Animación ambiental.
+   */
+  ambient: AmbientQa[];
 }
 
 /** A2.8: ver QaState.pixel */
@@ -440,6 +447,7 @@ export function installQa(game: Phaser.Game): void {
       anim: scene ? scene.qaAnim() : null,
       lastFailResponse: failResponses.last ? { ...failResponses.last } : null,
       npcLife: scene ? scene.qaNpcLife() : [],
+      ambient: scene ? scene.qaAmbient() : [],
     };
   };
 

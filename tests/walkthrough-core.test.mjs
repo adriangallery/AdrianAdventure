@@ -6,7 +6,7 @@ import { readFileSync } from 'node:fs';
 import {
   attemptIndex, check, checkAttemptRan, checkCinematic, checkFailResponse, checkHighlighted, checkJournal, checkLastChoices, checkListenerGrowth, checkRejects, checkWalkTarget, classify,
   describe, kindOf, newLogLines, routeDefects, runScriptDefects, selftestDefects, selftestMismatch, tapsScene,
-  checkPixel, notePixel, checkAnim, checkNpc,
+  checkPixel, notePixel, checkAnim, checkNpc, checkAmbient,
 } from '../scripts/lib/walkthrough-core.mjs';
 
 const readJson = (p) => JSON.parse(readFileSync(new URL(`../${p}`, import.meta.url), 'utf8'));
@@ -498,6 +498,21 @@ const npcL = (extra = {}) => ({
   id: 'npc_receptionist', mirrored: false, facing: 'right', defaultFacing: 'right', engaged: false, talking: false, mouthOpen: false,
   breathPx: 1, blinking: false, blinkCount: 2, turns: 1, mouthMoves: 9, talkMs: 2400, rest: true, faceLocked: false,
   lastTalk: { faced: 'right', facedPlayer: true, lines: 3, ms: 2400, mouthMoves: 9, voice: 'clip', level: false }, ...extra,
+});
+
+test('A4.3: expect.ambient comprueba presencia, condición, forzado y lo dibujado', () => {
+  const amb = { id: 'lamp_moths', kind: 'moths', conditionMet: true, forced: null, active: true, count: 5, sig: 123, frames: 40, bursts: 0 };
+  const s = st({ ambient: [amb, { ...amb, id: 'fence_dust', kind: 'dust', count: 0, bursts: 1 }] });
+  assert.deepEqual(checkAmbient({ id: 'lamp_moths', kind: 'moths', active: true, conditionMet: true, forced: null, minCount: 5, minFrames: 1 }, s), []);
+  assert.deepEqual(checkAmbient([{ id: 'fence_dust', minBursts: 1 }, { id: 'nope', absent: true }], s), []);
+  assert.match(checkAmbient({ id: 'lamp_moths', active: false }, s)[0], /active = true, se esperaba false/);
+  assert.match(checkAmbient({ id: 'lamp_moths', kind: 'dust' }, s)[0], /kind «moths», se esperaba «dust»/);
+  assert.match(checkAmbient({ id: 'lamp_moths', forced: 'off' }, s)[0], /forced = null, se esperaba off/);
+  assert.match(checkAmbient({ id: 'lamp_moths', minCount: 6 }, s)[0], /count = 5, se esperaban al menos 6/);
+  assert.match(checkAmbient({ id: 'nope' }, s)[0], /no está en la escena/);
+  assert.match(checkAmbient({ id: 'lamp_moths', absent: true }, s)[0], /se esperaba ausente/);
+  assert.match(checkAmbient({ id: 'x' }, st())[0], /anterior a A4.3/);
+  assert.deepEqual(check({ ambient: { id: 'lamp_moths', active: true } }, s), []);
 });
 
 test('A4.2: expect.npc comprueba giro, boca, reposo, parpadeos y la última conversación', () => {
