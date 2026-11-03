@@ -154,6 +154,7 @@ export class PreloadScene extends Phaser.Scene {
       'floppy_box', 'energy_drink', 'clinic_sign_in_sheet', 'clinic_note', 'luxury_watch',
       'glasses_3d', 'pepememe', 'ape_costume',
       'note_half_a', 'note_half_b', 'fence_plank', // A3.3c: PIN partido
+      'vet_bill', // A3.3d: la factura del veterinario de Gerald (pregunta de seguridad de DOORIS)
     ];
     for (const id of itemIds) {
       const key = `item_${id}`;

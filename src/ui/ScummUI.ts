@@ -523,7 +523,9 @@ export class ScummUI {
     note_half_a: "Half a note, warm from the lamp: '73..' Then: 'The other half is with the birds. They never sell.'",
     note_half_b: "Half a note, wrapped in foil: '..14'. The magpies had it. They have good taste and no morals.",
     fence_plank: "A plank from Adrian's fence. Long, sturdy, one rusty nail. Technically, I'm holding part of his perimeter.",
-    ledger: "Adrian's hardware wallet. The screen shows a balance that would make a whale blush. Or maybe it's just dust on the display.",
+    // A3.3d: la factura del veterinario (pregunta de seguridad de DOORIS) y el Ledger de debajo del felpudo
+    vet_bill: "PAWS & CLAWS VET. Patient: GERALD. Species: rubber duck (?). Born: 3 Jan 2009. Owner: Adrian. Relationship: best friend. Diagnosis: perfect. Note: please stop bringing him in.",
+    ledger: "Adrian's hardware wallet, fresh from under a doormat. The screen shows a balance that would make a whale blush. Or maybe it's just dust on the display.",
     keycard: "An admin keycard with Adrian's photo. He looks younger. And less concerned about gas fees.",
     floppy_disk: "A 3.5\" floppy labeled 'BACKUP'. 1.44 MB of pure nostalgia. That's like... half an NFT image.",
     printout: "A thermal printout with transaction hashes and a small map. The ink is already fading. Like most altcoin roadmaps.",
@@ -569,6 +571,14 @@ export class ScummUI {
       [Verb.PULL]: "I try to tear it. No. I just put it back together. What am I doing?",
       [Verb.CLOSE]: "I fold it back up. The 7 peeks out accusingly.",
       [Verb.GIVE]: "I'm not giving away the only code I have. That's Security 101.",
+    },
+    vet_bill: {
+      [Verb.OPEN]: "I unfold it. There's a second page. 'Treatment: reassurance. Dosage: as needed.' Gerald is in good hands.",
+      [Verb.TALK]: "'Gerald?' The bill doesn't answer. Somewhere, a duck squeaks. Probably.",
+      [Verb.PUSH]: "I flatten the bill. The paw-print stamp stays smudged. They stamped a duck's file with a paw.",
+      [Verb.PULL]: "I'm not tearing up Gerald's records. He's been through enough. Allegedly.",
+      [Verb.CLOSE]: "I fold it along the old creases. Adrian folded this a lot. He read it a lot.",
+      [Verb.GIVE]: "Give away Gerald's medical history? That's confidential. It's practically my job to keep it.",
     },
     mystery_envelope: {
       [Verb.OPEN]: "I tear open the seal... Inside: a single sheet with coordinates and a cryptic note: 'Find Patient Zero before they find you.'",

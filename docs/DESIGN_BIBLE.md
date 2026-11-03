@@ -181,7 +181,7 @@ Leyenda de los diagramas: rectángulo = acción/puzle, rombo = puerta del capít
 **Sinopsis.** Atardecer. Dex llega a la casa de Adrian. Le abre (o no) **DOORIS**, la cerradura, con
 autenticación de **tres factores** («for a door»): PIN, pregunta de seguridad y llave de hardware. El PIN
 está partido en dos mitades escondidas por Adrian; la respuesta está en el correo de Adrian; la llave de
-hardware (el Ledger) está bajo un felpudo que no se deja levantar. Anon llama la primera vez que Dex toca la puerta. Final: DOORIS se rinde, la puerta se abre
+hardware (el Ledger) está bajo un felpudo que no se deja levantar. Anon llama en el primer contacto con DOORIS (toque la puerta, el teclado o presente un factor). Final: DOORIS se rinde, la puerta se abre
 y Penny mira desde el mostrador. 15–20 min. Hitos: PIN completo, respuesta encontrada, Ledger, puerta.
 
 ```mermaid
@@ -213,10 +213,10 @@ graph TD
 | 1.2 | Tablón | `fence_plank` | `hs_fence` (PULL) | `has_plank` | El texto actual de PULL ya dice «I pull a plank. It comes loose.»; LOOK de la valla lo anuncia. | «Now there's an exploit in the perimeter. I'm the exploit.» | Hoy |
 | 1.3 | Nido de urraca | `note_half_b` | `hs_chimney` (combo `fence_plank`) | `nest_down`, `found_note_half_b` | LOOK chimenea: «Magpies nesting in the drainpipe, way too high to reach. They steal anything shiny.» PICK: «Too high. I'd need something long.» La nota está envuelta en papel de aluminio. | Dex: «Magpies steal anything shiny. Finally, someone with my investment thesis.» | Hoy |
 | 1.4 | Nota entera | `note_half_a` + `note_half_b` → `code_note` | — (`itemCombos`) | `found_code_note`, `has_code` | Cada mitad dice que falta la otra («...the other half is with the birds. They never sell.»). | La nota completa: «7314. If you found both halves, you're patient enough. — A.» Dex: «Patient. Me. Ha.» | Hoy |
-| 1.5 | Pregunta de seguridad | `vet_bill` y `mystery_envelope` (el mismo OPEN da los dos) | `hs_mailbox` | `found_vet_bill`, `knows_gerald`, `found_envelope` | DOORIS pregunta «the name of the owner's best friend». LOOK de la factura: «PAWS & CLAWS VET. Patient: GERALD. Species: rubber duck (?). Born: 3 Jan 2009. Diagnosis: perfect. Note: please stop bringing him in.» | Respuesta «[The name on the vet bill]». DOORIS: «Gerald. Correct. He's a very good boy. He's a duck.» Las opciones falsas («password123», «Satoshi», «Mom») tienen su burla. | Hoy (opción con `flag: knows_gerald` y texto que no es la respuesta); con A2.6a la opción se oculta |
-| 1.6 | DOORIS | `code_note`, `ledger` (no se gastan) | `hs_keypad`, `hs_front_door` (combos con los dos objetos; el último factor abre el árbol de la pregunta) | `dooris_pin_ok`, `dooris_key_ok`, `door_unlocked`, `chapter_1_complete` | Primera vez: «Three-factor authentication: PIN, security question, hardware key.» y «Voice match: 87 %…». LOOK del teclado enumera los factores que faltan. Si se falla la pregunta, «Lockout: three seconds. I'm merciful.» y repite. Frases de DOORIS ≤ 15 palabras. | «Three-factor authentication complete. One factor was a duck.» | Hoy (combos objeto→hotspot + árbol `dooris_auth`) |
+| 1.5 | Pregunta de seguridad | `vet_bill` y `mystery_envelope` (el mismo OPEN da los dos) | `hs_mailbox` | `found_vet_bill`, `knows_gerald`, `found_envelope` | DOORIS pregunta «the name of the owner's best friend». LOOK de la factura: «PAWS & CLAWS VET. Patient: GERALD. Species: rubber duck (?). Born: 3 Jan 2009. Diagnosis: perfect. Note: please stop bringing him in.» | Respuesta «[The name on the vet bill]». DOORIS: «Gerald. Correct. He's a very good boy. He's a duck.» Las opciones falsas («password123», «Satoshi», «Mom») tienen su burla. | Hecho en A3.3d: la opción buena lleva `when: item:vet_bill` (A2.6a: oculta sin la factura) y su texto no es la respuesta; `knows_gerald` queda puesta para el diario y el PIN del Ledger (cap. 3) |
+| 1.6 | DOORIS | `code_note`, `ledger` (no se gastan) | `hs_keypad`, `hs_front_door` (combos con los dos objetos; USE/TALK y cada combo abren el árbol, que presenta a DOORIS la primera vez, hace la pregunta mientras no esté respondida, enumera lo que falta y abre la puerta cuando están los tres) | `dooris_met`, `dooris_pin_ok`, `dooris_key_ok`, `dooris_question_ok`, `door_unlocked`, `chapter_1_complete` | Primera vez: «Three-factor authentication: PIN, security question, hardware key.» y «Voice match: 87 %…». LOOK del teclado enumera los factores que faltan. Si se falla la pregunta, «Lockout: three seconds. I'm merciful.» y repite. Frases de DOORIS ≤ 15 palabras. | «Three-factor authentication complete. One factor was a duck.» | Hecho en A3.3d (combos objeto→hotspot + árbol `dooris_auth`; el gag «Remove your glasses for Face ID» / «They're prescription» es una opción del hub) |
 | 1.7 | Felpudo HODL | `ledger` | `hs_doormat` (combo `fence_plank`) | `found_ledger` | DOORIS pide «a hardware key». LOOK felpudo: «HODL. Glued down. Something lumpy underneath.» PICK sin tablón: «It's glued down. It says HODL. It means it.» | «Adrian's hardware wallet. Under the doormat. The most secure place in crypto: the obvious one.» DOORIS al recibirlo: «Ledger detected. Please don't plug things into me without asking.» | Hoy |
-| 1.8 | Anon | — | trigger en el primer USE/OPEN de la puerta | `anon_call_1` | — | «Who is this?» — «A friend of Adrian. The door won't open for strangers. Be less of a stranger.» *click* | Hoy (`say` con `speaker: "Anon"`) |
+| 1.8 | Anon | — | nodos del árbol `dooris_auth` tras la presentación de DOORIS (primer contacto, venga por la puerta, el teclado o un factor) | `anon_call_1` | — | «*bzzz* Unknown number. ...Hello?» — «A friend of Adrian. The door won't open for strangers. Be less of a stranger.» — «Click. He hung up.» | Hecho en A3.3d (nodo con `speaker: "Anon"`) |
 
 **Bonus Web3**: graffiti «ZERO WAS HERE» tras los arbustos (ya existe) y trampilla VIP del felpudo (ver §7).
 
@@ -640,8 +640,9 @@ también la vieja (`marked_map` **o** `chapter_3_complete`).
 - `A3.3d` DOORIS: árbol `dooris_auth` (PIN + pregunta, opciones falsas con burla), buzón con factura de
   Gerald y sobre en un solo OPEN, «voice match 87 %», primera llamada de Anon; felpudo pegado + tablón →
   Ledger · zona: contenido.
-- `A3.3e` QA del cap. 1: walkthrough nuevo; atajos `puerta-sin-pregunta` (PIN sin `knows_gerald`),
-  `puerta-sin-pin` (Gerald sin `code_note`), `nota-con-lampara-encendida`, `ledger-sin-tablon` · zona: ci.
+- `A3.3e` QA del cap. 1: walkthrough nuevo; atajos `puerta-sin-pregunta` (PIN y Ledger sin la factura),
+  `puerta-sin-pin` (Gerald y Ledger sin `code_note`), `puerta-sin-llave` (PIN y Gerald sin Ledger),
+  `nota-con-lampara-encendida`, `ledger-sin-tablon`; demo `a3-3-chapter1` (GIF del final del capítulo) · zona: ci.
 
 **Capítulo 2 (A3.4)**
 - `A3.4a` Penny reescrita (árbol con nodo central, RRHH, Fernando, «refundable face»); abrigo vigilado con la
