@@ -2914,10 +2914,6 @@
               "value": true
             },
             {
-              "op": "achievement",
-              "text": "CHAPTER 1 COMPLETE \u2014 Breaking & Entering"
-            },
-            {
               "op": "fadeToScene",
               "sceneId": "lobby",
               "spawn": {
@@ -2933,7 +2929,13 @@
           "text": "Three factors. One duck. Breaking and entering. Mostly entering.",
           "when": "door_unlocked",
           "end": true,
-          "next": "ask"
+          "next": "ask",
+          "onEnter": [
+            {
+              "op": "achievement",
+              "text": "CHAPTER 1 COMPLETE \u2014 Breaking & Entering"
+            }
+          ]
         },
         "ask": {
           "speaker": "DOORIS",
@@ -2966,11 +2968,6 @@
               "text": "Can't you just scan my face?",
               "once": true,
               "next": "faceid"
-            },
-            {
-              "text": "What happened to Adrian?",
-              "once": true,
-              "next": "adrian"
             },
             {
               "text": "I'll come back.",
@@ -3036,11 +3033,6 @@
         "faceid_no": {
           "speaker": "DOORIS",
           "text": "Then no Face ID. Three factors it is. Glasses stay on, stranger.",
-          "next": "ask_hub"
-        },
-        "adrian": {
-          "speaker": "DOORIS",
-          "text": "Adrian left. Adrian left instructions. The instructions are: you, outside.",
           "next": "ask_hub"
         },
         "right": {
