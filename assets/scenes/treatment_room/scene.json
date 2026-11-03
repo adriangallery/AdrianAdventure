@@ -9,8 +9,8 @@
   },
   "render": {
     "world": {
-      "width": 2816,
-      "height": 1536
+      "width": 3712,
+      "height": 1152
     },
     "camera": {
       "start": {

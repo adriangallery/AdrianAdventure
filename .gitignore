@@ -25,3 +25,6 @@ lint-scenes-report.md
 # Cobertura de voces (A0.3)
 voice-coverage-report.json
 voice-coverage-report.md
+
+# Smoke (V8): capturas e informe de texturas de una ejecución local (el CI los sube como artefacto)
+smoke-shots/

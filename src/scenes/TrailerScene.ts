@@ -43,7 +43,7 @@ export class TrailerScene extends Phaser.Scene {
     for (const id of allScenes) {
       const key = `bg_${id}`;
       if (!this.textures.exists(key))
-        this.load.image(key, `assets/scenes/${id}/background.webp`);
+        this.load.image(key, `assets/scenes/${id}/background@2048.webp`); // A5.1: el fondo va en variantes
     }
 
     // Player sprites (same as PreloadScene)

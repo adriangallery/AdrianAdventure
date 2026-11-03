@@ -30,6 +30,7 @@ import { defaultVerbFor, exitVerbFor, focusOf, isDoubleClick, keyAction, primary
 import { CinematicDirector, type CinematicQaState, type CinematicUi } from '@/systems/CinematicDirector';
 import { parseTransition, worldToScreen, type TransitionSpec } from '@/systems/Cinematics';
 import { overlayTransform, type PctRect } from '@/systems/OverlayPlacement';
+import { fitScale, worldSize } from '@/systems/SceneTextures';
 import { FADE_FIRST_MS, FADE_SHORT_MS } from '@/systems/ScenePrefetch';
 import { addNote, callAnon } from '@/systems/Journal';
 import { JOURNAL_CHAPTERS, journalChapter, journalProgress, journalWorld } from '@/systems/JournalData';
@@ -179,11 +180,14 @@ export class GameScene extends Phaser.Scene {
       (updater) => { this.gameState = updater(this.gameState); this.registry.set('gameState', this.gameState); },
     );
 
-    // Background — get actual image dimensions
+    // Background. A5.1: el tamaño LÓGICO de la escena (render.world: al que se refieren las coordenadas en %, la unidad de
+    // píxel de A2.8 y la velocidad) ya no es el de la textura: el fondo se sube a la GPU en una variante más pequeña
+    // (background@2048.webp) y se estira con fitScale (src/systems/SceneTextures.ts). Sin render.world, el de la textura.
     const bgTexture = this.textures.get(`bg_${sceneId}`);
     const imgSource = bgTexture.getSourceImage() as HTMLImageElement;
-    const imgW = imgSource.width;
-    const imgH = imgSource.height;
+    const world = worldSize(sceneData, { w: imgSource.width, h: imgSource.height });
+    const imgW = world.w;
+    const imgH = world.h;
 
     // Panel height
     const panelH = this.getEffectivePanelHeight();
@@ -196,7 +200,7 @@ export class GameScene extends Phaser.Scene {
 
     // Fill background — darkened cover (landscape letterbox filler)
     const gameAreaH = this.scale.height - panelH;
-    const coverScale = Math.max(this.scale.width / imgW, gameAreaH / imgH);
+    const coverScale = Math.max(this.scale.width / imgW, gameAreaH / imgH) * fitScale(world, { w: imgSource.width, h: imgSource.height }).x;
     this.bgFill = this.add.image(this.scale.width / 2, gameAreaH / 2, `bg_${sceneId}`)
       .setScale(coverScale)
       .setOrigin(0.5)
@@ -206,8 +210,7 @@ export class GameScene extends Phaser.Scene {
 
     // Main background
     this.bg = this.add.image(0, 0, `bg_${sceneId}`).setOrigin(0, 0);
-    const t = this.coordSystem.getBgTransform();
-    this.bg.setPosition(t.x, t.y).setScale(t.scaleX, t.scaleY);
+    this.placeOverlay(this.bg);
 
     // Player
     const spawnOverride = this.registry.get('spawnOverride') as { x: number; y: number } | undefined;
@@ -236,8 +239,7 @@ export class GameScene extends Phaser.Scene {
     const fgKey = `fg_${sceneId}`;
     if (this.textures.exists(fgKey)) {
       this.fg = this.add.image(0, 0, fgKey).setOrigin(0, 0);
-      const ft = this.coordSystem.getBgTransform();
-      this.fg.setPosition(ft.x, ft.y).setScale(ft.scaleX, ft.scaleY);
+      this.placeOverlay(this.fg);
       this.fg.setDepth(15);
     }
 
@@ -858,6 +860,12 @@ export class GameScene extends Phaser.Scene {
     return this.npcs.filter((n) => n.active).map((n) => n.getLifeState());
   }
 
+  /** A5.1 (QA): tamaño lógico de la escena (el de las coordenadas en %) y tamaño real de la textura del fondo */
+  qaSceneArt(): { world: { w: number; h: number }; bgTexture: { w: number; h: number } } {
+    const src = this.bg.texture.getSourceImage() as { width: number; height: number };
+    return { world: { w: this.coordSystem.imgW, h: this.coordSystem.imgH }, bgTexture: { w: src.width, h: src.height } };
+  }
+
   /**
    * Toque en la escena ya resuelto (punto en % y hotspot visible bajo él, si hay): combo con el objeto
    * elegido, andar, mirar/hablar al momento o ir hasta el hotspot y actuar al llegar. A0.1: la API de QA
@@ -942,16 +950,14 @@ export class GameScene extends Phaser.Scene {
 
     // Fill background (landscape only)
     const gameAreaH = h - panelH;
-    const coverScale = Math.max(w / this.coordSystem.imgW, gameAreaH / this.coordSystem.imgH);
+    const bgSrc = this.bg.texture.getSourceImage() as { width: number; height: number };
+    const coverScale = Math.max(w / this.coordSystem.imgW, gameAreaH / this.coordSystem.imgH)
+      * fitScale({ w: this.coordSystem.imgW, h: this.coordSystem.imgH }, { w: bgSrc.width, h: bgSrc.height }).x;
     this.bgFill.setPosition(w / 2, gameAreaH / 2).setScale(coverScale);
 
-    const t = this.coordSystem.getBgTransform();
-    this.bg.setPosition(t.x, t.y).setScale(t.scaleX, t.scaleY);
-
-    // Foreground layer follows background transform
-    if (this.fg) {
-      this.fg.setPosition(t.x, t.y).setScale(t.scaleX, t.scaleY);
-    }
+    // A5.1: fondo y primer plano como un overlay a tamaño de fondo (escala del fondo × mundo/textura)
+    this.placeOverlay(this.bg);
+    if (this.fg) this.placeOverlay(this.fg);
 
     this.player.onResize(this.coordSystem);
 
@@ -980,7 +986,11 @@ export class GameScene extends Phaser.Scene {
 
   }
 
-  /** A2.7: overlay condicional sobre el fondo; con `bounds` (recortado) en su caja, si no, entero como el fondo */
+  /**
+   * A2.7: overlay condicional sobre el fondo; con `bounds` (recortado) en su caja, si no, entero como el fondo.
+   * A5.1: también el fondo y el primer plano: la textura puede ser una variante más pequeña que el mundo (render.world) y
+   * overlayTransform la estira (mundo / textura) para que cada píxel caiga donde caía.
+   */
   private placeOverlay(sprite: Phaser.GameObjects.Image, bounds?: PctRect): void {
     const src = sprite.texture.getSourceImage() as { width: number; height: number };
     const o = overlayTransform(
@@ -1394,7 +1404,11 @@ export class GameScene extends Phaser.Scene {
 
   /** Compute panel height — compact on mobile, standard on desktop */
   private computePanelHeight(): number {
-    const { width, height } = this.scale;
+    return GameScene.panelHeightFor(this.scale.width, this.scale.height);
+  }
+
+  /** Alto del panel SCUMM para un viewport (A5.1: PreloadScene lo usa para elegir la variante de fondo antes de que exista la escena) */
+  static panelHeightFor(width: number, height: number): number {
     const isMobile = height > width || Math.min(width, height) < 600;
     const isLandscape = width > height;
     const panelRatio = isMobile ? (isLandscape ? 0.22 : 0.15) : 0.25;

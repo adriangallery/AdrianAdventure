@@ -55,6 +55,11 @@ export class ScenePrefetcher {
     if (!this.scenes[id] && data && typeof data === 'object') this.scenes[id] = structuredClone(data) as PrefetchScene;
   }
 
+  /** A5.1: scene.json que se conocen (visitados o precargados), solo lectura: para saber qué claves de textura son de qué escena */
+  knownScenes(): Readonly<Record<string, PrefetchScene>> {
+    return this.scenes;
+  }
+
   /** Copia del scene.json si ya se tiene, para meterla en la caché JSON de Phaser sin pedirlo. */
   sceneData<T>(id: string): T | undefined {
     const s = this.scenes[id];
@@ -62,8 +67,13 @@ export class ScenePrefetcher {
   }
 
   /** Imágenes de la escena que no están ni en Phaser ni ya descargadas en la caché HTTP (lo en curso falta). */
-  missingImages(id: string, data: PrefetchScene): SceneAsset[] {
-    return sceneImageAssets(id, data, ASSET_V).filter((a) => !this.game.textures.exists(a.key) && !this.done.has(a.url));
+  missingImages(id: string, data: PrefetchScene, variant?: number): SceneAsset[] {
+    return sceneImageAssets(id, data, ASSET_V, variant ?? this.variant()).filter((a) => !this.game.textures.exists(a.key) && !this.done.has(a.url));
+  }
+
+  /** A5.1: ancho de la variante de fondo de la sesión (la decide PreloadScene; hasta entonces, la de por defecto) */
+  private variant(): number | undefined {
+    return (this.game.registry.get('bgVariant') as { width: number } | undefined)?.width;
   }
 
   /** Empieza a precargar las vecinas de `sceneId` (cancela lo de la escena anterior). */
@@ -113,6 +123,7 @@ export class ScenePrefetcher {
       neighbors: sceneExits(this.scenes[current], current),
       scenes: this.scenes,
       v: ASSET_V,
+      variant: this.variant(),
       done: new Set([...this.done, ...this.failed]),
       isLoaded: (key) => this.game.textures.exists(key) || this.game.cache.audio.has(key),
       muted,
