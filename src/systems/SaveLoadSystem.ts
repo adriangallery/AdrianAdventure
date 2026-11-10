@@ -30,15 +30,16 @@ export class SaveLoadSystem {
   /**
    * Auto-save the current state (slot 0 + wallet save if connected).
    */
-  autoSave(state: GameState, sceneName: string): void {
-    // Always save to anonymous slot 0
-    this.saveToSlot(0, state, sceneName);
+  autoSave(state: GameState, sceneName: string): boolean {
+    // Solo el slot 0 (A1.12: el autoguardado nunca toca los manuales 1-2 ni «Before load»)
+    const ok = this.saveToSlot(0, state, sceneName).ok;
     // Also save to wallet-linked storage if connected
     if (this.walletAddress) {
       saveForWallet(this.walletAddress, state, sceneName);
       // V7: copia en la nube (slot 0) para continuar desde otro dispositivo; limitada a 1/min
       cloudAutosave(this.walletAddress, state, sceneName);
     }
+    return ok;
   }
 
   /**

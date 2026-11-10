@@ -61,6 +61,8 @@ export class GameScene extends Phaser.Scene {
   private dialogueScripts!: DialogueScriptRunner;
   private inventorySystem!: InventorySystem;
   private saveSystem!: SaveLoadSystem;
+  /** A1.12: el último autoguardado se escribió y releyó bien (si no, no se enseña «AUTOSAVED»). */
+  private autosaveOk = false;
   private musicManager!: MusicManager;
   /** A4.4 (QA): último paso (superficie bajo los pies y efecto que sonó, null si la superficie es muda) */
   private lastFootstep: { surface: string | null; key: string | null; at: number } | null = null;
@@ -404,7 +406,8 @@ export class GameScene extends Phaser.Scene {
       this.showSceneTitle(sceneData.title);
       this.gameState.savedAt = Date.now();
       this.gameState.playerPosition = { pctX: spawn.x, pctY: spawn.y };
-      this.saveSystem.autoSave(this.gameState, sceneData.title);
+      // A1.12: «AUTOSAVED» solo si el autoguardado se pudo releer
+      this.autosaveOk = this.saveSystem.autoSave(this.gameState, sceneData.title);
       this.time.addEvent({ delay: 5000, loop: true, callback: () => this.checkIdleHint() });
     }
 
@@ -1375,6 +1378,7 @@ export class GameScene extends Phaser.Scene {
 
   /** V6: aviso breve «AUTOSAVED» sobre el panel, abajo a la derecha del área de juego. */
   private showAutosaveIndicator(): void {
+    if (!this.autosaveOk) return;
     if (this.isTrailer) return;
     this.registry.set('lastAutosaveAt', Date.now());
     const panelH = this.getEffectivePanelHeight();
