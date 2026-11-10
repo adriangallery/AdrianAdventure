@@ -207,6 +207,8 @@ await hold('2) fin de la cinemática', 3);
 
 // 3) coger: PICK del abrigo (sube, se gira de espaldas y gesto de puntillas a la vez que el script)
 {
+  // A3.4a: con Penny mirando el abrigo no se coge; aquí se da por distraída (el puzle lo graba demo-a3-4a-penny)
+  await page.evaluate(() => window.__qa.runScript([{ op: 'setFlag', flag: 'penny_reading', value: true }]));
   const seen = { gesture: false, maxLift: 0, still: false };
   const err = await during('3) PICK abrigo: gesto de puntillas', () => window.__demoRun(window.__qa.act('PICK', 'hs_coat')), [], {
     onState: async (st, clip) => {

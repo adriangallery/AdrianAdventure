@@ -333,8 +333,15 @@
       {
         "id": "hs_coat",
         "useResponses": {
+          "_default": [
+            "I'm not putting anything in Adrian's pockets. Penny would call it 'planting evidence'. She'd file it under 'planting'.",
+            "The coat doesn't need accessories. It needs its owner back."
+          ],
           "keycard": [
             "I put the keycard back in the coat. Then take it out again. I'm here to be paid, not to be honest."
+          ],
+          "leaky_pen": [
+            "I put the pen back in the pocket. The pocket starts turning blue. I take the pen back. The pocket stays blue."
           ]
         },
         "name": "Wool Coat",
@@ -347,20 +354,85 @@
         "scripts": {
           "LOOK": [
             {
-              "op": "say",
-              "text": "A heavy wool overcoat. Multiple pockets, each containing a different defunct exchange's branded pen. The lining is stitched with the words 'DYOR' in tiny letters."
+              "op": "ifFlag",
+              "flag": "found_keycard",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "Adrian's coat. Lighter by one keycard and one pen. Mostly lint now."
+                }
+              ],
+              "else": [
+                {
+                  "op": "say",
+                  "text": "Adrian's wool coat, on the rack. Something card-shaped in the breast pocket."
+                }
+              ]
             }
           ],
           "USE": [
             {
-              "op": "say",
-              "text": "I check the pockets. Pens from FTX, Celsius, BlockFi... a graveyard of exchanges."
+              "op": "ifFlag",
+              "flag": "penny_reading",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "I try it on. It fits perfectly. Same size as Adrian."
+                },
+                {
+                  "op": "say",
+                  "text": "Lots of people are this size. I put it back."
+                }
+              ],
+              "else": [
+                {
+                  "op": "ifFlag",
+                  "flag": "penny_coat_warned_2",
+                  "then": [
+                    {
+                      "op": "say",
+                      "text": "Third coat incident. I'm drafting a memo. It has bullet points. You're all of them.",
+                      "speaker": "Penny"
+                    }
+                  ],
+                  "else": [
+                    {
+                      "op": "ifFlag",
+                      "flag": "penny_coat_warned",
+                      "then": [
+                        {
+                          "op": "setFlag",
+                          "flag": "penny_coat_warned_2",
+                          "value": true
+                        },
+                        {
+                          "op": "say",
+                          "text": "Still HR. Still watching. Still not busy. Nothing confidential has landed on my desk today.",
+                          "speaker": "Penny"
+                        }
+                      ],
+                      "else": [
+                        {
+                          "op": "setFlag",
+                          "flag": "penny_coat_warned",
+                          "value": true
+                        },
+                        {
+                          "op": "say",
+                          "text": "Touch that coat and I call HR. I AM HR. ...Unless something CONFIDENTIAL lands on my desk. Then I'm very busy. Hypothetically.",
+                          "speaker": "Penny"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
             }
           ],
           "TALK": [
             {
               "op": "say",
-              "text": "The coat rustles. Ghosts of bear markets past."
+              "text": "'Where's your owner?' The coat says nothing. It's been trained by Penny."
             }
           ],
           "PICK": [
@@ -370,28 +442,110 @@
               "then": [
                 {
                   "op": "say",
-                  "text": "I already took the keycard. Just dead exchange pens left."
+                  "text": "Just dead exchange pens left. And lint. Adrian's lint."
                 }
               ],
               "else": [
                 {
-                  "op": "setFlag",
-                  "flag": "found_keycard",
-                  "value": true
-                },
-                {
-                  "op": "setFlag",
-                  "flag": "has_keycard",
-                  "value": true
-                },
-                {
-                  "op": "addItem",
-                  "id": "keycard",
-                  "name": "Adrian's Keycard"
-                },
-                {
-                  "op": "say",
-                  "text": "I search the deep pockets... buried under pens and receipts, I find a keycard! It says 'ADMIN ACCESS — AdrianLAB'."
+                  "op": "ifFlag",
+                  "flag": "penny_reading",
+                  "then": [
+                    {
+                      "op": "setFlag",
+                      "flag": "found_keycard",
+                      "value": true
+                    },
+                    {
+                      "op": "setFlag",
+                      "flag": "has_keycard",
+                      "value": true
+                    },
+                    {
+                      "op": "setFlag",
+                      "flag": "has_leaky_pen",
+                      "value": true
+                    },
+                    {
+                      "op": "setFlag",
+                      "flag": "penny_envelope_back",
+                      "value": true
+                    },
+                    {
+                      "op": "addItem",
+                      "id": "keycard",
+                      "name": "Adrian's Keycard"
+                    },
+                    {
+                      "op": "addItem",
+                      "id": "leaky_pen",
+                      "name": "Leaky Pen"
+                    },
+                    {
+                      "op": "addItem",
+                      "id": "mystery_envelope",
+                      "name": "Mystery Envelope"
+                    },
+                    {
+                      "op": "playSound",
+                      "key": "stinger_item"
+                    },
+                    {
+                      "op": "say",
+                      "text": "Breast pocket: Adrian's keycard. 'ADMIN ACCESS'. And a pen."
+                    },
+                    {
+                      "op": "say",
+                      "text": "Mt. Gox. Still leaking after all these years."
+                    },
+                    {
+                      "op": "say",
+                      "text": "Your envelope. Resealed. Badly. I never read it. Neither did HR.",
+                      "speaker": "Penny"
+                    }
+                  ],
+                  "else": [
+                    {
+                      "op": "ifFlag",
+                      "flag": "penny_coat_warned_2",
+                      "then": [
+                        {
+                          "op": "say",
+                          "text": "Third coat incident. I'm drafting a memo. It has bullet points. You're all of them.",
+                          "speaker": "Penny"
+                        }
+                      ],
+                      "else": [
+                        {
+                          "op": "ifFlag",
+                          "flag": "penny_coat_warned",
+                          "then": [
+                            {
+                              "op": "setFlag",
+                              "flag": "penny_coat_warned_2",
+                              "value": true
+                            },
+                            {
+                              "op": "say",
+                              "text": "Still HR. Still watching. Still not busy. Nothing confidential has landed on my desk today.",
+                              "speaker": "Penny"
+                            }
+                          ],
+                          "else": [
+                            {
+                              "op": "setFlag",
+                              "flag": "penny_coat_warned",
+                              "value": true
+                            },
+                            {
+                              "op": "say",
+                              "text": "Touch that coat and I call HR. I AM HR. ...Unless something CONFIDENTIAL lands on my desk. Then I'm very busy. Hypothetically.",
+                              "speaker": "Penny"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
                 }
               ]
             }
@@ -403,28 +557,110 @@
               "then": [
                 {
                   "op": "say",
-                  "text": "I already took the keycard. Just dead exchange pens left."
+                  "text": "Just dead exchange pens left. And lint. Adrian's lint."
                 }
               ],
               "else": [
                 {
-                  "op": "setFlag",
-                  "flag": "found_keycard",
-                  "value": true
-                },
-                {
-                  "op": "setFlag",
-                  "flag": "has_keycard",
-                  "value": true
-                },
-                {
-                  "op": "addItem",
-                  "id": "keycard",
-                  "name": "Adrian's Keycard"
-                },
-                {
-                  "op": "say",
-                  "text": "I open the coat pockets. Inside the breast pocket: an admin keycard with Adrian's face."
+                  "op": "ifFlag",
+                  "flag": "penny_reading",
+                  "then": [
+                    {
+                      "op": "setFlag",
+                      "flag": "found_keycard",
+                      "value": true
+                    },
+                    {
+                      "op": "setFlag",
+                      "flag": "has_keycard",
+                      "value": true
+                    },
+                    {
+                      "op": "setFlag",
+                      "flag": "has_leaky_pen",
+                      "value": true
+                    },
+                    {
+                      "op": "setFlag",
+                      "flag": "penny_envelope_back",
+                      "value": true
+                    },
+                    {
+                      "op": "addItem",
+                      "id": "keycard",
+                      "name": "Adrian's Keycard"
+                    },
+                    {
+                      "op": "addItem",
+                      "id": "leaky_pen",
+                      "name": "Leaky Pen"
+                    },
+                    {
+                      "op": "addItem",
+                      "id": "mystery_envelope",
+                      "name": "Mystery Envelope"
+                    },
+                    {
+                      "op": "playSound",
+                      "key": "stinger_item"
+                    },
+                    {
+                      "op": "say",
+                      "text": "Breast pocket: Adrian's keycard. 'ADMIN ACCESS'. And a pen."
+                    },
+                    {
+                      "op": "say",
+                      "text": "Mt. Gox. Still leaking after all these years."
+                    },
+                    {
+                      "op": "say",
+                      "text": "Your envelope. Resealed. Badly. I never read it. Neither did HR.",
+                      "speaker": "Penny"
+                    }
+                  ],
+                  "else": [
+                    {
+                      "op": "ifFlag",
+                      "flag": "penny_coat_warned_2",
+                      "then": [
+                        {
+                          "op": "say",
+                          "text": "Third coat incident. I'm drafting a memo. It has bullet points. You're all of them.",
+                          "speaker": "Penny"
+                        }
+                      ],
+                      "else": [
+                        {
+                          "op": "ifFlag",
+                          "flag": "penny_coat_warned",
+                          "then": [
+                            {
+                              "op": "setFlag",
+                              "flag": "penny_coat_warned_2",
+                              "value": true
+                            },
+                            {
+                              "op": "say",
+                              "text": "Still HR. Still watching. Still not busy. Nothing confidential has landed on my desk today.",
+                              "speaker": "Penny"
+                            }
+                          ],
+                          "else": [
+                            {
+                              "op": "setFlag",
+                              "flag": "penny_coat_warned",
+                              "value": true
+                            },
+                            {
+                              "op": "say",
+                              "text": "Touch that coat and I call HR. I AM HR. ...Unless something CONFIDENTIAL lands on my desk. Then I'm very busy. Hypothetically.",
+                              "speaker": "Penny"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
                 }
               ]
             }
@@ -432,7 +668,7 @@
           "CLOSE": [
             {
               "op": "say",
-              "text": "I button the coat. It looks dignified on its hook."
+              "text": "I button the coat. It looks dignified on its hook. More dignified than me."
             }
           ],
           "PUSH": [
@@ -443,8 +679,57 @@
           ],
           "PULL": [
             {
-              "op": "say",
-              "text": "I pull the coat off the hook. Heavy. I put it back — I have enough baggage."
+              "op": "ifFlag",
+              "flag": "penny_reading",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "I pull the coat off the hook. Heavy. I put it back. I have enough baggage."
+                }
+              ],
+              "else": [
+                {
+                  "op": "ifFlag",
+                  "flag": "penny_coat_warned_2",
+                  "then": [
+                    {
+                      "op": "say",
+                      "text": "Third coat incident. I'm drafting a memo. It has bullet points. You're all of them.",
+                      "speaker": "Penny"
+                    }
+                  ],
+                  "else": [
+                    {
+                      "op": "ifFlag",
+                      "flag": "penny_coat_warned",
+                      "then": [
+                        {
+                          "op": "setFlag",
+                          "flag": "penny_coat_warned_2",
+                          "value": true
+                        },
+                        {
+                          "op": "say",
+                          "text": "Still HR. Still watching. Still not busy. Nothing confidential has landed on my desk today.",
+                          "speaker": "Penny"
+                        }
+                      ],
+                      "else": [
+                        {
+                          "op": "setFlag",
+                          "flag": "penny_coat_warned",
+                          "value": true
+                        },
+                        {
+                          "op": "say",
+                          "text": "Touch that coat and I call HR. I AM HR. ...Unless something CONFIDENTIAL lands on my desk. Then I'm very busy. Hypothetically.",
+                          "speaker": "Penny"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
             }
           ],
           "GIVE": [
@@ -463,8 +748,20 @@
             "Not on the desk. The desk belongs to Penny. Everything here belongs to Penny.",
             "I slide it towards the monitor. The monitor doesn't care. Penny does."
           ],
-          "mystery_envelope": [
-            "I leave the envelope by the monitor. Penny's eyes follow it like a cat's. I take it back before she pounces."
+          "vet_bill": [
+            "I leave the vet bill on the desk. Penny reads it in one second. 'A duck. Not confidential. Just sad.' She slides it back."
+          ],
+          "code_note": [
+            "I put the PIN on Penny's desk. She covers her eyes. 'I didn't see a number. HR doesn't do numbers.' I take it back."
+          ],
+          "ledger": [
+            "I set the Ledger by her keyboard. Penny puts on gloves to hand it back. She keeps gloves for this."
+          ],
+          "keycard": [
+            "I leave the keycard on her desk. Penny stares at it like it bit someone. I take it back before she logs it."
+          ],
+          "leaky_pen": [
+            "I offer the desk a pen. It leaks a blue map of Japan on Penny's blotter. She hands it back with tongs."
           ]
         },
         "name": "Monitor Desk",
@@ -621,7 +918,7 @@
           "USE": [
             {
               "op": "say",
-              "text": "I tap-dance on the tiles. The acoustics are surprisingly good. The receptionist stares."
+              "text": "I tap-dance on the tiles. The acoustics are surprisingly good. Penny stares. Penny takes notes."
             }
           ],
           "TALK": [
@@ -816,12 +1113,12 @@
         "onEnter": [
           {
             "op": "ifFlag",
-            "flag": "chapter_2_intro_shown",
+            "flag": "found_keycard",
             "then": [],
             "else": [
               {
                 "op": "sayBrief",
-                "text": "The lobby hums with residual energy. Someone was here recently.",
+                "text": "Adrian's coat, still on the rack. Penny is watching it. Penny is watching me watch it.",
                 "duration": 2500
               }
             ]
@@ -870,7 +1167,8 @@
         "pepememe": "'A Rare Pepe? I'm not allowed to accept collectibles. Or memes. HR has a list.'",
         "ape_costume": "'Put that away. The last time someone wore one of those in here, we lost a fern.'",
         "code_note": "'I didn't see that code. I DEFINITELY didn't see that. This conversation never happened.'",
-        "mystery_envelope": "'CONFIDENTIAL? Oh no no no. Last time I opened something confidential, I found out my salary was public on the blockchain.'",
+        "vet_bill": "'A vet bill. For a duck. Named Gerald.' She hands it back. 'Not confidential. Just sad.'",
+        "leaky_pen": "'That's Adrian's pen. It's been leaking since 2014. Keep it away from my blotter.'",
         "ledger": "'Adrian's ledger?! Put that away! If the auditors see that, we're ALL going to on-chain jail.'",
         "keycard": "'That's Adrian's keycard! I didn't see it. You didn't show it. We never spoke.'",
         "rubber_duck": "She squeezes the duck, puts it on her desk, then gives it back. 'It judged me.'",
@@ -904,30 +1202,72 @@
         "golden_token": "I flash the golden token. Her pupils dilate. 'You can't buy my loyalty. My silence, maybe.'",
         "keycard": "'Stop swiping that near me! It triggers security logs! Do you WANT a lockdown?!'",
         "floppy_box": "I try to insert a floppy into her keyboard. 'That's not how computers work anymore. Please stop.'",
-        "mystery_envelope": "She recoils. 'Nope. Keep your confidential mysteries. I like my ignorance comfortable.'",
         "antenna": "'Are you trying to improve my signal? I'm already at full bars of sarcasm.'"
+      },
+      "itemDialogues": {
+        "mystery_envelope": { "node": "env_old" },
+        "mystery_envelope_opened": { "node": "env_old" }
       }
     }
   ],
   "dialogues": {
     "receptionist_intro": {
       "id": "receptionist_intro",
-      "start": "greeting",
+      "start": "reading",
       "nodes": {
+        "reading": {
+          "speaker": "Penny",
+          "text": "Shh. Page two. He did NOT. ...I'm not looking at the coat. I'm not looking at anything.",
+          "when": [
+            "penny_reading",
+            "!penny_envelope_back"
+          ],
+          "end": true,
+          "next": "greeting"
+        },
         "greeting": {
           "speaker": "Penny",
-          "text": "Welcome to AdrianLAB! Are you here for the tour or the experiments?",
+          "text": "We're closed. I'm Penny. Reception, HR, Security, and plant therapy. Have we met?",
+          "when": "!penny_met",
+          "next": "refundable"
+        },
+        "refundable": {
+          "speaker": "Penny",
+          "text": "You have a very... refundable face.",
+          "when": "!penny_met",
+          "next": "again"
+        },
+        "again": {
+          "speaker": "Penny",
+          "text": "You again. I've opened a file on you. It's thin. For now.",
+          "when": "penny_met",
           "next": "hub"
         },
         "hub": {
+          "onEnter": [
+            {
+              "op": "setFlag",
+              "flag": "penny_met",
+              "value": true
+            }
+          ],
           "choices": [
+            {
+              "text": "Who are you, exactly?",
+              "next": "who"
+            },
+            {
+              "text": "Whose coat is that?",
+              "next": "coat"
+            },
             {
               "text": "The tour, please.",
               "next": "tour"
             },
             {
-              "text": "What experiments?",
-              "next": "experiments"
+              "text": "Who's Fernando?",
+              "next": "fernando",
+              "when": "penny_fernando"
             },
             {
               "text": "What about Patient Zero?",
@@ -944,38 +1284,63 @@
             },
             {
               "text": "I'll come back later.",
-              "next": "experiments_end",
+              "next": "bye",
               "exit": true
             }
           ]
         },
-        "tour": {
+        "who": {
           "speaker": "Penny",
-          "text": "The lobby connects to all areas. Upstairs is the trading floor. The entrance leads outside. Oh, and whoever left their coat on the rack should really clean out their pockets.",
+          "text": "Everyone else left. I stayed. Three weeks, unpaid. Well, paid in vested tokens. They vest in 2031.",
+          "next": "who_2"
+        },
+        "who_2": {
+          "speaker": "Penny",
+          "text": "So I'm all the departments now. Complaints go to HR. I am HR. I've received none. I'm very effective.",
           "next": "hub"
         },
-        "experiments": {
+        "coat": {
           "speaker": "Penny",
-          "text": "Oh, you know... turning pixels into tokens, tokens into dreams, dreams into... well, mostly gas fees. But sometimes magic!",
-          "choices": [
-            {
-              "text": "Does 'Patient Zero' ring a bell?",
-              "next": "patient_zero"
-            },
-            {
-              "text": "Interesting. Thanks.",
-              "next": "experiments_end"
-            }
-          ]
+          "text": "Adrian's. His orders: nobody touches his things except Patient Zero. So: nobody. Especially you.",
+          "next": "coat_2"
         },
-        "experiments_end": {
+        "coat_2": {
           "speaker": "Penny",
-          "text": "Anytime! Let me know if you need anything else.",
+          "text": "And I don't read other people's mail. Unless it's marked confidential. Then it's practically my job.",
+          "onEnter": [
+            {
+              "op": "setFlag",
+              "flag": "penny_mail_hint",
+              "value": true
+            }
+          ],
+          "next": "hub"
+        },
+        "tour": {
+          "speaker": "Penny",
+          "text": "Stairs: trading floor. Door: outside. Coat: don't. Plant: Fernando. Be nice to Fernando.",
+          "onEnter": [
+            {
+              "op": "setFlag",
+              "flag": "penny_fernando",
+              "value": true
+            }
+          ],
+          "next": "hub"
+        },
+        "fernando": {
+          "speaker": "Penny",
+          "text": "Fernando is the plant. He's been through a lot. Overwatering. Neglect. Adrian's playlists.",
+          "next": "fernando_2"
+        },
+        "fernando_2": {
+          "speaker": "Penny",
+          "text": "If anything happens to Fernando, I'm filing a report. With myself. I'll take it very seriously.",
           "next": "hub"
         },
         "patient_zero": {
           "speaker": "Penny",
-          "text": "Patient Zero? I... I don't know what you're talking about. That's a basement-level clearance topic.",
+          "text": "Patient Zero? Never heard of them. That's basement-level clearance. I'm lobby-level.",
           "onEnter": [
             {
               "op": "setFlag",
@@ -996,12 +1361,12 @@
         },
         "pz_nervous": {
           "speaker": "Penny",
-          "text": "Nervous? Me? Ha! I just... look, some things in this building are above my pay grade. WAY above. If you want answers about... that... you'd need to go deeper. Literally.",
+          "text": "I'm HR. I don't get nervous. I make other people nervous. ...Something downstairs keeps blinking.",
           "next": "hub"
         },
         "pz_forget": {
           "speaker": "Penny",
-          "text": "Already forgotten! Ha ha... ha. Please don't mention that name again. Especially not near the basement.",
+          "text": "Already forgotten. I'm writing down that I forgot. In pen.",
           "next": "hub"
         },
         "vip": {
@@ -1015,6 +1380,43 @@
             }
           ],
           "next": "hub"
+        },
+        "bye": {
+          "speaker": "Penny",
+          "text": "Take your time. I'm logging all of it.",
+          "next": "hub"
+        },
+        "env_old": {
+          "speaker": "Penny",
+          "text": "Confidential? I already read it. Twice. It got worse the second time.",
+          "when": "found_keycard",
+          "end": true,
+          "next": "env_take"
+        },
+        "env_take": {
+          "speaker": "Penny",
+          "text": "Is that... CONFIDENTIAL? Leave it with me. I'll file it. Carefully. With my eyes.",
+          "onEnter": [
+            {
+              "op": "setFlag",
+              "flag": "penny_reading",
+              "value": true
+            },
+            {
+              "op": "removeItem",
+              "id": "mystery_envelope"
+            },
+            {
+              "op": "removeItem",
+              "id": "mystery_envelope_opened"
+            }
+          ],
+          "next": "env_gasp"
+        },
+        "env_gasp": {
+          "speaker": "Penny",
+          "text": "Oh. Oh no. Oh, he did NOT.",
+          "end": true
         }
       }
     }
@@ -1059,6 +1461,96 @@
     ]
   },
   "combos": [
+    {
+      "items": [
+        "mystery_envelope",
+        "hs_monitor_desk"
+      ],
+      "result": null,
+      "script": [
+        {
+          "op": "ifFlag",
+          "flag": "found_keycard",
+          "then": [
+            {
+              "op": "say",
+              "speaker": "Penny",
+              "text": "Confidential? I already read it. Twice. It got worse the second time."
+            }
+          ],
+          "else": [
+            {
+              "op": "setFlag",
+              "flag": "penny_reading",
+              "value": true
+            },
+            {
+              "op": "removeItem",
+              "id": "mystery_envelope"
+            },
+            {
+              "op": "removeItem",
+              "id": "mystery_envelope_opened"
+            },
+            {
+              "op": "say",
+              "speaker": "Penny",
+              "text": "Is that... CONFIDENTIAL? Leave it with me. I'll file it. Carefully. With my eyes."
+            },
+            {
+              "op": "say",
+              "speaker": "Penny",
+              "text": "Oh. Oh no. Oh, he did NOT."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "items": [
+        "mystery_envelope_opened",
+        "hs_monitor_desk"
+      ],
+      "result": null,
+      "script": [
+        {
+          "op": "ifFlag",
+          "flag": "found_keycard",
+          "then": [
+            {
+              "op": "say",
+              "speaker": "Penny",
+              "text": "Confidential? I already read it. Twice. It got worse the second time."
+            }
+          ],
+          "else": [
+            {
+              "op": "setFlag",
+              "flag": "penny_reading",
+              "value": true
+            },
+            {
+              "op": "removeItem",
+              "id": "mystery_envelope"
+            },
+            {
+              "op": "removeItem",
+              "id": "mystery_envelope_opened"
+            },
+            {
+              "op": "say",
+              "speaker": "Penny",
+              "text": "Is that... CONFIDENTIAL? Leave it with me. I'll file it. Carefully. With my eyes."
+            },
+            {
+              "op": "say",
+              "speaker": "Penny",
+              "text": "Oh. Oh no. Oh, he did NOT."
+            }
+          ]
+        }
+      ]
+    },
     {
       "items": [
         "water_bottle",
