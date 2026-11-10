@@ -140,7 +140,7 @@ export function loadScene(id, { root = ROOT, rev = null } = {}) {
   const rel = `assets/scenes/${id}/scene.json`;
   let scene;
   if (!rev) scene = existsSync(resolve(root, rel)) ? JSON.parse(readFileSync(resolve(root, rel), 'utf8')) : null;
-  else scene = JSON.parse(execFileSync('git', ['-C', root, 'show', `${rev}:${rel}`], { encoding: 'utf8', maxBuffer: 64 << 20 }));
+  else scene = JSON.parse(execFileSync('git', ['-C', root, 'show', `${rev}:${rel}`], { encoding: 'utf8', maxBuffer: 64 << 20, stdio: ['ignore', 'pipe', 'ignore'] }));
   const bg = resolve(root, `assets/scenes/${id}/${scene?.assets?.background || 'background.png'}`);
   if (scene && existsSync(bg)) {
     const h = pngHeight(readFileSync(bg).subarray(0, 32));
@@ -152,7 +152,7 @@ export function loadScene(id, { root = ROOT, rev = null } = {}) {
 export function loadGlobal({ root = ROOT, rev = null } = {}) {
   const rel = 'assets/config/global.json';
   if (!rev) return JSON.parse(readFileSync(resolve(root, rel), 'utf8'));
-  return JSON.parse(execFileSync('git', ['-C', root, 'show', `${rev}:${rel}`], { encoding: 'utf8', maxBuffer: 64 << 20 }));
+  return JSON.parse(execFileSync('git', ['-C', root, 'show', `${rev}:${rel}`], { encoding: 'utf8', maxBuffer: 64 << 20, stdio: ['ignore', 'pipe', 'ignore'] }));
 }
 
 /** Evalúa todas las escenas de refs (analítico). */
