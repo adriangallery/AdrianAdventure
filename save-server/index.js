@@ -2,10 +2,22 @@ import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { serve } from '@hono/node-server';
 import { verifyMessage, createPublicClient, http } from 'viem';
-import { mainnet } from 'viem/chains';
+import { mainnet, base } from 'viem/chains';
 import { readFileSync, writeFileSync, existsSync, mkdirSync, readdirSync, unlinkSync } from 'fs';
 import { join } from 'path';
+import { bodyLimit } from 'hono/body-limit';
 import { publicPlayer, createEnsCache } from './privacy.js';
+import { normalizeAddress, parseSlot, checkSessionAuth, validateSaveBody, MAX_SAVE_BYTES } from './validate.js';
+
+/**
+ * A1.12: comprobación de la firma de sesión (inyectada en validate.js). Primero EOA en local (sin red); si no cuadra,
+ * en Base con ERC-1271/6492 para las smart wallets (Coinbase Smart Wallet), RPC público y sin claves.
+ */
+const baseClient = createPublicClient({ chain: base, transport: http('https://mainnet.base.org', { retryCount: 1, timeout: 5000 }) });
+const verifySession = async (args) => {
+  try { if (await verifyMessage(args)) return true; } catch { /* sigue con la verificación on-chain */ }
+  return baseClient.verifyMessage(args);
+};
 
 const app = new Hono();
 
@@ -14,7 +26,8 @@ if (!existsSync(DATA_DIR)) mkdirSync(DATA_DIR, { recursive: true });
 
 app.use('*', cors({
   origin: ['https://adventure.zerothetoken.com', 'https://adventure.adrianzero.com', 'https://zeroadventure.vercel.app', 'https://adrianzero.com', 'http://localhost:3000', 'http://localhost:5173'],
-  allowMethods: ['GET', 'POST', 'OPTIONS'],
+  allowMethods: ['GET', 'POST', 'DELETE', 'OPTIONS'],
+  allowHeaders: ['Content-Type', 'X-Auth-Signature', 'X-Auth-Timestamp'],
 }));
 
 // A1.6: el ENS se resuelve aquí (el cliente ya no recibe la dirección completa). RPC público y gratuito, sin claves.
@@ -41,8 +54,8 @@ function saveFile(address, slot) {
  * GET /save/:address — Load all slots for a wallet
  */
 app.get('/save/:address', (c) => {
-  const address = c.req.param('address').toLowerCase();
-  if (!/^0x[a-f0-9]{40}$/.test(address)) return c.json({ error: 'Invalid address' }, 400);
+  const address = normalizeAddress(c.req.param('address'));
+  if (!address) return c.json({ error: 'Invalid address' }, 400);
 
   const slots = {};
   // Slot 0 = autoguardado en la nube (V7); 1 y 2 = guardados manuales
@@ -71,9 +84,9 @@ app.get('/save/:address', (c) => {
  * GET /save/:address/:slot — Load specific slot
  */
 app.get('/save/:address/:slot', (c) => {
-  const address = c.req.param('address').toLowerCase();
-  const slot = parseInt(c.req.param('slot'));
-  if (!/^0x[a-f0-9]{40}$/.test(address) || ![0, 1, 2].includes(slot)) {
+  const address = normalizeAddress(c.req.param('address'));
+  const slot = parseSlot(c.req.param('slot'));
+  if (!address || slot === null) {
     return c.json({ error: 'Invalid params' }, 400);
   }
 
@@ -88,59 +101,27 @@ app.get('/save/:address/:slot', (c) => {
 });
 
 /**
- * POST /save — Store a signed save to a specific slot
- * Body: { state, address, timestamp, signature, sceneName, slot }
+ * POST /save — guarda en un slot. A1.12: exige la firma de sesión de la wallet (authSignature/authTimestamp).
+ * Body: { state, address, timestamp, sceneName, slot, authSignature, authTimestamp }
  */
-app.post('/save', async (c) => {
+app.post('/save', bodyLimit({ maxSize: MAX_SAVE_BYTES, onError: (c) => c.json({ error: 'Save too large' }, 413) }), async (c) => {
   try {
-    const body = await c.req.json();
-    const { state, address, timestamp, signature, sceneName, slot, authSignature, authTimestamp } = body;
-    const slotId = slot ?? 1;
+    let body;
+    try { body = await c.req.json(); } catch { return c.json({ error: 'Invalid JSON' }, 400); }
+    const v = validateSaveBody(body);
+    if (!v.ok) return c.json({ error: v.error }, v.status);
 
-    if (!state || !address) {
-      return c.json({ error: 'Missing required fields' }, 400);
-    }
-    if (![0, 1, 2].includes(slotId)) {
-      return c.json({ error: 'Invalid slot (0 = autosave, 1 or 2)' }, 400);
-    }
+    const auth = await checkSessionAuth({
+      address: v.address, authSignature: body.authSignature, authTimestamp: body.authTimestamp, verify: verifySession,
+    });
+    if (!auth.ok) return c.json({ error: auth.error }, auth.status);
 
-    const addr = address.toLowerCase();
-    if (!/^0x[a-f0-9]{40}$/.test(addr)) return c.json({ error: 'Invalid address' }, 400);
-
-    // Verify ownership — try session auth, legacy signature, or allow unsigned (game saves don't need crypto-level security)
-    let verified = false;
-
-    if (authSignature && authTimestamp) {
-      const maxAge = 24 * 60 * 60 * 1000;
-      if (Date.now() - authTimestamp > maxAge) {
-        return c.json({ error: 'Session expired, reconnect wallet' }, 401);
-      }
-      const authMessage = `ZEROadventure-auth:${addr}:${authTimestamp}`;
-      try {
-        verified = await verifyMessage({ address: addr, message: authMessage, signature: authSignature });
-      } catch (err) {
-        console.error('Session auth verify failed:', err);
-      }
-    } else if (signature && timestamp) {
-      const message = JSON.stringify({ state, address: addr, timestamp });
-      try {
-        verified = await verifyMessage({ address: addr, message, signature });
-      } catch (err) {
-        console.error('Sig verify failed:', err);
-      }
-    }
-
-    // Allow unsigned saves — WalletConnect session proves ownership implicitly
-    if (!verified) {
-      console.log(`Unsigned save accepted for ${addr} slot ${slotId}`);
-    }
-
-    const fp = saveFile(addr, slotId);
-    const saveData = { state, address: addr, timestamp: timestamp || Date.now(), signature: signature || null, sceneName, slot: slotId, savedAt: Date.now() };
+    const fp = saveFile(v.address, v.slot);
+    const saveData = { state: v.state, address: v.address, timestamp: v.timestamp, signature: null, sceneName: v.sceneName, slot: v.slot, savedAt: Date.now() };
     writeFileSync(fp, JSON.stringify(saveData, null, 2));
 
-    console.log(`Slot ${slotId} saved for ${addr} (${sceneName})`);
-    return c.json({ ok: true, address: addr, slot: slotId, sceneName });
+    console.log(`Slot ${v.slot} saved for ${v.address} (${v.sceneName})`);
+    return c.json({ ok: true, address: v.address, slot: v.slot, sceneName: v.sceneName, timestamp: v.timestamp });
   } catch (err) {
     console.error('Save error:', err);
     return c.json({ error: 'Internal server error' }, 500);
@@ -268,11 +249,17 @@ app.get('/leaderboard', (c) => {
 });
 
 /**
- * DELETE /save/:address/:slot
+ * DELETE /save/:address/:slot — A1.12: dirección y slot validados y firma de sesión de esa wallet
+ * (cabeceras X-Auth-Signature / X-Auth-Timestamp).
  */
-app.delete('/save/:address/:slot', (c) => {
-  const address = c.req.param('address').toLowerCase();
-  const slot = parseInt(c.req.param('slot'));
+app.delete('/save/:address/:slot', async (c) => {
+  const address = normalizeAddress(c.req.param('address'));
+  const slot = parseSlot(c.req.param('slot'));
+  if (!address || slot === null) return c.json({ error: 'Invalid params' }, 400);
+  const auth = await checkSessionAuth({
+    address, authSignature: c.req.header('x-auth-signature'), authTimestamp: c.req.header('x-auth-timestamp'), verify: verifySession,
+  });
+  if (!auth.ok) return c.json({ error: auth.error }, auth.status);
   const fp = saveFile(address, slot);
   if (existsSync(fp)) unlinkSync(fp);
   return c.json({ ok: true });
