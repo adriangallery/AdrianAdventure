@@ -122,7 +122,8 @@
         { "do": "key", "key": "l", "note": "la tecla del verbo ya elegido lo suelta (vuelve a Walk), como en el panel", "expect": { "verb": "WALK" } },
         { "do": "rightclick", "target": "npc_receptionist", "choices": ["come back later"], "note": "clic derecho en una NPC = hablar (sin elegir verbo)", "expect": { "verb": "WALK", "walkTarget": { "target": "npc_receptionist", "verb": "TALK" } } },
         { "do": "rightclick", "target": "hs_floor_tiles", "note": "clic derecho en algo que solo tiene texto = mirar", "expect": { "walkTarget": { "target": "hs_floor_tiles", "verb": "LOOK" } } },
-        { "do": "rightclick", "target": "hs_coat", "rejects": "I AM HR", "note": "clic derecho en algo que se coge = coger. A3.4a: con Penny mirando no se coge", "expect": { "lacks": ["keycard"], "walkTarget": { "target": "hs_coat", "verb": "PICK" } } },
+        { "do": "use", "item": "mystery_envelope", "target": "hs_monitor_desk", "note": "A3.4a: el sobre en el escritorio distrae a Penny (si no, el abrigo no se coge)", "expect": { "flags": { "penny_reading": true } } },
+        { "do": "rightclick", "target": "hs_coat", "note": "clic derecho en algo que se coge = coger", "expect": { "has": ["keycard", "leaky_pen"], "walkTarget": { "target": "hs_coat", "verb": "PICK" } } },
         { "do": "key", "key": "u", "expect": { "verb": "USE" } },
         { "do": "key", "key": "Escape", "note": "Esc sin cinemática suelta el verbo elegido", "expect": { "verb": "WALK" } },
         { "do": "doubleclick", "target": "hs_stairs_up", "note": "doble clic en una salida: sube sin andar hasta la escalera (la API falla si el personaje se mueve)", "expect": { "scene": "upstairs", "noListenerGrowth": true } }
