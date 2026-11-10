@@ -28,6 +28,7 @@ import { failResponses } from '@/systems/FailResponsesData';
 import type { MusicManager, MusicQaState } from '@/systems/MusicManager';
 import type { SfxPlayer, SfxQaState } from '@/systems/Sfx';
 import { stingerLog, type StingerEvent } from '@/systems/StingerPlayer';
+import { qaFakeWallet } from '@/web3/wallet';
 
 type Point = { x: number; y: number };
 /** A2.6: `used` = ya elegida antes en ese árbol (gris). Las ocultas (`when`, `once`) no salen. */
@@ -215,6 +216,11 @@ export interface QaApi {
    * toca inventario ni flags, y se pierde al cambiar de escena.
    */
   previewCostume(costume: 'ape' | 'player' | null): Promise<QaState>;
+  /**
+   * A1.12: simula una wallet conectada (`address`; `null` la desconecta) para probar el guardado en la nube contra un
+   * save-server interceptado. `signed` = con firma de sesión ya hecha. No llama a ninguna wallet ni RPC real.
+   */
+  fakeWallet(address: string | null, signed?: boolean): void;
 }
 
 const SETTLE_TIMEOUT_MS = 120_000;
@@ -720,6 +726,12 @@ export function installQa(game: Phaser.Game): void {
       gs().qaPreviewCostume(costume);
       await sleep(100);
       return snapshot();
+    },
+
+    fakeWallet(address, signed = true) {
+      if (address !== null && !/^0x[0-9a-fA-F]{40}$/.test(address)) throw new QaError('error', `fakeWallet: «${address}» no es una dirección`);
+      note(`FAKE WALLET ${address ?? 'off'}${address && !signed ? ' (sin firma)' : ''}`);
+      qaFakeWallet(address as `0x${string}` | null, signed);
     },
 
     async newGame() {

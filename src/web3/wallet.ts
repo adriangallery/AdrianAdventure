@@ -170,3 +170,19 @@ export function disconnectWallet(): void {
 export function truncateAddress(address: string): string {
   return `${address.slice(0, 6)}...${address.slice(-4)}`;
 }
+
+/**
+ * A1.12 (solo QA, lo llama `__qa.fakeWallet` con ?qa=1): simula una wallet conectada sin extensión ni red, para
+ * probar el guardado en la nube contra un save-server interceptado. `signed` = ya hay firma de sesión; si no, firmar
+ * (`authorizeSession`) devuelve una firma falsa. No avisa a los suscriptores (no dispara la carga de NFT ni la RPC).
+ */
+export function qaFakeWallet(address: Address | null, signed: boolean): void {
+  if (!address) {
+    sessionAuth = null;
+    state = { connected: false, address: null, walletClient: null, providerType: null };
+    return;
+  }
+  const fakeClient = { signMessage: async () => `0x${'51'.repeat(65)}` } as unknown as WalletClient;
+  state = { connected: true, address, walletClient: fakeClient, providerType: 'injected' };
+  sessionAuth = signed ? { signature: `0x${'51'.repeat(65)}`, timestamp: Date.now() } : null;
+}

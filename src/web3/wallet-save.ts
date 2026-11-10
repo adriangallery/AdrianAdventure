@@ -1,6 +1,7 @@
 import type { GameState } from '@/types/game.types';
 import { getWalletState, getSessionAuth } from './wallet';
 import { migrateSave } from '@/systems/SaveMigration';
+import { cloudSaveVerified, sessionUsable, type CloudResult } from '@/systems/SaveSlots';
 
 
 const WALLET_SAVE_PREFIX = 'adrian_adventure_wallet_';
@@ -53,44 +54,18 @@ export function saveForWallet(address: string, state: GameState, sceneName: stri
 }
 
 /**
- * Save to remote Railway server for a specific slot (requires wallet signature).
- * Returns true on success.
+ * A1.12: sube la partida al slot `slot` de la nube y lo RELEE (ver SaveSlots.cloudSaveVerified). Antes devolvía false
+ * en silencio y el panel decía «saved» igual; ahora el que llama recibe el motivo del fallo y lo enseña.
+ * El servidor exige la firma de sesión de la wallet (`authorizeSession`); sin ella devuelve `no-session` sin llamar.
  */
-export async function saveForWalletRemote(address: string, state: GameState, sceneName: string, slot = 1): Promise<boolean> {
+export async function saveForWalletRemote(address: string, state: GameState, sceneName: string, slot = 1): Promise<CloudResult> {
   saveLocal(address, state, sceneName);
-
-  try {
-    const addr = address.toLowerCase();
-    const auth = getSessionAuth();
-
-    // Build request — include auth signature if available, otherwise save unsigned
-    const body: Record<string, unknown> = {
-      state,
-      address: addr,
-      timestamp: Date.now(),
-      sceneName,
-      slot,
-    };
-    if (auth) {
-      body.authSignature = auth.signature;
-      body.authTimestamp = auth.timestamp;
-    }
-
-    const resp = await fetch(`${SAVE_SERVER}/save`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-    });
-    if (!resp.ok) {
-      const err = await resp.text().catch(() => String(resp.status));
-      throw new Error(`Server ${resp.status}: ${err}`);
-    }
-    console.log(`Remote save synced: slot ${slot} for ${addr}`);
-    return true;
-  } catch (err) {
-    console.warn('Remote save failed:', err);
-    return false;
-  }
+  const res = await cloudSaveVerified({
+    fetch: (url, init) => fetch(url, { ...init, cache: 'no-store' }), base: SAVE_SERVER, address, auth: getSessionAuth(),
+    state, sceneName, slot, now: Date.now(),
+  });
+  if (!res.ok) console.warn(`Remote save slot ${slot} failed: ${res.error}${res.status ? ` (${res.status})` : ''}`);
+  return res;
 }
 
 /**
@@ -98,7 +73,7 @@ export async function saveForWalletRemote(address: string, state: GameState, sce
  */
 export async function loadRemoteSlots(address: string): Promise<Record<number, WalletSave> | null> {
   try {
-    const resp = await fetch(`${SAVE_SERVER}/save/${address.toLowerCase()}`);
+    const resp = await fetch(`${SAVE_SERVER}/save/${address.toLowerCase()}`, { cache: 'no-store' });
     if (resp.ok) {
       const data = await resp.json() as { slots: Record<number, WalletSave> };
       // A1.4: lo que devuelve la nube puede ser de antes del renombrado de flags
@@ -141,6 +116,8 @@ let lastCloudAutosaveAt = 0;
 export function cloudAutosave(address: string, state: GameState, sceneName: string): void {
   const now = Date.now();
   if (now - lastCloudAutosaveAt < CLOUD_AUTOSAVE_MIN_MS) return;
+  // A1.12: sin firma de sesión el servidor rechaza; no se intenta (el panel ofrece firmar). Solo escribe el slot 0.
+  if (!sessionUsable(getSessionAuth(), now)) return;
   lastCloudAutosaveAt = now;
   void saveForWalletRemote(address, state, sceneName, CLOUD_AUTOSAVE_SLOT);
 }
