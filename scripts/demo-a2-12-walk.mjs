@@ -99,19 +99,19 @@ async function installRecorder() {
 }
 
 /** Destino del juego para un punto de la ruta (punto de llegada de Facing con la Reach del jugador) */
-const targetOf = (pt) => page.evaluate((pt) => {
+const targetOf = (pt, d) => page.evaluate((pt, h) => {
   const gs = window.__game.scene.getScene('GameScene');
-  const d = gs.registry.get('sceneData');
   if (pt.kind === 'edge') return { x: pt.x, y: pt.y };
   if (pt.kind === 'hotspot') {
-    const h = d.regions.hotspots.find((q) => q.id === pt.id);
+    if (!h) return null;
     const plan = gs.planHotspot(h, 'USE');
-    return plan.walkTo;
+    // null = ya está allí: se queda donde está
+    return plan.walkTo ?? { x: gs.player.pctX, y: gs.player.pctY };
   }
   const npc = gs.npcs.find((n) => n.npcId === pt.id);
   if (!npc || !npc.visible) return null;
-  return gs.qaPlanTalk(pt.id);
-}, pt);
+  return gs.qaPlanTalk(pt.id) ?? { x: gs.player.pctX, y: gs.player.pctY };
+}, pt, pt.kind === 'hotspot' ? (d.regions?.hotspots ?? []).find((q) => q.id === pt.id) ?? null : null);
 
 /** Anda a `to` y espera a que llegue (o TIMEOUT_MS). Devuelve ms tardados o null si se atascó. */
 async function walk(to) {
@@ -187,7 +187,7 @@ for (const id of SCENES) {
   const row = { scene: id, legs: [] };
   let k = 0;
   for (const pt of route(d)) {
-    const to = await targetOf(pt);
+    const to = await targetOf(pt, d);
     if (!to) { row.legs.push({ pt, skipped: 'sin destino' }); continue; }
     const from = await page.evaluate(() => window.__samples.length);
     const ms = await walk(to);
