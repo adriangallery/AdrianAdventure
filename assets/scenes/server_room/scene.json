@@ -1019,5 +1019,112 @@
       "w": 72.2,
       "h": 8.1
     }
+  ],
+  "ambient": [
+    {
+      "id": "rack_leds",
+      "kind": "leds",
+      "area": {
+        "x": 17.5,
+        "y": 31,
+        "w": 8,
+        "h": 46
+      },
+      "cols": 3,
+      "rows": 9,
+      "colors": [
+        "#4cff6a",
+        "#3fa7ff",
+        "#ffb02e"
+      ],
+      "period": 500,
+      "size": 4.5,
+      "when": "!emergency_switch_flipped"
+    },
+    {
+      "id": "battery_leds",
+      "kind": "leds",
+      "cells": [
+        {
+          "x": 18,
+          "y": 34
+        },
+        {
+          "x": 21.5,
+          "y": 34
+        },
+        {
+          "x": 18,
+          "y": 40
+        },
+        {
+          "x": 21.5,
+          "y": 40
+        }
+      ],
+      "colors": [
+        "#ff4040"
+      ],
+      "period": 1600,
+      "when": "emergency_switch_flipped"
+    },
+    {
+      "id": "tube_flicker",
+      "kind": "flicker",
+      "area": {
+        "x": 41,
+        "y": 2.5,
+        "w": 19,
+        "h": 5
+      },
+      "shape": "rect",
+      "color": "#d8f0ff",
+      "alpha": 0.25,
+      "alphaMin": 0.03,
+      "period": 55,
+      "when": "!emergency_switch_flipped"
+    },
+    {
+      "id": "terminal_glow",
+      "kind": "glow",
+      "area": {
+        "x": 49.5,
+        "y": 42.5,
+        "w": 8.5,
+        "h": 14
+      },
+      "shape": "rect",
+      "color": "#40ff80",
+      "alpha": 0.2,
+      "alphaMin": 0.08,
+      "period": 2000,
+      "when": "!emergency_switch_flipped"
+    },
+    {
+      "id": "terminal_scan",
+      "kind": "scan",
+      "area": {
+        "x": 49.5,
+        "y": 42.5,
+        "w": 8.5,
+        "h": 14
+      },
+      "color": "#c0ffd8",
+      "alpha": 0.18,
+      "period": 2400,
+      "size": 5,
+      "when": "!emergency_switch_flipped"
+    },
+    {
+      "id": "coolant_drip",
+      "kind": "drip",
+      "at": {
+        "x": 75.6,
+        "y": 57
+      },
+      "floorY": 76.5,
+      "period": 3300,
+      "color": "#80d0ff"
+    }
   ]
 }

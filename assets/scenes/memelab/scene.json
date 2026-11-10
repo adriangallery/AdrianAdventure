@@ -890,5 +890,116 @@
         }
       ]
     }
+  ],
+  "ambient": [
+    {
+      "id": "tube_bubbles",
+      "kind": "rise",
+      "area": {
+        "x": 45.5,
+        "y": 23,
+        "w": 8,
+        "h": 50
+      },
+      "count": 14,
+      "color": "#c0ff80",
+      "alpha": 0.75,
+      "speed": 0.8
+    },
+    {
+      "id": "tube_glow",
+      "kind": "glow",
+      "area": {
+        "x": 41,
+        "y": 18,
+        "w": 18,
+        "h": 62
+      },
+      "shape": "ellipse",
+      "color": "#80ff40",
+      "alpha": 0.14,
+      "alphaMin": 0.05,
+      "period": 2000
+    },
+    {
+      "id": "bulb_flicker_left",
+      "kind": "flicker",
+      "area": {
+        "x": 26,
+        "y": 10,
+        "w": 8,
+        "h": 12
+      },
+      "shape": "ellipse",
+      "color": "#ffd080",
+      "alpha": 0.14,
+      "alphaMin": 0.02,
+      "period": 70
+    },
+    {
+      "id": "bulb_flicker_right",
+      "kind": "flicker",
+      "area": {
+        "x": 69,
+        "y": 8,
+        "w": 8,
+        "h": 12
+      },
+      "shape": "ellipse",
+      "color": "#ffd080",
+      "alpha": 0.14,
+      "alphaMin": 0.02,
+      "period": 70
+    },
+    {
+      "id": "panel_leds",
+      "kind": "leds",
+      "cells": [
+        {
+          "x": 86.8,
+          "y": 47
+        },
+        {
+          "x": 89.6,
+          "y": 47
+        },
+        {
+          "x": 86.3,
+          "y": 61.5
+        },
+        {
+          "x": 88,
+          "y": 62.5
+        },
+        {
+          "x": 91,
+          "y": 57
+        },
+        {
+          "x": 93,
+          "y": 57
+        }
+      ],
+      "colors": [
+        "#ff4040",
+        "#4cff6a",
+        "#ffb02e"
+      ],
+      "period": 900
+    },
+    {
+      "id": "crt_scan",
+      "kind": "scan",
+      "area": {
+        "x": 22.5,
+        "y": 42,
+        "w": 9,
+        "h": 13
+      },
+      "color": "#c0ffc0",
+      "alpha": 0.15,
+      "period": 2400,
+      "size": 5
+    }
   ]
 }

@@ -3,7 +3,7 @@
 //
 //   node scripts/lint-scenes.mjs [--strict] [--json] [--scene <id>] [--root <dir>] [--no-write]
 //
-// Recorre assets/scenes/<id>/scene.json y aplica diez reglas:
+// Recorre assets/scenes/<id>/scene.json y aplica once reglas:
 //   a  flags que se leen y nunca se ponen, o que se ponen y nunca se leen
 //   b  objetos que se consiguen (addItem) y no sirven para nada
 //   c  salidas (fadeToScene/gotoScene) en hotspots y triggers sin gate, para revisar a mano
@@ -25,8 +25,14 @@
 //      parejas mal formadas o con objetos que no existen) = ERROR; objeto del inventario con < 3 frases de mal uso
 //      (`items.<id>`) y pareja de un hotspot que es un combo (nunca se dice) = aviso. «Objeto que existe» = lo da un
 //      addItem de una escena, sale en ScummUI.ITEM_DESCS o en un addItem('…') de src/
+//   k  animación ambiental (A4.3, src/systems/Ambient.ts): `ambient[]` de la escena con un elemento mal definido (sin id,
+//      id repetido, kind desconocido, `when` mal escrito, sin `area`/`at`/`floorY` cuando su tipo lo pide, valores fuera
+//      de rango, más de AMBIENT_MAX_PER_SCENE) y op `ambient` que nombra un elemento que no está en esa escena = ERROR;
+//      escena con menos de 2 elementos válidos = aviso (A4.3 pide al menos 2 por escena). Las `when` del ambiente cuentan
+//      como lecturas de flags (a) y usos de objetos (b). Los tipos y topes se repiten aquí (el linter corre sin type
+//      stripping) y tests/lint-scenes.test.mjs comprueba que coinciden con Ambient.ts
 //
-// Por defecto (f), los spawns fuera de zona de (e), el diario mal formado de (h) y los errores de (j) son error; el resto, aviso. --strict lo convierte todo en error. Código de salida 1
+// Por defecto (f), los spawns fuera de zona de (e), el diario mal formado de (h) y los errores de (j) y (k) son error; el resto, aviso. --strict lo convierte todo en error. Código de salida 1
 // solo si hay errores. Escribe lint-scenes-report.json y lint-scenes-report.md en la raíz del repo.
 // Excepciones con motivo en qa/lint-scenes-allow.json: [{ "rule": "c", "scene": "x", "id": "y", "reason": "…" }]
 // (`id` compara con el id del hallazgo o con su ruta; admite `*` al final como prefijo).
@@ -36,6 +42,7 @@
 //     ifHasItem{id}, ifFlag{flag}, gotoScene/fadeToScene{sceneId,spawn}, playSound{key}, dialogue{treeId},
 //     flicker{overlay} (A1.4: parpadeo de un conditionalOverlays[].id de la MISMA escena, sin tocar flags).
 //     journalNote{id} (A2.9: nota del diario, assets/journal; ver regla h) y callAnon (sin campos).
+//     ambient{id, action} (A4.3: fuerza o lanza una ráfaga de un ambient[].id de la MISMA escena, sin tocar flags).
 //     Bloques anidados: then/else (if*, web3Require), onSuccess/onFail (mintNFT, mintAchievement).
 //   - Flags: escriben setFlag y dialogues…choices[].setFlag (DialogueSystem). Leen ifFlag, hideWhenFlag,
 //     showWhenFlag, conditionalOverlays[].flag, choices[].flag y cameraEffect.disableFlag (GameScene). Las
@@ -91,6 +98,7 @@ export const RULES = {
   h: 'diario',
   i: 'densidad de píxel',
   j: 'respuestas de fallo',
+  k: 'ambiente',
 };
 
 // A2.5: mismos mínimos que src/systems/FailResponses.ts (tests/lint-scenes.test.mjs comprueba que coinciden)
@@ -157,6 +165,71 @@ export function depthScaleWalkDefects(d, walkableAreas) {
     if (d.yBottom <= lo || d.yTop >= hi) out.push(`la franja ${d.yTop}-${d.yBottom} no corta la zona andable (y ${lo}-${hi}): el factor no cambia al andar`);
   }
   return out;
+}
+
+// A4.3: mismos tipos y topes que src/systems/Ambient.ts (tests/lint-scenes.test.mjs comprueba que coinciden)
+export const AMBIENT_KINDS = ['moths', 'dust', 'leds', 'fog', 'clouds', 'flicker', 'glow', 'scan', 'rise', 'drip', 'birds', 'sway'];
+export const AMBIENT_MAX_COUNT = 200;
+export const AMBIENT_MAX_PER_SCENE = 24;
+export const AMBIENT_ACTIONS = ['on', 'off', 'auto', 'burst'];
+const AMBIENT_NEEDS_AREA = new Set(['dust', 'fog', 'clouds', 'flicker', 'glow', 'scan', 'rise', 'birds']);
+const AMBIENT_NEEDS_AT = new Set(['moths', 'drip']);
+const AMBIENT_BLENDS = ['normal', 'add', 'screen', 'multiply'];
+const AMBIENT_NUM_RANGES = {
+  depth: [-10, 100], alpha: [0, 1], alphaMin: [0, 1], count: [0, AMBIENT_MAX_COUNT], size: [0.5, 2000], speed: [0, 20], period: [16, 600000],
+  radius: [0.1, 50], parallax: [0, 1], burst: [0, AMBIENT_MAX_COUNT], cols: [1, 64], rows: [1, 64], amplitude: [0, 200],
+};
+const ambientRect = (v) => !!v && typeof v === 'object' && ['x', 'y', 'w', 'h'].every((k) => isNum(v[k])) && v.w > 0 && v.h > 0 && v.x >= -10 && v.y >= -10 && v.x + v.w <= 110 && v.y + v.h <= 110;
+const ambientPoint = (v) => !!v && typeof v === 'object' && isNum(v.x) && isNum(v.y) && v.x >= -10 && v.x <= 110 && v.y >= -10 && v.y <= 110;
+const ambientColor = (v) => (isNum(v) && Number.isInteger(v) && v >= 0 && v <= 0xffffff) || (typeof v === 'string' && /^(?:#|0x)?[0-9a-fA-F]{6}$/.test(v.trim()));
+
+/**
+ * A4.3: validación de `ambient[]` de una escena, la misma que hace parseAmbient de src/systems/Ambient.ts (un elemento con
+ * defectos se salta en el juego). Devuelve { ok: [{ id, kind, when: {ok, bad} }], problems: [texto] }.
+ */
+export function ambientDefects(raw, sceneId = 'scene') {
+  const ok = [];
+  const problems = [];
+  if (raw === undefined || raw === null) return { ok, problems };
+  if (!Array.isArray(raw)) return { ok, problems: [`${sceneId}.ambient tiene que ser una lista`] };
+  const ids = new Set();
+  raw.forEach((o, i) => {
+    const where = `${sceneId}.ambient[${i}]`;
+    if (!o || typeof o !== 'object' || Array.isArray(o)) { problems.push(`${where}: no es un objeto`); return; }
+    const id = typeof o.id === 'string' && /^[a-z0-9_]+$/i.test(o.id) ? o.id : null;
+    if (!id) { problems.push(`${where}: sin id (letras, números y _)`); return; }
+    if (ids.has(id)) { problems.push(`${where}: id «${id}» repetido`); return; }
+    if (!AMBIENT_KINDS.includes(o.kind)) { problems.push(`${where} (${id}): kind «${String(o.kind)}» desconocido (${AMBIENT_KINDS.join(', ')})`); return; }
+    const bad = [];
+    const when = parseWhen(o.when);
+    if (when.bad.length) bad.push(`when «${when.bad.join('», «')}» no válido (flag, !flag, item:id, !item:id)`);
+    for (const [k, [lo, hi]] of Object.entries(AMBIENT_NUM_RANGES)) {
+      if (o[k] !== undefined && !(isNum(o[k]) && o[k] >= lo && o[k] <= hi)) bad.push(`${k} = ${JSON.stringify(o[k])} fuera de ${lo}-${hi}`);
+    }
+    if (o.floorY !== undefined && !(isNum(o.floorY) && o.floorY >= 0 && o.floorY <= 110)) bad.push('floorY fuera de 0-110');
+    if (o.color !== undefined && !ambientColor(o.color)) bad.push(`color ${JSON.stringify(o.color)} no válido (#rrggbb)`);
+    if (o.colors !== undefined && !(Array.isArray(o.colors) && o.colors.length && o.colors.every(ambientColor))) bad.push('colors tiene que ser una lista de #rrggbb');
+    if (o.blend !== undefined && !AMBIENT_BLENDS.includes(o.blend)) bad.push(`blend «${String(o.blend)}» no válido (${AMBIENT_BLENDS.join(', ')})`);
+    if (o.shape !== undefined && o.shape !== 'rect' && o.shape !== 'ellipse') bad.push('shape tiene que ser rect o ellipse');
+    if (o.soft !== undefined && typeof o.soft !== 'boolean') bad.push('soft tiene que ser true o false');
+    if (o.area !== undefined && !ambientRect(o.area)) bad.push('area tiene que ser {x, y, w, h} en % (w, h > 0)');
+    if (o.at !== undefined && !ambientPoint(o.at)) bad.push('at tiene que ser {x, y} en %');
+    if (o.cells !== undefined && !(Array.isArray(o.cells) && o.cells.length && o.cells.length <= AMBIENT_MAX_COUNT && o.cells.every(ambientPoint))) bad.push(`cells tiene que ser una lista de {x, y} (máx. ${AMBIENT_MAX_COUNT})`);
+    const hasArea = o.area !== undefined && ambientRect(o.area);
+    const hasAt = o.at !== undefined && ambientPoint(o.at);
+    if (AMBIENT_NEEDS_AREA.has(o.kind) && !hasArea) bad.push(`${o.kind} necesita area`);
+    if (AMBIENT_NEEDS_AT.has(o.kind) && !hasAt) bad.push(`${o.kind} necesita at`);
+    if (o.kind === 'drip' && o.floorY === undefined) bad.push('drip necesita floorY');
+    if (o.kind === 'drip' && hasAt && isNum(o.floorY) && o.floorY <= o.at.y) bad.push('drip: floorY tiene que estar por debajo de at.y');
+    if (o.kind === 'leds' && o.cells === undefined && !hasArea) bad.push('leds necesita cells o area (con cols y rows)');
+    if (o.kind === 'leds' && hasArea && o.cells === undefined && (o.cols ?? 1) * (o.rows ?? 1) > AMBIENT_MAX_COUNT) bad.push(`leds: cols × rows > ${AMBIENT_MAX_COUNT}`);
+    if (isNum(o.alphaMin) && isNum(o.alpha) && o.alphaMin > o.alpha) bad.push('alphaMin tiene que ser ≤ alpha');
+    if (bad.length) { problems.push(`${where} (${id}): ${bad.join('; ')}`); return; }
+    ids.add(id);
+    ok.push({ id, kind: o.kind, when });
+  });
+  if (ok.length > AMBIENT_MAX_PER_SCENE) problems.push(`${sceneId}.ambient: ${ok.length} elementos, máximo ${AMBIENT_MAX_PER_SCENE} (se usan los primeros)`);
+  return { ok: ok.slice(0, AMBIENT_MAX_PER_SCENE), problems };
 }
 
 const NESTED_KEYS = ['then', 'else', 'onSuccess', 'onFail'];
@@ -481,6 +554,8 @@ export function lintProject(project) {
     }
     for (const co of s.conditionalOverlays ?? []) note(reads, co.flag, `${id}.conditionalOverlays.${co.id}`);
     note(reads, s.cameraEffect?.disableFlag, `${id}.cameraEffect.disableFlag`);
+    // A4.3: las condiciones `when` de la animación ambiental leen flags
+    for (const el of ambientDefects(s.ambient, id).ok) for (const cond of el.when.ok) if (cond.kind === 'flag') note(reads, cond.name, `${id}.ambient.${el.id}.when`);
     for (const { c, where } of dialogueChoices(s)) {
       note(reads, c.flag, `${id}.${where}.flag`);
       note(writes, c.setFlag, `${id}.${where}.setFlag`);
@@ -527,6 +602,7 @@ export function lintProject(project) {
     }
     for (const { c } of dialogueChoices(s)) for (const cond of parseWhen(c.when).ok) if (cond.kind === 'item') itemUses.add(cond.name);
     for (const { node } of dialogueNodes(s)) for (const cond of parseWhen(node?.when).ok) if (cond.kind === 'item') itemUses.add(cond.name);
+    for (const el of ambientDefects(s.ambient, s.id).ok) for (const cond of el.when.ok) if (cond.kind === 'item') itemUses.add(cond.name);
   }
   for (const [item, where] of acquired) {
     if (itemUses.has(item) || mentionedIn(srcFiles, item, SRC_SKIP_ITEMS)) continue;
@@ -897,6 +973,21 @@ export function lintProject(project) {
       const n = Array.isArray(items[it]) ? items[it].length : 0;
       if (n < FAIL_MIN.item) push('j', 'warning', J, it, `items.${it}`, `objeto «${it}» con ${n} frase(s) de mal uso (mínimo ${FAIL_MIN.item}): cae en la bolsa genérica`);
     }
+  }
+
+  // ── (k) animación ambiental (A4.3) ──
+  for (const [id, s] of Object.entries(scenes)) {
+    const { ok, problems } = ambientDefects(s.ambient, id);
+    for (const p of problems) push('k', 'error', id, p.split(' ')[0], p.split(':')[0], `ambiente: ${p}`);
+    if (ok.length < 2) push('k', 'warning', id, 'ambient', `${id}.ambient`, `ambiente: ${ok.length} elemento(s) válido(s); A4.3 pide al menos 2 por escena`);
+  }
+  for (const c of containers) {
+    const ids = new Set(ambientDefects(scenes[c.scene]?.ambient, c.scene).ok.map((e) => e.id));
+    walkOps(c.ops, `${c.scene}.${c.label}`, (op, p) => {
+      if (op.op !== 'ambient') return;
+      if (!AMBIENT_ACTIONS.includes(op.action)) push('k', 'error', c.scene, String(op.id), p, `ambient: action «${String(op.action)}» no válida (${AMBIENT_ACTIONS.join(', ')})`);
+      if (typeof op.id !== 'string' || !ids.has(op.id)) push('k', 'error', c.scene, String(op.id), p, `ambient: el elemento «${op.id}» no está en ambient[] de ${c.scene}`);
+    });
   }
 
   return findings;
