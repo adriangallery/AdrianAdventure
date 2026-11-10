@@ -25,6 +25,7 @@ import { gameUrlParams } from '@/config/debugParams';
 import type { Address } from 'viem';
 import type { ScummUI } from '@/ui/ScummUI';
 import type { UIScene } from '@/scenes/UIScene';
+import { actorDepth } from '@/systems/WalkMotion';
 import { approachHotspot, approachTalk, lookFacing, type Approach, type ApproachTarget, type Facing, type FacingOptions } from '@/systems/Facing';
 import { defaultVerbFor, exitVerbFor, focusOf, isDoubleClick, keyAction, primaryVerb } from '@/systems/DesktopControls';
 import { CinematicDirector, type CinematicQaState, type CinematicUi } from '@/systems/CinematicDirector';
@@ -237,7 +238,7 @@ export class GameScene extends Phaser.Scene {
     // Per-scene player depth override (default 10, foreground is 15)
     // Set > 15 to render player ABOVE the foreground layer
     if (sceneData.player.playerDepth) {
-      this.player.setDepth(sceneData.player.playerDepth);
+      this.player.setFixedDepth(sceneData.player.playerDepth);
     }
 
     // Foreground layer — renders above player for depth (walk behind bushes/rocks)
@@ -356,6 +357,8 @@ export class GameScene extends Phaser.Scene {
         npc.artScale = nd.artScale ?? 1;
         npc.pctPosition = { x: nd.position.x, y: nd.position.y }; // store for resize repositioning
         npc.setScale(this.npcPixelScale(npc));
+        // A2.12: delante o detrás del jugador según la y de los pies
+        npc.setDepth(actorDepth(nd.position.y));
         // A4.2: respira, parpadea, se gira hacia el jugador y mueve la boca con la voz (semilla fija con ?qa=1)
         npc.startLife(lifeSeed(nd.id, qaMode, Math.random()), defaultFacing(nd.facing));
         this.npcs.push(npc);
@@ -490,6 +493,11 @@ export class GameScene extends Phaser.Scene {
     const lifeDt = this.lifeClock ? Math.min(250, Math.max(0, time - this.lifeClock)) : delta;
     this.lifeClock = time;
     this.updateNpcLife(lifeDt);
+    // A2.12: orden por la y de los pies (una cinemática puede mover a la NPC)
+    for (const npc of this.npcs) {
+      const d = actorDepth(npc.pctPosition?.y ?? 100);
+      if (npc.depth !== d) npc.setDepth(d);
+    }
 
     // Refresh conditional overlays when flags change (A1.4: un flicker en marcha manda sobre la flag)
     for (const co of this.conditionalOverlays) {
@@ -1667,8 +1675,8 @@ export class GameScene extends Phaser.Scene {
       ui: () => (this.scene.isActive('UIScene') ? (this.scene.get('UIScene') as unknown as CinematicUi) : null),
       music: () => this.musicManager ?? null,
       walkSpeedPct: () => {
-        const data = this.registry.get('sceneData') as SceneData | undefined;
-        return ((data?.player.speed ?? 200) / this.coordSystem.imgH) * 100;
+        // A2.12: la del punto más lento de la escena (el tiempo máximo de actorMove no se queda corto)
+        return this.player.slowestSpeedPct();
       },
       onBegin: () => {
         // A3.2: una cinemática en el onEnter (la apertura) se ve: fuera la cortina negra que tapa la entrada a la escena
@@ -1959,6 +1967,15 @@ export class GameScene extends Phaser.Scene {
   }
 
   /** A2.1: ¿se puede pisar el punto (en %)? walkableAreas menos blockedAreas */
+  /** A2.12 (QA, demo a2-12-walk): punto de llegada para hablar con una NPC desde donde está el jugador (null = no anda) */
+  qaPlanTalk(npcId: string): { x: number; y: number } | null {
+    const npc = this.npcs.find(n => n.npcId === npcId);
+    if (!npc) return null;
+    const npcData = (this.registry.get('sceneData') as SceneData).npcs?.find(n => n.id === npcId);
+    const target: ApproachTarget = { position: npc.pctPosition ?? undefined, walkTo: npcData?.walkTo, face: npcData?.face };
+    return approachTalk(target, this.playerPct(), this.reachPct, this.facingOpts()).walkTo;
+  }
+
   qaIsWalkable(pctX: number, pctY: number): boolean {
     return this.player.isWalkablePct(pctX, pctY);
   }

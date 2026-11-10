@@ -5,6 +5,7 @@ import { NavGrid, type Point } from '@/systems/Pathfinding';
 import type { Facing } from '@/systems/Facing';
 import { resolvePixelScale, spriteScale, artHeightPct, type DepthScale, type PixelGlobalConfig } from '@/systems/PixelScale';
 import { FootstepTracker } from '@/systems/Footsteps';
+import { actorDepth, sceneObstacles, speedMultiplier, stepToward, walkSpeedWorldPx } from '@/systems/WalkMotion';
 import {
   IdleTicker, QA_IDLE_SEED, facingForDir, facingTexture, gesturePose, idleTicPose, isVertical, moveDir, talkPose, walkPose,
   type AnimDir, type AnimPose, type IdleTic, type IdleTicKind, type Side,
@@ -86,8 +87,11 @@ export class Player extends Phaser.GameObjects.Sprite {
   private targetPctX: number | null = null;
   private targetPctY: number | null = null;
 
-  /** Movement speed in % per second */
-  private pctSpeed: number;
+  /** A2.12: multiplicador de `player.speed` de la escena (avance y reloj de la animación; ver WalkMotion) */
+  private speedMul: number;
+  private rawSpeed: number;
+  /** A2.12: orden de dibujado por la y de los pies (false si la escena fija `player.playerDepth`) */
+  private ySort = true;
 
   private idleFrameIndex = 0;
   private idleTimer = 0;
@@ -134,16 +138,17 @@ export class Player extends Phaser.GameObjects.Sprite {
     this.coordSystem = coordSystem;
     this.pctX = spawnPctX;
     this.pctY = spawnPctY;
-    this.nav = new NavGrid(sceneData.walkableAreas, sceneData.blockedAreas);
+    // A2.12: las NPC que están sobre el suelo también son obstáculo (su huella; ver WalkMotion.sceneObstacles)
+    this.nav = new NavGrid(sceneData.walkableAreas, sceneObstacles(sceneData.walkableAreas, sceneData.blockedAreas, sceneData.npcs));
 
     // A2.8: unidad de píxel de la escena (pixelScale; si no, el playerScale antiguo, el global o el de por defecto)
     const globalConfig = scene.cache.json.get('globalConfig') as PixelGlobalConfig | undefined;
     this.pixelScale = resolvePixelScale(sceneData, globalConfig);
     this.depthScale = sceneData.depthScale ?? null;
 
-    // Speed: convert from pixels/sec to %/sec (relative to image height)
-    const rawSpeed = sceneData.player.speed ?? 200;
-    this.pctSpeed = (rawSpeed / coordSystem.imgH) * 100;
+    // A2.12: velocidad en píxeles de arte por segundo (escala con Dex; ver WalkMotion); `player.speed` la multiplica
+    this.rawSpeed = sceneData.player.speed ?? 140;
+    this.speedMul = speedMultiplier(this.rawSpeed);
 
     // A4.1: tics de reposo deterministas con ?qa=1 (demos y rutas repetibles); si no, al azar
     const qa = typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('qa') === '1';
@@ -151,7 +156,7 @@ export class Player extends Phaser.GameObjects.Sprite {
 
     this.setOrigin(0.5, 1); // bottom-center (feet = position)
     this.applyPixelScale();
-    this.setDepth(10);
+    this.setDepth(actorDepth(spawnPctY, true));
 
     scene.add.existing(this);
   }
@@ -429,13 +434,16 @@ export class Player extends Phaser.GameObjects.Sprite {
       this.lastDir = dir;
       // A2.2: mira hacia donde anda; A4.1: de espaldas al subir y de frente al bajar (y así se queda al llegar)
       this.setFacing(facingForDir(dir));
-      this.walkClock += delta;
+      // A2.12: la animación va al mismo ritmo que el avance (zancada fija en píxeles de arte)
+      this.walkClock += delta * this.speedMul;
       this.applyPose(walkPose({ prefix: this.spritePrefix, dir, side: this.lastSide, tMs: this.walkClock, has: this.has }), null);
     }
 
     // A2.1: el avance del frame se reparte en tramos cortos por los puntos de paso; tras cada tramo, onStep
-    let budget = this.pctSpeed * delta / 1000;
-    while (budget > 1e-9 && this.targetPctX !== null && this.targetPctY !== null) {
+    // A2.12: presupuesto en píxeles de mundo, igual en cualquier dirección y proporcional al tamaño de Dex
+    let budget = walkSpeedWorldPx(this.pixelScale, this.lastScale.depth, this.rawSpeed) * delta / 1000;
+    const { imgW, imgH } = this.coordSystem;
+    while (budget > 1e-6 && this.targetPctX !== null && this.targetPctY !== null) {
       const dx = this.targetPctX - this.pctX;
       const dy = this.targetPctY - this.pctY;
       const dist = Math.hypot(dx, dy);
@@ -454,8 +462,9 @@ export class Player extends Phaser.GameObjects.Sprite {
         return;
       }
 
-      const move = Math.min(budget, MAX_SUBSTEP_PCT, dist);
-      budget -= move;
+      const { movePct: move, usedPx } = stepToward(dx, dy, budget, imgW, imgH, MAX_SUBSTEP_PCT);
+      if (move <= 0) break;
+      budget -= usedPx;
       const nextX = this.pctX + (dx / dist) * move;
       const nextY = this.pctY + (dy / dist) * move;
 
@@ -569,8 +578,25 @@ export class Player extends Phaser.GameObjects.Sprite {
     }
   }
 
+  /**
+   * A2.12: velocidad de andar en % del alto del fondo por segundo en el punto más lento de la escena (donde Dex es más
+   * pequeño), para que CinematicDirector calcule un tiempo máximo de actorMove que no se quede corto.
+   */
+  slowestSpeedPct(): number {
+    const d = this.depthScale ? Math.min(this.depthScale.scaleTop, this.depthScale.scaleBottom) : 1;
+    return (walkSpeedWorldPx(this.pixelScale, d, this.rawSpeed) / this.coordSystem.imgH) * 100;
+  }
+
+  /** A2.12: la escena fija la profundidad del jugador (`player.playerDepth`): sin orden por y */
+  setFixedDepth(depth: number): void {
+    this.ySort = false;
+    this.setDepth(depth);
+  }
+
   private syncScreenPosition(): void {
     const screen = this.coordSystem.pctToScreen(this.pctX, this.pctY);
+    // A2.12: delante o detrás de las NPC según la y de los pies
+    if (this.ySort) this.setDepth(actorDepth(this.pctY, true));
     // A4.1: de puntillas en el gesto (píxeles de pantalla enteros; 0 en reposo)
     this.setPosition(screen.x, screen.y - this.animLiftPx);
     // A2.8: con depthScale la escala cambia con la y de los pies
