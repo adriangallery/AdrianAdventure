@@ -1,0 +1,88 @@
+{
+  "_doc": "A2.11: referencias de proporción por escena (scripts/lib/proportion.mjs, scripts/demo-a2-11-proportion.mjs). Alturas y posiciones en % del fondo. reference.top/bottom medidos a ojo sobre background.png con rejilla del 10 % (comprobados contra los bounds del hotspot). kind door = Dex/puerta en 0,80-1,05 (85-100 % con tolerancia de medida); kind furniture = rango `expected` (Dex/mueble, razonado en `why`). positions: back/mid/front = fondo, medio y delante de la zona andable; ref = Dex junto a la referencia; sameDepth = pares a la misma y que no pueden diferir más de un 20 %. groups = escenas contiguas cuyo plano delantero no puede diferir más de un 20 %. exception = no se exige el cociente (motivo).",
+  "groups": [
+    { "name": "casa de Adrián (interiores)", "scenes": ["lobby", "upstairs", "basement"] }
+  ],
+  "scenes": [
+    {
+      "scene": "basement",
+      "reference": { "label": "escritorio", "hotspot": "hs_left_desk", "kind": "furniture", "top": 57, "bottom": 78, "expected": [1.9, 3.0], "why": "escritorio de 0,75 m y Dex de 1,8 m: 2,4; el escritorio está un poco más atrás que la franja andable" },
+      "positions": { "back": { "x": 33, "y": 79 }, "mid": { "x": 33, "y": 86.5 }, "front": { "x": 55, "y": 91.5 }, "frontL": { "x": 12, "y": 91.5 }, "ref": { "x": 55, "y": 91 } },
+      "sameDepth": [["front", "frontL"]]
+    },
+    {
+      "scene": "clinic_exterior",
+      "reference": { "label": "puerta de la clínica", "hotspot": "hs_main_entrance", "kind": "door", "top": 43.9, "bottom": 81 },
+      "positions": { "back": { "x": 14, "y": 72.5 }, "mid": { "x": 14, "y": 85 }, "front": { "x": 60, "y": 99 }, "frontL": { "x": 20, "y": 99 }, "ref": { "x": 49, "y": 92 } },
+      "sameDepth": [["front", "frontL"]]
+    },
+    {
+      "scene": "clinic_interior",
+      "reference": { "label": "puerta de la sala de tratamiento", "hotspot": "hs_treatment_door", "kind": "door", "top": 36, "bottom": 87 },
+      "positions": { "back": { "x": 30, "y": 88.5 }, "mid": { "x": 50, "y": 93 }, "front": { "x": 60, "y": 98.5 }, "frontR": { "x": 88, "y": 98.5 }, "ref": { "x": 29.5, "y": 89 } },
+      "sameDepth": [["front", "frontR"]]
+    },
+    {
+      "scene": "epilogue_outside",
+      "reference": { "label": "puerta de la clínica (al fondo)", "hotspot": "hs_clinic_door", "kind": "door", "top": 47.2, "bottom": 55.5 },
+      "positions": { "back": { "x": 38, "y": 82 }, "mid": { "x": 38, "y": 90 }, "front": { "x": 38, "y": 98 }, "frontL": { "x": 25, "y": 98 } },
+      "sameDepth": [["front", "frontL"]],
+      "exception": "plano general (pixelScale 2): la puerta está en el edificio del fondo, muy detrás de la zona andable; Dex es deliberadamente pequeño y no se le puede poner junto a la puerta"
+    },
+    {
+      "scene": "lobby",
+      "reference": { "label": "puerta de entrada", "hotspot": "hs_frontdoor", "kind": "door", "top": 19, "bottom": 96 },
+      "positions": { "back": { "x": 60, "y": 84 }, "mid": { "x": 60, "y": 91 }, "front": { "x": 60, "y": 98 }, "frontL": { "x": 42, "y": 98 }, "ref": { "x": 91, "y": 96 } },
+      "sameDepth": [["front", "frontL"]]
+    },
+    {
+      "scene": "memelab",
+      "reference": { "label": "puerta de salida", "hotspot": "hs_exit_door", "kind": "door", "top": 29, "bottom": 88 },
+      "positions": { "back": { "x": 40, "y": 92.5 }, "mid": { "x": 40, "y": 96 }, "front": { "x": 40, "y": 99 }, "frontR": { "x": 80, "y": 99 }, "ref": { "x": 9, "y": 95 } },
+      "sameDepth": [["front", "frontR"]]
+    },
+    {
+      "scene": "mountain",
+      "reference": { "label": "cartel de la clínica (con postes)", "hotspot": "hs_sign", "kind": "furniture", "top": 49.5, "bottom": 71, "expected": [0.85, 1.25], "why": "cartel de camino de ~2 m con sus postes: Dex (1,8 m) a su misma profundidad mide 0,9× su alto; plano general" },
+      "positions": { "back": { "x": 22, "y": 60 }, "mid": { "x": 22, "y": 75 }, "front": { "x": 60, "y": 97 }, "frontL": { "x": 20, "y": 97 }, "ref": { "x": 27, "y": 71 } },
+      "sameDepth": [["front", "frontL"]]
+    },
+    {
+      "scene": "outside",
+      "reference": { "label": "puerta de la casa", "hotspot": "hs_front_door", "kind": "door", "top": 52, "bottom": 75 },
+      "positions": { "back": { "x": 39, "y": 83.5 }, "mid": { "x": 40, "y": 90 }, "front": { "x": 60, "y": 98 }, "frontL": { "x": 10, "y": 98 }, "ref": { "x": 39, "y": 83.5 } },
+      "sameDepth": [["front", "frontL"]]
+    },
+    {
+      "scene": "recovery_pool",
+      "reference": { "label": "puerta oscura", "hotspot": "hs_dark_door", "kind": "door", "top": 20, "bottom": 74 },
+      "positions": { "back": { "x": 40, "y": 97 }, "front": { "x": 40, "y": 99.5 }, "frontR": { "x": 75, "y": 99.5 }, "ref": { "x": 13, "y": 98 } },
+      "sameDepth": [["front", "frontR"]]
+    },
+    {
+      "scene": "rooftop",
+      "reference": { "label": "antena parabólica (con su mástil)", "hotspot": "hs_satellite_dish", "kind": "furniture", "top": 16, "bottom": 78, "expected": [0.5, 0.85], "why": "no hay puerta dibujada (hs_roof_door no se ve en el fondo); parabólica de tejado de ~3 m con mástil: Dex 0,6×; el mástil está detrás de la zona andable" },
+      "positions": { "back": { "x": 55, "y": 79.5 }, "mid": { "x": 55, "y": 88 }, "front": { "x": 55, "y": 98 }, "frontL": { "x": 20, "y": 98 }, "ref": { "x": 30, "y": 90 } },
+      "sameDepth": [["front", "frontL"]]
+    },
+    {
+      "scene": "server_room",
+      "reference": { "label": "puerta (hueco de la escalera)", "hotspot": "tr_to_basement", "kind": "door", "top": 15, "bottom": 86.5 },
+      "positions": { "back": { "x": 40, "y": 92.5 }, "front": { "x": 40, "y": 99 }, "frontR": { "x": 75, "y": 99 }, "ref": { "x": 11, "y": 96 } },
+      "sameDepth": [["front", "frontR"]]
+    },
+    {
+      "scene": "treatment_room",
+      "reference": { "label": "puerta de salida", "hotspot": "hs_exit_door", "kind": "door", "top": 19, "bottom": 89 },
+      "positions": { "front": { "x": 50, "y": 98 } },
+      "exception": "el jugador no se ve en esta escena (player.hidePlayer: escena final en primer plano); no se mide en la demo",
+      "skipDemo": true
+    },
+    {
+      "scene": "upstairs",
+      "reference": { "label": "escritorio", "hotspot": "hs_desk", "kind": "furniture", "top": 61, "bottom": 88, "expected": [2.0, 2.7], "why": "no hay puerta (se sale por la izquierda y por la trampilla); escritorio de 0,75 m y Dex de 1,8 m: 2,4" },
+      "positions": { "back": { "x": 40, "y": 95.8 }, "front": { "x": 40, "y": 99.5 }, "frontL": { "x": 10, "y": 99.5 }, "ref": { "x": 52, "y": 97 } },
+      "sameDepth": [["front", "frontL"]]
+    }
+  ]
+}

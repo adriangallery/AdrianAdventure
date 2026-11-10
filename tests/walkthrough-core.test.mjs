@@ -448,13 +448,15 @@ test('A2.8: sameHeightAs compara con el alto apuntado en otra escena (±tol) y n
   assert.equal(notePixel(undefined, lobby), undefined);
 });
 
-test('A2.8: la ruta crítica comprueba la escala entera y el mismo alto en outside, lobby y clinic_interior', () => {
+test('A2.8/A2.11: la ruta crítica comprueba la escala entera en outside, lobby y clinic_interior y la unidad de cada escena', () => {
   const route = readJson('qa/walkthrough.json').routes.find((r) => r.id === 'ruta-critica');
   const withPixel = route.steps.filter((s) => s.expect?.pixel);
   assert.deepEqual(withPixel.map((s) => s.expect.scene), ['outside', 'lobby', 'clinic_interior']);
   for (const s of withPixel) assert.equal(s.expect.pixel.integer, true);
-  assert.deepEqual([withPixel[2].expect.pixel.sameHeightAs].flat(), ['outside', 'lobby']);
-  assert.ok(withPixel.slice(1).every((s) => (s.expect.pixel.tol ?? 0.1) <= 0.1));
+  // A2.11: cada escena tiene su pixelScale (qa/proportion-refs.json): ya no miden lo mismo, se comprueba la unidad
+  for (const s of withPixel.slice(1)) {
+    assert.equal(s.expect.pixel.pixelScale, readJson(`assets/scenes/${s.expect.scene}/scene.json`).pixelScale ?? 5.5);
+  }
 });
 
 const anim = (extra = {}) => ({

@@ -8,8 +8,11 @@
 //   - donde la escala base se redondea (siempre desde ×2: 1280x720 → ×3) es un entero y la de las NPC también; en
 //     844x390 la base exacta es 1,38 y la regla la deja sin redondear (un entero la cambiaría un 28-45 %, ver la
 //     cabecera de PixelScale.ts): se comprueba que la regla se cumple, no que sea entera;
-//   - el alto del jugador (en % del fondo) coincide (±1 %) en lobby, clinic_interior y la acera de outside;
-//   - en outside, en el porche el factor de profundidad está entre 0,75 y 0,9 (casi a la profundidad de la cochera: Dex no puede encoger a la mitad) y al volver a la acera vuelve a 1 (y a la escala entera).
+//   - el alto del mundo del jugador (en % del fondo) es el de la unidad de cada escena (103 × pixelScale / alto del
+//     fondo, ±1 %) en lobby, clinic_interior y la acera de outside (A2.11: cada escena tiene su pixelScale, ver
+//     qa/proportion-refs.json; antes era el mismo en las tres);
+//   - en outside, en el porche el factor de profundidad está entre 0,5 y 0,65 (A2.11: junto a la puerta Dex mide el
+//     85-100 % de su alto; con 0,8 la doblaba) y al volver a la acera vuelve a 1 (y a la escala entera).
 // Capturas fijas a zoom 1 (sin reescalar): `<viewport>-<escena>-pies.png` (los pies y las zapatillas del jugador, para
 // ver el píxel limpio), `<viewport>-<escena>.png` y, en outside, `<viewport>-filtro-lineal.png` /
 // `<viewport>-filtro-nearest.png` (el fondo con el filtro de A2.8 y con el de antes, para comparar los cables).
@@ -127,7 +130,7 @@ for (const vp of VIEWPORTS) {
   await demo.settle({ tap: [Math.round(vp.width / 2), 40] });
   const lobby = await pixel();
   checkScene(`${label} lobby`, lobby, { npc: 'npc_receptionist' });
-  heights.lobby = lobby?.playerHeightPct;
+  heights.lobby = lobby && { h: lobby.worldHeightPct, ps: lobby.pixelScale };
   await demo.still(`${label}-lobby`);
   await feetStill(`${label}-lobby`);
   for (let i = 0; i < 4; i++) await stageFrame(`${label} · lobby: jugador ×${lobby?.playerScale?.toFixed?.(2)} y recepcionista ×${lobby?.npcs?.[0]?.scale?.toFixed?.(2)} (misma unidad)`);
@@ -140,7 +143,7 @@ for (const vp of VIEWPORTS) {
   await demo.settle({ tap: [Math.round(vp.width / 2), 40] });
   const clinic = await pixel();
   checkScene(`${label} clinic_interior`, clinic, { npc: 'npc_dr_satoshi' });
-  heights.clinic_interior = clinic?.playerHeightPct;
+  heights.clinic_interior = clinic && { h: clinic.worldHeightPct, ps: clinic.pixelScale };
   await demo.still(`${label}-clinic_interior`);
   await feetStill(`${label}-clinic_interior`);
   for (let i = 0; i < 4; i++) await stageFrame(`${label} · clinic_interior: jugador ×${clinic?.playerScale?.toFixed?.(2)} y Dr. Satoshi ×${clinic?.npcs?.[0]?.scale?.toFixed?.(2)}`);
@@ -149,7 +152,7 @@ for (const vp of VIEWPORTS) {
   await open('outside', vp);
   const front = await pixel();
   checkScene(`${label} outside (acera)`, front);
-  heights.outside = front?.playerHeightPct;
+  heights.outside = front && { h: front.worldHeightPct, ps: front.pixelScale };
   await feetStill(`${label}-outside`);
   let minDepth = 1;
   const sample = (p) => { if (p) minDepth = Math.min(minDepth, p.depth); };
@@ -159,7 +162,7 @@ for (const vp of VIEWPORTS) {
   const porch = await pixel();
   console.log(`${label} outside (porche): ${JSON.stringify(porch)}`);
   report.push({ tag: `${label} outside (porche)`, ...porch });
-  if (!(minDepth >= 0.75 && minDepth < 0.9)) problems.push(`${label} outside: en el porche el factor de profundidad es ${minDepth} (se esperaba entre 0,75 y 0,9)`);
+  if (!(minDepth >= 0.5 && minDepth <= 0.65)) problems.push(`${label} outside: en el porche el factor de profundidad es ${minDepth} (se esperaba entre 0,5 y 0,65)`);
   await demo.still(`${label}-outside-porche`);
   // Filtro del fondo: el de A2.8 (lineal) y el de antes (nearest), mismo encuadre
   await demo.still(`${label}-filtro-lineal`);
@@ -180,11 +183,11 @@ for (const vp of VIEWPORTS) {
   checkScene(`${label} outside (vuelta)`, back);
   for (let i = 0; i < 3; i++) await stageFrame(`${label} · outside: de vuelta en la acera, ×${back?.playerScale?.toFixed?.(2)}`);
 
-  // Mismo alto en las tres escenas (±1 %: con el mismo viewport y la misma unidad tiene que ser idéntico)
-  const ref = heights.lobby;
-  for (const [scene, h] of Object.entries(heights)) {
-    if (!(typeof h === 'number' && typeof ref === 'number' && Math.abs(h - ref) / ref <= 0.01)) {
-      problems.push(`${label}: el jugador mide el ${h} % en ${scene} y el ${ref} % en lobby`);
+  // Alto del mundo = la unidad de la escena (103 píxeles de arte × pixelScale / 1152 del fondo; ±1 %)
+  for (const [scene, v] of Object.entries(heights)) {
+    const want = v ? (103 * v.ps / 1152) * 100 : NaN;
+    if (!(v && typeof v.h === 'number' && Math.abs(v.h - want) / want <= 0.01)) {
+      problems.push(`${label}: el jugador mide el ${v?.h} % del fondo en ${scene} y su unidad (${v?.ps}) da ${want.toFixed(2)} %`);
     }
   }
   console.log(`${label}: alto del jugador por escena ${JSON.stringify(heights)}`);

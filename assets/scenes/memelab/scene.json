@@ -34,6 +34,7 @@
       "walk": null
     }
   },
+  "pixelScale": 6,
   "ui": {
     "verbs": [
       "LOOK",

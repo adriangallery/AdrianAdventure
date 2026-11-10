@@ -3,7 +3,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { lintProject, applyPolicy, parseStringArray, parseWhen, depthScaleDefects, PIXEL_RANGES, FAIL_MIN, FAIL_VERBS, bagDefects, itemDescIds, loadProject } from '../scripts/lint-scenes.mjs';
+import { lintProject, applyPolicy, parseStringArray, parseWhen, depthScaleDefects, depthScaleWalkDefects, PIXEL_RANGES, FAIL_MIN, FAIL_VERBS, bagDefects, itemDescIds, loadProject } from '../scripts/lint-scenes.mjs';
 
 /** Escena mínima válida: fondo, un área caminable de todo el suelo y el spawn dentro. */
 function scene(id, extra = {}) {
@@ -582,4 +582,18 @@ test('j: el proyecto real pasa la regla sin errores ni avisos y tiene las cifras
     for (const h of s.regions?.hotspots ?? []) pairs += Object.keys(h.useResponses ?? {}).filter((k) => k !== '_default').length;
   }
   assert.ok(pairs >= 25, `solo ${pairs} parejas objeto + hotspot`);
+});
+
+test('A2.11: depthScaleWalkDefects (depthScale coherente con la zona andable)', () => {
+  const walk = [{ x: 0, y: 91, w: 100, h: 9 }, { x: 30, y: 82.5, w: 16, h: 14 }];
+  assert.deepEqual(depthScaleWalkDefects({ yTop: 83, yBottom: 92, scaleTop: 0.53, scaleBottom: 1 }, walk), []);
+  assert.match(depthScaleWalkDefects({ yTop: 40, yBottom: 60, scaleTop: 0.5, scaleBottom: 1 }, walk)[0], /no corta la zona andable/);
+  assert.match(depthScaleWalkDefects({ yTop: 83, yBottom: 92, scaleTop: 1, scaleBottom: 0.5 }, walk)[0], /lo lejano/);
+  assert.deepEqual(depthScaleWalkDefects({ yTop: 40, yBottom: 60, scaleTop: 0.5, scaleBottom: 1 }, undefined), []);
+  assert.deepEqual(depthScaleWalkDefects(null, walk), [], 'la forma la avisa depthScaleDefects');
+  // Las escenas del repo con depthScale son coherentes
+  for (const id of ['outside', 'mountain', 'clinic_exterior']) {
+    const sc = JSON.parse(readFileSync(new URL(`../assets/scenes/${id}/scene.json`, import.meta.url), 'utf8'));
+    assert.deepEqual(depthScaleWalkDefects(sc.depthScale, sc.walkableAreas), [], id);
+  }
 });
