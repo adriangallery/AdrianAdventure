@@ -1311,5 +1311,52 @@
       "flag": "plant_revived",
       "depth": 5
     }
+  ],
+  "ambient": [
+    {
+      "id": "monitor_glow",
+      "kind": "glow",
+      "area": {
+        "x": 10,
+        "y": 19,
+        "w": 27,
+        "h": 36
+      },
+      "shape": "rect",
+      "color": "#5cf0a0",
+      "alpha": 0.1,
+      "alphaMin": 0.04,
+      "period": 1900,
+      "depth": 16
+    },
+    {
+      "id": "lamp_dust",
+      "kind": "dust",
+      "area": {
+        "x": 38,
+        "y": 10,
+        "w": 24,
+        "h": 45
+      },
+      "count": 14,
+      "color": "#fff0c0",
+      "alpha": 0.4,
+      "speed": 0.6
+    },
+    {
+      "id": "crt_scan",
+      "kind": "scan",
+      "area": {
+        "x": 31.3,
+        "y": 33.5,
+        "w": 5.4,
+        "h": 9
+      },
+      "color": "#c8ffe0",
+      "alpha": 0.15,
+      "period": 2600,
+      "size": 5,
+      "depth": 16
+    }
   ]
 }

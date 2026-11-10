@@ -1514,5 +1514,92 @@
         }
       ]
     }
+  ],
+  "ambient": [
+    {
+      "id": "pipe_drip",
+      "kind": "drip",
+      "at": {
+        "x": 63.2,
+        "y": 11.5
+      },
+      "floorY": 80,
+      "period": 2800,
+      "color": "#a8d8ff"
+    },
+    {
+      "id": "pipe_drip_2",
+      "kind": "drip",
+      "at": {
+        "x": 34,
+        "y": 12
+      },
+      "floorY": 82,
+      "period": 4100,
+      "color": "#a8d8ff"
+    },
+    {
+      "id": "crt_glow",
+      "kind": "glow",
+      "area": {
+        "x": 51.5,
+        "y": 29,
+        "w": 10.5,
+        "h": 19
+      },
+      "shape": "rect",
+      "color": "#40ff80",
+      "alpha": 0.22,
+      "alphaMin": 0.1,
+      "period": 2400
+    },
+    {
+      "id": "bulb_flicker",
+      "kind": "flicker",
+      "area": {
+        "x": 25,
+        "y": 15,
+        "w": 16,
+        "h": 24
+      },
+      "shape": "ellipse",
+      "color": "#ffc050",
+      "alpha": 0.12,
+      "alphaMin": 0.02,
+      "period": 60
+    },
+    {
+      "id": "rack_leds",
+      "kind": "leds",
+      "area": {
+        "x": 77.5,
+        "y": 27,
+        "w": 5,
+        "h": 38
+      },
+      "cols": 2,
+      "rows": 9,
+      "colors": [
+        "#4cff6a",
+        "#3fa7ff",
+        "#ffb02e"
+      ],
+      "period": 650,
+      "size": 4.5
+    },
+    {
+      "id": "bulb_dust",
+      "kind": "dust",
+      "area": {
+        "x": 24,
+        "y": 20,
+        "w": 20,
+        "h": 32
+      },
+      "count": 10,
+      "color": "#ffe0a0",
+      "alpha": 0.4,
+      "speed": 0.5
+    }
   ]
 }

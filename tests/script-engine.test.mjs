@@ -369,6 +369,42 @@ test('A1.10: una ejecución abandonada que entra en una rama no apila su bloque 
   assert.equal(engine.isRunning(), false);
 });
 
+// ── A4.3: op ambient (forzar o lanzar una ráfaga de un elemento de animación ambiental, sin tocar el estado) ──
+
+test('A4.3: ambient llama al contexto con id y acción, es instantáneo y no toca el estado; mal definido o inexistente solo avisa', async () => {
+  const ctx = makeCtx();
+  const calls = [];
+  ctx.ambient = (id, action) => { calls.push(`${id}:${action}`); return id === 'moths'; };
+  let setStateCalls = 0;
+  const setState = ctx.setState;
+  ctx.setState = (u) => { setStateCalls++; setState(u); };
+  const warns = [];
+  const warn = console.warn;
+  console.warn = (m) => warns.push(String(m));
+  try {
+    const engine = new ScriptEngine(ctx);
+    await engine.execute([
+      { op: 'ambient', id: 'moths', action: 'off' },
+      { op: 'ambient', id: 'moths', action: 'burst' },
+      { op: 'ambient', id: 'moths', action: 'auto' },
+      { op: 'ambient', id: 'nope', action: 'on' },
+      { op: 'ambient', id: 'moths', action: 'explode' },
+      { op: 'ambient', action: 'on' },
+      { op: 'setFlag', flag: 'after', value: true },
+    ], 'x');
+    assert.deepEqual(calls, ['moths:off', 'moths:burst', 'moths:auto', 'nope:on']);
+    assert.equal(ctx.getState().flags.after, true, 'el script sigue tras los avisos');
+    assert.equal(setStateCalls, 1, 'solo el setFlag toca el estado');
+    assert.equal(warns.filter((w) => /ambient/.test(w)).length, 3);
+    // Sin contexto gráfico (p. ej. el runner de onEnter de diálogo sin escena): avisa y sigue
+    const bare = new ScriptEngine(makeCtx());
+    await bare.execute([{ op: 'ambient', id: 'moths', action: 'on' }], 'y');
+    assert.equal(warns.filter((w) => /ambient/.test(w)).length, 4);
+  } finally {
+    console.warn = warn;
+  }
+});
+
 // ── A1.4: flicker (parpadeo de un overlay sin tocar el estado) ──
 
 /** Contexto con overlays: `overlays` son los ids que existen en la escena; apunta cada forzado con su instante. */

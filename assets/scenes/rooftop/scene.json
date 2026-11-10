@@ -1265,5 +1265,89 @@
       "w": 1.1,
       "h": 10
     }
+  ],
+  "ambient": [
+    {
+      "id": "stars",
+      "kind": "dust",
+      "area": {
+        "x": 0,
+        "y": 0,
+        "w": 100,
+        "h": 42
+      },
+      "count": 36,
+      "size": 3.5,
+      "color": "#ffffff",
+      "alpha": 0.9,
+      "speed": 0,
+      "depth": 1,
+      "blend": "normal"
+    },
+    {
+      "id": "city_lights_left",
+      "kind": "dust",
+      "area": {
+        "x": 0,
+        "y": 62,
+        "w": 21,
+        "h": 8
+      },
+      "count": 14,
+      "size": 4,
+      "color": "#ffe3a0",
+      "alpha": 0.8,
+      "speed": 0,
+      "depth": 1,
+      "blend": "normal"
+    },
+    {
+      "id": "city_lights_right",
+      "kind": "dust",
+      "area": {
+        "x": 74,
+        "y": 61,
+        "w": 26,
+        "h": 8
+      },
+      "count": 16,
+      "size": 4,
+      "color": "#ffe3a0",
+      "alpha": 0.8,
+      "speed": 0,
+      "depth": 1,
+      "blend": "normal"
+    },
+    {
+      "id": "night_clouds",
+      "kind": "clouds",
+      "area": {
+        "x": 0,
+        "y": 0,
+        "w": 100,
+        "h": 35
+      },
+      "count": 2,
+      "size": 170,
+      "color": "#b4bce8",
+      "alpha": 0.28,
+      "parallax": 0.5,
+      "speed": 0.6
+    },
+    {
+      "id": "basement_light",
+      "kind": "glow",
+      "area": {
+        "x": 77.8,
+        "y": 81,
+        "w": 3.2,
+        "h": 5.8
+      },
+      "shape": "ellipse",
+      "color": "#ff5a4a",
+      "alpha": 0.55,
+      "alphaMin": 0,
+      "period": 1400
+    }
   ]
 }

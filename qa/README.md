@@ -28,7 +28,7 @@ hasta el hotspot, combos, gates y diálogos). Nunca pone flags ni da objetos.
 | `callAnon()` | A2.9: llama a Anon como el jugador (abre el diario si hace falta, pestaña Call Anon, botón de llamar, espera a que conteste y lo vuelve a cerrar si lo abrió ella); la llamada queda en `state().journal.anon` |
 | `previewCostume(costume)` | A4.1: enseña el juego de sprites del disfraz de mono (`'ape'`) o el normal (`'player'`) en la escena actual, para ver sus animaciones; `null` vuelve al de la partida. Solo los sprites: no da el disfraz ni toca inventario ni flags, y se pierde al cambiar de escena. Ver § Animación del protagonista |
 | `isWalkable(x, y)` | A2.1: si el punto (en %) se pisa en la escena actual (`walkableAreas` menos `blockedAreas`); síncrona |
-| `state()` | Escena, inventario, flags, visitadas, hotspots visibles, elecciones, avisos, log (`logTotal`: líneas apuntadas desde que cargó) `actions` (verbos que llegaron a ejecutarse) y `resizeListeners` (A1.10: listeners de `resize` del ScaleManager) y `path` (A2.1: última ruta calculada al andar: origen, puntos de paso y destino), `facing` (A2.2: `left`/`right`/`front`/`back`) y `walkTarget` (A2.2: último acercamiento a un hotspot/NPC: `target`, `verb`, `walkTo` —null si no anduvo— y `face`), y (A2.4) `verb` (verbo del panel), `highlightedHotspots` (resaltados con Tab), `verbKeyHints` (verbos con su tecla pintada en el panel) e `inputListeners` (listeners de teclado y del lienzo), (A2.10) `cinematic` (ver § Cinemáticas) y (A2.7) `prefetch` (precarga de las escenas vecinas: `scene`, `neighbors`, `done`, `pending`, `inFlight`, `failed`, `disabled`) y `lastTransition` (último cambio de escena: `from`, `to`, `ms`, `loadMs`, `at`, `mode` `full`/`indicator`/`instant`, `loadingScreen`, `fadeMs`) y (A2.9) `journal` (ver § Diario) y (A2.8) `pixel` (ver § Densidad de píxel) y (A4.1) `anim` (ver § Animación del protagonista), (A4.2) `npcLife` (ver § Vida en las NPC) y (A2.5) `lastFailResponse` (última respuesta de fallo: `{ kind, item, target, verb, text, bag }`, ver § Respuestas de fallo) |
+| `state()` | Escena, inventario, flags, visitadas, hotspots visibles, elecciones, avisos, log (`logTotal`: líneas apuntadas desde que cargó) `actions` (verbos que llegaron a ejecutarse) y `resizeListeners` (A1.10: listeners de `resize` del ScaleManager) y `path` (A2.1: última ruta calculada al andar: origen, puntos de paso y destino), `facing` (A2.2: `left`/`right`/`front`/`back`) y `walkTarget` (A2.2: último acercamiento a un hotspot/NPC: `target`, `verb`, `walkTo` —null si no anduvo— y `face`), y (A2.4) `verb` (verbo del panel), `highlightedHotspots` (resaltados con Tab), `verbKeyHints` (verbos con su tecla pintada en el panel) e `inputListeners` (listeners de teclado y del lienzo), (A2.10) `cinematic` (ver § Cinemáticas) y (A2.7) `prefetch` (precarga de las escenas vecinas: `scene`, `neighbors`, `done`, `pending`, `inFlight`, `failed`, `disabled`) y `lastTransition` (último cambio de escena: `from`, `to`, `ms`, `loadMs`, `at`, `mode` `full`/`indicator`/`instant`, `loadingScreen`, `fadeMs`) y (A2.9) `journal` (ver § Diario) y (A2.8) `pixel` (ver § Densidad de píxel) y (A4.1) `anim` (ver § Animación del protagonista), (A4.2) `npcLife` (ver § Vida en las NPC), (A4.3) `ambient` (ver § Animación ambiental) y (A2.5) `lastFailResponse` (última respuesta de fallo: `{ kind, item, target, verb, text, bag }`, ver § Respuestas de fallo) |
 
 Todas (salvo `state()` e `isWalkable()`) esperan a que el juego quede quieto y devuelven `state()`. Los errores empiezan por `[qa:blocked]`
 (el juego no deja hacerlo) o `[qa:error]` (id inexistente, tiempo agotado).
@@ -73,7 +73,10 @@ lo usa en outside, lobby y clinic_interior. A4.1 añade `expect.anim` (`dir` lef
 A2.8); la ruta crítica anda en vertical en el lobby tras coger el abrigo (abajo: `dir` `down`, de frente; arriba: `up`, de
 espaldas). A4.2 añade `expect.npc` (un objeto o una lista, por `id`: `mirrored`, `facing`, `talking`, `engaged`, `mouthOpen`,
 `rest`, `minBlinks`, `minTurns`, `minMouthMoves` y `lastTalk` `{ facedPlayer, faced, voice, minLines, minMouthMoves }`); la ruta
-crítica lo usa al hablar con Penny (habla mirando a Dex y mueve la boca en sus frases) y en el paso siguiente (reposo). Cada paso admite `expect` con `scene`, `has`, `lacks`, `flags`, `unsetFlags`, `visited`,
+crítica lo usa al hablar con Penny (habla mirando a Dex y mueve la boca en sus frases) y en el paso siguiente (reposo). A4.3 añade
+`expect.ambient` (un objeto o una lista, por `id`: `active`, `conditionMet`, `kind`, `forced`, `minCount`, `minFrames`, `minBursts`,
+`absent`); la ruta crítica lo usa en outside: tras New Game las polillas están en la lámpara y no en la ventana, al apagar la
+lámpara al revés, y el PULL de la valla lanza la ráfaga de polvo (`minBursts: 1`). Cada paso admite `expect` con `scene`, `has`, `lacks`, `flags`, `unsetFlags`, `visited`,
 `achievements`, `lastChoices`, `facing` (A2.2: hacia dónde mira el personaje al acabar el paso) y `noListenerGrowth`, y `rejects`: expresión regular (sin distinguir mayúsculas) que tiene que salir en los textos
 mostrados durante ese paso, p. ej. la frase con la que el juego rechaza la acción. Las rutas llevan un `goal` con
 el mismo formato que `expect`.
@@ -294,7 +297,8 @@ guardada (y en la nube) aunque acabe como empezó. Para parpadear un overlay con
   el SHUTDOWN de la escena (`ScriptEngine.cancelEffects`) o un cambio de escena lo cortan y quitan el forzado.
 
 Otros ops sin parpadeo de flags (A2.9, ver § Diario): `{ "op": "journalNote", "id": "<nota>" }` apunta una nota en el
-diario (estado de la partida, sin flag) y `{ "op": "callAnon" }` hace que Anon llame con la pista del puzle abierto.
+diario (estado de la partida, sin flag) y `{ "op": "callAnon" }` hace que Anon llame con la pista del puzle abierto. A4.3:
+`{ "op": "ambient", "id": "<ambient[].id>", "action": "burst" | "on" | "off" | "auto" }` (ver § Animación ambiental).
 
 Renombrar una flag que ya está en partidas guardadas exige migración: `src/systems/SaveMigration.ts`
 (`SAVE_VERSION`, `RENAMED_FLAGS`) migra al cargar los slots locales, la partida de la wallet, la de la nube y la
@@ -627,6 +631,66 @@ carga también `dr_satoshi_talk`).
   `scripts/demo-a4-2-npc-life.mjs` (con el sonido activado: Penny en el lobby, reposo, el Dr. Satoshi girándose a los dos lados
   en clinic_interior, porque en el lobby Penny está a la izquierda de toda la zona que se pisa, y una captura en 390x844).
 
+# Animación ambiental (A4.3)
+
+Cada escena declara en `scene.json`, bajo `ambient[]`, al menos dos elementos de vida de fondo que se dibujan **sin assets**
+(Graphics y una textura radial generada por color): polillas, polvo, LEDs, niebla, nubes con parallax, luces que titilan o
+respiran, barrido de CRT, burbujas, goteras, pájaros y vaivén del primer plano. Lógica pura en `src/systems/Ambient.ts`
+(`tests/ambient.test.mjs`, en `npm run test:engine`: valores por defecto, validación, cada tipo se mueve y se queda en su zona,
+determinismo por semilla, ráfagas, y que las 13 escenas reales tienen ≥ 2 elementos válidos); `src/systems/AmbientLayer.ts`
+la dibuja cada frame desde `GameScene.update` con el mismo reloj real que la vida de las NPC. Sin tweens ni temporizadores:
+en SHUTDOWN solo se sueltan referencias. Con `?qa=1` las semillas son fijas.
+
+```jsonc
+"ambient": [
+  { "id": "lamp_moths", "kind": "moths", "at": { "x": 36.4, "y": 46.5 }, "radius": 2.6, "count": 5, "when": "!porch_light_off" },
+  { "id": "sky_clouds", "kind": "clouds", "area": { "x": 0, "y": 0, "w": 100, "h": 30 }, "count": 3, "parallax": 0.6, "speed": 0.8 },
+  { "id": "rack_leds", "kind": "leds", "area": { "x": 17.5, "y": 31, "w": 8, "h": 46 }, "cols": 3, "rows": 9, "colors": ["#4cff6a", "#3fa7ff"], "period": 500 },
+  { "id": "fence_dust", "kind": "dust", "area": { "x": 0, "y": 50, "w": 7, "h": 25 }, "count": 0, "burst": 14, "blend": "normal" },
+  { "id": "bush_sway", "kind": "sway", "amplitude": 3, "period": 3800 }
+]
+```
+
+- **Campos comunes**: `id`, `kind`, `when` (gramática de A2.6a: `flag`, `!flag`, `item:id`, `!item:id`; lista = todas; se evalúa
+  cada frame, así el elemento se enciende o apaga en cuanto cambia la partida, como un overlay condicional), `depth` (12 por
+  defecto: encima de Dex y las NPC, que desde A2.12 van a 9-10 según la y de los pies, y debajo del primer plano; 5 =
+  detrás de los actores, el de LEDs, brillos, niebla, barridos y goteras; 1 = cielo; 16 = encima del primer plano), `alpha`,
+  `alphaMin` (glow y flicker; 30 % de alpha por defecto), `color` (`#rrggbb`), `count`, `size`, `speed`, `period`, `blend`
+  (`normal`, `add`, `screen`, `multiply`), `shape` (`rect` o `ellipse`: la elipse es una mancha radial suave, no un disco).
+- **Unidades**: posiciones (`at`, `area`, `cells`, `floorY`) en % del fondo como los hotspots; tamaños (`size`, `amplitude`) en
+  píxeles del fondo, pensados en píxeles de arte (un píxel de arte de los personajes son ≈ 5,5 px del fondo, A2.8: un punto de
+  6 se ve como un píxel de arte); `radius` en % del alto. En un fondo de otro alto (epílogo, 1536) los tamaños se escalan.
+- **Tipos**: `moths` (`at`, `radius`; siluetas oscuras que orbitan la luz), `dust` (`area`; `speed: 0` = quietas y centelleando:
+  estrellas, luces de la ciudad, reflejos del agua), `leds` (`cells` o `area` + `cols`/`rows`; `colors`; cada celda con su reloj,
+  encendida el 70 % de las veces), `fog` y `clouds` (`area`, `parallax` < 1 = más lejos: con la cámara desplazada se mueven menos
+  que el fondo y siguen dentro de la banda), `flicker` (casi siempre al máximo; ráfagas de tics de `period` ms hacia
+  `alphaMin`), `glow` (respira en seno entre `alphaMin` y `alpha` cada `period`), `scan` (línea que baja por el área cada
+  `period`), `rise` (nacen abajo del área y suben serpenteando; `soft` = manchas, vapor), `drip` (`at`, `floorY`: la gota se
+  forma, cae con gravedad y salpica; `period` ±30 %), `birds` (elipses de vuelo con aleteo) y `sway` (el primer plano oscila
+  `amplitude` px del fondo cada `period`; GameScene vuelve a la x base al cambiar la ventana).
+- **Op `ambient`** (`src/systems/ScriptEngine.ts`): `{ "op": "ambient", "id": "fence_dust", "action": "burst" }` lanza la ráfaga
+  (`burst` partículas extra de `dust` o `rise`; con `count: 0` el elemento solo existe para eso); `on`, `off` y `auto` fuerzan o
+  sueltan el elemento por encima de su `when`. Presentación pura: instantáneo, no toca la partida, al saltar una cinemática se
+  omite, y un id que no está en la escena (o una acción desconocida) solo avisa por consola (el linter, regla (k), lo marca como
+  error). El PULL de la valla de `outside` lo usa.
+- **Contenido** (por escena, con la biblia): outside (polillas en la lámpara mientras está encendida y en la ventana lateral
+  al apagarla —«They'll find another light»—, halo de la lámpara, nubes y pájaros del atardecer, vaivén de los arbustos, polvo
+  al arrancar el tablón), lobby (brillo y barrido de los monitores, polvo en la luz), upstairs (LEDs del rig, brillo de los
+  monitores, polvo del flexo y las polillas que siguieron a Dex), rooftop (estrellas y luces de la ciudad centelleando, nubes
+  nocturnas, la luz del sótano latiendo), basement (dos goteras —«Drip. Drip. Buy.»—, CRT, bombilla que titila, LEDs del rack,
+  polvo), server_room (LEDs de los racks, fluorescente, terminal con barrido, gotera del cooling; con el interruptor de
+  emergencia todo se apaga salvo cuatro LEDs rojos «running on battery»), mountain (niebla del valle, nubes con parallax,
+  pájaros, ventanas de la clínica, vaivén), clinic_exterior (luz de alarma, LED de la cámara de Gwei, nubes, vaivén),
+  clinic_interior (fluorescentes, lámpara roja, ordenador con barrido, burbujas del dispensador), recovery_pool (burbujas y
+  reflejos de la piscina, TV con barrido, ojos de B.O.T.), memelab (burbujas y halo del tubo, dos bombillas, panel de luces,
+  CRT), treatment_room (monitor con barrido, fluorescente, polvo, gotera) y epilogue_outside (pájaros, niebla del valle,
+  nubes, halo del amanecer y las polillas «que vuelan al sol» si se apagó la lámpara).
+- **QA**: `state().ambient` = `[{ id, kind, conditionMet, forced, active, count, sig, burstOnly, frames, bursts }]` (`sig` =
+  firma del último frame dibujado: cambia cuando algo se mueve); `expect.ambient` (ver § Rutas). Linter: regla (k). Demo:
+  `scripts/demo-a4-3-ambient.mjs` (las 13 escenas en 844x390 con la cámara sobre la zona con vida, outside con la lámpara
+  apagada y la ráfaga de la valla, captura en 390x844; comprueba que lo activo dibuja y se mueve y mide los fps).
+- **Pendiente** (A4.3a, opcional): tinte por escena (`outside_night`, `mountain_dawn`).
+
 # Respuestas de fallo (A2.5)
 
 Cuando algo no funciona, Dex lo dice con una frase con personalidad y con voz, nunca con una plantilla. Motor puro
@@ -678,6 +742,7 @@ deja la tabla en el resumen del job y sube `lint-scenes-report.json` y `.md` com
 | (h) | A2.9, diario (`assets/journal/*.json`): fichero inválido, capítulo o id repetidos, campos que faltan, condición mal escrita, `hints` que no son 3 y `journalNote` a una nota que no existe (**error**); flags que el diario lee y nada pone, objetos que mira y nada da (aviso). Las flags que lee el diario cuentan como leídas para (a) | **error** / aviso |
 | (i) | A2.8: `scale` a mano en `npcs[]` o `player.playerScale` (fuera del sistema de densidad de píxel) y `pixelScale`, `depthScale` o `npcs[].artScale` fuera de rango | aviso |
 | (j) | A2.5, respuestas de fallo: `useResponses` de un hotspot o `useResponses`/`giveResponses` de una NPC con un objeto que no existe, bolsa vacía o con una frase con marcador (`{item}`, `${…}`: no tendría voz), y `assets/config/fail-responses.json` inválido (bolsas de verbo con < 3 frases, objeto + objeto con < 5, parejas mal formadas o con objetos que no existen) (**error**); objeto del inventario con < 3 frases de mal uso y pareja de un hotspot que es un combo (nunca se dice) (aviso) | **error** / aviso |
+| (k) | A4.3, animación ambiental: elemento de `ambient[]` mal definido (sin id, id repetido, `kind` desconocido, `when` mal escrito, sin `area`/`at`/`floorY` cuando su tipo lo pide, valores fuera de rango) y op `ambient` que nombra un elemento que no está en esa escena o una acción desconocida (**error**); escena con menos de 2 elementos válidos (aviso). Las `when` del ambiente cuentan como lecturas de flags para (a) y usos de objetos para (b) | **error** / aviso |
 
 Las rutas que comprueba (f) son las que resuelve el código, no el nombre del JSON: el fondo es siempre
 `background.webp`, el primer plano `foreground.webp`, los iconos `assets/sprites/items/<id>.png` y además
