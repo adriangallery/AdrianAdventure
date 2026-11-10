@@ -132,6 +132,9 @@ function analyse(scene, samples, mul, label) {
   let movArt = 0;
   let still = 0;
   let slides = 0;
+  let run = 0;
+  let maxRun = 0;
+  const odd = [];
   let depthBad = 0;
   for (let i = 1; i < samples.length; i++) {
     const a = samples[i - 1];
@@ -140,13 +143,22 @@ function analyse(scene, samples, mul, label) {
     const dt = b.t - a.t;
     const dPx = Math.hypot(((b.x - a.x) / 100) * scene._w, ((b.y - a.y) / 100) * scene._h);
     const art = dPx / (b.ps * Math.max(0.2, b.scale));
-    if (dPx > 1e-6 && !a.moving && !b.moving) slides++;
+    // Desplazarse sin animación de andar: parado y moviéndose, o andando con una textura que no es de andar.
+    // Un frame suelto (16 ms, el de arrancar o el de llegar) no se ve; dos seguidos sí
+    let slid = false;
+    if (dPx > 0.5 && !a.moving && !b.moving) slid = true;
+    if (b.moving && a.moving && dPx > 0.5 && !/walk|back|front/i.test(b.tex)) slid = true;
+    if (slid) {
+      slides++;
+      run++;
+      maxRun = Math.max(maxRun, run);
+      if (odd.length < 3) odd.push(`${b.tex}${b.moving ? '' : ' (parado)'} ${dPx.toFixed(1)} px`);
+    } else run = 0;
     if (b.moving && a.moving) {
       movT += dt;
       movArt += art;
       if (dPx < 1e-6) still += dt; else still = 0;
       if (still > 250) errs.push(`${label}: anda parado ${Math.round(still)} ms en (${b.x.toFixed(2)}, ${b.y.toFixed(2)})`);
-      if (!/walk|back|front/i.test(b.tex)) slides++;
     }
     for (const n of b.npcs) {
       const front = b.y >= n.y;
@@ -156,9 +168,10 @@ function analyse(scene, samples, mul, label) {
   const want = WALK_ART_PX_PER_S * mul;
   const got = movT > 400 ? (movArt / movT) * 1000 : null;
   if (got !== null && (got < want * 0.75 || got > want * 1.25)) errs.push(`${label}: avanza ${got.toFixed(1)} px de arte/s (esperado ${want.toFixed(1)} ±25 %)`);
-  if (slides) errs.push(`${label}: ${slides} frames desplazándose sin animación de andar`);
+  if (maxRun >= 2) errs.push(`${label}: ${maxRun} frames seguidos desplazándose sin animación de andar (${odd.join('; ')})`);
+  else if (slides) console.log(`  aviso ${label}: ${slides} frame suelto sin animación de andar (${odd.join('; ')})`);
   if (depthBad) errs.push(`${label}: ${depthBad} frames con el orden de profundidad con una NPC al revés`);
-  return { errs: [...new Set(errs)].slice(0, 6), artPxPerS: got, want };
+  return { errs: [...new Set(errs)].slice(0, 6), artPxPerS: got, want, slides, maxRun };
 }
 
 for (const id of SCENES) {
