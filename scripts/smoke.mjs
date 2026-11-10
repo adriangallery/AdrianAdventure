@@ -559,9 +559,11 @@ await step('guardado A1.12: sobrescribir → recargar → cargar, sin cargas de 
     await SP.tapSlot(p, 1);
     await new Promise((r) => setTimeout(r, 800));
     a12Fail(/Load Slot 1\?/.test(await SP.confirmText(p) ?? ''), 'tocar un slot en LOAD no pidió confirmación');
-    a12Fail(JSON.stringify(await SP.gameSnap(p)) === JSON.stringify(fresh), 'tocar el slot cargó sin confirmar');
+    // (se mira la flag del guardado: la cinemática de entrada puede ir poniendo otras mientras tanto)
+    a12Fail(!(await SP.gameSnap(p)).flags.includes('a12_second'), 'tocar el slot cargó sin confirmar');
     await SP.confirm(p, false);
-    a12Fail(JSON.stringify(await SP.gameSnap(p)) === JSON.stringify(fresh), 'cancelar cargó igualmente');
+    await new Promise((r) => setTimeout(r, 500));
+    a12Fail(!(await SP.gameSnap(p)).flags.includes('a12_second'), 'cancelar cargó igualmente');
     await p.screenshot({ path: `${SHOTS}/a12-2-load-tab.png` });
     await SP.tapSlot(p, 1);
     await SP.confirm(p, true);
@@ -603,7 +605,8 @@ await step('guardado A1.12 con wallet: nube verificada, 500 → error visible, s
     await SP.confirm(p, true);
     st = await SP.waitStatus(p);
     a12Fail(st.kind === 'error' && /500/.test(st.text) && !/device \+ cloud/.test(st.text), `500 no dio error visible: ${JSON.stringify(st)}`);
-    a12Fail(JSON.stringify(await SP.gameSnap(p)) === JSON.stringify(mem), 'la partida en memoria cambió tras el fallo');
+    const after = await SP.gameSnap(p);
+    a12Fail(after.flags.includes('a12_after500') && after.flags.includes('a12_cloud') && after.scene === mem.scene, 'la partida en memoria cambió tras el fallo');
     a12Fail(!(await SP.cloudDb(p))[`${SP.QA_ADDR}:2`].state.flags.a12_after500, 'la nube cambió pese al 500');
     await p.screenshot({ path: `${SHOTS}/a12-3-error-500.png` });
     // Reintento: ahora sí
