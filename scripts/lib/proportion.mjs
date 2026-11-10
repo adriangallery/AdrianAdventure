@@ -40,7 +40,9 @@ export function depthFactor(d, yPct) {
 
 /** Alto del mundo (en % del fondo) de un sprite de `artH` píxeles de arte con los pies en `yPct`. */
 export function heightPct(scene, global, yPct, artH = PLAYER_ART_H, artScale = 1) {
-  const imgH = scene?.render?.world?.height || 1152;
+  // El alto real de background.png (loadScene lo apunta en `_imgH`): render.world no es fiable (server_room y
+  // treatment_room dicen 1024/1536 y el fondo mide 1152)
+  const imgH = scene?._imgH || scene?.render?.world?.height || 1152;
   return (artH * resolvePixelScale(scene, global) * artScale * depthFactor(scene?.depthScale, yPct) / imgH) * 100;
 }
 
@@ -127,11 +129,24 @@ export function loadRefs(root = ROOT) {
   return JSON.parse(readFileSync(resolve(root, 'qa/proportion-refs.json'), 'utf8'));
 }
 
-/** scene.json de la escena: del árbol de trabajo o, con `rev`, de ese commit (git show). */
+/** Alto de un PNG (cabecera IHDR: bytes 20-23), o null. */
+export function pngHeight(buf) {
+  if (!buf || buf.length < 24 || buf.readUInt32BE(12) !== 0x49484452) return null;
+  return buf.readUInt32BE(20);
+}
+
+/** scene.json de la escena (del árbol de trabajo o, con `rev`, de ese commit) con `_imgH` = alto real del fondo. */
 export function loadScene(id, { root = ROOT, rev = null } = {}) {
   const rel = `assets/scenes/${id}/scene.json`;
-  if (!rev) return existsSync(resolve(root, rel)) ? JSON.parse(readFileSync(resolve(root, rel), 'utf8')) : null;
-  return JSON.parse(execFileSync('git', ['-C', root, 'show', `${rev}:${rel}`], { encoding: 'utf8', maxBuffer: 64 << 20 }));
+  let scene;
+  if (!rev) scene = existsSync(resolve(root, rel)) ? JSON.parse(readFileSync(resolve(root, rel), 'utf8')) : null;
+  else scene = JSON.parse(execFileSync('git', ['-C', root, 'show', `${rev}:${rel}`], { encoding: 'utf8', maxBuffer: 64 << 20 }));
+  const bg = resolve(root, `assets/scenes/${id}/${scene?.assets?.background || 'background.png'}`);
+  if (scene && existsSync(bg)) {
+    const h = pngHeight(readFileSync(bg).subarray(0, 32));
+    if (h) scene._imgH = h;
+  }
+  return scene;
 }
 
 export function loadGlobal({ root = ROOT, rev = null } = {}) {

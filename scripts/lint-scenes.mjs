@@ -17,7 +17,8 @@
 //   i  densidad de píxel (A2.8, aviso): `scale` a mano en npcs[] o `player.playerScale` (lo sustituye la unidad de
 //      píxel de la escena), y `pixelScale`, `depthScale` o `npcs[].artScale` fuera de rango. Rangos: los de
 //      src/systems/PixelScale.ts (pixelScale 1-12, factores de depthScale 0,2-2 con yTop < yBottom en 0-100,
-//      artScale 0,25-4); se repiten aquí porque el linter corre en Node sin type stripping
+//      artScale 0,25-4); se repiten aquí porque el linter corre en Node sin type stripping. A2.11: depthScale que no
+//      corta la zona andable o con lo lejano más grande que lo cercano (depthScaleWalkDefects)
 //   j  respuestas de fallo (A2.5, src/systems/FailResponses.ts): `useResponses` de un hotspot o `useResponses`/
 //      `giveResponses` de una NPC con un objeto que no existe, bolsa vacía o con una frase con marcador ({item}, ${…}:
 //      sin voz), y assets/config/fail-responses.json inválido (bolsas de verbo con < 3 frases, objeto + objeto con < 5,
@@ -136,6 +137,24 @@ export function depthScaleDefects(d) {
   if (!(d.yTop < d.yBottom)) out.push('yTop tiene que ser menor que yBottom');
   for (const k of ['scaleTop', 'scaleBottom']) {
     if (!inRange(d[k], PIXEL_RANGES.depthFactor)) out.push(`${k} = ${d[k]} fuera de ${PIXEL_RANGES.depthFactor.join('-')}`);
+  }
+  return out;
+}
+
+/**
+ * A2.11: un depthScale coherente con la zona andable (vacío = coherente): la franja yTop-yBottom tiene que cortar la
+ * franja en y de walkableAreas (si no, el factor es constante y no hace nada) y lo lejano no puede ser más grande que
+ * lo cercano (scaleTop ≤ scaleBottom). Sin walkableAreas no se comprueba la franja.
+ */
+export function depthScaleWalkDefects(d, walkableAreas) {
+  if (depthScaleDefects(d).length) return [];
+  const out = [];
+  if (d.scaleTop > d.scaleBottom) out.push(`scaleTop ${d.scaleTop} > scaleBottom ${d.scaleBottom}: lo lejano sale más grande que lo cercano`);
+  const areas = (walkableAreas || []).filter((a) => isNum(a?.y) && isNum(a?.h));
+  if (areas.length) {
+    const lo = Math.min(...areas.map((a) => a.y));
+    const hi = Math.max(...areas.map((a) => a.y + a.h));
+    if (d.yBottom <= lo || d.yTop >= hi) out.push(`la franja ${d.yTop}-${d.yBottom} no corta la zona andable (y ${lo}-${hi}): el factor no cambia al andar`);
   }
   return out;
 }
@@ -808,6 +827,7 @@ export function lintProject(project) {
     }
     if (s.depthScale !== undefined) {
       for (const d of depthScaleDefects(s.depthScale)) push('i', 'warning', id, 'depthScale', `${id}.depthScale`, `depthScale: ${d}; se ignora (sin escala por profundidad)`);
+      for (const d of depthScaleWalkDefects(s.depthScale, s.walkableAreas)) push('i', 'warning', id, 'depthScale', `${id}.depthScale`, `depthScale: ${d}`);
     }
     if (s.player?.playerScale !== undefined) {
       push('i', 'warning', id, 'player.playerScale', `${id}.player.playerScale`, 'player.playerScale es anterior a A2.8: usa pixelScale (unidad de píxel de la escena para jugador y NPC)');

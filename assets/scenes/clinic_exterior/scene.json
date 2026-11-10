@@ -31,7 +31,8 @@
     "speed": 140,
     "sprite": null
   },
-  "depthScale": { "yTop": 71.6, "yBottom": 100, "scaleTop": 0.3, "scaleBottom": 0.9 },
+  "pixelScale": 4.5,
+  "depthScale": { "yTop": 71.6, "yBottom": 96, "scaleTop": 0.35, "scaleBottom": 1 },
   "ui": {
     "verbs": [
       "LOOK",
