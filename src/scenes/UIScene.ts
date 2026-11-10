@@ -101,6 +101,8 @@ export class UIScene extends Phaser.Scene {
     this.dialogueSystem = new DialogueSystem({
       say: (text, speaker) => {
         this.voiceSystem.play(text);
+        // A3.3e: la QA (`window.__qa`, `rejects` de las rutas) apunta también las frases de los nodos de diálogo
+        this.events.emit('dialogueLine', text, speaker);
         return this.dialogueBox.say(text, speaker);
       },
       showChoices: (choices) => this.choicePanel.show(choices),

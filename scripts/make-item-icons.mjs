@@ -8,7 +8,9 @@
 //   note_half_a.png  mitad izquierda de code_note.png («73»), con el borde derecho rasgado
 //   note_half_b.png  mitad derecha («14»), con el borde izquierdo rasgado y envuelta en papel de aluminio
 //   fence_plank.png  un tablón de valla en diagonal: vetas, un clavo torcido y el extremo partido
-// Sin arte de pago: las mitades salen de code_note.png y el tablón se dibuja aquí. Determinista (sin azar).
+//   vet_bill.png     (A3.3d) la factura del veterinario de Gerald: receipt.png teñido de verde menta con un sello de huella
+// Sin arte de pago: las mitades salen de code_note.png, la factura de receipt.png y el tablón se dibuja aquí.
+// Determinista (sin azar).
 import fs from 'node:fs';
 import path from 'node:path';
 import zlib from 'node:zlib';
@@ -240,8 +242,39 @@ function plank() {
   return up2(g);
 }
 
+/**
+ * A3.3d: la factura del veterinario de Gerald = receipt.png teñido de papel clínico (verde menta) con un sello rojo
+ * de huella (cuatro dedos y almohadilla) abajo a la derecha. El contorno oscuro del recibo se respeta.
+ */
+function vetBill(receipt) {
+  const out = blank(receipt.width, receipt.height);
+  for (let y = 0; y < receipt.height; y++) for (let x = 0; x < receipt.width; x++) {
+    const [r, g, b, a] = get(receipt, x, y);
+    if (a === 0) continue;
+    const lum = (r + g + b) / 3;
+    if (lum < 70) { set(out, x, y, [r, g, b, a]); continue; } // contorno y tinta
+    // Papel: hacia verde menta, conservando el sombreado del recibo
+    const k = lum / 255;
+    set(out, x, y, [Math.round(150 + 95 * k), Math.round(205 + 50 * k), Math.round(170 + 70 * k), a]);
+  }
+  const RED = [196, 40, 48, 255], DARK = [120, 18, 24, 255];
+  const stamp = (cx, cy, rx, ry) => {
+    for (let y = cy - ry; y <= cy + ry; y++) for (let x = cx - rx; x <= cx + rx; x++) {
+      const dx = (x - cx) / rx, dy = (y - cy) / ry;
+      const d = dx * dx + dy * dy;
+      if (d <= 1 && get(out, x, y)[3] > 0) set(out, x, y, d > 0.62 ? DARK : RED);
+    }
+  };
+  // Huella: almohadilla y cuatro dedos (rejilla de 128, abajo a la derecha, sobre la zona del precio)
+  stamp(92, 104, 9, 7);
+  stamp(79, 92, 4, 5); stamp(88, 87, 4, 5); stamp(97, 87, 4, 5); stamp(106, 92, 4, 5);
+  return out;
+}
+
 function main() {
   const note = decodePng(fs.readFileSync(path.join(ITEMS, 'code_note.png')));
+  const receipt = decodePng(fs.readFileSync(path.join(ITEMS, 'receipt.png')));
+  if (receipt.width !== SIZE || receipt.height !== SIZE) throw new Error(`receipt.png mide ${receipt.width}x${receipt.height}, se esperaba ${SIZE}`);
   if (note.width !== SIZE || note.height !== SIZE) throw new Error(`code_note.png mide ${note.width}x${note.height}, se esperaba ${SIZE}`);
 
   const a = centered(noteHalf(note, 'a'));
@@ -252,7 +285,7 @@ function main() {
   over(b, bHalf.img, 0, 0);
   over(b, f.front, 0, 0);
 
-  const outs = { note_half_a: a.img, note_half_b: b, fence_plank: plank() };
+  const outs = { note_half_a: a.img, note_half_b: b, fence_plank: plank(), vet_bill: vetBill(receipt) };
   for (const [id, img] of Object.entries(outs)) {
     const file = path.join(ITEMS, `${id}.png`);
     fs.writeFileSync(file, encodePng(img));

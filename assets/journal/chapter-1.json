@@ -1,18 +1,21 @@
 {
-  "_doc": "A2.9/A2.9a: diario de Dex (su móvil), capítulo 1 (outside). A3.3c: PIN partido (lámpara, tablón, nido, juntar mitades); buzón, felpudo y DOORIS llegan en A3.3d. Formato y reglas en qa/README.md § Diario. Condiciones con la gramática de `when` de A2.6a: flag, !flag, item:id, !item:id; lista = todas. Se reescribe en A3.3.",
+  "_doc": "A2.9/A2.9a: diario de Dex (su móvil), capítulo 1 (outside). A3.3c: PIN partido (lámpara, tablón, nido, juntar mitades). A3.3d: DOORIS (tres factores), buzón (factura de Gerald + sobre) y felpudo pegado (tablón → Ledger). Formato y reglas en qa/README.md § Diario. Condiciones con la gramática de `when` de A2.6a: flag, !flag, item:id, !item:id; lista = todas. El puzle abierto «más avanzado» es el último de la lista cuyo openWhen se cumple y cuyo doneWhen no: por eso los hilos de DOORIS (felpudo, buzón, pregunta, llave) van después del PIN.",
   "chapter": 1,
   "goals": [
     { "id": "g1_code", "text": "Find Adrian's door code. It's in two halves, because of course it is.", "doneWhen": "found_code_note" },
-    { "id": "g1_mail", "text": "Check Adrian's mail. Nosy is a job description.", "doneWhen": "found_envelope" },
+    { "id": "g1_mail", "text": "Check Adrian's mail. Nosy is a job description.", "doneWhen": "knows_gerald" },
     { "id": "g1_porch", "text": "Search the porch for anything Adrian hid.", "doneWhen": "found_ledger" },
-    { "id": "g1_inside", "text": "Get inside the lab.", "doneWhen": "door_unlocked" }
+    { "id": "g1_inside", "text": "Get past the front door.", "doneWhen": "door_unlocked" }
   ],
   "notes": [
     { "id": "n1_half_a", "text": "Behind the porch light, once it cooled down: half a note. '73..' The other half 'is with the birds. They never sell.'", "shownWhen": "found_note_half_a" },
     { "id": "n1_half_b", "text": "Magpie nest, knocked down with a fence plank: the other half, wrapped in foil. '..14'. Kept the plank. Might need it.", "shownWhen": "found_note_half_b" },
     { "id": "n1_code", "text": "Both halves taped together: 7314. 'If you found both halves, you're patient enough. — A.' He hid the code in two pieces. On purpose.", "shownWhen": "found_code_note" },
+    { "id": "n1_dooris", "text": "The front door has a name. DOORIS. Three-factor authentication: a PIN, a security question (the owner's best friend) and a hardware key. For a door.", "shownWhen": "dooris_met" },
+    { "id": "n1_anon", "text": "Unknown number. 'A friend of Adrian.' Told me to be less of a stranger and hung up. Saved the number as 'Anon'.", "shownWhen": "anon_call_1" },
     { "id": "n1_envelope", "text": "Mailbox: a sealed envelope, 'CONFIDENTIAL — PATIENT ZERO'. Somebody important will want to see this.", "shownWhen": "found_envelope" },
-    { "id": "n1_ledger", "text": "Adrian's Ledger was under the doormat. A hardware wallet under a doormat. Bold strategy.", "shownWhen": "found_ledger" }
+    { "id": "n1_vet_bill", "text": "Vet bill from the mailbox. Patient: Gerald. Species: rubber duck. Relationship: 'best friend'. Adrian's best friend is a duck. Noted. Literally.", "shownWhen": "knows_gerald" },
+    { "id": "n1_ledger", "text": "Adrian's Ledger was glued under the HODL doormat. Took a plank to get it out. A hardware wallet under a doormat. Bold strategy.", "shownWhen": "found_ledger" }
   ],
   "puzzles": [
     {
@@ -47,11 +50,51 @@
     {
       "id": "p1_door",
       "openWhen": "found_code_note",
-      "doneWhen": "door_unlocked",
+      "doneWhen": "dooris_pin_ok",
       "hints": [
         "You have numbers. Doors like numbers.",
         "The keypad. The note. Introduce them.",
         "Use the code note on the keypad."
+      ]
+    },
+    {
+      "id": "p1_mat",
+      "openWhen": "dooris_met",
+      "doneWhen": "found_ledger",
+      "hints": [
+        "Doors want keys. Adrian keeps his where everyone keeps everything.",
+        "The doormat. It's glued. Glue loses to leverage.",
+        "Use the fence plank on the doormat."
+      ]
+    },
+    {
+      "id": "p1_mail",
+      "openWhen": "dooris_met",
+      "doneWhen": "knows_gerald",
+      "hints": [
+        "A best friend leaves a paper trail. Check the mail.",
+        "Adrian's mailbox. He never opened it. You can.",
+        "Open the mailbox. Read the vet bill."
+      ]
+    },
+    {
+      "id": "p1_key",
+      "openWhen": "found_ledger",
+      "doneWhen": "dooris_key_ok",
+      "hints": [
+        "A hardware key is useless in your pocket.",
+        "The Ledger. The keypad. Introduce them.",
+        "Use the Ledger on the keypad."
+      ]
+    },
+    {
+      "id": "p1_question",
+      "openWhen": ["dooris_met", "knows_gerald"],
+      "doneWhen": "dooris_question_ok",
+      "hints": [
+        "You know the name. The door doesn't. Yet.",
+        "Talk to the door. Answer with what the vet wrote.",
+        "Talk to the keypad. Pick the name on the vet bill."
       ]
     }
   ],

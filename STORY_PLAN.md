@@ -64,8 +64,9 @@ Dex), Nurse Gwei (interfono), Chad (rival del duelo de FUD) y el coro de monos d
 Atardecer en casa de Adrian. DOORIS, la cerradura inteligente, exige autenticacion de tres factores: PIN
 (partido en dos mitades: tras la lampara del porche y en un nido de urraca que se alcanza con un tablon de la
 valla), pregunta de seguridad (el mejor amigo de Adrian: Gerald, un pato de goma, segun una factura del
-veterinario en el buzon) y llave de hardware (el Ledger de Adrian, bajo un felpudo «HODL» pegado al suelo).
-Anon llama por primera vez. Puzles detallados: biblia §4, capitulo 1.
+veterinario en el buzon) y llave de hardware (el Ledger de Adrian, bajo un felpudo «HODL» pegado al suelo, que
+solo cede con el tablon de la valla). Anon llama por primera vez en cuanto DOORIS se presenta. Los tres factores se
+pueden conseguir en cualquier orden; la puerta se abre con el tercero. Puzles detallados: biblia §4, capitulo 1.
 
 ### Items
 | Item | Donde | Requerido | On-chain |

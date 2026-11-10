@@ -225,6 +225,26 @@ test('ruta crítica de hoy (A3.3c): Anon guía el capítulo 1 como comprueba qa/
   assert.deepEqual([r.call.puzzle, r.call.level], ['p1_door', 1]);
   // Partida guardada antes de A3.3c (la nota entera de un paso): Anon va a la puerta, no a la lámpara
   assert.equal(J.openPuzzle(J.chapterData(chapters, 1), world({ found_code_note: true, has_code: true }, ['code_note'])).id, 'p1_door');
+  // A3.3d: DOORIS (tres factores). Conocida la puerta se abren el felpudo y el buzón; el más avanzado es el buzón
+  const met = world({ ...afterNote.flags, dooris_met: true, anon_call_1: true }, afterNote.items);
+  assert.deepEqual(J.pendingNotes(chapters, 1, met, J.emptyProgress()), ['n1_half_a', 'n1_half_b', 'n1_code', 'n1_dooris', 'n1_anon']);
+  r = J.callAnon(chapters, 1, met, r.progress);
+  assert.deepEqual([r.call.puzzle, r.call.level], ['p1_mail', 1]);
+  // Con el PIN aceptado y el Ledger en la mano: la llave al teclado va antes que el buzón
+  const ledger = world({ ...met.flags, dooris_pin_ok: true, found_ledger: true }, [...met.items, 'ledger']);
+  r = J.callAnon(chapters, 1, ledger, r.progress);
+  assert.deepEqual([r.call.puzzle, r.call.level], ['p1_key', 1]);
+  // Con la llave verificada y la factura, la pregunta; g1_mail y g1_porch con tic
+  const bill = world({ ...ledger.flags, dooris_key_ok: true, found_envelope: true, found_vet_bill: true, knows_gerald: true }, [...ledger.items, 'vet_bill', 'mystery_envelope']);
+  r = J.callAnon(chapters, 1, bill, r.progress);
+  assert.deepEqual([r.call.puzzle, r.call.level], ['p1_question', 1]);
+  const goals = J.goalsView(J.chapterData(chapters, 1), bill);
+  assert.deepEqual(goals.filter((g) => g.done).map((g) => g.id), ['g1_code', 'g1_mail', 'g1_porch']);
+  // Partida vieja con el Ledger cogido a mano (sin tablón) y sin conocer a DOORIS: la nota al teclado sigue siendo la pista
+  assert.equal(J.openPuzzle(J.chapterData(chapters, 1), world({ found_code_note: true, found_ledger: true }, ['code_note', 'ledger'])).id, 'p1_key');
+  // Tres factores: nada abierto salvo la puerta ya abierta → relleno
+  const open = world({ ...bill.flags, dooris_question_ok: true, door_unlocked: true, chapter_1_complete: true }, bill.items);
+  assert.equal(J.openPuzzle(J.chapterData(chapters, 1), open), null);
   // Capítulo 3 empieza en la azotea (chapter_2_complete): la primera pista es la escotilla
   p = J.emptyProgress();
   assert.equal(J.callAnon(chapters, 3, world({ chapter_2_complete: true, vane_turned: true }), p).call.puzzle, 'p3_hatch');
