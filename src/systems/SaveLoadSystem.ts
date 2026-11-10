@@ -1,8 +1,9 @@
 import type { GameState } from '@/types/game.types';
 import { migrateSave } from '@/systems/SaveMigration';
 import { saveForWallet, loadForWallet, hasWalletSave, cloudAutosave, type WalletSave } from '@/web3/wallet-save';
+import { SAVE_KEY, writeSlotVerified, readSlots, backupBeforeLoad, deleteSlotLocal, type SaveResult } from '@/systems/SaveSlots';
 
-const SAVE_KEY = 'adrian_adventure_save';
+/** Slots que cuentan como «hay partida» (0 = autoguardado, 1-2 = manuales; el 3 «Before load» no cuenta). */
 const MAX_SLOTS = 3;
 
 export interface SaveSlot {
@@ -29,29 +30,31 @@ export class SaveLoadSystem {
   /**
    * Auto-save the current state (slot 0 + wallet save if connected).
    */
-  autoSave(state: GameState, sceneName: string): void {
-    // Always save to anonymous slot 0
-    this.saveToSlot(0, state, sceneName);
+  autoSave(state: GameState, sceneName: string): boolean {
+    // Solo el slot 0 (A1.12: el autoguardado nunca toca los manuales 1-2 ni «Before load»)
+    const ok = this.saveToSlot(0, state, sceneName).ok;
     // Also save to wallet-linked storage if connected
     if (this.walletAddress) {
       saveForWallet(this.walletAddress, state, sceneName);
       // V7: copia en la nube (slot 0) para continuar desde otro dispositivo; limitada a 1/min
       cloudAutosave(this.walletAddress, state, sceneName);
     }
+    return ok;
   }
 
   /**
-   * Save to a specific slot (0 = autosave, 1-2 = manual).
+   * Save to a specific slot (0 = autosave, 1-2 = manual). A1.12: relee lo escrito y devuelve si de verdad quedó
+   * guardado (antes no devolvía nada y el panel decía «saved» pasara lo que pasara).
    */
-  saveToSlot(slotId: number, state: GameState, sceneName: string): void {
-    const slots = this.getAllSlots();
-    slots[slotId] = {
-      id: slotId,
-      state: structuredClone(state),
-      timestamp: Date.now(),
-      sceneName,
-    };
-    localStorage.setItem(SAVE_KEY, JSON.stringify(slots));
+  saveToSlot(slotId: number, state: GameState, sceneName: string): SaveResult {
+    const res = writeSlotVerified(localStorage, slotId, state, sceneName, Date.now());
+    if (!res.ok) console.warn(`Save slot ${slotId} failed: ${res.error}`);
+    return res;
+  }
+
+  /** A1.12: copia de seguridad «Before load» de la partida actual antes de cargar otra. */
+  backupBeforeLoad(state: GameState, sceneName: string): SaveResult {
+    return backupBeforeLoad(localStorage, state, sceneName, Date.now());
   }
 
   /**
@@ -73,16 +76,8 @@ export class SaveLoadSystem {
    * Get all save slots.
    */
   getAllSlots(): Record<number, SaveSlot> {
-    try {
-      const raw = localStorage.getItem(SAVE_KEY);
-      if (!raw) return {};
-      const slots = JSON.parse(raw) as Record<number, SaveSlot>;
-      // A1.4: partidas de versiones anteriores (flags renombradas)
-      for (const slot of Object.values(slots ?? {})) migrateSave(slot);
-      return slots ?? {};
-    } catch {
-      return {};
-    }
+    // A1.4: partidas de versiones anteriores (flags renombradas)
+    return readSlots(localStorage, (slot) => migrateSave(slot));
   }
 
   /**
@@ -101,9 +96,7 @@ export class SaveLoadSystem {
    * Delete a save slot.
    */
   deleteSlot(slotId: number): void {
-    const slots = this.getAllSlots();
-    delete slots[slotId];
-    localStorage.setItem(SAVE_KEY, JSON.stringify(slots));
+    deleteSlotLocal(localStorage, slotId);
   }
 
   /**

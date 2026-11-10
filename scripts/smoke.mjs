@@ -9,6 +9,7 @@
 // Uso: BASE_URL=http://127.0.0.1:4173 node scripts/smoke.mjs
 import { readdirSync, existsSync, mkdirSync, readFileSync } from 'node:fs';
 import puppeteer from 'puppeteer';
+import * as SP from './lib/save-panel.mjs';
 
 const BASE = process.env.BASE_URL || 'http://127.0.0.1:4173';
 const SHOTS = 'smoke-shots';
@@ -500,6 +501,136 @@ await step('respuestas de fallo: un verbo sin script dice la frase 0 de su bolsa
     if (!first || first.kind !== 'verb' || first.bag !== 'verb:PUSH') throw new Error(`PUSH sin script no dio la bolsa del verbo: ${JSON.stringify(first)}`);
     if (first.text !== failData.verbDefaults.PUSH[0]) throw new Error(`con ?qa=1 la primera frase tiene que ser la 0: «${first.text}»`);
     if (second?.text !== failData.verbDefaults.PUSH[1]) throw new Error(`la segunda vez tiene que ser la frase 1 (sin repetir): «${second?.text}»`);
+  } finally {
+    await ctx.close();
+  }
+});
+
+// A1.12: el caso de Adrián (3-nov). En móvil (390×844): guardar en un slot vacío, SOBRESCRIBIR con confirmación,
+// recargar la página, tocar el slot en LOAD (no carga sin confirmar), cargar → mismo estado, y la partida anterior
+// queda en «Before load». Con wallet simulada y la nube en memoria (nunca la real): guardado verificado, fallo 500 →
+// error visible (no «saved»), sin firma → aviso y botón para firmar. El autoguardado no pisa los manuales.
+const a12Fail = (cond, msg) => { if (!cond) throw new Error(msg); };
+async function a12Page(ctx, viewport) {
+  const p = await ctx.newPage();
+  await p.setViewport(viewport);
+  p.on('pageerror', (err) => fail(`[${context}] error de página: ${err.message}`));
+  await SP.installCloudMock(p);
+  return p;
+}
+const MOBILE = { width: 390, height: 844, deviceScaleFactor: 1, isMobile: true, hasTouch: true };
+
+await step('guardado A1.12: sobrescribir → recargar → cargar, sin cargas de un clic, copia «Before load» (móvil, sin wallet)', async () => {
+  const ctx = await browser.createBrowserContext();
+  try {
+    const p = await a12Page(ctx, MOBILE);
+    await SP.openGame(p, BASE);
+    await SP.mark(p, 'a12_first');
+    await SP.openPanel(p);
+    a12Fail(await SP.activeTab(p) === 'save', 'el panel no abre en la pestaña SAVE');
+    const lay = await SP.panelLayout(p);
+    console.log(`    panel 390×844: ${JSON.stringify({ ...lay, small: lay.small.length })}`);
+    a12Fail(lay.left >= 0 && lay.right <= lay.vw && lay.top >= 0 && lay.bottom <= lay.vh, `el panel no cabe en 390×844: ${JSON.stringify(lay)}`);
+    a12Fail(!lay.small.length, `botones de menos de 44 px: ${JSON.stringify(lay.small)}`);
+    await SP.tapSlot(p, 1);
+    let st = await SP.waitStatus(p);
+    a12Fail(st.kind === 'ok' && /Slot 1 saved/.test(st.text), `guardar en slot vacío: ${JSON.stringify(st)}`);
+    // Sobrescribir: primero pide confirmación y no guarda hasta decir que sí
+    await SP.mark(p, 'a12_second', 'a12_item');
+    const before = await SP.localSlot(p, 1);
+    await SP.tapSlot(p, 1);
+    a12Fail(/Overwrite Slot 1\?/.test(await SP.confirmText(p) ?? ''), 'sobrescribir no pidió confirmación');
+    a12Fail((await SP.localSlot(p, 1)).timestamp === before.timestamp, 'el slot cambió antes de confirmar');
+    await SP.confirm(p, true);
+    st = await SP.waitStatus(p);
+    a12Fail(st.kind === 'ok', `sobrescribir: ${JSON.stringify(st)}`);
+    const saved = await SP.gameSnap(p);
+    await p.screenshot({ path: `${SHOTS}/a12-1-guardado.png` });
+
+    // Recargar la página: partida nueva (el autoguardado del slot 0 no toca el 1)
+    await SP.openGame(p, BASE);
+    const fresh = await SP.gameSnap(p);
+    a12Fail(!fresh.flags.includes('a12_second'), 'la partida nueva ya traía la flag');
+    a12Fail((await SP.localSlot(p, 1))?.state?.flags?.a12_second === true, 'tras recargar el slot 1 no tiene lo sobrescrito');
+    await SP.openPanel(p);
+    await SP.tab(p, 'load');
+    a12Fail(await SP.activeTab(p) === 'load', 'la pestaña LOAD no quedó activa');
+    // Clic «accidental» en un slot: solo confirma, no carga
+    await SP.tapSlot(p, 1);
+    await new Promise((r) => setTimeout(r, 800));
+    a12Fail(/Load Slot 1\?/.test(await SP.confirmText(p) ?? ''), 'tocar un slot en LOAD no pidió confirmación');
+    // (se mira la flag del guardado: la cinemática de entrada puede ir poniendo otras mientras tanto)
+    a12Fail(!(await SP.gameSnap(p)).flags.includes('a12_second'), 'tocar el slot cargó sin confirmar');
+    await SP.confirm(p, false);
+    await new Promise((r) => setTimeout(r, 500));
+    a12Fail(!(await SP.gameSnap(p)).flags.includes('a12_second'), 'cancelar cargó igualmente');
+    await p.screenshot({ path: `${SHOTS}/a12-2-load-tab.png` });
+    await SP.tapSlot(p, 1);
+    await SP.confirm(p, true);
+    await p.waitForFunction(() => window.__game.registry.get('gameState')?.flags?.a12_second === true, { timeout: 60000, polling: 300 });
+    await new Promise((r) => setTimeout(r, 1500));
+    await SP.waitInGame(p, saved.scene);
+    const loaded = await SP.gameSnap(p);
+    a12Fail(loaded.flags.includes('a12_second') && loaded.inv.includes('a12_item'), `lo cargado no es lo guardado: ${JSON.stringify(loaded)}`);
+    // Guardado de seguridad recuperable desde el panel
+    const backup = await SP.localSlot(p, 3);
+    a12Fail(backup && !backup.state.flags.a12_second, 'no hay copia «Before load» de la partida anterior');
+    await SP.openPanel(p);
+    await SP.tab(p, 'load');
+    a12Fail(/Before load:/.test(await SP.slotText(p, 3) ?? '') && !/Empty/.test(await SP.slotText(p, 3)), '«Before load» no aparece en LOAD');
+    console.log(`    guardado ${JSON.stringify(saved)} · cargado ${JSON.stringify(loaded)} · copia ${backup.sceneName}`);
+  } finally {
+    await ctx.close();
+  }
+});
+
+await step('guardado A1.12 con wallet: nube verificada, 500 → error visible, sin firma → pedir firma (nube simulada)', async () => {
+  const ctx = await browser.createBrowserContext();
+  try {
+    const p = await a12Page(ctx, MOBILE);
+    await SP.openGame(p, BASE);
+    await p.evaluate((a) => window.__qa.fakeWallet(a, true), SP.QA_ADDR);
+    await SP.mark(p, 'a12_cloud');
+    await SP.openPanel(p);
+    await SP.tapSlot(p, 2);
+    let st = await SP.waitStatus(p);
+    a12Fail(st.kind === 'ok' && /device \+ cloud/.test(st.text), `guardado en la nube: ${JSON.stringify(st)}`);
+    const db = await SP.cloudDb(p);
+    a12Fail(db[`${SP.QA_ADDR}:2`]?.state?.flags?.a12_cloud === true, 'la nube simulada no tiene el slot 2');
+    // Fallo 500 al sobrescribir: error visible, nunca «saved (device + cloud)»; la partida en memoria intacta
+    await SP.mark(p, 'a12_after500');
+    const mem = await SP.gameSnap(p);
+    await SP.failNextCloudSave(p, 2, 500);
+    await SP.tapSlot(p, 2);
+    await SP.confirm(p, true);
+    st = await SP.waitStatus(p);
+    a12Fail(st.kind === 'error' && /500/.test(st.text) && !/device \+ cloud/.test(st.text), `500 no dio error visible: ${JSON.stringify(st)}`);
+    const after = await SP.gameSnap(p);
+    a12Fail(after.flags.includes('a12_after500') && after.flags.includes('a12_cloud') && after.scene === mem.scene, 'la partida en memoria cambió tras el fallo');
+    a12Fail(!(await SP.cloudDb(p))[`${SP.QA_ADDR}:2`].state.flags.a12_after500, 'la nube cambió pese al 500');
+    await p.screenshot({ path: `${SHOTS}/a12-3-error-500.png` });
+    // Reintento: ahora sí
+    await SP.panelAction(p, 'retry');
+    st = await SP.waitStatus(p);
+    a12Fail(st.kind === 'ok', `reintento: ${JSON.stringify(st)}`);
+    // Sin firma de sesión: el guardado local vale, la nube pide firmar y al firmar se sube
+    await p.evaluate((a) => window.__qa.fakeWallet(a, false), SP.QA_ADDR);
+    await SP.closePanel(p);
+    await SP.openPanel(p);
+    await SP.tapSlot(p, 1);
+    st = await SP.waitStatus(p);
+    a12Fail(st.kind === 'warn' && /signature/i.test(st.text), `sin firma: ${JSON.stringify(st)}`);
+    a12Fail(!(await SP.cloudDb(p))[`${SP.QA_ADDR}:1`], 'sin firma se subió a la nube');
+    await SP.panelAction(p, 'sign');
+    st = await SP.waitStatus(p);
+    a12Fail(st.kind === 'ok' && /device \+ cloud/.test(st.text), `tras firmar: ${JSON.stringify(st)}`);
+    // Apaisado 844×390: el panel cabe a lo ancho y los botones siguen siendo tocables (se desplaza en vertical)
+    await p.setViewport({ width: 844, height: 390, deviceScaleFactor: 1, isMobile: true, hasTouch: true });
+    await new Promise((r) => setTimeout(r, 500));
+    const lay = await SP.panelLayout(p);
+    a12Fail(lay.left >= 0 && lay.right <= lay.vw && lay.top >= 0 && lay.bottom <= lay.vh + 1, `el panel no cabe en 844×390: ${JSON.stringify(lay)}`);
+    a12Fail(!lay.small.length, `apaisado: botones de menos de 44 px: ${JSON.stringify(lay.small)}`);
+    console.log(`    nube: ${Object.keys(await SP.cloudDb(p)).join(', ')}`);
   } finally {
     await ctx.close();
   }
