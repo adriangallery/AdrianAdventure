@@ -29,7 +29,7 @@ const LOADING_TIPS: string[] = [
   'Hiding keys in obvious places...',
   'Rehearsing voice lines...',
   'Warming up the FloorEngine...',
-  'Convincing the receptionist to stay...',
+  'Convincing Penny to stay...',
   'Decrypting Patient Zero\'s diary...',
   'Polishing the rubber duck...',
   'Brewing on-chain coffee...',
