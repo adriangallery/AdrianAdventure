@@ -56,7 +56,9 @@ function route(d) {
 async function installRecorder() {
   await page.evaluate(() => {
     const gs = window.__game.scene.getScene('GameScene');
-    gs.player.onStep = null; // sin triggers: la demo solo anda
+    // Sin triggers (ni tras cada tramo ni en update): la demo solo anda y no debe salir de la escena
+    gs.player.onStep = null;
+    gs.checkWalkTriggers = () => false;
     window.__samples = [];
     window.__trail = [];
     // Tiempo de juego (el `delta` con el que anda el jugador), no el reloj de pared: el runner de CI va a saltos
@@ -206,6 +208,8 @@ for (const id of SCENES) {
     const ms = await walk(to);
     const label = `${id} → ${pt.kind}${pt.id ? ` ${pt.id}` : ''} (${to.x.toFixed(1)}, ${to.y.toFixed(1)})`;
     if (ms === null) problems.push(`${label}: no llega en ${TIMEOUT_MS} ms (atascado)`);
+    const now = await page.evaluate(() => window.__game.registry.get('currentSceneId'));
+    if (now !== id) { problems.push(`${label}: la escena cambió a ${now} (un trigger saltó)`); break; }
     const samples = await page.evaluate((f) => window.__samples.slice(Math.max(0, f - 1)), from);
     const res = analyse(d, samples, mul, label);
     problems.push(...res.errs);
