@@ -77,12 +77,41 @@
             {
               "op": "say",
               "text": "Three monitors: portfolio performance, yield farming stats, and NFT marketplace analytics."
+            },
+            {
+              "op": "ifFlag",
+              "flag": "found_terminal_key",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "The drawer is open and empty. Thirty-eight pages of Terms for one key. I'd read them again. I wouldn't."
+                }
+              ],
+              "else": [
+                {
+                  "op": "say",
+                  "text": "Locked. The lock is a tiny screen: 'Accept the Terms to open'."
+                }
+              ]
             }
           ],
           "USE": [
             {
-              "op": "say",
-              "text": "The terminal runs a sophisticated trading bot with AI algorithms."
+              "op": "ifFlag",
+              "flag": "found_terminal_key",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "The drawer is empty. I already took the trading terminal key."
+                }
+              ],
+              "else": [
+                {
+                  "op": "dialogue",
+                  "npcId": "tos_drawer",
+                  "treeId": "tos_drawer"
+                }
+              ]
             }
           ],
           "TALK": [
@@ -109,35 +138,29 @@
               ],
               "else": [
                 {
-                  "op": "setFlag",
-                  "flag": "found_terminal_key",
-                  "value": true
-                },
-                {
-                  "op": "addItem",
-                  "id": "terminal_key",
-                  "name": "Trading Terminal Key"
-                },
-                {
-                  "op": "say",
-                  "text": "I open the desk drawer and find a trading terminal key with significant access!"
-                },
-                {
-                  "op": "say",
-                  "text": "There's a sticky note inside: 'PZ escaped via contract exploit — check server logs'"
-                },
-                {
-                  "op": "setFlag",
-                  "flag": "found_pz_note",
-                  "value": true
+                  "op": "dialogue",
+                  "npcId": "tos_drawer",
+                  "treeId": "tos_drawer"
                 }
               ]
             }
           ],
           "CLOSE": [
             {
-              "op": "say",
-              "text": "I close the desk drawer. The trading terminal key is safely stored."
+              "op": "ifFlag",
+              "flag": "found_terminal_key",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "I close the drawer. It doesn't ask me to accept anything this time."
+                }
+              ],
+              "else": [
+                {
+                  "op": "say",
+                  "text": "Already closed. Closed and legally binding."
+                }
+              ]
             }
           ],
           "PUSH": [
@@ -781,7 +804,7 @@
                 },
                 {
                   "op": "say",
-                  "text": "I grab the receipt. It's a printout of a massive transaction — coordinates to a clinic in the mountains. Someone was tracking Patient Zero."
+                  "text": "I grab the receipt. One massive transfer, memo: 'PZ — care and feeding'. Somebody was paying for Patient Zero."
                 }
               ]
             }
@@ -925,6 +948,133 @@
         ]
       }
     ]
+  },
+  "dialogues": {
+    "tos_drawer": {
+      "id": "tos_drawer",
+      "start": "screen",
+      "nodes": {
+        "screen": {
+          "speaker": "Drawer",
+          "text": "TERMS AND CONDITIONS. Thirty-eight pages. Accept the Terms to open.",
+          "when": "!tos_read_1",
+          "next": "screen_again"
+        },
+        "screen_again": {
+          "speaker": "Drawer",
+          "text": "Welcome back. You have unread Terms.",
+          "when": "tos_read_1",
+          "next": "hub"
+        },
+        "hub": {
+          "choices": [
+            {
+              "text": "Accept.",
+              "next": "accept"
+            },
+            {
+              "text": "Keep reading.",
+              "next": "read_1",
+              "when": "!tos_read_1"
+            },
+            {
+              "text": "Keep reading.",
+              "next": "read_2",
+              "when": ["tos_read_1", "!tos_read_2"]
+            },
+            {
+              "text": "Keep reading.",
+              "next": "read_3",
+              "when": ["tos_read_2", "!tos_read_3"]
+            },
+            {
+              "text": "Never mind.",
+              "next": "bye",
+              "exit": true
+            }
+          ]
+        },
+        "accept": {
+          "speaker": "Drawer",
+          "text": "By accepting you agree to give Adrian your left kidney.",
+          "next": "accept_no"
+        },
+        "accept_no": {
+          "text": "I'm attached to that kidney. Literally. The drawer stays shut.",
+          "next": "hub"
+        },
+        "read_1": {
+          "speaker": "Drawer",
+          "text": "Page two. Adrian may change these Terms at any time. Including retroactively. Including now.",
+          "onEnter": [
+            {
+              "op": "setFlag",
+              "flag": "tos_read_1",
+              "value": true
+            }
+          ],
+          "next": "read_1_dex"
+        },
+        "read_1_dex": {
+          "text": "Nobody reads these. That's the whole business model.",
+          "next": "hub"
+        },
+        "read_2": {
+          "speaker": "Drawer",
+          "text": "Page seventeen. Section nine: Gerald is not a duck. Section ten: Gerald is a duck.",
+          "onEnter": [
+            {
+              "op": "setFlag",
+              "flag": "tos_read_2",
+              "value": true
+            }
+          ],
+          "next": "read_2_dex"
+        },
+        "read_2_dex": {
+          "text": "My eyes are bleeding. Twenty-one pages to go.",
+          "next": "hub"
+        },
+        "read_3": {
+          "speaker": "Drawer",
+          "text": "Page 38. Congratulations: you are the first person ever to read this. Drawer unlocked.",
+          "onEnter": [
+            {
+              "op": "setFlag",
+              "flag": "tos_read_3",
+              "value": true
+            },
+            {
+              "op": "setFlag",
+              "flag": "found_terminal_key",
+              "value": true
+            },
+            {
+              "op": "addItem",
+              "id": "terminal_key",
+              "name": "Trading Terminal Key"
+            },
+            {
+              "op": "setFlag",
+              "flag": "found_pz_note",
+              "value": true
+            }
+          ],
+          "next": "read_3_key"
+        },
+        "read_3_key": {
+          "text": "Inside: a trading terminal key. And a sticky note: 'PZ escaped via contract exploit. Check server logs.'",
+          "next": "read_3_dex"
+        },
+        "read_3_dex": {
+          "text": "Patience pays. I hate that it pays.",
+          "end": true
+        },
+        "bye": {
+          "text": "I'll skim it later. Like everyone. Like always."
+        }
+      }
+    }
   },
   "items": {
     "sceneItems": []
