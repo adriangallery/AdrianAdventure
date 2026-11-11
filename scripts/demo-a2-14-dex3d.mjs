@@ -67,7 +67,9 @@ async function walk(scene, tag, x, y, dir) {
   const s = await sampled(tag, (x, y) => window.__qa.walk(x, y), [x, y]);
   const frames = s.tex.filter((t) => t.startsWith(`player3d_walk_${dir}_`));
   console.log(`${scene} ${tag}: ${frames.length} fotogramas de ${dir} · giro máx ${s.maxAngle.toFixed(2)}°`);
-  if (frames.length < 6) problems.push(`${scene} ${tag}: solo ${frames.length} fotogramas player3d_walk_${dir}_* (${s.tex.join(', ')})`);
+  // en vertical los tramos del lobby son cortos (~0,3 s): basta con ver avanzar el ciclo (3 fotogramas distintos)
+  const need = dir === 'up' || dir === 'down' ? 3 : 6;
+  if (frames.length < need) problems.push(`${scene} ${tag}: solo ${frames.length} fotogramas player3d_walk_${dir}_* (${s.tex.join(', ')})`);
   if (s.maxAngle > 0.01) problems.push(`${scene} ${tag}: giro ${s.maxAngle.toFixed(2)}° andando (el 3D no se balancea)`);
   await demo.still(`${scene}-${tag}`);
 }
@@ -98,7 +100,7 @@ for (const scene of ['outside', 'lobby']) {
   // Tramos dentro de lo andable y por encima del panel de verbos (en 844x390 la franja de abajo del todo queda debajo)
   const L = scene === 'outside'
     ? { y: 93, left: 20, right: 70, vx: 40, back: 84 }
-    : { y: 93, left: 45, right: 85, vx: 55.5, back: 86 };
+    : { y: 93, left: 45, right: 85, vx: 55.5, back: 84 };
   await walk(scene, 'izquierda', L.left, L.y, 'left');
   await walk(scene, 'derecha', L.right, L.y, 'right');
   await sampled('a la columna', (x, y) => window.__qa.walk(x, y), [L.vx, L.y]);
