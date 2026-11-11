@@ -62,8 +62,9 @@ async function follow(view, stills, choices = []) {
   let lastText = null;
   let calm = 0;
   let busyTick = 0;
+  let lastTapAt = Date.now();
   const t0 = Date.now();
-  while (Date.now() - t0 < 40000 && calm < 5) {
+  while (Date.now() - t0 < 60000 && calm < 6) {
     const r = await probe();
     if (r.choices) {
       calm = 0;
@@ -82,13 +83,16 @@ async function follow(view, stills, choices = []) {
       lastText = r.text;
       seen.push({ speaker: r.speaker, text: r.text });
       for (const [re, label] of stills) if (re.test(r.text)) await demo.still(`${view}-${label}`);
-      await demo.film(Math.min(1800, Math.max(700, r.text.length * 22)));
+      await demo.film(Math.min(2000, Math.max(900, r.text.length * 25)));
       await page.evaluate(() => window.__game.scene.getScene('GameScene').qaSyntheticTap());
+      lastTapAt = Date.now();
       await demo.sleep(250);
       continue;
     }
     // Andar y transiciones a ×3 (un fotograma de cada tres): la demo tiene que quedarse en ≤ 90 s
-    if (r.text || r.busy) { calm = 0; if (busyTick++ % 3 === 0) await demo.shot(); await demo.sleep(120); continue; }
+    // Si el toque cayó con la frase aún escribiéndose (la completa en vez de pasarla), otro toque
+    if (r.text && Date.now() - lastTapAt > 1500) { await page.evaluate(() => window.__game.scene.getScene('GameScene').qaSyntheticTap()); lastTapAt = Date.now(); }
+    if (r.text || r.busy) { calm = 0; if (busyTick++ % 3 === 0) await demo.shot(); await demo.sleep(150); continue; }
     lastText = null;
     calm++;
     await demo.sleep(200);
