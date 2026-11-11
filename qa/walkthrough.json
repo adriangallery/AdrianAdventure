@@ -127,6 +127,7 @@
 
         { "do": "key", "key": "Tab", "phase": "down", "note": "mantener Tab: resalta los hotspots que se pueden pulsar y la NPC", "expect": { "highlighted": { "min": 6, "includes": ["hs_stairs_up", "hs_frontdoor", "hs_coat", "hs_plant", "npc_receptionist"] } } },
         { "do": "key", "key": "Tab", "phase": "up", "note": "al soltar Tab se quita", "expect": { "highlighted": { "max": 0 } } },
+        { "do": "rightclick", "target": "npc_receptionist", "choices": ["come back later"], "note": "clic derecho en una NPC = hablar (sin elegir verbo); antes del sobre: con Penny leyendo solo dice una frase y no hay árbol", "expect": { "verb": "WALK", "walkTarget": { "target": "npc_receptionist", "verb": "TALK" } } },
         { "do": "use", "item": "mystery_envelope", "target": "hs_monitor_desk", "note": "A3.4a: el sobre en el escritorio distrae a Penny (si no, el abrigo no se coge); va antes de las teclas de verbo: deja USE elegido y «l» lo cambia a LOOK", "expect": { "flags": { "penny_reading": true } } },
         { "do": "key", "key": "l", "note": "L = Look at en el panel", "expect": { "verb": "LOOK" } },
         { "do": "click", "target": "hs_plant", "note": "clic izquierdo con el verbo elegido por teclado: mira la planta", "expect": { "verb": "LOOK", "walkTarget": { "target": "hs_plant", "verb": "LOOK" } } },
