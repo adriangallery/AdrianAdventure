@@ -14,7 +14,10 @@
 //    necesitan `expect`, para no dar por cerrada una ruta que nunca llegó al punto del atajo.
 //
 // Uso: BASE_URL=http://127.0.0.1:4173 node scripts/walkthrough.mjs [qa/walkthrough.json qa/sequence-breaks.json]
-//      WALKTHROUGH_ONLY=<id de ruta> para lanzar una sola.
+//      --only <id>[,<id>…] (o WALKTHROUGH_ONLY=<id>[,<id>…]) para lanzar solo esas rutas.
+//      --shard <i>/<n> (A0.6): solo el trozo i de n (ruta k de la lista de todos los ficheros → trozo (k mod n)+1);
+//      el CI reparte así los atajos entre trabajos paralelos. Un trozo vacío termina en verde.
+//      WALKTHROUGH_ARTIFACT=<nombre> solo cambia el nombre del artefacto que cita el resumen de CI.
 //      --selftest [qa/selftest.json] (A0.5): autotest del runner. Cada ruta lleva `expectStatus` (y opcionalmente
 //      `expectDetail`, regex del detalle); falla si alguna clasificación no es la esperada. Solo aquí vale "allowGoto".
 //
@@ -23,15 +26,29 @@ import { appendFileSync, mkdirSync, readFileSync, rmSync, writeFileSync } from '
 import puppeteer from 'puppeteer';
 import {
   attemptIndex, check, checkAttemptRan, checkRejects, classify, describe, fmtPoint, inBounds, kindOf, routeDefects,
-  selftestDefects, selftestMismatch, notePixel,
+  selftestDefects, selftestMismatch, notePixel, parseOnly, parseShard, selectRoutes,
 } from './lib/walkthrough-core.mjs';
 
+// A0.6: flags con valor (`--shard 2/4` o `--shard=2/4`, igual `--only`); el resto son ficheros
 const ARGS = process.argv.slice(2);
-const SELFTEST = ARGS.includes('--selftest');
-const FILE_ARGS = ARGS.filter((a) => a !== '--selftest');
+const FLAGS = {};
+const FILE_ARGS = [];
+for (let i = 0; i < ARGS.length; i++) {
+  const m = /^--(shard|only)(?:=(.*))?$/.exec(ARGS[i]);
+  if (m) {
+    const v = m[2] ?? ARGS[++i];
+    if (v === undefined) { console.error(`Falta el valor de --${m[1]}`); process.exit(2); }
+    FLAGS[m[1]] = v;
+  } else if (ARGS[i] === '--selftest') FLAGS.selftest = true;
+  else FILE_ARGS.push(ARGS[i]);
+}
+const SELFTEST = !!FLAGS.selftest;
 const BASE = (process.env.BASE_URL || 'http://127.0.0.1:4173').replace(/\/+$/, '');
 const OUT = process.env.WALKTHROUGH_OUT || (SELFTEST ? 'walkthrough-selftest-shots' : 'walkthrough-shots');
-const ONLY = process.env.WALKTHROUGH_ONLY || '';
+const ARTIFACT = process.env.WALKTHROUGH_ARTIFACT || (SELFTEST ? 'walkthrough-selftest-shots' : 'walkthrough-shots');
+const ONLY = parseOnly(FLAGS.only ?? process.env.WALKTHROUGH_ONLY);
+let SHARD = null;
+try { SHARD = FLAGS.shard !== undefined ? parseShard(FLAGS.shard) : null; } catch (err) { console.error(err.message); process.exit(2); }
 const FILES = FILE_ARGS.length ? FILE_ARGS : SELFTEST ? ['qa/selftest.json'] : ['qa/walkthrough.json', 'qa/sequence-breaks.json'];
 // Ruido conocido que no rompe el juego (igual que el smoke) y recursos que faltan (se listan aparte)
 const IGNORE = [/AudioContext/i, /autoplay/i, /WalletConnect/i, /ethereum/i, /favicon/i, /Failed to load resource/i];
@@ -216,19 +233,33 @@ async function runRoute(file, route) {
   return { ...result, status, detail };
 }
 
+// A0.6: todas las rutas de los ficheros, en orden, y las que le tocan a este trabajo
+const SPECS = FILES.map((file) => ({ file, spec: JSON.parse(readFileSync(file, 'utf8')) }));
+const ALL = SPECS.flatMap(({ file, spec }) => spec.routes.map((route) => ({ file, id: route.id, route })));
+const { selected: SELECTED, unknown: UNKNOWN } = selectRoutes(ALL, { shard: SHARD, only: ONLY });
+if (UNKNOWN.length) {
+  console.error(`--only: no existen en ${FILES.join(', ')}: ${UNKNOWN.join(', ')}`);
+  process.exit(2);
+}
+const SHARD_LABEL = SHARD ? `trozo ${SHARD.index}/${SHARD.total}: ${SELECTED.length} de ${ALL.length} rutas` : '';
+if (SHARD && !SELECTED.length) {
+  console.log(`Trozo ${SHARD.index}/${SHARD.total} vacío (${ALL.length} rutas para ${SHARD.total} trozos): nada que ejecutar`);
+  process.exit(0);
+}
+
 const browser = await puppeteer.launch({
   headless: true,
   protocolTimeout: 600_000,
   args: ['--no-sandbox', '--use-gl=swiftshader', '--enable-webgl', '--ignore-gpu-blocklist', '--autoplay-policy=no-user-gesture-required'],
 });
 
-console.log(`${SELFTEST ? 'Selftest del runner de walkthrough' : 'Walkthrough de AdrianAdventure'} contra ${BASE}`);
+console.log(`${SELFTEST ? 'Selftest del runner de walkthrough' : 'Walkthrough de AdrianAdventure'} contra ${BASE}${SHARD_LABEL ? ` (${SHARD_LABEL})` : ''}`);
 const results = [];
-for (const file of FILES) {
-  const spec = JSON.parse(readFileSync(file, 'utf8'));
+for (const { file, spec } of SPECS) {
+  const routes = SELECTED.filter((r) => r.file === file).map((r) => r.route);
+  if (!routes.length) continue;
   console.log(`\n${spec.title ?? file}`);
-  for (const route of spec.routes) {
-    if (ONLY && route.id !== ONLY) continue;
+  for (const route of routes) {
     console.log(`  ▸ ${route.id}${route.title ? ` — ${route.title}` : ''}`);
     const stDefects = SELFTEST ? selftestDefects(route) : [];
     const r = stDefects.length
@@ -251,7 +282,7 @@ for (const file of FILES) {
 await browser.close();
 
 const missing = [...new Set(results.flatMap((r) => r.missing))];
-writeFileSync(`${OUT}/report.json`, JSON.stringify({ base: BASE, at: new Date().toISOString(), selftest: SELFTEST, results, missing }, null, 2));
+writeFileSync(`${OUT}/report.json`, JSON.stringify({ base: BASE, at: new Date().toISOString(), selftest: SELFTEST, shard: SHARD, only: ONLY, results, missing }, null, 2));
 
 const LABEL = { pass: 'OK', xfail: 'XFAIL (conocido)', xpass: 'XPASS (quitar knownBreak)', fail: 'FALLO', error: 'ERROR' };
 const cell = (s) => String(s ?? '').replace(/\|/g, '\\|').replace(/\n/g, ' ');
@@ -260,16 +291,16 @@ const md = SELFTEST
   ? [
     '### Selftest del runner de walkthrough (A0.5)',
     '',
-    `Contra \`${BASE}\` · capturas en el artefacto \`walkthrough-selftest-shots\``,
+    `Contra \`${BASE}\` · capturas en el artefacto \`${ARTIFACT}\``,
     '',
     '| Ruta | Tipo | Esperado | Resultado | Selftest | Detalle |',
     '|---|---|---|---|---|---|',
     ...results.map((r) => `| ${cell(r.id)} | ${r.kind} | ${cell(r.expectStatus)} | ${LABEL[r.status]} | ${r.mismatch ? `✖ ${cell(r.mismatch)}` : '✓'} | ${cell(r.detail)} |`),
   ]
   : [
-    '### Walkthrough y atajos (A0.1)',
+    `### Walkthrough y atajos (A0.1)${SHARD_LABEL ? ` · ${SHARD_LABEL}` : ''}`,
     '',
-    `Contra \`${BASE}\` · capturas en el artefacto \`walkthrough-shots\``,
+    `Contra \`${BASE}\` · capturas en el artefacto \`${ARTIFACT}\``,
     '',
     '| Ruta | Tipo | Resultado | Punto más lejano | Detalle |',
     '|---|---|---|---|---|',

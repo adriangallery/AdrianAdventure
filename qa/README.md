@@ -1,7 +1,9 @@
 # QA automática (A0.1, A0.5)
 
-El CI (job `walkthrough` de `.github/workflows/build.yml`) juega la partida con Chrome headless contra el
-build real y comprueba el estado paso a paso. Capturas e informe en el artefacto `walkthrough-shots`.
+El CI (check `walkthrough` de `.github/workflows/build.yml`) juega la partida con Chrome headless contra el
+build real y comprueba el estado paso a paso. Desde A0.6 va en jobs paralelos (ver «Lanzarlo»); capturas e
+informe en los artefactos `walkthrough-shots-critica`, `walkthrough-shots-atajos-<i>` y
+`walkthrough-selftest-shots`.
 
 ## API de QA (`?qa=1`)
 
@@ -161,16 +163,52 @@ antigua punto por punto: `qa/OLD_QA_RECHECK.md`.
 
 - En cada PR y en `main`: automático (build → walkthrough).
 - Contra producción: Actions → build → Run workflow → `BASE_URL=https://adventure.zerothetoken.com`. Lanza
-  smoke y walkthrough sin compilar. La API solo existe si ese despliegue ya incluye A0.1.
-- Una sola ruta: `WALKTHROUGH_ONLY=<id>`.
+  smoke y walkthrough (todas sus partes) sin compilar. La API solo existe si ese despliegue ya incluye A0.1.
+
+### Jobs del CI (A0.6)
+
+En serie tardaba ~36 min (cada atajo rejuega los capítulos anteriores). Ahora, en paralelo tras `build`:
+
+| Job (check-run) | Qué ejecuta | Artefacto |
+|---|---|---|
+| `walkthrough-critica` | `qa/walkthrough.json` (ruta crítica, controles de escritorio, cinemática) | `walkthrough-shots-critica` |
+| `walkthrough-atajos (i/n)` | trozo `i` de `n` de `qa/sequence-breaks.json` (`--shard i/n`) | `walkthrough-shots-atajos-<i>` |
+| `walkthrough-selftest` | `qa/selftest.json` (`--selftest`) | `walkthrough-selftest-shots` |
+| `walkthrough` | agrega: verde solo si las tres partes (todos los trozos) terminaron en `success` | — |
+
+Si una parte se salta (p. ej. porque falló `build`), `walkthrough` sale en rojo, no «skipped». Para más
+trozos basta con alargar `matrix.shard` en `build.yml` (`n` sale de `strategy.job-total`).
+
+### Flags del runner (`scripts/walkthrough.mjs`)
+
+- `--shard <i>/<n>`: solo el trozo `i` (desde 1) de `n`. La ruta `k` de la lista de todos los ficheros
+  pasados, en orden, va al trozo `(k mod n) + 1`: determinista, cada ruta en un solo trozo y la unión es la
+  lista entera (lo comprueba `tests/walkthrough-core.test.mjs`). Un trozo vacío (`n` mayor que el número de
+  rutas) termina en verde sin abrir el navegador.
+- `--only <id>[,<id>…]` (o `WALKTHROUGH_ONLY=<id>[,<id>…]`): solo esas rutas. Un id que no existe en los
+  ficheros pasados es error (rc 2), para que una errata no deje una ruta sin ejecutar. Se combina con
+  `--shard` (filtra dentro del trozo).
+- `WALKTHROUGH_OUT=<dir>`: carpeta de capturas (por defecto `walkthrough-shots/`); `WALKTHROUGH_ARTIFACT`
+  solo cambia el nombre de artefacto que cita el resumen de CI.
+
+En local, con el build servido (`npm run build && npx vite preview --port 4173`):
+
+```sh
+# un trozo de los atajos, como el CI
+BASE_URL=http://127.0.0.1:4173 npm run test:walkthrough -- qa/sequence-breaks.json --shard 2/4
+# una o varias rutas sueltas
+BASE_URL=http://127.0.0.1:4173 npm run test:walkthrough -- qa/sequence-breaks.json --only puerta-sin-pin,sotano-sin-keycard
+# solo la ruta crítica
+BASE_URL=http://127.0.0.1:4173 npm run test:walkthrough -- qa/walkthrough.json --only ruta-critica
+```
 
 ## Selftest del runner (A0.5)
 
 `qa/selftest.json` tiene una ruta por cada rama de clasificación de `scripts/walkthrough.mjs`, contra el juego
 real y sin tocar escenas. Cada ruta dice qué resultado espera (`expectStatus`: `pass`/`fail`/`xfail`/`xpass`/
 `error`) y opcionalmente `expectDetail` (expresión regular del detalle). `npm run test:walkthrough:selftest`
-(`--selftest`) falla si alguna clasificación no coincide; en CI va en el job `walkthrough` justo después de las
-rutas reales (aunque fallen), con el mismo `BASE_URL`, y deja capturas en el artefacto
+(`--selftest`) falla si alguna clasificación no coincide; en CI va en su propio job `walkthrough-selftest` (A0.6),
+en paralelo con las rutas reales, con el mismo `BASE_URL`, y deja capturas en el artefacto
 `walkthrough-selftest-shots`.
 
 | Ruta | Espera | Rama |
