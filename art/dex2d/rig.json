@@ -1,0 +1,33 @@
+{
+  "_doc": "A2.15: despiece del sprite actual de Dex (assets/sprites/player). Coordenadas en píxeles del PNG de origen; pivotes en el centro del píxel (x+0.5). Lo usa art/dex2d/build.py.",
+  "profile": {
+    "src": "Left.png",
+    "_facing": "Left.png mira a la DERECHA de la pantalla; el otro perfil es el espejo",
+    "canvas": [48, 103],
+    "offsetX": 14,
+    "hip": [4.5, 61],
+    "torso": { "rect": [0, 0, 20, 64], "armHole": { "rows": [37, 64], "cols": [0, 6], "outlineCol": 1, "plaidPeriod": 4, "pelvisFromRow": 66 } },
+    "arm": { "rect": [0, 29, 7, 65], "shoulder": [3.5, 31], "elbow": [3.5, 49], "skipColors": "blue" },
+    "leg": { "rect": [1, 59, 9, 95], "hip": [4.5, 61], "knee": [4.5, 78], "ankle": [4.5, 94.5], "handRows": [58, 65], "handCols": [2, 6], "fillFromRow": 66 },
+    "shoe": { "src": "Walk-Left-1.png", "rect": [29, 95, 44, 102], "ankle": [31.5, 95] },
+    "mouth": { "row": 19, "cols": [12, 14], "fromRow": 18 },
+    "z": ["farArm", "farLeg", "nearLeg", "torso", "nearArm"],
+    "bones": { "hip": ["torso", "thighL", "thighR"], "torso": ["head", "shoulderNear", "shoulderFar"], "thigh": ["shin"], "shin": ["foot"], "upperArm": ["forearm"] }
+  },
+  "front": {
+    "src": "Idle-1.png",
+    "canvas": [37, 103],
+    "offsetX": 6,
+    "armL": { "rect": [0, 37, 7, 64], "shoulder": [3.5, 38], "elbow": [3.5, 50] },
+    "armR": { "rect": [19, 37, 25, 64], "shoulder": [21.5, 38], "elbow": [21.5, 50] },
+    "legL": { "cols": [4, 13], "fromRow": 63 },
+    "legR": { "cols": [13, 22], "fromRow": 63 },
+    "mouth": { "row": 19, "cols": [15, 18], "fromRow": 18 }
+  },
+  "back": {
+    "src": "Back-Left.png",
+    "canvas": [28, 103],
+    "legL": { "cols": [5, 13], "fromRow": 66 },
+    "legR": { "cols": [13, 21], "fromRow": 66 }
+  }
+}

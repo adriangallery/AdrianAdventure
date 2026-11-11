@@ -9,6 +9,7 @@ import { FADE_FIRST_MS, FADE_SHORT_MS, sceneImageAssets, transitionMode, type Tr
 import { pickBgVariant, texturesToEvict, type BgVariant } from '@/systems/SceneTextures';
 import { gameUrlParams } from '@/config/debugParams';
 import { GameScene } from '@/scenes/GameScene';
+import { DEX2D_ANIMS } from '@/data/dex2dFrames';
 
 /** A2.7: medida del último cambio de escena (`__qa.state().lastTransition`) */
 export interface LastTransition {
@@ -128,6 +129,10 @@ export class PreloadScene extends Phaser.Scene {
       this.load.image('player_right', `assets/sprites/player/Right.png${v}`);
       this.load.image('player_front_left', `assets/sprites/player/Front-Left.png${v}`);
       this.load.image('player_front_right', `assets/sprites/player/Front-Right.png${v}`);
+      // A2.15: rig 2D de Dex pre-renderizado (art/dex2d/build.py): andar, idle, manías, hablar, coger y encogerse
+      for (const [anim, m] of Object.entries(DEX2D_ANIMS)) {
+        for (let i = 0; i < m.frames; i++) this.load.image(`dex2d_${anim}_${i}`, `assets/sprites/player/dex2d/${anim}_${i}.png${v}`);
+      }
 
     }
     // A2.2: de espaldas (Player.face('back')); como las de perfil, la clave sigue el nombre del PNG. Aparte del bloque

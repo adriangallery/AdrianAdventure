@@ -1,4 +1,5 @@
-// Demo de A4.1 (regla visual del plan SCUMM): animación del protagonista.
+// Demo de A4.1 (regla visual del plan SCUMM): animación del protagonista. A2.15: Dex usa el rig 2D pre-renderizado
+// (dex2d_*): andar arriba/abajo y hablar van en los fotogramas, sin balanceo por giro; el mono sigue como en A4.1.
 // En el lobby (?qa=1), 1280x720 (el GIF: un recorte de 800x540 de la escena centrado en el jugador, con una línea de
 // estado arriba) y luego 390x844 (capturas fijas):
 //   1) anda de perfil hasta debajo del abrigo; sube hacia el fondo (Back-Left/Right alternando + balanceo) y baja hacia
@@ -25,6 +26,7 @@ const SCENE = 'lobby';
 const X = 55.5; // bajo el abrigo: tramo vertical libre (ni triggers ni blockedAreas)
 const Y_FRONT = 98;
 const Y_BACK = 85;
+const Y_FRONT_390 = 91;
 const PLANT_LINE = 'A tall plant in a ceramic pot. It looks thirsty. Really thirsty.'; // texto que ya existe (hs_plant LOOK)
 const CLIP = { width: 800, height: 540 };
 
@@ -123,7 +125,7 @@ async function walkLeg(tag, label, x, y, want) {
       seen.dirs.add(a.dir);
       seen.textures.add(a.texture);
       seen.maxAngle = Math.max(seen.maxAngle, Math.abs(a.angle));
-      if (!seen.still && a.dir === want.dir && want.texture.test(a.texture) && Math.abs(a.angle) > 0.5) {
+      if (!seen.still && a.dir === want.dir && want.texture.test(a.texture) && (!want.sway || Math.abs(a.angle) > 0.5)) {
         seen.still = true;
         await demo.still(tag, { clip });
       }
@@ -167,7 +169,7 @@ async function talkLeg(tag, label, start, args, want) {
         seen.talking = true;
         seen.textures.add(a.texture);
         seen.maxAngle = Math.max(seen.maxAngle, Math.abs(a.angle));
-        if (!seen.still && seen.textures.size >= (want.frames ?? 1) && Math.abs(a.angle) > 0.3) {
+        if (!seen.still && seen.textures.size >= (want.frames ?? 1) && (Math.abs(a.angle) > 0.3 || seen.textures.size >= 2)) {
           seen.still = true;
           await demo.still(tag, { clip });
         }
@@ -181,7 +183,8 @@ async function talkLeg(tag, label, start, args, want) {
   console.log(`${tag}: texto ${seen.open ? 'visto' : 'NO visto'} · talking ${seen.talking} · texturas ${[...seen.textures].join(', ')} · cabeceo máx ${seen.maxAngle.toFixed(2)}° → tras cerrar: talking ${st.anim?.talking} · ${fmtA(st.anim)}`);
   if (!seen.open) problems.push(`${tag}: no salió el texto del jugador`);
   if (!seen.talking) problems.push(`${tag}: anim.talking nunca fue true con el texto abierto`);
-  if (seen.maxAngle < 0.3) problems.push(`${tag}: sin cabeceo (giro máx ${seen.maxAngle.toFixed(2)}°)`);
+  // A2.15: con el rig 2D el cabeceo y las manos van en los fotogramas (sin giro): vale giro o ≥ 2 texturas
+  if (seen.maxAngle < 0.3 && seen.textures.size < 2) problems.push(`${tag}: sin cabeceo ni gesto (giro máx ${seen.maxAngle.toFixed(2)}°, ${seen.textures.size} textura(s))`);
   if (want.frames && seen.textures.size < want.frames) problems.push(`${tag}: hablando solo ${seen.textures.size} textura(s), se esperaban ${want.frames}`);
   if (want.texture && ![...seen.textures].some((t) => want.texture.test(t))) problems.push(`${tag}: hablando sin textura ${want.texture}`);
   if (st.anim?.talking) problems.push(`${tag}: anim.talking sigue true con el texto cerrado`);
@@ -198,10 +201,10 @@ console.log(`inicio: jugador ${st0.player.x.toFixed(1)},${st0.player.y.toFixed(1
 if (!st0.anim) await demo.fail('state().anim no existe (API de QA anterior a A4.1)');
 
 // 1) de perfil hasta debajo del abrigo; arriba y abajo
-await walkLeg('perfil', '1) de perfil', X, Y_FRONT, { dir: 'left', texture: /^player_walk_(left|right)_\d$/, sway: false });
-await walkLeg('arriba', '1) hacia el fondo: Back-* + balanceo', X, Y_BACK, { dir: 'up', texture: /^player_back_(left|right)$/, sway: true, facing: 'back' });
+await walkLeg('perfil', '1) de perfil', X, Y_FRONT, { dir: 'left', texture: /^(player_walk_(left|right)|dex2d_walk_[lr])_\d$/, sway: false });
+await walkLeg('arriba', '1) hacia el fondo: rig de espaldas', X, Y_BACK, { dir: 'up', texture: /^dex2d_walk_up_\d$/, sway: false, facing: 'back' });
 await hold('1) llega de espaldas', 3);
-await walkLeg('abajo', '1) hacia la cámara: Front-* + balanceo', X, Y_FRONT, { dir: 'down', texture: /^player_front_(left|right)$/, sway: true, facing: 'front' });
+await walkLeg('abajo', '1) hacia la cámara: rig de frente', X, Y_FRONT, { dir: 'down', texture: /^dex2d_walk_down_\d$/, sway: false, facing: 'front' });
 await hold('1) llega de frente', 3);
 
 // 2) hablar: de perfil (LOOK planta, texto 2,5 s) y de frente en una cinemática con actorMove vertical
@@ -215,7 +218,7 @@ await talkLeg('habla-frente', '2) cinemática: actorMove al fondo y habla de fre
     { op: 'actorFace', actor: 'player', dir: 'front' },
     { op: 'say', text: line },
     { op: 'cinematicEnd' },
-  ])), [PLANT_LINE, X], { frames: 3, texture: /^player_front_/ });
+  ])), [PLANT_LINE, X], { frames: 3, texture: /^dex2d_talk_front_/ });
 // (la subida de la cinemática se comprueba aparte: anim.dir queda en «up» tras el actorMove)
 {
   const { st } = await capture('2) tras la cinemática');
@@ -310,9 +313,10 @@ await open(390);
 {
   const st = (await capture('390x844')).st;
   console.log(`390x844: ${fmtA(st.anim)} · pixel ×${st.pixel?.playerScale} entera ${st.pixel?.integer}`);
-  await walkLeg('390-perfil', '390x844 de perfil', X, Y_FRONT, { dir: 'left', texture: /^player_walk_/, sway: false, integer: false });
-  await walkLeg('390-arriba', '390x844 hacia el fondo', X, Y_BACK, { dir: 'up', texture: /^player_back_/, sway: true, facing: 'back', integer: false });
-  await walkLeg('390-abajo', '390x844 hacia la cámara', X, Y_FRONT, { dir: 'down', texture: /^player_front_/, sway: true, facing: 'front', integer: false });
+  // A2.15: en 390x844 la y 98 del lobby cae bajo el panel de verbos (QA no deja hacer clic ahí): se baja hasta la 91
+  await walkLeg('390-perfil', '390x844 de perfil', X, Y_FRONT_390, { dir: 'left', texture: /^(player|dex2d)_walk_/, sway: false, integer: false });
+  await walkLeg('390-arriba', '390x844 hacia el fondo', X, Y_BACK, { dir: 'up', texture: /^dex2d_walk_up_/, sway: false, facing: 'back', integer: false });
+  await walkLeg('390-abajo', '390x844 hacia la cámara', X, Y_FRONT_390, { dir: 'down', texture: /^dex2d_walk_down_/, sway: false, facing: 'front', integer: false });
   await demo.still('390x844');
 }
 await demo.end();

@@ -7,8 +7,9 @@ import { resolvePixelScale, spriteScale, artHeightPct, type DepthScale, type Pix
 import { FootstepTracker } from '@/systems/Footsteps';
 import { actorDepth, sceneObstacles, speedMultiplier, stepToward, walkSpeedWorldPx } from '@/systems/WalkMotion';
 import {
-  IdleTicker, QA_IDLE_SEED, facingForDir, facingTexture, gesturePose, idleTicPose, isVertical, moveDir, talkPose, walkPose,
-  type AnimDir, type AnimPose, type IdleTic, type IdleTicKind, type Side,
+  IdleTicker, QA_IDLE_SEED, RIG_IDLE_FRAME_MS, RIG_IDLE_FRAMES, facingForDir, facingTexture, gesturePose, hasRig, idleTicPose, isVertical,
+  moveDir, rigKey, shrugPose, talkPose, walkPose,
+  type AnimDir, type AnimPose, type IdleTic, type IdleTicKind, type PickLevel, type Side,
 } from '@/systems/PlayerAnim';
 
 const IDLE_FRAME_MS = 400;
@@ -39,6 +40,9 @@ export interface PlayerAnimQa {
   scale: number;
   baseScale: number;
   rest: boolean;
+  /** A2.15: usa el rig 2D pre-renderizado (dex2d_*) y encogimiento de hombros en marcha */
+  rig: boolean;
+  shrug: boolean;
 }
 /**
  * A2.1: tramo máximo (en %) entre dos comprobaciones de triggers. Un frame largo se parte en tramos de este tamaño
@@ -112,7 +116,9 @@ export class Player extends Phaser.GameObjects.Sprite {
   private talkWanted = false;
   private idleFree = false;
   private talkClock = 0;
-  private gestureAnim: { t: number; aim: Side | null } | null = null;
+  private gestureAnim: { t: number; aim: Side | null; level: PickLevel } | null = null;
+  /** A2.15: «no puedo» (respuesta de fallo) */
+  private shrugAnim: { t: number } | null = null;
   private idleTicker: IdleTicker;
   private ticActive = false;
   /** pose(key) de una cinemática: hablar solo cabecea, sin cambiar la textura, y no hay tics */
@@ -231,7 +237,7 @@ export class Player extends Phaser.GameObjects.Sprite {
     this.idleFrameIndex = 0;
     this.idleTicker.reset();
     this.ticActive = false;
-    this.setTexture(this.staticKey ?? `${this.spritePrefix}_idle1`);
+    this.setTexture(this.staticKey ?? this.idleKey());
     this.clearAnimTransform();
   }
 
@@ -241,7 +247,7 @@ export class Player extends Phaser.GameObjects.Sprite {
    */
   private restoreRest(): void {
     this.ticActive = false;
-    this.setTextureIfNeeded(this.staticKey ?? `${this.spritePrefix}_idle${this.idleFrameIndex + 1}`);
+    this.setTextureIfNeeded(this.staticKey ?? this.idleKey());
     this.clearAnimTransform();
   }
 
@@ -252,6 +258,11 @@ export class Player extends Phaser.GameObjects.Sprite {
     if (this.angle !== 0) this.setAngle(0);
     if (moved) this.syncScreenPosition();
     this.applyPixelScale();
+  }
+
+  /** A2.15: fotograma de idle en curso (el rig respira; sin rig, Idle-1..4 de siempre) */
+  private idleKey(): string {
+    return hasRig(this.spritePrefix, this.has) ? rigKey('idle', this.idleFrameIndex % RIG_IDLE_FRAMES) : `${this.spritePrefix}_idle${this.idleFrameIndex + 1}`;
   }
 
   private setTextureIfNeeded(key: string): void {
@@ -303,9 +314,19 @@ export class Player extends Phaser.GameObjects.Sprite {
    * A4.1: gesto breve de alcanzar o coger (PlayerAnim.GESTURE_MS) al actuar sobre un hotspot; `aim` = lado de la
    * pantalla en el que está el objetivo. Va a la vez que el script: no lo retrasa. Andando no hace nada.
    */
-  gesture(aim: Side | null): void {
+  gesture(aim: Side | null, level: PickLevel = 'mid'): void {
     if (this.isMoving() || !this.visible) return;
-    this.gestureAnim = { t: 0, aim };
+    this.shrugAnim = null;
+    this.gestureAnim = { t: 0, aim, level };
+    this.idleTicker.reset();
+    this.ticActive = false;
+  }
+
+  /** A2.15: encogerse de hombros (respuesta de fallo). Quieto y con el rig; no retrasa nada */
+  shrug(): void {
+    if (this.isMoving() || !this.visible || this.posed || !hasRig(this.spritePrefix, this.has)) return;
+    this.gestureAnim = null;
+    this.shrugAnim = { t: 0 };
     this.idleTicker.reset();
     this.ticActive = false;
   }
@@ -315,8 +336,9 @@ export class Player extends Phaser.GameObjects.Sprite {
   }
 
   private endGesture(): void {
-    if (!this.gestureAnim) return;
+    if (!this.gestureAnim && !this.shrugAnim) return;
     this.gestureAnim = null;
+    this.shrugAnim = null;
     this.restoreRest();
   }
 
@@ -339,6 +361,8 @@ export class Player extends Phaser.GameObjects.Sprite {
       liftPx: this.animLiftPx,
       scale: this.scaleY,
       baseScale: this.lastScale.scale,
+      rig: hasRig(this.spritePrefix, this.has),
+      shrug: this.shrugAnim !== null,
       rest: this.angle === 0 && this.animLiftPx === 0 && this.scaleX === this.lastScale.scale && this.scaleY === this.lastScale.scale,
     };
   }
@@ -534,17 +558,29 @@ export class Player extends Phaser.GameObjects.Sprite {
    * pose de reposo (ángulo 0, sin elevación, escala base).
    */
   private updateStill(delta: number): void {
-    const fallback = () => this.staticKey ?? `${this.spritePrefix}_idle${this.idleFrameIndex + 1}`;
+    const fallback = () => this.staticKey ?? this.idleKey();
     if (this.gestureAnim) {
       this.gestureAnim.t += delta;
       const pose = gesturePose({
         prefix: this.spritePrefix, facing: this.facing, side: this.lastSide, aim: this.gestureAnim.aim, tMs: this.gestureAnim.t, has: this.has,
+        level: this.gestureAnim.level,
       });
       if (pose) {
         this.applyPose(pose, fallback());
         return;
       }
       this.gestureAnim = null;
+      this.restoreRest();
+    }
+
+    if (this.shrugAnim) {
+      this.shrugAnim.t += delta;
+      const pose = shrugPose({ prefix: this.spritePrefix, tMs: this.shrugAnim.t, has: this.has });
+      if (pose) {
+        this.applyPose(pose, fallback());
+        return;
+      }
+      this.shrugAnim = null;
       this.restoreRest();
     }
 
@@ -560,7 +596,9 @@ export class Player extends Phaser.GameObjects.Sprite {
       this.restoreRest();
     }
 
-    const tick = this.idleTicker.update(delta, this.idleFree && this.visible && !this.posed, this.facing, this.lastSide);
+    const tick = this.idleTicker.update(
+      delta, this.idleFree && this.visible && !this.posed, this.facing, this.lastSide, hasRig(this.spritePrefix, this.has),
+    );
     if (tick) {
       this.ticActive = true;
       this.applyPose(idleTicPose(tick.tic, tick.t, { prefix: this.spritePrefix, has: this.has }), fallback());
@@ -571,10 +609,10 @@ export class Player extends Phaser.GameObjects.Sprite {
     // A2.2: mirando a un lado o de espaldas se queda quieto; el idle animado es de frente
     if (this.staticKey) return;
     this.idleTimer += delta;
-    if (this.idleTimer >= IDLE_FRAME_MS) {
+    if (this.idleTimer >= (hasRig(this.spritePrefix, this.has) ? RIG_IDLE_FRAME_MS : IDLE_FRAME_MS)) {
       this.idleTimer = 0;
       this.idleFrameIndex = (this.idleFrameIndex + 1) % 4;
-      this.setTexture(`${this.spritePrefix}_idle${this.idleFrameIndex + 1}`);
+      this.setTexture(this.idleKey());
     }
   }
 
