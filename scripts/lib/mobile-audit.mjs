@@ -22,7 +22,25 @@ export const VIEWPORTS = Object.freeze({
  * Excepciones documentadas: `{ kind: 'font'|'touch', match: RegExp sobre el id, orientation?: 'portrait'|'landscape',
  * min?: valor mínimo que se tolera, reason }`. Una excepción sin `reason` no vale.
  */
-export const EXCEPTIONS = Object.freeze([]);
+export const EXCEPTIONS = Object.freeze([
+  {
+    kind: 'touch',
+    match: /^UIScene:Text:(Give|Pick up|Use|Open|Look at|Push|Close|Talk to|Pull)$/,
+    orientation: 'landscape',
+    min: 26,
+    reason: 'Rejilla SCUMM de 9 verbos en 844×390: filas de 28 px (el panel ya ocupa el 31 % del alto; 3 filas de 40 px '
+      + 'lo llevarían al 40 %). Cada verbo se toca en su celda entera (76-130 px de ancho, sin huecos entre filas). '
+      + 'En vertical sí llegan a 44 px.',
+  },
+  {
+    kind: 'touch',
+    match: /^UIScene:Text:[▲▼]$/,
+    min: 24,
+    reason: 'Flechas del inventario: el hueco entre la rejilla de verbos y las casillas mide 26-28 px de ancho en un '
+      + 'iPhone; la zona táctil ocupa todo ese hueco y media columna de alto (42-66 px). Solo se usan con más de '
+      + '4 objetos (2 en vertical).',
+  },
+]);
 
 /** ¿Es un texto de letras/números (se exige tamaño mínimo) o un icono (flechas, emojis, «×»)? */
 export function isWordText(text) {

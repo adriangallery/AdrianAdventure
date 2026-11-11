@@ -6,6 +6,7 @@ import { loadForWallet } from '@/web3/wallet-save';
 import { resolveEns } from '@/web3/ens';
 import type { InventorySystem } from '@/systems/InventorySystem';
 import { TWP, FONT } from '@/config/theme';
+import { setTouchInteractive, touchContains, touchHitRect } from './touchTarget';
 
 /**
  * Minimal wallet button — top-right, Thimbleweed Park style.
@@ -22,14 +23,14 @@ export class WalletButton {
   constructor(scene: Phaser.Scene) {
     this.scene = scene;
     const { width } = scene.scale;
-    const fontSize = Math.max(9, Math.min(12, Math.floor(width * 0.01)));
+    // A5.2: mínimo 11 px (legible en un iPhone; antes 9 en móvil)
+    const fontSize = Math.max(11, Math.min(12, Math.floor(width * 0.01)));
 
     this.container = scene.add.container(width - 8, 8).setDepth(600);
 
-    this.bg = scene.add.rectangle(0, 0, 120, 24, TWP.WALLET_BG, 0.85)
+    this.bg = setTouchInteractive(scene.add.rectangle(0, 0, 120, 24, TWP.WALLET_BG, 0.85)
       .setStrokeStyle(1, TWP.WALLET_BORDER, 0.6)
-      .setOrigin(1, 0)
-      .setInteractive({ useHandCursor: true });
+      .setOrigin(1, 0), 120, 24);
 
     this.label = scene.add.text(-6, 5, 'Connect', {
       fontFamily: FONT.FAMILY,
@@ -56,7 +57,7 @@ export class WalletButton {
 
   /** A0.5: si el punto de pantalla cae en el botón (lo usa el hit-test de la API de QA). */
   contains(x: number, y: number): boolean {
-    return this.container.active && this.container.visible && this.bg.active && this.bg.getBounds().contains(x, y);
+    return this.container.active && this.container.visible && this.bg.active && touchContains(this.bg, x, y);
   }
 
   /** Callback for external systems to run after wallet connects (e.g., cloud save check) */
@@ -231,7 +232,10 @@ export class WalletButton {
 
   private resizeBg(): void {
     if (!this.bg?.active || !this.label?.active) return;
-    this.bg.setSize(Math.max(80, this.label.width + 16), 24);
+    const w = Math.max(80, this.label.width + 16);
+    this.bg.setSize(w, 24);
+    // A5.2: la zona táctil sigue al tamaño nuevo (44 px de alto)
+    if (this.bg.input) this.bg.input.hitArea = touchHitRect(w, 24);
   }
 
   /** Show DOM overlay wallet picker — returns provider type or null if cancelled */

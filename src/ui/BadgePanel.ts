@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { FONT } from '@/config/theme';
+import { setTouchInteractive } from './touchTarget';
 import { ACHIEVEMENTS, type AchievementDef } from '@/config/achievements.config';
 import type { GameState } from '@/types/game.types';
 import { getWalletState } from '@/web3/wallet';
@@ -25,11 +26,11 @@ export class BadgePanel {
 
   private buildTrophyButton(): Phaser.GameObjects.Container {
     const btn = this.scene.add.container(0, 0).setDepth(800).setScrollFactor(0);
-    const x = 48;
+    // A5.2: separado del de guardar (antes lo pisaba 5 px) para que las zonas táctiles de 44×44 no se solapen
+    const x = 70;
     const y = 20;
-    const bg = this.scene.add.rectangle(x, y, 30, 24, 0x1a1a2e, 0.85)
-      .setStrokeStyle(1, 0x504878, 0.6)
-      .setInteractive({ useHandCursor: true });
+    const bg = setTouchInteractive(this.scene.add.rectangle(x, y, 30, 24, 0x1a1a2e, 0.85)
+      .setStrokeStyle(1, 0x504878, 0.6), 30, 24);
     const icon = this.scene.add.text(x, y, '\u{1F3C6}', { fontSize: '14px' }).setOrigin(0.5);
     bg.on('pointerover', () => bg.setStrokeStyle(1, 0xf8e848, 0.9));
     bg.on('pointerout', () => bg.setStrokeStyle(1, 0x504878, 0.6));

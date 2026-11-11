@@ -10,6 +10,7 @@ import {
 } from '@/systems/SaveSlots';
 import type { GameScene } from '@/scenes/GameScene';
 import { TWP } from '@/config/theme';
+import { setTouchInteractive, touchContains } from './touchTarget';
 
 /**
  * Floppy disk save button — top-left corner.
@@ -25,10 +26,10 @@ export class SaveButton {
 
     this.container = scene.add.container(8, 8).setDepth(600);
 
-    const bg = this.bg = scene.add.rectangle(0, 0, 30, 24, TWP.WALLET_BG, 0.85)
+    // A5.2: se ve de 30×24, pero el dedo tiene 44×44 (setTouchInteractive)
+    const bg = this.bg = setTouchInteractive(scene.add.rectangle(0, 0, 30, 24, TWP.WALLET_BG, 0.85)
       .setStrokeStyle(1, TWP.WALLET_BORDER, 0.6)
-      .setOrigin(0, 0)
-      .setInteractive({ useHandCursor: true });
+      .setOrigin(0, 0), 30, 24);
 
     const label = scene.add.text(15, 12, '\u{1F4BE}', {
       fontSize: '14px',
@@ -40,7 +41,7 @@ export class SaveButton {
 
   /** A0.5: si el punto de pantalla cae en el botón (lo usa el hit-test de la API de QA). */
   contains(x: number, y: number): boolean {
-    return this.container.active && this.container.visible && this.bg.active && this.bg.getBounds().contains(x, y);
+    return this.container.active && this.container.visible && this.bg.active && touchContains(this.bg, x, y);
   }
 
   /**

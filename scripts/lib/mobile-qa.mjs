@@ -280,12 +280,14 @@ export async function runMobileQa(ref, orientation) {
           await page.touchscreen.tap(vpt.x, vpt.y);
           await sleep(300);
           const verb = await page.evaluate(() => window.__qa.state().verb);
+          const actionsBefore = await page.evaluate(() => window.__qa.state().actions);
           await page.touchscreen.tap(hpt.x, hpt.y);
           await sleep(1200);
           await shot(2);
           await audit('outside-texto');
           const st = await page.evaluate(() => window.__qa.dismissAll());
-          const did = JSON.stringify(st.actions ?? []).includes(s.target);
+          // `actions`: verbos que llegaron a ejecutarse (contador de la API de QA)
+          const did = (st.actions ?? 0) > actionsBefore;
           touch.verbTap = { ...vpt, verb, ok: /look/i.test(String(verb)) };
           touch.hotspotTap = { ...hpt, ok: did };
           console.log(`[${orientation}] toques reales: verbo ${JSON.stringify(touch.verbTap)} · hotspot ${JSON.stringify(touch.hotspotTap)}`);
@@ -331,7 +333,7 @@ export async function runMobileQa(ref, orientation) {
       await demo.openScene('lobby');
       await demo.settle({ tap: settleTap, calm: 3, tries: 60, every: 600 });
       await waitReady(page, 20000).catch(() => {});
-      page.evaluate(() => window.__qa.talk('npc_receptionist', []).catch(() => {}));
+      page.evaluate(() => window.__qa.talk('npc_receptionist', []).catch(() => {})).catch(() => {});
       await sleep(3500);
       await shot(2);
       await audit('lobby-dialogo');
