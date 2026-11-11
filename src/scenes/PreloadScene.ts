@@ -164,6 +164,7 @@ export class PreloadScene extends Phaser.Scene {
       'vet_bill', // A3.3d: la factura del veterinario de Gerald (pregunta de seguridad de DOORIS)
       'leaky_pen', // A3.4a: el boli de Mt. Gox del abrigo de Adrian
       'pizza_slice', // A3.4b: la porción de pizza que engrasa la veleta
+      'empty_can', 'rainwater_can', // A3.4d: la lata del mining rig, vacía y llena de lluvia (cadena de Fernando)
     ];
     for (const id of itemIds) {
       const key = `item_${id}`;

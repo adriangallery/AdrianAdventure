@@ -543,7 +543,7 @@ Primer puzle del capítulo 2 (`assets/scenes/lobby/scene.json`). Penny vigila el
   saca una frase.
 
 QA: ruta crítica (LOOK, dos rechazos, Anon `p2_coat`, pista de Penny, factura en el escritorio, sobre, TALK
-leyendo, abrigo), atajo `abrigo-sin-distraer-a-penny` en `qa/sequence-breaks.json`, y las rutas que cogían el
+leyendo, abrigo), atajo `abrigo-con-penny-mirando` (antes `abrigo-sin-distraer-a-penny`) en `qa/sequence-breaks.json`, y las rutas que cogían el
 abrigo pasan antes el sobre al escritorio. Demo `scripts/demo-a3-4a-penny.mjs` (844x390 y 390x844).
 
 # Densidad de píxel (A2.8)

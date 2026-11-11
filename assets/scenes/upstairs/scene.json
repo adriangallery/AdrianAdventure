@@ -257,14 +257,17 @@
             "The rig has a lot of slots. None of them fits that.",
             "I'm not feeding that to the mining rig. It eats electricity, not ideas."
           ],
-          "energy_drink": [
-            "The rig is running fine. Whatever needs this caffeine is dead, not busy. Something downstairs, maybe."
-          ],
           "terminal_key": [
             "I wave the terminal key at the rig. Wrong machine. The key wants a trading terminal, not a space heater."
           ],
           "keycard": [
             "No card reader on the rig. It doesn't care who I am. Most machines don't."
+          ],
+          "rainwater_can": [
+            "The rig wants caffeine, not weather. Fernando wants weather."
+          ],
+          "empty_can": [
+            "It already drank that one. It doesn't want the can. Nobody wants the can."
           ]
         },
         "name": "Mining Rig",
@@ -456,7 +459,10 @@
               "text": "Cool night air rushes in.",
               "duration": 1200
             },
-            { "op": "playSound", "key": "hatch_metal" },
+            {
+              "op": "playSound",
+              "key": "hatch_metal"
+            },
             {
               "op": "fadeToScene",
               "sceneId": "rooftop",
@@ -473,7 +479,10 @@
               "text": "Cool night air rushes in.",
               "duration": 1200
             },
-            { "op": "playSound", "key": "hatch_metal" },
+            {
+              "op": "playSound",
+              "key": "hatch_metal"
+            },
             {
               "op": "fadeToScene",
               "sceneId": "rooftop",
@@ -514,7 +523,10 @@
               "text": "Cool night air rushes in.",
               "duration": 1200
             },
-            { "op": "playSound", "key": "hatch_metal" },
+            {
+              "op": "playSound",
+              "key": "hatch_metal"
+            },
             {
               "op": "fadeToScene",
               "sceneId": "rooftop",
@@ -745,28 +757,57 @@
           ],
           "PICK": [
             {
-              "op": "ifFlag",
-              "flag": "has_energy_drink",
+              "op": "ifHasItem",
+              "id": "energy_drink",
               "then": [
                 {
                   "op": "say",
-                  "text": "I already grabbed the can. One dose of regret is enough."
+                  "text": "I already have a can. One dose of regret at a time."
                 }
               ],
               "else": [
                 {
-                  "op": "say",
-                  "text": "I grab the can. Still some liquid sloshing around. 500mg of caffeine and whatever 'BULL RUN extract' is. Extremely hydrating, apparently."
-                },
-                {
-                  "op": "setFlag",
+                  "op": "ifFlag",
                   "flag": "has_energy_drink",
-                  "value": true
-                },
-                {
-                  "op": "addItem",
-                  "id": "energy_drink",
-                  "name": "Energy Drink"
+                  "then": [
+                    {
+                      "op": "addItem",
+                      "id": "energy_drink",
+                      "name": "Energy Drink"
+                    },
+                    {
+                      "op": "say",
+                      "text": "Another can behind the monitor. Adrian bought these by the pallet."
+                    }
+                  ],
+                  "else": [
+                    {
+                      "op": "ifFlag",
+                      "flag": "has_energy_drink",
+                      "then": [
+                        {
+                          "op": "say",
+                          "text": "I already grabbed the can. One dose of regret is enough."
+                        }
+                      ],
+                      "else": [
+                        {
+                          "op": "say",
+                          "text": "I grab the can. Still some liquid sloshing around. 500mg of caffeine and whatever 'BULL RUN extract' is. Extremely hydrating, apparently."
+                        },
+                        {
+                          "op": "setFlag",
+                          "flag": "has_energy_drink",
+                          "value": true
+                        },
+                        {
+                          "op": "addItem",
+                          "id": "energy_drink",
+                          "name": "Energy Drink"
+                        }
+                      ]
+                    }
+                  ]
                 }
               ]
             }
@@ -906,10 +947,16 @@
               "op": "ifFlag",
               "flag": "found_ape_costume",
               "then": [
-                { "op": "say", "text": "An open backpack with 'ALPHA PACK' embroidered on it. Empty now \u2014 I already took the ape costume." }
+                {
+                  "op": "say",
+                  "text": "An open backpack with 'ALPHA PACK' embroidered on it. Empty now — I already took the ape costume."
+                }
               ],
               "else": [
-                { "op": "say", "text": "A sleek backpack tucked under the desk, labeled 'ALPHA PACK'. The zipper is half open. Something furry is poking out." }
+                {
+                  "op": "say",
+                  "text": "A sleek backpack tucked under the desk, labeled 'ALPHA PACK'. The zipper is half open. Something furry is poking out."
+                }
               ]
             }
           ],
@@ -918,30 +965,62 @@
               "op": "ifFlag",
               "flag": "found_ape_costume",
               "then": [
-                { "op": "say", "text": "The pack is empty. All the alpha has been extracted." }
+                {
+                  "op": "say",
+                  "text": "The pack is empty. All the alpha has been extracted."
+                }
               ],
               "else": [
-                { "op": "say", "text": "I unzip the pack. Inside: a full ape costume \u2014 head, gloves, everything. A note reads: 'FOR EMERGENCY APE-IN ONLY. NOT FINANCIAL ADVICE.'" },
-                { "op": "say", "text": "This must be what the traders wear when they want to 'ape in' to positions anonymously. Genius and unhinged." }
+                {
+                  "op": "say",
+                  "text": "I unzip the pack. Inside: a full ape costume — head, gloves, everything. A note reads: 'FOR EMERGENCY APE-IN ONLY. NOT FINANCIAL ADVICE.'"
+                },
+                {
+                  "op": "say",
+                  "text": "This must be what the traders wear when they want to 'ape in' to positions anonymously. Genius and unhinged."
+                }
               ]
             }
           ],
           "TALK": [
-            { "op": "say", "text": "I whisper to the pack. 'What alpha do you hold?' The zipper rattles. That's either wind or financial advice." }
+            {
+              "op": "say",
+              "text": "I whisper to the pack. 'What alpha do you hold?' The zipper rattles. That's either wind or financial advice."
+            }
           ],
           "PICK": [
             {
               "op": "ifFlag",
               "flag": "found_ape_costume",
               "then": [
-                { "op": "say", "text": "Already grabbed the costume. The empty pack can stay." }
+                {
+                  "op": "say",
+                  "text": "Already grabbed the costume. The empty pack can stay."
+                }
               ],
               "else": [
-                { "op": "setFlag", "flag": "found_ape_costume", "value": true },
-                { "op": "addItem", "id": "ape_costume", "name": "Ape Costume" },
-                { "op": "playSound", "key": "discovery" },
-                { "op": "say", "text": "I pull out the ape costume. It's surprisingly well-made \u2014 realistic fur, expressive face, even little diamond-shaped buttons." },
-                { "op": "say", "text": "A tag inside reads: 'Property of the Liquidity Pool Recreation Committee. If found, ape in.'" }
+                {
+                  "op": "setFlag",
+                  "flag": "found_ape_costume",
+                  "value": true
+                },
+                {
+                  "op": "addItem",
+                  "id": "ape_costume",
+                  "name": "Ape Costume"
+                },
+                {
+                  "op": "playSound",
+                  "key": "discovery"
+                },
+                {
+                  "op": "say",
+                  "text": "I pull out the ape costume. It's surprisingly well-made — realistic fur, expressive face, even little diamond-shaped buttons."
+                },
+                {
+                  "op": "say",
+                  "text": "A tag inside reads: 'Property of the Liquidity Pool Recreation Committee. If found, ape in.'"
+                }
               ]
             }
           ],
@@ -950,28 +1029,60 @@
               "op": "ifFlag",
               "flag": "found_ape_costume",
               "then": [
-                { "op": "say", "text": "Already opened and emptied. Nothing but lint and broken dreams left inside." }
+                {
+                  "op": "say",
+                  "text": "Already opened and emptied. Nothing but lint and broken dreams left inside."
+                }
               ],
               "else": [
-                { "op": "setFlag", "flag": "found_ape_costume", "value": true },
-                { "op": "addItem", "id": "ape_costume", "name": "Ape Costume" },
-                { "op": "playSound", "key": "discovery" },
-                { "op": "say", "text": "I open the Alpha Pack. Inside: a complete ape costume! Fur, mask, the works. Someone left this here for emergencies." },
-                { "op": "say", "text": "The label says: 'Liquidity Pool Recreation Committee \u2014 For authorized aping only.'" }
+                {
+                  "op": "setFlag",
+                  "flag": "found_ape_costume",
+                  "value": true
+                },
+                {
+                  "op": "addItem",
+                  "id": "ape_costume",
+                  "name": "Ape Costume"
+                },
+                {
+                  "op": "playSound",
+                  "key": "discovery"
+                },
+                {
+                  "op": "say",
+                  "text": "I open the Alpha Pack. Inside: a complete ape costume! Fur, mask, the works. Someone left this here for emergencies."
+                },
+                {
+                  "op": "say",
+                  "text": "The label says: 'Liquidity Pool Recreation Committee — For authorized aping only.'"
+                }
               ]
             }
           ],
           "CLOSE": [
-            { "op": "say", "text": "I zip the pack shut. The alpha stays contained. For now." }
+            {
+              "op": "say",
+              "text": "I zip the pack shut. The alpha stays contained. For now."
+            }
           ],
           "PUSH": [
-            { "op": "say", "text": "I nudge the pack with my foot. It slides under the desk. Something rattles inside." }
+            {
+              "op": "say",
+              "text": "I nudge the pack with my foot. It slides under the desk. Something rattles inside."
+            }
           ],
           "PULL": [
-            { "op": "say", "text": "I drag the pack out from under the desk. It's heavier than expected. What kind of alpha weighs this much?" }
+            {
+              "op": "say",
+              "text": "I drag the pack out from under the desk. It's heavier than expected. What kind of alpha weighs this much?"
+            }
           ],
           "GIVE": [
-            { "op": "say", "text": "Nobody here deserves this alpha. I'm keeping the pack." }
+            {
+              "op": "say",
+              "text": "Nobody here deserves this alpha. I'm keeping the pack."
+            }
           ]
         }
       }
@@ -1030,12 +1141,18 @@
             {
               "text": "Keep reading.",
               "next": "read_2",
-              "when": ["tos_read_1", "!tos_read_2"]
+              "when": [
+                "tos_read_1",
+                "!tos_read_2"
+              ]
             },
             {
               "text": "Keep reading.",
               "next": "read_3",
-              "when": ["tos_read_2", "!tos_read_3"]
+              "when": [
+                "tos_read_2",
+                "!tos_read_3"
+              ]
             },
             {
               "text": "Never mind.",
@@ -1148,10 +1265,6 @@
           ],
           "else": [
             {
-              "op": "say",
-              "text": "I insert the Golden ZERO Token into a slot on the mining rig. The screens flash: 'GOLDEN KEY ACCEPTED — FOUNDER MODE UNLOCKED.'"
-            },
-            {
               "op": "setFlag",
               "flag": "founder_mode",
               "value": true
@@ -1159,6 +1272,10 @@
             {
               "op": "removeItem",
               "id": "golden_token"
+            },
+            {
+              "op": "say",
+              "text": "I insert the Golden ZERO Token into a slot on the mining rig. The screens flash: 'GOLDEN KEY ACCEPTED — FOUNDER MODE UNLOCKED.'"
             },
             {
               "op": "wait",
@@ -1296,6 +1413,53 @@
         {
           "op": "achievement",
           "text": "GENESIS MINER — Activated the rig's original config"
+        }
+      ]
+    },
+    {
+      "items": [
+        "energy_drink",
+        "hs_computer"
+      ],
+      "result": "empty_can",
+      "script": [
+        {
+          "op": "ifFlag",
+          "flag": "has_empty_can",
+          "then": [
+            {
+              "op": "say",
+              "text": "It's had one. Any more and it starts day-trading."
+            }
+          ],
+          "else": [
+            {
+              "op": "removeItem",
+              "id": "energy_drink"
+            },
+            {
+              "op": "setFlag",
+              "flag": "has_empty_can",
+              "value": true
+            },
+            {
+              "op": "addItem",
+              "id": "empty_can",
+              "name": "Empty Can"
+            },
+            {
+              "op": "say",
+              "text": "I pour the BULL RUN into the rig's coolant reservoir."
+            },
+            {
+              "op": "say",
+              "text": "Its liquid cooling gurgles. I think it's been waiting for this."
+            },
+            {
+              "op": "say",
+              "text": "Hash rate up three percent. I keep the empty can. Penny would make me recycle it."
+            }
+          ]
         }
       ]
     }

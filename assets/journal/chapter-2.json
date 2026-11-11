@@ -1,5 +1,5 @@
 {
-  "_doc": "A2.9/A2.9a: diario de Dex, capítulo 2 (lobby, upstairs, rooftop). A3.4a: Penny y el abrigo (p2_coat, notas de Penny); A3.4c: cajón de Terms & Conditions (p2_drawer). A3.4b: veleta engrasada con pizza (p2_vane) y escotilla de tres cierres (p2_hatch: el capítulo acaba al bajar). Fernando, en A3.4d. Ver qa/README.md § Diario.",
+  "_doc": "A2.9/A2.9a: diario de Dex, capítulo 2 (lobby, upstairs, rooftop). A3.4a: Penny y el abrigo (p2_coat, notas de Penny); A3.4c: cajón de Terms & Conditions (p2_drawer). A3.4b: veleta engrasada con pizza (p2_vane) y escotilla de tres cierres (p2_hatch: el capítulo acaba al bajar). A3.4d: Fernando (sin objetivo propio: el test pide 3-4 por capítulo; notas n2_fernando/n2_golden/n2_founder y p2_fernando al final de la lista: Anon lo atiende solo después de que Penny prohíba la cafeína, y hasta regarlo). Ver qa/README.md § Diario.",
   "chapter": 2,
   "goals": [
     { "id": "g2_keycard", "text": "Get Adrian's keycard out of his coat. Past Penny.", "doneWhen": "has_keycard" },
@@ -15,7 +15,10 @@
     { "id": "n2_hatch", "text": "Roof hatch: card reader, keyhole, and a latch on a cable to the weather vane. Adrian trusts nobody.", "shownWhen": "hatch_reader_ok" },
     { "id": "n2_grease", "text": "Greased the weather vane with a slice of Adrian's pizza. It was always more lubricant than food.", "shownWhen": "vane_greased" },
     { "id": "n2_vane", "text": "The weather vane on the roof works a latch on the service hatch. Who wires a weather vane to a hatch? Adrian.", "shownWhen": "vane_turned" },
-    { "id": "n2_blink", "text": "Three locks open. That blinking below the building is a server heartbeat, and I climbed down to meet it.", "shownWhen": "chapter_2_complete" }
+    { "id": "n2_blink", "text": "Three locks open. That blinking below the building is a server heartbeat, and I climbed down to meet it.", "shownWhen": "chapter_2_complete" },
+    { "id": "n2_fernando", "text": "Fernando, the lobby plant, is in recovery. NO stimulants. He only drinks rain. Penny's rules.", "shownWhen": "penny_no_stimulants" },
+    { "id": "n2_golden", "text": "Gave Fernando a can of rooftop rain. He tipped me a Golden ZERO token. The mining rig upstairs has a suspiciously token-shaped slot.", "shownWhen": "plant_watered" },
+    { "id": "n2_founder", "text": "Founder Mode on the mining rig: Adrian's whole empire on one screen. He built all of it. Then he vanished.", "shownWhen": "founder_mode" }
   ],
   "puzzles": [
     {
@@ -55,6 +58,16 @@
         "Three locks. You've got three answers in your pockets.",
         "Card reader: the card from the coat. Keyhole: the key from the drawer. The latch: the vane.",
         "Use the keycard and the terminal key on the roof hatch. Then climb down."
+      ]
+    },
+    {
+      "id": "p2_fernando",
+      "openWhen": "penny_no_stimulants",
+      "doneWhen": "plant_watered",
+      "hints": [
+        "Fernando only drinks rain. Where does rain pile up in a building like this?",
+        "The roof has a very expensive birdbath. You'll need something empty to carry it in.",
+        "Pour the energy drink into the mining rig upstairs, fill the empty can at the satellite dish, then water Fernando."
       ]
     }
   ],

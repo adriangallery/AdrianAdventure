@@ -11,6 +11,8 @@
 //   vet_bill.png     (A3.3d) la factura del veterinario de Gerald: receipt.png teñido de verde menta con un sello de huella
 //   leaky_pen.png    (A3.4a) el boli de Mt. Gox del abrigo de Adrian: en diagonal, con la punta goteando tinta azul
 //   pizza_slice.png  (A3.4b) una porción de la pizza fosilizada de upstairs: pepperoni, brillos de grasa y una gota
+//   empty_can.png    (A3.4d) energy_drink.png (69×128, centrado en 128×128) desaturado y abollado: la lata que se bebió el mining rig
+//   rainwater_can.png (A3.4d) energy_drink.png teñido de azul con gotas: la lata llena de lluvia de la parabólica
 // Sin arte de pago: las mitades salen de code_note.png, la factura de receipt.png y el tablón se dibuja aquí.
 // Determinista (sin azar).
 import fs from 'node:fs';
@@ -371,6 +373,39 @@ function pizzaSlice() {
   return up2(g);
 }
 
+/**
+ * A3.4d: la lata de BULL RUN después del mining rig (gris, sin brillo: vacía) y llena de lluvia de la parabólica
+ * (teñida de azul, con tres gotas cayendo). Las dos salen de energy_drink.png (más estrecho: se centra en el lienzo de 128).
+ */
+function canVariant(can, kind) {
+  const out = blank(SIZE, SIZE);
+  const ox = Math.floor((SIZE - can.width) / 2), oy = Math.floor((SIZE - can.height) / 2);
+  for (let y = 0; y < can.height; y++) for (let x = 0; x < can.width; x++) {
+    const [r, g, b, a] = get(can, x, y);
+    if (a === 0) continue;
+    const lum = (r + g + b) / 3;
+    if (lum < 50) { set(out, x + ox, y + oy, [r, g, b, a]); continue; } // contorno
+    const k = lum / 255;
+    if (kind === 'empty') {
+      const v = Math.round(70 + 120 * k);
+      set(out, x + ox, y + oy, [v, v, Math.min(255, v + 6), a]);
+    } else {
+      set(out, x + ox, y + oy, [Math.round(40 + 70 * k), Math.round(110 + 90 * k), Math.round(170 + 85 * k), a]);
+    }
+  }
+  if (kind === 'rain') {
+    const DROP = [120, 200, 255, 255], EDGE = [20, 60, 110, 255];
+    for (const [cx, cy] of [[24, 18], [104, 30], [100, 70]]) {
+      for (let y = cy - 4; y <= cy + 4; y++) for (let x = cx - 3; x <= cx + 3; x++) {
+        const dy = (y - cy) / 4, dx = (x - cx) / (3 * Math.max(0.2, (dy + 1) / 2));
+        const d = dx * dx + dy * dy;
+        if (d <= 1) set(out, x, y, d > 0.55 ? EDGE : DROP);
+      }
+    }
+  }
+  return out;
+}
+
 function main() {
   const note = decodePng(fs.readFileSync(path.join(ITEMS, 'code_note.png')));
   const receipt = decodePng(fs.readFileSync(path.join(ITEMS, 'receipt.png')));
@@ -385,7 +420,9 @@ function main() {
   over(b, bHalf.img, 0, 0);
   over(b, f.front, 0, 0);
 
-  const outs = { note_half_a: a.img, note_half_b: b, fence_plank: plank(), vet_bill: vetBill(receipt), leaky_pen: leakyPen(), pizza_slice: pizzaSlice() };
+  const can = decodePng(fs.readFileSync(path.join(ITEMS, 'energy_drink.png')));
+  if (can.width > SIZE || can.height > SIZE) throw new Error(`energy_drink.png mide ${can.width}x${can.height}, más de ${SIZE}`);
+  const outs = { note_half_a: a.img, note_half_b: b, fence_plank: plank(), vet_bill: vetBill(receipt), leaky_pen: leakyPen(), pizza_slice: pizzaSlice(), empty_can: canVariant(can, 'empty'), rainwater_can: canVariant(can, 'rain') };
   for (const [id, img] of Object.entries(outs)) {
     const file = path.join(ITEMS, `${id}.png`);
     fs.writeFileSync(file, encodePng(img));

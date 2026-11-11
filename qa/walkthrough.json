@@ -64,6 +64,8 @@
         { "do": "act", "verb": "OPEN", "target": "hs_desk", "choices": ["Keep reading", "Keep reading", "Keep reading"], "rejects": "first person ever to read this", "note": "A3.4c (2.4): «Keep reading» ×3 llega a la página 38: terminal_key y la nota de PZ. A1.4: la flag del cajón se llama found_terminal_key (antes found_hw_wallet)", "expect": { "has": ["terminal_key"], "flags": { "tos_read_1": true, "tos_read_2": true, "tos_read_3": true, "found_terminal_key": true, "found_pz_note": true }, "unsetFlags": ["found_hw_wallet"] } },
         { "do": "act", "verb": "USE", "target": "hs_desk", "rejects": "already took the trading terminal key", "note": "A3.4c: con el cajón abierto ya no vuelve el árbol", "expect": { "scene": "upstairs", "has": ["terminal_key"] } },
         { "do": "act", "verb": "PICK", "target": "hs_energy_drink", "expect": { "has": ["energy_drink"] } },
+        { "do": "use", "item": "energy_drink", "target": "hs_computer", "rejects": "been waiting for this", "note": "A3.4d (2.7, opcional): el mining rig se bebe la lata y devuelve empty_can", "expect": { "scene": "upstairs", "has": ["empty_can"], "lacks": ["energy_drink"], "flags": { "has_empty_can": true } } },
+        { "do": "act", "verb": "PICK", "target": "hs_energy_drink", "rejects": "by the pallet", "note": "A3.4d: hay otra lata detrás del monitor (la del CRT del sótano, hasta A3.5a)", "expect": { "has": ["energy_drink", "empty_can"] } },
         { "do": "act", "verb": "LOOK", "target": "hs_pizza_box", "rejects": "sixty percent industrial lubricant", "note": "A3.4b (2.2): la pista de la grasa", "expect": { "scene": "upstairs", "lacks": ["pizza_slice"] } },
         { "do": "act", "verb": "PICK", "target": "hs_pizza_box", "rejects": "sound like velcro", "note": "A3.4b (2.2): una porción (pizza_slice, se gasta en la veleta)", "expect": { "has": ["pizza_slice"], "flags": { "has_pizza_slice": true } } },
         { "do": "act", "verb": "USE", "target": "hs_roof_hatch", "expect": { "scene": "rooftop", "audio": { "sfxPlayed": ["hatch_metal"], "ambience": "wind", "surface": "concrete" } } },
@@ -71,6 +73,8 @@
         { "do": "resize", "width": 1280, "height": 720, "note": "A1.10: vuelta al viewport de la ruta", "expect": { "scene": "rooftop", "noListenerGrowth": true } },
 
         { "do": "act", "verb": "PICK", "target": "hs_antenna_array", "expect": { "has": ["antenna"] } },
+        { "do": "act", "verb": "LOOK", "target": "hs_satellite_dish", "rejects": "best-funded birdbath", "note": "A3.4d (2.7): la pista de la lluvia", "expect": { "scene": "rooftop" } },
+        { "do": "use", "item": "empty_can", "target": "hs_satellite_dish", "rejects": "Artisanal", "note": "A3.4d (2.7): la lata vacía se llena de lluvia en la parabólica", "expect": { "has": ["rainwater_can"], "lacks": ["empty_can"], "flags": { "has_rainwater": true } } },
         { "do": "act", "verb": "LOOK", "target": "hs_roof_access_panel", "rejects": "Adrian trusts nobody", "note": "A3.4b (2.3): LOOK de la escotilla: tres cierres, y enumera los que faltan (aquí los tres)", "expect": { "scene": "rooftop", "unsetFlags": ["basement_unlocked", "hatch_reader_ok", "hatch_lock_ok"] } },
         { "do": "act", "verb": "USE", "target": "hs_weather_vane", "rejects": "Rust wins|Rusted solid", "note": "A3.4b (2.2): sin grasa la veleta no se mueve", "expect": { "scene": "rooftop", "unsetFlags": ["vane_turned", "vane_greased"] } },
         { "do": "use", "item": "pizza_slice", "target": "hs_weather_vane", "rejects": "contributes to the infrastructure", "note": "A3.4b (2.2): la pizza engrasa la veleta y se gasta", "expect": { "lacks": ["pizza_slice"], "flags": { "vane_greased": true }, "unsetFlags": ["vane_turned"] } },
@@ -93,6 +97,10 @@
         { "do": "use", "item": "ledger", "target": "hs_main_computer", "expect": { "flags": { "computer_unlocked": true } } },
         { "do": "use", "item": "floppy_disk", "target": "hs_main_computer", "expect": { "has": ["printout"], "lacks": ["floppy_disk"], "flags": { "has_printout": true } } },
         { "do": "act", "verb": "USE", "target": "hs_stairs", "expect": { "scene": "lobby" } },
+        { "do": "use", "item": "rainwater_can", "target": "hs_plant", "rejects": "only tips people he likes", "note": "A3.4d (2.7): Fernando bebe lluvia y suelta el Golden Token", "expect": { "scene": "lobby", "has": ["golden_token"], "lacks": ["rainwater_can"], "flags": { "plant_watered": true, "plant_revived": true } } },
+        { "do": "act", "verb": "USE", "target": "hs_stairs_up", "expect": { "scene": "upstairs" } },
+        { "do": "use", "item": "golden_token", "target": "hs_computer", "rejects": "FOUNDER MODE", "note": "A3.4d (2.7): el token en el mining rig: Founder Mode", "expect": { "lacks": ["golden_token"], "flags": { "founder_mode": true } } },
+        { "do": "walk", "x": 2, "y": 97.5, "trigger": "tr_to_lobby", "untilScene": "lobby", "note": "A3.4d: vuelta a pie al lobby por tr_to_lobby", "expect": { "scene": "lobby" } },
         { "do": "act", "verb": "USE", "target": "hs_frontdoor", "expect": { "scene": "outside" } },
 
         { "do": "walk", "x": 1.5, "y": 95, "trigger": "tr_mountain", "untilScene": "mountain", "note": "salida a pie por tr_mountain", "expect": { "scene": "mountain", "flags": { "chapter_4_intro_shown": true } } },
