@@ -152,14 +152,20 @@ export class MenuScene extends Phaser.Scene {
 
     const musicManager = this.game.registry.get('musicManager') as MusicManager | null;
 
-    this.createButton(width / 2, btnY, 'New Game', btnSize, () => {
-      this.showAudioPrompt(musicManager, () => startGame(false));
-    });
+    // A1.13: un solo arranque por menú. En móvil, el toque en el aviso de sonido (touchend) quitaba el aviso y el
+    // clic de ratón que el navegador emula después caía en el lienzo: si debajo estaba «New Game», tras «Continue»
+    // arrancaba también una partida nueva (vacía) que se autoguardaba encima.
+    let starting = false;
+    const choose = (loadSave: boolean) => {
+      if (starting) return;
+      starting = true;
+      this.showAudioPrompt(musicManager, () => startGame(loadSave));
+    };
+
+    this.createButton(width / 2, btnY, 'New Game', btnSize, () => choose(false));
 
     if (hasSave) {
-      this.createButton(width / 2, btnY + btnSpacing, 'Continue', btnSize, () => {
-        this.showAudioPrompt(musicManager, () => startGame(true));
-      });
+      this.createButton(width / 2, btnY + btnSpacing, 'Continue', btnSize, () => choose(true));
       // V6: dónde y cuándo se guardó la partida que se va a continuar (A1.13: la que de verdad se carga)
       const detail = this.add.text(width / 2, btnY + btnSpacing + btnSize * 1.05, MenuScene.continueDetail(chosen), {
         fontFamily: FONT.FAMILY,
@@ -266,7 +272,7 @@ export class MenuScene extends Phaser.Scene {
         musicManager.unlockFromGesture();
         if (musicManager.isMuted()) musicManager.toggleMute();
       }
-      overlay.remove();
+      MenuScene.dismissAfterGhostClick(overlay);
       onProceed();
     };
     yesBtn.addEventListener('touchend', enableAndProceed);
@@ -290,7 +296,7 @@ export class MenuScene extends Phaser.Scene {
         if (!musicManager.isMuted()) musicManager.toggleMute();
         this.game.sound.mute = true;
       }
-      overlay.remove();
+      MenuScene.dismissAfterGhostClick(overlay);
       onProceed();
     };
     noBtn.addEventListener('touchend', skipAndProceed);
@@ -455,6 +461,17 @@ export class MenuScene extends Phaser.Scene {
   }
 
   /** «just now» · «5 min ago» · «3 h ago» · «2 d ago» */
+  /**
+   * A1.13: quita el aviso sin dejar pasar el clic emulado tras el toque: se hace invisible al instante pero sigue
+   * encima (tapando el lienzo) unos 450 ms, lo que tarda el navegador en mandar el mousedown/click de compatibilidad.
+   */
+  static dismissAfterGhostClick(overlay: HTMLElement): void {
+    overlay.style.opacity = '0';
+    overlay.style.background = 'transparent';
+    overlay.setAttribute('aria-hidden', 'true');
+    window.setTimeout(() => overlay.remove(), 450);
+  }
+
   /** A1.13: la mejor partida local para «Continue» (ver SaveProgress.pickContinue), ya migrada. */
   static bestLocalSave(): ContinueCandidate | null {
     try {
