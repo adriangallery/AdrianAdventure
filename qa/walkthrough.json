@@ -88,6 +88,7 @@
         { "do": "act", "verb": "PICK", "target": "hs_left_desk", "rejects": "In this economy", "note": "A3.5a (3.3/3.4): la mesa da el disquete y un papel en blanco (scrap_paper, una de las dos hojas para la alfa falsa)", "expect": { "has": ["floppy_disk", "scrap_paper"], "flags": { "found_floppy": true, "found_scrap_paper": true } } },
         { "do": "use", "item": "energy_drink", "target": "hs_main_computer", "rejects": "isn't electricity", "note": "A3.5a (3.1): la bebida energética ya no enciende el CRT (es del cap. 2): rechazo y la lata se queda", "expect": { "scene": "basement", "has": ["energy_drink"], "unsetFlags": ["crt_powered"] } },
         { "do": "act", "verb": "PUSH", "target": "hs_equipment", "expect": { "scene": "server_room", "flags": { "server_room_open": true } } },
+        {"do": "callAnon", "note": "A3.5d: en server_room el puzle abierto más avanzado es p3_glass (p3_power y p3_pzbot también abren con server_room_open, pero van antes en la lista)", "expect": {"journal": {"chapter": 3, "anon": {"puzzle": "p3_glass", "level": 1}}}},
 
         { "do": "act", "verb": "LOOK", "target": "hs_raised_floor", "rejects": "DeFi protocol has dependencies", "note": "A3.5a (3.1): la pista del suelo técnico", "expect": { "scene": "server_room", "lacks": ["extension_cord"] } },
         { "do": "act", "verb": "PICK", "target": "hs_raised_floor", "rejects": "Red on the right", "note": "A3.5a (3.1): bajo las baldosas, el alargador y las gafas 3D (del cap. 4)", "expect": { "has": ["extension_cord", "glasses_3d"], "flags": { "has_extension_cord": true, "found_glasses_3d": true, "tiles_opened": true } } },
@@ -102,6 +103,7 @@
         { "do": "act", "verb": "PICK", "target": "hs_server_rack_b", "expect": { "has": ["burned_chip"] } },
         { "do": "act", "verb": "USE", "target": "hs_emergency_switch", "rejects": "STILL BULLISH", "note": "A3.5c (3.5): con switch_unlocked se apaga todo menos el rack de PZ-BOT (4 % de batería) y salen las coordenadas; el capítulo NO acaba aquí", "expect": { "flags": { "emergency_switch_flipped": true, "coords_known": true }, "unsetFlags": ["chapter_3_complete"] } },
         { "do": "walk", "x": 8, "y": 95, "trigger": "tr_to_basement", "untilScene": "basement", "note": "salida a pie por tr_to_basement", "expect": { "scene": "basement" } },
+        {"do": "callAnon", "note": "A3.5d: interruptor accionado y PZ-BOT colgado; falta el CRT: Anon habla de p3_power", "expect": {"journal": {"chapter": 3, "anon": {"puzzle": "p3_power", "level": 1}}}},
 
         { "do": "use", "item": "ledger", "target": "hs_main_computer", "rejects": "dead", "note": "A3.5a (3.2): sin corriente el Ledger no sirve", "expect": { "scene": "basement", "unsetFlags": ["computer_unlocked"] } },
         { "do": "use", "item": "extension_cord", "target": "hs_main_computer", "rejects": "smells like 1997", "note": "A3.5a (3.1): el alargador enciende el CRT y se queda enchufado", "expect": { "lacks": ["extension_cord"], "flags": { "crt_powered": true } } },

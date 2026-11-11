@@ -180,7 +180,7 @@ rutas reales (aunque fallen), con el mismo `BASE_URL`, y deja capturas en el art
 | `st-fail-sin-objetivo` | FAIL | pasos bien, `goal` sin cumplir |
 | `st-fail-atajo-abierto` | FAIL | se cumple el `goal` en el intento (aunque falle su `expect`) |
 | `st-xfail-atajo-conocido` | XFAIL | el mismo atajo con `knownBreak` |
-| `st-pass-trigger-pisado` | PASS | `[qa:blocked]` en el intento: pisa `outside.tr_mountain` sin printout, que no cambia de escena (A3.2: antes `tr_game_opening`) |
+| `st-pass-trigger-pisado` | PASS | `[qa:blocked]` en el intento: pisa `outside.tr_mountain` sin `marked_map` (antes printout), que no cambia de escena (A3.2: antes `tr_game_opening`) |
 | `st-xpass-ya-cerrado` | XPASS | lo mismo con `knownBreak` |
 | `st-pass-rechazo-visible` | PASS | intento con `rejects` («INVALID CODE» de `hs_keypad`) y acción ejecutada |
 | `st-error-sin-rechazo` | ERROR | el intento no muestra el `rejects` pedido |

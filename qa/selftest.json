@@ -62,7 +62,7 @@
       "id": "st-pass-trigger-pisado",
       "kind": "sequence-break",
       "title": "PASS: [qa:blocked] en el intento — se pisa un trigger que no cambia de escena",
-      "why": "A3.2: tr_mountain (outside) sin printout ni chapter_3_complete para al personaje y explica por qué no sigue: se pisa y no cambia de escena (antes era tr_game_opening, que A3.2 quitó por redundante con el onEnter)",
+      "why": "A3.2: tr_mountain (outside) sin marked_map (antes printout) ni chapter_3_complete para al personaje y explica por qué no sigue: se pisa y no cambia de escena (antes era tr_game_opening, que A3.2 quitó por redundante con el onEnter)",
       "expectStatus": "pass",
       "expectDetail": "^cerrado \\(paso 2 \\(intento\\): \\[qa:blocked\\] llegó a tr_mountain",
       "goal": { "scene": "mountain" },
