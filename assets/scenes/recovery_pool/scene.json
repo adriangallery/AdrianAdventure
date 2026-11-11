@@ -1590,7 +1590,7 @@
         },
         "d1": {
           "speaker": "Shallow-End Ape",
-          "text": "Your bags are so heavy, the lifeguard filed a complaint.",
+          "text": "Your bags are so heavy, the lifeguard filed a complaint, old chap.",
           "next": "d1_dex"
         },
         "d1_dex": {
@@ -1679,7 +1679,7 @@
         },
         "d3": {
           "speaker": "Deep-End Ape",
-          "text": "You bought the top so hard, they named it after you.",
+          "text": "You bought the top so hard, they named it after you, bro.",
           "next": "d3_dex"
         },
         "d3_dex": {
@@ -1865,7 +1865,7 @@
     },
     "r5": {
       "speaker": "B.O.T.",
-      "text": "Your roadmap is a napkin with a frowny face on it.",
+      "text": "FUD sample one. Your roadmap is a napkin with a frowny face on it.",
       "next": "r5_dex"
     },
     "r5_dex": {
