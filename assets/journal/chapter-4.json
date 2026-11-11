@@ -51,8 +51,8 @@
     },
     {
       "id": "n4_pool",
-      "text": "Satoshi says the other patients are 'providing liquidity. Downstairs.' I don't want to know. I want to know.",
-      "shownWhen": "satoshi_pool_hint"
+      "text": "Satoshi only opens the treatment room to group therapy graduates. Chad runs the group. Downstairs, behind the patient records.",
+      "shownWhen": "satoshi_needs_chad"
     },
     {
       "id": "n4_authorized",
