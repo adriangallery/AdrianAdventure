@@ -1429,7 +1429,7 @@ export class GameScene extends Phaser.Scene {
     this.registry.set('lastAutosaveAt', Date.now());
     const panelH = this.getEffectivePanelHeight();
     const label = this.add.text(this.scale.width - 12, this.scale.height - panelH - 10, 'AUTOSAVED', {
-      fontFamily: FONT.FAMILY, fontSize: '10px', color: TWP.HINT_TEXT, backgroundColor: TWP.HINT_BG, padding: { x: 6, y: 3 },
+      fontFamily: FONT.FAMILY, fontSize: '11px', color: TWP.HINT_TEXT, backgroundColor: TWP.HINT_BG, padding: { x: 6, y: 3 },
     }).setOrigin(1, 1).setDepth(400).setScrollFactor(0).setAlpha(0).setName('autosave-indicator');
     this.tweens.add({
       targets: label, alpha: 1, duration: 200, hold: 1600, yoyo: true,
@@ -1738,7 +1738,8 @@ export class GameScene extends Phaser.Scene {
 
   private showSceneTitle(title: string): void {
     const center = this.coordSystem.pctToScreen(50, 5);
-    const fontSize = Math.max(8, Math.min(14, Math.floor(this.coordSystem.bgW * 0.012)));
+    // A5.2: mínimo 11 px (legible en un iPhone en horizontal; antes 8)
+    const fontSize = Math.max(11, Math.min(14, Math.floor(this.coordSystem.bgW * 0.012)));
     const text = this.add.text(center.x, center.y, title, {
       fontFamily: FONT.FAMILY, fontSize: `${fontSize}px`,
       color: TWP.SCENE_TITLE, stroke: '#000000', strokeThickness: 3,
