@@ -20,7 +20,8 @@
 // `depthScale` (scene.json, opcional) = escala por profundidad lineal en y, como en Monkey Island: entre `yTop` y
 // `yBottom` (en % del alto del fondo) el factor va de `scaleTop` a `scaleBottom` y fuera se queda en el del extremo.
 // Multiplica la base ya redondeada, así que donde el factor es 1 la escala sigue siendo entera y al andar no hay saltos.
-// Solo donde la perspectiva lo pide (caminos que se alejan: outside, mountain, clinic_exterior).
+// Solo donde la perspectiva lo pide (caminos que se alejan: mountain, clinic_exterior) y con un cambio ≤ 25 % entre lo
+// más cercano y lo más lejano (A2.13; regla l del linter). `outside` es de escala fija (A2.13, Adrián 11-nov).
 //
 // La altura que usa Facing (A2.2) es la «del mundo» (artHeightPct: sin redondeo de pantalla), para que girarse hacia
 // un objeto no dependa del tamaño de la ventana.

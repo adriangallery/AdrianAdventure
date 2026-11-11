@@ -3,7 +3,7 @@
 //
 //   node scripts/lint-scenes.mjs [--strict] [--json] [--scene <id>] [--root <dir>] [--no-write]
 //
-// Recorre assets/scenes/<id>/scene.json y aplica once reglas:
+// Recorre assets/scenes/<id>/scene.json y aplica doce reglas:
 //   a  flags que se leen y nunca se ponen, o que se ponen y nunca se leen
 //   b  objetos que se consiguen (addItem) y no sirven para nada
 //   c  salidas (fadeToScene/gotoScene) en hotspots y triggers sin gate, para revisar a mano
@@ -31,8 +31,12 @@
 //      escena con menos de 2 elementos válidos = aviso (A4.3 pide al menos 2 por escena). Las `when` del ambiente cuentan
 //      como lecturas de flags (a) y usos de objetos (b). Los tipos y topes se repiten aquí (el linter corre sin type
 //      stripping) y tests/lint-scenes.test.mjs comprueba que coinciden con Ambient.ts
+//   l  cambio de tamaño por profundidad (A2.13, ERROR): un `depthScale` que cambia el tamaño de Dex más de un 25 % entre
+//      el punto más cercano y el más lejano (min/max de scaleTop/scaleBottom < 0,75), o cualquier depthScale que cambie
+//      el tamaño en una escena de escala fija (FIXED_SCALE_SCENES: `outside`, por decisión de Adrián del 11-nov; la
+//      lista coincide con los `scale: fixed` de qa/proportion-refs.json que llevan depthScale prohibido explícito)
 //
-// Por defecto (f), los spawns fuera de zona de (e), el diario mal formado de (h) y los errores de (j) y (k) son error; el resto, aviso. --strict lo convierte todo en error. Código de salida 1
+// Por defecto (f), los spawns fuera de zona de (e), el diario mal formado de (h), los errores de (j) y (k) y (l) son error; el resto, aviso. --strict lo convierte todo en error. Código de salida 1
 // solo si hay errores. Escribe lint-scenes-report.json y lint-scenes-report.md en la raíz del repo.
 // Excepciones con motivo en qa/lint-scenes-allow.json: [{ "rule": "c", "scene": "x", "id": "y", "reason": "…" }]
 // (`id` compara con el id del hallazgo o con su ruta; admite `*` al final como prefijo).
@@ -99,6 +103,7 @@ export const RULES = {
   i: 'densidad de píxel',
   j: 'respuestas de fallo',
   k: 'ambiente',
+  l: 'cambio de escala',
 };
 
 // A2.5: mismos mínimos que src/systems/FailResponses.ts (tests/lint-scenes.test.mjs comprueba que coinciden)
@@ -164,6 +169,24 @@ export function depthScaleWalkDefects(d, walkableAreas) {
     const hi = Math.max(...areas.map((a) => a.y + a.h));
     if (d.yBottom <= lo || d.yTop >= hi) out.push(`la franja ${d.yTop}-${d.yBottom} no corta la zona andable (y ${lo}-${hi}): el factor no cambia al andar`);
   }
+  return out;
+}
+
+// A2.13: cambio máximo de tamaño por profundidad (= MAX_DEPTH_CHANGE de scripts/lib/proportion.mjs; lo comprueba
+// tests/lint-scenes.test.mjs) y escenas donde Dex no cambia de tamaño nunca, con su motivo.
+export const MAX_DEPTH_CHANGE = 0.25;
+export const FIXED_SCALE_SCENES = {
+  outside: 'Adrián (11-nov): fachada y porche sin profundidad; Dex mide lo mismo en la acera que en la puerta',
+};
+
+/** A2.13: defectos de cambio de tamaño de un depthScale (vacío = bien). `fixed` = la escena es de escala fija. */
+export function depthChangeDefects(d, fixed = false) {
+  if (depthScaleDefects(d).length) return [];
+  const lo = Math.min(d.scaleTop, d.scaleBottom), hi = Math.max(d.scaleTop, d.scaleBottom);
+  const ch = hi > 0 ? 1 - lo / hi : 0;
+  const out = [];
+  if (fixed && ch > 1e-9) out.push(`escena de escala fija (${fixed}) y el depthScale cambia el tamaño un ${Math.round(ch * 100)} %: quítalo o pon scaleTop = scaleBottom`);
+  else if (ch > MAX_DEPTH_CHANGE + 1e-9) out.push(`el depthScale cambia el tamaño un ${Math.round(ch * 100)} % (${d.scaleTop}–${d.scaleBottom}); máximo ${MAX_DEPTH_CHANGE * 100} %: min/max ≥ ${1 - MAX_DEPTH_CHANGE}`);
   return out;
 }
 
@@ -916,6 +939,12 @@ export function lintProject(project) {
         push('i', 'warning', id, n.id, `${id}.npcs.${n.id}.artScale`, `${n.id}: artScale = ${JSON.stringify(n.artScale)} fuera de ${PIXEL_RANGES.artScale.join('-')}; se usa 1`);
       }
     }
+  }
+
+  // ── (l) cambio de escala (A2.13) ──
+  for (const [id, s] of Object.entries(scenes)) {
+    if (s.depthScale === undefined) continue;
+    for (const d of depthChangeDefects(s.depthScale, FIXED_SCALE_SCENES[id] ?? false)) push('l', 'error', id, 'depthScale', `${id}.depthScale`, `depthScale: ${d}`);
   }
 
   // ── (j) respuestas de fallo (A2.5) ──
