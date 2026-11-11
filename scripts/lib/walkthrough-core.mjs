@@ -586,6 +586,32 @@ export function classify(route, run) {
   return { status, detail };
 }
 
+// ── A0.6: reparto de rutas entre trabajos paralelos del CI (`--shard i/n`, `--only id,…`) ──────────────────────
+/** `"2/4"` → `{ index: 2, total: 4 }` (índice desde 1). Lanza si no es `i/n` con 1 ≤ i ≤ n. */
+export function parseShard(s) {
+  const m = /^\s*(\d+)\s*\/\s*(\d+)\s*$/.exec(String(s ?? ''));
+  const index = m ? Number(m[1]) : NaN;
+  const total = m ? Number(m[2]) : NaN;
+  if (!m || total < 1 || index < 1 || index > total) throw new Error(`--shard «${s}» no vale: tiene que ser i/n con 1 ≤ i ≤ n (p. ej. 2/4)`);
+  return { index, total };
+}
+/** `"a, b,,c"` → `['a', 'b', 'c']`. */
+export const parseOnly = (s) => String(s ?? '').split(',').map((x) => x.trim()).filter(Boolean);
+/**
+ * Rutas que le tocan a este trabajo. `routes` es la lista ordenada de todas las rutas de los ficheros pedidos
+ * (`{ file, id }`). Reparto por índice global (ruta k → trozo (k mod n) + 1): determinista, cada ruta en un solo
+ * trozo y la unión de los n trozos es la lista entera. `only` filtra por id después del reparto (no lo cambia).
+ * Devuelve `{ selected, unknown }`: ids de `only` que no existen en los ficheros (un error tipográfico no puede
+ * dejar una ruta sin ejecutar en silencio).
+ */
+export function selectRoutes(routes, { shard = null, only = [] } = {}) {
+  const ids = new Set(routes.map((r) => r.id));
+  const unknown = only.filter((id) => !ids.has(id));
+  const selected = routes.filter((r, k) => (!shard || k % shard.total === shard.index - 1) && (!only.length || only.includes(r.id)));
+  return { selected, unknown };
+}
+// ── fin A0.6 ──────────────────────────────────────────────────────────────────────────────────────────────────
+
 /** Defectos de una ruta del selftest: tiene que decir qué resultado espera. */
 export function selftestDefects(route) {
   const out = [];

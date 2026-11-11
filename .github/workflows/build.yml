@@ -3,6 +3,7 @@
 # desplegar con `git push dokku`.
 # A0.1 (plan SCUMM): job `walkthrough` (ruta crítica y atajos con la API ?qa=1, ver qa/README.md), también en
 # `main`, y `workflow_dispatch` con BASE_URL para lanzar smoke y walkthrough contra una URL ya desplegada.
+# A0.6: el job `walkthrough` agrega walkthrough-critica, walkthrough-atajos (trozos) y walkthrough-selftest.
 # A0.2 (plan SCUMM): job `demo`, que graba las demos visuales `scripts/demo-*.mjs` y sube sus GIF
 # (sustituye a los jobs `demo-v6` y `demo-a1-3`).
 name: build
@@ -89,12 +90,16 @@ jobs:
           name: smoke-shots
           path: smoke-shots/
 
-  walkthrough:
-    # A0.1: New Game → créditos con la API de QA y atajos de secuencia (qa/*.json); capturas por paso
+  # A0.1: New Game → créditos con la API de QA y atajos de secuencia (qa/*.json); capturas por paso.
+  # A0.6: en paralelo para no pasar de ~15 min de reloj (antes, todo en serie: ~36 min). Ruta crítica, atajos
+  # repartidos en trozos (`--shard i/n`, reparto por índice que cubre cada ruta una sola vez, ver qa/README.md) y
+  # selftest, cada uno con su build. El check `walkthrough` (el que miran el orquestador y las PR) es el job final
+  # que agrega: verde solo si todas las partes lo son.
+  walkthrough-critica:
     needs: build
     if: ${{ !cancelled() && (needs.build.result == 'success' || (needs.build.result == 'skipped' && inputs.BASE_URL)) }}
     runs-on: ubuntu-latest
-    timeout-minutes: 70
+    timeout-minutes: 40
     steps:
       - uses: actions/checkout@v4
 
@@ -116,14 +121,90 @@ jobs:
           for i in $(seq 1 60); do curl -sf http://127.0.0.1:4173/ >/dev/null && exit 0; sleep 1; done
           cat preview.log; exit 1
 
-      - name: Recorrido y atajos
-        run: npm run test:walkthrough -- qa/walkthrough.json qa/sequence-breaks.json
+      - name: Ruta crítica, controles de escritorio y cinemática (qa/walkthrough.json)
+        run: npm run test:walkthrough -- qa/walkthrough.json
         env:
           BASE_URL: ${{ inputs.BASE_URL || 'http://127.0.0.1:4173' }}
+          WALKTHROUGH_ARTIFACT: walkthrough-shots-critica
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: walkthrough-shots-critica
+          path: walkthrough-shots/
+
+  walkthrough-atajos:
+    needs: build
+    if: ${{ !cancelled() && (needs.build.result == 'success' || (needs.build.result == 'skipped' && inputs.BASE_URL)) }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        # Para más trozos basta con alargar la lista: el total sale de strategy.job-total
+        shard: [1, 2, 3, 4]
+    name: walkthrough-atajos (${{ matrix.shard }}/${{ strategy.job-total }})
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Build con assets (igual que el Dockerfile del mini)
+        if: ${{ !inputs.BASE_URL }}
+        run: npm run build
+
+      - name: Servir el build
+        if: ${{ !inputs.BASE_URL }}
+        run: |
+          npx vite preview --host 127.0.0.1 --port 4173 --strictPort > preview.log 2>&1 &
+          for i in $(seq 1 60); do curl -sf http://127.0.0.1:4173/ >/dev/null && exit 0; sleep 1; done
+          cat preview.log; exit 1
+
+      - name: Atajos de secuencia, trozo ${{ matrix.shard }}/${{ strategy.job-total }} (qa/sequence-breaks.json)
+        run: npm run test:walkthrough -- qa/sequence-breaks.json --shard "${{ matrix.shard }}/${{ strategy.job-total }}"
+        env:
+          BASE_URL: ${{ inputs.BASE_URL || 'http://127.0.0.1:4173' }}
+          WALKTHROUGH_ARTIFACT: walkthrough-shots-atajos-${{ matrix.shard }}
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: walkthrough-shots-atajos-${{ matrix.shard }}
+          path: walkthrough-shots/
+
+  walkthrough-selftest:
+    # A0.5: comprueba que el runner clasifica bien cada rama (qa/selftest.json), independiente de las rutas reales
+    needs: build
+    if: ${{ !cancelled() && (needs.build.result == 'success' || (needs.build.result == 'skipped' && inputs.BASE_URL)) }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Build con assets (igual que el Dockerfile del mini)
+        if: ${{ !inputs.BASE_URL }}
+        run: npm run build
+
+      - name: Servir el build
+        if: ${{ !inputs.BASE_URL }}
+        run: |
+          npx vite preview --host 127.0.0.1 --port 4173 --strictPort > preview.log 2>&1 &
+          for i in $(seq 1 60); do curl -sf http://127.0.0.1:4173/ >/dev/null && exit 0; sleep 1; done
+          cat preview.log; exit 1
 
       - name: Selftest del runner (A0.5)
-        # Aunque fallen las rutas reales: comprueba que el runner clasifica bien cada rama (qa/selftest.json)
-        if: ${{ !cancelled() }}
         run: npm run test:walkthrough:selftest
         env:
           BASE_URL: ${{ inputs.BASE_URL || 'http://127.0.0.1:4173' }}
@@ -131,14 +212,36 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: walkthrough-shots
-          path: walkthrough-shots/
-
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
           name: walkthrough-selftest-shots
           path: walkthrough-selftest-shots/
+
+  walkthrough:
+    # A0.6: check agregado con el nombre de siempre. Corre aunque algo falle (no si se cancela el workflow) y solo es
+    # verde si las tres partes (todos los trozos de atajos incluidos) terminaron en success.
+    needs: [walkthrough-critica, walkthrough-atajos, walkthrough-selftest]
+    if: ${{ !cancelled() }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Resultado de las partes
+        env:
+          CRITICA: ${{ needs.walkthrough-critica.result }}
+          ATAJOS: ${{ needs.walkthrough-atajos.result }}
+          SELFTEST: ${{ needs.walkthrough-selftest.result }}
+        run: |
+          {
+            echo '### Walkthrough (A0.6)'
+            echo
+            echo '| Parte | Resultado |'
+            echo '|---|---|'
+            echo "| walkthrough-critica | $CRITICA |"
+            echo "| walkthrough-atajos (todos los trozos) | $ATAJOS |"
+            echo "| walkthrough-selftest | $SELFTEST |"
+          } | tee -a "$GITHUB_STEP_SUMMARY"
+          [ "$CRITICA" = success ] && [ "$ATAJOS" = success ] && [ "$SELFTEST" = success ] || {
+            echo "::error::walkthrough: alguna parte no terminó en success (crítica=$CRITICA, atajos=$ATAJOS, selftest=$SELFTEST)"
+            exit 1
+          }
 
   demo:
     # A0.2 (regla visual del plan): GIF de cada demo `scripts/demo-*.mjs` (grabación en scripts/lib/demo.mjs).

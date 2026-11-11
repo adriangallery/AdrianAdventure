@@ -199,6 +199,45 @@ test('las rutas reales (walkthrough y atajos) siguen bien definidas', () => {
   }
 });
 
+// ── A0.6: reparto de rutas entre trabajos del CI (--shard i/n, --only) ──
+import { parseOnly, parseShard, selectRoutes } from '../scripts/lib/walkthrough-core.mjs';
+
+test('A0.6: parseShard y parseOnly', () => {
+  assert.deepEqual(parseShard('2/4'), { index: 2, total: 4 });
+  assert.deepEqual(parseShard(' 1 / 1 '), { index: 1, total: 1 });
+  for (const bad of ['0/4', '5/4', '1/0', '2', 'a/b', '', undefined, '-1/3', '1.5/3']) assert.throws(() => parseShard(bad), /--shard/, String(bad));
+  assert.deepEqual(parseOnly('a, b,,c '), ['a', 'b', 'c']);
+  assert.deepEqual(parseOnly(''), []);
+  assert.deepEqual(parseOnly(undefined), []);
+});
+
+test('A0.6: los trozos de los atajos (y de todas las rutas) cubren cada ruta exactamente una vez', () => {
+  const routesOf = (...files) => files.flatMap((file) => readJson(file).routes.map((r) => ({ file, id: r.id })));
+  const sets = [routesOf('qa/sequence-breaks.json'), routesOf('qa/walkthrough.json'), routesOf('qa/walkthrough.json', 'qa/sequence-breaks.json'), routesOf('qa/selftest.json')];
+  for (const all of sets) {
+    assert.equal(new Set(all.map((r) => `${r.file}#${r.id}`)).size, all.length, 'ids repetidos dentro de un fichero');
+    for (let n = 1; n <= all.length + 2; n++) {
+      const parts = Array.from({ length: n }, (_, i) => selectRoutes(all, { shard: { index: i + 1, total: n } }).selected);
+      const union = parts.flat();
+      assert.equal(union.length, all.length, `n=${n}: sobran o faltan rutas`);
+      assert.deepEqual([...union].sort((a, b) => all.indexOf(a) - all.indexOf(b)), all, `n=${n}: la unión no es la lista entera`);
+      // Equilibrado por número de rutas y estable: llamar dos veces da lo mismo
+      assert.ok(Math.max(...parts.map((p) => p.length)) - Math.min(...parts.map((p) => p.length)) <= 1, `n=${n}: desequilibrado`);
+      assert.deepEqual(selectRoutes(all, { shard: { index: 1, total: n } }).selected, parts[0]);
+    }
+  }
+});
+
+test('A0.6: selectRoutes con --only filtra después del reparto y avisa de ids que no existen', () => {
+  const all = ['a', 'b', 'c', 'd', 'e'].map((id) => ({ file: 'f.json', id }));
+  assert.deepEqual(selectRoutes(all).selected, all);
+  assert.deepEqual(selectRoutes(all, { shard: { index: 2, total: 2 } }).selected.map((r) => r.id), ['b', 'd']);
+  assert.deepEqual(selectRoutes(all, { only: ['c', 'a'] }).selected.map((r) => r.id), ['a', 'c']);
+  assert.deepEqual(selectRoutes(all, { shard: { index: 1, total: 2 }, only: ['b', 'c'] }).selected.map((r) => r.id), ['c']);
+  assert.deepEqual(selectRoutes(all, { only: ['a', 'zz'] }).unknown, ['zz']);
+});
+// ── fin A0.6 ──
+
 test('A1.10: noListenerGrowth compara los listeners de resize con los del primer paso', () => {
   const exp = { scene: 'rooftop', noListenerGrowth: true };
   assert.deepEqual(check(exp, st({ scene: 'rooftop', resizeListeners: 9 }), { listenersBaseline: 9 }), []);
