@@ -94,7 +94,7 @@ jobs:
     needs: build
     if: ${{ !cancelled() && (needs.build.result == 'success' || (needs.build.result == 'skipped' && inputs.BASE_URL)) }}
     runs-on: ubuntu-latest
-    timeout-minutes: 40
+    timeout-minutes: 60 # A3.5d: con los atajos del capítulo 3 (cada uno rejuega los capítulos 1 y 2) se pasaba de 40
     steps:
       - uses: actions/checkout@v4
 
