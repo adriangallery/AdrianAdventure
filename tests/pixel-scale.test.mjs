@@ -156,7 +156,9 @@ test('escenas: sin playerScale ni scale de NPC a mano; pixelScale/depthScale/art
     }
   }
   // Los spawn de las escenas con profundidad están en la franja del factor 1 (alto de referencia)
-  for (const id of ['outside', 'mountain', 'clinic_exterior']) {
+  // (A2.13: outside es de escala fija, sin depthScale)
+  assert.equal(scene('outside').depthScale, undefined, 'outside: escala fija (A2.13)');
+  for (const id of ['mountain', 'clinic_exterior']) {
     const sc = scene(id);
     assert.ok(sc.depthScale, `${id} lleva depthScale`);
     assert.equal(depthFactor(sc.depthScale, sc.player.spawn.y), 1, `${id}: spawn sin profundidad`);
