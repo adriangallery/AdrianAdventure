@@ -114,7 +114,7 @@ test('walkPose del mono en vertical: fotogramas de perfil del último lado con e
   assert.equal(p.texture, 'ape_walk_right_1');
   assert.ok(near(walkPose({ prefix: 'ape', dir: 'up', side: 'right', tMs: STEP_MS / 2, has }).angle, SWAY_DEG));
   // Sin ninguna textura de Front (tráiler), igual
-  assert.equal(walkPose({ prefix: 'player', dir: 'down', side: 'right', tMs: 0, has: (k) => !k.includes('front') }).texture, 'player_walk_left_0');
+  assert.equal(walkPose({ prefix: 'player', dir: 'down', side: 'right', tMs: 0, has: (k) => !k.includes('front') && !k.startsWith('dex2d_') }).texture, 'player_walk_left_0');
 });
 
 test('talkPose: cabeceo a TALK_HZ, de frente alterna manos; con pose fija solo cabecea', () => {
@@ -220,4 +220,76 @@ test('IdleTicker: primer tic tras IDLE_TIC_AFTER_MS quieto, luego cada 3-6 s; cu
   assert.ok(tk.current(), 'tic en curso');
   assert.equal(tk.update(16, false, 'front', 'right'), null);
   assert.equal(tk.current(), null, 'cortado');
+});
+
+// ── A2.15: rig 2D pre-renderizado (art/dex2d/build.py) ───────────────────────────────────────────────────────────
+const F = await import('../src/data/dex2dFrames.ts');
+const RIG_PNG = readdirSync(new URL('../assets/sprites/player/dex2d/', import.meta.url)).filter((f) => f.endsWith('.png'));
+const RIG_KEYS = new Set([...KEYS, ...Object.entries(F.DEX2D_ANIMS).flatMap(([a, m]) => Array.from({ length: m.frames }, (_, i) => `dex2d_${a}_${i}`))]);
+const hasR = (k) => RIG_KEYS.has(k);
+
+test('A2.15: los fotogramas del rig existen y cuadran con las constantes de PlayerAnim', () => {
+  for (const [a, m] of Object.entries(F.DEX2D_ANIMS)) {
+    for (let i = 0; i < m.frames; i++) assert.ok(RIG_PNG.includes(`${a}_${i}.png`), `falta dex2d/${a}_${i}.png`);
+    assert.equal(m.h, 103, `${a}: alto 103 (A2.11: mismo alto y pies abajo)`);
+  }
+  assert.equal(F.DEX2D_ANIMS.walk_r.frames, A.RIG_WALK_FRAMES);
+  assert.equal(F.DEX2D_ANIMS.walk_r.ms, A.RIG_WALK_FRAME_MS);
+  assert.equal(F.DEX2D_ANIMS.walk_down.frames, A.RIG_VWALK_FRAMES);
+  assert.equal(F.DEX2D_ANIMS.walk_up.ms, A.RIG_VWALK_FRAME_MS);
+  assert.equal(F.DEX2D_ANIMS.idle.frames, A.RIG_IDLE_FRAMES);
+  assert.equal(F.DEX2D_ANIMS.talk_r.ms, A.RIG_TALK_FRAME_MS);
+  assert.equal(F.DEX2D_ANIMS.shrug.frames, A.RIG_SHRUG_FRAMES);
+  for (const [k, v] of Object.entries(A.RIG_TICS)) {
+    assert.equal(F.DEX2D_ANIMS[`tic_${k}`].frames, v.frames, k);
+    assert.equal(F.DEX2D_ANIMS[`tic_${k}`].ms, v.ms, k);
+  }
+  assert.equal(F.DEX2D_WALK_STEP_ART_PX, A.RIG_STEP_ART_PX);
+});
+
+test('A2.15: sin patinar — 2 pasos por ciclo de andar = lo que avanza a 74 px de arte/s', async () => {
+  const W = await import('../src/systems/WalkMotion.ts');
+  const cycle = A.RIG_WALK_FRAMES * A.RIG_WALK_FRAME_MS;
+  assert.ok(near(W.artPxPerCycle(cycle), 2 * A.RIG_STEP_ART_PX, 1e-6), `${W.artPxPerCycle(cycle)} px por ciclo`);
+  assert.ok(Math.abs(A.RIG_VWALK_FRAMES * A.RIG_VWALK_FRAME_MS - cycle) <= 2, 'arriba/abajo con la misma cadencia');
+});
+
+test('A2.15: walk/talk/gesto/shrug usan el rig con Dex y no con el mono', () => {
+  assert.equal(A.hasRig('player', hasR), true);
+  assert.equal(A.hasRig('ape', hasR), false);
+  assert.equal(A.hasRig('player', has), false, 'sin los fotogramas (tráiler) sigue lo de A4.1');
+  assert.equal(walkPose({ prefix: 'player', dir: 'right', side: 'right', tMs: 0, has: hasR }).texture, 'dex2d_walk_r_0');
+  assert.equal(walkPose({ prefix: 'player', dir: 'left', side: 'left', tMs: 350, has: hasR }).texture, 'dex2d_walk_l_3');
+  assert.equal(walkPose({ prefix: 'player', dir: 'right', side: 'right', tMs: 800, has: hasR }).texture, 'dex2d_walk_r_0');
+  assert.equal(walkPose({ prefix: 'player', dir: 'down', side: 'right', tMs: 140, has: hasR }).texture, 'dex2d_walk_down_1');
+  assert.equal(walkPose({ prefix: 'player', dir: 'up', side: 'right', tMs: 0, has: hasR }).angle, 0, 'el rig no se balancea con tween');
+  assert.equal(walkPose({ prefix: 'ape', dir: 'right', side: 'right', tMs: 0, has: hasR }).texture, 'ape_walk_left_0');
+  assert.equal(talkPose({ prefix: 'player', facing: 'front', tMs: 150, has: hasR }).texture, 'dex2d_talk_front_1');
+  assert.equal(talkPose({ prefix: 'player', facing: 'right', tMs: 0, has: hasR }).texture, 'dex2d_talk_r_0');
+  assert.equal(talkPose({ prefix: 'player', facing: 'front', tMs: 150, has: hasR, posed: true }).texture, null);
+  const g = (t, level) => gesturePose({ prefix: 'player', facing: 'right', side: 'right', aim: 'right', tMs: t, has: hasR, level });
+  assert.equal(g(0).texture, 'dex2d_pick_r_mid_0');
+  assert.equal(g(GESTURE_MS - 1, 'high').texture, 'dex2d_pick_r_high_3');
+  assert.equal(g(GESTURE_MS), null);
+  assert.equal(A.pickLevel(0.1), 'low');
+  assert.equal(A.pickLevel(0.5), 'mid');
+  assert.equal(A.pickLevel(1.0), 'high');
+  assert.equal(A.pickLevel(null), 'mid');
+  assert.equal(A.shrugPose({ prefix: 'player', tMs: 0, has: hasR }).texture, 'dex2d_shrug_0');
+  assert.equal(A.shrugPose({ prefix: 'player', tMs: A.SHRUG_MS, has: hasR }), null);
+  assert.equal(A.shrugPose({ prefix: 'ape', tMs: 0, has: hasR }), null);
+});
+
+test('A2.15: manías de reposo del rig, deterministas con la semilla de QA', () => {
+  assert.deepEqual(idleTicKinds('front', true), ['scratch', 'glasses', 'sway', 'yawn', 'lookSide']);
+  assert.deepEqual(idleTicKinds('front'), ['lookSide', 'tapFoot'], 'sin rig, lo de A4.1');
+  const seq = (seed) => {
+    const r = mulberry32(seed);
+    return Array.from({ length: 12 }, () => pickIdleTic(r, 'front', 'right', true).kind);
+  };
+  assert.deepEqual(seq(QA_IDLE_SEED), seq(QA_IDLE_SEED));
+  assert.ok(new Set(seq(QA_IDLE_SEED)).size >= 3, 'al menos 3 manías distintas en 12 tics');
+  const tic = { kind: 'scratch', ms: 8 * 140, side: 'right' };
+  assert.equal(idleTicPose(tic, 0, { prefix: 'player', has: hasR }).texture, 'dex2d_tic_scratch_0');
+  assert.equal(idleTicPose(tic, 8 * 140 - 1, { prefix: 'player', has: hasR }).texture, 'dex2d_tic_scratch_7');
 });

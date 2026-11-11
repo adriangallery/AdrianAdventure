@@ -619,6 +619,11 @@ y si la escena está libre. Sin arte nuevo: los PNG de `assets/sprites/player`.
 - **QA**: `state().anim` = `{ texture, moving, dir, vertical, talking, gesture, idleTick, idleTicks, costume, preview,
   angle, liftPx, scale, baseScale, rest }`; `expect.anim` (ver § Rutas); `__qa.previewCostume('ape' | 'player' | null)`.
   Demo: `scripts/demo-a4-1-player-anim.mjs`.
+- **Rig 2D de Dex (A2.15)**: con el juego de sprites `player`, andar, idle, hablar, coger de perfil, las manías de reposo
+  (`scratch`, `glasses`, `sway`, `yawn`, de frente) y el encogimiento de hombros de las respuestas de fallo
+  (`FailResponses.onFail`) usan fotogramas pre-renderizados `dex2d_<anim>_<i>` (art/dex2d/build.py; ver
+  docs/progreso/A2.15.md) en vez de giros: `angle` 0 salvo de espaldas en el gesto. `state().anim` suma `rig` y `shrug`.
+  El mono y el tráiler siguen con lo de arriba. Demo: `scripts/demo-a2-15-rig2d.mjs`.
 
 # Vida en las NPC (A4.2)
 

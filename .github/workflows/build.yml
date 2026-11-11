@@ -94,7 +94,7 @@ jobs:
     needs: build
     if: ${{ !cancelled() && (needs.build.result == 'success' || (needs.build.result == 'skipped' && inputs.BASE_URL)) }}
     runs-on: ubuntu-latest
-    timeout-minutes: 40
+    timeout-minutes: 70
     steps:
       - uses: actions/checkout@v4
 
