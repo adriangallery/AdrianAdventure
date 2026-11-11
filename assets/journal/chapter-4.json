@@ -1,21 +1,26 @@
 {
-  "_doc": "A2.9/A2.9a: diario de Dex, capítulo 4. A3.6a: admisión de Nurse Gwei (pruebas en el buzón y cuestionario de negación); el resto se reescribe en A3.6f. Ver qa/README.md § Diario.",
+  "_doc": "A2.9/A2.9a: diario de Dex, capítulo 4. A3.6: reescrito con el capítulo de la biblia (admisión de Nurse Gwei, condición de Satoshi, piscina, réplicas, MemeLAB, duelo de FUD y autorización). p4_records y p4_mountain se quedan (el listado del CRT y la subida se pueden hacer tarde). Ver qa/README.md § Diario.",
   "chapter": 4,
   "goals": [
-    {
-      "id": "g4_printout",
-      "text": "Make the old computer print what it knows.",
-      "doneWhen": "has_printout"
-    },
-    {
-      "id": "g4_mountain",
-      "text": "Follow the map into the mountains.",
-      "doneWhen": "chapter_4_intro_shown"
-    },
     {
       "id": "g4_admitted",
       "text": "Get admitted to the clinic. As a patient.",
       "doneWhen": "admitted"
+    },
+    {
+      "id": "g4_comebacks",
+      "text": "Learn to fight Chad: three sources of comebacks and one thing he can't argue with.",
+      "doneWhen": [
+        "fud_r1",
+        "fud_r3",
+        "fud_r5",
+        "found_pepememe"
+      ]
+    },
+    {
+      "id": "g4_chad",
+      "text": "Beat Chad at FUD.",
+      "doneWhen": "beat_chad"
     },
     {
       "id": "g4_satoshi",
@@ -55,11 +60,6 @@
       "shownWhen": "satoshi_needs_chad"
     },
     {
-      "id": "n4_authorized",
-      "text": "Satoshi authorized the treatment room. The door also has a physical keyhole. Dual lock.",
-      "shownWhen": "treatment_room_unlocked"
-    },
-    {
       "id": "n4_accepted",
       "text": "The pool apes accepted me. Gerald approves. I've been ignored by better people, but never by wetter ones.",
       "shownWhen": "pool_accepted"
@@ -83,6 +83,26 @@
       "id": "n4_fud_bar",
       "text": "Comebacks (the bar): 'Still more detail than your exit plan.' / 'I can tell. They left the receipts floating in the pool.' B.O.T. says Chad has never made anything.",
       "shownWhen": "fud_r5"
+    },
+    {
+      "id": "n4_pepe",
+      "text": "A rare Pepe from the MemeLAB. 'SPECIMEN #001 — by P.Z.' P.Z. Patient Zero made something people still want.",
+      "shownWhen": "found_pepememe"
+    },
+    {
+      "id": "n4_chad",
+      "text": "Beat Chad. With a frog. He gave me his sobriety token. Worth nothing. That's the point.",
+      "shownWhen": "beat_chad"
+    },
+    {
+      "id": "n4_envelope",
+      "text": "Satoshi read Adrian's envelope: the original referral. The patient's name is under a coffee stain.",
+      "shownWhen": "satoshi_read_envelope"
+    },
+    {
+      "id": "n4_authorized",
+      "text": "Satoshi authorized the treatment room. The door also has a physical keyhole. Dual lock.",
+      "shownWhen": "treatment_room_unlocked"
     }
   ],
   "puzzles": [
@@ -126,13 +146,72 @@
       ]
     },
     {
-      "id": "p4_clinic",
+      "id": "p4_satoshi",
       "openWhen": "admitted",
+      "doneWhen": "satoshi_needs_chad",
+      "hints": [
+        "You want the treatment room. Ask the man who owns the door.",
+        "Satoshi. Ask him straight about the treatment room.",
+        "Talk to Dr. Satoshi and ask to see the treatment room."
+      ]
+    },
+    {
+      "id": "p4_pool",
+      "openWhen": "satoshi_needs_chad",
+      "doneWhen": "pool_accepted",
+      "hints": [
+        "Group meets downstairs. Downstairs is behind something heavy.",
+        "Push the filing cabinet. Then the apes need a reason to respect you. Fur, or a duck.",
+        "Wear the ape costume, or pick a rubber duck from the junk pile and use Gerald, the giant duck."
+      ]
+    },
+    {
+      "id": "p4_comebacks",
+      "openWhen": "pool_accepted",
+      "doneWhen": [
+        "fud_r1",
+        "fud_r3",
+        "fud_r5"
+      ],
+      "hints": [
+        "You don't beat a roaster without a script. Steal one.",
+        "The book by the pool says where: shallow end, deep end, the bar.",
+        "Talk to the apes on the left, the apes on the right, and order a drink from B.O.T."
+      ]
+    },
+    {
+      "id": "p4_pepe",
+      "openWhen": "pool_accepted",
+      "doneWhen": "found_pepememe",
+      "hints": [
+        "Chad's weakness: he never made anything. Find something somebody made.",
+        "Behind the DEEP LIQUIDITY door. Your eyes will need help in there.",
+        "Use your 3D glasses in the MemeLAB, then pick up the rare Pepe."
+      ]
+    },
+    {
+      "id": "p4_chad",
+      "openWhen": [
+        "fud_r1",
+        "fud_r3",
+        "fud_r5",
+        "found_pepememe"
+      ],
+      "doneWhen": "beat_chad",
+      "hints": [
+        "Every FUD has exactly one comeback that answers it.",
+        "Tops, bags, roadmaps. Then the big one: what did you build?",
+        "Loyalty card, kiddie pool, exit plan. Then show him the Pepe."
+      ]
+    },
+    {
+      "id": "p4_clinic",
+      "openWhen": "beat_chad",
       "doneWhen": "treatment_room_unlocked",
       "hints": [
-        "The doctor guards the treatment room. Doctors like paperwork.",
-        "Paperwork with Patient Zero's name on it. Sealed, ideally.",
-        "Give Satoshi the confidential envelope. Talk to him about the documents."
+        "Chad said the Doc collects those.",
+        "Satoshi. The token. Upstairs.",
+        "Talk to Dr. Satoshi and tell him you beat Chad."
       ]
     }
   ],

@@ -160,6 +160,111 @@
         }
       },
       {
+        "id": "hs_chad",
+        "name": "Chad",
+        "useResponses": {
+          "_default": [
+            "Chad looks at it. Chad yawns. Chad only respects words, bro.",
+            "I offer it to Chad. 'Is that FUD? Doesn't sound like FUD.'",
+            "Chad slides his sunglasses down, looks, slides them back up. Rejected."
+          ],
+          "pepememe": [
+            "I flash the Pepe at Chad. He doesn't look. 'Show me in a duel, bro. Timing is everything.'"
+          ]
+        },
+        "bounds": {
+          "x": 62.5,
+          "y": 67,
+          "w": 7,
+          "h": 21
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "say",
+              "text": "An ape on a blue ring, sunglasses indoors, arms behind his head. That's Chad. Runs group therapy. Never lost a FUD duel."
+            },
+            {
+              "op": "say",
+              "text": "He has also never built anything. You can tell. He's very relaxed."
+            }
+          ],
+          "TALK": [
+            {
+              "op": "ifFlag",
+              "flag": "beat_chad",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "Bro. You beat me. I'm still processing. Go show the Doc.",
+                  "speaker": "Chad"
+                }
+              ],
+              "else": [
+                {
+                  "op": "ifFlag",
+                  "flag": "pool_accepted",
+                  "then": [
+                    {
+                      "op": "dialogue",
+                      "npcId": "chad_fud",
+                      "treeId": "chad_fud"
+                    }
+                  ],
+                  "else": [
+                    {
+                      "op": "say",
+                      "text": "Normies don't get roasted, bro. Normies get ignored.",
+                      "speaker": "Chad"
+                    },
+                    {
+                      "op": "say",
+                      "text": "Chad won't even FUD me. I need the pool to accept me first. Gerald seems to be in charge of that."
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "USE": [
+            {
+              "op": "say",
+              "text": "I poke Chad's ring. He doesn't even look. 'Words are the only currency here, bro.'"
+            }
+          ],
+          "PICK": [
+            {
+              "op": "say",
+              "text": "Chad's not for sale. He'd want you to think he is."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I nudge Chad's ring. He drifts two metres and acts like he meant it. Alpha move."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "I pull Chad's ring closer. 'Personal space, bro. It's a pool, not a launchpad.'"
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "say",
+              "text": "Chad's mind is closed. Like his positions. Ha. No, wait, his positions are open. All of them."
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "Chad doesn't take gifts. He takes Ls. Eventually."
+            }
+          ]
+        }
+      },
+      {
         "id": "hs_pool_group_right",
         "useResponses": {
           "ape_costume": [
@@ -1177,6 +1282,281 @@
   },
   "npcs": [],
   "dialogues": {
+    "chad_fud": {
+      "id": "chad_fud",
+      "start": "intro",
+      "nodes": {
+        "intro": {
+          "speaker": "Chad",
+          "text": "New guy wants to duel? Rules: I FUD, you reply. Miss once and I win. Ready, bro?",
+          "next": "hub"
+        },
+        "hub": {
+          "choices": [
+            {
+              "text": "Let's duel.",
+              "next": "i3"
+            },
+            {
+              "text": "What do I get if I win?",
+              "next": "prize"
+            },
+            {
+              "text": "Not today, Chad.",
+              "next": "bye",
+              "exit": true
+            }
+          ]
+        },
+        "prize": {
+          "speaker": "Chad",
+          "text": "My sobriety token. The Doc collects them. Nobody's ever taken mine.",
+          "next": "hub"
+        },
+        "i3": {
+          "speaker": "Chad",
+          "text": "You bought the top so hard, they named it after you.",
+          "choices": [
+            {
+              "text": "I can tell. They left the receipts floating in the pool.",
+              "next": "lose",
+              "when": "fud_r6"
+            },
+            {
+              "text": "Then today they'll hear you lose.",
+              "next": "lose",
+              "when": "fud_r4"
+            },
+            {
+              "text": "A broken clock is right twice a day. You're on a streak of zero.",
+              "next": "lose",
+              "when": "fud_r2"
+            },
+            {
+              "text": "And you sold the bottom so often, they gave you a loyalty card.",
+              "next": "i1",
+              "when": "fud_r3"
+            },
+            {
+              "text": "I... was early?",
+              "next": "lose",
+              "when": "!fud_r3"
+            }
+          ]
+        },
+        "i1": {
+          "speaker": "Chad",
+          "text": "Your bags are so heavy, the lifeguard filed a complaint.",
+          "choices": [
+            {
+              "text": "A broken clock is right twice a day. You're on a streak of zero.",
+              "next": "lose",
+              "when": "fud_r2"
+            },
+            {
+              "text": "Still more detail than your exit plan.",
+              "next": "lose",
+              "when": "fud_r5"
+            },
+            {
+              "text": "At least mine float. Yours sank in a kiddie pool.",
+              "next": "i5",
+              "when": "fud_r1"
+            },
+            {
+              "text": "Then today they'll hear you lose.",
+              "next": "lose",
+              "when": "fud_r4"
+            },
+            {
+              "text": "Uh... no they're not?",
+              "next": "lose",
+              "when": "!fud_r1"
+            }
+          ]
+        },
+        "i5": {
+          "speaker": "Chad",
+          "text": "Your roadmap is a napkin with a frowny face on it.",
+          "choices": [
+            {
+              "text": "Still more detail than your exit plan.",
+              "next": "i7",
+              "when": "fud_r5"
+            },
+            {
+              "text": "And you sold the bottom so often, they gave you a loyalty card.",
+              "next": "lose",
+              "when": "fud_r3"
+            },
+            {
+              "text": "At least mine float. Yours sank in a kiddie pool.",
+              "next": "lose",
+              "when": "fud_r1"
+            },
+            {
+              "text": "I can tell. They left the receipts floating in the pool.",
+              "next": "lose",
+              "when": "fud_r6"
+            },
+            {
+              "text": "It's a vision board.",
+              "next": "lose",
+              "when": "!fud_r5"
+            }
+          ]
+        },
+        "i7": {
+          "speaker": "Chad",
+          "text": "Name ONE thing you've built that anyone still wants.",
+          "choices": [
+            {
+              "text": "[Show the Rare Pepe] This.",
+              "next": "pepe",
+              "when": "found_pepememe"
+            },
+            {
+              "text": "I can tell. They left the receipts floating in the pool.",
+              "next": "lose",
+              "when": "fud_r6"
+            },
+            {
+              "text": "Then today they'll hear you lose.",
+              "next": "lose",
+              "when": "fud_r4"
+            },
+            {
+              "text": "A broken clock is right twice a day. You're on a streak of zero.",
+              "next": "lose",
+              "when": "fud_r2"
+            },
+            {
+              "text": "My... portfolio?",
+              "next": "lose",
+              "when": "!found_pepememe"
+            }
+          ]
+        },
+        "pepe": {
+          "speaker": "Chad",
+          "text": "...Specimen #001? By P.Z.? Bro. BRO.",
+          "next": "win"
+        },
+        "win": {
+          "speaker": "Chad",
+          "text": "Fine. You win. Take it. A sobriety token. Worth nothing. That's the point.",
+          "onEnter": [
+            {
+              "op": "setFlag",
+              "flag": "beat_chad",
+              "value": true
+            },
+            {
+              "op": "setFlag",
+              "flag": "has_sobriety_chip",
+              "value": true
+            },
+            {
+              "op": "addItem",
+              "id": "sobriety_chip",
+              "name": "Sobriety Chip"
+            }
+          ],
+          "next": "win_2"
+        },
+        "win_2": {
+          "speaker": "Chad",
+          "text": "Show the Doc. He collects these.",
+          "next": "win_dex"
+        },
+        "win_dex": {
+          "text": "I beat Chad at FUD. With a frog. My mum would not understand, and that's fine.",
+          "end": true
+        },
+        "lose": {
+          "speaker": "Chad",
+          "text": "HA! Weak, bro. Chad wins. Chad always wins.",
+          "onEnter": [
+            {
+              "op": "ifFlag",
+              "flag": "chad_losses_1",
+              "then": [
+                {
+                  "op": "setFlag",
+                  "flag": "chad_losses_2",
+                  "value": true
+                }
+              ],
+              "else": [
+                {
+                  "op": "setFlag",
+                  "flag": "chad_losses_1",
+                  "value": true
+                }
+              ]
+            }
+          ],
+          "next": "h_left"
+        },
+        "h_left": {
+          "speaker": "Chad",
+          "when": [
+            "chad_losses_2",
+            "!fud_r1"
+          ],
+          "text": "Even the posh apes in the shallow end have better comebacks, bro.",
+          "end": true,
+          "next": "h_right"
+        },
+        "h_right": {
+          "speaker": "Chad",
+          "when": [
+            "chad_losses_2",
+            "!fud_r3"
+          ],
+          "text": "The deep end roasts harder than you, and they're mostly underwater.",
+          "end": true,
+          "next": "h_bar"
+        },
+        "h_bar": {
+          "speaker": "Chad",
+          "when": [
+            "chad_losses_2",
+            "!fud_r5"
+          ],
+          "text": "Even the bartender has better lines. And he's a toaster.",
+          "end": true,
+          "next": "h_pepe"
+        },
+        "h_pepe": {
+          "speaker": "Chad",
+          "when": [
+            "chad_losses_2",
+            "!found_pepememe"
+          ],
+          "text": "Nobody down here ever MADE anything, bro. That's why I'm undefeated.",
+          "end": true,
+          "next": "h_any"
+        },
+        "h_any": {
+          "speaker": "Chad",
+          "when": "chad_losses_2",
+          "text": "Every FUD has one right comeback. You keep picking the wrong one. Respect, actually.",
+          "end": true,
+          "next": "lose_end"
+        },
+        "lose_end": {
+          "speaker": "Chad",
+          "text": "Run it back whenever, bro. Losing is free. Winning costs a personality.",
+          "end": true
+        },
+        "bye": {
+          "speaker": "Chad",
+          "text": "Smart. Fear is the first step to sobriety.",
+          "end": true
+        }
+      }
+    },
     "apes_left": {
       "id": "apes_left",
       "start": "greeting",

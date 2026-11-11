@@ -1245,7 +1245,7 @@
           "next": "evidence_path",
           "when": [
             "found_envelope",
-            "!treatment_room_unlocked"
+            "!satoshi_read_envelope"
           ]
         },
         {
@@ -1391,42 +1391,15 @@
     },
     "evidence_path": {
       "speaker": "Dr. Satoshi",
-      "text": "Let me see... *examines the envelope* 'CONFIDENTIAL — PATIENT ZERO.' The original referral documentation. The admission records, the initial diagnosis... Where did you find this?",
-      "choices": [
-        {
-          "text": "In a mailbox outside AdrianLAB. Someone wanted this found.",
-          "next": "evidence_accepted"
-        },
-        {
-          "text": "Does it matter? Can I see the treatment room?",
-          "next": "evidence_accepted"
-        }
-      ]
-    },
-    "evidence_accepted": {
-      "speaker": "Dr. Satoshi",
-      "text": "You've done your homework. Not many visitors bring evidence — they usually just bring opinions. Very well. I'll authorize treatment room access. But the door has a dual-lock system. You'll need a physical key too. Adrian insisted on analog security for the most sensitive room. Said smart contracts can be exploited, but a deadbolt can't.",
+      "text": "Let me see... *examines the envelope* 'CONFIDENTIAL — PATIENT ZERO.' The original referral. Signed by Adrian.",
       "onEnter": [
         {
           "op": "setFlag",
-          "flag": "treatment_room_unlocked",
+          "flag": "satoshi_read_envelope",
           "value": true
-        },
-        {
-          "op": "setFlag",
-          "flag": "chapter_4_complete",
-          "value": true
-        },
-        {
-          "op": "removeItem",
-          "id": "mystery_envelope"
-        },
-        {
-          "op": "achievement",
-          "text": "Chapter 4 Complete: The Mountain Path"
         }
       ],
-      "next": "hub"
+      "next": "evidence_lore"
     },
     "treatment_room_2": {
       "speaker": "Dr. Satoshi",
@@ -1489,6 +1462,15 @@
     "chip_auth_2": {
       "speaker": "Dr. Satoshi",
       "text": "Authorization granted. The door has a dual lock, though. You'll still need a physical key. Adrian said smart contracts get exploited. Deadbolts don't.",
+      "next": "hub"
+    },
+    "evidence_lore": {
+      "speaker": "Dr. Satoshi",
+      "text": "The patient's name is under a coffee stain. Of course it is. Keep it. Paper doesn't open doors here. Graduating does.",
+      "next": "evidence_dex"
+    },
+    "evidence_dex": {
+      "text": "A coffee stain. Penny's coffee, I'd bet. That woman stains history.",
       "next": "hub"
     }
   }

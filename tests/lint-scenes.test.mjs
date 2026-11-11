@@ -379,7 +379,9 @@ test('A2.6: los árboles reales del juego pasan las reglas nuevas', async () => 
   const fs = await import('node:fs');
   for (const id of ['lobby', 'clinic_interior', 'recovery_pool']) {
     const data = JSON.parse(fs.readFileSync(new URL(`../assets/scenes/${id}/scene.json`, import.meta.url), 'utf8'));
-    const f = only(lintProject(project([{ ...data, id }])), 'f').filter((x) => x.where.includes('dialogues') || x.where.includes('itemDialogues'));
+    // A3.6e: el árbol chad_fud da un objeto en su onEnter: los iconos reales de assets/sprites/items existen
+    const icons = fs.readdirSync(new URL('../assets/sprites/items/', import.meta.url)).map((n) => `assets/sprites/items/${n}`);
+    const f = only(lintProject(project([{ ...data, id }], { files: icons })), 'f').filter((x) => x.where.includes('dialogues') || x.where.includes('itemDialogues'));
     assert.deepEqual(f, [], id);
     for (const t of Object.values(data.dialogues)) {
       assert.ok(t.nodes.hub, `${id}: el árbol ${t.id} tiene hub`);
