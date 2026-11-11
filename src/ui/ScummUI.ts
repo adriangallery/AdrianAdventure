@@ -591,6 +591,11 @@ export class ScummUI {
     // A3.4d: la cadena opcional de Fernando
     empty_can: "An empty can of BULL RUN. The mining rig drank it in one go. It holds nothing now. Except potential.",
     rainwater_can: "A BULL RUN can full of rooftop rain. Filtered through a satellite dish. Fernando's drink of choice.",
+    // A3.5: capítulo 3 (biblia §4, puzles 3.1, 3.3, 3.4 y 3.6)
+    extension_cord: "An orange extension cord. One metre of pure infrastructure. The true backbone of every startup.",
+    scrap_paper: "A blank scrap of paper from the basement desk. No words yet. Endless potential. Like a whitepaper.",
+    fake_alpha: "'BUY $GERALD. TRUST ME.' In leaky blue ink. The most convincing alpha I've ever written. Also the only one.",
+    marked_map: "The printout map, now with a big blue X on the clinic. X marks the spot. I've never had a spot before.",
     ape_costume: "A full ape costume from the Alpha Pack. Realistic fur, expressive face, diamond-shaped buttons. When worn, I blend in with the Liquidity Pool apes. USE to put it on or take it off.",
   };
 

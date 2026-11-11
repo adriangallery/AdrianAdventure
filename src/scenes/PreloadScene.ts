@@ -170,6 +170,7 @@ export class PreloadScene extends Phaser.Scene {
       'leaky_pen', // A3.4a: el boli de Mt. Gox del abrigo de Adrian
       'pizza_slice', // A3.4b: la porción de pizza que engrasa la veleta
       'empty_can', 'rainwater_can', // A3.4d: la lata del mining rig, vacía y llena de lluvia (cadena de Fernando)
+      'extension_cord', 'scrap_paper', 'fake_alpha', 'marked_map', // A3.5: alargador, papel, alfa falsa y mapa marcado (cap. 3)
     ];
     for (const id of itemIds) {
       const key = `item_${id}`;

@@ -6,13 +6,37 @@
       "item2": "note_half_b",
       "result": "code_note",
       "script": [
-        { "op": "removeItem", "id": "note_half_a" },
-        { "op": "removeItem", "id": "note_half_b" },
-        { "op": "addItem", "id": "code_note", "name": "Code Note (7314)" },
-        { "op": "setFlag", "flag": "found_code_note", "value": true },
-        { "op": "setFlag", "flag": "has_code", "value": true },
-        { "op": "say", "text": "I line up the torn edges. 73... 14. It reads: '7314. If you found both halves, you're patient enough. \u2014 A.'" },
-        { "op": "say", "text": "Patient. Me. Ha." }
+        {
+          "op": "removeItem",
+          "id": "note_half_a"
+        },
+        {
+          "op": "removeItem",
+          "id": "note_half_b"
+        },
+        {
+          "op": "addItem",
+          "id": "code_note",
+          "name": "Code Note (7314)"
+        },
+        {
+          "op": "setFlag",
+          "flag": "found_code_note",
+          "value": true
+        },
+        {
+          "op": "setFlag",
+          "flag": "has_code",
+          "value": true
+        },
+        {
+          "op": "say",
+          "text": "I line up the torn edges. 73... 14. It reads: '7314. If you found both halves, you're patient enough. — A.'"
+        },
+        {
+          "op": "say",
+          "text": "Patient. Me. Ha."
+        }
       ]
     },
     {
@@ -20,7 +44,10 @@
       "item2": "terminal_key",
       "result": null,
       "script": [
-        { "op": "say", "text": "I try to use the terminal key to pry open the envelope. The key scratches the wax seal but doesn't break it. I need something sharper... or just my hands." }
+        {
+          "op": "say",
+          "text": "I try to use the terminal key to pry open the envelope. The key scratches the wax seal but doesn't break it. I need something sharper... or just my hands."
+        }
       ]
     },
     {
@@ -28,7 +55,10 @@
       "item2": "broken_mouse",
       "result": null,
       "script": [
-        { "op": "say", "text": "I attach the rubber duck to the broken mouse. It squeaks when I click. I've invented the world's worst ergonomic mouse. Patent pending." }
+        {
+          "op": "say",
+          "text": "I attach the rubber duck to the broken mouse. It squeaks when I click. I've invented the world's worst ergonomic mouse. Patent pending."
+        }
       ]
     },
     {
@@ -36,7 +66,10 @@
       "item2": "water_bottle",
       "result": null,
       "script": [
-        { "op": "say", "text": "I put the duck in the water bottle. It floats! ...I don't know what I expected. This is neither useful nor a bathtub." }
+        {
+          "op": "say",
+          "text": "I put the duck in the water bottle. It floats! ...I don't know what I expected. This is neither useful nor a bathtub."
+        }
       ]
     },
     {
@@ -44,7 +77,10 @@
       "item2": "golden_token",
       "result": null,
       "script": [
-        { "op": "say", "text": "I hold the receipt next to the golden token. '1 BTC @ $3.50' vs a golden ZERO token. The irony of crypto in two objects." }
+        {
+          "op": "say",
+          "text": "I hold the receipt next to the golden token. '1 BTC @ $3.50' vs a golden ZERO token. The irony of crypto in two objects."
+        }
       ]
     },
     {
@@ -52,7 +88,10 @@
       "item2": "sign_in_sheet",
       "result": null,
       "script": [
-        { "op": "say", "text": "I compare the transaction hashes on the printout with the patient records. Wait... some of these wallet addresses match. The patients ARE the traders." }
+        {
+          "op": "say",
+          "text": "I compare the transaction hashes on the printout with the patient records. Wait... some of these wallet addresses match. The patients ARE the traders."
+        }
       ]
     },
     {
@@ -60,7 +99,10 @@
       "item2": "broken_mouse",
       "result": null,
       "script": [
-        { "op": "say", "text": "I attach the antenna to the mouse. Congratulations, I've built a wireless mouse. That doesn't work. Because it's broken. And that's not how wireless works." }
+        {
+          "op": "say",
+          "text": "I attach the antenna to the mouse. Congratulations, I've built a wireless mouse. That doesn't work. Because it's broken. And that's not how wireless works."
+        }
       ]
     },
     {
@@ -68,7 +110,10 @@
       "item2": "burned_chip",
       "result": null,
       "script": [
-        { "op": "say", "text": "The floppy disk and the burnt chip. One holds data, the other lost it forever. A cautionary tale about backups." }
+        {
+          "op": "say",
+          "text": "The floppy disk and the burnt chip. One holds data, the other lost it forever. A cautionary tale about backups."
+        }
       ]
     },
     {
@@ -76,7 +121,211 @@
       "item2": "ledger",
       "result": null,
       "script": [
-        { "op": "say", "text": "I type 7314 into the Ledger. 'Invalid PIN.' Of course — the code is for the door, not the wallet. Different kind of security." }
+        {
+          "op": "say",
+          "text": "I type 7314 into the Ledger. 'Invalid PIN.' Of course — the code is for the door, not the wallet. Different kind of security."
+        }
+      ]
+    },
+    {
+      "item1": "receipt",
+      "item2": "leaky_pen",
+      "result": "fake_alpha",
+      "script": [
+        {
+          "op": "ifFlag",
+          "flag": "has_fake_alpha",
+          "then": [
+            {
+              "op": "say",
+              "text": "I already wrote one fake alpha. I have some principles. Not many, but some."
+            }
+          ],
+          "else": [
+            {
+              "op": "removeItem",
+              "id": "receipt"
+            },
+            {
+              "op": "addItem",
+              "id": "fake_alpha",
+              "name": "Fake Alpha"
+            },
+            {
+              "op": "setFlag",
+              "flag": "has_fake_alpha",
+              "value": true
+            },
+            {
+              "op": "say",
+              "text": "I flip the receipt over and write: 'BUY $GERALD. TRUST ME.' The pen leaks the dollar sign into a blob. Looks more legit, honestly."
+            },
+            {
+              "op": "say",
+              "text": "Fake alpha. Hand-crafted. Organic. Zero research."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "item1": "scrap_paper",
+      "item2": "leaky_pen",
+      "result": "fake_alpha",
+      "script": [
+        {
+          "op": "ifFlag",
+          "flag": "has_fake_alpha",
+          "then": [
+            {
+              "op": "say",
+              "text": "I already wrote one fake alpha. I have some principles. Not many, but some."
+            }
+          ],
+          "else": [
+            {
+              "op": "removeItem",
+              "id": "scrap_paper"
+            },
+            {
+              "op": "addItem",
+              "id": "fake_alpha",
+              "name": "Fake Alpha"
+            },
+            {
+              "op": "setFlag",
+              "flag": "has_fake_alpha",
+              "value": true
+            },
+            {
+              "op": "say",
+              "text": "I flatten the scrap of paper and write: 'BUY $GERALD. TRUST ME.' The pen leaks the dollar sign into a blob. Looks more legit, honestly."
+            },
+            {
+              "op": "say",
+              "text": "Fake alpha. Hand-crafted. Organic. Zero research."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "item1": "printout",
+      "item2": "leaky_pen",
+      "result": "marked_map",
+      "script": [
+        {
+          "op": "ifFlag",
+          "flag": "coords_known",
+          "then": [
+            {
+              "op": "removeItem",
+              "id": "printout"
+            },
+            {
+              "op": "addItem",
+              "id": "marked_map",
+              "name": "Marked Map"
+            },
+            {
+              "op": "setFlag",
+              "flag": "has_marked_map",
+              "value": true
+            },
+            {
+              "op": "ifFlag",
+              "flag": "chapter_3_complete",
+              "then": [],
+              "else": [
+                {
+                  "op": "setFlag",
+                  "flag": "chapter_3_complete",
+                  "value": true
+                },
+                {
+                  "op": "achievement",
+                  "text": "Chapter 3 Complete: Below the Surface"
+                }
+              ]
+            },
+            {
+              "op": "playSound",
+              "key": "discovery"
+            },
+            {
+              "op": "say",
+              "text": "I copy the coordinates onto the printout and draw a big leaky X on the clinic."
+            },
+            {
+              "op": "say",
+              "text": "X marks the spot. I've always wanted to say that. I've never had a spot."
+            },
+            {
+              "op": "say",
+              "text": "The clinic. Up the mountain path outside the lab. Time to go."
+            }
+          ],
+          "else": [
+            {
+              "op": "ifFlag",
+              "flag": "emergency_switch_flipped",
+              "then": [
+                {
+                  "op": "removeItem",
+                  "id": "printout"
+                },
+                {
+                  "op": "addItem",
+                  "id": "marked_map",
+                  "name": "Marked Map"
+                },
+                {
+                  "op": "setFlag",
+                  "flag": "has_marked_map",
+                  "value": true
+                },
+                {
+                  "op": "ifFlag",
+                  "flag": "chapter_3_complete",
+                  "then": [],
+                  "else": [
+                    {
+                      "op": "setFlag",
+                      "flag": "chapter_3_complete",
+                      "value": true
+                    },
+                    {
+                      "op": "achievement",
+                      "text": "Chapter 3 Complete: Below the Surface"
+                    }
+                  ]
+                },
+                {
+                  "op": "playSound",
+                  "key": "discovery"
+                },
+                {
+                  "op": "say",
+                  "text": "I copy the coordinates onto the printout and draw a big leaky X on the clinic."
+                },
+                {
+                  "op": "say",
+                  "text": "X marks the spot. I've always wanted to say that. I've never had a spot."
+                },
+                {
+                  "op": "say",
+                  "text": "The clinic. Up the mountain path outside the lab. Time to go."
+                }
+              ],
+              "else": [
+                {
+                  "op": "say",
+                  "text": "Mark what? I don't know where X is yet."
+                }
+              ]
+            }
+          ]
+        }
       ]
     }
   ]

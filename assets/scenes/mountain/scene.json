@@ -151,7 +151,7 @@
           "USE": [
             {
               "op": "ifHasItem",
-              "id": "printout",
+              "id": "marked_map",
               "then": [
                 {
                   "op": "fadeToScene",
@@ -860,7 +860,7 @@
         "onEnter": [
           {
             "op": "ifHasItem",
-            "id": "printout",
+            "id": "marked_map",
             "then": [
               {
                 "op": "fadeToScene",

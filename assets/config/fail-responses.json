@@ -343,6 +343,26 @@
       "I'm not wasting good rain on that. Someone in this building only drinks rain.",
       "I hold the can over it. A drop falls. Nothing grows. Wrong customer.",
       "That doesn't need watering. Something green downstairs does."
+    ],
+    "extension_cord": [
+      "I offer it the cord. It has nothing to plug in. Neither do I, emotionally.",
+      "Not everything needs power. This, apparently, doesn't. Rare.",
+      "I wave the extension cord at it. One metre short of a plan."
+    ],
+    "scrap_paper": [
+      "I hold up the blank paper. It says nothing. It agrees with everything.",
+      "Blank paper won't help here. Written paper might. Different paper.",
+      "I press the scrap against it. Now it's a scrap pressed against a thing."
+    ],
+    "fake_alpha": [
+      "I show it my alpha. 'BUY $GERALD.' It doesn't buy it. It's not a bot.",
+      "This alpha has one target audience, and it's not this.",
+      "I wave the fake alpha around. Nothing in this room is gullible enough. Yet."
+    ],
+    "marked_map": [
+      "I check the map against it. The X isn't here. The X is up the mountain.",
+      "The map is for the mountain, not for this.",
+      "I unfold the map. It points the other way. Outside. Up."
     ]
   }
 }

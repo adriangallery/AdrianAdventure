@@ -73,6 +73,15 @@
           ],
           "golden_token": [
             "There's no coin slot on the CRT. I checked twice. I really wanted there to be one."
+          ],
+          "energy_drink": [
+            "Caffeine isn't electricity. The CRT doesn't need a mood boost. It needs a socket."
+          ],
+          "glasses_3d": [
+            "I look at the CRT through the 3D glasses. It's still dark. In two colours."
+          ],
+          "scrap_paper": [
+            "I hold the blank scrap to the screen. Nothing to print on it. The CRT has its own printer. Snob."
           ]
         },
         "name": "CRT Computer",
@@ -90,17 +99,29 @@
               "then": [
                 {
                   "op": "ifFlag",
-                  "flag": "crt_repaired",
+                  "flag": "computer_unlocked",
                   "then": [
                     {
-                      "op": "say",
-                      "text": "An ancient CRT monitor with a green phosphor glow. The screen shows a blinking cursor: 'INSERT ADRIAN'S LEDGER TO CONTINUE...'"
+                      "op": "ifFlag",
+                      "flag": "floppy_inserted",
+                      "then": [
+                        {
+                          "op": "say",
+                          "text": "The CRT shows the patient roster. 'PATIENT ZERO — STATUS: ESCAPED' blinks in red at the bottom."
+                        }
+                      ],
+                      "else": [
+                        {
+                          "op": "say",
+                          "text": "A green phosphor glow: 'VAULT OPEN. INSERT BACKUP.' The disk drive blinks, waiting for something to read."
+                        }
+                      ]
                     }
                   ],
                   "else": [
                     {
                       "op": "say",
-                      "text": "The CRT hums with energy but the screen shows an error: 'DIAGNOSTIC FAILURE — CHIP SLOT B7 EMPTY. Insert replacement chip to continue.'"
+                      "text": "An ancient CRT with a green phosphor glow. A blinking cursor: 'INSERT ADRIAN'S LEDGER. ENTER PIN.'"
                     }
                   ]
                 }
@@ -108,7 +129,7 @@
               "else": [
                 {
                   "op": "say",
-                  "text": "An ancient CRT monitor. The screen is completely dark. A faded sticker on the side reads: 'WARNING — UNSTABLE POWER SUPPLY.' This thing needs a serious jolt to start."
+                  "text": "An ancient CRT monitor. Dark. Its plug dangles a metre short of the socket. Classic last-mile problem."
                 }
               ]
             }
@@ -120,14 +141,6 @@
               "then": [
                 {
                   "op": "ifFlag",
-                  "flag": "crt_repaired",
-                  "then": [
-                    {
-                      "op": "ifFlag",
-                      "flag": "found_ledger",
-              "then": [
-                {
-                  "op": "ifFlag",
                   "flag": "computer_unlocked",
                   "then": [
                     {
@@ -136,7 +149,7 @@
                       "then": [
                         {
                           "op": "say",
-                          "text": "The computer shows the patient roster. 'PATIENT ZERO \u2014 STATUS: ESCAPED' blinks in red at the bottom."
+                          "text": "The computer shows the patient roster. 'PATIENT ZERO — STATUS: ESCAPED' blinks in red at the bottom."
                         }
                       ],
                       "else": [
@@ -148,10 +161,6 @@
                               "op": "setFlag",
                               "flag": "floppy_inserted",
                               "value": true
-                            },
-                            {
-                              "op": "removeItem",
-                              "id": "floppy_disk"
                             },
                             {
                               "op": "addItem",
@@ -169,29 +178,29 @@
                             },
                             {
                               "op": "say",
-                              "text": "The roster lists patients. Conditions read like a crypto obituary:"
+                              "text": "A patient roster. Chronic Airdrop Dependency... Acute Rug Pull Trauma... Terminal FOMO..."
                             },
                             {
                               "op": "say",
-                              "text": "Chronic Airdrop Dependency... Acute Rug Pull Trauma... Terminal FOMO..."
+                              "text": "At the bottom, in red: PATIENT ZERO — STATUS: ESCAPED"
+                            },
+                            {
+                              "op": "playSound",
+                              "key": "floppy_insert"
                             },
                             {
                               "op": "say",
-                              "text": "At the bottom, in red ink: PATIENT ZERO \u2014 STATUS: ESCAPED"
+                              "text": "The printer spits out a map. A map with no X. Very zen. Very useless."
                             },
                             {
                               "op": "say",
-                              "text": "Escaped? Through what? And to where?"
-                            },
-                            {
-                              "op": "say",
-                              "text": "The printer spits out a map. This could lead somewhere."
+                              "text": "The drive spits the floppy back out. 'BACKUP COMPLETE.' Into the pocket it goes."
                             }
                           ],
                           "else": [
                             {
                               "op": "say",
-                              "text": "The computer is already unlocked. The screen shows Adrian's private vault dashboard. The disk drive blinks, waiting for something to read."
+                              "text": "The screen says 'INSERT BACKUP'. I need a disk. Somebody down here was working late."
                             }
                           ]
                         }
@@ -200,17 +209,21 @@
                   ],
                   "else": [
                     {
-                      "op": "say",
-                      "text": "I plug in Adrian's Ledger... The screen flashes: 'WALLET RECOGNIZED. VAULT ACCESS GRANTED.'"
-                    },
-                    {
-                      "op": "say",
-                      "text": "The monitor reveals a dashboard: portfolio tracker, NFT collection, and... a map to something called 'Patient Zero Clinic'."
-                    },
-                    {
-                      "op": "setFlag",
-                      "flag": "computer_unlocked",
-                      "value": true
+                      "op": "ifFlag",
+                      "flag": "found_ledger",
+                      "then": [
+                        {
+                          "op": "dialogue",
+                          "npcId": "ledger_pin",
+                          "treeId": "ledger_pin"
+                        }
+                      ],
+                      "else": [
+                        {
+                          "op": "say",
+                          "text": "The screen says 'INSERT ADRIAN'S LEDGER'. I need to find it somewhere."
+                        }
+                      ]
                     }
                   ]
                 }
@@ -218,23 +231,7 @@
               "else": [
                 {
                   "op": "say",
-                  "text": "The screen says 'INSERT ADRIAN'S LEDGER'. I need to find it somewhere."
-                }
-              ]
-            }
-                    ],
-                    "else": [
-                      {
-                        "op": "say",
-                        "text": "The CRT screen displays: 'DIAGNOSTIC FAILURE — CHIP SLOT B7 EMPTY.' I need to find a replacement chip for the missing slot."
-                      }
-                    ]
-                  }
-              ],
-              "else": [
-                {
-                  "op": "say",
-                  "text": "The CRT flickers weakly and dies. POWER INSUFFICIENT. This ancient machine needs a serious jolt of energy to boot up."
+                  "text": "The CRT stays dark. The plug doesn't reach the socket. I need a metre of something."
                 }
               ]
             }
@@ -403,8 +400,30 @@
               "flag": "found_floppy",
               "then": [
                 {
-                  "op": "say",
-                  "text": "I already grabbed everything useful from this desk."
+                  "op": "ifFlag",
+                  "flag": "found_scrap_paper",
+                  "then": [
+                    {
+                      "op": "say",
+                      "text": "I already grabbed everything useful from this desk."
+                    }
+                  ],
+                  "else": [
+                    {
+                      "op": "setFlag",
+                      "flag": "found_scrap_paper",
+                      "value": true
+                    },
+                    {
+                      "op": "addItem",
+                      "id": "scrap_paper",
+                      "name": "Scrap Paper"
+                    },
+                    {
+                      "op": "say",
+                      "text": "Under the papers, one blank scrap. Blank paper. In this economy. I'll take it."
+                    }
+                  ]
                 }
               ],
               "else": [
@@ -419,8 +438,22 @@
                   "name": "Floppy Disk"
                 },
                 {
+                  "op": "setFlag",
+                  "flag": "found_scrap_paper",
+                  "value": true
+                },
+                {
+                  "op": "addItem",
+                  "id": "scrap_paper",
+                  "name": "Scrap Paper"
+                },
+                {
                   "op": "say",
                   "text": "I find a floppy disk hidden under the papers! The label reads: 'BACKUP - DO NOT LOSE'"
+                },
+                {
+                  "op": "say",
+                  "text": "And a blank scrap of paper. Blank paper. In this economy. I'll take it."
                 }
               ]
             }
@@ -431,8 +464,30 @@
               "flag": "found_floppy",
               "then": [
                 {
-                  "op": "say",
-                  "text": "I already grabbed everything useful from this desk."
+                  "op": "ifFlag",
+                  "flag": "found_scrap_paper",
+                  "then": [
+                    {
+                      "op": "say",
+                      "text": "I already grabbed everything useful from this desk."
+                    }
+                  ],
+                  "else": [
+                    {
+                      "op": "setFlag",
+                      "flag": "found_scrap_paper",
+                      "value": true
+                    },
+                    {
+                      "op": "addItem",
+                      "id": "scrap_paper",
+                      "name": "Scrap Paper"
+                    },
+                    {
+                      "op": "say",
+                      "text": "Under the papers, one blank scrap. Blank paper. In this economy. I'll take it."
+                    }
+                  ]
                 }
               ],
               "else": [
@@ -447,8 +502,22 @@
                   "name": "Floppy Disk"
                 },
                 {
+                  "op": "setFlag",
+                  "flag": "found_scrap_paper",
+                  "value": true
+                },
+                {
+                  "op": "addItem",
+                  "id": "scrap_paper",
+                  "name": "Scrap Paper"
+                },
+                {
                   "op": "say",
-                  "text": "I open the desk drawer. Under old receipts and dust... a 3.5 inch floppy labeled 'BACKUP'."
+                  "text": "I open the desk drawer. Under old receipts and dust... a 3.5 inch floppy labeled 'BACKUP - DO NOT LOSE'."
+                },
+                {
+                  "op": "say",
+                  "text": "And a blank scrap of paper. Blank paper. In this economy. I'll take it."
                 }
               ]
             }
@@ -1207,13 +1276,97 @@
       }
     ]
   },
+  "dialogues": {
+    "ledger_pin": {
+      "id": "ledger_pin",
+      "start": "prompt",
+      "nodes": {
+        "prompt": {
+          "speaker": "Ledger",
+          "text": "ENTER PIN. Hint: my best friend's birthday. DDMM.",
+          "next": "hub"
+        },
+        "hub": {
+          "choices": [
+            {
+              "text": "7314.",
+              "next": "door"
+            },
+            {
+              "text": "0000.",
+              "next": "zeros"
+            },
+            {
+              "text": "[Gerald's birthday, DDMM]",
+              "next": "gerald",
+              "when": "knows_gerald"
+            },
+            {
+              "text": "Whose birthday?",
+              "next": "nobday",
+              "when": "!knows_gerald"
+            },
+            {
+              "text": "Unplug it.",
+              "next": "bye",
+              "exit": true
+            }
+          ]
+        },
+        "door": {
+          "text": "7314.",
+          "next": "door_dex"
+        },
+        "door_dex": {
+          "text": "That's the door, genius.",
+          "next": "wrong"
+        },
+        "zeros": {
+          "text": "0000. Nobody's that lazy. Except me. Apparently.",
+          "next": "wrong"
+        },
+        "wrong": {
+          "speaker": "Ledger",
+          "text": "WRONG PIN.",
+          "next": "hub"
+        },
+        "nobday": {
+          "text": "Adrian's best friend? I don't even know who that is. Somebody's mail would know.",
+          "next": "hub"
+        },
+        "gerald": {
+          "text": "0301. Gerald was born on the genesis block. Of course he was.",
+          "onEnter": [
+            {
+              "op": "setFlag",
+              "flag": "computer_unlocked",
+              "value": true
+            }
+          ],
+          "next": "ok"
+        },
+        "ok": {
+          "speaker": "Ledger",
+          "text": "PIN ACCEPTED. VAULT ACCESS GRANTED.",
+          "next": "ok_dex"
+        },
+        "ok_dex": {
+          "text": "A vault dashboard. Portfolio, NFTs, and one line blinking: 'INSERT BACKUP'.",
+          "end": true
+        },
+        "bye": {
+          "text": "Later. Ledgers don't get bored."
+        }
+      }
+    }
+  },
   "items": {
     "sceneItems": []
   },
   "combos": [
     {
       "items": [
-        "energy_drink",
+        "extension_cord",
         "hs_main_computer"
       ],
       "result": "power_crt",
@@ -1222,17 +1375,37 @@
           "op": "ifFlag",
           "flag": "crt_powered",
           "then": [
-            { "op": "say", "text": "The CRT is already powered up. No need for more caffeine." }
+            {
+              "op": "say",
+              "text": "The CRT is already plugged in. One cord per computer. I'm not a monster."
+            }
           ],
           "else": [
-            { "op": "say", "text": "I pop open the energy drink and pour it into the cooling reservoir. The capacitors spark. 500mg of BULL RUN caffeine surges through ancient circuits." },
-            { "op": "wait", "ms": 500 },
-            { "op": "removeItem", "id": "energy_drink" },
-            { "op": "setFlag", "flag": "crt_powered", "value": true },
-            { "op": "playSound", "key": "discovery" },
-            { "op": "say", "text": "The screen blazes to life with a sickly green glow: 'POWER RESTORED. RUNNING DIAGNOSTICS...'" },
-            { "op": "wait", "ms": 300 },
-            { "op": "say", "text": "'DIAGNOSTIC FAILURE — CHIP SLOT B7 EMPTY.' The system needs a replacement chip to continue." }
+            {
+              "op": "removeItem",
+              "id": "extension_cord"
+            },
+            {
+              "op": "setFlag",
+              "flag": "crt_powered",
+              "value": true
+            },
+            {
+              "op": "say",
+              "text": "I run the orange cord from the socket to the CRT. Exactly a metre. Last mile solved."
+            },
+            {
+              "op": "playSound",
+              "key": "discovery"
+            },
+            {
+              "op": "say",
+              "text": "Click. Hum. A green glow. It's alive. It smells like 1997."
+            },
+            {
+              "op": "say",
+              "text": "The screen blinks: 'INSERT ADRIAN'S LEDGER. ENTER PIN.'"
+            }
           ]
         }
       ]
@@ -1252,21 +1425,41 @@
               "op": "ifFlag",
               "flag": "crt_repaired",
               "then": [
-                { "op": "say", "text": "The chip is already installed. The CRT runs fine now." }
+                {
+                  "op": "say",
+                  "text": "The chip is already installed. Slot B7 is happy. Nobody else noticed."
+                }
               ],
               "else": [
-                { "op": "say", "text": "The burned chip from AdrianAuctions... it fits the empty socket in slot B7 perfectly." },
-                { "op": "wait", "ms": 400 },
-                { "op": "removeItem", "id": "burned_chip" },
-                { "op": "setFlag", "flag": "crt_repaired", "value": true },
-                { "op": "playSound", "key": "discovery" },
-                { "op": "say", "text": "*click* The screen refreshes: 'DIAGNOSTIC: ALL SYSTEMS NOMINAL. INSERT CREDENTIALS TO CONTINUE.'" },
-                { "op": "say", "text": "The CRT is fully operational. Now I need Adrian's Ledger to access the vault." }
+                {
+                  "op": "removeItem",
+                  "id": "burned_chip"
+                },
+                {
+                  "op": "setFlag",
+                  "flag": "crt_repaired",
+                  "value": true
+                },
+                {
+                  "op": "say",
+                  "text": "The burned chip from AdrianAuctions... it fits the empty socket in slot B7 perfectly."
+                },
+                {
+                  "op": "playSound",
+                  "key": "discovery"
+                },
+                {
+                  "op": "say",
+                  "text": "*click* A tiny 'B7 OK' appears in the corner. Nothing else changes. Some fixes are just for peace of mind."
+                }
               ]
             }
           ],
           "else": [
-            { "op": "say", "text": "The CRT is dead. I need to power it up first before installing any chips." }
+            {
+              "op": "say",
+              "text": "The CRT is dead. I need to power it up first before installing any chips."
+            }
           ]
         }
       ]
@@ -1284,41 +1477,27 @@
           "then": [
             {
               "op": "ifFlag",
-              "flag": "crt_repaired",
+              "flag": "computer_unlocked",
               "then": [
                 {
-                  "op": "ifFlag",
-                  "flag": "computer_unlocked",
-                  "then": [
-                    {
-                      "op": "say",
-                      "text": "The computer already recognized Adrian's Ledger. The vault dashboard is still open."
-                    }
-                  ],
-                  "else": [
-                    {
-                      "op": "say",
-                      "text": "I plug in Adrian's Ledger... The screen flashes: 'WALLET RECOGNIZED. VAULT ACCESS GRANTED.'"
-                    },
-                    {
-                      "op": "say",
-                      "text": "The monitor reveals a dashboard: portfolio tracker, NFT collection, and... a map to something called 'Patient Zero Clinic'."
-                    },
-                    {
-                      "op": "setFlag",
-                      "flag": "computer_unlocked",
-                      "value": true
-                    }
-                  ]
+                  "op": "say",
+                  "text": "The computer already recognized Adrian's Ledger. The vault dashboard is still open."
                 }
               ],
               "else": [
-                { "op": "say", "text": "The CRT shows a diagnostic error. I need to fix the chip slot before authenticating." }
+                {
+                  "op": "dialogue",
+                  "npcId": "ledger_pin",
+                  "treeId": "ledger_pin"
+                }
               ]
             }
           ],
           "else": [
-            { "op": "say", "text": "The CRT is dead. I need to power it up first." }
+            {
+              "op": "say",
+              "text": "The CRT is dead. Power first, wallet second."
+            }
           ]
         }
       ]
@@ -1332,16 +1511,19 @@
       "script": [
         {
           "op": "ifFlag",
-          "flag": "crt_repaired",
+          "flag": "computer_unlocked",
           "then": [
             {
               "op": "ifFlag",
               "flag": "floppy_inserted",
               "then": [
-                { "op": "playSound", "key": "floppy_insert" },
+                {
+                  "op": "playSound",
+                  "key": "floppy_insert"
+                },
                 {
                   "op": "say",
-                  "text": "The floppy is already inserted. The patient roster is on screen."
+                  "text": "Already read. The roster is printed. The disk stays with me. It said DO NOT LOSE."
                 }
               ],
               "else": [
@@ -1349,10 +1531,6 @@
                   "op": "setFlag",
                   "flag": "floppy_inserted",
                   "value": true
-                },
-                {
-                  "op": "removeItem",
-                  "id": "floppy_disk"
                 },
                 {
                   "op": "addItem",
@@ -1370,19 +1548,43 @@
                 },
                 {
                   "op": "say",
-                  "text": "Chronic Airdrop Dependency... Acute Rug Pull Trauma... Terminal FOMO... At the bottom, in red: PATIENT ZERO \u2014 STATUS: ESCAPED"
+                  "text": "A patient roster. Chronic Airdrop Dependency... Acute Rug Pull Trauma... Terminal FOMO..."
                 },
                 {
                   "op": "say",
-                  "text": "The printer spits out a map. This could lead somewhere."
+                  "text": "At the bottom, in red: PATIENT ZERO — STATUS: ESCAPED"
+                },
+                {
+                  "op": "playSound",
+                  "key": "floppy_insert"
+                },
+                {
+                  "op": "say",
+                  "text": "The printer spits out a map. A map with no X. Very zen. Very useless."
+                },
+                {
+                  "op": "say",
+                  "text": "The drive spits the floppy back out. 'BACKUP COMPLETE.' Into the pocket it goes."
                 }
               ]
             }
           ],
           "else": [
             {
-              "op": "say",
-              "text": "The CRT isn't ready yet. I need to power it up and fix the diagnostics before inserting anything."
+              "op": "ifFlag",
+              "flag": "crt_powered",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "'ACCESS DENIED. LEDGER REQUIRED.' The vault first, then the backup."
+                }
+              ],
+              "else": [
+                {
+                  "op": "say",
+                  "text": "The CRT is dead. A floppy won't fix that. Nothing from the nineties ever fixed anything."
+                }
+              ]
             }
           ]
         }
@@ -1406,34 +1608,6 @@
           ],
           "else": [
             {
-              "op": "say",
-              "text": "I slide a floppy from the box into the drive. The CRT goes dark. Then..."
-            },
-            {
-              "op": "say",
-              "text": "*KRRRRTTTT-KRRRRTTTT* The drive spins up like it's been WAITING for this exact disc. The screen floods with green text."
-            },
-            {
-              "op": "say",
-              "text": "'ADRIANLAB FLOPPY COLLECTION DETECTED \u2014 HOLDER OVERRIDE ACTIVE. Decrypting Sector Zero...'"
-            },
-            {
-              "op": "say",
-              "text": "A hidden partition opens. Adrian left a personal message encoded in the floppy metadata:"
-            },
-            {
-              "op": "say",
-              "text": "'To whoever holds these discs: you're not just a collector. You backed the lab when nobody believed pixel art on a blockchain was worth anything. You were right. \u2014 A.'"
-            },
-            {
-              "op": "say",
-              "text": "Below the message, a manifest: every floppy disc ever minted, every pack opened, every trait unlocked. The entire AdrianLAB creation history. On a 1.44MB floppy. Somehow."
-            },
-            {
-              "op": "say",
-              "text": "The CRT prints a final line: 'COMPRESSION RATIO: infinity. When you believe in the art, size doesn't matter.'"
-            },
-            {
               "op": "setFlag",
               "flag": "floppy_basement_unlocked",
               "value": true
@@ -1444,8 +1618,36 @@
               "value": true
             },
             {
+              "op": "say",
+              "text": "I slide a floppy from the box into the drive. The CRT goes dark. Then..."
+            },
+            {
+              "op": "say",
+              "text": "*KRRRRTTTT-KRRRRTTTT* The drive spins up like it's been WAITING for this exact disc. The screen floods with green text."
+            },
+            {
+              "op": "say",
+              "text": "'ADRIANLAB FLOPPY COLLECTION DETECTED — HOLDER OVERRIDE ACTIVE. Decrypting Sector Zero...'"
+            },
+            {
+              "op": "say",
+              "text": "A hidden partition opens. Adrian left a personal message encoded in the floppy metadata:"
+            },
+            {
+              "op": "say",
+              "text": "'To whoever holds these discs: you're not just a collector. You backed the lab when nobody believed pixel art on a blockchain was worth anything. You were right. — A.'"
+            },
+            {
+              "op": "say",
+              "text": "Below the message, a manifest: every floppy disc ever minted, every pack opened, every trait unlocked. The entire AdrianLAB creation history. On a 1.44MB floppy. Somehow."
+            },
+            {
+              "op": "say",
+              "text": "The CRT prints a final line: 'COMPRESSION RATIO: infinity. When you believe in the art, size doesn't matter.'"
+            },
+            {
               "op": "achievement",
-              "text": "SECTOR ZERO \u2014 Unlocked Adrian's hidden floppy message"
+              "text": "SECTOR ZERO — Unlocked Adrian's hidden floppy message"
             }
           ]
         }

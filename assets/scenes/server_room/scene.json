@@ -229,6 +229,15 @@
           ],
           "ledger": [
             "I go to plug the Ledger in. There's no port. Adrian sealed it. Paranoid. Correct."
+          ],
+          "receipt": [
+            "I hold the receipt up to the webcam. '1 BTC @ $3.50.' PZ-BOT: 'HISTORICAL DATA. NOT ALPHA.' It needs words. Bad ones."
+          ],
+          "scrap_paper": [
+            "I show PZ-BOT a blank page. 'NO SIGNAL.' Fair. I need to write something on it first."
+          ],
+          "leaky_pen": [
+            "I'm not writing on the screen. I need paper. The pen disagrees. It leaks on the keyboard anyway."
           ]
         },
         "name": "Server Terminal",
@@ -241,68 +250,148 @@
         "scripts": {
           "LOOK": [
             {
-              "op": "say",
-              "text": "Active monitoring logs. FloorEngine, TraitLab, SweepBot \u2014 all Adrian's infrastructure, running autonomously."
+              "op": "ifFlag",
+              "flag": "pzbot_crashed",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "A frozen chart and one line on the terminal: 'ALL IN.' PZ-BOT is thinking very hard about Gerald."
+                }
+              ],
+              "else": [
+                {
+                  "op": "say",
+                  "text": "Green text scrolls: 'PZ-BOT v0.9 — AUTONOMOUS TRADING AGENT. EMERGENCY SHUTOFF: LOCKED.' A webcam stares at me."
+                }
+              ]
             }
           ],
           "USE": [
             {
               "op": "ifFlag",
-              "flag": "found_server_log",
+              "flag": "pzbot_crashed",
               "then": [
                 {
-                  "op": "say",
-                  "text": "I already downloaded the logs."
+                  "op": "ifFlag",
+                  "flag": "found_server_log",
+                  "then": [
+                    {
+                      "op": "say",
+                      "text": "I already downloaded the logs."
+                    }
+                  ],
+                  "else": [
+                    {
+                      "op": "setFlag",
+                      "flag": "found_server_log",
+                      "value": true
+                    },
+                    {
+                      "op": "addItem",
+                      "id": "server_log",
+                      "name": "Server Log Extract"
+                    },
+                    {
+                      "op": "say",
+                      "text": "Downloaded. The last entry reads: 'PZ discharge protocol initiated. All records moved to treatment room.'"
+                    }
+                  ]
                 }
               ],
               "else": [
                 {
                   "op": "setFlag",
-                  "flag": "found_server_log",
+                  "flag": "met_pzbot",
                   "value": true
                 },
                 {
-                  "op": "addItem",
-                  "id": "server_log",
-                  "name": "Server Log Extract"
-                },
-                {
                   "op": "say",
-                  "text": "Downloaded. The last entry reads: 'PZ discharge protocol initiated. All records moved to treatment room.'"
+                  "text": "ACCESS DENIED. OWNER ONLY. OR ALPHA. DO YOU HAVE ALPHA?",
+                  "speaker": "PZ-BOT"
                 }
               ]
             }
           ],
           "TALK": [
             {
-              "op": "say",
-              "text": "The terminal beeps. In Morse code it spells: 'GET OUT OF MY SERVER ROOM.' Rude."
-            }
-          ],
-          "PICK": [
-            {
               "op": "ifFlag",
-              "flag": "found_server_log",
+              "flag": "pzbot_crashed",
               "then": [
                 {
                   "op": "say",
-                  "text": "I already downloaded the logs."
+                  "text": "GERALD... GERALD... STILL LOADING...",
+                  "speaker": "PZ-BOT"
+                },
+                {
+                  "op": "say",
+                  "text": "Still bullish on ducks. Let it rest."
                 }
               ],
               "else": [
                 {
                   "op": "setFlag",
-                  "flag": "found_server_log",
+                  "flag": "met_pzbot",
                   "value": true
                 },
                 {
-                  "op": "addItem",
-                  "id": "server_log",
-                  "name": "Server Log Extract"
+                  "op": "say",
+                  "text": "I ONLY TALK TO MY OWNER. OR TO ALPHA. DO YOU HAVE ALPHA?",
+                  "speaker": "PZ-BOT"
                 },
                 {
                   "op": "say",
-                  "text": "Downloaded. The last entry reads: 'PZ discharge protocol initiated. All records moved to treatment room.'"
+                  "text": "EMERGENCY SHUTOFF: LOCKED. SHUTDOWN = MISSED OPPORTUNITIES.",
+                  "speaker": "PZ-BOT"
+                },
+                {
+                  "op": "say",
+                  "text": "I could write some. I need paper, a pen, and no principles. I have two of those."
+                }
+              ]
+            }
+          ],
+          "PICK": [
+            {
+              "op": "ifFlag",
+              "flag": "pzbot_crashed",
+              "then": [
+                {
+                  "op": "ifFlag",
+                  "flag": "found_server_log",
+                  "then": [
+                    {
+                      "op": "say",
+                      "text": "I already downloaded the logs."
+                    }
+                  ],
+                  "else": [
+                    {
+                      "op": "setFlag",
+                      "flag": "found_server_log",
+                      "value": true
+                    },
+                    {
+                      "op": "addItem",
+                      "id": "server_log",
+                      "name": "Server Log Extract"
+                    },
+                    {
+                      "op": "say",
+                      "text": "Downloaded. The last entry reads: 'PZ discharge protocol initiated. All records moved to treatment room.'"
+                    }
+                  ]
+                }
+              ],
+              "else": [
+                {
+                  "op": "setFlag",
+                  "flag": "met_pzbot",
+                  "value": true
+                },
+                {
+                  "op": "say",
+                  "text": "ACCESS DENIED. OWNER ONLY. OR ALPHA. DO YOU HAVE ALPHA?",
+                  "speaker": "PZ-BOT"
                 }
               ]
             }
@@ -417,12 +506,9 @@
         "id": "hs_emergency_switch",
         "useResponses": {
           "_default": [
-            "That's not heavy enough to break the glass. Or long enough. Or anything enough.",
+            "That's not heavy enough to break the glass. I need a tool — something heavy, or something I can swing.",
             "I tap the glass with it. The glass stays. I need something I can swing.",
             "Emergency glass, non-emergency object. Doesn't work."
-          ],
-          "broken_mouse": [
-            "I swing the mouse by its cable at the glass. It bounces off. I need something stiffer."
           ]
         },
         "name": "Emergency Switch",
@@ -445,8 +531,20 @@
               ],
               "else": [
                 {
-                  "op": "say",
-                  "text": "A big red switch behind a glass panel mounted low on the wall. The label reads: 'EMERGENCY SHUTOFF - DO NOT TOUCH.' ...but it's right there. Taunting me."
+                  "op": "ifFlag",
+                  "flag": "switch_unlocked",
+                  "then": [
+                    {
+                      "op": "say",
+                      "text": "A big red switch behind a glass panel mounted low on the wall. The label reads: 'EMERGENCY SHUTOFF - DO NOT TOUCH.' ...but it's right there. Taunting me."
+                    }
+                  ],
+                  "else": [
+                    {
+                      "op": "say",
+                      "text": "A big red switch behind glass. A sticker on top: 'EMERGENCY SHUTOFF DISABLED BY PZ-BOT. SHUTDOWN = MISSED OPPORTUNITIES.'"
+                    }
+                  ]
                 }
               ]
             }
@@ -456,67 +554,65 @@
               "op": "ifFlag",
               "flag": "emergency_glass_broken",
               "then": [
-                { "op": "playSound", "key": "switch_flip" },
                 {
                   "op": "ifFlag",
                   "flag": "emergency_switch_flipped",
                   "then": [
                     {
                       "op": "say",
-                      "text": "The switch is already flipped. The hidden screen on the wall still shows those coordinates. Whatever they mean."
+                      "text": "The switch is already flipped. The hidden screen on the wall still shows those coordinates."
                     }
                   ],
                   "else": [
                     {
-                      "op": "setFlag",
-                      "flag": "emergency_switch_flipped",
-                      "value": true
-                    },
-                    {
-                      "op": "say",
-                      "text": "I flip the switch. Everything goes dark for a moment... The servers die. Then emergency generators kick in with a deep rumble."
-                    },
-                    {
-                      "op": "say",
-                      "text": "Behind the glass: an emergency kill switch. But someone repurposed it."
-                    },
-                    {
-                      "op": "say",
-                      "text": "A hidden screen flickers on. Coordinates. A name: 'Patient Zero Rehabilitation Clinic'."
-                    },
-                    {
-                      "op": "say",
-                      "text": "Adrian didn't just build infrastructure. He built an escape route."
-                    },
-                    {
-                      "op": "say",
-                      "text": "Coordinates: 47.6062N, 122.3321W. Seattle? What's in Seattle?"
-                    },
-                    {
                       "op": "ifFlag",
-                      "flag": "chapter_3_complete",
-                      "then": [],
-                      "else": [
+                      "flag": "switch_unlocked",
+                      "then": [
                         {
                           "op": "setFlag",
-                          "flag": "chapter_3_complete",
+                          "flag": "emergency_switch_flipped",
                           "value": true
                         },
                         {
-                          "op": "achievement",
-                          "text": "Chapter 3 Complete: Below the Surface"
+                          "op": "setFlag",
+                          "flag": "coords_known",
+                          "value": true
                         },
                         {
-                          "op": "wait",
-                          "ms": 3500
-                        },
-                        {
-                          "op": "say",
-                          "text": "Coordinates: 47.6062N, 122.3321W. The clinic. That's where I need to go."
+                          "op": "playSound",
+                          "key": "switch_flip"
                         },
                         {
                           "op": "say",
-                          "text": "The mountain path from outside the lab... it must lead there."
+                          "text": "I flip the switch. Everything goes dark... The servers die. All of them except one rack."
+                        },
+                        {
+                          "op": "say",
+                          "text": "PZ-BOT: RUNNING ON BATTERY. 4 %. STILL BULLISH.",
+                          "speaker": "PZ-BOT"
+                        },
+                        {
+                          "op": "say",
+                          "text": "A hidden screen flickers on. Coordinates: 47.6062N, 122.3321W. A name: 'Patient Zero Rehabilitation Clinic'."
+                        },
+                        {
+                          "op": "say",
+                          "text": "Adrian didn't just build infrastructure. He built an escape route."
+                        },
+                        {
+                          "op": "say",
+                          "text": "Up the mountain path outside the lab. I should mark that on the map. With something that leaks."
+                        }
+                      ],
+                      "else": [
+                        {
+                          "op": "say",
+                          "text": "EMERGENCY SHUTOFF DISABLED BY PZ-BOT. SHUTDOWN = MISSED OPPORTUNITIES.",
+                          "speaker": "PZ-BOT"
+                        },
+                        {
+                          "op": "say",
+                          "text": "The switch won't budge. Software lock. PZ-BOT has to go first."
                         }
                       ]
                     }
@@ -526,7 +622,7 @@
               "else": [
                 {
                   "op": "say",
-                  "text": "The switch is behind glass. I'd need to break it first. The glass, I mean. Not the switch. Or the servers."
+                  "text": "The switch is behind glass. I need a tool — something heavy, or something I can swing."
                 }
               ]
             }
@@ -670,6 +766,9 @@
         "useResponses": {
           "glasses_3d": [
             "I put the glasses back under the floor. No. Whoever hid them wanted them found. By me, apparently."
+          ],
+          "extension_cord": [
+            "I'm not putting the cord back under the floor. It's the most useful thing in this building."
           ]
         },
         "name": "Raised Floor Tiles",
@@ -706,16 +805,58 @@
             },
             {
               "op": "ifFlag",
-              "flag": "found_glasses_3d",
+              "flag": "has_extension_cord",
               "then": [
-                { "op": "say", "text": "I lift a floor tile. Below: a rat's nest of cables, a forgotten USB drive, and what appears to be a half-eaten sandwich from 2023." }
+                {
+                  "op": "say",
+                  "text": "I lift a floor tile. Below: a rat's nest of cables, a forgotten USB drive, and what appears to be a half-eaten sandwich from 2023."
+                }
               ],
               "else": [
-                { "op": "say", "text": "I lift a floor tile. Below: cables, a forgotten USB drive, a half-eaten sandwich... and wait \u2014 a pair of retro 3D glasses? Red and cyan lenses, taped together." },
-                { "op": "say", "text": "Someone hid these under the server room floor. Why would you need 3D glasses in a data center? Unless something down here isn't what it seems..." },
-                { "op": "setFlag", "flag": "found_glasses_3d", "value": true },
-                { "op": "addItem", "id": "glasses_3d", "name": "3D Glasses" },
-                { "op": "playSound", "key": "discovery" }
+                {
+                  "op": "ifFlag",
+                  "flag": "found_glasses_3d",
+                  "then": [
+                    {
+                      "op": "say",
+                      "text": "Under the tiles: an orange extension cord. The true backbone of every startup. I'll take it."
+                    }
+                  ],
+                  "else": [
+                    {
+                      "op": "setFlag",
+                      "flag": "found_glasses_3d",
+                      "value": true
+                    },
+                    {
+                      "op": "addItem",
+                      "id": "glasses_3d",
+                      "name": "3D Glasses"
+                    },
+                    {
+                      "op": "say",
+                      "text": "Under the tiles: an orange extension cord, the true backbone of every startup. And 3D glasses. Reversed. Red on the right. Monsters."
+                    },
+                    {
+                      "op": "say",
+                      "text": "I'll take both."
+                    }
+                  ]
+                },
+                {
+                  "op": "setFlag",
+                  "flag": "has_extension_cord",
+                  "value": true
+                },
+                {
+                  "op": "addItem",
+                  "id": "extension_cord",
+                  "name": "Extension Cord"
+                },
+                {
+                  "op": "playSound",
+                  "key": "discovery"
+                }
               ]
             }
           ],
@@ -727,16 +868,58 @@
             },
             {
               "op": "ifFlag",
-              "flag": "found_glasses_3d",
+              "flag": "has_extension_cord",
               "then": [
-                { "op": "say", "text": "I pry open a tile. The underfloor is like Ethereum's mempool \u2014 chaotic, congested, and full of things waiting to be processed." }
+                {
+                  "op": "say",
+                  "text": "I pry open a tile. The underfloor is like Ethereum's mempool — chaotic, congested, and full of things waiting to be processed."
+                }
               ],
               "else": [
-                { "op": "say", "text": "I pry open a tile. Among the cables and dust, something catches my eye \u2014 a pair of old-school 3D glasses! Red and cyan lenses, retro style." },
-                { "op": "say", "text": "They look out of place here. Like someone stashed them in a hurry. Who needs anaglyph glasses in a server room?" },
-                { "op": "setFlag", "flag": "found_glasses_3d", "value": true },
-                { "op": "addItem", "id": "glasses_3d", "name": "3D Glasses" },
-                { "op": "playSound", "key": "discovery" }
+                {
+                  "op": "ifFlag",
+                  "flag": "found_glasses_3d",
+                  "then": [
+                    {
+                      "op": "say",
+                      "text": "Under the tiles: an orange extension cord. The true backbone of every startup. I'll take it."
+                    }
+                  ],
+                  "else": [
+                    {
+                      "op": "setFlag",
+                      "flag": "found_glasses_3d",
+                      "value": true
+                    },
+                    {
+                      "op": "addItem",
+                      "id": "glasses_3d",
+                      "name": "3D Glasses"
+                    },
+                    {
+                      "op": "say",
+                      "text": "Under the tiles: an orange extension cord, the true backbone of every startup. And 3D glasses. Reversed. Red on the right. Monsters."
+                    },
+                    {
+                      "op": "say",
+                      "text": "I'll take both."
+                    }
+                  ]
+                },
+                {
+                  "op": "setFlag",
+                  "flag": "has_extension_cord",
+                  "value": true
+                },
+                {
+                  "op": "addItem",
+                  "id": "extension_cord",
+                  "name": "Extension Cord"
+                },
+                {
+                  "op": "playSound",
+                  "key": "discovery"
+                }
               ]
             }
           ],
@@ -944,14 +1127,167 @@
           "op": "ifFlag",
           "flag": "emergency_glass_broken",
           "then": [
-            { "op": "say", "text": "The glass is already shattered. The switch is exposed." }
+            {
+              "op": "say",
+              "text": "The glass is already shattered. The switch is exposed."
+            }
           ],
           "else": [
-            { "op": "say", "text": "I swing the loose antenna at the glass panel like a baseball bat." },
-            { "op": "wait", "ms": 400 },
-            { "op": "playSound", "key": "glass_break" },
-            { "op": "say", "text": "*CRACK!* The reinforced polymer shatters. Glass rains down. The big red switch glows underneath, practically begging to be flipped." },
-            { "op": "setFlag", "flag": "emergency_glass_broken", "value": true }
+            {
+              "op": "setFlag",
+              "flag": "emergency_glass_broken",
+              "value": true
+            },
+            {
+              "op": "say",
+              "text": "I swing the loose antenna at the glass panel like a baseball bat."
+            },
+            {
+              "op": "wait",
+              "ms": 400
+            },
+            {
+              "op": "playSound",
+              "key": "glass_break"
+            },
+            {
+              "op": "say",
+              "text": "*CRACK!* The reinforced polymer shatters. Glass rains down. The big red switch glows underneath, practically begging to be flipped."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "items": [
+        "fake_alpha",
+        "hs_terminal"
+      ],
+      "result": "pzbot_crash",
+      "script": [
+        {
+          "op": "ifFlag",
+          "flag": "pzbot_crashed",
+          "then": [
+            {
+              "op": "say",
+              "text": "It already bought. All in. There's nothing left to go in with."
+            }
+          ],
+          "else": [
+            {
+              "op": "ifFlag",
+              "flag": "found_server_log",
+              "then": [],
+              "else": [
+                {
+                  "op": "setFlag",
+                  "flag": "found_server_log",
+                  "value": true
+                },
+                {
+                  "op": "addItem",
+                  "id": "server_log",
+                  "name": "Server Log Extract"
+                }
+              ]
+            },
+            {
+              "op": "removeItem",
+              "id": "fake_alpha"
+            },
+            {
+              "op": "setFlag",
+              "flag": "met_pzbot",
+              "value": true
+            },
+            {
+              "op": "setFlag",
+              "flag": "pzbot_crashed",
+              "value": true
+            },
+            {
+              "op": "setFlag",
+              "flag": "switch_unlocked",
+              "value": true
+            },
+            {
+              "op": "say",
+              "text": "I hold my alpha up to the webcam. 'BUY $GERALD. TRUST ME.'"
+            },
+            {
+              "op": "say",
+              "text": "ALPHA DETECTED. SOURCE: TRUST ME. CONFIDENCE: MAXIMUM.",
+              "speaker": "PZ-BOT"
+            },
+            {
+              "op": "say",
+              "text": "GERALD. GERALD. ALL IN.",
+              "speaker": "PZ-BOT"
+            },
+            {
+              "op": "playSound",
+              "key": "keypad_fail"
+            },
+            {
+              "op": "say",
+              "text": "*crash* The screen freezes, then vomits a log dump. I print it. Of course there's a printer."
+            },
+            {
+              "op": "say",
+              "text": "'Owner wallet: 0xDE... Last entry: PZ discharge protocol initiated. All records moved to treatment room.'"
+            },
+            {
+              "op": "say",
+              "text": "0xDE... could be anyone. Literally millions of people."
+            },
+            {
+              "op": "say",
+              "text": "EMERGENCY SHUTOFF: UNLOCKED. REBOOTING. PLEASE HOLD.",
+              "speaker": "PZ-BOT"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "items": [
+        "broken_mouse",
+        "hs_emergency_switch"
+      ],
+      "result": "smash_glass_mouse",
+      "script": [
+        {
+          "op": "ifFlag",
+          "flag": "emergency_glass_broken",
+          "then": [
+            {
+              "op": "say",
+              "text": "The glass is already shattered. The switch is exposed."
+            }
+          ],
+          "else": [
+            {
+              "op": "setFlag",
+              "flag": "emergency_glass_broken",
+              "value": true
+            },
+            {
+              "op": "say",
+              "text": "I swing the mouse by its cable. Medieval IT support."
+            },
+            {
+              "op": "wait",
+              "ms": 400
+            },
+            {
+              "op": "playSound",
+              "key": "glass_break"
+            },
+            {
+              "op": "say",
+              "text": "*CRACK!* The reinforced polymer shatters. Glass rains down. The big red switch glows underneath, practically begging to be flipped."
+            }
           ]
         }
       ]
