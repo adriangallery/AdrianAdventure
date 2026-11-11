@@ -123,7 +123,7 @@ async function walkLeg(tag, label, x, y, want) {
       seen.dirs.add(a.dir);
       seen.textures.add(a.texture);
       seen.maxAngle = Math.max(seen.maxAngle, Math.abs(a.angle));
-      if (!seen.still && a.dir === want.dir && want.texture.test(a.texture) && Math.abs(a.angle) > 0.5) {
+      if (!seen.still && a.dir === want.dir && want.texture.test(a.texture) && (!want.sway || Math.abs(a.angle) > 0.5)) {
         seen.still = true;
         await demo.still(tag, { clip });
       }
@@ -167,7 +167,7 @@ async function talkLeg(tag, label, start, args, want) {
         seen.talking = true;
         seen.textures.add(a.texture);
         seen.maxAngle = Math.max(seen.maxAngle, Math.abs(a.angle));
-        if (!seen.still && seen.textures.size >= (want.frames ?? 1) && Math.abs(a.angle) > 0.3) {
+        if (!seen.still && seen.textures.size >= (want.frames ?? 1) && (want.nod === false || Math.abs(a.angle) > 0.3)) {
           seen.still = true;
           await demo.still(tag, { clip });
         }
@@ -181,7 +181,7 @@ async function talkLeg(tag, label, start, args, want) {
   console.log(`${tag}: texto ${seen.open ? 'visto' : 'NO visto'} · talking ${seen.talking} · texturas ${[...seen.textures].join(', ')} · cabeceo máx ${seen.maxAngle.toFixed(2)}° → tras cerrar: talking ${st.anim?.talking} · ${fmtA(st.anim)}`);
   if (!seen.open) problems.push(`${tag}: no salió el texto del jugador`);
   if (!seen.talking) problems.push(`${tag}: anim.talking nunca fue true con el texto abierto`);
-  if (seen.maxAngle < 0.3) problems.push(`${tag}: sin cabeceo (giro máx ${seen.maxAngle.toFixed(2)}°)`);
+  if (want.nod !== false && seen.maxAngle < 0.3) problems.push(`${tag}: sin cabeceo (giro máx ${seen.maxAngle.toFixed(2)}°)`);
   if (want.frames && seen.textures.size < want.frames) problems.push(`${tag}: hablando solo ${seen.textures.size} textura(s), se esperaban ${want.frames}`);
   if (want.texture && ![...seen.textures].some((t) => want.texture.test(t))) problems.push(`${tag}: hablando sin textura ${want.texture}`);
   if (st.anim?.talking) problems.push(`${tag}: anim.talking sigue true con el texto cerrado`);
@@ -198,15 +198,16 @@ console.log(`inicio: jugador ${st0.player.x.toFixed(1)},${st0.player.y.toFixed(1
 if (!st0.anim) await demo.fail('state().anim no existe (API de QA anterior a A4.1)');
 
 // 1) de perfil hasta debajo del abrigo; arriba y abajo
-await walkLeg('perfil', '1) de perfil', X, Y_FRONT, { dir: 'left', texture: /^player_walk_(left|right)_\d$/, sway: false });
-await walkLeg('arriba', '1) hacia el fondo: Back-* + balanceo', X, Y_BACK, { dir: 'up', texture: /^player_back_(left|right)$/, sway: true, facing: 'back' });
+// A2.14: Dex 3D: andar de 8 fotogramas propios en cada dirección (player3d_walk_<dir>_<i>), sin balanceo
+await walkLeg('perfil', '1) de perfil', X, Y_FRONT, { dir: 'left', texture: /^player3d_walk_left_\d$/, sway: false });
+await walkLeg('arriba', '1) hacia el fondo: ciclo de espaldas', X, Y_BACK, { dir: 'up', texture: /^player3d_walk_up_\d$/, sway: false, facing: 'back' });
 await hold('1) llega de espaldas', 3);
-await walkLeg('abajo', '1) hacia la cámara: Front-* + balanceo', X, Y_FRONT, { dir: 'down', texture: /^player_front_(left|right)$/, sway: true, facing: 'front' });
+await walkLeg('abajo', '1) hacia la cámara: ciclo de frente', X, Y_FRONT, { dir: 'down', texture: /^player3d_walk_down_\d$/, sway: false, facing: 'front' });
 await hold('1) llega de frente', 3);
 
 // 2) hablar: de perfil (LOOK planta, texto 2,5 s) y de frente en una cinemática con actorMove vertical
 await talkLeg('habla-perfil', '2) LOOK planta: cabeceo de perfil',
-  () => window.__demoRun(window.__qa.act('LOOK', 'hs_plant', [], 2500)), [], {});
+  () => window.__demoRun(window.__qa.act('LOOK', 'hs_plant', [], 2500)), [], { frames: 3, texture: /^player3d_talk_(left|right)_\d$/, nod: false });
 const cineSeen = { up: false };
 await talkLeg('habla-frente', '2) cinemática: actorMove al fondo y habla de frente',
   (line, x) => window.__demoRun(window.__qa.runScript([
@@ -215,7 +216,7 @@ await talkLeg('habla-frente', '2) cinemática: actorMove al fondo y habla de fre
     { op: 'actorFace', actor: 'player', dir: 'front' },
     { op: 'say', text: line },
     { op: 'cinematicEnd' },
-  ])), [PLANT_LINE, X], { frames: 3, texture: /^player_front_/ });
+  ])), [PLANT_LINE, X], { frames: 3, texture: /^player3d_talk_down_\d$/, nod: false });
 // (la subida de la cinemática se comprueba aparte: anim.dir queda en «up» tras el actorMove)
 {
   const { st } = await capture('2) tras la cinemática');
@@ -236,7 +237,8 @@ await hold('2) fin de la cinemática', 3);
       if (a?.gesture) {
         seen.gesture = true;
         seen.maxLift = Math.max(seen.maxLift, a.liftPx);
-        if (!seen.still && a.liftPx > 0) { seen.still = true; await demo.still('gesto', { clip }); }
+        if (/^player3d_pick_/.test(a.texture)) seen.pick3d = a.texture;
+        if (!seen.still && seen.pick3d) { seen.still = true; await demo.still('gesto', { clip }); }
       }
     },
   });
@@ -245,7 +247,8 @@ await hold('2) fin de la cinemática', 3);
   const { st } = await capture('3) PICK abrigo: hecho');
   console.log(`gesto: visto ${seen.gesture} · elevación máx ${seen.maxLift}px → ${fmtA(st.anim)} · mira ${st.facing} · inventario ${JSON.stringify(st.inventory)}`);
   if (!seen.gesture) problems.push('PICK: no se vio el gesto (anim.gesture)');
-  if (seen.maxLift <= 0) problems.push('PICK: de espaldas el gesto no se puso de puntillas (liftPx 0)');
+  // A2.14: el gesto es de fotogramas 3D propios (coger alto/medio/bajo según la altura del objeto), sin elevación
+  if (!seen.pick3d) problems.push('PICK: el gesto no usó fotogramas 3D (player3d_pick_*)');
   if (st.facing !== 'back') problems.push(`PICK: mira «${st.facing}», se esperaba «back»`);
   if (!st.inventory.includes('keycard')) problems.push('PICK: no cogió la keycard');
   checkRest('PICK', st);
@@ -310,9 +313,9 @@ await open(390);
 {
   const st = (await capture('390x844')).st;
   console.log(`390x844: ${fmtA(st.anim)} · pixel ×${st.pixel?.playerScale} entera ${st.pixel?.integer}`);
-  await walkLeg('390-perfil', '390x844 de perfil', X, Y_FRONT, { dir: 'left', texture: /^player_walk_/, sway: false, integer: false });
-  await walkLeg('390-arriba', '390x844 hacia el fondo', X, Y_BACK, { dir: 'up', texture: /^player_back_/, sway: true, facing: 'back', integer: false });
-  await walkLeg('390-abajo', '390x844 hacia la cámara', X, Y_FRONT, { dir: 'down', texture: /^player_front_/, sway: true, facing: 'front', integer: false });
+  await walkLeg('390-perfil', '390x844 de perfil', X, Y_FRONT, { dir: 'left', texture: /^player3d_walk_left_/, sway: false, integer: false });
+  await walkLeg('390-arriba', '390x844 hacia el fondo', X, Y_BACK, { dir: 'up', texture: /^player3d_walk_up_/, sway: false, facing: 'back', integer: false });
+  await walkLeg('390-abajo', '390x844 hacia la cámara', X, Y_FRONT, { dir: 'down', texture: /^player3d_walk_down_/, sway: false, facing: 'front', integer: false });
   await demo.still('390x844');
 }
 await demo.end();
