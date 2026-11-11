@@ -80,6 +80,8 @@ jobs:
         run: npm run test:smoke
         env:
           BASE_URL: ${{ inputs.BASE_URL || 'http://127.0.0.1:4173' }}
+          # A5.1: tope del arte de escena en la GPU (MB; antes de A5.1 llegaba a 173 MB tras seis escenas)
+          SMOKE_TEXTURE_MAX_MB: '32'
 
       - uses: actions/upload-artifact@v4
         if: always()

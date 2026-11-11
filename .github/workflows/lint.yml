@@ -104,3 +104,8 @@ jobs:
       - name: Overlays recortados (A2.7)
         if: ${{ !cancelled() }}
         run: node scripts/crop-overlays.mjs --check
+      # A5.1: cada fondo, primer plano y overlay a tamaño de fondo tiene sus variantes @1280/@2048 con la medida justa, y
+      # render.world coincide con el fondo maestro. Si falla: `node scripts/make-bg-variants.mjs` y commit.
+      - name: Variantes de fondo (A5.1)
+        if: ${{ !cancelled() }}
+        run: node scripts/make-bg-variants.mjs --check

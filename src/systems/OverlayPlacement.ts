@@ -4,6 +4,9 @@
 // escala que el fondo. Con `bounds` (en % del fondo, lo escribe scripts/crop-overlays.mjs) es solo su caja: se
 // pasa a píxeles enteros del fondo con la misma cuenta que scripts/lib/overlay-crop.mjs (pctToBox) y se coloca
 // ahí, así cada píxel cae exactamente donde caía en la imagen completa.
+// A5.1: `img` es el tamaño LÓGICO del fondo (render.world) y `tex` el de la textura real; si una imagen a tamaño de
+// fondo viene en una variante más pequeña (`background@2048.webp`), la escala se multiplica por img/tex. GameScene
+// coloca así también el fondo y el primer plano (sin bounds).
 
 export interface PctRect {
   x: number;
@@ -29,7 +32,14 @@ export function overlayTransform(
   tex: { w: number; h: number },
   bounds?: PctRect | null,
 ): BgTransform {
-  if (!bounds) return { x: bg.x, y: bg.y, scaleX: bg.scaleX, scaleY: bg.scaleY };
+  if (!bounds) {
+    return {
+      x: bg.x,
+      y: bg.y,
+      scaleX: bg.scaleX * (tex.w > 0 ? img.w / tex.w : 1),
+      scaleY: bg.scaleY * (tex.h > 0 ? img.h / tex.h : 1),
+    };
+  }
   const left = Math.round((bounds.x * img.w) / 100);
   const top = Math.round((bounds.y * img.h) / 100);
   const width = Math.round((bounds.w * img.w) / 100);

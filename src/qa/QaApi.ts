@@ -30,6 +30,9 @@ import type { MusicManager, MusicQaState } from '@/systems/MusicManager';
 import type { SfxPlayer, SfxQaState } from '@/systems/Sfx';
 import { stingerLog, type StingerEvent } from '@/systems/StingerPlayer';
 import { qaFakeWallet } from '@/web3/wallet';
+import { textureReport, type TextureEntry, type TextureReport } from '@/systems/SceneTextures';
+import { sceneImageAssets } from '@/systems/ScenePrefetch';
+import { ASSET_V } from '@/systems/ScenePrefetcher';
 
 type Point = { x: number; y: number };
 /** A2.6: `used` = ya elegida antes en ese árbol (gris). Las ocultas (`when`, `once`) no salen. */
@@ -162,6 +165,14 @@ export interface QaState {
    * (pista que se va en el fundido cruzado), `music.musicKey` (tonalidad) y `stingers` (últimos tocados). null fuera del juego.
    */
   audio: AudioQaState | null;
+  /**
+   * A5.1: memoria de texturas (src/systems/SceneTextures.ts): `count` y `bytes` (ancho × alto × 4 por fuente, lo que
+   * ocupan en la GPU) de todo lo que hay en el TextureManager, `byKind` (scene: arte de la escena actual; otherScenes:
+   * arte de otras escenas que sigue cargado; characters, items, badges, canvas, other), `scenesLoaded` (escenas con arte
+   * en Phaser), `big` (texturas de ≥ 1 MB), `variant` (ancho de fondo elegido y por qué; null si los fondos van a tamaño
+   * completo), `world` (tamaño lógico de la escena, render.world) y `bgTexture` (tamaño real de la textura del fondo).
+   */
+  textures: TexturesQaState;
 }
 
 /** A4.4: ver QaState.audio */
@@ -170,6 +181,13 @@ export interface AudioQaState extends MusicQaState {
   footsteps: ReturnType<GameScene['qaFootsteps']> | null;
   /** A4.5: últimos stingers tocados ({ kind, key, detune, music, at }) */
   stingers: StingerEvent[];
+}
+
+/** A5.1: ver QaState.textures */
+export interface TexturesQaState extends TextureReport {
+  variant: { width: number; reason: string } | null;
+  world: { w: number; h: number } | null;
+  bgTexture: { w: number; h: number } | null;
 }
 
 /** A2.8: ver QaState.pixel */
@@ -476,6 +494,31 @@ export function installQa(game: Phaser.Game): void {
       npcLife: scene ? scene.qaNpcLife() : [],
       audio: qaAudio(scene),
       ambient: scene ? scene.qaAmbient() : [],
+      textures: texturesState(scene, data ?? null),
+    };
+  };
+
+  /**
+   * A5.1: memoria de texturas: todas las fuentes del TextureManager (ancho × alto × 4), clasificadas con las claves de arte
+   * de cada escena conocida (la actual y las que recuerda el prefetcher: visitadas o precargadas).
+   */
+  const texturesState = (scene: GameScene | null, data: SceneData | null): TexturesQaState => {
+    const entries: TextureEntry[] = [];
+    for (const [key, tex] of Object.entries(game.textures.list as Record<string, Phaser.Textures.Texture>)) {
+      for (const src of tex.source ?? []) entries.push({ key, width: src.width, height: src.height, canvas: !!src.isCanvas || !!src.isRenderTexture });
+    }
+    const prefetcher = registry.get('scenePrefetcher') as ScenePrefetcher | undefined;
+    const known: Record<string, unknown> = { ...(prefetcher?.knownScenes() ?? {}) };
+    const currentScene = scene ? ((registry.get('currentSceneId') as string | undefined) ?? null) : null;
+    if (currentScene && data) known[currentScene] = data;
+    const sceneArt: Record<string, string[]> = {};
+    for (const [id, s] of Object.entries(known)) sceneArt[id] = sceneImageAssets(id, s as SceneData, ASSET_V).map((a) => a.key);
+    const art = scene ? scene.qaSceneArt() : null;
+    return {
+      ...textureReport(entries, { currentScene, sceneArt }),
+      variant: (registry.get('bgVariant') as { width: number; reason: string } | undefined) ?? null,
+      world: art?.world ?? null,
+      bgTexture: art?.bgTexture ?? null,
     };
   };
 
