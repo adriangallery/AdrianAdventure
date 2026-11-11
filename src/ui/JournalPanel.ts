@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { FONT, SPEECH_COLORS, TWP } from '@/config/theme';
+import { setTouchInteractive, touchContains } from './touchTarget';
 import { sfxOf } from '@/systems/Sfx';
 import { goalStingers, type GoalSnapshot } from '@/systems/Stingers';
 import { playStinger } from '@/systems/StingerPlayer';
@@ -53,7 +54,8 @@ export interface JournalHooks {
 }
 
 /** Botón: a la derecha del de trofeos (BadgePanel, x 33-63), misma altura y tamaño que Save. */
-const BTN = { x: 67, y: 8, w: 30, h: 24 };
+// A5.2: x 67 → 100 para dejar sitio a las zonas táctiles de 44×44 de guardar y logros (se ve igual de grande)
+const BTN = { x: 100, y: 8, w: 30, h: 24 };
 /** Lo que tarda en «dar tono» antes de que Anon conteste */
 export const RING_MS = 900;
 /** Un toque que abre el diario no lo cierra con el clic emulado que llega después sobre el fondo */
@@ -68,32 +70,32 @@ const CSS = `
   box-shadow:0 0 0 2px #08080f,0 10px 40px rgba(0,0,0,.6);display:flex;flex-direction:column;overflow:hidden;color:#f0e8d8}
 @media (orientation:landscape){#journal-phone{width:min(90vw,720px);height:min(88vh,520px);border-radius:16px}}
 #journal-phone .jr-head{display:flex;align-items:center;gap:8px;padding:10px 12px 6px;border-bottom:1px solid #2a2a40}
-#journal-phone .jr-title{flex:1;min-width:0;font-size:9px;color:#f8e848;line-height:1.5}
-#journal-phone .jr-sub{font-size:7px;color:#8878a8;margin-top:3px}
-#journal-close{flex:0 0 auto;width:40px;height:34px;background:transparent;border:1px solid #504878;color:#c0b0d8;border-radius:8px;font:inherit;font-size:10px;cursor:pointer}
+#journal-phone .jr-title{flex:1;min-width:0;font-size:11px;color:#f8e848;line-height:1.5}
+#journal-phone .jr-sub{font-size:11px;color:#8878a8;margin-top:3px}
+#journal-close{flex:0 0 auto;width:44px;height:44px;background:transparent;border:1px solid #504878;color:#c0b0d8;border-radius:8px;font:inherit;font-size:12px;cursor:pointer}
 #journal-phone .jr-tabs{display:flex;gap:6px;padding:8px 10px}
-#journal-phone .jr-tab{flex:1;min-height:36px;font:inherit;font-size:8px;color:#8878a8;background:#12121e;border:1px solid #2a2a40;border-radius:8px;position:relative;cursor:pointer;padding:0 4px}
+#journal-phone .jr-tab{flex:1;min-height:44px;font:inherit;font-size:11px;line-height:1.4;color:#8878a8;background:#12121e;border:1px solid #2a2a40;border-radius:8px;position:relative;cursor:pointer;padding:0 2px}
 #journal-phone .jr-tab[aria-selected=true]{color:#f8e848;border-color:#f8e848;background:#1a1a30}
 #journal-phone .jr-new{position:absolute;top:4px;right:5px;width:7px;height:7px;border-radius:50%;background:#f8e848}
-#journal-phone .jr-body{flex:1;overflow-y:auto;padding:4px 14px 14px;font-size:9px;line-height:1.8;-webkit-overflow-scrolling:touch}
-@media (min-width:700px) and (min-height:600px){#journal-phone .jr-body{font-size:10px}}
+#journal-phone .jr-body{flex:1;overflow-y:auto;padding:4px 14px 14px;font-size:11px;line-height:1.8;-webkit-overflow-scrolling:touch}
+@media (min-width:700px) and (min-height:600px){#journal-phone .jr-body{font-size:12px}}
 #journal-phone .jr-goal{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-bottom:1px dashed #1f1f33}
 #journal-phone .jr-box{flex:0 0 14px;height:14px;border:2px solid #504878;border-radius:3px;display:flex;align-items:center;justify-content:center;
   font-size:10px;line-height:1;margin-top:1px;color:#08080f;font-family:sans-serif;font-weight:bold}
 #journal-phone .jr-goal.done .jr-box{background:#8cf070;border-color:#8cf070}
 #journal-phone .jr-goal.done .jr-text{color:#9aa890}
-#journal-phone .jr-badge{display:inline-block;font-size:6px;color:#08080f;background:#f8e848;border-radius:3px;padding:2px 4px;margin-left:6px;vertical-align:middle}
-#journal-phone .jr-section{font-size:7px;color:#6a5a90;margin:14px 0 4px}
+#journal-phone .jr-badge{display:inline-block;font-size:11px;color:#08080f;background:#f8e848;border-radius:3px;padding:2px 4px;margin-left:6px;vertical-align:middle}
+#journal-phone .jr-section{font-size:11px;color:#6a5a90;margin:14px 0 4px}
 #journal-phone .jr-note{background:#12121e;border:1px solid #2a2a40;border-radius:8px;padding:8px 10px;margin:8px 0}
-#journal-phone .jr-note-ch{font-size:6px;color:#8878a8;margin-bottom:4px}
-#journal-phone .jr-empty{color:#8878a8;font-size:8px;padding:16px 0;text-align:center}
+#journal-phone .jr-note-ch{font-size:11px;color:#8878a8;margin-bottom:4px}
+#journal-phone .jr-empty{color:#8878a8;font-size:11px;padding:16px 0;text-align:center}
 #journal-phone .jr-contact{display:flex;align-items:center;gap:10px;margin:8px 0 10px}
 #journal-phone .jr-avatar{flex:0 0 34px;height:34px;border-radius:50%;background:#1a1a30;border:2px solid ${ANON_COLOR};display:flex;align-items:center;justify-content:center;color:${ANON_COLOR};font-size:12px}
-#journal-call{width:100%;min-height:44px;font:inherit;font-size:10px;color:#08080f;background:#8cf070;border:none;border-radius:22px;cursor:pointer}
+#journal-call{width:100%;min-height:44px;font:inherit;font-size:11px;color:#08080f;background:#8cf070;border:none;border-radius:22px;cursor:pointer}
 #journal-call:disabled{background:#2a3a2a;color:#5f8090;cursor:default}
-#journal-phone .jr-level{font-size:7px;color:#8878a8;margin:10px 0 0}
+#journal-phone .jr-level{font-size:11px;color:#8878a8;margin:10px 0 0}
 #journal-phone .jr-bubble{background:#10202a;border:1px solid #1a2a38;color:${ANON_COLOR};border-radius:10px 10px 10px 2px;padding:10px 12px;margin-top:10px}
-#journal-phone .jr-click{font-size:7px;color:#5f8090;margin-top:6px;text-align:right}
+#journal-phone .jr-click{font-size:11px;color:#5f8090;margin-top:6px;text-align:right}
 `;
 
 export class JournalPanel {
@@ -116,10 +118,9 @@ export class JournalPanel {
     this.scene = scene;
     this.hooks = hooks;
     this.button = scene.add.container(BTN.x, BTN.y).setDepth(600).setScrollFactor(0);
-    this.bg = scene.add.rectangle(0, 0, BTN.w, BTN.h, TWP.WALLET_BG, 0.85)
+    this.bg = setTouchInteractive(scene.add.rectangle(0, 0, BTN.w, BTN.h, TWP.WALLET_BG, 0.85)
       .setStrokeStyle(1, TWP.WALLET_BORDER, 0.6)
-      .setOrigin(0, 0)
-      .setInteractive({ useHandCursor: true });
+      .setOrigin(0, 0), BTN.w, BTN.h);
     // Móvil dibujado: carcasa, pantalla y botón
     const icon = scene.add.graphics();
     icon.lineStyle(1.5, 0xc0b0d8, 1);
@@ -138,7 +139,7 @@ export class JournalPanel {
 
   /** A0.5: si el punto de pantalla cae en el botón (hit-test de la API de QA, como Save y Wallet). */
   containsButton(x: number, y: number): boolean {
-    return this.button.active && this.button.visible && this.bg.active && this.bg.getBounds().contains(x, y);
+    return this.button.active && this.button.visible && this.bg.active && touchContains(this.bg, x, y);
   }
 
   /** Centro del botón en coordenadas del juego (smoke y demo tocan ahí con el dedo). */

@@ -79,7 +79,7 @@ export class MenuScene extends Phaser.Scene {
     const btnSize = Math.max(14, Math.min(20, Math.floor(refSize * 0.022)));
     const btnSpacing = Math.max(btnSize * 2.5, 44);
     const btnCount = hasSave ? 3 : 2; // New Game + Leaderboard + optional Continue
-    const subSize = Math.max(10, Math.min(14, Math.floor(refSize * 0.014)));
+    const subSize = Math.max(11, Math.min(14, Math.floor(refSize * 0.014)));
     const rotateHintH = isPortrait ? 40 : 0;
 
     // Subtitle — A1.7: el arte del título llega con los personajes hasta su borde inferior, así que el
@@ -152,7 +152,7 @@ export class MenuScene extends Phaser.Scene {
       if (auto) {
         this.add.text(width / 2, btnY + btnSpacing + btnSize * 1.05, `${auto.sceneName} · ${MenuScene.timeAgo(auto.timestamp)}`, {
           fontFamily: FONT.FAMILY,
-          fontSize: `${Math.max(8, Math.round(subSize * 0.8))}px`,
+          fontSize: `${Math.max(11, Math.round(subSize * 0.8))}px`,
           color: TWP.MENU_SUBTITLE,
         }).setOrigin(0.5, 0).setAlpha(0.8).setName('continue-detail');
       }
@@ -164,7 +164,7 @@ export class MenuScene extends Phaser.Scene {
 
     // Rotate hint in portrait
     if (isPortrait) {
-      const hintSize = Math.max(9, Math.min(12, Math.floor(refSize * 0.012)));
+      const hintSize = Math.max(11, Math.min(12, Math.floor(refSize * 0.012)));
       this.add.text(width / 2, height - 30, '\u{1F504} Rotate for best experience', {
         fontFamily: FONT.FAMILY,
         fontSize: `${hintSize}px`,
@@ -445,7 +445,8 @@ export class MenuScene extends Phaser.Scene {
     })
       .setOrigin(0.5)
       .setInteractive({ useHandCursor: true })
-      .setPadding(16, 12);
+      // A5.2: 14 px arriba y abajo → zona táctil ≥ 40 px de alto en un iPhone (antes 39)
+      .setPadding(16, 14);
 
     text.on('pointerover', () => text.setColor(TWP.MENU_BTN_HOVER));
     text.on('pointerout', () => text.setColor(TWP.MENU_BTN));

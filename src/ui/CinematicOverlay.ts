@@ -234,8 +234,9 @@ export class CinematicOverlay {
   showAchievement(text: string): Promise<void> {
     return new Promise<void>((resolve) => {
       const { width } = this.scene.scale;
-      const fontSize = Math.max(8, Math.min(12, Math.floor(width * 0.01)));
-      const labelSize = Math.max(6, Math.min(9, Math.floor(width * 0.007)));
+      // A5.2: mínimo 11 px en móvil (antes 8 y 6)
+      const fontSize = Math.max(11, Math.min(12, Math.floor(width * 0.01)));
+      const labelSize = Math.max(11, Math.min(11, Math.floor(width * 0.007)));
       const stripHeight = Math.max(50, Math.floor(fontSize * 5));
 
       const container = this.scene.add.container(0, -stripHeight).setDepth(DEPTH + 1).setScrollFactor(0);

@@ -8,10 +8,14 @@ import { TWP, FONT, LAYOUT } from '@/config/theme';
 import { hasFinePointer } from '@/config/platform';
 import { VERB_KEYS } from '@/systems/DesktopControls';
 import { failResponses } from '@/systems/FailResponsesData';
+import { MIN_TOUCH_PX } from './touchTarget';
 import { sfxOf } from '@/systems/Sfx';
 
 export const SCUMM_PANEL_MIN_HEIGHT: number = LAYOUT.PANEL_MIN_HEIGHT;
-const COLLAPSED_HEIGHT = 36;
+// A5.2: 44 px (zona táctil del asa en un iPhone; antes 36)
+const COLLAPSED_HEIGHT = 44;
+/** A5.2: alto mínimo del panel en móvil vertical: línea de acción + 3 filas de verbos de 44 px (zona táctil). */
+const PORTRAIT_PANEL_MIN = 164;
 
 /**
  * Thimbleweed Park-style SCUMM bottom panel.
@@ -52,6 +56,8 @@ export class ScummUI {
   private contextId: string | null = null;
   private contextTimer: Phaser.Time.TimerEvent | null = null;
   private isMobile = false;
+  /** A5.2: x donde empieza la rejilla del inventario (para que no se salga de la pantalla) */
+  private invStartX = 0;
   private handleBar: Phaser.GameObjects.Container | null = null;
 
   constructor(scene: Phaser.Scene) {
@@ -93,7 +99,7 @@ export class ScummUI {
     const panelRatio = this.isMobile
       ? (isLandscape ? 0.28 : 0.18)
       : 0.25;
-    const minH = this.isMobile && isLandscape ? 120 : LAYOUT.PANEL_MIN_HEIGHT;
+    const minH = this.isMobile ? (isLandscape ? 120 : PORTRAIT_PANEL_MIN) : LAYOUT.PANEL_MIN_HEIGHT;
     this.fullPanelHeight = Math.max(minH, Math.floor(height * panelRatio));
 
     // Effective height depends on collapsed state
@@ -157,8 +163,13 @@ export class ScummUI {
     // ─── Verb grid (3×3) — proportional columns based on text width ───
     const verbStartY = 6 + actionFontSize + 10; // below action line
     const verbPadLeft = Math.max(6, width * 0.015);
-    const mobileVerbSize = width < 500 ? Math.max(10, Math.min(14, Math.floor(width * 0.028))) : verbFontSize;
-    const verbRowH = Math.max(22, mobileVerbSize + 8);
+    // A5.2: verbos de al menos 11 px en móvil (antes 10 en un iPhone vertical)
+    const mobileVerbSize = width < 500 ? Math.max(11, Math.min(14, Math.floor(width * 0.028))) : verbFontSize;
+    // A5.2: en móvil las filas ocupan el alto del panel (hasta 44 px), y cada verbo se toca en toda su celda
+    const fitRowH = Math.floor((this.fullPanelHeight - verbStartY - 4) / 3);
+    const verbRowH = this.isMobile
+      ? Math.max(22, mobileVerbSize + 8, Math.min(MIN_TOUCH_PX, fitRowH))
+      : Math.max(22, mobileVerbSize + 8);
     const verbGap = Math.max(8, Math.floor(width * 0.012)); // consistent gap between columns
 
     // Measure max width per column — single reusable text to avoid texture churn
@@ -195,7 +206,9 @@ export class ScummUI {
       const col = i % cols;
       const row = Math.floor(i / cols);
       const x = colX[col];
-      const y = verbStartY + row * verbRowH;
+      const textH = mobileVerbSize + 6;
+      const offY = this.isMobile ? Math.max(0, Math.floor((verbRowH - textH) / 2)) : 0;
+      const y = verbStartY + row * verbRowH + offY;
       const isActive = verb === this.selectedVerb;
 
       const text = this.scene.add.text(x, y, VERB_LABELS[verb], {
@@ -203,8 +216,18 @@ export class ScummUI {
         fontSize: `${mobileVerbSize}px`,
         color: isActive ? TWP.VERB_ACTIVE : TWP.VERB_NORMAL,
       })
-        .setInteractive({ useHandCursor: true })
         .setPadding(2, 3);
+      if (this.isMobile) {
+        // A5.2: zona táctil = la celda entera (ancho de columna + hueco, alto de fila), sin huecos muertos
+        const half = Math.floor(verbGap / 2);
+        text.setInteractive({
+          hitArea: new Phaser.Geom.Rectangle(col > 0 ? -half : -2, -offY, colMaxW[col] + half + (col > 0 ? half : 2), verbRowH),
+          hitAreaCallback: Phaser.Geom.Rectangle.Contains,
+          useHandCursor: true,
+        });
+      } else {
+        text.setInteractive({ useHandCursor: true });
+      }
 
       text.on('pointerover', () => {
         if (verb !== this.selectedVerb) text.setColor(TWP.VERB_HOVER);
@@ -237,11 +260,20 @@ export class ScummUI {
     const arrowSize = Math.max(12, Math.min(20, Math.floor(width * 0.016)));
     const arrowTopY = verbStartY + 4;
     const arrowBotY = verbStartY + verbRowH * 3 - arrowSize - 4;
+    // A5.2: cada flecha se toca en media columna (alto) y en todo el hueco entre verbos e inventario (ancho)
+    const arrowHalf = Math.floor(verbGap / 2);
+    const arrowHitW = arrowSize + 12 + arrowHalf - 2;
+    const arrowHitH = Math.floor(verbRowH * 1.5);
+    const arrowHit = (y0: number) => ({
+      hitArea: new Phaser.Geom.Rectangle(-arrowHalf, y0, arrowHitW, arrowHitH),
+      hitAreaCallback: Phaser.Geom.Rectangle.Contains,
+      useHandCursor: true,
+    });
 
     // Up arrow
     const upArrow = this.scene.add.text(arrowX, arrowTopY, '\u25B2', {
       fontFamily: FONT.FAMILY, fontSize: `${arrowSize}px`, color: TWP.INV_ARROW,
-    }).setInteractive({ useHandCursor: true });
+    }).setInteractive(arrowHit(-4));
     upArrow.on('pointerover', () => upArrow.setColor(TWP.INV_ARROW_HOVER));
     upArrow.on('pointerout', () => upArrow.setColor(TWP.INV_ARROW));
     upArrow.on('pointerdown', () => {
@@ -252,7 +284,7 @@ export class ScummUI {
     // Down arrow
     const downArrow = this.scene.add.text(arrowX, arrowBotY, '\u25BC', {
       fontFamily: FONT.FAMILY, fontSize: `${arrowSize}px`, color: TWP.INV_ARROW,
-    }).setInteractive({ useHandCursor: true });
+    }).setInteractive(arrowHit(arrowSize + 4 - arrowHitH));
     downArrow.on('pointerover', () => downArrow.setColor(TWP.INV_ARROW_HOVER));
     downArrow.on('pointerout', () => downArrow.setColor(TWP.INV_ARROW));
     downArrow.on('pointerdown', () => {
@@ -263,6 +295,7 @@ export class ScummUI {
 
     // ─── Inventory grid (right side — 2 rows of dark square tiles) ───
     const invStartX = arrowX + arrowSize + 12;
+    this.invStartX = invStartX;
     this.invContainer = this.scene.add.container(invStartX, verbStartY);
     this.container.add(this.invContainer);
     this.renderInventory();
@@ -807,10 +840,14 @@ export class ScummUI {
     const { width } = this.scene.scale;
 
     // TWP-style: exactly 2 rows of square icon tiles, no text labels
-    const slotSize = Math.max(44, Math.min(64, Math.floor(width * 0.05)));
+    let slotSize = Math.max(44, Math.min(64, Math.floor(width * 0.05)));
     const gap = 4;
     const availableW = width * 0.40;
-    const cols = Math.max(2, Math.floor(availableW / (slotSize + gap)));
+    // A5.2: en un iPhone vertical las dos columnas se salían 3-6 px por la derecha: se ajustan al hueco que queda
+    // (casillas de 40 px como mínimo, la zona táctil que exige el CI)
+    const room = width - this.invStartX - 2;
+    if (room < slotSize * 2 + gap) slotSize = Math.max(40, Math.floor((room - gap) / 2));
+    const cols = Math.max(1, Math.min(Math.max(2, Math.floor(availableW / (slotSize + gap))), Math.floor((room + gap) / (slotSize + gap))));
     const rows = 2; // TWP always uses 2 rows
     const maxVisible = cols * rows;
     const visible = items.slice(this.invScrollOffset * cols, this.invScrollOffset * cols + maxVisible);
