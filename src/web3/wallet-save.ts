@@ -2,6 +2,7 @@ import type { GameState } from '@/types/game.types';
 import { getWalletState, getSessionAuth } from './wallet';
 import { migrateSave } from '@/systems/SaveMigration';
 import { cloudSaveVerified, sessionUsable, type CloudResult } from '@/systems/SaveSlots';
+import { autosavePlan, hasProgress } from '@/systems/SaveProgress';
 
 
 const WALLET_SAVE_PREFIX = 'adrian_adventure_wallet_';
@@ -50,6 +51,16 @@ function loadLocal(address: string): WalletSave | null {
  * Use saveForWalletRemote() for cross-device sync (requires wallet signature).
  */
 export function saveForWallet(address: string, state: GameState, sceneName: string): void {
+  // A1.13: el autoguardado de cartera sigue la regla del slot 0: un estado vacío no pisa nada, y la partida de cartera
+  // con progreso de OTRA partida se conserva en `<clave>_prev` (también la ve «Continue») antes de pisarla.
+  const existing = loadLocal(address);
+  const plan = autosavePlan(existing?.state, state);
+  if (!plan.write) return;
+  if (plan.backupExisting && existing) {
+    try {
+      localStorage.setItem(`${WALLET_SAVE_PREFIX}${address.toLowerCase()}_prev`, JSON.stringify(existing));
+    } catch { return; }
+  }
   saveLocal(address, state, sceneName);
 }
 
@@ -116,6 +127,8 @@ let lastCloudAutosaveAt = 0;
 export function cloudAutosave(address: string, state: GameState, sceneName: string): void {
   const now = Date.now();
   if (now - lastCloudAutosaveAt < CLOUD_AUTOSAVE_MIN_MS) return;
+  // A1.13: un estado sin progreso nunca sube a la nube (pisaría el autoguardado de la nube con una partida vacía)
+  if (!hasProgress(state)) return;
   // A1.12: sin firma de sesión el servidor rechaza; no se intenta (el panel ofrece firmar). Solo escribe el slot 0.
   if (!sessionUsable(getSessionAuth(), now)) return;
   lastCloudAutosaveAt = now;

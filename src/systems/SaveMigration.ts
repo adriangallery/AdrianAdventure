@@ -11,6 +11,7 @@ import type { GameState } from '@/types/game.types';
  *      A2.9: campo aditivo `journal` (diario: notas, vistos, nivel de pista por puzle, llamadas; opcional, sin subir
  *      versión): si no es un objeto se descarta; si lo es, se queda solo lo que tenga la forma esperada (la misma regla
  *      que `progressFrom` de Journal.ts).
+ *      A1.13: campo aditivo `runId` (id de partida, opcional, sin subir versión): si no es un id válido se descarta.
  *
  * Toda partida que entra en el juego pasa por aquí: los slots locales (`SaveLoadSystem.getAllSlots`), la
  * partida de la wallet en localStorage y la de la nube (`wallet-save`: `loadLocal`, `loadRemoteSlots`,
@@ -74,6 +75,10 @@ export function migrateGameState<T extends Partial<GameState> | null | undefined
       const calls = typeof r.calls === 'number' && Number.isFinite(r.calls) && r.calls >= 0 ? Math.floor(r.calls) : 0;
       state.journal = { notes: ids(r.notes), seen: ids(r.seen), hints, calls };
     }
+  }
+  // A1.13: id de partida opcional; si no es un id válido se descarta (la partida se trata como vieja)
+  if (state.runId !== undefined && !(typeof state.runId === 'string' && /^[A-Za-z0-9_-]{1,40}$/.test(state.runId))) {
+    delete state.runId;
   }
   if (typeof state.saveVersion !== 'number' || state.saveVersion < SAVE_VERSION) state.saveVersion = SAVE_VERSION;
   return state;

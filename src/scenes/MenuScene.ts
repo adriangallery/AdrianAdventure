@@ -1,5 +1,8 @@
 import Phaser from 'phaser';
-import { SaveLoadSystem } from '@/systems/SaveLoadSystem';
+import { migrateSave } from '@/systems/SaveMigration';
+import { collectLocalCandidates, pickContinue, cloudBeatsLocal, type ContinueCandidate } from '@/systems/SaveProgress';
+import { getWalletState } from '@/web3/wallet';
+import { loadRemoteSlots } from '@/web3/wallet-save';
 import type { MusicManager } from '@/systems/MusicManager';
 import { TWP, FONT } from '@/config/theme';
 import { ACHIEVEMENTS } from '@/config/achievements.config';
@@ -74,8 +77,11 @@ export class MenuScene extends Phaser.Scene {
     this.cameras.main.setBackgroundColor('#000000');
 
     // Buttons config (need count to calculate available space)
-    const saveSystem = new SaveLoadSystem();
-    const hasSave = saveSystem.hasSave();
+    // A1.13: «Continue» = la partida MÁS RECIENTE CON PROGRESO de todas las fuentes (slots 0-2, «Before load»,
+    // «Previous autosave», partidas de cartera de este dispositivo y, si llega a tiempo, la nube de la wallet).
+    // Antes solo miraba el autoguardado (slot 0), que podía ser el estado vacío de un «New Game».
+    let chosen: ContinueCandidate | null = MenuScene.bestLocalSave();
+    const hasSave = !!chosen;
     const btnSize = Math.max(14, Math.min(20, Math.floor(refSize * 0.022)));
     const btnSpacing = Math.max(btnSize * 2.5, 44);
     const btnCount = hasSave ? 3 : 2; // New Game + Leaderboard + optional Continue
@@ -124,10 +130,17 @@ export class MenuScene extends Phaser.Scene {
 
     const startGame = (loadSave: boolean) => {
       if (loadSave) {
-        const slot = saveSystem.loadAutoSave();
-        if (!slot) return;
-        this.registry.set('gameState', slot.state);
-        this.registry.set('currentSceneId', slot.state.currentScene);
+        if (!chosen) return;
+        const state = structuredClone(chosen.state);
+        if (!state.firedTriggers) state.firedTriggers = [];
+        if (!state.dialogueProgress) state.dialogueProgress = {};
+        if (!state.achievements) state.achievements = [];
+        if (!Array.isArray(state.visited)) state.visited = [state.currentScene];
+        this.registry.set('gameState', state);
+        this.registry.set('currentSceneId', state.currentScene);
+        if (chosen.source !== 'slot' && state.playerPosition) {
+          this.registry.set('spawnOverride', { x: state.playerPosition.pctX, y: state.playerPosition.pctY });
+        }
       } else {
         this.registry.remove('gameState');
       }
@@ -139,24 +152,44 @@ export class MenuScene extends Phaser.Scene {
 
     const musicManager = this.game.registry.get('musicManager') as MusicManager | null;
 
-    this.createButton(width / 2, btnY, 'New Game', btnSize, () => {
-      this.showAudioPrompt(musicManager, () => startGame(false));
-    });
+    // A1.13: un solo arranque por menú. En móvil, el toque en el aviso de sonido (touchend) quitaba el aviso y el
+    // clic de ratón que el navegador emula después caía en el lienzo: si debajo estaba «New Game», tras «Continue»
+    // arrancaba también una partida nueva (vacía) que se autoguardaba encima.
+    let starting = false;
+    const choose = (loadSave: boolean) => {
+      if (starting) return;
+      starting = true;
+      this.showAudioPrompt(musicManager, () => startGame(loadSave));
+    };
+
+    this.createButton(width / 2, btnY, 'New Game', btnSize, () => choose(false));
 
     if (hasSave) {
-      this.createButton(width / 2, btnY + btnSpacing, 'Continue', btnSize, () => {
-        this.showAudioPrompt(musicManager, () => startGame(true));
-      });
-      // V6: dónde y cuándo se guardó la partida que se va a continuar
-      const auto = saveSystem.loadAutoSave();
-      if (auto) {
-        this.add.text(width / 2, btnY + btnSpacing + btnSize * 1.05, `${auto.sceneName} · ${MenuScene.timeAgo(auto.timestamp)}`, {
-          fontFamily: FONT.FAMILY,
-          fontSize: `${Math.max(11, Math.round(subSize * 0.8))}px`,
-          color: TWP.MENU_SUBTITLE,
-        }).setOrigin(0.5, 0).setAlpha(0.8).setName('continue-detail');
+      this.createButton(width / 2, btnY + btnSpacing, 'Continue', btnSize, () => choose(true));
+      // V6: dónde y cuándo se guardó la partida que se va a continuar (A1.13: la que de verdad se carga)
+      const detail = this.add.text(width / 2, btnY + btnSpacing + btnSize * 1.05, MenuScene.continueDetail(chosen), {
+        fontFamily: FONT.FAMILY,
+        fontSize: `${Math.max(11, Math.round(subSize * 0.8))}px`,
+        color: TWP.MENU_SUBTITLE,
+      }).setOrigin(0.5, 0).setAlpha(0.8).setName('continue-detail');
+      // La nube (wallet ya conectada) no bloquea el menú: si llega y es más nueva y con más progreso, pasa a ser la elegida
+      const addr = getWalletState().address;
+      if (addr) {
+        void loadRemoteSlots(addr).then((slots) => {
+          if (!slots || !detail.active) return;
+          const cloud = pickContinue(Object.entries(slots).map(([id, w]) => (w?.state ? {
+            source: 'cloud' as const, slotId: Number(id), state: w.state, sceneName: w.sceneName ?? 'Unknown', timestamp: w.timestamp ?? 0,
+          } : null)));
+          if (cloudBeatsLocal(chosen, cloud)) {
+            chosen = cloud;
+            detail.setText(MenuScene.continueDetail(chosen));
+          }
+        }).catch(() => {});
       }
     }
+    (window as unknown as { __continuePick?: unknown }).__continuePick = chosen
+      ? { source: chosen.source, slotId: chosen.slotId ?? null, key: chosen.key ?? null, sceneName: chosen.sceneName, timestamp: chosen.timestamp }
+      : null;
 
     // Leaderboard button
     const lbY = hasSave ? btnY + btnSpacing * 2 : btnY + btnSpacing;
@@ -239,7 +272,7 @@ export class MenuScene extends Phaser.Scene {
         musicManager.unlockFromGesture();
         if (musicManager.isMuted()) musicManager.toggleMute();
       }
-      overlay.remove();
+      MenuScene.dismissAfterGhostClick(overlay);
       onProceed();
     };
     yesBtn.addEventListener('touchend', enableAndProceed);
@@ -263,7 +296,7 @@ export class MenuScene extends Phaser.Scene {
         if (!musicManager.isMuted()) musicManager.toggleMute();
         this.game.sound.mute = true;
       }
-      overlay.remove();
+      MenuScene.dismissAfterGhostClick(overlay);
       onProceed();
     };
     noBtn.addEventListener('touchend', skipAndProceed);
@@ -428,6 +461,32 @@ export class MenuScene extends Phaser.Scene {
   }
 
   /** «just now» · «5 min ago» · «3 h ago» · «2 d ago» */
+  /**
+   * A1.13: quita el aviso sin dejar pasar el clic emulado tras el toque: se hace invisible al instante pero sigue
+   * encima (tapando el lienzo) unos 450 ms, lo que tarda el navegador en mandar el mousedown/click de compatibilidad.
+   */
+  static dismissAfterGhostClick(overlay: HTMLElement): void {
+    overlay.style.opacity = '0';
+    overlay.style.background = 'transparent';
+    overlay.setAttribute('aria-hidden', 'true');
+    window.setTimeout(() => overlay.remove(), 450);
+  }
+
+  /** A1.13: la mejor partida local para «Continue» (ver SaveProgress.pickContinue), ya migrada. */
+  static bestLocalSave(): ContinueCandidate | null {
+    try {
+      const cands = collectLocalCandidates(localStorage);
+      for (const c of cands) migrateSave(c);
+      return pickContinue(cands);
+    } catch {
+      return null;
+    }
+  }
+
+  static continueDetail(c: ContinueCandidate | null): string {
+    return c ? `${c.sceneName} · ${MenuScene.timeAgo(c.timestamp)}` : '';
+  }
+
   static timeAgo(ts: number): string {
     const m = Math.round((Date.now() - ts) / 60000);
     if (m < 1) return 'just now';
@@ -446,7 +505,8 @@ export class MenuScene extends Phaser.Scene {
       .setOrigin(0.5)
       .setInteractive({ useHandCursor: true })
       // A5.2: 14 px arriba y abajo → zona táctil ≥ 40 px de alto en un iPhone (antes 39)
-      .setPadding(16, 14);
+      .setPadding(16, 14)
+      .setName(`menu-btn-${label.toLowerCase().replace(/\s+/g, '-')}`);
 
     text.on('pointerover', () => text.setColor(TWP.MENU_BTN_HOVER));
     text.on('pointerout', () => text.setColor(TWP.MENU_BTN));

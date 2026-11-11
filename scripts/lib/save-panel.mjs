@@ -127,3 +127,70 @@ export const panelLayout = (page) => page.evaluate(() => {
     .filter((b) => b.h < 44 || b.w < 44);
   return { vw: innerWidth, vh: innerHeight, left: p.left, right: p.right, top: p.top, bottom: p.bottom, small };
 });
+
+// ─── A1.13: menú y «Continue» ────────────────────────────────
+
+/** Las partidas reales de Adrián (11-nov): slot 2 @19:01:42 (2 flags), slot 1 @19:02:04 (5 flags, 2 objetos),
+ * slot 0 = autoguardado VACÍO @19:02:45, y una partida de cartera más vieja (outside, found_envelope, floppy_box). */
+export const ADRIAN_A113 = (() => {
+  const at = (hms) => Date.parse(`2026-11-11T${hms}+01:00`);
+  const item = (id, name) => ({ id, name, icon: null, fromNFT: false });
+  const st = (flags, inventory, savedAt, extra = {}) => ({
+    saveVersion: 2, currentScene: 'outside', flags: Object.fromEntries(flags.map((f) => [f, true])), inventory,
+    visited: ['outside'], firedTriggers: [], dialogueProgress: {}, achievements: [], savedAt, ...extra,
+  });
+  const intro = ['premise_shown', 'chapter_1_intro_shown'];
+  const slot1Flags = [...intro, 'porch_light_off', 'found_note_half_a', 'has_plank'];
+  const slots = {
+    0: { id: 0, state: st([], [], at('19:02:45')), timestamp: at('19:02:45'), sceneName: 'Outside' },
+    1: { id: 1, state: st(slot1Flags, [item('note_half_a', 'Note (half)'), item('fence_plank', 'Fence Plank')], at('19:02:04'), { playerPosition: { pctX: 40, pctY: 92 } }), timestamp: at('19:02:04'), sceneName: 'Outside' },
+    2: { id: 2, state: st(intro, [], at('19:01:42')), timestamp: at('19:01:42'), sceneName: 'Outside' },
+  };
+  const walletKey = 'adrian_adventure_wallet_0x4943000000000000000000000000000000a11300';
+  const wallet = { state: st(['found_envelope'], [item('floppy_box', 'Floppy Disc Box')], at('18:30:00')), address: walletKey.slice(24), timestamp: at('18:30:00'), signature: null, sceneName: 'Outside' };
+  return { slots, slot1Flags, slot1Items: ['note_half_a', 'fence_plank'], walletKey, wallet };
+})();
+
+/** Menú limpio con exactamente estas partidas en localStorage (borra todo lo demás y recarga). */
+export async function openMenuWith(page, base, items) {
+  await page.goto(`${base}/?qa=1`, { waitUntil: 'domcontentloaded' });
+  await page.evaluate((kv) => {
+    localStorage.clear();
+    for (const [k, v] of Object.entries(kv)) localStorage.setItem(k, typeof v === 'string' ? v : JSON.stringify(v));
+  }, items);
+  await page.goto(`${base}/?qa=1`, { waitUntil: 'domcontentloaded' });
+  await page.waitForFunction(() => window.__game?.scene?.isActive('MenuScene')
+    && !!window.__game.scene.getScene('MenuScene').children.getByName('menu-btn-new-game'), { timeout: 90000, polling: 250 });
+}
+
+/** Texto de un objeto del menú por nombre (null si no está). */
+export const menuText = (page, name) => page.evaluate((n) => window.__game.scene.getScene('MenuScene')?.children.getByName(n)?.text ?? null, name);
+
+/** Pulsa de verdad (toque en pantalla) un botón del menú y, si sale el aviso de sonido, «No thanks». */
+export async function tapMenuButton(page, label) {
+  const pt = await page.evaluate((n) => {
+    const menu = window.__game.scene.getScene('MenuScene');
+    const o = menu?.children.getByName(n);
+    if (!o) return null;
+    const b = o.getBounds();
+    const canvas = window.__game.canvas.getBoundingClientRect();
+    const sx = canvas.width / window.__game.scale.width;
+    const sy = canvas.height / window.__game.scale.height;
+    return { x: canvas.left + b.centerX * sx, y: canvas.top + b.centerY * sy };
+  }, `menu-btn-${label.toLowerCase().replace(/\s+/g, '-')}`);
+  if (!pt) throw new Error(`no está el botón «${label}» en el menú`);
+  await page.touchscreen.tap(pt.x, pt.y);
+  const deadline = Date.now() + 8000;
+  while (Date.now() < deadline) {
+    const r = await page.evaluate(() => {
+      const b = [...document.querySelectorAll('button')].find((x) => /No thanks/i.test(x.textContent ?? ''));
+      if (!b) return null;
+      const q = b.getBoundingClientRect();
+      return { x: q.left + q.width / 2, y: q.top + q.height / 2 };
+    });
+    if (r) { await page.touchscreen.tap(r.x, r.y); return pt; }
+    if (await page.evaluate(() => window.__game.scene.isActive('PreloadScene') || window.__game.scene.isActive('GameScene'))) return pt;
+    await new Promise((res) => setTimeout(res, 150));
+  }
+  return pt;
+}

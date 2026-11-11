@@ -718,6 +718,51 @@ await step('guardado A1.12 con wallet: nube verificada, 500 → error visible, s
   }
 });
 
+// A1.13: el caso de Adrián (11-nov). Con SUS partidas en localStorage (slot 2 @19:01:42 con 2 flags, slot 1 @19:02:04
+// con 5 flags y 2 objetos, slot 0 = autoguardado VACÍO @19:02:45 y una partida de cartera más vieja), «Continue» del
+// menú (toque real) carga el slot 1: inventario con los 2 objetos y las 5 flags. Al entrar en la escena los slots 1 y 2
+// siguen intactos y el 0 ya no queda vacío. Sin partidas con progreso no hay «Continue».
+await step('Continue A1.13: con el autoguardado vacío más nuevo, carga la partida con progreso (caso de Adrián, móvil)', async () => {
+  const ctx = await browser.createBrowserContext();
+  try {
+    const p = await a12Page(ctx, MOBILE);
+    const A = SP.ADRIAN_A113;
+    // Solo el autoguardado vacío → no hay Continue
+    await SP.openMenuWith(p, BASE, { adrian_adventure_save: { 0: A.slots[0] } });
+    a12Fail(await SP.menuText(p, 'menu-btn-continue') === null, 'con solo un autoguardado vacío sale «Continue»');
+    // Las partidas de Adrián
+    await SP.openMenuWith(p, BASE, { adrian_adventure_save: A.slots, [A.walletKey]: A.wallet });
+    a12Fail(await SP.menuText(p, 'menu-btn-continue') !== null, 'no sale «Continue» con partidas guardadas');
+    const pick = await p.evaluate(() => window.__continuePick);
+    const detail = await SP.menuText(p, 'continue-detail');
+    console.log(`    elegida ${JSON.stringify(pick)} · detalle «${detail}»`);
+    a12Fail(pick?.source === 'slot' && pick.slotId === 1, `Continue no elige el slot 1: ${JSON.stringify(pick)}`);
+    a12Fail(/^Outside · /.test(detail ?? ''), `detalle bajo Continue: «${detail}»`);
+    await p.screenshot({ path: `${SHOTS}/a13-1-menu.png` });
+    await SP.tapMenuButton(p, 'Continue');
+    await SP.waitInGame(p, 'outside');
+    await p.waitForFunction(() => window.__qa.state().inventory.length > 0, { timeout: 30000, polling: 300 }).catch(() => {});
+    const qs = await p.evaluate(() => window.__qa.state());
+    const on = Object.keys(qs.flags).filter((k) => qs.flags[k]);
+    console.log(`    tras Continue: inventario ${JSON.stringify(qs.inventory)} · flags ${JSON.stringify(on)}`);
+    for (const it of A.slot1Items) a12Fail(qs.inventory.includes(it), `falta ${it} en el inventario: ${JSON.stringify(qs.inventory)}`);
+    for (const f of A.slot1Flags) a12Fail(qs.flags[f] === true, `falta la flag ${f}: ${JSON.stringify(on)}`);
+    await new Promise((r) => setTimeout(r, 2500));
+    const s1 = await SP.localSlot(p, 1);
+    const s2 = await SP.localSlot(p, 2);
+    const s0 = await SP.localSlot(p, 0);
+    a12Fail(JSON.stringify(s1) === JSON.stringify(A.slots[1]), 'el slot 1 cambió al continuar');
+    a12Fail(JSON.stringify(s2) === JSON.stringify(A.slots[2]), 'el slot 2 cambió al continuar');
+    const s0flags = Object.values(s0?.state?.flags ?? {}).filter(Boolean).length;
+    a12Fail(s0 && s0flags >= 5 && (s0.state.inventory ?? []).length >= 2, `el slot 0 quedó vacío tras continuar: ${JSON.stringify(s0?.state?.flags)}`);
+    const w = await p.evaluate((k) => JSON.parse(localStorage.getItem(k) || 'null'), A.walletKey);
+    a12Fail(JSON.stringify(w) === JSON.stringify(A.wallet), 'la partida de cartera cambió al continuar sin wallet');
+    await p.screenshot({ path: `${SHOTS}/a13-2-continued.png` });
+  } finally {
+    await ctx.close();
+  }
+});
+
 await browser.close();
 if (failures.length) {
   console.log(`\n${failures.length} fallo(s).`);
