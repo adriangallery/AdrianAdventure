@@ -314,7 +314,10 @@ class Front:
                 elif x in (1, 23):
                     b[y, x] = S[32, 1] if y < 62 else 0
                 elif y < 58:
-                    b[y, x] = S[y, x + 4] if x < 12 else S[y, x - 4]
+                    c = S[y, x + 4] if x < 12 else S[y, x - 4]
+                    if (c[:3] > 190).all():
+                        c = S[y, x + 8] if x < 12 else S[y, x - 8]
+                    b[y, x] = c
                 elif y < 63:
                     b[y, x] = S[65, x] if S[65, x, 3] else 0
                 else:

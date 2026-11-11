@@ -21,7 +21,7 @@ test('surfaceAt: el rectángulo de surfaces manda sobre footstep; sin nada, muda
 test('el tracker da el primer paso tras media zancada y luego uno por zancada, alternando el pie', () => {
   const t = new FootstepTracker();
   const feet = [];
-  for (let i = 0; i < 100; i++) {
+  for (let i = 0; i < 200; i++) {
     const f = t.advance(1);
     if (f !== null) feet.push({ at: i + 1, foot: f });
   }

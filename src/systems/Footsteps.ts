@@ -9,8 +9,11 @@
  * Sin `footstep` (ni rectángulo que cubra los pies) no suena nada: una escena sin superficie declarada sigue muda.
  */
 
-/** Píxeles de arte entre dos pasos (el jugador mide 103: zancada de un quinto de su altura, ~1,8 pasos/s a 200 px/s) */
-export const STRIDE_ART_PX = 20;
+/**
+ * Píxeles de arte entre dos pasos. A2.15: ≈ el paso del rig 2D (PlayerAnim.RIG_STEP_ART_PX = 29,6: 8 fotogramas × 100 ms = 2
+ * pasos a 74 px/s), así cada pisada suena cuando el pie toca el suelo en la animación (2,5 pasos/s).
+ */
+export const STRIDE_ART_PX = 30;
 /** Un salto mayor que esto (teletransporte, cambio de escena) no cuenta como andar */
 export const MAX_STEP_JUMP_ART_PX = STRIDE_ART_PX * 3;
 /** Desafino al azar (cents) y volumen de cada paso */

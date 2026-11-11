@@ -36,7 +36,7 @@ import { FADE_FIRST_MS, FADE_SHORT_MS } from '@/systems/ScenePrefetch';
 import { addNote, callAnon } from '@/systems/Journal';
 import { JOURNAL_CHAPTERS, journalChapter, journalProgress, journalWorld } from '@/systems/JournalData';
 import { spriteScale, worldToArt, isIntegerScale } from '@/systems/PixelScale';
-import { wantsGesture } from '@/systems/PlayerAnim';
+import { pickLevel, wantsGesture } from '@/systems/PlayerAnim';
 import { defaultFacing, lifeSeed, type VoiceState } from '@/systems/NpcLife';
 import { AmbientLayer } from '@/systems/AmbientLayer';
 import type { AmbientQa } from '@/systems/Ambient';
@@ -231,6 +231,8 @@ export class GameScene extends Phaser.Scene {
     this.registry.remove('spawnOverride');
     this.player = new Player(this, this.coordSystem, spawn.x, spawn.y, sceneData);
     this.player.onStep = () => this.checkWalkTriggers();
+    // A2.15: «no puedo» = Dex se encoge de hombros con cada respuesta de fallo (el texto sale a la vez, sin esperar)
+    failResponses.onFail = () => this.player?.shrug();
 
     // Hide player for closeup/cinematic scenes
     if (sceneData.player.hidePlayer) {
@@ -857,7 +859,10 @@ export class GameScene extends Phaser.Scene {
   private startGesture(verb: Verb, aim: { x: number; y: number } | null): void {
     if (!aim || this.isTrailer || !wantsGesture(verb)) return;
     const dx = aim.x - this.player.pctX;
-    this.player.gesture(Math.abs(dx) < 0.5 ? null : dx > 0 ? 'right' : 'left');
+    // A2.15: altura del objetivo sobre los pies en altos de Dex (coger del suelo, a media altura o en alto)
+    const h = this.player.getWorldHeightPct();
+    const level = pickLevel(h > 0 ? (this.player.pctY - aim.y) / h : null);
+    this.player.gesture(Math.abs(dx) < 0.5 ? null : dx > 0 ? 'right' : 'left', level);
   }
 
   /**
@@ -2183,6 +2188,7 @@ export class GameScene extends Phaser.Scene {
     // cinemática de estos motores; el director suelta sus animaciones (la escena nueva arranca sin franjas)
     this.cinema?.destroy();
     this.cinema = undefined;
+    failResponses.onFail = null;
     this.scriptEngine?.cancelEffects();
     this.dialogueScripts?.cancelEffects();
     this.overlayOverrides.clear();
