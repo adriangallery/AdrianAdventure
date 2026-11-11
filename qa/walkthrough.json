@@ -131,7 +131,7 @@
         { "do": "key", "key": "l", "note": "L = Look at en el panel", "expect": { "verb": "LOOK" } },
         { "do": "click", "target": "hs_plant", "note": "clic izquierdo con el verbo elegido por teclado: mira la planta", "expect": { "verb": "LOOK", "walkTarget": { "target": "hs_plant", "verb": "LOOK" } } },
         { "do": "key", "key": "l", "note": "la tecla del verbo ya elegido lo suelta (vuelve a Walk), como en el panel", "expect": { "verb": "WALK" } },
-        { "do": "rightclick", "target": "npc_receptionist", "choices": ["come back later"], "note": "clic derecho en una NPC = hablar (sin elegir verbo)", "expect": { "verb": "WALK", "walkTarget": { "target": "npc_receptionist", "verb": "TALK" } } },
+        { "do": "rightclick", "target": "npc_receptionist", "rejects": "Page two", "note": "clic derecho en una NPC = hablar (sin elegir verbo). A3.4a: con el sobre ya en su mesa Penny está leyendo: una frase y sin opciones", "expect": { "verb": "WALK", "walkTarget": { "target": "npc_receptionist", "verb": "TALK" } } },
         { "do": "rightclick", "target": "hs_floor_tiles", "note": "clic derecho en algo que solo tiene texto = mirar", "expect": { "walkTarget": { "target": "hs_floor_tiles", "verb": "LOOK" } } },
         { "do": "rightclick", "target": "hs_coat", "note": "clic derecho en algo que se coge = coger", "expect": { "has": ["keycard", "leaky_pen"], "walkTarget": { "target": "hs_coat", "verb": "PICK" } } },
         { "do": "key", "key": "u", "expect": { "verb": "USE" } },
