@@ -265,13 +265,13 @@ def profile_pick(P, level):
     hx = P.hipX
     if level == 'high':
         seq = [dict(hip_y=64, near={'a': -10, 'f': -30}, lean=0),
-               dict(hip_y=62, near={'hand': (hx + 9, 14)}, lean=1, toes=True),
-               dict(hip_y=62, near={'hand': (hx + 10, 12)}, lean=1, toes=True),
-               dict(hip_y=63, near={'hand': (hx + 8, 30)}, lean=0)]
+               dict(hip_y=62, near={'hand': (hx + 15, 6)}, lean=1, toes=True),
+               dict(hip_y=62, near={'hand': (hx + 16, 3)}, lean=1, toes=True),
+               dict(hip_y=63, near={'a': -25, 'f': -60}, lean=0)]
     elif level == 'low':
         seq = [dict(hip_y=64, near={'a': -10, 'f': -20}, lean=0),
-               dict(hip_y=72, near={'hand': (hx + 15, 88)}, lean=3, crouch=True),
-               dict(hip_y=73, near={'hand': (hx + 16, 90)}, lean=3, crouch=True),
+               dict(hip_y=74, near={'hand': (hx + 18, 84)}, lean=4, crouch=True),
+               dict(hip_y=76, near={'hand': (hx + 19, 88)}, lean=4, crouch=True),
                dict(hip_y=66, near={'hand': (hx + 8, 62)}, lean=1)]
     else:
         seq = [dict(hip_y=64, near={'a': 10, 'f': 0}, lean=-1),
@@ -284,7 +284,7 @@ def profile_pick(P, level):
         if s.get('toes'):
             feet = [(5, 2, 18), (-3, 0, 0)]
         if s.get('crouch'):
-            feet = [(7, 0, 0), (-5, 0, 0)]
+            feet = [(8, 0, 0), (-6, 0, 0)]
         out.append(profile_stand(P, hip_y=s['hip_y'], near=s['near'], lean=s['lean'], feet=feet))
     return out
 
