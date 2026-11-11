@@ -97,7 +97,7 @@ async function rig(reset = false) {
   }, reset);
 }
 
-async function walk(tag, x, y, want) {
+async function walk(tag, x, y, want, min = 4) {
   await rig(true);
   const err = await during(tag, (x, y) => window.__demoRun(window.__qa.walk(x, y)), [x, y]);
   if (err) problems.push(`${tag}: walk falló: ${err}`);
@@ -105,7 +105,7 @@ async function walk(tag, x, y, want) {
   s.tex.forEach((t) => seenTex.add(t));
   const hits = s.tex.filter((t) => want.test(t));
   console.log(`${tag}: ${hits.length} fotogramas ${want} · escalas ${s.scales.join('/')} · altos ${s.heights.join('/')}`);
-  if (hits.length < 4) problems.push(`${tag}: solo ${hits.length} fotogramas ${want} (${s.tex.join(', ')})`);
+  if (hits.length < min) problems.push(`${tag}: solo ${hits.length} fotogramas ${want} (${s.tex.join(', ')})`);
   if (s.heights.some((h) => h !== 103)) problems.push(`${tag}: fotogramas de alto ${s.heights.join('/')} (A2.11: 103)`);
   return s;
 }
@@ -130,8 +130,9 @@ await open('outside');
 // ── 2-6) lobby ────────────────────────────────────────────────────────────────────────────────────────────────────
 await open('lobby');
 await walk('lobby perfil', 55.5, 98, /^dex2d_walk_(l|r)_\d$/);
-await walk('lobby al fondo', 55.5, 85, /^dex2d_walk_up_\d$/);
-await walk('lobby a la cámara', 55.5, 98, /^dex2d_walk_down_\d$/);
+// los tramos verticales del lobby duran ~1 s: basta con ver el ciclo moverse (≥ 2 fotogramas)
+await walk('lobby al fondo', 55.5, 85, /^dex2d_walk_up_\d$/, 2);
+await walk('lobby a la cámara', 55.5, 98, /^dex2d_walk_down_\d$/, 2);
 await demo.still('lobby-frente', { clip: (await capture('lobby: de frente')).clip });
 
 // 3) hablar
@@ -164,11 +165,12 @@ await demo.still('lobby-frente', { clip: (await capture('lobby: de frente')).cli
   await page.evaluate(() => window.__demoRun(window.__qa.walk(55.5, 98)));
   await page.waitForFunction(() => window.__demoDone, { timeout: 40000 }).catch(() => {});
   let shrugged = false;
-  for (const [verb, hs] of [['PUSH', 'hs_plant'], ['PULL', 'hs_plant'], ['PUSH', 'hs_coat'], ['CLOSE', 'hs_plant']]) {
+  // hs_poster no tiene PUSH/PULL (bolsa del verbo); si no, la keycard sobre la planta (objeto sobre hotspot)
+  for (const [verb, hs, items] of [['PUSH', 'hs_poster', []], ['PULL', 'hs_poster', []], ['USE', 'hs_plant', ['keycard']], ['GIVE', 'hs_plant', ['keycard']]]) {
     await demo.settle({ tap: [640, 40], calm: 2, every: 300 });
     const before = await page.evaluate(() => JSON.stringify(window.__qa.state().lastFailResponse));
     await rig(true);
-    const err = await during(`fallo: ${verb} ${hs}`, (v, h) => window.__demoRun(window.__qa.act(v, h, [], 1500)), [verb, hs]);
+    const err = await during(`fallo: ${verb} ${hs}`, (v, h, it) => window.__demoRun(it.length ? window.__qa.use(it[0], h) : window.__qa.act(v, h)), [verb, hs, items]);
     for (let i = 0; i < 4; i++) await capture(`fallo: ${verb} ${hs}`);
     const after = await page.evaluate(() => JSON.stringify(window.__qa.state().lastFailResponse));
     const s = await rig();
