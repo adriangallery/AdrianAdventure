@@ -529,6 +529,23 @@ PICK del felpudo); las rutas que solo quieren llegar al lobby hacen la ruta cort
 tercer factor filmado frase a frase con toques reales hasta el lobby; capturas `dooris-hello`, `dooris-open`,
 `dooris-question`, `lobby`).
 
+# Penny y el abrigo (A3.4a)
+
+Primer puzle del capítulo 2 (`assets/scenes/lobby/scene.json`). Penny vigila el abrigo de Adrian:
+
+- `hs_coat` PICK/OPEN/PULL/USE sin `penny_reading`: Penny se niega en tres variantes (`penny_coat_warned`,
+  `penny_coat_warned_2`); la primera es la frase de la pista («…Unless something CONFIDENTIAL lands on my desk»).
+- El sobre (`mystery_envelope`, o `mystery_envelope_opened` si Dex lo abrió) en `hs_monitor_desk` (combo) o dado a
+  Penny (`itemDialogues` → nodo `env_old` de `receptionist_intro`): `penny_reading`, Penny se queda el sobre.
+- Con `penny_reading`, PICK/OPEN del abrigo: `keycard` + `leaky_pen` (`found_keycard`, `has_keycard`,
+  `has_leaky_pen`) y Penny devuelve el sobre cerrado (`penny_envelope_back`). TALK mientras lee: una frase y fin.
+- Partidas viejas con `found_keycard` no cambian (sin boli; nada pide `leaky_pen`); el sobre en el escritorio solo
+  saca una frase.
+
+QA: ruta crítica (LOOK, dos rechazos, Anon `p2_coat`, pista de Penny, factura en el escritorio, sobre, TALK
+leyendo, abrigo), atajo `abrigo-sin-distraer-a-penny` en `qa/sequence-breaks.json`, y las rutas que cogían el
+abrigo pasan antes el sobre al escritorio. Demo `scripts/demo-a3-4a-penny.mjs` (844x390 y 390x844).
+
 # Densidad de píxel (A2.8)
 
 Lógica pura en `src/systems/PixelScale.ts` (`tests/pixel-scale.test.mjs`, en `npm run test:engine`); la aplican

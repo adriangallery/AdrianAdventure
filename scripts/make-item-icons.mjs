@@ -9,6 +9,7 @@
 //   note_half_b.png  mitad derecha («14»), con el borde izquierdo rasgado y envuelta en papel de aluminio
 //   fence_plank.png  un tablón de valla en diagonal: vetas, un clavo torcido y el extremo partido
 //   vet_bill.png     (A3.3d) la factura del veterinario de Gerald: receipt.png teñido de verde menta con un sello de huella
+//   leaky_pen.png    (A3.4a) el boli de Mt. Gox del abrigo de Adrian: en diagonal, con la punta goteando tinta azul
 // Sin arte de pago: las mitades salen de code_note.png, la factura de receipt.png y el tablón se dibuja aquí.
 // Determinista (sin azar).
 import fs from 'node:fs';
@@ -271,6 +272,65 @@ function vetBill(receipt) {
   return out;
 }
 
+/**
+ * A3.4a: el boli de Mt. Gox (rejilla de 64, ×2). Cuerpo en diagonal (punta abajo a la izquierda), anilla dorada,
+ * banda roja con tres rayas blancas (el logo del exchange, sin letras), clip, y tres gotas de tinta bajo la punta.
+ */
+function leakyPen() {
+  const g = blank(64, 64);
+  const cx = 33, cy = 30, ang = -Math.PI / 4;
+  const cos = Math.cos(ang), sin = Math.sin(ang);
+  const L = 25, W = 3.6;
+  const OUT = [20, 22, 40];
+  const at = (u, v) => [Math.round(cx + u * cos - v * sin), Math.round(cy + u * sin + v * cos)];
+  const inside = (x, y) => {
+    const dx = x + 0.5 - cx, dy = y + 0.5 - cy;
+    const u = dx * cos + dy * sin, v = -dx * sin + dy * cos;
+    if (u < -L || u > L) return null;
+    // la punta se estrecha en los últimos 7 px
+    const w = u < -L + 7 ? W * (u + L) / 7 : W;
+    if (Math.abs(v) > Math.max(w, 0.6)) return null;
+    return { u, v };
+  };
+  for (let y = 0; y < 64; y++) for (let x = 0; x < 64; x++) {
+    const p = inside(x, y);
+    if (!p) continue;
+    let c;
+    if (p.u < -L + 7) c = p.u < -L + 3 ? [40, 60, 150] : [196, 198, 206]; // punta manchada de tinta y cono metálico
+    else if (p.u < -L + 9) c = [212, 170, 60]; // anilla dorada
+    else if (p.u > 4 && p.u < 14) c = Math.abs(Math.round(p.u) % 3) === 0 ? [240, 240, 236] : [200, 36, 44]; // banda
+    else c = p.v < -1.2 ? [70, 96, 196] : p.v > 1.6 ? [28, 44, 120] : [46, 68, 160]; // cuerpo azul con brillo
+    set(g, x, y, c);
+  }
+  for (let y = 0; y < 64; y++) for (let x = 0; x < 64; x++) {
+    if (!inside(x, y)) continue;
+    if (!inside(x - 1, y) || !inside(x + 1, y) || !inside(x, y - 1) || !inside(x, y + 1)) set(g, x, y, OUT);
+  }
+  // Clip plateado a lo largo del capuchón
+  for (let u = L - 12; u <= L - 2; u++) { const [x, y] = at(u, -W - 1); set(g, x, y, [170, 174, 186]); set(g, x + 1, y + 1, OUT); }
+  // Gotas de tinta bajo la punta (cada vez más abajo)
+  const [tx, ty] = at(-L, 0);
+  const INK = [36, 54, 150], HI = [120, 150, 240];
+  const drop = (x, y, r) => {
+    for (let yy = -r - 1; yy <= r; yy++) for (let xx = -r; xx <= r; xx++) {
+      const yy2 = yy < 0 ? yy * r / (r + 1) : yy; // forma de lágrima: más estrecha arriba
+      if (xx * xx + yy2 * yy2 <= r * r + 0.5) set(g, x + xx, y + yy, OUT);
+    }
+    for (let yy = -r; yy < r; yy++) for (let xx = -r + 1; xx < r; xx++) {
+      if (xx * xx + yy * yy <= (r - 1) * (r - 1) + 0.5) set(g, x + xx, y + yy, INK);
+    }
+    set(g, x - 1, y - 1, HI);
+  };
+  drop(tx, ty + 6, 2);
+  drop(tx + 1, ty + 13, 3);
+  // charco
+  for (let x = tx - 6; x <= tx + 8; x++) for (let y = ty + 19; y <= ty + 21; y++) {
+    const d = Math.abs(x - tx - 1) / 7 + Math.abs(y - ty - 20) / 1.6;
+    if (d <= 1) set(g, x, y, d > 0.75 ? OUT : INK);
+  }
+  return up2(g);
+}
+
 function main() {
   const note = decodePng(fs.readFileSync(path.join(ITEMS, 'code_note.png')));
   const receipt = decodePng(fs.readFileSync(path.join(ITEMS, 'receipt.png')));
@@ -285,7 +345,7 @@ function main() {
   over(b, bHalf.img, 0, 0);
   over(b, f.front, 0, 0);
 
-  const outs = { note_half_a: a.img, note_half_b: b, fence_plank: plank(), vet_bill: vetBill(receipt) };
+  const outs = { note_half_a: a.img, note_half_b: b, fence_plank: plank(), vet_bill: vetBill(receipt), leaky_pen: leakyPen() };
   for (const [id, img] of Object.entries(outs)) {
     const file = path.join(ITEMS, `${id}.png`);
     fs.writeFileSync(file, encodePng(img));

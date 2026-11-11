@@ -1,27 +1,28 @@
 {
-  "_doc": "A2.9/A2.9a: diario de Dex, capítulo 2 tal como es HOY (lobby, upstairs, rooftop). Se reescribe en A3.4. Ver qa/README.md § Diario.",
+  "_doc": "A2.9/A2.9a: diario de Dex, capítulo 2 (lobby, upstairs, rooftop). A3.4a: Penny y el abrigo (p2_coat, notas de Penny); el resto se reescribe en A3.4b-d. Ver qa/README.md § Diario.",
   "chapter": 2,
   "goals": [
-    { "id": "g2_keycard", "text": "Find a way past Adrian's security.", "doneWhen": "has_keycard" },
-    { "id": "g2_receptionist", "text": "Ask the receptionist about Patient Zero.", "doneWhen": "receptionist_mentioned_pz" },
+    { "id": "g2_keycard", "text": "Get Adrian's keycard out of his coat. Past Penny.", "doneWhen": "has_keycard" },
+    { "id": "g2_receptionist", "text": "Ask Penny about Patient Zero.", "doneWhen": "receptionist_mentioned_pz" },
     { "id": "g2_office", "text": "Search Adrian's office upstairs.", "doneWhen": "found_terminal_key" },
     { "id": "g2_blink", "text": "Find out what's blinking down below.", "doneWhen": "chapter_2_complete" }
   ],
   "notes": [
-    { "id": "n2_keycard", "text": "Adrian's coat: an admin keycard with his face on it. He left in a hurry. Or wants me to think so.", "shownWhen": "found_keycard" },
-    { "id": "n2_receptionist", "text": "The receptionist panicked at 'Patient Zero'. 'A basement-level clearance topic.' Noted. Underlined.", "shownWhen": "receptionist_mentioned_pz" },
+    { "id": "n2_penny", "text": "Penny guards Adrian's coat. She doesn't read other people's mail. Unless it's marked confidential.", "shownWhen": "penny_mail_hint" },
+    { "id": "n2_keycard", "text": "Adrian's coat: an admin keycard with his face on it, and a Mt. Gox pen that won't stop leaking. Penny never saw a thing.", "shownWhen": "found_keycard" },
+    { "id": "n2_receptionist", "text": "Penny panicked at 'Patient Zero'. 'Basement-level clearance.' Something downstairs keeps blinking. Noted. Underlined.", "shownWhen": "receptionist_mentioned_pz" },
     { "id": "n2_pz_note", "text": "Sticky note in Adrian's drawer: 'PZ escaped via contract exploit — check server logs.' Also: a trading terminal key.", "shownWhen": "found_pz_note" },
     { "id": "n2_vane", "text": "The weather vane on the roof works a latch on the service hatch. Who wires a weather vane to a hatch? Adrian.", "shownWhen": "vane_turned" },
     { "id": "n2_blink", "text": "That blinking below the building is a server heartbeat. Something in the basement is still running.", "shownWhen": "chapter_2_complete" }
   ],
   "puzzles": [
     {
-      "id": "p2_keycard",
+      "id": "p2_coat",
       "doneWhen": "has_keycard",
       "hints": [
-        "People who leave in a hurry forget things.",
-        "His coat is still on the rack.",
-        "Pick up the coat. Check the pockets."
+        "Gatekeepers can't resist a good secret. Give her something to read.",
+        "Penny reads anything marked confidential. You've got an envelope that says exactly that.",
+        "Put the confidential envelope on Penny's desk. While she reads, take the coat."
       ]
     },
     {
