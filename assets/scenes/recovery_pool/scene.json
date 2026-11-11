@@ -67,12 +67,45 @@
           "TALK": [
             {
               "op": "ifFlag",
-              "flag": "ape_costume_worn",
+              "flag": "pool_accepted",
               "then": [
-                { "op": "say", "text": "'Bro, we're providing liquidity.' 'To what?' 'To this pool. We're literally IN the liquidity pool.' The other apes nod. One adds: 'I sold ETH at $400.' Solemnly, they all pour one out. Into the pool. Where they're standing." }
+                {
+                  "op": "dialogue",
+                  "npcId": "apes_left",
+                  "treeId": "apes_left"
+                }
               ],
               "else": [
-                { "op": "say", "text": "I try to talk to the apes. They glance at me, then at each other. One mutters: 'Paper hands vibes.' Another: 'Not one of us.' They all turn back to their phones. Ignored." }
+                {
+                  "op": "ifFlag",
+                  "flag": "ape_costume_worn",
+                  "then": [
+                    {
+                      "op": "setFlag",
+                      "flag": "pool_accepted",
+                      "value": true
+                    },
+                    {
+                      "op": "say",
+                      "text": "The apes look me up and down. Fur. Diamond buttons. One of them nods. 'One of us, old chap.'"
+                    },
+                    {
+                      "op": "dialogue",
+                      "npcId": "apes_left",
+                      "treeId": "apes_left"
+                    }
+                  ],
+                  "else": [
+                    {
+                      "op": "say",
+                      "text": "I try to talk to the apes. They glance at me, then at each other. 'Not one of us, old chap.' They turn back to their phones."
+                    },
+                    {
+                      "op": "say",
+                      "text": "Fur would help. Or a gesture of respect to whatever that giant duck is."
+                    }
+                  ]
+                }
               ]
             }
           ],
@@ -81,10 +114,16 @@
               "op": "ifFlag",
               "flag": "ape_costume_worn",
               "then": [
-                { "op": "say", "text": "I try to engage them. One looks up briefly. 'Are you bullish or bearish?' he asks, then goes back to his phone before I can answer." }
+                {
+                  "op": "say",
+                  "text": "I try to engage them. One looks up briefly. 'Are you bullish or bearish?' he asks, then goes back to his phone before I can answer."
+                }
               ],
               "else": [
-                { "op": "say", "text": "I wave at the apes. They don't even look up. I'm invisible to them without the right... look." }
+                {
+                  "op": "say",
+                  "text": "I wave at the apes. They don't even look up. I'm invisible to them without the right... look."
+                }
               ]
             }
           ],
@@ -99,10 +138,16 @@
               "op": "ifFlag",
               "flag": "ape_costume_worn",
               "then": [
-                { "op": "say", "text": "One of them holds up his phone. 'Check my portfolio.' I look. It's a picture of a sunset. 'That's not a portfolio.' 'It is now.'" }
+                {
+                  "op": "say",
+                  "text": "One of them holds up his phone. 'Check my portfolio.' I look. It's a picture of a sunset. 'That's not a portfolio.' 'It is now.'"
+                }
               ],
               "else": [
-                { "op": "say", "text": "I try to start a conversation. They close ranks. Literally. The apes form a wall of wet fur. I'm not getting through without looking the part." }
+                {
+                  "op": "say",
+                  "text": "I try to start a conversation. They close ranks. Literally. The apes form a wall of wet fur. I'm not getting through without looking the part."
+                }
               ]
             }
           ],
@@ -138,12 +183,41 @@
           "TALK": [
             {
               "op": "ifFlag",
-              "flag": "ape_costume_worn",
+              "flag": "pool_accepted",
               "then": [
-                { "op": "say", "text": "'Welcome to the liquidity pool! We ARE the liquidity.' I look around. Apes floating in green water. 'So THIS is what happens to liquidity providers.' 'We don't leave. Ever. That's the impermanent part.'" }
+                {
+                  "op": "dialogue",
+                  "npcId": "apes_right",
+                  "treeId": "apes_right"
+                }
               ],
               "else": [
-                { "op": "say", "text": "The deep-end apes glance my way. 'Who let a normie in here?' one whispers. Another: 'Security!' They point at me and laugh. I don't belong here. Not looking like this." }
+                {
+                  "op": "ifFlag",
+                  "flag": "ape_costume_worn",
+                  "then": [
+                    {
+                      "op": "setFlag",
+                      "flag": "pool_accepted",
+                      "value": true
+                    },
+                    {
+                      "op": "say",
+                      "text": "The deep-end apes squint at my costume. 'Fur's legit,' one says. 'Let the lad in.'"
+                    },
+                    {
+                      "op": "dialogue",
+                      "npcId": "apes_right",
+                      "treeId": "apes_right"
+                    }
+                  ],
+                  "else": [
+                    {
+                      "op": "say",
+                      "text": "The deep-end apes glance my way. 'Who let a normie in here?' One points at the duck. 'Nobody gets in without Gerald's blessing.'"
+                    }
+                  ]
+                }
               ]
             }
           ],
@@ -152,10 +226,16 @@
               "op": "ifFlag",
               "flag": "ape_costume_worn",
               "then": [
-                { "op": "say", "text": "I try to hand one of them a towel. 'No thanks, I'm HODLing... the water.' He sinks a little lower." }
+                {
+                  "op": "say",
+                  "text": "I try to hand one of them a towel. 'No thanks, I'm HODLing... the water.' He sinks a little lower."
+                }
               ],
               "else": [
-                { "op": "say", "text": "I reach toward them. They paddle away in unison. Like synchronized swimmers, but with worse financial decisions." }
+                {
+                  "op": "say",
+                  "text": "I reach toward them. They paddle away in unison. Like synchronized swimmers, but with worse financial decisions."
+                }
               ]
             }
           ],
@@ -170,10 +250,16 @@
               "op": "ifFlag",
               "flag": "ape_costume_worn",
               "then": [
-                { "op": "say", "text": "'Open your mind,' one says. 'I'll open my wallet when you show me a real roadmap,' I reply. Silence. Then: 'Fair.'" }
+                {
+                  "op": "say",
+                  "text": "'Open your mind,' one says. 'I'll open my wallet when you show me a real roadmap,' I reply. Silence. Then: 'Fair.'"
+                }
               ],
               "else": [
-                { "op": "say", "text": "I try to get their attention. They form a huddle and whisper about me. I hear: '...definitely a bear...' Not welcome here." }
+                {
+                  "op": "say",
+                  "text": "I try to get their attention. They form a huddle and whisper about me. I hear: '...definitely a bear...' Not welcome here."
+                }
               ]
             }
           ],
@@ -194,7 +280,7 @@
             "The apes hiss. You don't touch Gerald with random stuff."
           ],
           "rubber_duck": [
-            "I hold my duck up to Gerald. They need a proper introduction. I should just walk up to him."
+            "I hold my duck up to Gerald. Then I just set it down beside him. Gently."
           ],
           "golden_token": [
             "I offer Gerald the golden token. Gerald doesn't do money. Gerald is beyond money."
@@ -230,26 +316,58 @@
             }
           ],
           "TALK": [
-            { "op": "playSound", "key": "duck_squeak" },
+            {
+              "op": "playSound",
+              "key": "duck_squeak"
+            },
             {
               "op": "say",
               "text": "I address the duck directly. 'Gerald, what's the alpha?' The duck says nothing. The apes gasp. 'He only speaks during bull markets,' one explains."
             }
           ],
           "USE": [
-            { "op": "playSound", "key": "duck_squeak" },
+            {
+              "op": "playSound",
+              "key": "duck_squeak"
+            },
             {
               "op": "ifHasItem",
               "id": "rubber_duck",
               "then": [
                 {
-                  "op": "say",
-                  "text": "I place my rubber duck next to Gerald. They float side by side. The apes go silent. 'The prophecy...' one whispers. 'Two ducks... the merge is complete.'"
-                },
-                {
-                  "op": "setFlag",
+                  "op": "ifFlag",
                   "flag": "duck_reunion",
-                  "value": true
+                  "then": [
+                    {
+                      "op": "setFlag",
+                      "flag": "pool_accepted",
+                      "value": true
+                    },
+                    {
+                      "op": "say",
+                      "text": "My duck and Gerald bob together. The prophecy is fulfilled. Twice would be greedy."
+                    }
+                  ],
+                  "else": [
+                    {
+                      "op": "setFlag",
+                      "flag": "duck_reunion",
+                      "value": true
+                    },
+                    {
+                      "op": "setFlag",
+                      "flag": "pool_accepted",
+                      "value": true
+                    },
+                    {
+                      "op": "say",
+                      "text": "I place my rubber duck next to Gerald. They float side by side. The apes go silent. 'The prophecy...' one whispers. 'Two ducks...'"
+                    },
+                    {
+                      "op": "say",
+                      "text": "The apes part around me like I'm royalty. Wet, furry royalty. I think I've been accepted."
+                    }
+                  ]
                 }
               ],
               "else": [
@@ -261,7 +379,10 @@
             }
           ],
           "PICK": [
-            { "op": "playSound", "key": "duck_squeak" },
+            {
+              "op": "playSound",
+              "key": "duck_squeak"
+            },
             {
               "op": "say",
               "text": "Gerald is too big to pick up. And the apes would riot. Never come between a degen and their inflatable."
@@ -414,14 +535,42 @@
           "TALK": [
             {
               "op": "ifFlag",
-              "flag": "ape_costume_worn",
+              "flag": "pool_accepted",
               "then": [
-                { "op": "dialogue", "npcId": "npc_bot_bartender", "treeId": "bartender_intro" }
+                {
+                  "op": "dialogue",
+                  "npcId": "npc_bot_bartender",
+                  "treeId": "bartender_intro"
+                }
               ],
               "else": [
-                { "op": "say", "speaker": "B.O.T.", "text": "*scans face* Identity: UNKNOWN. Species: HUMAN. Access level: NONE." },
-                { "op": "say", "speaker": "B.O.T.", "text": "This bar serves apes only. Come back when you look the part. Dress code is strictly enforced." },
-                { "op": "say", "text": "The robot's LED eyes flash red briefly. Clearly, I need to blend in if I want to get served here." }
+                {
+                  "op": "ifFlag",
+                  "flag": "ape_costume_worn",
+                  "then": [
+                    {
+                      "op": "dialogue",
+                      "npcId": "npc_bot_bartender",
+                      "treeId": "bartender_intro"
+                    }
+                  ],
+                  "else": [
+                    {
+                      "op": "say",
+                      "speaker": "B.O.T.",
+                      "text": "*scans face* Identity: UNKNOWN. Species: HUMAN. Access level: NONE."
+                    },
+                    {
+                      "op": "say",
+                      "speaker": "B.O.T.",
+                      "text": "This bar serves apes only. Come back when you look the part. Dress code is strictly enforced."
+                    },
+                    {
+                      "op": "say",
+                      "text": "The robot's LED eyes flash red briefly. Clearly, I need to blend in if I want to get served here."
+                    }
+                  ]
+                }
               ]
             }
           ],
@@ -430,10 +579,17 @@
               "op": "ifFlag",
               "flag": "ape_costume_worn",
               "then": [
-                { "op": "say", "text": "I try to access the robot's control panel. 'Buy me a drink first,' it says. Even robots have boundaries." }
+                {
+                  "op": "say",
+                  "text": "I try to access the robot's control panel. 'Buy me a drink first,' it says. Even robots have boundaries."
+                }
               ],
               "else": [
-                { "op": "say", "speaker": "B.O.T.", "text": "*arm blocks access* Apes only. No exceptions. I don't make the rules. I just enforce them. Mechanically." }
+                {
+                  "op": "say",
+                  "speaker": "B.O.T.",
+                  "text": "*arm blocks access* Apes only. No exceptions. I don't make the rules. I just enforce them. Mechanically."
+                }
               ]
             }
           ],
@@ -904,6 +1060,10 @@
             {
               "op": "say",
               "text": "'The Art of the Rug: 48 Laws of DeFi Power'. Author: Anonymous. The foreword is by 'a whale who wishes to remain unnamed'. The back cover QR code leads to a rickroll."
+            },
+            {
+              "op": "say",
+              "text": "There's a bookmark at chapter 3. Somebody here studies."
             }
           ],
           "TALK": [
@@ -914,8 +1074,21 @@
           ],
           "USE": [
             {
+              "op": "setFlag",
+              "flag": "read_rug_book",
+              "value": true
+            },
+            {
               "op": "say",
-              "text": "I flip to a random page. 'Rule #23: If someone says trust me bro, run. If they say NFA, run faster.' Sound advice from a book found next to a pool of degens."
+              "text": "Chapter 1: 'Buy High, Sell Low'. Chapter 2: 'I Did My Own Research (On Twitter)'. Chapter 3: 'How to Win a FUD Duel'."
+            },
+            {
+              "op": "say",
+              "text": "One line, underlined twice: 'Comebacks are learned at the shallow end, the deep end, and the bar.'"
+            },
+            {
+              "op": "say",
+              "text": "Three sources. Like a proper oracle. Except these ones are wet."
             }
           ],
           "PICK": [
@@ -926,8 +1099,21 @@
           ],
           "OPEN": [
             {
+              "op": "setFlag",
+              "flag": "read_rug_book",
+              "value": true
+            },
+            {
               "op": "say",
-              "text": "Chapter 1: 'Buy High, Sell Low — A Beginner's Guide'. Chapter 2: 'I Did My Own Research (On Twitter)'. Chapter 3: 'Why Your Favorite Influencer Doesn't Own What They Shill'. I slam it shut."
+              "text": "Chapter 1: 'Buy High, Sell Low'. Chapter 2: 'I Did My Own Research (On Twitter)'. Chapter 3: 'How to Win a FUD Duel'."
+            },
+            {
+              "op": "say",
+              "text": "One line, underlined twice: 'Comebacks are learned at the shallow end, the deep end, and the bar.'"
+            },
+            {
+              "op": "say",
+              "text": "Three sources. Like a proper oracle. Except these ones are wet."
             }
           ],
           "CLOSE": [
@@ -991,145 +1177,371 @@
   },
   "npcs": [],
   "dialogues": {
-    "bartender_intro": {
-      "id": "bartender_intro",
+    "apes_left": {
+      "id": "apes_left",
       "start": "greeting",
       "nodes": {
         "greeting": {
-          "speaker": "B.O.T.",
-          "text": "Welcome to the Liquidity Pool. I'm B.O.T. — Beverage Operations Terminal. Formerly a high-frequency trading algorithm. Now I mix drinks and watch apes provide liquidity. With their bodies. It's... a lateral move.",
+          "speaker": "Shallow-End Ape",
+          "text": "Ah, a new chap. Fancy a spot of FUD? We duel every Tuesday. It's always Tuesday down here.",
           "next": "hub"
         },
         "hub": {
           "choices": [
             {
-              "text": "What is this place?",
-              "next": "what_is_this"
+              "text": "Teach me to trade insults.",
+              "next": "d1"
             },
             {
-              "text": "Tell me about the patients.",
-              "next": "patients"
+              "text": "Why the shallow end?",
+              "next": "why"
             },
             {
-              "text": "Have you seen Patient Zero?",
-              "next": "patient_zero",
-              "setFlag": "bot_mentioned_pz"
-            },
-            {
-              "text": "I'll have a drink.",
-              "next": "drink"
-            },
-            {
-              "text": "Thanks, B.O.T.",
-              "next": "farewell",
+              "text": "Cheerio.",
+              "next": "bye",
               "exit": true
             }
           ]
         },
-        "what_is_this": {
-          "speaker": "B.O.T.",
-          "text": "Dr. Satoshi's experimental DeFi therapy. Literal liquidity provision. The apes believe being IN the pool makes them liquidity providers. The green water is infused with 'decentralized minerals'. It's just food coloring. But the APY on their delusions is remarkable.",
-          "choices": [
-            {
-              "text": "Does the therapy work?",
-              "next": "therapy_works"
-            },
-            {
-              "text": "About Patient Zero...",
-              "next": "patient_zero"
-            }
-          ]
-        },
-        "therapy_works": {
-          "speaker": "B.O.T.",
-          "text": "Define 'work'. They haven't checked their portfolios in 45 minutes. That's a clinic record. One of them even made eye contact with another human yesterday. Baby steps.",
+        "why": {
+          "speaker": "Shallow-End Ape",
+          "text": "Deep end's for leverage, old boy. We're spot traders. We like to touch the bottom.",
           "next": "hub"
         },
-        "patients": {
-          "speaker": "B.O.T.",
-          "text": "Chronic cases, all of them. That one bought the top of every cycle since 2017. That one over there? Mortgaged his house for a dog coin. And the one with the diamond floatie? He's actually profitable. He just comes for the vibes.",
-          "choices": [
-            {
-              "text": "The profitable one comes voluntarily?",
-              "next": "profitable"
-            },
-            {
-              "text": "About Patient Zero...",
-              "next": "patient_zero"
-            }
-          ]
+        "d1": {
+          "speaker": "Shallow-End Ape",
+          "text": "Your bags are so heavy, the lifeguard filed a complaint.",
+          "next": "d1_dex"
         },
-        "profitable": {
-          "speaker": "B.O.T.",
-          "text": "Survivor's guilt. He made money while his friends got liquidated. Now he floats here, pretending to be broke. It's the crypto version of a support group. 'Hi, I'm Chad, and I sold the top.' *gasps from the pool*",
+        "d1_dex": {
+          "text": "Uh... no they're not?",
+          "next": "d1_r"
+        },
+        "d1_r": {
+          "speaker": "Other Shallow-End Ape",
+          "text": "At least mine float. Yours sank in a kiddie pool.",
+          "onEnter": [
+            {
+              "op": "setFlag",
+              "flag": "fud_r1",
+              "value": true
+            }
+          ],
+          "next": "d2"
+        },
+        "d2": {
+          "speaker": "Shallow-End Ape",
+          "text": "I've seen better hands on a broken clock.",
+          "next": "d2_dex"
+        },
+        "d2_dex": {
+          "text": "Your face is a broken clock.",
+          "next": "d2_r"
+        },
+        "d2_r": {
+          "speaker": "Other Shallow-End Ape",
+          "text": "A broken clock is right twice a day. You're on a streak of zero.",
+          "onEnter": [
+            {
+              "op": "setFlag",
+              "flag": "fud_r2",
+              "value": true
+            }
+          ],
+          "next": "d_end"
+        },
+        "d_end": {
+          "speaker": "Shallow-End Ape",
+          "text": "Two-nil, old chap. Do write those down.",
+          "next": "d_end_dex"
+        },
+        "d_end_dex": {
+          "text": "Written down. In my phone. Right next to my losses.",
           "next": "hub"
         },
-        "patient_zero": {
-          "speaker": "B.O.T.",
-          "text": "Patient Zero... *servos whir* My data logs show someone matching that description. They were here before the pool was a pool. When this was still a server room. They left something behind — a message in my memory banks I can't delete.",
-          "choices": [
-            {
-              "text": "What message?",
-              "next": "message"
-            },
-            {
-              "text": "When was this?",
-              "next": "when"
-            }
-          ]
-        },
-        "message": {
-          "speaker": "B.O.T.",
-          "text": "'The cure isn't in the code. It's in the community.' That's all. Encrypted with a key I don't have. Whoever Patient Zero was, they understood something the rest of us are still trying to compute.",
-          "choices": [
-            {
-              "text": "Tell me something else.",
-              "next": "hub"
-            },
-            {
-              "text": "Thanks, B.O.T.",
-              "next": "farewell",
-              "exit": true
-            }
-          ]
-        },
-        "when": {
-          "speaker": "B.O.T.",
-          "text": "Block 1. Not block 1 of Base. Block 1 of this building. Before AdrianLAB was AdrianLAB. Before the trading floors and the diamond protocol. When it was just... someone's dream in a basement. Like all the best things.",
-          "choices": [
-            {
-              "text": "Tell me something else.",
-              "next": "hub"
-            },
-            {
-              "text": "Thanks, B.O.T.",
-              "next": "farewell",
-              "exit": true
-            }
-          ]
-        },
-        "drink": {
-          "speaker": "B.O.T.",
-          "text": "The house special: 'The Liquidation'. It's green, it burns, and you'll question your life choices afterward. Just like real trading. Cheers.",
-          "choices": [
-            {
-              "text": "Tell me something else.",
-              "next": "hub"
-            },
-            {
-              "text": "Thanks, B.O.T.",
-              "next": "farewell",
-              "exit": true
-            }
-          ]
-        },
-        "farewell": {
-          "speaker": "B.O.T.",
-          "text": "Come back anytime. The pool is always open. The bar is always stocked. And the charts... the charts never sleep. Neither do I. Because I'm a robot. That was the joke. I'll work on my delivery.",
+        "bye": {
+          "speaker": "Shallow-End Ape",
+          "text": "Toodle-oo. Mind the deep end.",
           "end": true
         }
       }
+    },
+    "apes_right": {
+      "id": "apes_right",
+      "start": "greeting",
+      "nodes": {
+        "greeting": {
+          "speaker": "Deep-End Ape",
+          "text": "Gerald's friend! Welcome to the deep end, bro. Down here we roast. Wanna get roasted?",
+          "next": "hub"
+        },
+        "hub": {
+          "choices": [
+            {
+              "text": "Roast me. For science.",
+              "next": "d3"
+            },
+            {
+              "text": "Who's the guy on the diamond floatie?",
+              "next": "chad"
+            },
+            {
+              "text": "I'll float elsewhere.",
+              "next": "bye",
+              "exit": true
+            }
+          ]
+        },
+        "chad": {
+          "speaker": "Deep-End Ape",
+          "text": "That's Chad. He runs group. Undefeated at FUD. Don't let him smell fear. He can smell fear.",
+          "next": "hub"
+        },
+        "d3": {
+          "speaker": "Deep-End Ape",
+          "text": "You bought the top so hard, they named it after you.",
+          "next": "d3_dex"
+        },
+        "d3_dex": {
+          "text": "I... was early?",
+          "next": "d3_r"
+        },
+        "d3_r": {
+          "speaker": "Diamond-Floatie Ape",
+          "text": "And you sold the bottom so often, they gave you a loyalty card.",
+          "onEnter": [
+            {
+              "op": "setFlag",
+              "flag": "fud_r3",
+              "value": true
+            }
+          ],
+          "next": "d4"
+        },
+        "d4": {
+          "speaker": "Deep-End Ape",
+          "text": "Nobody in this pool has ever heard of you.",
+          "next": "d4_dex"
+        },
+        "d4_dex": {
+          "text": "Good. I'm undercover.",
+          "next": "d4_r"
+        },
+        "d4_r": {
+          "speaker": "Diamond-Floatie Ape",
+          "text": "Then today they'll hear you lose.",
+          "onEnter": [
+            {
+              "op": "setFlag",
+              "flag": "fud_r4",
+              "value": true
+            }
+          ],
+          "next": "d_end"
+        },
+        "d_end": {
+          "speaker": "Deep-End Ape",
+          "text": "Brutal. You lost to the comebacks, bro. Steal them. Everyone does.",
+          "next": "hub"
+        },
+        "bye": {
+          "speaker": "Deep-End Ape",
+          "text": "Stay liquid, bro.",
+          "end": true
+        }
+      }
+    },
+    "bartender_intro": {
+  "id": "bartender_intro",
+  "start": "greeting",
+  "nodes": {
+    "greeting": {
+      "speaker": "B.O.T.",
+      "text": "Welcome to the Liquidity Pool. I'm B.O.T. — Beverage Operations Terminal. Formerly a high-frequency trading algorithm. Now I mix drinks and watch apes provide liquidity. With their bodies. It's... a lateral move.",
+      "next": "hub"
+    },
+    "hub": {
+      "choices": [
+        {
+          "text": "What is this place?",
+          "next": "what_is_this"
+        },
+        {
+          "text": "Tell me about the patients.",
+          "next": "patients"
+        },
+        {
+          "text": "Have you seen Patient Zero?",
+          "next": "patient_zero",
+          "setFlag": "bot_mentioned_pz"
+        },
+        {
+          "text": "I'll have a drink.",
+          "next": "drink"
+        },
+        {
+          "text": "Thanks, B.O.T.",
+          "next": "farewell",
+          "exit": true
+        }
+      ]
+    },
+    "what_is_this": {
+      "speaker": "B.O.T.",
+      "text": "Dr. Satoshi's experimental DeFi therapy. Literal liquidity provision. The apes believe being IN the pool makes them liquidity providers. The green water is infused with 'decentralized minerals'. It's just food coloring. But the APY on their delusions is remarkable.",
+      "choices": [
+        {
+          "text": "Does the therapy work?",
+          "next": "therapy_works"
+        },
+        {
+          "text": "About Patient Zero...",
+          "next": "patient_zero"
+        }
+      ]
+    },
+    "therapy_works": {
+      "speaker": "B.O.T.",
+      "text": "Define 'work'. They haven't checked their portfolios in 45 minutes. That's a clinic record. One of them even made eye contact with another human yesterday. Baby steps.",
+      "next": "hub"
+    },
+    "patients": {
+      "speaker": "B.O.T.",
+      "text": "Chronic cases, all of them. That one bought the top of every cycle since 2017. That one over there? Mortgaged his house for a dog coin. And the one with the diamond floatie? He's actually profitable. He just comes for the vibes.",
+      "choices": [
+        {
+          "text": "The profitable one comes voluntarily?",
+          "next": "profitable"
+        },
+        {
+          "text": "About Patient Zero...",
+          "next": "patient_zero"
+        }
+      ]
+    },
+    "profitable": {
+      "speaker": "B.O.T.",
+      "text": "Survivor's guilt. He made money while his friends got liquidated. Now he floats here, pretending to be broke. It's the crypto version of a support group. 'Hi, I'm Chad, and I sold the top.' *gasps from the pool*",
+      "next": "hub"
+    },
+    "patient_zero": {
+      "speaker": "B.O.T.",
+      "text": "Patient Zero... *servos whir* My data logs show someone matching that description. They were here before the pool was a pool. When this was still a server room. They left something behind — a message in my memory banks I can't delete.",
+      "choices": [
+        {
+          "text": "What message?",
+          "next": "message"
+        },
+        {
+          "text": "When was this?",
+          "next": "when"
+        }
+      ]
+    },
+    "message": {
+      "speaker": "B.O.T.",
+      "text": "'The cure isn't in the code. It's in the community.' That's all. Encrypted with a key I don't have. Whoever Patient Zero was, they understood something the rest of us are still trying to compute.",
+      "choices": [
+        {
+          "text": "Tell me something else.",
+          "next": "hub"
+        },
+        {
+          "text": "Thanks, B.O.T.",
+          "next": "farewell",
+          "exit": true
+        }
+      ]
+    },
+    "when": {
+      "speaker": "B.O.T.",
+      "text": "Block 1. Not block 1 of Base. Block 1 of this building. Before AdrianLAB was AdrianLAB. Before the trading floors and the diamond protocol. When it was just... someone's dream in a basement. Like all the best things.",
+      "choices": [
+        {
+          "text": "Tell me something else.",
+          "next": "hub"
+        },
+        {
+          "text": "Thanks, B.O.T.",
+          "next": "farewell",
+          "exit": true
+        }
+      ]
+    },
+    "drink": {
+      "speaker": "B.O.T.",
+      "text": "The house special: 'The Liquidation'. It's green, it burns, and you'll question your life choices afterward. Just like real trading. Cheers.",
+      "next": "lesson"
+    },
+    "farewell": {
+      "speaker": "B.O.T.",
+      "text": "Come back anytime. The pool is always open. The bar is always stocked. And the charts... the charts never sleep. Neither do I. Because I'm a robot. That was the joke. I'll work on my delivery.",
+      "end": true
+    },
+    "lesson": {
+      "speaker": "B.O.T.",
+      "text": "House rule: every Liquidation comes with a FUD lesson. Defend yourself.",
+      "next": "r5"
+    },
+    "r5": {
+      "speaker": "B.O.T.",
+      "text": "Your roadmap is a napkin with a frowny face on it.",
+      "next": "r5_dex"
+    },
+    "r5_dex": {
+      "text": "It's a vision board.",
+      "next": "r5_ok"
+    },
+    "r5_ok": {
+      "speaker": "B.O.T.",
+      "text": "Insufficient. Correct output: 'Still more detail than your exit plan.'",
+      "onEnter": [
+        {
+          "op": "setFlag",
+          "flag": "fud_r5",
+          "value": true
+        }
+      ],
+      "next": "r6"
+    },
+    "r6": {
+      "speaker": "B.O.T.",
+      "text": "I've been liquidated by better people than you.",
+      "next": "r6_dex"
+    },
+    "r6_dex": {
+      "text": "Ouch.",
+      "next": "r6_ok"
+    },
+    "r6_ok": {
+      "speaker": "B.O.T.",
+      "text": "Correct output: 'I can tell. They left the receipts floating in the pool.'",
+      "onEnter": [
+        {
+          "op": "setFlag",
+          "flag": "fud_r6",
+          "value": true
+        }
+      ],
+      "next": "r_tip"
+    },
+    "r_tip": {
+      "speaker": "B.O.T.",
+      "text": "Free tip, as a former trading bot. Chad has one weakness: he has never made anything.",
+      "choices": [
+        {
+          "text": "Tell me something else.",
+          "next": "hub"
+        },
+        {
+          "text": "Thanks, B.O.T.",
+          "next": "farewell",
+          "exit": true
+        }
+      ]
     }
+  }
+}
   },
   "items": {
     "sceneItems": []

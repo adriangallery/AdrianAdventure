@@ -58,6 +58,31 @@
       "id": "n4_authorized",
       "text": "Satoshi authorized the treatment room. The door also has a physical keyhole. Dual lock.",
       "shownWhen": "treatment_room_unlocked"
+    },
+    {
+      "id": "n4_accepted",
+      "text": "The pool apes accepted me. Gerald approves. I've been ignored by better people, but never by wetter ones.",
+      "shownWhen": "pool_accepted"
+    },
+    {
+      "id": "n4_book",
+      "text": "'The Art of the Rug', chapter 3: comebacks are learned at the shallow end, the deep end, and the bar.",
+      "shownWhen": "read_rug_book"
+    },
+    {
+      "id": "n4_fud_left",
+      "text": "Comebacks (shallow end): 'At least mine float. Yours sank in a kiddie pool.' / 'A broken clock is right twice a day. You're on a streak of zero.'",
+      "shownWhen": "fud_r1"
+    },
+    {
+      "id": "n4_fud_right",
+      "text": "Comebacks (deep end): 'And you sold the bottom so often, they gave you a loyalty card.' / 'Then today they'll hear you lose.'",
+      "shownWhen": "fud_r3"
+    },
+    {
+      "id": "n4_fud_bar",
+      "text": "Comebacks (the bar): 'Still more detail than your exit plan.' / 'I can tell. They left the receipts floating in the pool.' B.O.T. says Chad has never made anything.",
+      "shownWhen": "fud_r5"
     }
   ],
   "puzzles": [
