@@ -82,7 +82,7 @@ async function follow(view, stills, choices = []) {
       lastText = r.text;
       seen.push({ speaker: r.speaker, text: r.text });
       for (const [re, label] of stills) if (re.test(r.text)) await demo.still(`${view}-${label}`);
-      await demo.film(Math.min(2000, Math.max(900, r.text.length * 25)));
+      await demo.film(Math.min(1300, Math.max(600, r.text.length * 16)));
       await page.evaluate(() => window.__game.scene.getScene('GameScene').qaSyntheticTap());
       lastTapAt = Date.now();
       await demo.sleep(250);
