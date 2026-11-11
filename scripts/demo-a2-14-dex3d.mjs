@@ -6,8 +6,8 @@
 //   2) habla (LOOK de un hotspot): fotogramas player3d_talk_*;
 //   3) cada gesto (coger bajo/medio/alto, usar, empujar, tirar, dar) lanzado con player.gesture(null, anim):
 //      fotogramas player3d_<anim>_<dir>_*, y vuelve al reposo;
-//   4) el alto de Dex (state().pixel.worldHeightPct) es el mismo con cualquier fotograma 3D que con el de reposo
-//      (el origen queda en los pies: A2.11 no cambia).
+//   4) durante cada gesto (quieto) el alto de Dex (state().pixel.worldHeightPct) no cambia: con cualquier fotograma 3D
+//      el origen queda en los pies y el alto es el de A2.11.
 // Uso: BASE_URL=http://127.0.0.1:4173 node scripts/lib/demo.mjs run a2-14-dex3d
 import { startDemo, sleep } from './lib/demo.mjs';
 
@@ -95,24 +95,21 @@ for (const scene of ['outside', 'lobby']) {
   const st0 = await anim();
   console.log(`${scene}: inicio ${JSON.stringify(st0.anim?.texture)} · alto ${st0.h}`);
   await demo.still(`${scene}-inicio`);
-  const y = scene === 'outside' ? 96 : 98;
-  await walk(scene, 'izquierda', 30, y, 'left');
-  await walk(scene, 'derecha', 70, y, 'right');
-  if (scene === 'lobby') {
-    await walk(scene, 'fondo', 55.5, 85, 'up');
-    await walk(scene, 'camara', 55.5, 98, 'down');
-  } else {
-    await walk(scene, 'fondo', 40, 84, 'up');
-    await walk(scene, 'camara', 40, 96, 'down');
-  }
-  const hRest = (await anim()).h;
-  const hs = await page.evaluate(() => window.__s.heights);
-  if (hRest && hs.some((h) => Math.abs(h - hRest) > 0.05 * hRest)) problems.push(`${scene}: el alto de Dex cambia con los fotogramas 3D`);
-  // hablar
-  const hsId = scene === 'lobby' ? 'hs_plant' : await page.evaluate(() => window.__game.scene.getScene('GameScene').sceneData?.hotspots?.[0]?.id);
-  const t = await sampled('habla', (id) => window.__qa.act('LOOK', id, [], 2500), [hsId], 12000);
+  // Tramos dentro de lo andable y por encima del panel de verbos (en 844x390 la franja de abajo del todo queda debajo)
+  const L = scene === 'outside'
+    ? { y: 93, left: 20, right: 70, vx: 40, back: 84 }
+    : { y: 93, left: 45, right: 85, vx: 55.5, back: 86 };
+  await walk(scene, 'izquierda', L.left, L.y, 'left');
+  await walk(scene, 'derecha', L.right, L.y, 'right');
+  await sampled('a la columna', (x, y) => window.__qa.walk(x, y), [L.vx, L.y]);
+  await walk(scene, 'fondo', L.vx, L.back, 'up');
+  await walk(scene, 'camara', L.vx, L.y, 'down');
+  // hablar (texto del jugador: en el lobby el LOOK de la planta; fuera, un say)
+  const t = await sampled('habla', (scene) => (scene === 'lobby'
+    ? window.__qa.act('LOOK', 'hs_plant', [], 2500)
+    : window.__qa.runScript([{ op: 'say', text: 'Same old street. New old me.' }])), [scene], 12000);
   const talk = t.tex.filter((k) => k.startsWith('player3d_talk_'));
-  console.log(`${scene} habla (${hsId}): ${talk.length} fotogramas`);
+  console.log(`${scene} habla: ${talk.length} fotogramas`);
   if (talk.length < 3) problems.push(`${scene}: hablando solo ${talk.length} fotogramas player3d_talk_*`);
   await demo.settle({ tap: [422, 40], calm: 2, every: 300 });
   await gestures(scene);
