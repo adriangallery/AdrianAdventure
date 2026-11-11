@@ -32,12 +32,6 @@
     "sprite": null
   },
   "pixelScale": 4.5,
-  "depthScale": {
-    "yTop": 83,
-    "yBottom": 92,
-    "scaleTop": 0.53,
-    "scaleBottom": 1
-  },
   "ui": {
     "verbs": [
       "LOOK",
