@@ -356,6 +356,79 @@ class Front:
             img[ring] = self.src[32, 1]
         img[m] = lay[m]
 
+    # ── brazo de frente DIBUJADO (A2.15 rev.): para los giros grandes no se rota el recorte del sprite (sale un
+    # alambre de 2 px con flecos), se pinta por píxeles: dos cápsulas de 4–5 px (brazo y antebrazo, codo en esquina),
+    # mano de ~5×5, sombreado en bandas con los 4 tonos de piel del brazo de Idle-1 y contorno negro de 1 px continuo.
+    def drawn_arm(self, img, side, sh, a=0, f=0, hand=None, finger=False, lf=None):
+        S = self.src
+        LU, LF = 12.0, 11.5
+        if lf:   # antebrazo escorzado (apunta a la cámara)
+            LF = lf
+        if hand is not None:
+            a, el, f = ik(sh, hand, LU, LF, +1 if side == 'L' else -1)
+        else:
+            r = math.radians(a)
+            el = (sh[0] - LU * math.sin(r), sh[1] + LU * math.cos(r))
+        rf = math.radians(f)
+        hd = (el[0] - LF * math.sin(rf), el[1] + LF * math.cos(rf))
+        dfx, dfy = -math.sin(rf), math.cos(rf)
+        hc = (hd[0] + 1.4 * dfx, hd[1] + 1.4 * dfy)     # centro de la mano, un poco más allá de la muñeca
+        # rampa de piel (de fuera a dentro en reposo) sacada del brazo izquierdo de Idle-1, fila 50
+        ramp = [tuple(S[50, x]) for x in (3, 4, 5, 6)]
+        if side == 'R':
+            ramp = ramp[::-1]
+        ramp.append(tuple(S[60, 18]))   # piel más oscura: pliegue de los dedos
+        H, W = self.H, self.W
+        fill = np.zeros((H, W), bool)
+        tone = np.zeros((H, W), int)
+        segs = [(sh, el, 2.2), (el, hd, 1.8)]
+        if finger:   # índice estirado: 1 px de ancho, 3 px más allá de la mano
+            segs.append(((hc[0] + 1.8 * dfx, hc[1] + 1.8 * dfy), (hc[0] + 4.6 * dfx, hc[1] + 4.6 * dfy), 0.72))
+        x0 = int(min(sh[0], el[0], hd[0]) - 5); x1 = int(max(sh[0], el[0], hd[0]) + 6)
+        y0 = int(min(sh[1], el[1], hd[1]) - 5); y1 = int(max(sh[1], el[1], hd[1]) + 6)
+        for y in range(max(0, y0), min(H, y1)):
+            for x in range(max(0, x0), min(W, x1)):
+                px, py = x + 0.5, y + 0.5
+                best = None
+                for (p0, p1, rad) in segs:
+                    vx, vy = p1[0] - p0[0], p1[1] - p0[1]
+                    L2 = vx * vx + vy * vy or 1e-6
+                    t = max(0.0, min(1.0, ((px - p0[0]) * vx + (py - p0[1]) * vy) / L2))
+                    qx, qy = p0[0] + t * vx - px, p0[1] + t * vy - py
+                    d = math.hypot(qx, qy)
+                    if d <= rad and (best is None or d - rad < best[0]):
+                        L = math.sqrt(L2)
+                        off = ((px - p0[0]) * vy - (py - p0[1]) * vx) / L   # >0 hacia +x cuando cuelga
+                        best = (d - rad, off / rad)
+                dh = math.hypot(px - hc[0], py - hc[1])
+                if dh <= 2.6:
+                    off = ((px - hc[0]) * dfy - (py - hc[1]) * dfx) / 2.6
+                    along = (px - hc[0]) * dfx + (py - hc[1]) * dfy
+                    best = (-1, off, 4 if 0.15 <= along <= 1.15 and abs(off) < 0.75 else None)   # pliegue de los dedos
+                if best is not None:
+                    fill[y, x] = True
+                    tone[y, x] = best[2] if len(best) > 2 and best[2] is not None else max(0, min(3, int((best[1] + 1) / 2 * 4)))
+        # limpieza: fuera salientes de 1 px y dentro muescas de 1 px (4-vecinos)
+        for _ in range(2):
+            n = np.zeros(fill.shape, int)
+            n[1:] += fill[:-1]; n[:-1] += fill[1:]; n[:, 1:] += fill[:, :-1]; n[:, :-1] += fill[:, 1:]
+            fill &= ~(n <= 1) if not finger else ~(n == 0)
+            add = (~fill) & (n >= 3)
+            tone[add] = 1
+            fill |= add
+        ring = np.zeros_like(fill)
+        ring[1:] |= fill[:-1]; ring[:-1] |= fill[1:]; ring[:, 1:] |= fill[:, :-1]; ring[:, :-1] |= fill[:, 1:]
+        ring &= ~fill
+        yy, xx = np.mgrid[0:H, 0:W]
+        ring &= np.hypot(xx + 0.5 - sh[0], yy + 0.5 - sh[1]) > 3.0   # junto al hombro lo tapa la manga
+        img[ring] = S[32, 1]
+        for k in range(5):
+            m = fill & (tone == k)
+            img[m] = ramp[k]
+        # la manga corta encima (filas 37..39 del original), en su sitio
+        cx = 0 if side == 'L' else 18
+        paste(img, S[37:40, cx:cx + 7].copy(), int(round(sh[0] - 3.5)), int(round(sh[1] - 1)))
+
     def frame(self, bob=0, liftL=0, liftR=0, armL=None, armR=None, head=(0, 0), mouth=False, lean=0, shrug=0, breath=0):
         img = blank(self.W, self.H)
         o = self.ox
@@ -373,8 +446,13 @@ class Front:
         sy = 38 + bob - shrug
         aL = armL or {}
         aR = armR or {}
-        self.arm(img, 'L', (o + lean + 3.5, sy), **aL)
-        self.arm(img, 'R', (o + lean + 21.5, sy), **aR)
+        for side, spec, sx in (('L', aL, 3.5), ('R', aR, 21.5)):
+            spec = dict(spec)
+            dy = spec.pop('dy', 0)
+            if spec.pop('drawn', False):
+                self.drawn_arm(img, side, (o + lean + sx, sy + dy), **spec)
+            else:
+                self.arm(img, side, (o + lean + sx, sy + dy), **spec)
         return clean_orphans(img)
 
 
@@ -385,7 +463,10 @@ def front_walk(F):
         s = math.sin(2 * math.pi * p)
         liftL = round(2 * max(0, s)); liftR = round(2 * max(0, -s))
         bob = 1 if i % 3 == 0 else 0
-        out.append(F.frame(bob=bob, liftL=liftL, liftR=liftR, armL={'a': -7 * s, 'f': -7 * s}, armR={'a': -7 * s, 'f': -7 * s}))
+        # brazos: el recorte original sin girar (igual que Idle-1), 1 px arriba en contrafase (como de espaldas);
+        # girarlo ±7° dejaba el contorno en sierra y el brazo más flaco
+        out.append(F.frame(bob=bob, liftL=liftL, liftR=liftR, armL={'dy': -1 if s < -0.3 else 0},
+                           armR={'dy': -1 if s > 0.3 else 0}))
     return out
 
 
@@ -420,33 +501,40 @@ def front_idle(F):
 
 def front_tics(F):
     tics = {}
-    # rascarse la cabeza (mano derecha de la pantalla sobre el pelo, 3 rascadas)
-    sc = [F.frame(armR={'a': -40, 'f': -60})]
+    o = F.ox
+    D = dict(drawn=True)
+    # rascarse la cabeza: el brazo derecho de la pantalla (dibujado) sube por fuera, la mano rasca encima de la oreja
+    up = dict(D, hand=(o + 25, 30))
+    sc = [F.frame(armR=up)]
     for k in range(6):
-        sc.append(F.frame(armR={'hand': (F.ox + 19 + (k % 2), 16 - 2 * (k % 2))}, head=(-1 if k % 2 else 0, 0)))
-    sc.append(F.frame(armR={'a': -40, 'f': -60}))
+        sc.append(F.frame(armR=dict(D, hand=(o + 20 + (k % 2), 17 - (k % 2))), shrug=1, head=(-1 if k % 2 else 0, 0)))
+    sc.append(F.frame(armR=up))
     tics['scratch'] = sc
-    # subirse las gafas (dedo al puente de las gafas, empuja 1 px)
-    gl = [F.frame(armL={'a': 30, 'f': 60})]
-    gl.append(F.frame(armL={'hand': (F.ox + 13, 16)}))
-    gl.append(F.frame(armL={'hand': (F.ox + 13, 14)}, head=(0, -1)))
-    gl.append(F.frame(armL={'hand': (F.ox + 13, 14)}))
-    gl.append(F.frame(armL={'a': 30, 'f': 60}))
+    # subirse las gafas: mano izquierda de la pantalla delante de la cara, el índice empuja el puente 1 px
+    mid = dict(D, hand=(o + 9, 26))
+    gl = [F.frame(armL=mid)]
+    gl.append(F.frame(armL=dict(D, hand=(o + 11, 19), finger=True)))
+    gl.append(F.frame(armL=dict(D, hand=(o + 11, 18), finger=True), head=(0, -1)))
+    gl.append(F.frame(armL=dict(D, hand=(o + 11, 19), finger=True)))
+    gl.append(F.frame(armL=mid))
     tics['glasses'] = gl
     # balancearse sobre los talones (el cuerpo de un lado a otro, 1 px)
     tics['sway'] = [F.frame(lean=l) for l in (0, 1, 1, 0, -1, -1)]
-    # bostezo con estirón: brazos arriba, boca abierta
-    yw = [F.frame(bob=1), F.frame(armL={'hand': (F.ox + 3, 12)}, armR={'hand': (F.ox + 21, 12)}, mouth=True, shrug=1),
-          F.frame(armL={'hand': (F.ox + 1, 4)}, armR={'hand': (F.ox + 23, 4)}, mouth=True, shrug=1, head=(0, -1)),
-          F.frame(armL={'hand': (F.ox + 3, 12)}, armR={'hand': (F.ox + 21, 12)}, mouth=True), F.frame()]
+    # bostezo con estirón: brazos arriba en V, boca abierta
+    yw = [F.frame(bob=1),
+          F.frame(armL=dict(D, hand=(o - 3, 22)), armR=dict(D, hand=(o + 28, 22)), mouth=True, shrug=1),
+          F.frame(armL=dict(D, hand=(o - 2, 16)), armR=dict(D, hand=(o + 27, 16)), mouth=True, shrug=1, head=(0, -1)),
+          F.frame(armL=dict(D, hand=(o - 3, 22)), armR=dict(D, hand=(o + 28, 22)), mouth=True), F.frame()]
     tics['yawn'] = yw
     return tics
 
 
 def front_talk(F):
-    # mano abierta hacia fuera (como el shrug, con un solo brazo) mientras cabecea y abre la boca
-    return [F.frame(), F.frame(mouth=True, armR={'a': -12, 'f': -70}),
-            F.frame(armR={'a': -16, 'f': -95}, head=(0, 1)), F.frame(mouth=True, armR={'a': -12, 'f': -70})]
+    # mano abierta hacia fuera (antebrazo dibujado) mientras cabecea y abre la boca
+    D = dict(drawn=True)
+    o = F.ox
+    return [F.frame(), F.frame(mouth=True, armR=dict(D, a=-4, f=-38, lf=8)),
+            F.frame(armR=dict(D, a=4, f=-58, lf=7), head=(0, 1)), F.frame(mouth=True, armR=dict(D, a=-4, f=-38, lf=8))]
 
 
 def front_shrug(F):
