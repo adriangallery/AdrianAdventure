@@ -114,7 +114,7 @@ test('walkPose del mono en vertical: fotogramas de perfil del último lado con e
   assert.equal(p.texture, 'ape_walk_right_1');
   assert.ok(near(walkPose({ prefix: 'ape', dir: 'up', side: 'right', tMs: STEP_MS / 2, has }).angle, SWAY_DEG));
   // Sin ninguna textura de Front (tráiler), igual
-  assert.equal(walkPose({ prefix: 'player', dir: 'down', side: 'right', tMs: 0, has: (k) => !k.includes('front') }).texture, 'player_walk_left_0');
+  assert.equal(walkPose({ prefix: 'player', dir: 'down', side: 'right', tMs: 0, has: (k) => !k.includes('front') && !k.startsWith('player3d_') }).texture, 'player_walk_left_0');
 });
 
 test('talkPose: cabeceo a TALK_HZ, de frente alterna manos; con pose fija solo cabecea', () => {
@@ -220,4 +220,65 @@ test('IdleTicker: primer tic tras IDLE_TIC_AFTER_MS quieto, luego cada 3-6 s; cu
   assert.ok(tk.current(), 'tic en curso');
   assert.equal(tk.update(16, false, 'front', 'right'), null);
   assert.equal(tk.current(), null, 'cortado');
+});
+
+// ── A2.14: Dex en 3D (assets/sprites/player3d, generado por art/dex3d) ──────────────────────────────────────────────
+test('A2.14: fotogramas 3D en disco, manifiesto y tamaño (alto de Dex 103, pies en la fila 103)', async () => {
+  const { DEX3D, DEX_ART_HEIGHT, WALK3D_FRAMES, TALK3D_FRAMES, GESTURE3D_FRAMES, GESTURES3D } = A;
+  assert.equal(DEX3D, 'player3d');
+  assert.equal(DEX_ART_HEIGHT, 103);
+  const dir = new URL('../assets/sprites/player3d/', import.meta.url);
+  const files = new Set(readdirSync(dir));
+  const { readFileSync } = await import('node:fs');
+  const man = JSON.parse(readFileSync(new URL('dex3d.json', dir), 'utf8'));
+  assert.equal(man.artHeight, DEX_ART_HEIGHT);
+  assert.ok(Math.abs(man.origin[1] - DEX_ART_HEIGHT / man.frameHeight) < 1e-9);
+  const need = [];
+  for (const d of ['down', 'up', 'left', 'right']) {
+    for (let i = 0; i < WALK3D_FRAMES; i++) need.push(`walk_${d}_${i}.png`);
+    if (d !== 'up') for (let i = 0; i < TALK3D_FRAMES; i++) need.push(`talk_${d}_${i}.png`);
+    for (const g of GESTURES3D) for (let i = 0; i < GESTURE3D_FRAMES; i++) need.push(`${g}_${d}_${i}.png`);
+  }
+  for (let i = 0; i < 4; i++) need.push(`idle_down_${i}.png`);
+  need.push('idle_right_0.png', 'idle_left_0.png', 'idle_up_right_0.png', 'idle_up_left_0.png');
+  for (const f of need) assert.ok(files.has(f), `falta ${f}`);
+  assert.equal(man.anims.walk.frames, WALK3D_FRAMES);
+});
+
+test('A2.14: andar 3D = 8 fotogramas en 540 ms = 2 zancadas de 20 px a 74 px/s (sin patinar), sin balanceo', () => {
+  const { WALK3D_FRAMES, WALK3D_FRAME_MS } = A;
+  // 540 ms frente a 540,5: el pie apoyado se desliza < 0,1 % (0,04 px de arte por ciclo)
+  assert.ok(near(WALK3D_FRAMES * WALK3D_FRAME_MS, (2 * 20 * 1000) / 74, 1));
+  const has3 = (k) => k.startsWith('player3d_') || has(k);
+  for (const dir of ['down', 'up', 'left', 'right']) {
+    const seen = new Set();
+    for (let t = 0; t < WALK3D_FRAMES * WALK3D_FRAME_MS; t += WALK3D_FRAME_MS) {
+      const p = walkPose({ prefix: 'player', dir, side: 'right', tMs: t + 1, has: has3 });
+      assert.equal(p.angle, 0);
+      seen.add(p.texture);
+    }
+    assert.equal(seen.size, WALK3D_FRAMES, dir);
+    assert.ok([...seen].every((k) => k.startsWith(`player3d_walk_${dir}_`)));
+  }
+  // el mono sigue con lo suyo
+  assert.ok(walkPose({ prefix: 'ape', dir: 'left', side: 'left', tMs: 0, has: has3 }).texture.startsWith('ape_walk_'));
+});
+
+test('A2.14: hablar y gestos 3D; el gesto según verbo y altura', () => {
+  const { gestureAnimFor, GESTURE3D_FRAMES } = A;
+  const has3 = (k) => k.startsWith('player3d_') || has(k);
+  assert.match(talkPose({ prefix: 'player', facing: 'front', tMs: 250, has: has3 }).texture, /^player3d_talk_down_2$/);
+  assert.match(talkPose({ prefix: 'player', facing: 'right', tMs: 0, has: has3 }).texture, /^player3d_talk_right_0$/);
+  // con pose fija de cinemática no cambia de textura
+  assert.equal(talkPose({ prefix: 'player', facing: 'front', tMs: 250, has: has3, posed: true }).texture, null);
+  const frames = new Set();
+  for (let t = 0; t < GESTURE_MS; t += 10) frames.add(gesturePose({ prefix: 'player', facing: 'left', side: 'left', aim: 'left', tMs: t, has: has3, anim: 'pick_low' }).texture);
+  assert.equal(frames.size, GESTURE3D_FRAMES);
+  assert.equal(gesturePose({ prefix: 'player', facing: 'left', side: 'left', aim: null, tMs: GESTURE_MS, has: has3 }), null);
+  assert.equal(gestureAnimFor('PICK', 0.1), 'pick_low');
+  assert.equal(gestureAnimFor('PICK', 0.5), 'pick_mid');
+  assert.equal(gestureAnimFor('PICK', 0.95), 'pick_high');
+  assert.equal(gestureAnimFor('PICK', null), 'pick_mid');
+  assert.equal(gestureAnimFor('PUSH', 0.5), 'push');
+  assert.equal(gestureAnimFor('OPEN', 0.5), 'use');
 });

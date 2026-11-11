@@ -260,7 +260,7 @@ export class Player extends Phaser.GameObjects.Sprite {
    * andar hacia cámara): el origen se pone en los pies para cualquier textura más alta que DEX_ART_HEIGHT, así el
    * punto de los pies y el alto de Dex quedan como siempre (A2.11).
    */
-  setTexture(key: string | Phaser.Textures.Texture, frame?: string | number): this {
+  setTexture(key: string, frame?: string | number): this {
     super.setTexture(key, frame);
     const h = this.frame?.realHeight ?? 0;
     this.setOrigin(0.5, h > DEX_ART_HEIGHT ? DEX_ART_HEIGHT / h : 1);
