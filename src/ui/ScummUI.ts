@@ -596,6 +596,9 @@ export class ScummUI {
     scrap_paper: "A blank scrap of paper from the basement desk. No words yet. Endless potential. Like a whitepaper.",
     fake_alpha: "'BUY $GERALD. TRUST ME.' In leaky blue ink. The most convincing alpha I've ever written. Also the only one.",
     marked_map: "The printout map, now with a big blue X on the clinic. X marks the spot. I've never had a spot before.",
+    // A3.6: capítulo 4 (biblia §4, puzles 4.3 y 4.8)
+    patient_wristband: "A patient wristband. 'DEX — DIAGNOSIS: TEXTBOOK.' First time I've been admitted anywhere.",
+    sobriety_chip: "A sobriety token from Chad. Worth nothing. That's the point. The doctor collects these.",
     ape_costume: "A full ape costume from the Alpha Pack. Realistic fur, expressive face, diamond-shaped buttons. When worn, I blend in with the Liquidity Pool apes. USE to put it on or take it off.",
   };
 

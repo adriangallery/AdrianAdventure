@@ -129,11 +129,8 @@
             "I hold it up to the camera. Nobody buzzes me in. Rude, for a clinic.",
             "That won't get me in. Clinics let in patients and doctors. Not props."
           ],
-          "keycard": [
-            "I wave the keycard at the entrance. Nothing. Maybe I should just try the door with it in my pocket."
-          ],
           "sign_in_sheet": [
-            "I hold the sign-in sheet up to the entrance. Paperwork works better if I just try the door. With it in my pocket."
+            "I hold the sign-in sheet to the camera. The scanner beeps no. Visitors sign in. Patients get in."
           ]
         },
         "name": "Clinic Entrance",
@@ -147,20 +144,18 @@
           "LOOK": [
             {
               "op": "say",
-              "text": "Heavy reinforced doors with a biometric scanner. Built to keep patients in, not visitors out."
+              "text": "Heavy reinforced doors, an intercom and a small sign: 'PATIENTS ONLY. NO EXCEPTIONS. NO REFUNDS.'"
             }
           ],
           "USE": [
             {
-              "op": "ifHasItem",
-              "id": "keycard",
+              "op": "ifFlag",
+              "flag": "clinic_unlocked",
               "then": [
                 {
-                  "op": "sayBrief",
-                  "text": "Keycard accepted. The scanner turns green.",
-                  "duration": 1500
+                  "op": "playSound",
+                  "key": "door_slide"
                 },
-                { "op": "playSound", "key": "door_slide" },
                 {
                   "op": "fadeToScene",
                   "sceneId": "clinic_interior",
@@ -172,19 +167,185 @@
               ],
               "else": [
                 {
-                  "op": "ifHasItem",
-                  "id": "sign_in_sheet",
+                  "op": "ifFlag",
+                  "flag": "admitted",
                   "then": [
-                    {
-                      "op": "say",
-                      "text": "The scanner reads the sign-in sheet's barcode. Visitor access granted."
-                    },
                     {
                       "op": "setFlag",
                       "flag": "clinic_unlocked",
                       "value": true
                     },
-                    { "op": "playSound", "key": "door_slide" },
+                    {
+                      "op": "playSound",
+                      "key": "door_slide"
+                    },
+                    {
+                      "op": "fadeToScene",
+                      "sceneId": "clinic_interior",
+                      "spawn": {
+                        "x": 18.1,
+                        "y": 98.5
+                      }
+                    }
+                  ],
+                  "else": [
+                    {
+                      "op": "ifFlag",
+                      "flag": "satoshi_pool_hint",
+                      "then": [
+                        {
+                          "op": "setFlag",
+                          "flag": "admitted",
+                          "value": true
+                        },
+                        {
+                          "op": "setFlag",
+                          "flag": "clinic_unlocked",
+                          "value": true
+                        },
+                        {
+                          "op": "playSound",
+                          "key": "door_slide"
+                        },
+                        {
+                          "op": "fadeToScene",
+                          "sceneId": "clinic_interior",
+                          "spawn": {
+                            "x": 18.1,
+                            "y": 98.5
+                          }
+                        }
+                      ],
+                      "else": [
+                        {
+                          "op": "ifFlag",
+                          "flag": "treatment_room_unlocked",
+                          "then": [
+                            {
+                              "op": "setFlag",
+                              "flag": "admitted",
+                              "value": true
+                            },
+                            {
+                              "op": "setFlag",
+                              "flag": "clinic_unlocked",
+                              "value": true
+                            },
+                            {
+                              "op": "playSound",
+                              "key": "door_slide"
+                            },
+                            {
+                              "op": "fadeToScene",
+                              "sceneId": "clinic_interior",
+                              "spawn": {
+                                "x": 18.1,
+                                "y": 98.5
+                              }
+                            }
+                          ],
+                          "else": [
+                            {
+                              "op": "ifFlag",
+                              "flag": "intake_evidence",
+                              "then": [
+                                {
+                                  "op": "playSound",
+                                  "key": "intercom_buzz"
+                                },
+                                {
+                                  "op": "dialogue",
+                                  "npcId": "gwei_intake",
+                                  "treeId": "gwei_intake"
+                                },
+                                {
+                                  "op": "ifFlag",
+                                  "flag": "admitted",
+                                  "then": [
+                                    {
+                                      "op": "playSound",
+                                      "key": "door_slide"
+                                    },
+                                    {
+                                      "op": "fadeToScene",
+                                      "sceneId": "clinic_interior",
+                                      "spawn": {
+                                        "x": 18.1,
+                                        "y": 98.5
+                                      }
+                                    }
+                                  ],
+                                  "else": []
+                                }
+                              ],
+                              "else": [
+                                {
+                                  "op": "setFlag",
+                                  "flag": "gwei_intake_hint",
+                                  "value": true
+                                },
+                                {
+                                  "op": "playSound",
+                                  "key": "intercom_buzz"
+                                },
+                                {
+                                  "op": "say",
+                                  "text": "This is a clinic. Patients only. And you are not a patient. Yet.",
+                                  "speaker": "Nurse Gwei"
+                                },
+                                {
+                                  "op": "say",
+                                  "text": "Patients must submit proof of symptoms. Insomnia. Loss. And denial — I'll test that one myself.",
+                                  "speaker": "Nurse Gwei"
+                                },
+                                {
+                                  "op": "say",
+                                  "text": "Evidence goes in the visitor box. Scanned and returned. Then buzz me.",
+                                  "speaker": "Nurse Gwei"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "ifFlag",
+              "flag": "clinic_unlocked",
+              "then": [
+                {
+                  "op": "playSound",
+                  "key": "door_slide"
+                },
+                {
+                  "op": "fadeToScene",
+                  "sceneId": "clinic_interior",
+                  "spawn": {
+                    "x": 18.1,
+                    "y": 98.5
+                  }
+                }
+              ],
+              "else": [
+                {
+                  "op": "ifFlag",
+                  "flag": "admitted",
+                  "then": [
+                    {
+                      "op": "setFlag",
+                      "flag": "clinic_unlocked",
+                      "value": true
+                    },
+                    {
+                      "op": "playSound",
+                      "key": "door_slide"
+                    },
                     {
                       "op": "fadeToScene",
                       "sceneId": "clinic_interior",
@@ -197,19 +358,22 @@
                   "else": [
                     {
                       "op": "say",
-                      "text": "The scanner blinks: 'PROOF OF STAKE REQUIRED'. I need some form of identification or authorization."
+                      "text": "Locked. There's no handle on this side. Just an intercom. Very welcoming."
                     }
                   ]
                 }
               ]
             }
           ],
-          "OPEN": [
+          "TALK": [
             {
               "op": "ifFlag",
               "flag": "clinic_unlocked",
               "then": [
-                { "op": "playSound", "key": "door_slide" },
+                {
+                  "op": "playSound",
+                  "key": "door_slide"
+                },
                 {
                   "op": "fadeToScene",
                   "sceneId": "clinic_interior",
@@ -221,17 +385,151 @@
               ],
               "else": [
                 {
-                  "op": "say",
-                  "text": "Locked. The biometric scanner needs something from me first."
+                  "op": "ifFlag",
+                  "flag": "admitted",
+                  "then": [
+                    {
+                      "op": "setFlag",
+                      "flag": "clinic_unlocked",
+                      "value": true
+                    },
+                    {
+                      "op": "playSound",
+                      "key": "door_slide"
+                    },
+                    {
+                      "op": "fadeToScene",
+                      "sceneId": "clinic_interior",
+                      "spawn": {
+                        "x": 18.1,
+                        "y": 98.5
+                      }
+                    }
+                  ],
+                  "else": [
+                    {
+                      "op": "ifFlag",
+                      "flag": "satoshi_pool_hint",
+                      "then": [
+                        {
+                          "op": "setFlag",
+                          "flag": "admitted",
+                          "value": true
+                        },
+                        {
+                          "op": "setFlag",
+                          "flag": "clinic_unlocked",
+                          "value": true
+                        },
+                        {
+                          "op": "playSound",
+                          "key": "door_slide"
+                        },
+                        {
+                          "op": "fadeToScene",
+                          "sceneId": "clinic_interior",
+                          "spawn": {
+                            "x": 18.1,
+                            "y": 98.5
+                          }
+                        }
+                      ],
+                      "else": [
+                        {
+                          "op": "ifFlag",
+                          "flag": "treatment_room_unlocked",
+                          "then": [
+                            {
+                              "op": "setFlag",
+                              "flag": "admitted",
+                              "value": true
+                            },
+                            {
+                              "op": "setFlag",
+                              "flag": "clinic_unlocked",
+                              "value": true
+                            },
+                            {
+                              "op": "playSound",
+                              "key": "door_slide"
+                            },
+                            {
+                              "op": "fadeToScene",
+                              "sceneId": "clinic_interior",
+                              "spawn": {
+                                "x": 18.1,
+                                "y": 98.5
+                              }
+                            }
+                          ],
+                          "else": [
+                            {
+                              "op": "ifFlag",
+                              "flag": "intake_evidence",
+                              "then": [
+                                {
+                                  "op": "playSound",
+                                  "key": "intercom_buzz"
+                                },
+                                {
+                                  "op": "dialogue",
+                                  "npcId": "gwei_intake",
+                                  "treeId": "gwei_intake"
+                                },
+                                {
+                                  "op": "ifFlag",
+                                  "flag": "admitted",
+                                  "then": [
+                                    {
+                                      "op": "playSound",
+                                      "key": "door_slide"
+                                    },
+                                    {
+                                      "op": "fadeToScene",
+                                      "sceneId": "clinic_interior",
+                                      "spawn": {
+                                        "x": 18.1,
+                                        "y": 98.5
+                                      }
+                                    }
+                                  ],
+                                  "else": []
+                                }
+                              ],
+                              "else": [
+                                {
+                                  "op": "setFlag",
+                                  "flag": "gwei_intake_hint",
+                                  "value": true
+                                },
+                                {
+                                  "op": "playSound",
+                                  "key": "intercom_buzz"
+                                },
+                                {
+                                  "op": "say",
+                                  "text": "This is a clinic. Patients only. And you are not a patient. Yet.",
+                                  "speaker": "Nurse Gwei"
+                                },
+                                {
+                                  "op": "say",
+                                  "text": "Patients must submit proof of symptoms. Insomnia. Loss. And denial — I'll test that one myself.",
+                                  "speaker": "Nurse Gwei"
+                                },
+                                {
+                                  "op": "say",
+                                  "text": "Evidence goes in the visitor box. Scanned and returned. Then buzz me.",
+                                  "speaker": "Nurse Gwei"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
                 }
               ]
-            }
-          ],
-          "TALK": [
-            { "op": "playSound", "key": "intercom_buzz" },
-            {
-              "op": "say",
-              "text": "An intercom crackles: 'Visiting hours are... always. Please authenticate.'"
             }
           ],
           "PUSH": [
@@ -261,7 +559,7 @@
           "GIVE": [
             {
               "op": "say",
-              "text": "The door doesn't accept gifts. Only credentials."
+              "text": "The door doesn't accept gifts. The visitor box takes evidence."
             }
           ]
         }
@@ -269,6 +567,11 @@
       {
         "id": "hs_visitor_box",
         "useResponses": {
+          "_default": [
+            "The slot scans it, thinks about it, and spits it back. Not a symptom.",
+            "The box hums and returns it. Apparently that's not a medical condition.",
+            "Scanned and returned. Rejected. Even the box has standards."
+          ],
           "sign_in_sheet": [
             "I put the sheet back in the drop box. Then take it out again. Evidence first, manners later."
           ]
@@ -284,7 +587,18 @@
           "LOOK": [
             {
               "op": "say",
-              "text": "A weathered drop box labeled 'VISITOR SIGN-IN'. There's a clipboard inside."
+              "text": "A weathered drop box labeled 'VISITOR SIGN-IN'. A newer slot underneath: 'PROOF OF SYMPTOMS. SCANNED AND RETURNED.'"
+            },
+            {
+              "op": "ifFlag",
+              "flag": "found_sign_in_sheet",
+              "then": [],
+              "else": [
+                {
+                  "op": "say",
+                  "text": "There's a clipboard inside."
+                }
+              ]
             }
           ],
           "PICK": [
@@ -328,7 +642,7 @@
           "USE": [
             {
               "op": "say",
-              "text": "It's a drop box. I should check what's inside."
+              "text": "The slot wants evidence, not my hand. Proof of symptoms. I have plenty. I need it in a form."
             }
           ],
           "TALK": [
@@ -358,7 +672,7 @@
           "GIVE": [
             {
               "op": "say",
-              "text": "The drop box accepts sign-in sheets, not gifts. It has a very specific deposit function."
+              "text": "The slot takes proof of symptoms. It scans them and gives them back. Like a pawn shop for feelings."
             }
           ]
         }
@@ -698,15 +1012,52 @@
               "flag": "found_clinic_note",
               "then": [
                 {
-                  "op": "say",
-                  "text": "Nothing else worth saving in there. Just regret and empty cans."
+                  "op": "ifHasItem",
+                  "id": "energy_drink",
+                  "then": [
+                    {
+                      "op": "say",
+                      "text": "Nothing else worth saving in there. Just regret and empty cans."
+                    }
+                  ],
+                  "else": [
+                    {
+                      "op": "ifHasItem",
+                      "id": "empty_can",
+                      "then": [
+                        {
+                          "op": "say",
+                          "text": "Nothing else worth saving in there. Just regret and empty cans."
+                        }
+                      ],
+                      "else": [
+                        {
+                          "op": "ifHasItem",
+                          "id": "rainwater_can",
+                          "then": [
+                            {
+                              "op": "say",
+                              "text": "Nothing else worth saving in there. Just regret and empty cans."
+                            }
+                          ],
+                          "else": [
+                            {
+                              "op": "addItem",
+                              "id": "empty_can",
+                              "name": "Empty Can"
+                            },
+                            {
+                              "op": "say",
+                              "text": "And an empty can of BULL RUN. Somebody else couldn't sleep either. I'll take it. For science."
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
                 }
               ],
               "else": [
-                {
-                  "op": "say",
-                  "text": "I fish through the trash... under the energy drink cans and torn whitepapers, I find a crumpled note: 'Day 47: Still believe in the tech. Patient Zero was right about everything. — Dr. S'"
-                },
                 {
                   "op": "addItem",
                   "id": "clinic_note",
@@ -716,6 +1067,52 @@
                   "op": "setFlag",
                   "flag": "found_clinic_note",
                   "value": true
+                },
+                {
+                  "op": "ifHasItem",
+                  "id": "energy_drink",
+                  "then": [],
+                  "else": [
+                    {
+                      "op": "ifHasItem",
+                      "id": "empty_can",
+                      "then": [],
+                      "else": [
+                        {
+                          "op": "ifHasItem",
+                          "id": "rainwater_can",
+                          "then": [],
+                          "else": [
+                            {
+                              "op": "addItem",
+                              "id": "empty_can",
+                              "name": "Empty Can"
+                            },
+                            {
+                              "op": "setFlag",
+                              "flag": "trash_can_taken",
+                              "value": true
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "op": "say",
+                  "text": "I fish through the trash... under the energy drink cans and torn whitepapers, I find a crumpled note: 'Day 47: Still believe in the tech. Patient Zero was right about everything. — Dr. S'"
+                },
+                {
+                  "op": "ifFlag",
+                  "flag": "trash_can_taken",
+                  "then": [
+                    {
+                      "op": "say",
+                      "text": "And an empty can of BULL RUN. Somebody else couldn't sleep either. I'll take it. For science."
+                    }
+                  ],
+                  "else": []
                 }
               ]
             }
@@ -933,7 +1330,406 @@
   "items": {
     "sceneItems": []
   },
-  "combos": [],
+  "combos": [
+    {
+      "items": [
+        "energy_drink",
+        "hs_visitor_box"
+      ],
+      "result": "intake_insomnia_drink",
+      "script": [
+        {
+          "op": "ifFlag",
+          "flag": "intake_insomnia",
+          "then": [
+            {
+              "op": "say",
+              "text": "Already on file. My insomnia is very well documented."
+            }
+          ],
+          "else": [
+            {
+              "op": "setFlag",
+              "flag": "intake_insomnia",
+              "value": true
+            },
+            {
+              "op": "ifFlag",
+              "flag": "intake_loss",
+              "then": [
+                {
+                  "op": "setFlag",
+                  "flag": "intake_evidence",
+                  "value": true
+                }
+              ],
+              "else": []
+            },
+            {
+              "op": "playSound",
+              "key": "item_use"
+            },
+            {
+              "op": "say",
+              "text": "Proof of insomnia: one can of BULL RUN, 500 mg. Unopened. You're saving it for later. Even worse. Accepted.",
+              "speaker": "Nurse Gwei"
+            },
+            {
+              "op": "say",
+              "text": "The slot hums and spits the can back out. Scanned and returned."
+            },
+            {
+              "op": "ifFlag",
+              "flag": "intake_evidence",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "Insomnia and loss, confirmed. Buzz the intercom for your denial test.",
+                  "speaker": "Nurse Gwei"
+                }
+              ],
+              "else": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "items": [
+        "empty_can",
+        "hs_visitor_box"
+      ],
+      "result": "intake_insomnia_can",
+      "script": [
+        {
+          "op": "ifFlag",
+          "flag": "intake_insomnia",
+          "then": [
+            {
+              "op": "say",
+              "text": "Already on file. My insomnia is very well documented."
+            }
+          ],
+          "else": [
+            {
+              "op": "setFlag",
+              "flag": "intake_insomnia",
+              "value": true
+            },
+            {
+              "op": "ifFlag",
+              "flag": "intake_loss",
+              "then": [
+                {
+                  "op": "setFlag",
+                  "flag": "intake_evidence",
+                  "value": true
+                }
+              ],
+              "else": []
+            },
+            {
+              "op": "playSound",
+              "key": "item_use"
+            },
+            {
+              "op": "say",
+              "text": "Proof of insomnia: one empty can of BULL RUN, 500 mg. Accepted.",
+              "speaker": "Nurse Gwei"
+            },
+            {
+              "op": "say",
+              "text": "The slot hums and spits the can back out. Scanned and returned."
+            },
+            {
+              "op": "ifFlag",
+              "flag": "intake_evidence",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "Insomnia and loss, confirmed. Buzz the intercom for your denial test.",
+                  "speaker": "Nurse Gwei"
+                }
+              ],
+              "else": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "items": [
+        "rainwater_can",
+        "hs_visitor_box"
+      ],
+      "result": "intake_insomnia_rain",
+      "script": [
+        {
+          "op": "ifFlag",
+          "flag": "intake_insomnia",
+          "then": [
+            {
+              "op": "say",
+              "text": "Already on file. My insomnia is very well documented."
+            }
+          ],
+          "else": [
+            {
+              "op": "setFlag",
+              "flag": "intake_insomnia",
+              "value": true
+            },
+            {
+              "op": "ifFlag",
+              "flag": "intake_loss",
+              "then": [
+                {
+                  "op": "setFlag",
+                  "flag": "intake_evidence",
+                  "value": true
+                }
+              ],
+              "else": []
+            },
+            {
+              "op": "playSound",
+              "key": "item_use"
+            },
+            {
+              "op": "say",
+              "text": "Proof of insomnia: one can of BULL RUN, refilled with rain. Concerning. Accepted.",
+              "speaker": "Nurse Gwei"
+            },
+            {
+              "op": "say",
+              "text": "The slot hums and spits the can back out. Scanned and returned."
+            },
+            {
+              "op": "ifFlag",
+              "flag": "intake_evidence",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "Insomnia and loss, confirmed. Buzz the intercom for your denial test.",
+                  "speaker": "Nurse Gwei"
+                }
+              ],
+              "else": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "items": [
+        "clinic_note",
+        "hs_visitor_box"
+      ],
+      "result": "intake_loss",
+      "script": [
+        {
+          "op": "ifFlag",
+          "flag": "intake_loss",
+          "then": [
+            {
+              "op": "say",
+              "text": "Already on file. Some losses you only report once."
+            }
+          ],
+          "else": [
+            {
+              "op": "setFlag",
+              "flag": "intake_loss",
+              "value": true
+            },
+            {
+              "op": "ifFlag",
+              "flag": "intake_insomnia",
+              "then": [
+                {
+                  "op": "setFlag",
+                  "flag": "intake_evidence",
+                  "value": true
+                }
+              ],
+              "else": []
+            },
+            {
+              "op": "playSound",
+              "key": "item_use"
+            },
+            {
+              "op": "say",
+              "text": "Proof of loss: 'Day 47: still believe in the tech.' Accepted. That one's going on the fridge.",
+              "speaker": "Nurse Gwei"
+            },
+            {
+              "op": "say",
+              "text": "The note comes back out of the slot. Slightly more crumpled. Like me."
+            },
+            {
+              "op": "ifFlag",
+              "flag": "intake_evidence",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "Insomnia and loss, confirmed. Buzz the intercom for your denial test.",
+                  "speaker": "Nurse Gwei"
+                }
+              ],
+              "else": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "items": [
+        "keycard",
+        "hs_main_entrance"
+      ],
+      "result": "keycard_revoked",
+      "script": [
+        {
+          "op": "playSound",
+          "key": "intercom_buzz"
+        },
+        {
+          "op": "say",
+          "text": "I swipe Adrian's keycard. The reader thinks about it. Red."
+        },
+        {
+          "op": "say",
+          "text": "Adrian's card has been revoked. Since the incident. We don't talk about the incident.",
+          "speaker": "Nurse Gwei"
+        },
+        {
+          "op": "ifFlag",
+          "flag": "admitted",
+          "then": [
+            {
+              "op": "say",
+              "text": "You have a wristband now. Use the door like a patient.",
+              "speaker": "Nurse Gwei"
+            }
+          ],
+          "else": [
+            {
+              "op": "say",
+              "text": "Patients only. Bring proof of symptoms to the visitor box.",
+              "speaker": "Nurse Gwei"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "items": [
+        "patient_wristband",
+        "hs_main_entrance"
+      ],
+      "result": "wristband_entry",
+      "script": [
+        {
+          "op": "setFlag",
+          "flag": "clinic_unlocked",
+          "value": true
+        },
+        {
+          "op": "say",
+          "text": "I hold my wristband to the scanner. 'Welcome back, patient.' The nicest thing a door has ever said to me."
+        },
+        {
+          "op": "playSound",
+          "key": "door_slide"
+        },
+        {
+          "op": "fadeToScene",
+          "sceneId": "clinic_interior",
+          "spawn": {
+            "x": 18.1,
+            "y": 98.5
+          }
+        }
+      ]
+    }
+  ],
+  "dialogues": {
+    "gwei_intake": {
+      "id": "gwei_intake",
+      "start": "intro",
+      "nodes": {
+        "intro": {
+          "speaker": "Nurse Gwei",
+          "text": "Evidence received. Insomnia: confirmed. Loss: confirmed. Now, denial. Do you have a problem?",
+          "next": "hub"
+        },
+        "hub": {
+          "choices": [
+            {
+              "text": "Maybe I have a problem.",
+              "next": "honest"
+            },
+            {
+              "text": "Problem? I've never even heard of crypto.",
+              "next": "liar"
+            },
+            {
+              "text": "I can stop whenever I want. I just don't want to.",
+              "next": "win",
+              "when": "intake_evidence"
+            },
+            {
+              "text": "I'll buzz back later.",
+              "next": "bye",
+              "exit": true
+            }
+          ]
+        },
+        "honest": {
+          "speaker": "Nurse Gwei",
+          "text": "Too self-aware. Come back worse.",
+          "end": true
+        },
+        "liar": {
+          "speaker": "Nurse Gwei",
+          "text": "That's lying, not denial. Denial is when you believe it.",
+          "next": "hub"
+        },
+        "win": {
+          "speaker": "Nurse Gwei",
+          "text": "Textbook. Welcome home.",
+          "onEnter": [
+            {
+              "op": "setFlag",
+              "flag": "admitted",
+              "value": true
+            },
+            {
+              "op": "setFlag",
+              "flag": "clinic_unlocked",
+              "value": true
+            },
+            {
+              "op": "addItem",
+              "id": "patient_wristband",
+              "name": "Patient Wristband"
+            }
+          ],
+          "next": "win_dex"
+        },
+        "win_dex": {
+          "text": "A wristband drops out of the slot. 'DEX — DIAGNOSIS: TEXTBOOK.' The door clicks open. I've never been so proud of a diagnosis.",
+          "end": true
+        },
+        "bye": {
+          "speaker": "Nurse Gwei",
+          "text": "The intercom is always on. Unlike your stop-losses.",
+          "end": true
+        }
+      }
+    }
+  },
   "audio": {
     "music": "clinical",
     "variation": {

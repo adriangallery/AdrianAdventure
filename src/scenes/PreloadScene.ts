@@ -171,6 +171,7 @@ export class PreloadScene extends Phaser.Scene {
       'pizza_slice', // A3.4b: la porción de pizza que engrasa la veleta
       'empty_can', 'rainwater_can', // A3.4d: la lata del mining rig, vacía y llena de lluvia (cadena de Fernando)
       'extension_cord', 'scrap_paper', 'fake_alpha', 'marked_map', // A3.5: alargador, papel, alfa falsa y mapa marcado (cap. 3)
+      'patient_wristband', 'sobriety_chip', // A3.6: pulsera de paciente (Gwei) y ficha de sobriedad (Chad), cap. 4
     ];
     for (const id of itemIds) {
       const key = `item_${id}`;
