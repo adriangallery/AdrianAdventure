@@ -4,9 +4,10 @@
 // (camino del monte), un cambio suave de como mucho un 25 % entre el punto más cercano y el más lejano.
 // Con ?qa=1:
 //   1) outside, en 844x390 (móvil apaisado) y 1280x720 (escritorio): Dex en la acera junto al buzón (55, 93), anda
-//      hasta la puerta (34,5, 83,5) midiendo su alto en pantalla en cada fotograma, y vuelve. Falla si el alto en la
-//      puerta (o en cualquier punto del paseo) se aparta más de 1 px del de la acera, o si el factor de profundidad no
-//      es 1. Capturas `outside-<vp>-acera.png`, `outside-<vp>-puerta.png` y las dos juntas en
+//      hasta la puerta (34,5, 83,5) midiendo su escala y su alto en pantalla en cada fotograma, y vuelve. Falla si el
+//      alto en la puerta (los dos quieto, mismo fotograma de reposo) se aparta más de 1 px del de la acera, si la escala
+//      cambia en algún fotograma del paseo o si el factor de profundidad no es 1. (El alto en pantalla al andar varía
+//      2-4 px porque los fotogramas de la hoja de andar no miden todos lo mismo; eso no es la escala y solo se apunta.) Capturas `outside-<vp>-acera.png`, `outside-<vp>-puerta.png` y las dos juntas en
 //      `outside-<vp>-acera-y-puerta.png`.
 //   2) el resto de escenas (844x390): Dex en el punto andable más cercano (abajo) y en el más lejano (arriba) de
 //      `walkableAreas`; falla si lejos/cerca < 0,75, o si una escena de escala fija (qa/proportion-refs.json, scale)
@@ -54,7 +55,7 @@ const measure = () => page.evaluate(() => {
   const gs = window.__game.scene.getScene('GameScene');
   const p = gs.player;
   const px = window.__qa.state().pixel;
-  return { h: Math.round(p.displayHeight * gs.cameras.main.zoom * 100) / 100, depth: px.depth, worldHeightPct: px.worldHeightPct, pixelScale: px.pixelScale, x: Math.round(p.pctX * 10) / 10, y: Math.round(p.pctY * 10) / 10 };
+  return { h: Math.round(p.displayHeight * gs.cameras.main.zoom * 100) / 100, scale: p.scaleY * gs.cameras.main.zoom, depth: px.depth, worldHeightPct: px.worldHeightPct, pixelScale: px.pixelScale, x: Math.round(p.pctX * 10) / 10, y: Math.round(p.pctY * 10) / 10 };
 });
 
 async function open(scene, vp) {
@@ -108,11 +109,13 @@ for (const vp of VIEWPORTS) {
   const all = [acera, puerta, ...ida.samples, ...vuelta.samples];
   const hs = all.map((m) => m.h);
   const min = Math.min(...hs), max = Math.max(...hs);
-  const row = { viewport: label, acera: acera.h, puerta: puerta.h, min, max, samples: all.length, depth: [...new Set(all.map((m) => m.depth))] };
+  const scales = all.map((m) => m.scale);
+  const sMin = Math.min(...scales), sMax = Math.max(...scales);
+  const row = { viewport: label, acera: acera.h, puerta: puerta.h, min, max, scale: [sMin, sMax], samples: all.length, depth: [...new Set(all.map((m) => m.depth))] };
   report.outside.push(row);
   console.log(`${label} outside: ${JSON.stringify(row)}`);
   if (Math.abs(puerta.h - acera.h) > TOL_PX) problems.push(`${label} outside: Dex mide ${acera.h} px en la acera y ${puerta.h} px en la puerta (±${TOL_PX} px)`);
-  if (max - min > TOL_PX) problems.push(`${label} outside: al andar su alto va de ${min} a ${max} px (escala fija: ±${TOL_PX} px)`);
+  if (sMax - sMin > 1e-6) problems.push(`${label} outside: al andar la escala va de ${sMin} a ${sMax} (escala fija)`);
   if (all.some((m) => Math.abs(m.depth - 1) > 1e-6)) problems.push(`${label} outside: factor de profundidad ≠ 1 (${row.depth.join(', ')})`);
   if (Math.abs(acera.worldHeightPct - 40.23) > 0.05) problems.push(`${label} outside: en la acera mide el ${acera.worldHeightPct} % del fondo (el tamaño de A2.11 era 40,23 %)`);
 }
@@ -146,9 +149,9 @@ for (const ref of refs.scenes) {
 
 await demo.end();
 const md = [
-  '| outside | acera (px) | puerta (px) | mín–máx al andar (px) | factor |',
-  '|---|---|---|---|---|',
-  ...report.outside.map((r) => `| ${r.viewport} | ${r.acera} | ${r.puerta} | ${r.min}–${r.max} (${r.samples} medidas) | ${r.depth.join(', ')} |`),
+  '| outside | acera (px) | puerta (px) | escala al andar (mín–máx) | alto al andar (px, varía con el fotograma) | factor |',
+  '|---|---|---|---|---|---|',
+  ...report.outside.map((r) => `| ${r.viewport} | ${r.acera} | ${r.puerta} | ${r.scale.join('–')} | ${r.min}–${r.max} (${r.samples} medidas) | ${r.depth.join(', ')} |`),
   '',
   '| escena | modo | cerca (px) | lejos (px) | lejos/cerca |',
   '|---|---|---|---|---|',
