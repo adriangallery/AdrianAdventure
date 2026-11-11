@@ -81,7 +81,7 @@ await frame(50, 70);
 await page.evaluate(() => window.__game.scene.getScene('GameScene').player?.setVisible(true));
 await page.waitForFunction(() => {
   const pf = window.__qa.state().prefetch;
-  return !!pf && pf.scene === 'outside' && !pf.inFlight && pf.pending.length === 0 && pf.done.includes('assets/scenes/lobby/background.webp');
+  return !!pf && pf.scene === 'outside' && !pf.inFlight && pf.pending.length === 0 && pf.done.includes('assets/scenes/lobby/background@2048.webp');
 }, { timeout: 60000, polling: 250 }).catch(() => problems.push('la precarga no bajó el lobby en 60 s'));
 console.log(`precarga: ${JSON.stringify((await st()).prefetch)}`);
 
