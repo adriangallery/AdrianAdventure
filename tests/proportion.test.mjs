@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import {
   resolvePixelScale, depthFactor, heightPct, evaluateScene, groupProblems, pngHeight, loadRefs, loadScene, loadGlobal,
-  evaluateAll, markdownTable, DOOR_RANGE, NPC_TOL, SAME_DEPTH_TOL,
+  evaluateAll, markdownTable, DOOR_RANGE, NPC_TOL, SAME_DEPTH_TOL, MAX_DEPTH_CHANGE, depthChange, scaleModeProblems,
 } from '../scripts/lib/proportion.mjs';
 import * as PS from '../src/systems/PixelScale.ts';
 
@@ -84,7 +84,7 @@ test('qa/proportion-refs.json: las 13 escenas, referencias medibles y posiciones
     assert.ok(sc, r.scene);
     assert.ok(r.reference && r.reference.top < r.reference.bottom, `${r.scene}: referencia`);
     if (r.reference.kind !== 'door') assert.ok(Array.isArray(r.reference.expected) && r.reference.why, `${r.scene}: mueble sin rango razonado`);
-    if (r.exception) continue;
+    if (r.exception && !r.positions?.ref) continue; // A2.13: outside es excepción del cociente pero se mide entera
     for (const k of ['front', 'ref']) assert.ok(r.positions[k], `${r.scene}: falta la posición ${k}`);
     // Todas las posiciones caen dentro de un rectángulo andable
     for (const [k, p] of Object.entries(r.positions)) {
@@ -100,4 +100,49 @@ test('las escenas del repo cumplen las referencias (lo que exige la demo, en ana
   assert.equal(rows.length, 13);
   assert.match(markdownTable([], rows), /\| lobby \|/);
   assert.equal(loadGlobal().pixelScale, 5.5);
+});
+
+// ── A2.13: escala fija en outside y cambio de tamaño ≤ 25 % en el resto ──
+
+test('A2.13: depthChange y scaleModeProblems', () => {
+  assert.equal(MAX_DEPTH_CHANGE, 0.25);
+  assert.equal(depthChange(null), 0);
+  assert.ok(near(depthChange({ yTop: 59, yBottom: 86.5, scaleTop: 0.35, scaleBottom: 1 }), 0.65));
+  assert.ok(near(depthChange({ yTop: 59, yBottom: 86.5, scaleTop: 0.75, scaleBottom: 1 }), 0.25));
+  assert.ok(near(depthChange({ yTop: 59, yBottom: 86.5, scaleTop: 1, scaleBottom: 0.8 }), 0.2));
+  const ds = (top) => ({ depthScale: { yTop: 80, yBottom: 95, scaleTop: top, scaleBottom: 1 } });
+  assert.deepEqual(scaleModeProblems({ scene: 'x', scale: 'fixed' }, {}), []);
+  assert.deepEqual(scaleModeProblems({ scene: 'x', scale: 'fixed' }, ds(1)), [], 'scaleTop = scaleBottom es fija');
+  assert.match(scaleModeProblems({ scene: 'x', scale: 'fixed' }, ds(0.9))[0], /escala fija/);
+  assert.deepEqual(scaleModeProblems({ scene: 'x', scale: 'variable' }, ds(0.75)), []);
+  assert.match(scaleModeProblems({ scene: 'x', scale: 'variable' }, ds(0.5))[0], /50 %/);
+  assert.match(scaleModeProblems({ scene: 'x', scale: 'variable' }, {})[0], /fixed/);
+  assert.match(scaleModeProblems({ scene: 'x' }, {})[0], /falta scale/);
+});
+
+test('A2.13: evaluateScene en una escena fija exige el mismo alto en todas las posiciones', () => {
+  const ref = { scene: 'x', scale: 'fixed', positions: { a: { x: 50, y: 99 }, b: { x: 40, y: 83 } } };
+  assert.deepEqual(evaluateScene(ref, { pixelScale: 4.5, _imgH: 1152 }, null).problems, []);
+  const bad = evaluateScene(ref, { pixelScale: 4.5, _imgH: 1152 }, null, (y) => (y < 90 ? 30 : 40)).problems;
+  assert.ok(bad.some((p) => /escala fija y Dex mide de 30 % a 40 %/.test(p)));
+});
+
+test('A2.13: cada escena declara su modo; outside fija a 4,5 (el tamaño de la acera) y ningún cambio > 25 %', () => {
+  const refs = loadRefs();
+  for (const r of refs.scenes) {
+    assert.ok(['fixed', 'variable'].includes(r.scale) && r.scaleWhy, `${r.scene}: scale/scaleWhy`);
+    const sc = loadScene(r.scene);
+    assert.deepEqual(scaleModeProblems(r, sc), [], r.scene);
+    assert.ok(depthChange(sc.depthScale) <= MAX_DEPTH_CHANGE + 1e-9, r.scene);
+  }
+  const out = refs.scenes.find((r) => r.scene === 'outside');
+  assert.equal(out.scale, 'fixed');
+  assert.match(out.exception, /A2\.13/);
+  const sc = loadScene('outside');
+  assert.equal(sc.depthScale, undefined);
+  assert.equal(resolvePixelScale(sc, loadGlobal()), 4.5);
+  // Acera junto al buzón y puerta: el mismo alto (el de la acera de A2.11: 40,23 % del fondo)
+  const acera = heightPct(sc, loadGlobal(), 93), puerta = heightPct(sc, loadGlobal(), 83);
+  assert.ok(near(acera, puerta) && Math.abs(acera - 40.23) < 0.01, `${acera} / ${puerta}`);
+  assert.equal(refs.scenes.find((r) => r.scene === 'epilogue_outside').scale, 'fixed', 'coherente con outside');
 });

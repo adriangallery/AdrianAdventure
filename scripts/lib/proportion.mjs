@@ -49,6 +49,33 @@ export function heightPct(scene, global, yPct, artH = PLAYER_ART_H, artScale = 1
 const r2 = (v) => Math.round(v * 100) / 100;
 
 /**
+ * A2.13: cambio máximo de tamaño por profundidad entre el punto más cercano y el más lejano (min/max ≥ 1 − 0,25).
+ * Lo repite scripts/lint-scenes.mjs (regla l); tests/proportion.test.mjs comprueba que coinciden.
+ */
+export const MAX_DEPTH_CHANGE = 0.25;
+
+/** A2.13: cambio relativo de tamaño de un depthScale (0 = escala fija; sin depthScale o inválido, 0). */
+export function depthChange(d) {
+  if (!d || !['yTop', 'yBottom', 'scaleTop', 'scaleBottom'].every((k) => isNum(d[k])) || !(d.yTop < d.yBottom)) return 0;
+  const lo = Math.min(d.scaleTop, d.scaleBottom), hi = Math.max(d.scaleTop, d.scaleBottom);
+  return hi > 0 ? 1 - lo / hi : 0;
+}
+
+/**
+ * A2.13: el modo de escala declarado en qa/proportion-refs.json (`scale`: fixed | variable) frente al scene.json.
+ * fixed = sin cambio de tamaño en toda la zona andable; variable = depthScale con un cambio ≤ MAX_DEPTH_CHANGE.
+ */
+export function scaleModeProblems(ref, scene) {
+  const out = [];
+  const ch = depthChange(scene?.depthScale);
+  if (ref.scale !== 'fixed' && ref.scale !== 'variable') out.push(`${ref.scene}: falta scale (fixed | variable) en qa/proportion-refs.json`);
+  if (ref.scale === 'fixed' && ch > 1e-9) out.push(`${ref.scene}: declarada de escala fija y su depthScale cambia el tamaño un ${Math.round(ch * 100)} %`);
+  if (ref.scale === 'variable' && !(ch > 1e-9)) out.push(`${ref.scene}: declarada variable y no tiene depthScale que cambie el tamaño (¿fixed?)`);
+  if (ch > MAX_DEPTH_CHANGE + 1e-9) out.push(`${ref.scene}: el depthScale cambia el tamaño un ${Math.round(ch * 100)} % (máximo ${MAX_DEPTH_CHANGE * 100} %: min/max ≥ ${1 - MAX_DEPTH_CHANGE})`);
+  return out;
+}
+
+/**
  * Mide una escena con su referencia de qa/proportion-refs.json. `measure(y)` da el alto de Dex (% del fondo) con los
  * pies en y; por defecto, el analítico. Devuelve { row, problems }.
  */
@@ -89,6 +116,14 @@ export function evaluateScene(ref, scene, global, measure = (y) => heightPct(sce
     const rel = got / (dexScale * (n.artScale ?? 1));
     row.npcs.push({ id: n.id, y: n.position?.y, rel: r2(rel) });
     if (Math.abs(rel - 1) > NPC_TOL) problems.push(`${ref.scene}: ${n.id} a ${r2(rel)}× la escala de Dex a su misma profundidad (±${NPC_TOL * 100} %)`);
+  }
+  // A2.13: escala fija o cambio ≤ 25 %; en las fijas, todas las posiciones miden lo mismo
+  row.scale = ref.scale ?? null;
+  row.depthChange = r2(depthChange(scene?.depthScale));
+  if (ref.scale) problems.push(...scaleModeProblems(ref, scene));
+  if (ref.scale === 'fixed') {
+    const hs = Object.values(at).filter(isNum);
+    if (hs.length > 1 && Math.max(...hs) - Math.min(...hs) > 0.01) problems.push(`${ref.scene}: escala fija y Dex mide de ${Math.min(...hs)} % a ${Math.max(...hs)} % según dónde esté`);
   }
   if (ref.exception) row.exception = ref.exception;
   return { row, problems };

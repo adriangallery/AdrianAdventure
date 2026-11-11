@@ -35,8 +35,8 @@
       "walk": null
     }
   },
-  "pixelScale": 4,
-  "depthScale": { "yTop": 59, "yBottom": 86.5, "scaleTop": 0.35, "scaleBottom": 1 },
+  "pixelScale": 3.4,
+  "depthScale": { "yTop": 59, "yBottom": 86.5, "scaleTop": 0.75, "scaleBottom": 1 },
   "ui": {
     "verbs": [
       "LOOK",

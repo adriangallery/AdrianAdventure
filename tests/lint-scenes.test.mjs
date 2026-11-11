@@ -4,7 +4,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import {
-  lintProject, applyPolicy, parseStringArray, parseWhen, depthScaleDefects, depthScaleWalkDefects, PIXEL_RANGES, FAIL_MIN, FAIL_VERBS, bagDefects, itemDescIds, loadProject,
+  lintProject, applyPolicy, parseStringArray, parseWhen, depthScaleDefects, depthScaleWalkDefects, depthChangeDefects, MAX_DEPTH_CHANGE, FIXED_SCALE_SCENES, PIXEL_RANGES, FAIL_MIN, FAIL_VERBS, bagDefects, itemDescIds, loadProject,
   ambientDefects, AMBIENT_KINDS, AMBIENT_MAX_COUNT, AMBIENT_MAX_PER_SCENE, AMBIENT_ACTIONS,
 } from '../scripts/lint-scenes.mjs';
 
@@ -648,8 +648,42 @@ test('A2.11: depthScaleWalkDefects (depthScale coherente con la zona andable)', 
   assert.deepEqual(depthScaleWalkDefects({ yTop: 40, yBottom: 60, scaleTop: 0.5, scaleBottom: 1 }, undefined), []);
   assert.deepEqual(depthScaleWalkDefects(null, walk), [], 'la forma la avisa depthScaleDefects');
   // Las escenas del repo con depthScale son coherentes
-  for (const id of ['outside', 'mountain', 'clinic_exterior']) {
+  for (const id of ['mountain', 'clinic_exterior']) {
     const sc = JSON.parse(readFileSync(new URL(`../assets/scenes/${id}/scene.json`, import.meta.url), 'utf8'));
     assert.deepEqual(depthScaleWalkDefects(sc.depthScale, sc.walkableAreas), [], id);
   }
+});
+
+// ── (l) cambio de escala (A2.13) ──
+
+test('l: depthScale con un cambio de tamaño > 25 % o en una escena de escala fija = error', () => {
+  const f = only(lintProject(project([
+    scene('a', { depthScale: { yTop: 80, yBottom: 95, scaleTop: 0.35, scaleBottom: 1 } }),
+    scene('b', { depthScale: { yTop: 80, yBottom: 95, scaleTop: 0.75, scaleBottom: 1 } }),
+    scene('c', { depthScale: { yTop: 80, yBottom: 95, scaleTop: 1, scaleBottom: 0.7 } }),
+    scene('outside', { depthScale: { yTop: 83, yBottom: 92, scaleTop: 0.9, scaleBottom: 1 } }),
+    scene('d', {}),
+  ])), 'l');
+  assert.ok(f.every((x) => x.severity === 'error'));
+  assert.ok(f.some((x) => x.where === 'a.depthScale' && /65 %/.test(x.message)));
+  assert.ok(f.some((x) => x.where === 'c.depthScale' && /30 %/.test(x.message)), 'también si lo lejano es lo grande');
+  assert.ok(f.some((x) => x.where === 'outside.depthScale' && /escala fija/.test(x.message)), 'outside: ni un 10 %');
+  assert.ok(!f.some((x) => x.scene === 'b' || x.scene === 'd'), '0,75-1 y sin depthScale no fallan');
+  assert.deepEqual(depthChangeDefects({ yTop: 83, yBottom: 92, scaleTop: 1, scaleBottom: 1 }, 'fija'), [], 'scaleTop = scaleBottom vale en una fija');
+  assert.deepEqual(depthChangeDefects('mucho'), [], 'la forma la avisa la regla i');
+});
+
+test('l: el tope y las escenas fijas coinciden con scripts/lib/proportion.mjs y qa/proportion-refs.json', async () => {
+  const prop = await import('../scripts/lib/proportion.mjs');
+  assert.equal(MAX_DEPTH_CHANGE, prop.MAX_DEPTH_CHANGE);
+  assert.equal(MAX_DEPTH_CHANGE, 0.25);
+  const refs = prop.loadRefs();
+  for (const id of Object.keys(FIXED_SCALE_SCENES)) assert.equal(refs.scenes.find((r) => r.scene === id)?.scale, 'fixed', id);
+  assert.ok(FIXED_SCALE_SCENES.outside, 'outside es de escala fija (Adrián, 11-nov)');
+  // Las escenas del repo pasan la regla
+  const { scenes } = loadProject(new URL('..', import.meta.url).pathname);
+  for (const [id, sc] of Object.entries(scenes)) {
+    if (sc.depthScale !== undefined) assert.deepEqual(depthChangeDefects(sc.depthScale, FIXED_SCALE_SCENES[id] ?? false), [], id);
+  }
+  assert.equal(scenes.outside.depthScale, undefined, 'outside sin depthScale');
 });

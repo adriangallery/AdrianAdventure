@@ -2,7 +2,7 @@
 // En 844x390 (móvil apaisado) y 1280x720 (escritorio), con ?qa=1:
 //   1) lobby: el jugador anda hasta el mostrador, junto a la recepcionista (misma unidad de píxel los dos);
 //   2) clinic_interior: el jugador junto al Dr. Satoshi;
-//   3) outside: paseo de la acera al porche y vuelta: con depthScale encoge al alejarse y crece al acercarse.
+//   3) outside: paseo de la acera al porche y vuelta (A2.13: escala fija, no cambia de tamaño en ningún momento).
 // Comprueba por la API de QA (`state().pixel`, src/systems/PixelScale.ts) que:
 //   - jugador y NPC usan la misma unidad: escala de la NPC = base del jugador (× artScale, 1 en las dos);
 //   - donde la escala base se redondea (siempre desde ×2: 1280x720 → ×3) es un entero y la de las NPC también; en
@@ -11,8 +11,8 @@
 //   - el alto del mundo del jugador (en % del fondo) es el de la unidad de cada escena (103 × pixelScale / alto del
 //     fondo, ±1 %) en lobby, clinic_interior y la acera de outside (A2.11: cada escena tiene su pixelScale, ver
 //     qa/proportion-refs.json; antes era el mismo en las tres);
-//   - en outside, en el porche el factor de profundidad está entre 0,5 y 0,65 (A2.11: junto a la puerta Dex mide el
-//     85-100 % de su alto; con 0,8 la doblaba) y al volver a la acera vuelve a 1 (y a la escala entera).
+//   - en outside el factor de profundidad es 1 en todo el paseo (A2.13, Adrián 11-nov: escala fija, el tamaño de la
+//     acera también en el porche; antes A2.11 lo bajaba a 0,5-0,65) y en el porche Dex mide lo mismo que en la acera.
 // Capturas fijas a zoom 1 (sin reescalar): `<viewport>-<escena>-pies.png` (los pies y las zapatillas del jugador, para
 // ver el píxel limpio), `<viewport>-<escena>.png` y, en outside, `<viewport>-filtro-lineal.png` /
 // `<viewport>-filtro-nearest.png` (el fondo con el filtro de A2.8 y con el de antes, para comparar los cables).
@@ -154,15 +154,16 @@ for (const vp of VIEWPORTS) {
   checkScene(`${label} outside (acera)`, front);
   heights.outside = front && { h: front.worldHeightPct, ps: front.pixelScale };
   await feetStill(`${label}-outside`);
-  let minDepth = 1;
-  const sample = (p) => { if (p) minDepth = Math.min(minDepth, p.depth); };
-  const inErr = await walkFilming(39, 83.5, `${label} · outside: hacia el porche (se aleja: encoge)`, { sample });
+  let minDepth = 1, maxDepth = 1;
+  const sample = (p) => { if (p) { minDepth = Math.min(minDepth, p.depth); maxDepth = Math.max(maxDepth, p.depth); } };
+  const inErr = await walkFilming(39, 83.5, `${label} · outside: hacia el porche (A2.13: mismo tamaño)`, { sample });
   if (inErr) problems.push(`${label} outside: walk al porche falló: ${inErr}`);
   await demo.settle({ tap: [Math.round(vp.width / 2), 40] });
   const porch = await pixel();
   console.log(`${label} outside (porche): ${JSON.stringify(porch)}`);
   report.push({ tag: `${label} outside (porche)`, ...porch });
-  if (!(minDepth >= 0.5 && minDepth <= 0.65)) problems.push(`${label} outside: en el porche el factor de profundidad es ${minDepth} (se esperaba entre 0,5 y 0,65)`);
+  if (Math.abs(minDepth - 1) > 1e-6 || Math.abs(maxDepth - 1) > 1e-6) problems.push(`${label} outside: el factor de profundidad fue de ${minDepth} a ${maxDepth} (A2.13: escala fija, siempre 1)`);
+  if (front && porch && Math.abs(porch.playerHeightPct - front.playerHeightPct) > 0.05) problems.push(`${label} outside: en el porche mide ${porch.playerHeightPct} % y en la acera ${front.playerHeightPct} % (A2.13: escala fija)`);
   await demo.still(`${label}-outside-porche`);
   // Filtro del fondo: el de A2.8 (lineal) y el de antes (nearest), mismo encuadre
   await demo.still(`${label}-filtro-lineal`);
@@ -176,7 +177,7 @@ for (const vp of VIEWPORTS) {
     const gs = window.__game.scene.getScene('GameScene');
     gs.textures.get('bg_outside').setFilter(0); // Phaser.Textures.FilterMode.LINEAR
   });
-  const outErr = await walkFilming(55, 97, `${label} · outside: vuelve a la acera (se acerca: crece)`);
+  const outErr = await walkFilming(55, 97, `${label} · outside: vuelve a la acera (mismo tamaño)`);
   if (outErr) problems.push(`${label} outside: walk a la acera falló: ${outErr}`);
   await demo.settle({ tap: [Math.round(vp.width / 2), 40] });
   const back = await pixel();
