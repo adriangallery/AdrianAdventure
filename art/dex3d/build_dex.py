@@ -25,22 +25,22 @@ HIP_X = 0.095
 ANKLE_Z = 0.11
 KNEE = (0.0, -0.012, 0.50)  # rodilla un poco adelantada: el IK sabe hacia dónde doblar
 HIP_Z = 0.87
-SHOULDER = (0.175, 0.01, 1.315)
-ELBOW = (0.205, 0.035, 1.075)  # codo un poco atrás
-WRIST = (0.215, 0.0, 0.855)
-HAND_TIP = (0.215, -0.005, 0.765)
+SHOULDER = (0.195, 0.01, 1.315)
+ELBOW = (0.225, 0.035, 1.075)  # codo un poco atrás
+WRIST = (0.235, 0.0, 0.855)
+HAND_TIP = (0.235, -0.005, 0.765)
 NECK_BASE = 1.335
 HEAD_BASE = 1.39
 HEAD_TOP = 1.74
 HEAD_C = Vector((0.0, -0.005, 1.535))
-HEAD_K = 1.27  # cabeza grande de aventura gráfica: todo lo de la cabeza se escala ×HEAD_K sobre HEAD_C
+HEAD_K = 1.08  # cabeza grande de aventura gráfica: todo lo de la cabeza se escala ×HEAD_K sobre HEAD_C
 MOUTH_C = HEAD_C + Vector((0, -0.118, -0.085)) * HEAD_K
 
 COLORS = {
     'skin': (0.96, 0.66, 0.48),
     'skin_dark': (0.62, 0.30, 0.20),
-    'hair': (0.035, 0.032, 0.03),
-    'shirt_red': (0.80, 0.03, 0.06),
+    'hair': (0.05, 0.045, 0.045),
+    'shirt_red': (0.90, 0.03, 0.07),
     'jeans': (0.20, 0.38, 0.68),
     'jeans_cuff': (0.45, 0.60, 0.82),
     'shoe_red': (0.82, 0.04, 0.07),
@@ -73,6 +73,23 @@ def mat_flat(name, rgb, rough=0.85):
     return m
 
 
+def mat_hair():
+    """Pelo en dos tonos: casi negro y gris oscuro en las caras que miran arriba (brillo de los mechones)."""
+    m = mat_flat('hair2', COLORS['hair'], 0.5)
+    nt = m.node_tree
+    geo = nt.nodes.new('ShaderNodeNewGeometry')
+    sep = nt.nodes.new('ShaderNodeSeparateXYZ')
+    nt.links.new(geo.outputs['Normal'], sep.inputs[0])
+    ramp = nt.nodes.new('ShaderNodeValToRGB')
+    ramp.color_ramp.interpolation = 'CONSTANT'
+    ramp.color_ramp.elements[0].color = (*srgb_to_lin(COLORS['hair']), 1)
+    ramp.color_ramp.elements[1].position = 0.55
+    ramp.color_ramp.elements[1].color = (*srgb_to_lin((0.26, 0.25, 0.27)), 1)
+    nt.links.new(sep.outputs['Z'], ramp.inputs['Fac'])
+    nt.links.new(ramp.outputs['Color'], nt.nodes['Principled BSDF'].inputs['Base Color'])
+    return m
+
+
 def mat_plaid(name='shirt_plaid'):
     """Cuadros rojo/negro con la posición de reposo (atributo 'rest'): no «nada» al deformar."""
     m = bpy.data.materials.new(name)
@@ -85,7 +102,7 @@ def mat_plaid(name='shirt_plaid'):
     attr.attribute_name = 'rest'
     sep = nt.nodes.new('ShaderNodeSeparateXYZ')
     nt.links.new(attr.outputs['Vector'], sep.inputs[0])
-    period = 0.075
+    period = 0.05
 
     def band(sock, width):
         # 1 dentro de la franja oscura: fract(v/period) < width
@@ -100,8 +117,8 @@ def mat_plaid(name='shirt_plaid'):
     # horizontal: x+y (para que los costados también tengan cuadros)
     addxy = nt.nodes.new('ShaderNodeMath'); addxy.operation = 'ADD'
     nt.links.new(sep.outputs['X'], addxy.inputs[0]); nt.links.new(sep.outputs['Y'], addxy.inputs[1])
-    vb = band(addxy.outputs[0], 0.42)
-    hb = band(sep.outputs['Z'], 0.42)
+    vb = band(addxy.outputs[0], 0.45)
+    hb = band(sep.outputs['Z'], 0.45)
     both = nt.nodes.new('ShaderNodeMath'); both.operation = 'MULTIPLY'
     nt.links.new(vb, both.inputs[0]); nt.links.new(hb, both.inputs[1])
     anyb = nt.nodes.new('ShaderNodeMath'); anyb.operation = 'MAXIMUM'
@@ -109,7 +126,7 @@ def mat_plaid(name='shirt_plaid'):
     # rojo → rojo oscuro (una franja) → negro (cruce)
     r1 = nt.nodes.new('ShaderNodeMix'); r1.data_type = 'RGBA'
     r1.inputs['A'].default_value = (*srgb_to_lin(COLORS['shirt_red']), 1)
-    r1.inputs['B'].default_value = (*srgb_to_lin((0.33, 0.01, 0.03)), 1)
+    r1.inputs['B'].default_value = (*srgb_to_lin((0.30, 0.0, 0.02)), 1)
     nt.links.new(anyb.outputs[0], r1.inputs['Factor'])
     r2 = nt.nodes.new('ShaderNodeMix'); r2.data_type = 'RGBA'
     nt.links.new(r1.outputs['Result'], r2.inputs['A'])
@@ -395,6 +412,8 @@ def build_armature():
 def build_mesh(rig):
     M = {k: mat_flat(k, v) for k, v in COLORS.items()}
     M['plaid'] = mat_plaid()
+    M['hair'] = mat_hair()
+    M['cuffred'] = mat_flat('cuffred', (0.55, 0.02, 0.05))
     M['lens_red'] = mat_flat('lens_red_e', COLORS['lens_red'], 0.3)
     M['lens_cyan'] = mat_flat('lens_cyan_e', COLORS['lens_cyan'], 0.3)
     objs = []
@@ -424,14 +443,14 @@ def build_mesh(rig):
 
     # camisa (torso) — algo suelta, por fuera del pantalón
     shirt = loft([
-        (0.935, 0.315, 0.205, 0.0), (0.99, 0.32, 0.205, 0.0), (1.06, 0.315, 0.20, 0.0), (1.13, 0.32, 0.20, 0.0),
-        (1.20, 0.335, 0.205, 0.005), (1.26, 0.355, 0.205, 0.005), (1.30, 0.36, 0.195, 0.005), (1.335, 0.30, 0.17, 0.005),
-        (1.36, 0.14, 0.12, 0.005),
+        (0.875, 0.33, 0.21, 0.0), (0.93, 0.335, 0.21, 0.0), (1.00, 0.335, 0.205, 0.0), (1.08, 0.34, 0.205, 0.0),
+        (1.16, 0.36, 0.21, 0.005), (1.24, 0.395, 0.21, 0.005), (1.29, 0.405, 0.20, 0.005), (1.33, 0.34, 0.17, 0.005),
+        (1.355, 0.15, 0.12, 0.005),
     ])
     add(new_obj('shirt', shirt, M['plaid']), torso_w)
     # cintura blanca (la goma que asoma) y pantalón (pelvis)
-    add(new_obj('belt', loft([(0.905, 0.30, 0.19, 0.0), (0.935, 0.305, 0.195, 0.0)]), M['belt']), 'hips')
-    pelvis = loft([(0.80, 0.27, 0.17, 0.0), (0.84, 0.29, 0.18, 0.0), (0.88, 0.295, 0.185, 0.0), (0.91, 0.295, 0.185, 0.0)])
+    add(new_obj('belt', loft([(0.845, 0.305, 0.19, 0.0), (0.878, 0.31, 0.195, 0.0)]), M['belt']), 'hips')
+    pelvis = loft([(0.78, 0.28, 0.17, 0.0), (0.81, 0.295, 0.18, 0.0), (0.845, 0.30, 0.185, 0.0), (0.86, 0.30, 0.185, 0.0)])
 
     def pelvis_w(co):
         s = 'L' if co.x > 0 else 'R'
@@ -471,6 +490,12 @@ def build_mesh(rig):
         for v in upper.verts:
             v.co.x += x
         add(new_obj(f'shoe.{s}', upper, M['shoe_red']), shoe_w)
+        toecap = loft([(0.035, 0.10, 0.07, -0.185), (0.075, 0.095, 0.06, -0.18)])
+        for v in toecap.verts:
+            v.co.x += x
+        add(new_obj(f'toecap.{s}', toecap, M['sole']), shoe_w)
+        laces = box((x, -0.06, 0.105), (0.05, 0.10, 0.02))
+        add(new_obj(f'laces.{s}', laces, M['white']), shoe_w)
 
         # brazo: manga corta de cuadros + brazo de piel
         S, E, W, T = side(SHOULDER, sx), side(ELBOW, sx), side(WRIST, sx), side(HAND_TIP, sx)
@@ -486,12 +511,14 @@ def build_mesh(rig):
                 w[f'shoulder.{s}'] = w.get(f'shoulder.{s}', 0) + k * 0.7
                 w['chest'] = w.get('chest', 0) + k * 0.3
             return w
-        arm_pts = chain_points([lerp(S, E, 0.25), E, W], [0.042, 0.038, 0.032], step=0.025)
+        arm_pts = chain_points([lerp(S, E, 0.25), E, W], [0.054, 0.05, 0.043], step=0.025)
         add(new_obj(f'arm.{s}', tube(arm_pts, segs=8), M['skin']), arm_w)
-        sleeve_pts = chain_points([lerp(S, (0, 0, S[2]), 0.1) + Vector((0, 0, -0.01)), lerp(S, E, 0.42)], [0.068, 0.062], step=0.025)
+        sleeve_pts = chain_points([lerp(S, (0, 0, S[2]), 0.1) + Vector((0, 0, -0.01)), lerp(S, E, 0.42)], [0.08, 0.075], step=0.025)
         add(new_obj(f'sleeve.{s}', tube(sleeve_pts, segs=8), M['plaid']), arm_w)
+        cuff_pts = chain_points([lerp(S, E, 0.38), lerp(S, E, 0.46)], [0.082, 0.078], step=0.02)
+        add(new_obj(f'sleeve_cuff.{s}', tube(cuff_pts, segs=8), M['cuffred']), arm_w)
         # mano: manopla + pulgar (todo al hueso hand)
-        hand = sphere(lerp(W, T, 0.45), 0.042, scale=(0.75, 0.95, 1.25), segs=8, rings=6)
+        hand = sphere(lerp(W, T, 0.45), 0.052, scale=(0.75, 0.95, 1.25), segs=8, rings=6)
         thumb = sphere(Vector(W) + Vector((0, -0.035, -0.035)), 0.016, scale=(1, 1, 1.6), segs=6, rings=4)
         hb = hand
         tm = bpy.data.meshes.new('tmp')
@@ -505,18 +532,18 @@ def build_mesh(rig):
     add(new_obj('neck', neck, M['skin']),
         lambda co: chain_weights(co, [(0, 0, 1.2), (0, 0, NECK_BASE), (0, -0.005, HEAD_BASE), (0, 0, HEAD_TOP)], ['chest', 'neck', 'head'], blend=0.025))
     # cabeza (grande, de aventura gráfica): cráneo + mandíbula
-    head = sphere(HEAD_C, 0.125, scale=(1.0, 1.05, 1.12), segs=14, rings=10)
+    head = sphere(HEAD_C, 0.125, scale=(0.82, 1.0, 1.22), segs=14, rings=10)
     # afinar la barbilla
     for v in head.verts:
         if v.co.z < HEAD_C.z - 0.02:
             t = (HEAD_C.z - 0.02 - v.co.z) / 0.13
-            v.co.x *= 1 - 0.22 * t
-            v.co.y = HEAD_C.y + (v.co.y - HEAD_C.y) * (1 - 0.15 * t) - 0.012 * t
+            v.co.x *= 1 - 0.30 * t
+            v.co.y = HEAD_C.y + (v.co.y - HEAD_C.y) * (1 - 0.10 * t) - 0.03 * t  # mandíbula y barbilla adelantadas
     add(new_obj('head', head, M['skin']), 'head')
-    nose = sphere(HEAD_C + Vector((0, -0.13, -0.025)), 0.022, scale=(0.9, 1.1, 1.3), segs=8, rings=5)
+    nose = sphere(HEAD_C + Vector((0, -0.135, -0.03)), 0.026, scale=(0.8, 1.7, 1.2), segs=8, rings=5)
     add(new_obj('nose', nose, M['skin']), 'head')
     for sx in (1, -1):
-        ear = sphere(HEAD_C + Vector((sx * 0.118, 0.0, -0.005)), 0.025, scale=(0.5, 0.9, 1.3), segs=8, rings=5)
+        ear = sphere(HEAD_C + Vector((sx * 0.10, 0.01, -0.01)), 0.03, scale=(0.5, 0.9, 1.4), segs=8, rings=5)
         add(new_obj(f'ear{sx}', ear, M['skin']), 'head')
     # boca (la abre el hueso jaw)
     mouth = box(HEAD_C + Vector((0, -0.118, -0.085)), (0.05, 0.02, 0.014))
@@ -524,20 +551,23 @@ def build_mesh(rig):
     # gafas 3D: montura blanca + lente cian (lado R = izquierda de la pantalla) y roja (lado L)
     gz = HEAD_C.z + 0.015
     gy = HEAD_C.y - 0.128
-    frame = box((0, gy, gz), (0.25, 0.018, 0.062))
+    frame = box((0, gy, gz), (0.25, 0.03, 0.08))
     add(new_obj('glasses_frame', frame, M['white']), 'head')
     for sx, mat in ((1, M['lens_red']), (-1, M['lens_cyan'])):
-        lens = box((sx * 0.055, gy - 0.011, gz), (0.075, 0.006, 0.042))
+        lens = box((sx * 0.058, gy - 0.018, gz), (0.08, 0.03, 0.05))
         add(new_obj(f'lens{sx}', lens, mat), 'head')
-        temple = box((sx * 0.122, gy + 0.07, gz + 0.012), (0.012, 0.15, 0.014))
+        temple = box((sx * 0.112, gy + 0.07, gz + 0.012), (0.018, 0.15, 0.022))
         add(new_obj(f'temple{sx}', temple, M['white']), 'head')
+        # lateral de la lente (se ve de perfil y de 3/4)
+        side_l = box((sx * 0.115, gy + 0.005, gz), (0.012, 0.035, 0.05))
+        add(new_obj(f'lens_side{sx}', side_l, mat), 'head')
     # pelo: casquete + pinchos despeinados (deterministas)
     cap = sphere(HEAD_C + Vector((0, 0.012, 0.035)), 0.133, scale=(1.0, 1.06, 1.12), segs=14, rings=10)
     rm = [v for v in cap.verts if (v.co.y - HEAD_C.y < -0.05 and v.co.z < HEAD_C.z + 0.085) or (v.co.y - HEAD_C.y < 0.05 and v.co.z < HEAD_C.z + 0.045) or v.co.z < HEAD_C.z - 0.04]
     bmesh.ops.delete(cap, geom=rm, context='VERTS')
     import random
     rnd = random.Random(1414)
-    for i in range(70):
+    for i in range(120):
         # dirección en el hemisferio de arriba y de atrás
         th = rnd.uniform(0, 2 * math.pi)
         ph = rnd.uniform(0.0, 1.6)
@@ -545,9 +575,9 @@ def build_mesh(rig):
         if d.z < 0.35 and not (d.y > 0.35 and d.z > -0.25):
             continue  # pinchos arriba y detrás: nada sobre la cara ni las orejas
         base = HEAD_C + Vector((0, 0.015, 0.04)) + Vector((d.x * 0.125, d.y * 0.13, d.z * 0.15))
-        ln = rnd.uniform(0.06, 0.12)
+        ln = rnd.uniform(0.05, 0.10)
         tip = base + (d + Vector((rnd.uniform(-0.35, 0.35), rnd.uniform(-0.2, 0.35), rnd.uniform(-0.1, 0.4)))).normalized() * ln
-        res = bmesh.ops.create_cone(cap, cap_ends=True, segments=5, radius1=0.032, radius2=0.0, depth=ln)
+        res = bmesh.ops.create_cone(cap, cap_ends=True, segments=5, radius1=0.024, radius2=0.0, depth=ln)
         rot = (tip - base).to_track_quat('Z', 'Y').to_matrix().to_4x4()
         bmesh.ops.transform(cap, matrix=Matrix.Translation((base + tip) / 2) @ rot, verts=res['verts'])
     bmesh.ops.recalc_face_normals(cap, faces=cap.faces)

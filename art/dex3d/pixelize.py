@@ -69,7 +69,9 @@ def pixelize(raw_path, pal, ss, root_col_art, bottom_art):
     # contorno: opaco con algún vecino (4) transparente
     m = mask
     pad = np.pad(m, 1)
-    edge = m & ~(pad[:-2, 1:-1] & pad[2:, 1:-1] & pad[1:-1, :-2] & pad[1:-1, 2:])
+    # 8 vecinos: el contorno cierra también en diagonal (sin píxeles claros en el borde)
+    edge = m & ~(pad[:-2, 1:-1] & pad[2:, 1:-1] & pad[1:-1, :-2] & pad[1:-1, 2:]
+                 & pad[:-2, :-2] & pad[:-2, 2:] & pad[2:, :-2] & pad[2:, 2:])
     out[edge, :3] = OUTLINE
     # recorte con el origen en los pies
     x0 = root_col_art - CROP_W // 2
