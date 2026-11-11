@@ -488,7 +488,8 @@ export class MenuScene extends Phaser.Scene {
       .setOrigin(0.5)
       .setInteractive({ useHandCursor: true })
       // A5.2: 14 px arriba y abajo → zona táctil ≥ 40 px de alto en un iPhone (antes 39)
-      .setPadding(16, 14);
+      .setPadding(16, 14)
+      .setName(`menu-btn-${label.toLowerCase().replace(/\s+/g, '-')}`);
 
     text.on('pointerover', () => text.setColor(TWP.MENU_BTN_HOVER));
     text.on('pointerout', () => text.setColor(TWP.MENU_BTN));
