@@ -312,7 +312,7 @@ class Front:
                 if x in (0, 24):
                     b[y, x] = 0
                 elif x in (1, 23):
-                    b[y, x] = S[32, 1] if y < 62 else 0
+                    b[y, x] = S[32, 1] if y < 58 else 0
                 elif y < 58:
                     c = S[y, x + 4] if x < 12 else S[y, x - 4]
                     if (c[:3] > 190).all():
@@ -342,8 +342,19 @@ class Front:
         else:
             r = math.radians(a)
             el = (sh[0] - self.lu * math.sin(r), sh[1] + self.lu * math.cos(r))
-        blit_rot(img, u, sp, sh, a)
-        blit_rot(img, fo, ep, el, f)
+        # el brazo se pinta en su capa y lleva contorno oscuro (el del propio sprite) donde no está pegado al hombro,
+        # para que el antebrazo se lea sobre el cuadro de la camisa
+        lay = blank(self.W, self.H)
+        blit_rot(lay, u, sp, sh, a)
+        blit_rot(lay, fo, ep, el, f)
+        m = lay[:, :, 3] > 0
+        ring = np.zeros_like(m)
+        ring[1:] |= m[:-1]; ring[:-1] |= m[1:]; ring[:, 1:] |= m[:, :-1]; ring[:, :-1] |= m[:, 1:]
+        ring &= ~m
+        ring[: int(sh[1]) + 4] = False
+        if (a, f) != (0, 0) or hand is not None:
+            img[ring] = self.src[32, 1]
+        img[m] = lay[m]
 
     def frame(self, bob=0, liftL=0, liftR=0, armL=None, armR=None, head=(0, 0), mouth=False, lean=0, shrug=0, breath=0):
         img = blank(self.W, self.H)
@@ -353,12 +364,12 @@ class Front:
         t = self.torso.copy()
         if breath:   # 1 px de pecho: quita una fila de camisa y baja lo de encima
             t[22:46] = t[21:45]; t[21] = 0
-        paste(img, t, o + lean, bob - shrug)
+        paste(img, t, o + lean, bob)
         h = self.head.copy()
         if mouth:
             for x in range(15, 19):
                 h[19, x] = self.src[18, 15]
-        paste(img, h, o + lean + head[0], bob + head[1] + breath)
+        paste(img, h, o + lean + head[0], bob + head[1] + breath - shrug)
         sy = 38 + bob - shrug
         aL = armL or {}
         aR = armR or {}
@@ -412,7 +423,7 @@ def front_tics(F):
     # rascarse la cabeza (mano derecha de la pantalla sobre el pelo, 3 rascadas)
     sc = [F.frame(armR={'a': -40, 'f': -60})]
     for k in range(6):
-        sc.append(F.frame(armR={'hand': (F.ox + 17 + (k % 2) * 2, 4 + (k % 2))}, head=(-1 if k % 2 else 0, 0)))
+        sc.append(F.frame(armR={'hand': (F.ox + 19 + (k % 2), 16 - 2 * (k % 2))}, head=(-1 if k % 2 else 0, 0)))
     sc.append(F.frame(armR={'a': -40, 'f': -60}))
     tics['scratch'] = sc
     # subirse las gafas (dedo al puente de las gafas, empuja 1 px)
@@ -433,14 +444,15 @@ def front_tics(F):
 
 
 def front_talk(F):
-    return [F.frame(), F.frame(mouth=True, armR={'hand': (F.ox + 24, 50)}),
-            F.frame(armR={'hand': (F.ox + 25, 46)}, head=(0, 1)), F.frame(mouth=True, armR={'hand': (F.ox + 24, 50)})]
+    # mano abierta hacia fuera (como el shrug, con un solo brazo) mientras cabecea y abre la boca
+    return [F.frame(), F.frame(mouth=True, armR={'a': -12, 'f': -70}),
+            F.frame(armR={'a': -16, 'f': -95}, head=(0, 1)), F.frame(mouth=True, armR={'a': -12, 'f': -70})]
 
 
 def front_shrug(F):
     up = dict(armL={'a': 20, 'f': 95}, armR={'a': -20, 'f': -95})
     return [F.frame(bob=1), F.frame(shrug=1, head=(1, 0), **up), F.frame(shrug=1, head=(1, 0), **up),
-            F.frame(shrug=1, head=(1, 0), **up), F.frame(armL={'a': 8, 'f': 30}, armR={'a': -8, 'f': -30})]
+            F.frame(shrug=1, head=(1, 0), **up), F.frame(bob=1, armL={'a': 4, 'f': 12}, armR={'a': -4, 'f': -12})]
 
 
 # ════════════════════════════════════════ SALIDA ═════════════════════════════════════════════════════════════════
