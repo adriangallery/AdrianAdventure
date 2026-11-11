@@ -26,6 +26,7 @@ const SCENE = 'lobby';
 const X = 55.5; // bajo el abrigo: tramo vertical libre (ni triggers ni blockedAreas)
 const Y_FRONT = 98;
 const Y_BACK = 85;
+const Y_FRONT_390 = 91;
 const PLANT_LINE = 'A tall plant in a ceramic pot. It looks thirsty. Really thirsty.'; // texto que ya existe (hs_plant LOOK)
 const CLIP = { width: 800, height: 540 };
 
@@ -312,9 +313,10 @@ await open(390);
 {
   const st = (await capture('390x844')).st;
   console.log(`390x844: ${fmtA(st.anim)} · pixel ×${st.pixel?.playerScale} entera ${st.pixel?.integer}`);
-  await walkLeg('390-perfil', '390x844 de perfil', X, Y_FRONT, { dir: 'left', texture: /^(player|dex2d)_walk_/, sway: false, integer: false });
+  // A2.15: en 390x844 la y 98 del lobby cae bajo el panel de verbos (QA no deja hacer clic ahí): se baja hasta la 91
+  await walkLeg('390-perfil', '390x844 de perfil', X, Y_FRONT_390, { dir: 'left', texture: /^(player|dex2d)_walk_/, sway: false, integer: false });
   await walkLeg('390-arriba', '390x844 hacia el fondo', X, Y_BACK, { dir: 'up', texture: /^dex2d_walk_up_/, sway: false, facing: 'back', integer: false });
-  await walkLeg('390-abajo', '390x844 hacia la cámara', X, Y_FRONT, { dir: 'down', texture: /^dex2d_walk_down_/, sway: false, facing: 'front', integer: false });
+  await walkLeg('390-abajo', '390x844 hacia la cámara', X, Y_FRONT_390, { dir: 'down', texture: /^dex2d_walk_down_/, sway: false, facing: 'front', integer: false });
   await demo.still('390x844');
 }
 await demo.end();
