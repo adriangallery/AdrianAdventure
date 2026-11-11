@@ -142,6 +142,12 @@ y `montana-con-capitulo-3-a-medias` comprueban que ni la keycard ni haber bajado
 `sotano-sin-keycard` es de control: debe quedarse fuera. Las demás salidas sin gate son vueltas a escenas del
 mismo capítulo o anteriores y están silenciadas en `qa/lint-scenes-allow.json` con su motivo.
 
+A3.6f (capítulo 4) añade `duelo-sin-replicas`: la ruta crítica hasta la piscina (sin redimensiones, Anon ni
+comprobaciones visuales), el pato con Gerald y TALK con Chad sin ninguna réplica aprendida: las réplicas no aprendidas
+no salen (`lastChoices.absent`, `when: fud_rN`), solo la salida torpe, y Chad gana (`chad_losses_1`, sin `beat_chad`).
+La clínica sin admisión (keycard revocada, puerta sin pruebas, respuesta honesta) y la autorización sin ficha («You
+bring vibes») van como rechazos dentro de la ruta crítica, para no rejugar otra vez los capítulos 1-3 en el CI.
+
 A3.3c (PIN partido, capítulo 1) añade tres rutas que deben quedarse fuera: `nota-con-lampara-encendida` (OPEN y PICK de
 la lámpara sin apagarla: «Hot. Hot hot hot.» y ninguna mitad), `nido-sin-tablon` (USE, PULL y PICK de la chimenea sin
 `fence_plank`: el nido no cae) y `puerta-con-media-nota` (`note_half_a` en el teclado: respuesta de fallo, la puerta sigue
