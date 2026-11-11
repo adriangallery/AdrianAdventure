@@ -13,6 +13,10 @@
 //   pizza_slice.png  (A3.4b) una porción de la pizza fosilizada de upstairs: pepperoni, brillos de grasa y una gota
 //   empty_can.png    (A3.4d) energy_drink.png (69×128, centrado en 128×128) desaturado y abollado: la lata que se bebió el mining rig
 //   rainwater_can.png (A3.4d) energy_drink.png teñido de azul con gotas: la lata llena de lluvia de la parabólica
+//   extension_cord.png (A3.5a) el alargador naranja del suelo técnico de server_room: un rollo de cable y el enchufe
+//   scrap_paper.png  (A3.5a) el papel en blanco de la mesa del sótano: arrugado, con el borde de arriba rasgado
+//   fake_alpha.png   (A3.5b) scrap_paper.png con garabatos de tinta azul («BUY $GERALD. TRUST ME.») y una mancha del boli
+//   marked_map.png   (A3.5c) printout.png con una X de tinta azul encima: el mapa marcado
 // Sin arte de pago: las mitades salen de code_note.png, la factura de receipt.png y el tablón se dibuja aquí.
 // Determinista (sin azar).
 import fs from 'node:fs';
@@ -406,6 +410,87 @@ function canVariant(can, kind) {
   return out;
 }
 
+// A3.5: iconos del capítulo 3 (se insertan en make-item-icons.mjs antes de main)
+function scrapPaper() {
+  const g = blank(64, 64);
+  const OUT = [40, 38, 30];
+  // papel algo torcido con borde rasgado arriba
+  const inside = (x, y) => {
+    const top = 14 + ((x * 7) % 5 === 0 ? 2 : (x % 3)), bot = 50 - Math.floor(x / 16);
+    return x >= 12 && x <= 51 && y >= top && y <= bot;
+  };
+  for (let y = 0; y < 64; y++) for (let x = 0; x < 64; x++) {
+    if (!inside(x, y)) continue;
+    const edge = !inside(x - 1, y) || !inside(x + 1, y) || !inside(x, y - 1) || !inside(x, y + 1);
+    const crease = Math.abs(x - y) < 1 || Math.abs(x + y - 70) < 1;
+    set(g, x, y, edge ? OUT : crease ? [214, 208, 186] : [242, 238, 222]);
+  }
+  return up2(g);
+}
+function extensionCord() {
+  const g = blank(64, 64);
+  const OUT = [40, 20, 6], OR = [240, 120, 30], HI = [255, 176, 90];
+  // rollo de cable: tres anillos
+  for (const [cx, cy, r] of [[28, 34, 15], [28, 34, 11], [28, 34, 7]]) {
+    for (let a = 0; a < 720; a++) {
+      const t = (a / 720) * Math.PI * 2;
+      const x = Math.round(cx + r * Math.cos(t)), y = Math.round(cy + r * 0.8 * Math.sin(t));
+      for (const [dx, dy] of [[-1, 0], [1, 0], [0, -1], [0, 1], [-1, -1], [1, 1]]) if (get(g, x + dx, y + dy)[3] === 0) set(g, x + dx, y + dy, OUT);
+    }
+  }
+  for (const [cx, cy, r] of [[28, 34, 15], [28, 34, 11], [28, 34, 7]]) {
+    for (let a = 0; a < 720; a++) {
+      const t = (a / 720) * Math.PI * 2;
+      set(g, Math.round(cx + r * Math.cos(t)), Math.round(cy + r * 0.8 * Math.sin(t)), Math.sin(t) < -0.5 ? HI : OR);
+    }
+  }
+  // cola de cable hasta el enchufe
+  for (let x = 43; x <= 50; x++) { set(g, x, 33, OUT); set(g, x, 34, OR); set(g, x, 35, OUT); }
+  // enchufe blanco con dos patas
+  for (let y = 28; y <= 40; y++) for (let x = 50; x <= 57; x++) {
+    const e = y === 28 || y === 40 || x === 50 || x === 57;
+    set(g, x, y, e ? OUT : [232, 230, 222]);
+  }
+  for (const py of [31, 37]) for (let x = 58; x <= 61; x++) { set(g, x, py, [180, 170, 120]); set(g, x, py + 1, OUT); }
+  return up2(g);
+}
+function inkOn(base, rows, color = [40, 60, 170]) {
+  const out = blank(base.width, base.height);
+  over(out, base, 0, 0);
+  // garabatos de tinta en filas (solo sobre el papel)
+  for (const [y0, x0, x1] of rows) {
+    for (let x = x0; x <= x1; x++) {
+      const y = y0 + Math.round(2 * Math.sin(x / 2.3));
+      for (const dy of [0, 1]) if (get(out, x, y + dy)[3] > 0) set(out, x, y + dy, color);
+    }
+  }
+  return out;
+}
+function fakeAlpha(paper) {
+  // el papel en blanco con «BUY $GERALD. TRUST ME.» garabateado y una mancha del boli
+  const out = inkOn(paper, [[40, 34, 92], [56, 30, 98], [72, 38, 86]]);
+  for (let y = 84; y <= 96; y++) for (let x = 70; x <= 84; x++) {
+    const d = ((x - 77) / 7) ** 2 + ((y - 90) / 6) ** 2;
+    if (d <= 1 && get(out, x, y)[3] > 0) set(out, x, y, d > 0.6 ? [20, 30, 100] : [46, 68, 160]);
+  }
+  return out;
+}
+function markedMap(printout) {
+  const out = blank(printout.width, printout.height);
+  over(out, printout, 0, 0);
+  // una X gruesa de tinta azul en el centro del mapa (con contorno oscuro)
+  const cx = 64, cy = 66, R = 16;
+  for (const pass of [0, 1]) for (let t = -R; t <= R; t++) for (const s of [1, -1]) {
+    const x = cx + t, y = cy + s * t;
+    const w = pass === 0 ? 4 : 2;
+    for (let dy = -w; dy <= w; dy++) for (let dx = -w; dx <= w; dx++) {
+      if (Math.abs(dx) + Math.abs(dy) > w) continue;
+      set(out, x + dx, y + dy, pass === 0 ? [18, 26, 90] : [60, 92, 214]);
+    }
+  }
+  return out;
+}
+
 function main() {
   const note = decodePng(fs.readFileSync(path.join(ITEMS, 'code_note.png')));
   const receipt = decodePng(fs.readFileSync(path.join(ITEMS, 'receipt.png')));
@@ -422,7 +507,10 @@ function main() {
 
   const can = decodePng(fs.readFileSync(path.join(ITEMS, 'energy_drink.png')));
   if (can.width > SIZE || can.height > SIZE) throw new Error(`energy_drink.png mide ${can.width}x${can.height}, más de ${SIZE}`);
-  const outs = { note_half_a: a.img, note_half_b: b, fence_plank: plank(), vet_bill: vetBill(receipt), leaky_pen: leakyPen(), pizza_slice: pizzaSlice(), empty_can: canVariant(can, 'empty'), rainwater_can: canVariant(can, 'rain') };
+  const printout = decodePng(fs.readFileSync(path.join(ITEMS, 'printout.png')));
+  const scrap = scrapPaper();
+  const outs = { note_half_a: a.img, note_half_b: b, fence_plank: plank(), vet_bill: vetBill(receipt), leaky_pen: leakyPen(), pizza_slice: pizzaSlice(), empty_can: canVariant(can, 'empty'), rainwater_can: canVariant(can, 'rain'),
+    extension_cord: extensionCord(), scrap_paper: scrap, fake_alpha: fakeAlpha(scrap), marked_map: markedMap(printout) };
   for (const [id, img] of Object.entries(outs)) {
     const file = path.join(ITEMS, `${id}.png`);
     fs.writeFileSync(file, encodePng(img));

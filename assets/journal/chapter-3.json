@@ -1,17 +1,59 @@
 {
-  "_doc": "A2.9/A2.9a: diario de Dex, capítulo 3 tal como es HOY (de mirar la luz del sótano al interruptor de emergencia: el capítulo 3 empieza con chapter_2_complete, aún en la azotea). Se reescribe en A3.5. Ver qa/README.md § Diario.",
+  "_doc": "A2.9/A2.9a: diario de Dex, capítulo 3. A3.5a: el CRT (alargador del suelo técnico, PIN del Ledger con el cumpleaños de Gerald y el disquete que vuelve); la bebida energética ya es del cap. 2. Ver qa/README.md § Diario.",
   "chapter": 3,
   "goals": [
-    { "id": "g3_down", "text": "Get down to the basement.", "doneWhen": "basement_unlocked" },
-    { "id": "g3_crt", "text": "Wake up the old computer.", "doneWhen": "crt_powered" },
-    { "id": "g3_servers", "text": "Find where the humming comes from.", "doneWhen": "server_room_open" },
-    { "id": "g3_switch", "text": "Flip the emergency switch.", "doneWhen": "emergency_switch_flipped" }
+    {
+      "id": "g3_down",
+      "text": "Get down to the basement.",
+      "doneWhen": "basement_unlocked"
+    },
+    {
+      "id": "g3_crt",
+      "text": "Get the old computer to talk.",
+      "doneWhen": "has_printout"
+    },
+    {
+      "id": "g3_servers",
+      "text": "Find where the humming comes from.",
+      "doneWhen": "server_room_open"
+    },
+    {
+      "id": "g3_switch",
+      "text": "Flip the emergency switch.",
+      "doneWhen": "emergency_switch_flipped"
+    }
   ],
   "notes": [
-    { "id": "n3_crt", "text": "The basement CRT runs on energy drink now. Next complaint: chip slot B7 is empty.", "shownWhen": "crt_powered" },
-    { "id": "n3_server_room", "text": "Hidden door behind the basement equipment rack. A whole server room. Still warm.", "shownWhen": "server_room_open" },
-    { "id": "n3_chip", "text": "Pried a fused chip out of the dead AdrianAuctions rack. Might fit an old computer.", "shownWhen": "found_burned_chip" },
-    { "id": "n3_coords", "text": "Emergency switch screen: 47.6062N, 122.3321W. Patient Zero Rehabilitation Clinic. The mountain path outside the lab goes that way.", "shownWhen": "emergency_switch_flipped" }
+    {
+      "id": "n3_crt",
+      "text": "Basement CRT: plug a metre short of the socket. Ledger PIN hint: 'my best friend's birthday. DDMM.'",
+      "shownWhen": "basement_unlocked"
+    },
+    {
+      "id": "n3_server_room",
+      "text": "Hidden door behind the basement equipment rack. A whole server room. Still warm.",
+      "shownWhen": "server_room_open"
+    },
+    {
+      "id": "n3_cord",
+      "text": "Under the server room floor: an orange extension cord and 3D glasses with the lenses the wrong way round.",
+      "shownWhen": "has_extension_cord"
+    },
+    {
+      "id": "n3_roster",
+      "text": "The floppy held a patient roster. PATIENT ZERO — STATUS: ESCAPED. The printout has a map. No X on it.",
+      "shownWhen": "has_printout"
+    },
+    {
+      "id": "n3_chip",
+      "text": "Pried a fused chip out of the dead AdrianAuctions rack. The CRT's slot B7 is empty. Not that it seems to care.",
+      "shownWhen": "found_burned_chip"
+    },
+    {
+      "id": "n3_coords",
+      "text": "Emergency switch screen: 47.6062N, 122.3321W. Patient Zero Rehabilitation Clinic. The mountain path outside the lab goes that way.",
+      "shownWhen": "emergency_switch_flipped"
+    }
   ],
   "puzzles": [
     {
@@ -24,23 +66,43 @@
       ]
     },
     {
-      "id": "p3_power",
-      "openWhen": "basement_unlocked",
-      "doneWhen": "crt_powered",
-      "hints": [
-        "That old screen is starving.",
-        "Something with an unreasonable amount of caffeine.",
-        "Use the energy drink from Adrian's office on the computer."
-      ]
-    },
-    {
       "id": "p3_servers",
-      "openWhen": "crt_powered",
+      "openWhen": "basement_unlocked",
       "doneWhen": "server_room_open",
       "hints": [
         "Servers hum. Follow the hum.",
         "The equipment rack in the basement moves.",
         "Push the equipment rack."
+      ]
+    },
+    {
+      "id": "p3_power",
+      "openWhen": "server_room_open",
+      "doneWhen": "crt_powered",
+      "hints": [
+        "That old screen is a metre away from being alive.",
+        "Server rooms keep their spare cables under the floor.",
+        "Open the raised floor in the server room, take the extension cord and use it on the CRT."
+      ]
+    },
+    {
+      "id": "p3_pin",
+      "openWhen": "crt_powered",
+      "doneWhen": "computer_unlocked",
+      "hints": [
+        "Adrian's Ledger wants a PIN. Its hint is a birthday.",
+        "Adrian's best friend has paperwork. It came out of the mailbox.",
+        "Gerald's vet bill: born 3 January 2009. Use the Ledger on the CRT and pick Gerald's birthday."
+      ]
+    },
+    {
+      "id": "p3_floppy",
+      "openWhen": "computer_unlocked",
+      "doneWhen": "has_printout",
+      "hints": [
+        "The vault is open. The screen wants a backup.",
+        "Somebody worked late at the little desk in the basement.",
+        "Take the floppy from the small desk and use it on the CRT."
       ]
     },
     {
