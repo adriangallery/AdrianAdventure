@@ -19,6 +19,8 @@ export const SAVE_KEY = 'adrian_adventure_save';
 export const AUTOSAVE_SLOT = 0;
 export const MANUAL_SLOTS = [1, 2] as const;
 export const BACKUP_SLOT = 3;
+/** A1.13: copia del autoguardado de otra partida antes de pisarlo (solo local; = SaveProgress.PREVIOUS_AUTOSAVE_SLOT). */
+export const PREVIOUS_AUTOSAVE_SLOT_ID = 4;
 /** Slots que acepta el save-server (lista blanca; el de seguridad es solo local). */
 export const CLOUD_SLOTS = [0, 1, 2] as const;
 /** La sesión firmada caduca a las 24 h en el servidor; el cliente la da por caducada un poco antes. */
@@ -53,6 +55,7 @@ type Migrate = (slot: SlotRecord) => unknown;
 export function slotLabel(slotId: number): string {
   if (slotId === AUTOSAVE_SLOT) return 'Autosave';
   if (slotId === BACKUP_SLOT) return 'Before load';
+  if (slotId === PREVIOUS_AUTOSAVE_SLOT_ID) return 'Previous autosave';
   return `Slot ${slotId}`;
 }
 

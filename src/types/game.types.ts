@@ -1,5 +1,6 @@
 import { SAVE_VERSION } from '@/systems/SaveMigration';
 import type { JournalProgress } from '@/systems/Journal';
+import { newRunId } from '@/systems/SaveProgress';
 
 export enum Verb {
   WALK = 'WALK',
@@ -78,6 +79,11 @@ export interface GameState {
   savedAt?: number;
   /** A1.4: versión del formato de la partida (ver SaveMigration.ts); sin ella es una partida v1 */
   saveVersion?: number;
+  /**
+   * A1.13: id de la partida (nuevo en cada «New Game»; a las viejas se les pone uno al cargarlas). El autoguardado
+   * no pisa sin copia el autoguardado de OTRA partida con progreso (SaveProgress.autosavePlan).
+   */
+  runId?: string;
 }
 
 export interface InventoryItem {
@@ -90,6 +96,7 @@ export interface InventoryItem {
 export function createInitialState(sceneId: string): GameState {
   return {
     saveVersion: SAVE_VERSION,
+    runId: newRunId(Date.now(), Math.random()),
     currentScene: sceneId,
     flags: {},
     inventory: [],
