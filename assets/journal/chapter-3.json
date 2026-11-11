@@ -1,5 +1,5 @@
 {
-  "_doc": "A2.9/A2.9a: diario de Dex, capítulo 3. A3.5a: el CRT (alargador del suelo técnico, PIN del Ledger con el cumpleaños de Gerald y el disquete que vuelve); la bebida energética ya es del cap. 2. Ver qa/README.md § Diario.",
+  "_doc": "A2.9/A2.9a: diario de Dex, capítulo 3. A3.5a: el CRT (alargador del suelo técnico, PIN del Ledger con el cumpleaños de Gerald y el disquete que vuelve); la bebida energética ya es del cap. 2. A3.5b: PZ-BOT y la alfa falsa (p3_pzbot, notas n3_pzbot y n3_log). Ver qa/README.md § Diario.",
   "chapter": 3,
   "goals": [
     {
@@ -43,6 +43,16 @@
       "id": "n3_roster",
       "text": "The floppy held a patient roster. PATIENT ZERO — STATUS: ESCAPED. The printout has a map. No X on it.",
       "shownWhen": "has_printout"
+    },
+    {
+      "id": "n3_pzbot",
+      "text": "PZ-BOT runs the server room terminal. Only talks to its owner. Or to alpha. Locked the emergency shutoff: 'SHUTDOWN = MISSED OPPORTUNITIES.'",
+      "shownWhen": "met_pzbot"
+    },
+    {
+      "id": "n3_log",
+      "text": "PZ-BOT bought $GERALD and crashed. Its log: owner wallet 0xDE... Records moved to the treatment room. Could be anyone.",
+      "shownWhen": "pzbot_crashed"
     },
     {
       "id": "n3_chip",
@@ -103,6 +113,16 @@
         "The vault is open. The screen wants a backup.",
         "Somebody worked late at the little desk in the basement.",
         "Take the floppy from the small desk and use it on the CRT."
+      ]
+    },
+    {
+      "id": "p3_pzbot",
+      "openWhen": "server_room_open",
+      "doneWhen": "pzbot_crashed",
+      "hints": [
+        "PZ-BOT only listens to its owner. Or to alpha.",
+        "Alpha is just confident words on paper. You own a pen that won't stop writing.",
+        "Combine scrap paper or the receipt with the leaky pen. Use the fake alpha on the terminal."
       ]
     },
     {

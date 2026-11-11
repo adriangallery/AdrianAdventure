@@ -229,6 +229,15 @@
           ],
           "ledger": [
             "I go to plug the Ledger in. There's no port. Adrian sealed it. Paranoid. Correct."
+          ],
+          "receipt": [
+            "I hold the receipt up to the webcam. '1 BTC @ $3.50.' PZ-BOT: 'HISTORICAL DATA. NOT ALPHA.' It needs words. Bad ones."
+          ],
+          "scrap_paper": [
+            "I show PZ-BOT a blank page. 'NO SIGNAL.' Fair. I need to write something on it first."
+          ],
+          "leaky_pen": [
+            "I'm not writing on the screen. I need paper. The pen disagrees. It leaks on the keyboard anyway."
           ]
         },
         "name": "Server Terminal",
@@ -241,68 +250,148 @@
         "scripts": {
           "LOOK": [
             {
-              "op": "say",
-              "text": "Active monitoring logs. FloorEngine, TraitLab, SweepBot \u2014 all Adrian's infrastructure, running autonomously."
+              "op": "ifFlag",
+              "flag": "pzbot_crashed",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "A frozen chart and one line on the terminal: 'ALL IN.' PZ-BOT is thinking very hard about Gerald."
+                }
+              ],
+              "else": [
+                {
+                  "op": "say",
+                  "text": "Green text scrolls: 'PZ-BOT v0.9 — AUTONOMOUS TRADING AGENT. EMERGENCY SHUTOFF: LOCKED.' A webcam stares at me."
+                }
+              ]
             }
           ],
           "USE": [
             {
               "op": "ifFlag",
-              "flag": "found_server_log",
+              "flag": "pzbot_crashed",
               "then": [
                 {
-                  "op": "say",
-                  "text": "I already downloaded the logs."
+                  "op": "ifFlag",
+                  "flag": "found_server_log",
+                  "then": [
+                    {
+                      "op": "say",
+                      "text": "I already downloaded the logs."
+                    }
+                  ],
+                  "else": [
+                    {
+                      "op": "setFlag",
+                      "flag": "found_server_log",
+                      "value": true
+                    },
+                    {
+                      "op": "addItem",
+                      "id": "server_log",
+                      "name": "Server Log Extract"
+                    },
+                    {
+                      "op": "say",
+                      "text": "Downloaded. The last entry reads: 'PZ discharge protocol initiated. All records moved to treatment room.'"
+                    }
+                  ]
                 }
               ],
               "else": [
                 {
                   "op": "setFlag",
-                  "flag": "found_server_log",
+                  "flag": "met_pzbot",
                   "value": true
                 },
                 {
-                  "op": "addItem",
-                  "id": "server_log",
-                  "name": "Server Log Extract"
-                },
-                {
                   "op": "say",
-                  "text": "Downloaded. The last entry reads: 'PZ discharge protocol initiated. All records moved to treatment room.'"
+                  "text": "ACCESS DENIED. OWNER ONLY. OR ALPHA. DO YOU HAVE ALPHA?",
+                  "speaker": "PZ-BOT"
                 }
               ]
             }
           ],
           "TALK": [
             {
-              "op": "say",
-              "text": "The terminal beeps. In Morse code it spells: 'GET OUT OF MY SERVER ROOM.' Rude."
-            }
-          ],
-          "PICK": [
-            {
               "op": "ifFlag",
-              "flag": "found_server_log",
+              "flag": "pzbot_crashed",
               "then": [
                 {
                   "op": "say",
-                  "text": "I already downloaded the logs."
+                  "text": "GERALD... GERALD... STILL LOADING...",
+                  "speaker": "PZ-BOT"
+                },
+                {
+                  "op": "say",
+                  "text": "Still bullish on ducks. Let it rest."
                 }
               ],
               "else": [
                 {
                   "op": "setFlag",
-                  "flag": "found_server_log",
+                  "flag": "met_pzbot",
                   "value": true
                 },
                 {
-                  "op": "addItem",
-                  "id": "server_log",
-                  "name": "Server Log Extract"
+                  "op": "say",
+                  "text": "I ONLY TALK TO MY OWNER. OR TO ALPHA. DO YOU HAVE ALPHA?",
+                  "speaker": "PZ-BOT"
                 },
                 {
                   "op": "say",
-                  "text": "Downloaded. The last entry reads: 'PZ discharge protocol initiated. All records moved to treatment room.'"
+                  "text": "EMERGENCY SHUTOFF: LOCKED. SHUTDOWN = MISSED OPPORTUNITIES.",
+                  "speaker": "PZ-BOT"
+                },
+                {
+                  "op": "say",
+                  "text": "I could write some. I need paper, a pen, and no principles. I have two of those."
+                }
+              ]
+            }
+          ],
+          "PICK": [
+            {
+              "op": "ifFlag",
+              "flag": "pzbot_crashed",
+              "then": [
+                {
+                  "op": "ifFlag",
+                  "flag": "found_server_log",
+                  "then": [
+                    {
+                      "op": "say",
+                      "text": "I already downloaded the logs."
+                    }
+                  ],
+                  "else": [
+                    {
+                      "op": "setFlag",
+                      "flag": "found_server_log",
+                      "value": true
+                    },
+                    {
+                      "op": "addItem",
+                      "id": "server_log",
+                      "name": "Server Log Extract"
+                    },
+                    {
+                      "op": "say",
+                      "text": "Downloaded. The last entry reads: 'PZ discharge protocol initiated. All records moved to treatment room.'"
+                    }
+                  ]
+                }
+              ],
+              "else": [
+                {
+                  "op": "setFlag",
+                  "flag": "met_pzbot",
+                  "value": true
+                },
+                {
+                  "op": "say",
+                  "text": "ACCESS DENIED. OWNER ONLY. OR ALPHA. DO YOU HAVE ALPHA?",
+                  "speaker": "PZ-BOT"
                 }
               ]
             }
@@ -1031,14 +1120,125 @@
           "op": "ifFlag",
           "flag": "emergency_glass_broken",
           "then": [
-            { "op": "say", "text": "The glass is already shattered. The switch is exposed." }
+            {
+              "op": "say",
+              "text": "The glass is already shattered. The switch is exposed."
+            }
           ],
           "else": [
-            { "op": "say", "text": "I swing the loose antenna at the glass panel like a baseball bat." },
-            { "op": "wait", "ms": 400 },
-            { "op": "playSound", "key": "glass_break" },
-            { "op": "say", "text": "*CRACK!* The reinforced polymer shatters. Glass rains down. The big red switch glows underneath, practically begging to be flipped." },
-            { "op": "setFlag", "flag": "emergency_glass_broken", "value": true }
+            {
+              "op": "say",
+              "text": "I swing the loose antenna at the glass panel like a baseball bat."
+            },
+            {
+              "op": "wait",
+              "ms": 400
+            },
+            {
+              "op": "playSound",
+              "key": "glass_break"
+            },
+            {
+              "op": "say",
+              "text": "*CRACK!* The reinforced polymer shatters. Glass rains down. The big red switch glows underneath, practically begging to be flipped."
+            },
+            {
+              "op": "setFlag",
+              "flag": "emergency_glass_broken",
+              "value": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "items": [
+        "fake_alpha",
+        "hs_terminal"
+      ],
+      "result": "pzbot_crash",
+      "script": [
+        {
+          "op": "ifFlag",
+          "flag": "pzbot_crashed",
+          "then": [
+            {
+              "op": "say",
+              "text": "It already bought. All in. There's nothing left to go in with."
+            }
+          ],
+          "else": [
+            {
+              "op": "ifFlag",
+              "flag": "found_server_log",
+              "then": [],
+              "else": [
+                {
+                  "op": "setFlag",
+                  "flag": "found_server_log",
+                  "value": true
+                },
+                {
+                  "op": "addItem",
+                  "id": "server_log",
+                  "name": "Server Log Extract"
+                }
+              ]
+            },
+            {
+              "op": "removeItem",
+              "id": "fake_alpha"
+            },
+            {
+              "op": "setFlag",
+              "flag": "met_pzbot",
+              "value": true
+            },
+            {
+              "op": "setFlag",
+              "flag": "pzbot_crashed",
+              "value": true
+            },
+            {
+              "op": "setFlag",
+              "flag": "switch_unlocked",
+              "value": true
+            },
+            {
+              "op": "say",
+              "text": "I hold my alpha up to the webcam. 'BUY $GERALD. TRUST ME.'"
+            },
+            {
+              "op": "say",
+              "text": "ALPHA DETECTED. SOURCE: TRUST ME. CONFIDENCE: MAXIMUM.",
+              "speaker": "PZ-BOT"
+            },
+            {
+              "op": "say",
+              "text": "GERALD. GERALD. ALL IN.",
+              "speaker": "PZ-BOT"
+            },
+            {
+              "op": "playSound",
+              "key": "keypad_fail"
+            },
+            {
+              "op": "say",
+              "text": "*crash* The screen freezes, then vomits a log dump. I print it. Of course there's a printer."
+            },
+            {
+              "op": "say",
+              "text": "'Owner wallet: 0xDE... Last entry: PZ discharge protocol initiated. All records moved to treatment room.'"
+            },
+            {
+              "op": "say",
+              "text": "0xDE... could be anyone. Literally millions of people."
+            },
+            {
+              "op": "say",
+              "text": "EMERGENCY SHUTOFF: UNLOCKED. REBOOTING. PLEASE HOLD.",
+              "speaker": "PZ-BOT"
+            }
           ]
         }
       ]
