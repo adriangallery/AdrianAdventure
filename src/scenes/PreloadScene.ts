@@ -156,6 +156,7 @@ export class PreloadScene extends Phaser.Scene {
       'note_half_a', 'note_half_b', 'fence_plank', // A3.3c: PIN partido
       'vet_bill', // A3.3d: la factura del veterinario de Gerald (pregunta de seguridad de DOORIS)
       'leaky_pen', // A3.4a: el boli de Mt. Gox del abrigo de Adrian
+      'pizza_slice', // A3.4b: la porción de pizza que engrasa la veleta
     ];
     for (const id of itemIds) {
       const key = `item_${id}`;

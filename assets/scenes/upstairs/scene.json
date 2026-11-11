@@ -612,7 +612,23 @@
           "LOOK": [
             {
               "op": "say",
-              "text": "An open pizza box on the floor. Two slices remain, petrified. The receipt says '10,000 BTC'. Just kidding. But someone definitely ate here for days."
+              "text": "An open pizza box on the floor, fossilised."
+            },
+            {
+              "op": "ifFlag",
+              "flag": "has_pizza_slice",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "One slice left. Forty percent cheese, sixty percent industrial lubricant."
+                }
+              ],
+              "else": [
+                {
+                  "op": "say",
+                  "text": "Two slices. Forty percent cheese, sixty percent industrial lubricant."
+                }
+              ]
             }
           ],
           "USE": [
@@ -629,8 +645,42 @@
           ],
           "PICK": [
             {
-              "op": "say",
-              "text": "I pick up a petrified slice. It could be used as a weapon. Or a coaster. I put it back."
+              "op": "ifFlag",
+              "flag": "has_pizza_slice",
+              "then": [
+                {
+                  "op": "ifHasItem",
+                  "id": "pizza_slice",
+                  "then": [
+                    {
+                      "op": "say",
+                      "text": "One slice is plenty. I'm not opening a lubricant business."
+                    }
+                  ],
+                  "else": [
+                    {
+                      "op": "say",
+                      "text": "The other slice stays. I think it's load-bearing."
+                    }
+                  ]
+                }
+              ],
+              "else": [
+                {
+                  "op": "setFlag",
+                  "flag": "has_pizza_slice",
+                  "value": true
+                },
+                {
+                  "op": "addItem",
+                  "id": "pizza_slice",
+                  "name": "Pizza Slice"
+                },
+                {
+                  "op": "say",
+                  "text": "I peel off a slice. It comes away with a sound like velcro."
+                }
+              ]
             }
           ],
           "OPEN": [

@@ -1,5 +1,5 @@
 {
-  "_doc": "A2.9/A2.9a: diario de Dex, capítulo 2 (lobby, upstairs, rooftop). A3.4a: Penny y el abrigo (p2_coat, notas de Penny); el resto se reescribe en A3.4b-d. Ver qa/README.md § Diario.",
+  "_doc": "A2.9/A2.9a: diario de Dex, capítulo 2 (lobby, upstairs, rooftop). A3.4a: Penny y el abrigo (p2_coat, notas de Penny); A3.4c: cajón de Terms & Conditions (p2_drawer). A3.4b: veleta engrasada con pizza (p2_vane) y escotilla de tres cierres (p2_hatch: el capítulo acaba al bajar). Fernando, en A3.4d. Ver qa/README.md § Diario.",
   "chapter": 2,
   "goals": [
     { "id": "g2_keycard", "text": "Get Adrian's keycard out of his coat. Past Penny.", "doneWhen": "has_keycard" },
@@ -12,8 +12,10 @@
     { "id": "n2_keycard", "text": "Adrian's coat: an admin keycard with his face on it, and a Mt. Gox pen that won't stop leaking. Penny never saw a thing.", "shownWhen": "found_keycard" },
     { "id": "n2_receptionist", "text": "Penny panicked at 'Patient Zero'. 'Basement-level clearance.' Something downstairs keeps blinking. Noted. Underlined.", "shownWhen": "receptionist_mentioned_pz" },
     { "id": "n2_pz_note", "text": "Read all 38 pages of Adrian's Terms. Prize: a trading terminal key and a sticky note, 'PZ escaped via contract exploit. Check server logs.'", "shownWhen": "found_pz_note" },
+    { "id": "n2_hatch", "text": "Roof hatch: card reader, keyhole, and a latch on a cable to the weather vane. Adrian trusts nobody.", "shownWhen": "hatch_reader_ok" },
+    { "id": "n2_grease", "text": "Greased the weather vane with a slice of Adrian's pizza. It was always more lubricant than food.", "shownWhen": "vane_greased" },
     { "id": "n2_vane", "text": "The weather vane on the roof works a latch on the service hatch. Who wires a weather vane to a hatch? Adrian.", "shownWhen": "vane_turned" },
-    { "id": "n2_blink", "text": "That blinking below the building is a server heartbeat. Something in the basement is still running.", "shownWhen": "chapter_2_complete" }
+    { "id": "n2_blink", "text": "Three locks open. That blinking below the building is a server heartbeat, and I climbed down to meet it.", "shownWhen": "chapter_2_complete" }
   ],
   "puzzles": [
     {
@@ -40,19 +42,19 @@
       "openWhen": "found_terminal_key",
       "doneWhen": "vane_turned",
       "hints": [
-        "Go up. Things on roofs point somewhere.",
-        "The weather vane is wired to something.",
-        "Use the weather vane. Force it down."
+        "That weather vane hasn't moved since the last bull run. It needs grease.",
+        "Upstairs there's a pizza that's mostly lubricant.",
+        "Take a slice from the pizza box upstairs, use it on the weather vane, then turn the vane."
       ]
     },
     {
-      "id": "p2_light",
+      "id": "p2_hatch",
       "openWhen": "vane_turned",
       "doneWhen": "chapter_2_complete",
       "hints": [
-        "Something down there is blinking at you.",
-        "The light at the bottom of the building.",
-        "From the roof, look at the basement light."
+        "Three locks. You've got three answers in your pockets.",
+        "Card reader: the card from the coat. Keyhole: the key from the drawer. The latch: the vane.",
+        "Use the keycard and the terminal key on the roof hatch. Then climb down."
       ]
     }
   ],
