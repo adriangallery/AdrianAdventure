@@ -23,6 +23,8 @@ CROP_W = 72
 CROP_H = 103  # alto de Dex en reposo (px de arte): de la fila 0 a la de los dedos de frente
 PAD_BOTTOM = 5  # filas bajo los pies para el pie adelantado al andar hacia cámara (el origen sigue en los pies)
 OUTLINE = (12, 8, 10)
+DARK_LUM = 0.25  # sRGB
+DARK_MIN = 6  # de 16
 
 
 def build_palette(n=40):
@@ -58,6 +60,14 @@ def pixelize(raw_path, pal, ss, root_col_art, bottom_art):
     alpha = a[..., 3].mean(axis=(1, 3))
     rgb_lin = (to_lin(a[..., :3] * 255) * a[..., 3:4]).sum(axis=(1, 3)) / np.maximum(1e-6, a[..., 3].sum(axis=(1, 3)))[..., None]
     mask = alpha >= 0.5
+    # trazos oscuros finos (boca, cejas, nariz, líneas de los cuadros): si un bloque tiene al menos DARK_MIN de sus
+    # SS×SS píxeles oscuros y opacos, el píxel de arte toma el color medio de esos (la media los borraba)
+    srgb = a[..., :3]
+    lum = srgb[..., 0] * 0.30 + srgb[..., 1] * 0.59 + srgb[..., 2] * 0.11
+    dark = (lum < DARK_LUM) & (a[..., 3] > 0.5)
+    nd = dark.sum(axis=(1, 3))
+    dark_lin = (to_lin(srgb * 255) * dark[..., None]).sum(axis=(1, 3)) / np.maximum(1, nd)[..., None]
+    rgb_lin = np.where((nd >= DARK_MIN)[..., None], dark_lin, rgb_lin)
     # al más cercano de la paleta en lineal con pesos de luminancia
     pl = to_lin(pal)
     wts = np.array([0.30, 0.59, 0.11]) * 3
