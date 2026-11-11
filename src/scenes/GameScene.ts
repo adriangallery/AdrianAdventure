@@ -231,6 +231,8 @@ export class GameScene extends Phaser.Scene {
     this.registry.remove('spawnOverride');
     this.player = new Player(this, this.coordSystem, spawn.x, spawn.y, sceneData);
     this.player.onStep = () => this.checkWalkTriggers();
+    // A2.14: «no puedo» = Dex se encoge de hombros con cada respuesta de fallo (el texto sale a la vez, sin esperar)
+    failResponses.onFail = () => this.player?.shrug();
 
     // Hide player for closeup/cinematic scenes
     if (sceneData.player.hidePlayer) {
@@ -2186,6 +2188,7 @@ export class GameScene extends Phaser.Scene {
     // cinemática de estos motores; el director suelta sus animaciones (la escena nueva arranca sin franjas)
     this.cinema?.destroy();
     this.cinema = undefined;
+    failResponses.onFail = null;
     this.scriptEngine?.cancelEffects();
     this.dialogueScripts?.cancelEffects();
     this.overlayOverrides.clear();

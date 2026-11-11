@@ -282,3 +282,91 @@ test('A2.14: hablar y gestos 3D; el gesto según verbo y altura', () => {
   assert.equal(gestureAnimFor('PUSH', 0.5), 'push');
   assert.equal(gestureAnimFor('OPEN', 0.5), 'use');
 });
+
+// ── A2.14 «con gracia»: manías de reposo y encogerse de hombros ───────────────────────────────────────────────────────
+test('A2.14 gracia: manías de reposo de frente (se disparan, alternan sin repetir, deterministas, se cortan)', () => {
+  const { MANIAS3D, MANIA_LIST, maniaMs } = A;
+  assert.ok(MANIA_LIST.length >= 4);
+  for (const m of MANIA_LIST) {
+    const { frames, fps } = MANIAS3D[m];
+    assert.ok(frames >= 8 && frames <= 12, `${m}: ${frames} fotogramas`);
+    assert.ok(fps >= 8 && fps <= 10, `${m}: ${fps} fps`);
+    assert.equal(maniaMs(m), Math.round((frames * 1000) / fps));
+  }
+  assert.deepEqual(idleTicKinds('front', true), ['mania', 'lookSide']);
+  assert.deepEqual(idleTicKinds('right', true), ['lookCamera', 'lookSide'], 'de perfil, sin manías');
+  const run = (seed, ms, free = () => true, facing = 'front') => {
+    const tk = new IdleTicker(seed);
+    const log = [];
+    let prev = null;
+    for (let t = 0; t <= ms; t += 16) {
+      const r = tk.update(16, free(t), facing, 'right', true);
+      if (r && r.tic !== prev) log.push({ at: t, kind: r.tic.kind, mania: r.tic.mania ?? null });
+      prev = r ? r.tic : null;
+    }
+    return log;
+  };
+  const a = run(QA_IDLE_SEED, 60000);
+  const manias = a.filter((x) => x.kind === 'mania').map((x) => x.mania);
+  assert.ok(a[0].at >= IDLE_TIC_AFTER_MS - 16 && a[0].at <= IDLE_TIC_AFTER_MS + 32, `primer tic a los ${a[0].at} ms`);
+  assert.ok(manias.length >= 5, `${manias.length} manías en 60 s`);
+  assert.ok(new Set(manias).size >= 3, `variedad: ${manias.join(', ')}`);
+  for (let i = 1; i < manias.length; i++) assert.notEqual(manias[i], manias[i - 1], 'no repite la anterior');
+  assert.deepEqual(run(QA_IDLE_SEED, 60000), a, 'misma semilla, mismas manías');
+  // de perfil no hay manías
+  assert.ok(run(QA_IDLE_SEED, 30000, () => true, 'left').every((x) => x.kind !== 'mania'));
+  // fotogramas: player3d_<manía>_down_<i>, del 0 al último y ahí se queda
+  const has3 = (k) => k.startsWith('player3d_') || has(k);
+  const m = MANIA_LIST[0];
+  const tic = { kind: 'mania', ms: maniaMs(m), side: 'right', mania: m };
+  const seen = new Set();
+  for (let t = 0; t < tic.ms; t += 20) seen.add(idleTicPose(tic, t, { prefix: 'player', has: has3 }).texture);
+  assert.equal(seen.size, MANIAS3D[m].frames);
+  assert.equal(idleTicPose(tic, 0, { prefix: 'player', has: has3 }).texture, `player3d_${m}_down_0`);
+  assert.equal(idleTicPose(tic, 99999, { prefix: 'player', has: has3 }).texture, `player3d_${m}_down_${MANIAS3D[m].frames - 1}`);
+  assert.equal(idleTicPose(tic, 0, { prefix: 'player', has }).texture, 'player_idle1', 'sin fotogramas 3D, el idle');
+  // se corta en cuanto deja de estar en reposo (andar, hablar, gesto)
+  const tk = new IdleTicker(QA_IDLE_SEED);
+  let cur = null;
+  for (let t = 0; t < 20000 && !(cur && cur.tic.kind === 'mania'); t += 16) cur = tk.update(16, true, 'front', 'right', true);
+  assert.equal(cur?.tic.kind, 'mania');
+  assert.equal(tk.update(16, false, 'front', 'right', true), null);
+  assert.equal(tk.current(), null, 'cortada al instante');
+});
+
+test('A2.14 gracia: encogerse de hombros (shrug) de frente y de perfil, 7 fotogramas en SHRUG_MS', () => {
+  const { shrugPose, SHRUG_MS, SHRUG3D_FRAMES, SHRUG3D_FRAME_MS } = A;
+  assert.equal(SHRUG_MS, SHRUG3D_FRAMES * SHRUG3D_FRAME_MS);
+  assert.ok(SHRUG3D_FRAMES >= 6 && SHRUG3D_FRAMES <= 8);
+  const has3 = (k) => k.startsWith('player3d_') || has(k);
+  for (const [facing, dir] of [['front', 'down'], ['left', 'left'], ['right', 'right']]) {
+    const seen = new Set();
+    for (let t = 0; t < SHRUG_MS; t += 10) {
+      const p = shrugPose({ prefix: 'player', facing, tMs: t, has: has3 });
+      assert.equal(p.angle, 0);
+      assert.equal(p.lift, 0);
+      seen.add(p.texture);
+    }
+    assert.equal(seen.size, SHRUG3D_FRAMES, facing);
+    assert.ok([...seen].every((k) => k.startsWith(`player3d_shrug_${dir}_`)));
+    assert.equal(shrugPose({ prefix: 'player', facing, tMs: SHRUG_MS, has: has3 }), null, 'termina');
+  }
+  // de espaldas no hay fotogramas (las claves up no existen) y el mono no tiene
+  const noUp = (k) => has3(k) && !k.includes('_shrug_up_');
+  assert.equal(shrugPose({ prefix: 'player', facing: 'back', tMs: 0, has: noUp }), null);
+  assert.equal(shrugPose({ prefix: 'ape', facing: 'front', tMs: 0, has: has3 }), null);
+});
+
+test('A2.14 gracia: PNG de las manías y del shrug en disco y en el manifiesto', async () => {
+  const { MANIAS3D, MANIA_LIST, SHRUG3D_FRAMES } = A;
+  const dir = new URL('../assets/sprites/player3d/', import.meta.url);
+  const files = new Set(readdirSync(dir));
+  const { readFileSync } = await import('node:fs');
+  const man = JSON.parse(readFileSync(new URL('dex3d.json', dir), 'utf8'));
+  for (const m of MANIA_LIST) {
+    for (let i = 0; i < MANIAS3D[m].frames; i++) assert.ok(files.has(`${m}_down_${i}.png`), `falta ${m}_down_${i}.png`);
+    assert.equal(man.anims[m]?.frames, MANIAS3D[m].frames, `manifiesto ${m}`);
+  }
+  for (const d of ['down', 'left', 'right']) for (let i = 0; i < SHRUG3D_FRAMES; i++) assert.ok(files.has(`shrug_${d}_${i}.png`), `falta shrug_${d}_${i}.png`);
+  assert.equal(man.anims.shrug?.frames, SHRUG3D_FRAMES);
+});

@@ -7,7 +7,10 @@
 //   3) cada gesto (coger bajo/medio/alto, usar, empujar, tirar, dar) lanzado con player.gesture(null, anim):
 //      fotogramas player3d_<anim>_<dir>_*, y vuelve al reposo;
 //   4) durante cada gesto (quieto) el alto de Dex (state().pixel.worldHeightPct) no cambia: con cualquier fotograma 3D
-//      el origen queda en los pies y el alto es el de A2.11.
+//      el origen queda en los pies y el alto es el de A2.11;
+//   5) A2.14 «con gracia»: «no puedo» = encogerse de hombros (player.shrug(), lo mismo que lanza cada respuesta de
+//      fallo): fotogramas player3d_shrug_<dir>_* y vuelta al reposo; y quieto de frente con la escena libre, al menos
+//      una manía de reposo (state().anim.mania: idle_scratch, idle_glasses…) con sus fotogramas player3d_idle_*_down_*.
 // Uso: BASE_URL=http://127.0.0.1:4173 node scripts/lib/demo.mjs run a2-14-dex3d
 import { startDemo, sleep } from './lib/demo.mjs';
 
@@ -92,6 +95,42 @@ async function gestures(scene) {
   }
 }
 
+async function shrug(scene) {
+  const s = await sampled('shrug', () => new Promise((done) => {
+    const p = window.__game.scene.getScene('GameScene').player;
+    p.face('front');
+    p.shrug();
+    const t = setInterval(() => { if (!p.isGesturing()) { clearInterval(t); done(); } }, 30);
+  }), [], 3000);
+  const frames = s.tex.filter((t) => t.startsWith('player3d_shrug_'));
+  console.log(`${scene} shrug: ${frames.join(', ')}`);
+  if (frames.length < 4) problems.push(`${scene} shrug: ${frames.length} fotogramas 3D (${s.tex.join(', ')})`);
+  await demo.still(`${scene}-shrug`);
+  await sleep(200);
+  const a = (await anim()).anim;
+  if (a && (!a.rest || a.gesture)) problems.push(`${scene} shrug: no vuelve al reposo`);
+}
+
+/** Quieto de frente hasta que suene una manía (primer tic a los 6 s con ?qa=1) y hasta que acabe */
+async function mania(scene) {
+  const s = await sampled('mania', () => new Promise((done) => {
+    window.__game.scene.getScene('GameScene').player.face('front');
+    const seen = (window.__maniaSeen = []);
+    const t0 = performance.now();
+    const t = setInterval(() => {
+      const m = window.__qa.state().anim?.mania ?? null;
+      if (m && !seen.includes(m)) seen.push(m);
+      if ((seen.length && !m) || performance.now() - t0 > 20000) { clearInterval(t); done(); }
+    }, 30);
+  }), [], 24000);
+  const names = await page.evaluate(() => window.__maniaSeen ?? []);
+  const frames = s.tex.filter((t) => /^player3d_idle_[a-z]+_down_/.test(t));
+  console.log(`${scene} manía: ${names.join(', ') || 'ninguna'} · ${frames.length} fotogramas`);
+  if (!names.length) problems.push(`${scene}: ninguna manía de reposo en 20 s quieto de frente (${s.tex.join(', ')})`);
+  else if (frames.length < 6) problems.push(`${scene} manía ${names[0]}: solo ${frames.length} fotogramas`);
+  await demo.still(`${scene}-mania`);
+}
+
 for (const scene of ['outside', 'lobby']) {
   await open(scene);
   const st0 = await anim();
@@ -115,6 +154,9 @@ for (const scene of ['outside', 'lobby']) {
   if (talk.length < 3) problems.push(`${scene}: hablando solo ${talk.length} fotogramas player3d_talk_*`);
   await demo.settle({ tap: [422, 40], calm: 2, every: 300 });
   await gestures(scene);
+  await shrug(scene);
+  await demo.settle({ tap: [422, 40], calm: 2, every: 300 });
+  await mania(scene);
 }
 
 await demo.end();

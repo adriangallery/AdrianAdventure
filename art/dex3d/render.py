@@ -2,7 +2,7 @@
 las escenas y salida en bruto (RGBA a ×SS de la resolución de arte) que luego pasa pixelize.py.
 
 Uso (headless):
-    blender -b -P art/dex3d/render.py -- --out /var/tmp/adv-dex3d/raw [--only walk_right,idle] [--views] [--save-blend art/dex3d/dex.blend]
+    blender -b -P art/dex3d/render.py -- --out /var/tmp/adv-dex3d/raw [--only walk,idle] [--dirs down,right] [--views] [--save-blend art/dex3d/dex.blend]
 
 --views: solo pose de reposo, pose T y una vuelta de 8 vistas (comprobación del modelo).
 Sin --views: calibra la escala (103 px de arte de alto en reposo, de frente), monta las acciones (animate.py) con la
@@ -112,6 +112,7 @@ def main():
     argv = sys.argv[sys.argv.index('--') + 1:] if '--' in sys.argv else []
     out = argv[argv.index('--out') + 1] if '--out' in argv else '/var/tmp/adv-dex3d/raw'
     only = argv[argv.index('--only') + 1].split(',') if '--only' in argv else None
+    only_dirs = argv[argv.index('--dirs') + 1].split(',') if '--dirs' in argv else None  # iterar: solo esas direcciones
     os.makedirs(out, exist_ok=True)
     rig = build_dex.build()
     ortho = 2.02
@@ -147,8 +148,9 @@ def main():
     for name, a in anims.items():
         if only and name not in only:
             continue
-        meta['anims'][name] = {'frames': a['frames'], 'fps': a['fps'], 'dirs': a['dirs'], 'loop': a['loop']}
-        for d in a['dirs']:
+        dirs = [d for d in a['dirs'] if not only_dirs or d in only_dirs]
+        meta['anims'][name] = {'frames': a['frames'], 'fps': a['fps'], 'dirs': dirs, 'loop': a['loop']}
+        for d in dirs:
             animate.set_facing(rig, DIRS[d])
             rig.animation_data.action = a['action']
             for i in range(a['frames']):
