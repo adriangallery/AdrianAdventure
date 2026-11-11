@@ -2,6 +2,7 @@ import type { GameState } from '@/types/game.types';
 import { migrateSave } from '@/systems/SaveMigration';
 import { saveForWallet, loadForWallet, hasWalletSave, cloudAutosave, type WalletSave } from '@/web3/wallet-save';
 import { SAVE_KEY, writeSlotVerified, readSlots, backupBeforeLoad, deleteSlotLocal, type SaveResult } from '@/systems/SaveSlots';
+import { autosavePlan, PREVIOUS_AUTOSAVE_SLOT } from '@/systems/SaveProgress';
 
 /** Slots que cuentan como «hay partida» (0 = autoguardado, 1-2 = manuales; el 3 «Before load» no cuenta). */
 const MAX_SLOTS = 3;
@@ -29,11 +30,22 @@ export class SaveLoadSystem {
 
   /**
    * Auto-save the current state (slot 0 + wallet save if connected).
+   * A1.13: un estado sin progreso (p. ej. el de «New Game») no se escribe en ningún sitio (ni slot 0, ni cartera, ni
+   * nube); si el slot 0 tiene progreso de OTRA partida, antes de pisarlo se copia a «Previous autosave» (slot 4).
+   * Devuelve true solo si se escribió y se releyó.
    */
   autoSave(state: GameState, sceneName: string): boolean {
+    const existing = this.getAllSlots()[0] ?? null;
+    const plan = autosavePlan(existing?.state, state);
+    if (!plan.write) return false;
+    if (plan.backupExisting && existing) {
+      const kept = writeSlotVerified(localStorage, PREVIOUS_AUTOSAVE_SLOT, existing.state, existing.sceneName, existing.timestamp);
+      // Si no se pudo guardar la copia, no se pisa la partida anterior
+      if (!kept.ok) { console.warn(`Previous autosave backup failed: ${kept.error}`); return false; }
+    }
     // Solo el slot 0 (A1.12: el autoguardado nunca toca los manuales 1-2 ni «Before load»)
     const ok = this.saveToSlot(0, state, sceneName).ok;
-    // Also save to wallet-linked storage if connected
+    // Also save to wallet-linked storage if connected (con la misma regla dentro de wallet-save)
     if (this.walletAddress) {
       saveForWallet(this.walletAddress, state, sceneName);
       // V7: copia en la nube (slot 0) para continuar desde otro dispositivo; limitada a 1/min

@@ -5,7 +5,7 @@ import { SaveLoadSystem } from '@/systems/SaveLoadSystem';
 import { getWalletState, getSessionAuth, authorizeSession } from '@/web3/wallet';
 import { exportSignedWalletSave, importWalletSave, saveForWalletRemote, loadRemoteSlots, type WalletSave } from '@/web3/wallet-save';
 import {
-  AUTOSAVE_SLOT, BACKUP_SLOT, MANUAL_SLOTS, pickSlotView, saveErrorMessage, sessionUsable, slotLabel, slotTapAction,
+  AUTOSAVE_SLOT, BACKUP_SLOT, PREVIOUS_AUTOSAVE_SLOT_ID, MANUAL_SLOTS, pickSlotView, saveErrorMessage, sessionUsable, slotLabel, slotTapAction,
   type PanelMode, type SlotView,
 } from '@/systems/SaveSlots';
 import type { GameScene } from '@/scenes/GameScene';
@@ -282,7 +282,9 @@ export class SaveButton {
       }
 
       const game = currentGame();
-      const slotIds = mode === 'save' ? [...MANUAL_SLOTS] : [...MANUAL_SLOTS, AUTOSAVE_SLOT, BACKUP_SLOT];
+      // A1.13: «Previous autosave» (copia del autoguardado de otra partida) solo se lista si existe
+      const slotIds = mode === 'save' ? [...MANUAL_SLOTS]
+        : [...MANUAL_SLOTS, AUTOSAVE_SLOT, BACKUP_SLOT, ...(viewOf(PREVIOUS_AUTOSAVE_SLOT_ID) ? [PREVIOUS_AUTOSAVE_SLOT_ID] : [])];
       for (const slotId of slotIds) {
         const view = viewOf(slotId);
         const action = slotTapAction(mode, slotId, view, !!game);

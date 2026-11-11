@@ -7,6 +7,7 @@ import { DialogueScriptRunner } from '@/systems/DialogueScripts';
 import { InventorySystem } from '@/systems/InventorySystem';
 import { SaveLoadSystem } from '@/systems/SaveLoadSystem';
 import { migrateGameState } from '@/systems/SaveMigration';
+import { isValidRunId, newRunId } from '@/systems/SaveProgress';
 import type { MusicManager } from '@/systems/MusicManager';
 import { CinematicOverlay } from '@/ui/CinematicOverlay';
 import { Web3VisualSystem } from '@/systems/Web3VisualSystem';
@@ -67,6 +68,8 @@ export class GameScene extends Phaser.Scene {
   private saveSystem!: SaveLoadSystem;
   /** A1.12: el último autoguardado se escribió y releyó bien (si no, no se enseña «AUTOSAVED»). */
   private autosaveOk = false;
+  /** A1.13: hubo progreso desde el último autoguardado (ver autosaveProgressIfIdle). */
+  private progressDirty = false;
   private musicManager!: MusicManager;
   /** A4.4 (QA): último paso (superficie bajo los pies y efecto que sonó, null si la superficie es muda) */
   private lastFootstep: { surface: string | null; key: string | null; at: number } | null = null;
@@ -176,6 +179,8 @@ export class GameScene extends Phaser.Scene {
     // A1.4: red de seguridad; las cargas ya migran, pero cualquier estado que llegue al registry pasa por aquí
     this.gameState = migrateGameState((this.registry.get('gameState') as GameState) ?? createInitialState(sceneId));
     this.gameState.currentScene = sceneId;
+    // A1.13: id de partida; a una partida vieja (sin id) se le pone uno al cargarla
+    if (!isValidRunId(this.gameState.runId)) this.gameState.runId = newRunId(Date.now(), Math.random());
     if (!this.gameState.visited.includes(sceneId)) this.gameState.visited.push(sceneId);
     // Ensure new fields exist (backward compat with old saves)
     if (!this.gameState.firedTriggers) this.gameState.firedTriggers = [];
@@ -1367,6 +1372,21 @@ export class GameScene extends Phaser.Scene {
     return points;
   }
 
+  /**
+   * A1.13: autoguardado por progreso. Antes solo se autoguardaba al entrar en una escena, y todo el capítulo 1 pasa en
+   * `outside`: el slot 0 se quedaba con el estado de «New Game» aunque el jugador llevara un rato jugando. Ahora, cuando
+   * cambia el inventario o las flags y no hay script, diálogo ni diario en marcha, se autoguarda (sin aviso en pantalla).
+   */
+  private autosaveProgressIfIdle(): void {
+    if (!this.progressDirty || this.isTrailer) return;
+    if (this.scriptEngine.isRunning() || this.registry.get('dialogueShowing') || this.registry.get('dialogueActive')
+      || this.registry.get('journalOpen') || this.registry.get('sceneTransition')) return;
+    this.progressDirty = false;
+    this.gameState.savedAt = Date.now();
+    const title = this.sceneDataLoader?.getSceneData()?.title ?? this.gameState.currentScene;
+    this.saveSystem.autoSave(this.gameState, title);
+  }
+
   /** Firma del progreso: cambia al cambiar de escena, coger/soltar objetos o activar flags. */
   private currentProgressSig(): string {
     const flags = Object.values(this.gameState.flags ?? {}).filter(Boolean).length;
@@ -1383,7 +1403,14 @@ export class GameScene extends Phaser.Scene {
     if (this.isTrailer) return;
     const now = Date.now();
     const sig = this.currentProgressSig();
-    if (sig !== this.progressSig) { this.progressSig = sig; this.lastProgressAt = now; return; }
+    const changed = sig !== this.progressSig;
+    if (changed) {
+      // A1.13: hay avance (objeto, flag): se marca para autoguardar en cuanto no haya script ni diálogo en marcha
+      if (this.progressSig) this.progressDirty = true;
+      this.progressSig = sig; this.lastProgressAt = now;
+    }
+    this.autosaveProgressIfIdle();
+    if (changed) return;
     // A2.9: leyendo el diario tampoco cuenta como atascado
     if (this.scriptEngine.isRunning() || this.registry.get('dialogueShowing') || this.registry.get('dialogueActive') || this.registry.get('journalOpen')) {
       this.lastProgressAt = Math.max(this.lastProgressAt, now - 1000);
