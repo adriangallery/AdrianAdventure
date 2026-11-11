@@ -525,6 +525,8 @@ export class ScummUI {
     fence_plank: "A plank from Adrian's fence. Long, sturdy, one rusty nail. Technically, I'm holding part of his perimeter.",
     // A3.3d: la factura del veterinario (pregunta de seguridad de DOORIS) y el Ledger de debajo del felpudo
     vet_bill: "PAWS & CLAWS VET. Patient: GERALD. Species: rubber duck (?). Born: 3 Jan 2009. Owner: Adrian. Relationship: best friend. Diagnosis: perfect. Note: please stop bringing him in.",
+    // A3.4a: el boli del abrigo de Adrian (gag recurrente: cap. 3 alfa falsa y mapa, epílogo NOW HIRING)
+    leaky_pen: "A pen from Adrian's coat pocket. Mt. Gox branding. Still leaking after all these years. My fingers are blue now.",
     ledger: "Adrian's hardware wallet, fresh from under a doormat. The screen shows a balance that would make a whale blush. Or maybe it's just dust on the display.",
     keycard: "An admin keycard with Adrian's photo. He looks younger. And less concerned about gas fees.",
     floppy_disk: "A 3.5\" floppy labeled 'BACKUP'. 1.44 MB of pure nostalgia. That's like... half an NFT image.",
@@ -571,6 +573,14 @@ export class ScummUI {
       [Verb.PULL]: "I try to tear it. No. I just put it back together. What am I doing?",
       [Verb.CLOSE]: "I fold it back up. The 7 peeks out accusingly.",
       [Verb.GIVE]: "I'm not giving away the only code I have. That's Security 101.",
+    },
+    leaky_pen: {
+      [Verb.OPEN]: "I unscrew it. More ink comes out than any pen should hold. I screw it back. Quickly.",
+      [Verb.TALK]: "'Where did all the money go?' The pen leaks a little more. That's a no comment.",
+      [Verb.PUSH]: "I click it. Click. Click. Drip. The click works. The pen doesn't stop.",
+      [Verb.PULL]: "I pull the cap off. Blue ink everywhere. I put it back on. Blue ink still everywhere.",
+      [Verb.CLOSE]: "I cap it. It keeps leaking through the cap. It's a gift.",
+      [Verb.GIVE]: "Nobody wants this pen. That's how it ended up in a coat for ten years.",
     },
     vet_bill: {
       [Verb.OPEN]: "I unfold it. There's a second page. 'Treatment: reassurance. Dosage: as needed.' Gerald is in good hands.",

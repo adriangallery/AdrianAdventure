@@ -44,6 +44,7 @@
         {"do": "act", "verb": "OPEN", "target": "hs_mailbox", "note": "A3.3d: un solo OPEN da el sobre y la factura del veterinario (Gerald, la respuesta de la pregunta de seguridad)", "expect": {"has": ["vet_bill", "mystery_envelope"], "flags": {"knows_gerald": true}}},
         {"do": "use", "item": "code_note", "target": "hs_keypad", "choices": ["vet bill"], "note": "A3.3d: PIN aceptado; DOORIS se presenta (primera vez), llama Anon y hace la pregunta de seguridad: la opción «[The name on the vet bill]» solo sale con la factura; aún falta la llave", "expect": {"scene": "outside", "flags": {"dooris_met": true, "anon_call_1": true, "dooris_pin_ok": true, "dooris_question_ok": true, "door_unlocked": false}}},
         {"do": "use", "item": "ledger", "target": "hs_keypad", "note": "A3.3d: tercer factor: DOORIS abre («One factor was a duck») y el árbol cambia de escena al cerrarse", "expect": {"scene": "lobby", "flags": {"chapter_1_complete": true}}},
+        { "do": "use", "item": "mystery_envelope", "target": "hs_monitor_desk", "note": "A3.4a: el sobre en el escritorio distrae a Penny", "expect": { "flags": { "penny_reading": true } } },
         { "do": "act", "verb": "PICK", "target": "hs_coat", "expect": { "has": ["keycard"] } },
         { "do": "act", "verb": "USE", "target": "hs_frontdoor", "expect": { "scene": "outside", "has": ["keycard"], "lacks": ["printout"], "flags": { "chapter_3_complete": false } } },
         { "do": "walk", "x": 1.5, "y": 95, "trigger": "tr_mountain", "untilScene": "mountain", "attempt": true }
@@ -66,6 +67,7 @@
         {"do": "act", "verb": "OPEN", "target": "hs_mailbox", "note": "A3.3d: un solo OPEN da el sobre y la factura del veterinario (Gerald, la respuesta de la pregunta de seguridad)", "expect": {"has": ["vet_bill", "mystery_envelope"], "flags": {"knows_gerald": true}}},
         {"do": "use", "item": "code_note", "target": "hs_keypad", "choices": ["vet bill"], "note": "A3.3d: PIN aceptado; DOORIS se presenta (primera vez), llama Anon y hace la pregunta de seguridad: la opción «[The name on the vet bill]» solo sale con la factura; aún falta la llave", "expect": {"scene": "outside", "flags": {"dooris_met": true, "anon_call_1": true, "dooris_pin_ok": true, "dooris_question_ok": true, "door_unlocked": false}}},
         {"do": "use", "item": "ledger", "target": "hs_keypad", "note": "A3.3d: tercer factor: DOORIS abre («One factor was a duck») y el árbol cambia de escena al cerrarse", "expect": {"scene": "lobby"}},
+        { "do": "use", "item": "mystery_envelope", "target": "hs_monitor_desk", "note": "A3.4a: el sobre en el escritorio distrae a Penny", "expect": { "flags": { "penny_reading": true } } },
         { "do": "act", "verb": "PICK", "target": "hs_coat", "expect": { "has": ["keycard"] } },
         { "do": "act", "verb": "USE", "target": "hs_stairs_up", "expect": { "scene": "upstairs" } },
         { "do": "act", "verb": "USE", "target": "hs_roof_hatch", "expect": { "scene": "rooftop" } },
@@ -200,6 +202,31 @@
         {"do": "act", "verb": "PULL", "target": "hs_doormat", "rejects": "leverage", "expect": {"lacks": ["ledger"], "unsetFlags": ["found_ledger"]}},
         {"do": "act", "verb": "PUSH", "target": "hs_doormat", "rejects": "bonded to the porch", "expect": {"lacks": ["ledger"], "unsetFlags": ["found_ledger"]}},
         {"do": "act", "verb": "PICK", "target": "hs_doormat", "attempt": true, "rejects": "It means it", "expect": {"lacks": ["ledger"], "unsetFlags": ["found_ledger"]}}
+      ]
+    },
+    {
+      "id": "abrigo-sin-distraer-a-penny",
+      "kind": "sequence-break",
+      "title": "A3.4a: la keycard del abrigo sin distraer a Penny con el sobre",
+      "why": "A3.4a (puzle 2.1): Penny vigila el abrigo; PICK, OPEN, PULL y USE se niegan hasta que el sobre CONFIDENTIAL llega a su escritorio (penny_reading)",
+      "goal": {"has": ["keycard"]},
+      "steps": [
+        {"do": "newGame", "expect": {"scene": "outside"}},
+        {"do": "act", "verb": "USE", "target": "hs_porch_light", "note": "A3.3c: la mitad A del PIN (apagar la lámpara, cogerla)", "expect": {"flags": {"porch_light_off": true}}},
+        {"do": "act", "verb": "PICK", "target": "hs_porch_light", "expect": {"has": ["note_half_a"]}},
+        {"do": "act", "verb": "PULL", "target": "hs_fence", "note": "A3.3c: el tablón y, con él, el nido de la chimenea (mitad B)", "expect": {"has": ["fence_plank"]}},
+        {"do": "use", "item": "fence_plank", "target": "hs_chimney", "expect": {"has": ["note_half_b"]}},
+        {"do": "combine", "items": ["note_half_a", "note_half_b"], "expect": {"has": ["code_note"]}},
+        {"do": "use", "item": "fence_plank", "target": "hs_doormat", "note": "A3.3d: el felpudo HODL está pegado; con el tablón sale el Ledger (llave de hardware)", "expect": {"has": ["ledger"], "flags": {"found_ledger": true}}},
+        {"do": "act", "verb": "OPEN", "target": "hs_mailbox", "note": "A3.3d: un solo OPEN da el sobre y la factura del veterinario (Gerald, la respuesta de la pregunta de seguridad)", "expect": {"has": ["vet_bill", "mystery_envelope"], "flags": {"knows_gerald": true}}},
+        {"do": "use", "item": "code_note", "target": "hs_keypad", "choices": ["vet bill"], "note": "A3.3d: PIN aceptado; DOORIS se presenta (primera vez), llama Anon y hace la pregunta de seguridad: la opción «[The name on the vet bill]» solo sale con la factura; aún falta la llave", "expect": {"scene": "outside", "flags": {"dooris_met": true, "anon_call_1": true, "dooris_pin_ok": true, "dooris_question_ok": true, "door_unlocked": false}}},
+        {"do": "use", "item": "ledger", "target": "hs_keypad", "note": "A3.3d: tercer factor: DOORIS abre («One factor was a duck») y el árbol cambia de escena al cerrarse", "expect": {"scene": "lobby"}},
+        {"do": "act", "verb": "PICK", "target": "hs_coat", "rejects": "I AM HR", "note": "A3.4a (2.1): Penny mira el abrigo: primera negativa", "expect": {"scene": "lobby", "lacks": ["keycard", "leaky_pen"], "flags": {"penny_reading": false}}},
+        {"do": "act", "verb": "OPEN", "target": "hs_coat", "rejects": "Still not busy", "note": "A3.4a: OPEN es lo mismo que PICK (segunda variante)", "expect": {"lacks": ["keycard"]}},
+        {"do": "act", "verb": "PULL", "target": "hs_coat", "rejects": "drafting a memo", "note": "A3.4a: descolgarlo tampoco (tercera variante, la que se repite)", "expect": {"lacks": ["keycard"]}},
+        {"do": "act", "verb": "USE", "target": "hs_coat", "rejects": "drafting a memo", "note": "A3.4a: probárselo tampoco (el gag de la talla solo con Penny leyendo)", "expect": {"lacks": ["keycard"]}},
+        {"do": "use", "item": "vet_bill", "target": "hs_monitor_desk", "rejects": "Just sad", "note": "A3.4a: otro papel en el escritorio no la distrae", "expect": {"flags": {"penny_reading": false}}},
+        {"do": "act", "verb": "PICK", "target": "hs_coat", "attempt": true, "rejects": "drafting a memo", "expect": {"lacks": ["keycard", "leaky_pen"], "flags": {"penny_reading": false, "found_keycard": false}}}
       ]
     }
   ]

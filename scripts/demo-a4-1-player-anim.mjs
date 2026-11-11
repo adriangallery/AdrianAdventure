@@ -100,6 +100,22 @@ async function hold(label, n = 4) {
 /** Tramo andado: muestrea dirección, texturas y giro mientras anda; comprueba la llegada. */
 async function walkLeg(tag, label, x, y, want) {
   const seen = { dirs: new Set(), textures: new Set(), maxAngle: 0, still: false };
+  // Muestreo dentro de la página, en cada fotograma: desde A2.11/A2.12 (pixelScale 7 en el lobby, 74 px de arte/s) el
+  // tramo vertical dura ~1 s y las capturas (una cada ~300 ms) podían caer todas cerca del paso por cero del giro.
+  await page.evaluate(() => {
+    const s = (window.__demoSway = { dirs: [], textures: [], maxAngle: 0, on: true });
+    const tick = () => {
+      if (!s.on) return;
+      const a = window.__qa.state().anim;
+      if (a?.moving) {
+        if (!s.dirs.includes(a.dir)) s.dirs.push(a.dir);
+        if (!s.textures.includes(a.texture)) s.textures.push(a.texture);
+        s.maxAngle = Math.max(s.maxAngle, Math.abs(a.angle));
+      }
+      requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  });
   const err = await during(label, (x, y) => window.__demoRun(window.__qa.walk(x, y)), [x, y], {
     onState: async (st, clip) => {
       const a = st.anim;
@@ -114,6 +130,10 @@ async function walkLeg(tag, label, x, y, want) {
     },
   });
   if (err) problems.push(`${tag}: walk falló: ${err}`);
+  const inPage = await page.evaluate(() => { const s = window.__demoSway; s.on = false; return s; });
+  for (const d of inPage.dirs) seen.dirs.add(d);
+  for (const t of inPage.textures) seen.textures.add(t);
+  seen.maxAngle = Math.max(seen.maxAngle, inPage.maxAngle);
   await sleep(300);
   const { st } = await capture(`${label}: llega`);
   const a = st.anim;
@@ -207,6 +227,8 @@ await hold('2) fin de la cinemática', 3);
 
 // 3) coger: PICK del abrigo (sube, se gira de espaldas y gesto de puntillas a la vez que el script)
 {
+  // A3.4a: con Penny mirando el abrigo no se coge; aquí se da por distraída (el puzle lo graba demo-a3-4a-penny)
+  await page.evaluate(() => window.__qa.runScript([{ op: 'setFlag', flag: 'penny_reading', value: true }]));
   const seen = { gesture: false, maxLift: 0, still: false };
   const err = await during('3) PICK abrigo: gesto de puntillas', () => window.__demoRun(window.__qa.act('PICK', 'hs_coat')), [], {
     onState: async (st, clip) => {

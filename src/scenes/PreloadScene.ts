@@ -29,7 +29,7 @@ const LOADING_TIPS: string[] = [
   'Hiding keys in obvious places...',
   'Rehearsing voice lines...',
   'Warming up the FloorEngine...',
-  'Convincing the receptionist to stay...',
+  'Convincing Penny to stay...',
   'Decrypting Patient Zero\'s diary...',
   'Polishing the rubber duck...',
   'Brewing on-chain coffee...',
@@ -155,6 +155,7 @@ export class PreloadScene extends Phaser.Scene {
       'glasses_3d', 'pepememe', 'ape_costume',
       'note_half_a', 'note_half_b', 'fence_plank', // A3.3c: PIN partido
       'vet_bill', // A3.3d: la factura del veterinario de Gerald (pregunta de seguridad de DOORIS)
+      'leaky_pen', // A3.4a: el boli de Mt. Gox del abrigo de Adrian
     ];
     for (const id of itemIds) {
       const key = `item_${id}`;

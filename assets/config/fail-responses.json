@@ -139,6 +139,9 @@
       { "items": ["vet_bill", "ledger"], "lines": ["A vet bill and a hardware wallet. Gerald isn't covered. Nothing here is covered."] },
       { "items": ["vet_bill", "code_note"], "lines": ["7314 and a duck. If that's Adrian's whole security model, I'm already in. ...I'm not already in."] },
       { "items": ["vet_bill", "mystery_envelope"], "lines": ["They came out of the mailbox together. I'm not putting them back together. They've had enough."] },
+      { "items": ["leaky_pen", "mystery_envelope"], "lines": ["I could forge a new seal with the pen. Penny already resealed it. Badly. Two bad seals don't make a good one."] },
+      { "items": ["leaky_pen", "vet_bill"], "lines": ["I'm not writing on Gerald's medical records. Blue ink would upset him. He's yellow."] },
+      { "items": ["leaky_pen", "keycard"], "lines": ["I try to doodle a moustache on Adrian's keycard photo. The pen leaks a beard instead. I wipe it off. Mostly."] },
       { "items": ["fence_plank", "ledger"], "lines": ["The plank got the Ledger out. The Ledger doesn't owe it anything. That's not how leverage works."] }
     ]
   },
@@ -317,6 +320,11 @@
       "I wave the vet bill at it. Gerald's clean bill of health impresses nobody but me.",
       "Not a vet thing. Gerald's paperwork stays in my pocket, where confidential things go.",
       "I hold up the bill. 'Diagnosis: perfect.' That's Gerald's. This isn't."
+    ],
+    "leaky_pen": [
+      "I try the pen on it. Blue drips everywhere. Nothing gets signed, everything gets stained.",
+      "Not the right time for the pen. It leaks anyway. It doesn't care about timing.",
+      "I hold the pen over it. A drop falls. I watch it fall. That's the whole plan, apparently."
     ]
   }
 }

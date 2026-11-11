@@ -150,10 +150,10 @@ await open('outside');
 
   // 3) ducking bajo la voz
   const seen = { voiceFrames: 0, minGain: 1, afterGain: null };
-  err = await during('3) USE puerta cerrada: Dex habla → la música baja bajo la voz', () => window.__demoRun(window.__qa.act('USE', 'hs_front_door')), [], 60000, ({ a }) => {
+  err = await during('3) LOOK puerta: Dex habla → la música baja bajo la voz', () => window.__demoRun(window.__qa.act('LOOK', 'hs_front_door')), [], 60000, ({ a }) => {
     if (a?.duck.includes('voice')) { seen.voiceFrames++; seen.minGain = Math.min(seen.minGain, a.duckGain); }
   });
-  if (err) problems.push(`USE hs_front_door: ${err}`);
+  if (err) problems.push(`LOOK hs_front_door: ${err}`);
   await sleep(600);
   after = (await capture('3) la música vuelve', { shot: false })).a;
   seen.afterGain = after?.duckGain;
