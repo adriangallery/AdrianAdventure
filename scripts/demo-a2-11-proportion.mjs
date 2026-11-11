@@ -8,7 +8,9 @@
 //     misma profundidad (≤ 20 %) y grupos de escenas contiguas (plano delantero ≤ 20 %);
 //   - comprueba que la medida del juego coincide con la analítica (±2 %): la tabla de docs/progreso/A2.11.md sale de
 //     `node scripts/lib/proportion.mjs table`.
-// Falla (exit 1) si alguna escena queda fuera, salvo las excepciones razonadas del JSON.
+// Falla (exit 1) si alguna escena queda fuera, salvo las excepciones razonadas del JSON. A2.13: además, cada escena
+// cumple su modo de escala (`scale`: fixed = el mismo alto en todas las posiciones; variable = cambio ≤ 25 %); en
+// outside (fija por decisión de Adrián) Dex/puerta queda en 1,75 y es excepción declarada del cociente.
 // Capturas: `<escena>-<sitio>.png` (Dex junto a la referencia: `<escena>-ref.png`) y la tabla en proportion.md/.json.
 // Uso: BASE_URL=http://127.0.0.1:4173 node scripts/lib/demo.mjs run a2-11-proportion
 import { join } from 'node:path';

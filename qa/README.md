@@ -556,7 +556,7 @@ Campos opcionales de `scene.json` (junto a `walkableAreas`/`blockedAreas` y los 
 
 ```jsonc
 "pixelScale": 5.5,       // píxeles de fondo por píxel de arte de personaje: la unidad de píxel del mundo (1-12)
-"depthScale": { "yTop": 82.5, "yBottom": 91, "scaleTop": 0.8, "scaleBottom": 1 },  // factor 0,2-2, lineal en y (%)
+"depthScale": { "yTop": 59, "yBottom": 86.5, "scaleTop": 0.75, "scaleBottom": 1 },  // factor 0,2-2, lineal en y (%); cambio ≤ 25 % (A2.13)
 "npcs": [{ "id": "npc_x", "artScale": 1 }]   // hoja dibujada a otra densidad que la del jugador (0,25-4; 1 por defecto)
 ```
 
@@ -571,8 +571,11 @@ Campos opcionales de `scene.json` (junto a `walkableAreas`/`blockedAreas` y los 
   Con la misma ventana todas las escenas con la unidad por defecto dan la misma escala, y el mismo alto.
 - **Profundidad**: `depthScale` multiplica la base ya redondeada por el factor de la y de los pies (constante fuera de
   `yTop`-`yBottom`): en la franja del factor 1 la escala sigue entera y al andar crece o encoge sin saltos, como en
-  Monkey Island. Solo en caminos que se alejan: `outside` (porche), `mountain` (sendero) y `clinic_exterior`
-  (camino del monte). Los spawns están en la franja del factor 1. Pathfinding, triggers y `walkTo` van por los pies
+  Monkey Island. Solo en caminos que se alejan de verdad: `mountain` (sendero) y `clinic_exterior` (camino del monte),
+  y con un cambio suave: como mucho un 25 % entre el punto más cercano y el más lejano (min/max ≥ 0,75; A2.13, regla l
+  del linter, ERROR). Fachadas, porches e interiores poco hondos van con escala fija (sin `depthScale`); `outside` lo
+  es por decisión de Adrián (11-nov: Dex mide lo mismo en la acera que en la puerta), ver `qa/proportion-refs.json`
+  (`scale`, `scaleWhy`) y `docs/progreso/A2.13.md`. Los spawns están en la franja del factor 1. Pathfinding, triggers y `walkTo` van por los pies
   (en %), que no se mueven; el hit-test de las NPC es la inversa de la escala (`worldToArt`), y Facing (A2.2) usa el
   alto «del mundo» (sin el redondeo de pantalla), así girarse no depende del tamaño de la ventana.
 - **Filtros**: personajes en NEAREST (`pixelArt: true`, `roundPixels: true`); el arte de la escena (fondo, primer
@@ -760,6 +763,7 @@ deja la tabla en el resumen del job y sube `lint-scenes-report.json` y `.md` com
 | (i) | A2.8: `scale` a mano en `npcs[]` o `player.playerScale` (fuera del sistema de densidad de píxel) y `pixelScale`, `depthScale` o `npcs[].artScale` fuera de rango | aviso |
 | (j) | A2.5, respuestas de fallo: `useResponses` de un hotspot o `useResponses`/`giveResponses` de una NPC con un objeto que no existe, bolsa vacía o con una frase con marcador (`{item}`, `${…}`: no tendría voz), y `assets/config/fail-responses.json` inválido (bolsas de verbo con < 3 frases, objeto + objeto con < 5, parejas mal formadas o con objetos que no existen) (**error**); objeto del inventario con < 3 frases de mal uso y pareja de un hotspot que es un combo (nunca se dice) (aviso) | **error** / aviso |
 | (k) | A4.3, animación ambiental: elemento de `ambient[]` mal definido (sin id, id repetido, `kind` desconocido, `when` mal escrito, sin `area`/`at`/`floorY` cuando su tipo lo pide, valores fuera de rango) y op `ambient` que nombra un elemento que no está en esa escena o una acción desconocida (**error**); escena con menos de 2 elementos válidos (aviso). Las `when` del ambiente cuentan como lecturas de flags para (a) y usos de objetos para (b) | **error** / aviso |
+| (l) | A2.13, cambio de escala: `depthScale` que cambia el tamaño de Dex más de un 25 % entre lo más cercano y lo más lejano (min/max de `scaleTop`/`scaleBottom` < 0,75), o cualquier `depthScale` que cambie el tamaño en una escena de escala fija (`FIXED_SCALE_SCENES`: `outside`) | **error** |
 
 Las rutas que comprueba (f) son las que resuelve el código, no el nombre del JSON: el fondo es siempre
 `background.webp`, el primer plano `foreground.webp`, los iconos `assets/sprites/items/<id>.png` y además
