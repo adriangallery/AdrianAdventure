@@ -7,8 +7,8 @@ import { resolvePixelScale, spriteScale, artHeightPct, type DepthScale, type Pix
 import { FootstepTracker } from '@/systems/Footsteps';
 import { actorDepth, sceneObstacles, speedMultiplier, stepToward, walkSpeedWorldPx } from '@/systems/WalkMotion';
 import {
-  DEX_ART_HEIGHT, IdleTicker, QA_IDLE_SEED, facingForDir, facingTexture, gesturePose, idleTicPose, isVertical, moveDir, talkPose, walkPose,
-  type AnimDir, type AnimPose, type Gesture3d, type IdleTic, type IdleTicKind, type Side,
+  DEX3D, DEX_ART_HEIGHT, IdleTicker, MANIA_LIST, QA_IDLE_SEED, facingForDir, facingTexture, gesturePose, idleTicPose, isVertical, moveDir, shrugPose,
+  talkPose, walkPose, type AnimDir, type AnimPose, type Gesture3d, type IdleTic, type IdleTicKind, type Mania3d, type Side,
 } from '@/systems/PlayerAnim';
 
 const IDLE_FRAME_MS = 400;
@@ -29,6 +29,10 @@ export interface PlayerAnimQa {
   /** Tic de reposo en curso (null si ninguno) y cuántos van en la escena */
   idleTick: IdleTicKind | null;
   idleTicks: number;
+  /** A2.14: manía de reposo de Dex 3D en curso (idle_scratch, idle_glasses, idle_yawn, idle_tap, idle_rock) o null */
+  mania: Mania3d | null;
+  /** A2.14: qué gesto suena (pick_*, use, push, pull, give o shrug) o null */
+  gestureAnim: string | null;
   /** Juego de sprites: player | ape; `preview` = el de __qa.previewCostume (null si no hay) */
   costume: string;
   preview: string | null;
@@ -112,7 +116,7 @@ export class Player extends Phaser.GameObjects.Sprite {
   private talkWanted = false;
   private idleFree = false;
   private talkClock = 0;
-  private gestureAnim: { t: number; aim: Side | null; anim?: Gesture3d } | null = null;
+  private gestureAnim: { t: number; aim: Side | null; anim?: Gesture3d | 'shrug' } | null = null;
   private idleTicker: IdleTicker;
   private ticActive = false;
   /** pose(key) de una cinemática: hablar solo cabecea, sin cambiar la textura, y no hay tics */
@@ -323,6 +327,18 @@ export class Player extends Phaser.GameObjects.Sprite {
     this.ticActive = false;
   }
 
+  /**
+   * A2.14: «no puedo» (respuesta de fallo): se encoge de hombros (PlayerAnim.shrugPose) a la vez que sale el texto, sin
+   * retrasarlo. Andando, invisible, sin fotogramas (de espaldas, el mono) o con una pose de cinemática no hace nada.
+   */
+  shrug(): void {
+    if (this.isMoving() || !this.visible || this.posed) return;
+    if (!shrugPose({ prefix: this.spritePrefix, facing: this.facing, tMs: 0, has: this.has })) return;
+    this.gestureAnim = { t: 0, aim: null, anim: 'shrug' };
+    this.idleTicker.reset();
+    this.ticActive = false;
+  }
+
   isGesturing(): boolean {
     return this.gestureAnim !== null;
   }
@@ -346,6 +362,8 @@ export class Player extends Phaser.GameObjects.Sprite {
       gesture: this.gestureAnim !== null,
       idleTick: tic?.kind ?? null,
       idleTicks: this.idleTicker.count,
+      mania: tic?.mania ?? null,
+      gestureAnim: this.gestureAnim ? this.gestureAnim.anim ?? 'pick_mid' : null,
       costume: this.spritePrefix,
       preview: this.costumePreview,
       angle: Math.round(this.angle * 100) / 100,
@@ -550,9 +568,10 @@ export class Player extends Phaser.GameObjects.Sprite {
     const fallback = () => this.staticKey ?? `${this.spritePrefix}_idle${this.idleFrameIndex + 1}`;
     if (this.gestureAnim) {
       this.gestureAnim.t += delta;
-      const pose = gesturePose({
-        prefix: this.spritePrefix, facing: this.facing, side: this.lastSide, aim: this.gestureAnim.aim, tMs: this.gestureAnim.t, has: this.has, anim: this.gestureAnim.anim,
-      });
+      const g = this.gestureAnim;
+      const pose = g.anim === 'shrug'
+        ? shrugPose({ prefix: this.spritePrefix, facing: this.facing, tMs: g.t, has: this.has })
+        : gesturePose({ prefix: this.spritePrefix, facing: this.facing, side: this.lastSide, aim: g.aim, tMs: g.t, has: this.has, anim: g.anim });
       if (pose) {
         this.applyPose(pose, fallback());
         return;
@@ -573,7 +592,8 @@ export class Player extends Phaser.GameObjects.Sprite {
       this.restoreRest();
     }
 
-    const tick = this.idleTicker.update(delta, this.idleFree && this.visible && !this.posed, this.facing, this.lastSide);
+    const manias = this.spritePrefix === 'player' && this.has(`${DEX3D}_${MANIA_LIST[0]}_down_0`);
+    const tick = this.idleTicker.update(delta, this.idleFree && this.visible && !this.posed, this.facing, this.lastSide, manias);
     if (tick) {
       this.ticActive = true;
       this.applyPose(idleTicPose(tick.tic, tick.t, { prefix: this.spritePrefix, has: this.has }), fallback());

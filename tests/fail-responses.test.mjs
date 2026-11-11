@@ -186,3 +186,16 @@ test('escenas reales: useResponses de hotspots y bolsas de NPC sin marcadores, o
   assert.ok(pairs >= 25, `solo ${pairs} parejas objeto + hotspot`);
   assert.equal(npcDefaults, 4, 'Penny y Dr. Satoshi, USE y GIVE');
 });
+
+test('A2.14: onFail avisa de cada respuesta de fallo (Dex se encoge de hombros) con la misma respuesta que `last`', () => {
+  const fr = new FailResponses(DATA, { deterministic: true });
+  const got = [];
+  fr.onFail = (r) => got.push(r);
+  const a = fr.verb('PUSH', 'x');
+  const b = fr.itemOnItem('a', 'b');
+  assert.deepEqual(got, [a, b]);
+  assert.equal(fr.last, b);
+  fr.onFail = null;
+  fr.verb('PULL');
+  assert.equal(got.length, 2);
+});

@@ -9,7 +9,7 @@ import { FADE_FIRST_MS, FADE_SHORT_MS, sceneImageAssets, transitionMode, type Tr
 import { pickBgVariant, texturesToEvict, type BgVariant } from '@/systems/SceneTextures';
 import { gameUrlParams } from '@/config/debugParams';
 import { GameScene } from '@/scenes/GameScene';
-import { DEX3D, GESTURE3D_FRAMES, GESTURES3D, TALK3D_FRAMES, WALK3D_FRAMES } from '@/systems/PlayerAnim';
+import { DEX3D, GESTURE3D_FRAMES, GESTURES3D, MANIAS3D, MANIA_LIST, SHRUG3D_FRAMES, TALK3D_FRAMES, WALK3D_FRAMES } from '@/systems/PlayerAnim';
 
 /** A2.7: medida del último cambio de escena (`__qa.state().lastTransition`) */
 export interface LastTransition {
@@ -148,6 +148,12 @@ export class PreloadScene extends Phaser.Scene {
         for (const g of GESTURES3D) {
           for (let i = 0; i < GESTURE3D_FRAMES; i++) this.load.image(`${DEX3D}_${g}_${dir}_${i}`, d3(`${g}_${dir}_${i}`));
         }
+        // A2.14 «con gracia»: encogerse de hombros (de frente y de perfil)
+        if (dir !== 'up') for (let i = 0; i < SHRUG3D_FRAMES; i++) this.load.image(`${DEX3D}_shrug_${dir}_${i}`, d3(`shrug_${dir}_${i}`));
+      }
+      // A2.14 «con gracia»: manías de reposo, de frente (PlayerAnim.MANIAS3D)
+      for (const m of MANIA_LIST) {
+        for (let i = 0; i < MANIAS3D[m].frames; i++) this.load.image(`${DEX3D}_${m}_down_${i}`, d3(`${m}_down_${i}`));
       }
     }
 

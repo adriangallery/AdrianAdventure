@@ -65,12 +65,14 @@ export const IDLE_TIC_TAP_FRAME_MS = 150;
 /** Semilla fija con ?qa=1: los tics salen siempre en el mismo orden (demos y walkthrough repetibles) */
 export const QA_IDLE_SEED = 0x41a1;
 
-export type IdleTicKind = 'lookSide' | 'lookCamera' | 'tapFoot';
+export type IdleTicKind = 'lookSide' | 'lookCamera' | 'tapFoot' | 'mania';
 export interface IdleTic {
   kind: IdleTicKind;
   ms: number;
   /** lookSide: hacia qué lado de la pantalla mira */
   side: Side;
+  /** kind 'mania' (A2.14, Dex 3D de frente): cuál suena */
+  mania?: Mania3d;
 }
 
 // ── A2.14: Dex en 3D (sprites pre-renderizados con Blender, art/dex3d) ─────────────────────────────────────────────
@@ -90,6 +92,32 @@ export const GESTURE3D_FRAMES = 5;
 export type Gesture3d = 'pick_low' | 'pick_mid' | 'pick_high' | 'use' | 'push' | 'pull' | 'give';
 export const GESTURES3D: readonly Gesture3d[] = ['pick_low', 'pick_mid', 'pick_high', 'use', 'push', 'pull', 'give'];
 export type Dir3d = 'down' | 'up' | 'left' | 'right';
+
+/**
+ * A2.14 «con gracia»: manías de reposo de Dex 3D (solo de frente, `player3d_<manía>_down_<i>`). Las elige IdleTicker
+ * cuando mira de frente y existen sus fotogramas; alternan sin repetir la anterior y se cortan al andar, hablar o hacer
+ * un gesto (lo mismo que los tics de A4.1).
+ */
+export type Mania3d = 'idle_scratch' | 'idle_glasses' | 'idle_yawn' | 'idle_tap' | 'idle_rock';
+export const MANIAS3D: Readonly<Record<Mania3d, { frames: number; fps: number }>> = {
+  idle_scratch: { frames: 10, fps: 9 }, // rascarse la cabeza
+  idle_glasses: { frames: 10, fps: 9 }, // subirse las gafas con un dedo
+  idle_yawn: { frames: 12, fps: 9 }, // bostezar estirándose
+  idle_tap: { frames: 12, fps: 9 }, // brazos cruzados y golpecitos con el pie
+  idle_rock: { frames: 10, fps: 9 }, // manos a la espalda, balancearse sobre puntas y talones
+};
+export const MANIA_LIST = Object.keys(MANIAS3D) as Mania3d[];
+/** De frente con manías: probabilidad de manía frente a mirar a un lado */
+export const MANIA_CHANCE = 0.75;
+
+export function maniaMs(m: Mania3d): number {
+  return Math.round((MANIAS3D[m].frames * 1000) / MANIAS3D[m].fps);
+}
+
+/** «No puedo» (respuesta de fallo): encogimiento de hombros, de frente y de perfil */
+export const SHRUG3D_FRAMES = 7;
+export const SHRUG3D_FRAME_MS = 100;
+export const SHRUG_MS = SHRUG3D_FRAMES * SHRUG3D_FRAME_MS;
 
 export function facingDir3d(f: AnimFacing): Dir3d {
   return f === 'front' ? 'down' : f === 'back' ? 'up' : f;
@@ -231,6 +259,17 @@ export function gesturePose(o: { prefix: string; facing: AnimFacing; side: Side;
   return { texture: o.has(key) ? key : null, angle: sign(toward) * (GESTURE_LEAN_DEG / 2) * e, lift: (GESTURE_LIFT_ART / 2) * e };
 }
 
+/**
+ * A2.14: encogerse de hombros («no puedo») durante SHRUG_MS con los fotogramas 3D de su orientación (de frente o de
+ * perfil). null si ha terminado o no hay fotogramas (de espaldas, el mono, el tráiler): entonces no hace nada.
+ */
+export function shrugPose(o: { prefix: string; facing: AnimFacing; tMs: number; has: HasTexture }): AnimPose | null {
+  if (o.tMs >= SHRUG_MS || o.tMs < 0) return null;
+  const k = `${DEX3D}_shrug_${facingDir3d(o.facing)}_`;
+  if (o.prefix !== 'player' || !o.has(`${k}0`)) return null;
+  return { texture: `${k}${Math.min(SHRUG3D_FRAMES - 1, Math.floor(o.tMs / SHRUG3D_FRAME_MS))}`, angle: 0, lift: 0 };
+}
+
 /** PRNG pequeño y determinista (mulberry32): con la misma semilla, la misma secuencia */
 export function mulberry32(seed: number): () => number {
   let a = seed >>> 0;
@@ -244,11 +283,24 @@ export function mulberry32(seed: number): () => number {
 }
 
 /** Tics posibles según hacia dónde mira: de frente mira a un lado o mueve el pie; de perfil o de espaldas, a cámara o al otro lado */
-export function idleTicKinds(facing: AnimFacing): IdleTicKind[] {
+export function idleTicKinds(facing: AnimFacing, manias = false): IdleTicKind[] {
+  if (facing === 'front' && manias) return ['mania', 'lookSide'];
   return facing === 'front' ? ['lookSide', 'tapFoot'] : ['lookCamera', 'lookSide'];
 }
 
-export function pickIdleTic(rng: () => number, facing: AnimFacing, side: Side): IdleTic {
+/**
+ * A2.14: con `manias` (Dex 3D de frente) casi siempre una manía (MANIA_CHANCE), distinta de la anterior (`prev`);
+ * si no, mirar a un lado. Sin manías, como en A4.1.
+ */
+export function pickIdleTic(rng: () => number, facing: AnimFacing, side: Side, manias = false, prev: Mania3d | null = null): IdleTic {
+  if (facing === 'front' && manias) {
+    if (rng() < MANIA_CHANCE) {
+      const pool = MANIA_LIST.filter((m) => m !== prev);
+      const mania = pool[Math.min(pool.length - 1, Math.floor(rng() * pool.length))];
+      return { kind: 'mania', ms: maniaMs(mania), side, mania };
+    }
+    return { kind: 'lookSide', ms: IDLE_TIC_LOOK_MS, side: rng() < 0.5 ? 'left' : 'right' };
+  }
   const kinds = idleTicKinds(facing);
   const kind = kinds[Math.min(kinds.length - 1, Math.floor(rng() * kinds.length))];
   const coin: Side = rng() < 0.5 ? 'left' : 'right';
@@ -265,6 +317,11 @@ export function pickIdleTic(rng: () => number, facing: AnimFacing, side: Side): 
 export function idleTicPose(tic: IdleTic, tMs: number, o: { prefix: string; has: HasTexture }): AnimPose {
   const p = o.prefix;
   const first = (keys: string[]) => keys.find((k) => o.has(k)) ?? null;
+  if (tic.kind === 'mania' && tic.mania) {
+    const { frames, fps } = MANIAS3D[tic.mania];
+    const i = Math.min(frames - 1, Math.floor((Math.max(0, tMs) * fps) / 1000));
+    return { texture: first([`${DEX3D}_${tic.mania}_down_${i}`, `${p}_idle1`]), angle: 0, lift: 0 };
+  }
   if (tic.kind === 'lookSide') return { texture: first([`${p}_${mirrored(tic.side)}`, `${p}_walk_${mirrored(tic.side)}_0`]), angle: 0, lift: 0 };
   if (tic.kind === 'lookCamera') return { texture: first([`${p}_idle1`]), angle: 0, lift: 0 };
   const step = Math.floor(Math.max(0, tMs) / IDLE_TIC_TAP_FRAME_MS) % 2;
@@ -282,6 +339,7 @@ export class IdleTicker {
   private nextAt = IDLE_TIC_AFTER_MS;
   private tic: IdleTic | null = null;
   private ticT = 0;
+  private lastMania: Mania3d | null = null;
   /** Tics empezados desde que se creó (QA) */
   count = 0;
 
@@ -289,7 +347,8 @@ export class IdleTicker {
     this.rng = mulberry32(seed);
   }
 
-  update(dtMs: number, free: boolean, facing: AnimFacing, side: Side): { tic: IdleTic; t: number } | null {
+  /** `manias`: Dex 3D con los fotogramas de las manías (solo cuenta de frente) */
+  update(dtMs: number, free: boolean, facing: AnimFacing, side: Side, manias = false): { tic: IdleTic; t: number } | null {
     if (!free) {
       this.reset();
       return null;
@@ -304,7 +363,8 @@ export class IdleTicker {
     }
     this.still += dtMs;
     if (this.still < this.nextAt) return null;
-    this.tic = pickIdleTic(this.rng, facing, side);
+    this.tic = pickIdleTic(this.rng, facing, side, manias, this.lastMania);
+    if (this.tic.mania) this.lastMania = this.tic.mania;
     this.ticT = 0;
     this.count++;
     return { tic: this.tic, t: 0 };

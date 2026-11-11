@@ -84,6 +84,8 @@ export class FailResponses {
   private readonly rounds = new Map<string, number>();
   private readonly pairs = new Map<string, string[]>();
   last: FailResponse | null = null;
+  /** A2.14: se llama con cada respuesta de fallo (GameScene: Dex se encoge de hombros); null = nadie escucha */
+  onFail: ((r: FailResponse) => void) | null = null;
 
   constructor(data: FailResponsesData, opts: FailResponsesOptions = {}) {
     this.data = data ?? {};
@@ -131,6 +133,7 @@ export class FailResponses {
 
   private remember(r: FailResponse): FailResponse {
     this.last = r;
+    this.onFail?.(r);
     return r;
   }
 
