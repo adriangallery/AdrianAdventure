@@ -16,7 +16,7 @@ const { NavGrid } = await import('../src/systems/Pathfinding.ts');
 const { approachHotspot, approachTalk, standPoint } = await import('../src/systems/Facing.ts');
 const W = await import('../src/systems/WalkMotion.ts');
 const { STRIDE_ART_PX } = await import('../src/systems/Footsteps.ts');
-const { WALK_FRAME_MS, STEP_MS } = await import('../src/systems/PlayerAnim.ts');
+const { RIG_WALK_FRAMES, RIG_WALK_FRAME_MS } = await import('../src/systems/PlayerAnim.ts');
 
 const ROOT = new URL('../assets/scenes/', import.meta.url);
 const IDS = readdirSync(ROOT).filter((d) => {
@@ -172,10 +172,12 @@ test('velocidad: escala con el tamaño de Dex (unidad de píxel × profundidad) 
   assert.ok(Math.abs(W.walkSpeedWorldPx(4, 0.5) / W.walkSpeedWorldPx(4, 1) - 0.5) < 1e-9);
   // Avance por zancada de sonido (Footsteps) y por ciclo de andar: dentro de un rango natural en cualquier escena,
   // porque la velocidad en píxeles de arte no depende de la escena (el reloj de la animación va × speedMultiplier)
+  // A2.15: el ciclo del rig 2D son 2 pasos; el paso de sonido cae con la pisada (±5 %)
   const stepMs = (STRIDE_ART_PX / W.WALK_ART_PX_PER_S) * 1000;
-  assert.ok(stepMs >= STEP_MS * 0.9 && stepMs <= WALK_FRAME_MS * 2, `zancada cada ${stepMs.toFixed(0)} ms`);
-  const cycle = W.artPxPerCycle(WALK_FRAME_MS * 3);
-  assert.ok(cycle >= STRIDE_ART_PX * 1.5 && cycle <= STRIDE_ART_PX * 2.5, `ciclo ${cycle} px de arte`);
+  const animStepMs = (RIG_WALK_FRAMES / 2) * RIG_WALK_FRAME_MS;
+  assert.ok(Math.abs(stepMs / animStepMs - 1) <= 0.05, `zancada cada ${stepMs.toFixed(0)} ms, paso de la animación ${animStepMs} ms`);
+  const cycle = W.artPxPerCycle(RIG_WALK_FRAMES * RIG_WALK_FRAME_MS);
+  assert.ok(Math.abs(cycle / (2 * STRIDE_ART_PX) - 1) <= 0.05, `ciclo ${cycle} px de arte`);
   for (const id of IDS) {
     const d = SCENES[id];
     const mul = W.speedMultiplier(d.player.speed);
