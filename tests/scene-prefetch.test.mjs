@@ -44,48 +44,57 @@ test('grafo real: outside y lobby se conectan en los dos sentidos y todas las sa
 test('sceneImageAssets da las claves de textura de PreloadScene/GameScene', () => {
   const s = {
     assets: { foreground: 'foreground.png' },
-    conditionalOverlays: [{ id: 'm', sprite: 'overlay_m', format: 'webp' }, { id: 'n', sprite: 'overlay_n' }],
+    conditionalOverlays: [{ id: 'm', sprite: 'overlay_m', format: 'webp', bounds: { x: 1, y: 1, w: 1, h: 1 } }, { id: 'n', sprite: 'overlay_n' }], // A5.1: sin bounds = a tamaño de fondo, en variante
     web3Visuals: [{ defaultSprite: 'poster', variants: [{ sprite: 'poster_vip' }, { sprite: 'poster' }] }],
   };
   assert.deepEqual(sceneImageAssets('lobby', s, V), [
-    { key: 'bg_lobby', url: 'assets/scenes/lobby/background.webp?v=test' },
-    { key: 'fg_lobby', url: 'assets/scenes/lobby/foreground.webp?v=test' },
+    { key: 'bg_lobby', url: 'assets/scenes/lobby/background@2048.webp?v=test' },
+    { key: 'fg_lobby', url: 'assets/scenes/lobby/foreground@2048.webp?v=test' },
     { key: 'overlay_lobby_m', url: 'assets/scenes/lobby/overlay_m.webp?v=test' },
-    { key: 'overlay_lobby_n', url: 'assets/scenes/lobby/overlay_n.png?v=test' },
+    { key: 'overlay_lobby_n', url: 'assets/scenes/lobby/overlay_n@2048.webp?v=test' },
     { key: 'poster', url: 'assets/scenes/lobby/poster.png?v=test' },
     { key: 'poster_vip', url: 'assets/scenes/lobby/poster_vip.png?v=test' },
   ]);
-  assert.deepEqual(sceneImageAssets('x', undefined, ''), [{ key: 'bg_x', url: 'assets/scenes/x/background.webp' }], 'sin JSON, solo el fondo');
+  assert.deepEqual(sceneImageAssets('x', undefined, ''), [{ key: 'bg_x', url: 'assets/scenes/x/background@2048.webp' }], 'sin JSON, solo el fondo');
+  assert.deepEqual(sceneImageAssets('x', undefined, '', 1280), [{ key: 'bg_x', url: 'assets/scenes/x/background@1280.webp' }], 'A5.1: variante de 1280');
+  // A5.1: unos bounds que cubren el fondo entero (server_room.lights_out) cuentan como overlay a tamaño de fondo
+  assert.equal(P.isFullFrame(undefined), true);
+  assert.equal(P.isFullFrame({ x: 0, y: 0, w: 100, h: 100 }), true);
+  assert.equal(P.isFullFrame({ x: 1, y: 1, w: 1, h: 1 }), false);
+  assert.deepEqual(sceneImageAssets('s', { conditionalOverlays: [{ id: 'l', sprite: 'overlay_l', format: 'webp', bounds: { x: 0, y: 0, w: 100, h: 100 } }] }, '', 1280)[1],
+    { key: 'overlay_s_l', url: 'assets/scenes/s/overlay_l@1280.webp' });
 });
 
 test('cada imagen de cada escena real existe en disco', () => {
   for (const id of ids) {
-    for (const a of sceneImageAssets(id, scene(id), '')) {
-      assert.ok(existsSync(new URL(`../${a.url}`, import.meta.url)), `${id}: falta ${a.url}`);
+    for (const variant of [1280, 2048]) {
+      for (const a of sceneImageAssets(id, scene(id), '', variant)) {
+        assert.ok(existsSync(new URL(`../${a.url}`, import.meta.url)), `${id}: falta ${a.url}`);
+      }
     }
   }
 });
 
 test('planPrefetch: primero los JSON que faltan, luego imágenes por vecina, música solo con sonido', () => {
-  const lobby = { conditionalOverlays: [{ id: 'p', sprite: 'overlay_p', format: 'webp' }], audio: { music: 'retro' } };
+  const lobby = { conditionalOverlays: [{ id: 'p', sprite: 'overlay_p', format: 'webp', bounds: { x: 1, y: 1, w: 1, h: 1 } }], audio: { music: 'retro' } };
   const base = { current: 'outside', neighbors: ['lobby', 'mountain'], scenes: { lobby }, v: V, done: new Set(), isLoaded: () => false, muted: true };
   const t1 = planPrefetch(base);
   assert.deepEqual(t1.map((t) => `${t.kind}:${shortUrl(t.url)}`), [
     'json:assets/scenes/mountain/scene.json',
-    'image:assets/scenes/lobby/background.webp',
+    'image:assets/scenes/lobby/background@2048.webp',
     'image:assets/scenes/lobby/overlay_p.webp',
   ]);
   const t2 = planPrefetch({ ...base, muted: false, scenes: { lobby, mountain: { audio: { music: 'vista' } } } });
   assert.deepEqual(t2.map((t) => `${t.kind}:${shortUrl(t.url)}`), [
-    'image:assets/scenes/lobby/background.webp',
+    'image:assets/scenes/lobby/background@2048.webp',
     'image:assets/scenes/lobby/overlay_p.webp',
-    'image:assets/scenes/mountain/background.webp',
+    'image:assets/scenes/mountain/background@2048.webp',
     'music:assets/audio/music/retro.mp3',
     'music:assets/audio/music/vista.mp3',
   ]);
   // Lo ya descargado o ya en Phaser no se pide
-  const t3 = planPrefetch({ ...base, scenes: { lobby, mountain: {} }, done: new Set([sceneJsonUrl('mountain', V), 'assets/scenes/lobby/background.webp?v=test']), isLoaded: (k) => k === 'overlay_lobby_p' });
-  assert.deepEqual(t3.map((t) => shortUrl(t.url)), ['assets/scenes/mountain/background.webp']);
+  const t3 = planPrefetch({ ...base, scenes: { lobby, mountain: {} }, done: new Set([sceneJsonUrl('mountain', V), 'assets/scenes/lobby/background@2048.webp?v=test']), isLoaded: (k) => k === 'overlay_lobby_p' });
+  assert.deepEqual(t3.map((t) => shortUrl(t.url)), ['assets/scenes/mountain/background@2048.webp']);
   // La escena actual nunca, y como mucho maxScenes vecinas
   assert.deepEqual(planPrefetch({ ...base, neighbors: ['outside', 'a', 'b', 'c'], scenes: {}, maxScenes: 2 }).map((t) => t.scene), ['a', 'b']);
   // Nada que hacer

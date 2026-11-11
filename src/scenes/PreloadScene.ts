@@ -6,6 +6,9 @@ import type { MusicManager } from '@/systems/MusicManager';
 import { loadingTipsFor, musicToPreload } from '@/systems/AudioPolicy';
 import { ScenePrefetcher, ASSET_V as v } from '@/systems/ScenePrefetcher';
 import { FADE_FIRST_MS, FADE_SHORT_MS, sceneImageAssets, transitionMode, type TransitionMode } from '@/systems/ScenePrefetch';
+import { pickBgVariant, texturesToEvict, type BgVariant } from '@/systems/SceneTextures';
+import { gameUrlParams } from '@/config/debugParams';
+import { GameScene } from '@/scenes/GameScene';
 
 /** A2.7: medida del último cambio de escena (`__qa.state().lastTransition`) */
 export interface LastTransition {
@@ -84,11 +87,15 @@ export class PreloadScene extends Phaser.Scene {
     const jsonKey = `scene_${sceneId}`;
     this.cache.json.remove(jsonKey);
     const known = import.meta.env.DEV ? undefined : prefetcher.sceneData<SceneData>(sceneId);
+    // A5.1: variante del arte a tamaño de fondo (1280 o 2048 px de ancho) para toda la sesión, y fuera el arte de las
+    // escenas que ya no se ven (todas menos esta y la anterior).
+    const variant = this.bgVariant(known);
+    if (!this.registry.get('trailerMode')) this.evictSceneArt(sceneId, variant.width);
     // Imágenes de la escena: fondo, primer plano (solo si `assets.foreground`; antes se pedía siempre y en las
     // escenas sin primer plano dejaba un error de consola), overlays condicionales y sprites web3. A2.7: todo en
     // esta pasada (antes los overlays y web3 iban en una segunda carga desde create()).
     const queueImages = (data: SceneData | undefined) => {
-      for (const a of sceneImageAssets(sceneId, data, v)) {
+      for (const a of sceneImageAssets(sceneId, data, v, variant.width)) {
         if (!this.textures.exists(a.key)) this.load.image(a.key, a.url);
       }
     };
@@ -105,7 +112,7 @@ export class PreloadScene extends Phaser.Scene {
     }
     // A2.7: sin pantalla de carga si todo está ya en Phaser o en la caché HTTP (precargado); si falta algo, una
     // barrita; la pantalla completa solo al arrancar el juego.
-    this.mode = transitionMode({ firstLoad, missing: known ? prefetcher.missingImages(sceneId, known).length : 1 });
+    this.mode = transitionMode({ firstLoad, missing: known ? prefetcher.missingImages(sceneId, known, variant.width).length : 1 });
     this.registry.set('fadeInMs', this.mode === 'full' ? FADE_FIRST_MS : FADE_SHORT_MS);
 
     // Player sprites (load once)
@@ -288,6 +295,44 @@ export class PreloadScene extends Phaser.Scene {
     this.load.on('complete', cleanup);
   }
 
+  /**
+   * A5.1: variante de fondo de la sesión (`registry.bgVariant`): se decide una vez, con el viewport de arranque (área de
+   * juego = ventana menos el panel SCUMM), el tamaño lógico de la primera escena (render.world; 3712×1152 si aún no se
+   * sabe), `navigator.deviceMemory`, el ahorro de datos y `?bg=` (solo en dev o con ?qa=1). El lienzo de Phaser va en
+   * píxeles CSS (index.html lo amplía con image-rendering: pixelated), así que el DPR no añade detalle: dpr = 1.
+   */
+  private bgVariant(known: SceneData | undefined): BgVariant {
+    const stored = this.registry.get('bgVariant') as BgVariant | undefined;
+    if (stored) return stored;
+    const nav = typeof navigator !== 'undefined' ? (navigator as Navigator & { deviceMemory?: number; connection?: { saveData?: boolean } }) : null;
+    const { width, height } = this.scale;
+    const world = known?.render?.world;
+    const variant = pickBgVariant({
+      vpW: width,
+      vpH: height - GameScene.panelHeightFor(width, height),
+      dpr: 1,
+      world: world && world.width > 0 && world.height > 0 ? { w: world.width, h: world.height } : { w: 3712, h: 1152 },
+      deviceMemory: nav?.deviceMemory ?? null,
+      saveData: nav?.connection?.saveData ?? null,
+      override: gameUrlParams(window.location.search, import.meta.env.DEV).get('bg'),
+    });
+    this.registry.set('bgVariant', variant);
+    return variant;
+  }
+
+  /**
+   * A5.1: quita del TextureManager el arte (fondo, primer plano, overlays, sprites web3) de las escenas que no son la que
+   * entra ni la anterior (`lastSceneId`): volver atrás sigue siendo instantáneo y lo demás se vuelve a decodificar desde
+   * la caché HTTP (A2.7). Las escenas conocidas son las que recuerda el prefetcher (visitadas o precargadas).
+   */
+  private evictSceneArt(entering: string, variant: number): void {
+    const prefetcher = ScenePrefetcher.of(this.game);
+    const sceneArt: Record<string, string[]> = {};
+    for (const [id, data] of Object.entries(prefetcher.knownScenes())) sceneArt[id] = sceneImageAssets(id, data, v, variant).map((a) => a.key);
+    const keep = [this.registry.get('lastSceneId') as string | undefined];
+    for (const key of texturesToEvict(sceneArt, entering, keep, (k) => this.textures.exists(k))) this.textures.remove(key);
+  }
+
   /** A2.7: barrita discreta abajo (sin texto) para una escena que aún no está en caché; sale a los 150 ms */
   private showIndicator(): void {
     const { width, height } = this.scale;
@@ -340,29 +385,15 @@ export class PreloadScene extends Phaser.Scene {
     // Load web3Visual sprites from scene JSON (requires scene data to be parsed first)
     const sceneId = this.registry.get('currentSceneId') as string;
     const sceneData = this.cache.json.get(`scene_${sceneId}`) as SceneData | undefined;
-    const basePath = `assets/scenes/${sceneId}`;
     // A1.3: web3Visuals y conditionalOverlays van en UNA sola cola. Antes, si faltaba algún sprite
     // web3 se arrancaba GameScene al terminar esa carga y los overlays nunca se pedían: en la
     // primera visita al lobby `overlay_lobby_plant_revived` no existía y GameScene lo saltaba.
+    // A5.1: la misma lista (y la misma variante de fondo) que en preload(): sceneImageAssets.
     let needsLoad = false;
-    const queue = (key: string, url: string) => {
-      if (this.textures.exists(key)) return;
-      this.load.image(key, url);
+    for (const a of sceneImageAssets(sceneId, sceneData, v, this.bgVariant(sceneData).width)) {
+      if (this.textures.exists(a.key)) continue;
+      this.load.image(a.key, a.url);
       needsLoad = true;
-    };
-
-    // Sprites web3 (por defecto y variantes para holders)
-    for (const visual of sceneData?.web3Visuals ?? []) {
-      queue(visual.defaultSprite, `${basePath}/${visual.defaultSprite}.png${v}`);
-      for (const variant of visual.variants ?? []) {
-        queue(variant.sprite, `${basePath}/${variant.sprite}.png${v}`);
-      }
-    }
-
-    // Overlays condicionados por flags
-    for (const co of sceneData?.conditionalOverlays ?? []) {
-      const ext = co.format === 'webp' ? 'webp' : 'png';
-      queue(`overlay_${sceneId}_${co.id}`, `${basePath}/${co.sprite}.${ext}${v}`);
     }
 
     if (needsLoad) {

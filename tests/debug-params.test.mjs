@@ -32,7 +32,7 @@ test('los parámetros que no son de depuración pasan siempre (?trailer, ?record
   const p = gameUrlParams('?trailer&record', false);
   assert.equal(p.has('trailer'), true);
   assert.equal(p.has('record'), true);
-  assert.deepEqual([...DEBUG_PARAMS].sort(), ['dev', 'hintAfter', 'scene', 'skip']);
+  assert.deepEqual([...DEBUG_PARAMS].sort(), ['bg', 'dev', 'hintAfter', 'scene', 'skip']);
 });
 
 test('main.ts, BootScene y GameScene leen la URL por gameUrlParams (nadie lee ?scene/?skip/?dev/?hintAfter a pelo)', () => {

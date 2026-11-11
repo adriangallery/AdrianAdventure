@@ -6,8 +6,9 @@
 // A2.7: cambio de escena con la precarga hecha y vuelta: sin pantalla de carga y sin volver a descargar; MB y tiempos.
 // A2.9: el diario (móvil de Dex) se abre y se cierra con toques reales en 390x844, y con J/Esc.
 // A2.5: un PUSH sin script dice la frase 0 de la bolsa verbDefaults.PUSH (ronda fija con ?qa=1) y luego la 1.
+// A5.1: memoria de texturas (GPU) y peso por escena en escritorio y móvil; tabla en el resumen y smoke-shots/texture-memory.json.
 // Uso: BASE_URL=http://127.0.0.1:4173 node scripts/smoke.mjs
-import { readdirSync, existsSync, mkdirSync, readFileSync } from 'node:fs';
+import { readdirSync, existsSync, mkdirSync, readFileSync, writeFileSync, appendFileSync } from 'node:fs';
 import puppeteer from 'puppeteer';
 import * as SP from './lib/save-panel.mjs';
 
@@ -168,7 +169,7 @@ await step('transiciones: precarga de vecinas, sin pantalla de carga y sin volve
     const first = (await st()).lastTransition;
     if (!first.loadingScreen) throw new Error(`la primera carga del juego no enseñó la pantalla de carga (${JSON.stringify(first)})`);
     await p.evaluate(() => window.__qa.dismissAll());
-    await prefetched('outside', 'assets/scenes/lobby/background.webp');
+    await prefetched('outside', 'assets/scenes/lobby/background@2048.webp');
     const pf = (await st()).prefetch;
     console.log(`    precarga desde outside: vecinas ${pf.neighbors.join(', ')} · ${pf.done.length} ficheros`);
 
@@ -204,6 +205,87 @@ await step('transiciones: precarga de vecinas, sin pantalla de carga y sin volve
   } finally {
     await ctx.close();
   }
+});
+
+// A5.1: memoria de texturas y peso por escena. Perfil limpio en cada viewport: entra en `outside` y encadena varias
+// escenas (`__qa.goto`); tras cada una apunta `state().textures` (bytes estimados en la GPU: ancho × alto × 4 por fuente,
+// por categoría; escenas cuyo arte sigue en Phaser; variante de fondo elegida) y los bytes bajados por la red de
+// `assets/scenes/<id>/`. Tabla en el log y en el resumen del job; todo en smoke-shots/texture-memory.json. Es la medida
+// «antes/después» del checkpoint: con SMOKE_TEXTURE_MAX_MB (tope del arte de escena cargado, en MB) falla si se pasa;
+// vacío o 0 = solo medir.
+const TEXTURE_MAX_MB = Number(process.env.SMOKE_TEXTURE_MAX_MB || 0);
+const TEXTURE_ROUTE = ['outside', 'lobby', 'upstairs', 'rooftop', 'basement', 'server_room'];
+const TEXTURE_VIEWPORTS = [
+  { label: 'escritorio 1280x720 (DPR 1)', width: 1280, height: 720, dpr: 1, mobile: false, route: TEXTURE_ROUTE },
+  { label: 'móvil apaisado 844x390 (DPR 1)', width: 844, height: 390, dpr: 1, mobile: true, route: TEXTURE_ROUTE.slice(0, 3) },
+  { label: 'móvil apaisado 844x390 (DPR 3)', width: 844, height: 390, dpr: 3, mobile: true, route: TEXTURE_ROUTE.slice(0, 2) },
+];
+const textureReport = { viewports: [] };
+await step('texturas: memoria estimada en la GPU y peso por escena (A5.1)', async () => {
+  const mb = (n) => (n / 1048576).toFixed(1);
+  const lines = ['### Memoria de texturas (A5.1)', ''];
+  const problems = [];
+  for (const vp of TEXTURE_VIEWPORTS) {
+    const ctx = await browser.createBrowserContext();
+    const p = await ctx.newPage();
+    await p.setViewport({ width: vp.width, height: vp.height, deviceScaleFactor: vp.dpr, isMobile: vp.mobile, hasTouch: vp.mobile });
+    p.on('pageerror', (err) => fail(`[texturas] error de página: ${err.message}`));
+    const net = [];
+    p.on('requestfinished', async (req) => {
+      const res = req.response();
+      if (!res || !req.url().startsWith(BASE) || res.fromCache()) return;
+      let len = Number(res.headers()['content-length'] || 0);
+      if (!len) { try { len = (await res.buffer()).length; } catch { len = 0; } }
+      net.push({ url: req.url().replace(BASE, '').replace(/^\//, '').split('?')[0], len });
+    });
+    const wait = (fn, arg, timeout = SCENE_TIMEOUT) => p.waitForFunction(fn, { timeout, polling: 200 }, arg);
+    const rows = [];
+    try {
+      const [first, ...rest] = vp.route;
+      await p.goto(`${BASE}/?qa=1&scene=${first}`, { waitUntil: 'domcontentloaded' });
+      await wait((s) => window.__qa?.state().lastTransition?.to === s, first);
+      await p.evaluate(() => window.__qa.dismissAll()).catch(() => {});
+      const snap = async (scene) => {
+        const t = await p.evaluate(() => window.__qa.state().textures);
+        if (!t) throw new Error('state().textures no existe (API de QA anterior a A5.1)');
+        const netBytes = net.filter((r) => r.url.startsWith(`assets/scenes/${scene}/`)).reduce((a, r) => a + r.len, 0);
+        rows.push({ scene, netBytes, ...t });
+      };
+      await snap(first);
+      for (const id of rest) {
+        await p.evaluate((s) => window.__qa.goto(s), id);
+        await p.evaluate(() => window.__qa.dismissAll()).catch(() => {});
+        await snap(id);
+      }
+    } finally {
+      await ctx.close();
+    }
+    const last = rows.at(-1);
+    textureReport.viewports.push({ ...vp, variant: last.variant, bgTexture: last.bgTexture, world: last.world, rows });
+    console.log(`    ${vp.label}: fondo ${last.bgTexture ? `${last.bgTexture.w}x${last.bgTexture.h}` : '?'}${last.variant ? ` (variante ${last.variant.width}: ${last.variant.reason})` : ' (tamaño completo)'}`);
+    console.log(`    ${'escena'.padEnd(14)} ${'texturas'.padStart(10)} ${'arte escena'.padStart(12)} ${'otras esc.'.padStart(11)} ${'escenas'.padStart(8)} ${'red escena'.padStart(11)}`);
+    lines.push(`**${vp.label}** · fondo ${last.bgTexture ? `${last.bgTexture.w}x${last.bgTexture.h}` : '?'}${last.variant ? ` (variante ${last.variant.width}: ${last.variant.reason})` : ''}`, '',
+      '| escena | texturas (total) | arte de la escena | arte de otras escenas | escenas cargadas | red de la escena |', '|---|---|---|---|---|---|');
+    for (const r of rows) {
+      const art = r.byKind.scene.bytes;
+      const others = r.byKind.otherScenes.bytes;
+      console.log(`    ${r.scene.padEnd(14)} ${`${mb(r.bytes)} MB`.padStart(10)} ${`${mb(art)} MB`.padStart(12)} ${`${mb(others)} MB`.padStart(11)} ${String(r.scenesLoaded.length).padStart(8)} ${`${mb(r.netBytes)} MB`.padStart(11)}`);
+      lines.push(`| ${r.scene} | ${mb(r.bytes)} MB (${r.count}) | ${mb(art)} MB | ${mb(others)} MB | ${r.scenesLoaded.length} | ${mb(r.netBytes)} MB |`);
+      const loaded = art + others;
+      if (TEXTURE_MAX_MB && loaded > TEXTURE_MAX_MB * 1048576) problems.push(`${vp.label}, ${r.scene}: ${mb(loaded)} MB de arte de escena en la GPU (máx. ${TEXTURE_MAX_MB})`);
+      // A5.1: solo la escena actual y la anterior siguen en Phaser; el resto se libera al cambiar de escena
+      if (r.scenesLoaded.length > 2) problems.push(`${vp.label}, ${r.scene}: arte de ${r.scenesLoaded.length} escenas en Phaser (${r.scenesLoaded.join(', ')}; máx. 2: la actual y la anterior)`);
+    }
+    // A5.1: variante de fondo por viewport (escritorio 2048, móvil apaisado 1280 a cualquier DPR)
+    const wantVariant = vp.width === 1280 ? 2048 : 1280;
+    if (last.variant?.width !== wantVariant) problems.push(`${vp.label}: variante de fondo ${last.variant?.width ?? 'ninguna'}, se esperaba ${wantVariant}`);
+    else if (last.bgTexture?.w !== wantVariant) problems.push(`${vp.label}: la textura del fondo mide ${last.bgTexture?.w} de ancho, se esperaba ${wantVariant}`);
+    lines.push('', `Texturas de ≥ 1 MB al final: ${last.big.map((b) => `${b.key} ${b.w}x${b.h} (${mb(b.bytes)} MB)`).join(', ') || 'ninguna'}`, '');
+    console.log(`    ≥ 1 MB al final: ${last.big.map((b) => `${b.key} ${b.w}x${b.h}`).join(', ') || 'ninguna'}`);
+  }
+  writeFileSync(`${SHOTS}/texture-memory.json`, JSON.stringify(textureReport, null, 2));
+  if (process.env.GITHUB_STEP_SUMMARY) appendFileSync(process.env.GITHUB_STEP_SUMMARY, `${lines.join('\n')}\n`);
+  if (problems.length) throw new Error(problems.join(' | '));
 });
 
 // A1.5: arranque con «No thanks, silence is golden» en un perfil limpio. Se registran todas las peticiones y
