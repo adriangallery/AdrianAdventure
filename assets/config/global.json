@@ -208,6 +208,125 @@
           ]
         }
       ]
+    },
+    {
+      "item1": "printout",
+      "item2": "leaky_pen",
+      "result": "marked_map",
+      "script": [
+        {
+          "op": "ifFlag",
+          "flag": "coords_known",
+          "then": [
+            {
+              "op": "removeItem",
+              "id": "printout"
+            },
+            {
+              "op": "addItem",
+              "id": "marked_map",
+              "name": "Marked Map"
+            },
+            {
+              "op": "setFlag",
+              "flag": "has_marked_map",
+              "value": true
+            },
+            {
+              "op": "ifFlag",
+              "flag": "chapter_3_complete",
+              "then": [],
+              "else": [
+                {
+                  "op": "setFlag",
+                  "flag": "chapter_3_complete",
+                  "value": true
+                },
+                {
+                  "op": "achievement",
+                  "text": "Chapter 3 Complete: Below the Surface"
+                }
+              ]
+            },
+            {
+              "op": "playSound",
+              "key": "discovery"
+            },
+            {
+              "op": "say",
+              "text": "I copy the coordinates onto the printout and draw a big leaky X on the clinic."
+            },
+            {
+              "op": "say",
+              "text": "X marks the spot. I've always wanted to say that. I've never had a spot."
+            },
+            {
+              "op": "say",
+              "text": "The clinic. Up the mountain path outside the lab. Time to go."
+            }
+          ],
+          "else": [
+            {
+              "op": "ifFlag",
+              "flag": "emergency_switch_flipped",
+              "then": [
+                {
+                  "op": "removeItem",
+                  "id": "printout"
+                },
+                {
+                  "op": "addItem",
+                  "id": "marked_map",
+                  "name": "Marked Map"
+                },
+                {
+                  "op": "setFlag",
+                  "flag": "has_marked_map",
+                  "value": true
+                },
+                {
+                  "op": "ifFlag",
+                  "flag": "chapter_3_complete",
+                  "then": [],
+                  "else": [
+                    {
+                      "op": "setFlag",
+                      "flag": "chapter_3_complete",
+                      "value": true
+                    },
+                    {
+                      "op": "achievement",
+                      "text": "Chapter 3 Complete: Below the Surface"
+                    }
+                  ]
+                },
+                {
+                  "op": "playSound",
+                  "key": "discovery"
+                },
+                {
+                  "op": "say",
+                  "text": "I copy the coordinates onto the printout and draw a big leaky X on the clinic."
+                },
+                {
+                  "op": "say",
+                  "text": "X marks the spot. I've always wanted to say that. I've never had a spot."
+                },
+                {
+                  "op": "say",
+                  "text": "The clinic. Up the mountain path outside the lab. Time to go."
+                }
+              ],
+              "else": [
+                {
+                  "op": "say",
+                  "text": "Mark what? I don't know where X is yet."
+                }
+              ]
+            }
+          ]
+        }
+      ]
     }
   ]
 }

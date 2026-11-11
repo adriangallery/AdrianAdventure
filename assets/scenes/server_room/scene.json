@@ -506,12 +506,9 @@
         "id": "hs_emergency_switch",
         "useResponses": {
           "_default": [
-            "That's not heavy enough to break the glass. Or long enough. Or anything enough.",
+            "That's not heavy enough to break the glass. I need a tool — something heavy, or something I can swing.",
             "I tap the glass with it. The glass stays. I need something I can swing.",
             "Emergency glass, non-emergency object. Doesn't work."
-          ],
-          "broken_mouse": [
-            "I swing the mouse by its cable at the glass. It bounces off. I need something stiffer."
           ]
         },
         "name": "Emergency Switch",
@@ -534,8 +531,20 @@
               ],
               "else": [
                 {
-                  "op": "say",
-                  "text": "A big red switch behind a glass panel mounted low on the wall. The label reads: 'EMERGENCY SHUTOFF - DO NOT TOUCH.' ...but it's right there. Taunting me."
+                  "op": "ifFlag",
+                  "flag": "switch_unlocked",
+                  "then": [
+                    {
+                      "op": "say",
+                      "text": "A big red switch behind a glass panel mounted low on the wall. The label reads: 'EMERGENCY SHUTOFF - DO NOT TOUCH.' ...but it's right there. Taunting me."
+                    }
+                  ],
+                  "else": [
+                    {
+                      "op": "say",
+                      "text": "A big red switch behind glass. A sticker on top: 'EMERGENCY SHUTOFF DISABLED BY PZ-BOT. SHUTDOWN = MISSED OPPORTUNITIES.'"
+                    }
+                  ]
                 }
               ]
             }
@@ -545,67 +554,65 @@
               "op": "ifFlag",
               "flag": "emergency_glass_broken",
               "then": [
-                { "op": "playSound", "key": "switch_flip" },
                 {
                   "op": "ifFlag",
                   "flag": "emergency_switch_flipped",
                   "then": [
                     {
                       "op": "say",
-                      "text": "The switch is already flipped. The hidden screen on the wall still shows those coordinates. Whatever they mean."
+                      "text": "The switch is already flipped. The hidden screen on the wall still shows those coordinates."
                     }
                   ],
                   "else": [
                     {
-                      "op": "setFlag",
-                      "flag": "emergency_switch_flipped",
-                      "value": true
-                    },
-                    {
-                      "op": "say",
-                      "text": "I flip the switch. Everything goes dark for a moment... The servers die. Then emergency generators kick in with a deep rumble."
-                    },
-                    {
-                      "op": "say",
-                      "text": "Behind the glass: an emergency kill switch. But someone repurposed it."
-                    },
-                    {
-                      "op": "say",
-                      "text": "A hidden screen flickers on. Coordinates. A name: 'Patient Zero Rehabilitation Clinic'."
-                    },
-                    {
-                      "op": "say",
-                      "text": "Adrian didn't just build infrastructure. He built an escape route."
-                    },
-                    {
-                      "op": "say",
-                      "text": "Coordinates: 47.6062N, 122.3321W. Seattle? What's in Seattle?"
-                    },
-                    {
                       "op": "ifFlag",
-                      "flag": "chapter_3_complete",
-                      "then": [],
-                      "else": [
+                      "flag": "switch_unlocked",
+                      "then": [
                         {
                           "op": "setFlag",
-                          "flag": "chapter_3_complete",
+                          "flag": "emergency_switch_flipped",
                           "value": true
                         },
                         {
-                          "op": "achievement",
-                          "text": "Chapter 3 Complete: Below the Surface"
+                          "op": "setFlag",
+                          "flag": "coords_known",
+                          "value": true
                         },
                         {
-                          "op": "wait",
-                          "ms": 3500
-                        },
-                        {
-                          "op": "say",
-                          "text": "Coordinates: 47.6062N, 122.3321W. The clinic. That's where I need to go."
+                          "op": "playSound",
+                          "key": "switch_flip"
                         },
                         {
                           "op": "say",
-                          "text": "The mountain path from outside the lab... it must lead there."
+                          "text": "I flip the switch. Everything goes dark... The servers die. All of them except one rack."
+                        },
+                        {
+                          "op": "say",
+                          "text": "PZ-BOT: RUNNING ON BATTERY. 4 %. STILL BULLISH.",
+                          "speaker": "PZ-BOT"
+                        },
+                        {
+                          "op": "say",
+                          "text": "A hidden screen flickers on. Coordinates: 47.6062N, 122.3321W. A name: 'Patient Zero Rehabilitation Clinic'."
+                        },
+                        {
+                          "op": "say",
+                          "text": "Adrian didn't just build infrastructure. He built an escape route."
+                        },
+                        {
+                          "op": "say",
+                          "text": "Up the mountain path outside the lab. I should mark that on the map. With something that leaks."
+                        }
+                      ],
+                      "else": [
+                        {
+                          "op": "say",
+                          "text": "EMERGENCY SHUTOFF DISABLED BY PZ-BOT. SHUTDOWN = MISSED OPPORTUNITIES.",
+                          "speaker": "PZ-BOT"
+                        },
+                        {
+                          "op": "say",
+                          "text": "The switch won't budge. Software lock. PZ-BOT has to go first."
                         }
                       ]
                     }
@@ -615,7 +622,7 @@
               "else": [
                 {
                   "op": "say",
-                  "text": "The switch is behind glass. I'd need to break it first. The glass, I mean. Not the switch. Or the servers."
+                  "text": "The switch is behind glass. I need a tool — something heavy, or something I can swing."
                 }
               ]
             }
@@ -1127,6 +1134,11 @@
           ],
           "else": [
             {
+              "op": "setFlag",
+              "flag": "emergency_glass_broken",
+              "value": true
+            },
+            {
               "op": "say",
               "text": "I swing the loose antenna at the glass panel like a baseball bat."
             },
@@ -1141,11 +1153,6 @@
             {
               "op": "say",
               "text": "*CRACK!* The reinforced polymer shatters. Glass rains down. The big red switch glows underneath, practically begging to be flipped."
-            },
-            {
-              "op": "setFlag",
-              "flag": "emergency_glass_broken",
-              "value": true
             }
           ]
         }
@@ -1238,6 +1245,48 @@
               "op": "say",
               "text": "EMERGENCY SHUTOFF: UNLOCKED. REBOOTING. PLEASE HOLD.",
               "speaker": "PZ-BOT"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "items": [
+        "broken_mouse",
+        "hs_emergency_switch"
+      ],
+      "result": "smash_glass_mouse",
+      "script": [
+        {
+          "op": "ifFlag",
+          "flag": "emergency_glass_broken",
+          "then": [
+            {
+              "op": "say",
+              "text": "The glass is already shattered. The switch is exposed."
+            }
+          ],
+          "else": [
+            {
+              "op": "setFlag",
+              "flag": "emergency_glass_broken",
+              "value": true
+            },
+            {
+              "op": "say",
+              "text": "I swing the mouse by its cable. Medieval IT support."
+            },
+            {
+              "op": "wait",
+              "ms": 400
+            },
+            {
+              "op": "playSound",
+              "key": "glass_break"
+            },
+            {
+              "op": "say",
+              "text": "*CRACK!* The reinforced polymer shatters. Glass rains down. The big red switch glows underneath, practically begging to be flipped."
             }
           ]
         }

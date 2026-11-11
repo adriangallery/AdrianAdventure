@@ -2759,7 +2759,7 @@
         "onEnter": [
           {
             "op": "ifHasItem",
-            "id": "printout",
+            "id": "marked_map",
             "then": [
               {
                 "op": "gotoScene",

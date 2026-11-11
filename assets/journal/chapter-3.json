@@ -1,5 +1,5 @@
 {
-  "_doc": "A2.9/A2.9a: diario de Dex, capítulo 3. A3.5a: el CRT (alargador del suelo técnico, PIN del Ledger con el cumpleaños de Gerald y el disquete que vuelve); la bebida energética ya es del cap. 2. A3.5b: PZ-BOT y la alfa falsa (p3_pzbot, notas n3_pzbot y n3_log). Ver qa/README.md § Diario.",
+  "_doc": "A2.9/A2.9a: diario de Dex, capítulo 3. A3.5a: el CRT (alargador del suelo técnico, PIN del Ledger con el cumpleaños de Gerald y el disquete que vuelve); la bebida energética ya es del cap. 2. A3.5b: PZ-BOT y la alfa falsa (p3_pzbot, notas n3_pzbot y n3_log). A3.5c: interruptor con switch_unlocked (p3_switch), cristal con antena o ratón (p3_glass) y mapa marcado (p3_map, objetivo g3_map). Ver qa/README.md § Diario.",
   "chapter": 3,
   "goals": [
     {
@@ -18,9 +18,9 @@
       "doneWhen": "server_room_open"
     },
     {
-      "id": "g3_switch",
-      "text": "Flip the emergency switch.",
-      "doneWhen": "emergency_switch_flipped"
+      "id": "g3_map",
+      "text": "Mark the map. Find out where Patient Zero went.",
+      "doneWhen": "has_marked_map"
     }
   ],
   "notes": [
@@ -61,8 +61,13 @@
     },
     {
       "id": "n3_coords",
-      "text": "Emergency switch screen: 47.6062N, 122.3321W. Patient Zero Rehabilitation Clinic. The mountain path outside the lab goes that way.",
-      "shownWhen": "emergency_switch_flipped"
+      "text": "Emergency switch screen: 47.6062N, 122.3321W. Patient Zero Rehabilitation Clinic. Up the mountain path outside the lab.",
+      "shownWhen": "coords_known"
+    },
+    {
+      "id": "n3_map",
+      "text": "Marked the printout map with the leaky pen. X on the clinic. First spot of my life.",
+      "shownWhen": "has_marked_map"
     }
   ],
   "puzzles": [
@@ -131,18 +136,34 @@
       "doneWhen": "emergency_glass_broken",
       "hints": [
         "Big red switch. Glass in the way.",
-        "Something long and metal. The roof had one.",
-        "Use the antenna on the emergency switch."
+        "Something you can swing. The roof had one. So does the basement desk.",
+        "Use the antenna, or the broken mouse, on the emergency switch."
       ]
     },
     {
       "id": "p3_switch",
-      "openWhen": "emergency_glass_broken",
+      "openWhen": [
+        "emergency_glass_broken",
+        "pzbot_crashed"
+      ],
       "doneWhen": "emergency_switch_flipped",
       "hints": [
-        "Nothing between you and the switch now.",
+        "Nothing between you and the switch now. Not even PZ-BOT.",
         "It says do not touch. Touch it.",
         "Use the emergency switch."
+      ]
+    },
+    {
+      "id": "p3_map",
+      "openWhen": [
+        "has_printout",
+        "coords_known"
+      ],
+      "doneWhen": "has_marked_map",
+      "hints": [
+        "You have a map with no X, and you know where X is.",
+        "Something that writes. Something that leaks.",
+        "Combine the printout with the leaky pen."
       ]
     }
   ],
