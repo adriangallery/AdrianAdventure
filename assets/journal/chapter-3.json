@@ -19,8 +19,8 @@
       "doneWhen": "basement_unlocked",
       "hints": [
         "You saw the light. Now find the way down.",
-        "The hatch on the roof wants the vane turned and your card.",
-        "Turn the weather vane. Then use the keycard on the roof hatch."
+        "The roof hatch has three locks: a card reader, a keyhole and the vane's latch.",
+        "Grease and turn the vane. Then use the keycard and the terminal key on the roof hatch."
       ]
     },
     {

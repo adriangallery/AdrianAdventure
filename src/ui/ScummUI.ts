@@ -527,6 +527,7 @@ export class ScummUI {
     vet_bill: "PAWS & CLAWS VET. Patient: GERALD. Species: rubber duck (?). Born: 3 Jan 2009. Owner: Adrian. Relationship: best friend. Diagnosis: perfect. Note: please stop bringing him in.",
     // A3.4a: el boli del abrigo de Adrian (gag recurrente: cap. 3 alfa falsa y mapa, epílogo NOW HIRING)
     leaky_pen: "A pen from Adrian's coat pocket. Mt. Gox branding. Still leaking after all these years. My fingers are blue now.",
+    pizza_slice: "Pizza, technically. Forty percent cheese, sixty percent industrial lubricant. It's shinier than my shoes.",
     ledger: "Adrian's hardware wallet, fresh from under a doormat. The screen shows a balance that would make a whale blush. Or maybe it's just dust on the display.",
     keycard: "An admin keycard with Adrian's photo. He looks younger. And less concerned about gas fees.",
     floppy_disk: "A 3.5\" floppy labeled 'BACKUP'. 1.44 MB of pure nostalgia. That's like... half an NFT image.",
@@ -573,6 +574,14 @@ export class ScummUI {
       [Verb.PULL]: "I try to tear it. No. I just put it back together. What am I doing?",
       [Verb.CLOSE]: "I fold it back up. The 7 peeks out accusingly.",
       [Verb.GIVE]: "I'm not giving away the only code I have. That's Security 101.",
+    },
+    pizza_slice: {
+      [Verb.OPEN]: "It's a slice. There's no inside. There's barely an outside.",
+      [Verb.TALK]: "'Who hurt you?' A drop of grease runs down the crust. Fair enough.",
+      [Verb.PUSH]: "I press it. Grease wells up like a spring. Like an oil spring.",
+      [Verb.PULL]: "I try to tear it in half. It bends. Pizza shouldn't bend like that.",
+      [Verb.CLOSE]: "I fold it over. Now it's a calzone of regret.",
+      [Verb.GIVE]: "Nobody wants this. Nobody should. It has a job to do.",
     },
     leaky_pen: {
       [Verb.OPEN]: "I unscrew it. More ink comes out than any pen should hold. I screw it back. Quickly.",

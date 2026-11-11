@@ -10,6 +10,7 @@
 //   fence_plank.png  un tablón de valla en diagonal: vetas, un clavo torcido y el extremo partido
 //   vet_bill.png     (A3.3d) la factura del veterinario de Gerald: receipt.png teñido de verde menta con un sello de huella
 //   leaky_pen.png    (A3.4a) el boli de Mt. Gox del abrigo de Adrian: en diagonal, con la punta goteando tinta azul
+//   pizza_slice.png  (A3.4b) una porción de la pizza fosilizada de upstairs: pepperoni, brillos de grasa y una gota
 // Sin arte de pago: las mitades salen de code_note.png, la factura de receipt.png y el tablón se dibuja aquí.
 // Determinista (sin azar).
 import fs from 'node:fs';
@@ -331,6 +332,45 @@ function leakyPen() {
   return up2(g);
 }
 
+/**
+ * A3.4b: una porción de la pizza fosilizada de upstairs (rejilla de 64, ×2). Triángulo con la punta abajo, borde de
+ * corteza arriba, queso con tres rodajas de pepperoni y brillos de grasa (la que engrasa la veleta), y una gota.
+ */
+function pizzaSlice() {
+  const g = blank(64, 64);
+  const OUT = [30, 18, 8];
+  const top = 12, tip = 54, half = 22, cx = 32;
+  const inside = (x, y) => {
+    const fy = y + 0.5;
+    if (fy < top || fy > tip) return false;
+    const w = half * (tip - fy) / (tip - top);
+    return Math.abs(x + 0.5 - cx) <= w;
+  };
+  for (let y = 0; y < 64; y++) for (let x = 0; x < 64; x++) {
+    if (!inside(x, y)) continue;
+    let c;
+    if (y < top + 5) c = y < top + 2 ? [214, 150, 70] : [176, 108, 44]; // corteza
+    else c = (x * 7 + y * 3) % 11 === 0 ? [236, 196, 70] : [246, 214, 96]; // queso con grumos
+    set(g, x, y, c);
+  }
+  const PEP = [178, 40, 34], PEPD = [130, 24, 22];
+  for (const [px, py, r] of [[26, 22, 4], [38, 25, 4], [31, 36, 3]]) {
+    for (let y = py - r; y <= py + r; y++) for (let x = px - r; x <= px + r; x++) {
+      const d = (x - px) ** 2 + (y - py) ** 2;
+      if (d <= r * r && inside(x, y)) set(g, x, y, d >= (r - 1) * (r - 1) ? PEPD : PEP);
+    }
+  }
+  // brillos de grasa (blanco amarillento, en diagonal)
+  for (const [x, y] of [[22, 19], [23, 20], [35, 31], [36, 32], [28, 43], [44, 19], [45, 20]]) if (inside(x, y)) set(g, x, y, [255, 250, 210]);
+  for (let y = 0; y < 64; y++) for (let x = 0; x < 64; x++) {
+    if (!inside(x, y)) continue;
+    if (!inside(x - 1, y) || !inside(x + 1, y) || !inside(x, y - 1) || !inside(x, y + 1)) set(g, x, y, OUT);
+  }
+  // una gota de grasa bajo la punta
+  for (const [x, y, c] of [[32, 56, OUT], [31, 57, OUT], [32, 57, [250, 222, 120]], [33, 57, OUT], [31, 58, OUT], [32, 58, [250, 222, 120]], [33, 58, OUT], [32, 59, OUT]]) set(g, x, y, c);
+  return up2(g);
+}
+
 function main() {
   const note = decodePng(fs.readFileSync(path.join(ITEMS, 'code_note.png')));
   const receipt = decodePng(fs.readFileSync(path.join(ITEMS, 'receipt.png')));
@@ -345,7 +385,7 @@ function main() {
   over(b, bHalf.img, 0, 0);
   over(b, f.front, 0, 0);
 
-  const outs = { note_half_a: a.img, note_half_b: b, fence_plank: plank(), vet_bill: vetBill(receipt), leaky_pen: leakyPen() };
+  const outs = { note_half_a: a.img, note_half_b: b, fence_plank: plank(), vet_bill: vetBill(receipt), leaky_pen: leakyPen(), pizza_slice: pizzaSlice() };
   for (const [id, img] of Object.entries(outs)) {
     const file = path.join(ITEMS, `${id}.png`);
     fs.writeFileSync(file, encodePng(img));

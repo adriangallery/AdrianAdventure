@@ -332,37 +332,89 @@
         "scripts": {
           "LOOK": [
             {
-              "op": "say",
-              "text": "A weather vane shaped like the Bitcoin logo. It spins slowly, but not with the wind... it seems to respond to market sentiment? Right now it points northwest. Or bearish. Hard to tell."
-            }
-          ],
-          "USE": [
-            {
               "op": "ifFlag",
               "flag": "vane_turned",
               "then": [
                 {
                   "op": "say",
-                  "text": "The vane is already locked pointing down. I can still hear the mechanism clicking beneath the roof."
+                  "text": "The Bitcoin vane, pointing straight down. The cable to the hatch is slack. Very bearish."
                 }
               ],
               "else": [
                 {
-                  "op": "say",
-                  "text": "I grip the Bitcoin weather vane and force it straight down. Something mechanical clicks beneath the roof — a hidden latch releasing."
-                },
+                  "op": "ifFlag",
+                  "flag": "vane_greased",
+                  "then": [
+                    {
+                      "op": "say",
+                      "text": "Greased with pizza. It smells like a Friday night. It might actually turn now."
+                    }
+                  ],
+                  "else": [
+                    {
+                      "op": "say",
+                      "text": "A weather vane shaped like the Bitcoin logo. A cable runs from its base to the service hatch."
+                    },
+                    {
+                      "op": "say",
+                      "text": "Rusted solid. It needs grease. A lot of grease."
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "USE": [
+            {
+              "op": "ifFlag",
+              "flag": "vane_greased",
+              "then": [
                 {
-                  "op": "setFlag",
+                  "op": "ifFlag",
                   "flag": "vane_turned",
-                  "value": true
-                },
+                  "then": [
+                    {
+                      "op": "say",
+                      "text": "The vane is already locked pointing down. I can still hear the mechanism clicking beneath the roof."
+                    }
+                  ],
+                  "else": [
+                    {
+                      "op": "say",
+                      "text": "I grip the Bitcoin weather vane and force it straight down. Something mechanical clicks beneath the roof — a hidden latch releasing."
+                    },
+                    {
+                      "op": "setFlag",
+                      "flag": "vane_turned",
+                      "value": true
+                    },
+                    {
+                      "op": "wait",
+                      "ms": 800
+                    },
+                    {
+                      "op": "say",
+                      "text": "The vane locks into position with a heavy clunk. That sound came from the service shaft. The vane must be connected to its locking mechanism."
+                    }
+                  ]
+                }
+              ],
+              "else": [
                 {
-                  "op": "wait",
-                  "ms": 800
-                },
-                {
-                  "op": "say",
-                  "text": "The vane locks into position with a heavy clunk. That sound came from the service shaft. The vane must be connected to its locking mechanism."
+                  "op": "ifFlag",
+                  "flag": "vane_turned",
+                  "then": [
+                    {
+                      "op": "say",
+                      "text": "The vane is already locked pointing down. I can still hear the mechanism clicking beneath the roof."
+                    }
+                  ],
+                  "else": [
+                    {
+                      "op": "say",
+                      "text": "I grip the vane and heave. Nothing. Rusted solid. I've pulled something, and it isn't the vane."
+                    }
+                  ]
                 }
               ]
             }
@@ -394,59 +446,83 @@
           "PUSH": [
             {
               "op": "ifFlag",
-              "flag": "vane_pushed",
+              "flag": "vane_greased",
               "then": [
                 {
-                  "op": "setFlag",
-                  "flag": "vane_pushed",
-                  "value": false
-                },
-                {
                   "op": "ifFlag",
-                  "flag": "vane_turned",
+                  "flag": "vane_pushed",
                   "then": [
                     {
-                      "op": "say",
-                      "text": "I push the weather vane. It creaks and swings back east. The cable to the hatch stays slack — still unlatched."
+                      "op": "setFlag",
+                      "flag": "vane_pushed",
+                      "value": false
+                    },
+                    {
+                      "op": "ifFlag",
+                      "flag": "vane_turned",
+                      "then": [
+                        {
+                          "op": "say",
+                          "text": "I push the weather vane. It creaks and swings back east. The cable to the hatch stays slack — still unlatched."
+                        }
+                      ],
+                      "else": [
+                        {
+                          "op": "say",
+                          "text": "I push the weather vane. It creaks and swings back east. *CLUNK* — a cable pulls a mechanical latch beneath the roof. The service shaft hatch!"
+                        },
+                        {
+                          "op": "setFlag",
+                          "flag": "vane_turned",
+                          "value": true
+                        }
+                      ]
                     }
                   ],
                   "else": [
                     {
-                      "op": "say",
-                      "text": "I push the weather vane. It creaks and swings back east. *CLUNK* — a cable pulls a mechanical latch beneath the roof. The service shaft hatch!"
+                      "op": "setFlag",
+                      "flag": "vane_pushed",
+                      "value": true
                     },
                     {
-                      "op": "setFlag",
+                      "op": "ifFlag",
                       "flag": "vane_turned",
-                      "value": true
+                      "then": [
+                        {
+                          "op": "say",
+                          "text": "I push the weather vane. It creaks and swings west. Bearish sentiment. The cable to the hatch stays slack — still unlatched."
+                        }
+                      ],
+                      "else": [
+                        {
+                          "op": "setFlag",
+                          "flag": "vane_turned",
+                          "value": true
+                        },
+                        {
+                          "op": "say",
+                          "text": "I push the weather vane. It creaks and swings west. *CLUNK* — a cable pulls a mechanical latch beneath the roof. The service shaft hatch!"
+                        }
+                      ]
                     }
                   ]
                 }
               ],
               "else": [
                 {
-                  "op": "setFlag",
-                  "flag": "vane_pushed",
-                  "value": true
-                },
-                {
                   "op": "ifFlag",
                   "flag": "vane_turned",
                   "then": [
                     {
                       "op": "say",
-                      "text": "I push the weather vane. It creaks and swings west. Bearish sentiment. The cable to the hatch stays slack — still unlatched."
+                      "text": "The vane is already locked pointing down. I can still hear the mechanism clicking beneath the roof."
                     }
                   ],
                   "else": [
                     {
-                      "op": "setFlag",
-                      "flag": "vane_turned",
-                      "value": true
-                    },
-                    {
                       "op": "say",
-                      "text": "I push the weather vane. It creaks and swings west. *CLUNK* — a cable pulls a mechanical latch beneath the roof. The service shaft hatch!"
+                      "text": "I push the vane. The vane pushes back. Rust wins."
                     }
                   ]
                 }
@@ -456,59 +532,83 @@
           "PULL": [
             {
               "op": "ifFlag",
-              "flag": "vane_pushed",
+              "flag": "vane_greased",
               "then": [
                 {
-                  "op": "setFlag",
-                  "flag": "vane_pushed",
-                  "value": false
-                },
-                {
                   "op": "ifFlag",
-                  "flag": "vane_turned",
+                  "flag": "vane_pushed",
                   "then": [
                     {
-                      "op": "say",
-                      "text": "I pull the weather vane back east. The cable to the hatch stays slack — still unlatched."
+                      "op": "setFlag",
+                      "flag": "vane_pushed",
+                      "value": false
+                    },
+                    {
+                      "op": "ifFlag",
+                      "flag": "vane_turned",
+                      "then": [
+                        {
+                          "op": "say",
+                          "text": "I pull the weather vane back east. The cable to the hatch stays slack — still unlatched."
+                        }
+                      ],
+                      "else": [
+                        {
+                          "op": "say",
+                          "text": "I pull the weather vane back east. *CLUNK* — a cable pulls a mechanical latch beneath the roof. The service shaft hatch!"
+                        },
+                        {
+                          "op": "setFlag",
+                          "flag": "vane_turned",
+                          "value": true
+                        }
+                      ]
                     }
                   ],
                   "else": [
                     {
-                      "op": "say",
-                      "text": "I pull the weather vane back east. *CLUNK* — a cable pulls a mechanical latch beneath the roof. The service shaft hatch!"
+                      "op": "setFlag",
+                      "flag": "vane_pushed",
+                      "value": true
                     },
                     {
-                      "op": "setFlag",
+                      "op": "ifFlag",
                       "flag": "vane_turned",
-                      "value": true
+                      "then": [
+                        {
+                          "op": "say",
+                          "text": "I yank the weather vane west. Bears in control. The cable to the hatch stays slack — still unlatched."
+                        }
+                      ],
+                      "else": [
+                        {
+                          "op": "say",
+                          "text": "I yank the weather vane west. *CLUNK* — a cable pulls a mechanical latch beneath the roof. The service shaft hatch!"
+                        },
+                        {
+                          "op": "setFlag",
+                          "flag": "vane_turned",
+                          "value": true
+                        }
+                      ]
                     }
                   ]
                 }
               ],
               "else": [
                 {
-                  "op": "setFlag",
-                  "flag": "vane_pushed",
-                  "value": true
-                },
-                {
                   "op": "ifFlag",
                   "flag": "vane_turned",
                   "then": [
                     {
                       "op": "say",
-                      "text": "I yank the weather vane west. Bears in control. The cable to the hatch stays slack — still unlatched."
+                      "text": "The vane is already locked pointing down. I can still hear the mechanism clicking beneath the roof."
                     }
                   ],
                   "else": [
                     {
                       "op": "say",
-                      "text": "I yank the weather vane west. *CLUNK* — a cable pulls a mechanical latch beneath the roof. The service shaft hatch!"
-                    },
-                    {
-                      "op": "setFlag",
-                      "flag": "vane_turned",
-                      "value": true
+                      "text": "I pull. The rust holds. A muscle I didn't know I had files a complaint."
                     }
                   ]
                 }
@@ -552,25 +652,12 @@
             },
             {
               "op": "ifFlag",
-              "flag": "chapter_2_complete",
+              "flag": "basement_unlocked",
               "then": [],
               "else": [
                 {
-                  "op": "setFlag",
-                  "flag": "chapter_2_complete",
-                  "value": true
-                },
-                {
-                  "op": "achievement",
-                  "text": "Chapter 2 Complete: The Receptionist"
-                },
-                {
-                  "op": "wait",
-                  "ms": 3500
-                },
-                {
                   "op": "say",
-                  "text": "That blinking... it's a server heartbeat. Something below needs attention. The service shaft hatch might be the way down."
+                  "text": "That blinking is a server heartbeat. The service hatch goes down there. Of course it does."
                 }
               ]
             }
@@ -723,11 +810,11 @@
             "I press it against the hatch. The reader blinks red. Unimpressed.",
             "The hatch wants to see some ID. That isn't ID. That barely counts as stuff."
           ],
-          "terminal_key": [
-            "I look for a keyhole for the terminal key. The hatch only has a card reader. Wrong key, right idea."
+          "pizza_slice": [
+            "Grease the hatch? The hatch isn't rusty. It's paranoid. Something else up here is rusty."
           ],
           "code_note": [
-            "No keypad on this hatch. 7314 stays in my pocket. The hatch wants a card."
+            "No keypad on this hatch. 7314 stays in my pocket. The hatch wants a card and a key."
           ]
         },
         "name": "Service Shaft Hatch",
@@ -741,17 +828,105 @@
           "LOOK": [
             {
               "op": "ifFlag",
-              "flag": "vane_turned",
+              "flag": "basement_unlocked",
               "then": [
                 {
                   "op": "say",
-                  "text": "A heavy metal hatch flush with the roof. Through the grate I can see the service shaft dropping all the way to the basement. The mechanical latch is disengaged — just need the keycard now."
+                  "text": "The hatch hangs open. A ladder drops into the dark, toward the blinking."
                 }
               ],
               "else": [
                 {
                   "op": "say",
-                  "text": "A heavy metal hatch flush with the roof. Through the grate I can see a vertical service shaft dropping straight down to the basement. A keycard slot blinks red, but there's also a heavy mechanical latch underneath — connected by cable to something else on the roof."
+                  "text": "Three locks: a card reader, a keyhole, and something mechanical underneath. Adrian trusts nobody."
+                },
+                {
+                  "op": "ifFlag",
+                  "flag": "hatch_reader_ok",
+                  "then": [
+                    {
+                      "op": "ifFlag",
+                      "flag": "hatch_lock_ok",
+                      "then": [
+                        {
+                          "op": "ifFlag",
+                          "flag": "vane_turned",
+                          "then": [
+                            {
+                              "op": "say",
+                              "text": "All three are open. After you, me."
+                            }
+                          ],
+                          "else": [
+                            {
+                              "op": "say",
+                              "text": "Still shut: the mechanical latch. Its cable runs up to the weather vane."
+                            }
+                          ]
+                        }
+                      ],
+                      "else": [
+                        {
+                          "op": "ifFlag",
+                          "flag": "vane_turned",
+                          "then": [
+                            {
+                              "op": "say",
+                              "text": "Still shut: the keyhole."
+                            }
+                          ],
+                          "else": [
+                            {
+                              "op": "say",
+                              "text": "Still shut: the keyhole and the mechanical latch."
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ],
+                  "else": [
+                    {
+                      "op": "ifFlag",
+                      "flag": "hatch_lock_ok",
+                      "then": [
+                        {
+                          "op": "ifFlag",
+                          "flag": "vane_turned",
+                          "then": [
+                            {
+                              "op": "say",
+                              "text": "Still shut: the card reader."
+                            }
+                          ],
+                          "else": [
+                            {
+                              "op": "say",
+                              "text": "Still shut: the card reader and the mechanical latch."
+                            }
+                          ]
+                        }
+                      ],
+                      "else": [
+                        {
+                          "op": "ifFlag",
+                          "flag": "vane_turned",
+                          "then": [
+                            {
+                              "op": "say",
+                              "text": "Still shut: the card reader and the keyhole."
+                            }
+                          ],
+                          "else": [
+                            {
+                              "op": "say",
+                              "text": "All three are shut. Obviously."
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
                 }
               ]
             }
@@ -759,44 +934,192 @@
           "USE": [
             {
               "op": "ifFlag",
-              "flag": "vane_turned",
+              "flag": "basement_unlocked",
               "then": [
                 {
                   "op": "ifFlag",
-                  "flag": "has_keycard",
-                  "then": [
-                    {
-                      "op": "sayBrief",
-                      "text": "The keycard beeps. Green light. The hatch swings open — a service ladder descends into darkness.",
-                      "duration": 1500
-                    },
-                    {
-                      "op": "setFlag",
-                      "flag": "basement_unlocked",
-                      "value": true
-                    },
-                    { "op": "playSound", "key": "hatch_metal" },
-                    {
-                      "op": "fadeToScene",
-                      "sceneId": "basement",
-                      "spawn": {
-                        "x": 50,
-                        "y": 90
-                      }
-                    }
-                  ],
+                  "flag": "chapter_2_complete",
+                  "then": [],
                   "else": [
                     {
-                      "op": "say",
-                      "text": "The mechanical latch is released, but the keycard reader still blinks red. I need both — the latch AND the credentials."
+                      "op": "setFlag",
+                      "flag": "chapter_2_complete",
+                      "value": true
                     }
                   ]
+                },
+                {
+                  "op": "sayBrief",
+                  "text": "Back down the ladder. Mind the rungs.",
+                  "duration": 1200
+                },
+                {
+                  "op": "playSound",
+                  "key": "hatch_metal"
+                },
+                {
+                  "op": "fadeToScene",
+                  "sceneId": "basement",
+                  "spawn": {
+                    "x": 50,
+                    "y": 90
+                  }
                 }
               ],
               "else": [
                 {
-                  "op": "say",
-                  "text": "The hatch won't budge. A mechanical latch holds it shut from underneath — something besides the keycard slot is locking this down."
+                  "op": "ifFlag",
+                  "flag": "hatch_reader_ok",
+                  "then": [
+                    {
+                      "op": "ifFlag",
+                      "flag": "hatch_lock_ok",
+                      "then": [
+                        {
+                          "op": "ifFlag",
+                          "flag": "vane_turned",
+                          "then": [
+                            {
+                              "op": "setFlag",
+                              "flag": "basement_unlocked",
+                              "value": true
+                            },
+                            {
+                              "op": "ifFlag",
+                              "flag": "chapter_2_complete",
+                              "then": [],
+                              "else": [
+                                {
+                                  "op": "setFlag",
+                                  "flag": "chapter_2_complete",
+                                  "value": true
+                                },
+                                {
+                                  "op": "achievement",
+                                  "text": "Chapter 2 Complete: The Receptionist"
+                                }
+                              ]
+                            },
+                            {
+                              "op": "playSound",
+                              "key": "hatch_metal"
+                            },
+                            {
+                              "op": "say",
+                              "text": "Three locks. Adrian trusts nobody. Including, apparently, Adrian."
+                            },
+                            {
+                              "op": "sayBrief",
+                              "text": "The hatch swings open. A ladder, a long drop, and that blinking. Down I go.",
+                              "duration": 1500
+                            },
+                            {
+                              "op": "fadeToScene",
+                              "sceneId": "basement",
+                              "spawn": {
+                                "x": 50,
+                                "y": 90
+                              }
+                            }
+                          ],
+                          "else": [
+                            {
+                              "op": "say",
+                              "text": "It won't budge."
+                            },
+                            {
+                              "op": "say",
+                              "text": "Still shut: the mechanical latch. Its cable runs up to the weather vane."
+                            }
+                          ]
+                        }
+                      ],
+                      "else": [
+                        {
+                          "op": "ifFlag",
+                          "flag": "vane_turned",
+                          "then": [
+                            {
+                              "op": "say",
+                              "text": "It won't budge."
+                            },
+                            {
+                              "op": "say",
+                              "text": "Still shut: the keyhole."
+                            }
+                          ],
+                          "else": [
+                            {
+                              "op": "say",
+                              "text": "It won't budge."
+                            },
+                            {
+                              "op": "say",
+                              "text": "Still shut: the keyhole and the mechanical latch."
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ],
+                  "else": [
+                    {
+                      "op": "ifFlag",
+                      "flag": "hatch_lock_ok",
+                      "then": [
+                        {
+                          "op": "ifFlag",
+                          "flag": "vane_turned",
+                          "then": [
+                            {
+                              "op": "say",
+                              "text": "It won't budge."
+                            },
+                            {
+                              "op": "say",
+                              "text": "Still shut: the card reader."
+                            }
+                          ],
+                          "else": [
+                            {
+                              "op": "say",
+                              "text": "It won't budge."
+                            },
+                            {
+                              "op": "say",
+                              "text": "Still shut: the card reader and the mechanical latch."
+                            }
+                          ]
+                        }
+                      ],
+                      "else": [
+                        {
+                          "op": "ifFlag",
+                          "flag": "vane_turned",
+                          "then": [
+                            {
+                              "op": "say",
+                              "text": "It won't budge."
+                            },
+                            {
+                              "op": "say",
+                              "text": "Still shut: the card reader and the keyhole."
+                            }
+                          ],
+                          "else": [
+                            {
+                              "op": "say",
+                              "text": "It won't budge."
+                            },
+                            {
+                              "op": "say",
+                              "text": "All three are shut. Obviously."
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
                 }
               ]
             }
@@ -816,52 +1139,212 @@
           "OPEN": [
             {
               "op": "ifFlag",
-              "flag": "vane_turned",
+              "flag": "basement_unlocked",
               "then": [
                 {
                   "op": "ifFlag",
-                  "flag": "has_keycard",
-                  "then": [
-                    {
-                      "op": "sayBrief",
-                      "text": "The keycard beeps. Green light. The hatch swings open — a service ladder descends into darkness.",
-                      "duration": 1500
-                    },
-                    {
-                      "op": "setFlag",
-                      "flag": "basement_unlocked",
-                      "value": true
-                    },
-                    { "op": "playSound", "key": "hatch_metal" },
-                    {
-                      "op": "fadeToScene",
-                      "sceneId": "basement",
-                      "spawn": {
-                        "x": 50,
-                        "y": 90
-                      }
-                    }
-                  ],
+                  "flag": "chapter_2_complete",
+                  "then": [],
                   "else": [
                     {
-                      "op": "say",
-                      "text": "The latch is free, but the keycard reader still blinks red. ACCESS DENIED. I need the right credentials too."
+                      "op": "setFlag",
+                      "flag": "chapter_2_complete",
+                      "value": true
                     }
                   ]
+                },
+                {
+                  "op": "sayBrief",
+                  "text": "Back down the ladder. Mind the rungs.",
+                  "duration": 1200
+                },
+                {
+                  "op": "playSound",
+                  "key": "hatch_metal"
+                },
+                {
+                  "op": "fadeToScene",
+                  "sceneId": "basement",
+                  "spawn": {
+                    "x": 50,
+                    "y": 90
+                  }
                 }
               ],
               "else": [
                 {
-                  "op": "say",
-                  "text": "Something mechanical holds the hatch shut from below. The keycard slot won't even activate — a secondary lock is engaged."
+                  "op": "ifFlag",
+                  "flag": "hatch_reader_ok",
+                  "then": [
+                    {
+                      "op": "ifFlag",
+                      "flag": "hatch_lock_ok",
+                      "then": [
+                        {
+                          "op": "ifFlag",
+                          "flag": "vane_turned",
+                          "then": [
+                            {
+                              "op": "setFlag",
+                              "flag": "basement_unlocked",
+                              "value": true
+                            },
+                            {
+                              "op": "ifFlag",
+                              "flag": "chapter_2_complete",
+                              "then": [],
+                              "else": [
+                                {
+                                  "op": "setFlag",
+                                  "flag": "chapter_2_complete",
+                                  "value": true
+                                },
+                                {
+                                  "op": "achievement",
+                                  "text": "Chapter 2 Complete: The Receptionist"
+                                }
+                              ]
+                            },
+                            {
+                              "op": "playSound",
+                              "key": "hatch_metal"
+                            },
+                            {
+                              "op": "say",
+                              "text": "Three locks. Adrian trusts nobody. Including, apparently, Adrian."
+                            },
+                            {
+                              "op": "sayBrief",
+                              "text": "The hatch swings open. A ladder, a long drop, and that blinking. Down I go.",
+                              "duration": 1500
+                            },
+                            {
+                              "op": "fadeToScene",
+                              "sceneId": "basement",
+                              "spawn": {
+                                "x": 50,
+                                "y": 90
+                              }
+                            }
+                          ],
+                          "else": [
+                            {
+                              "op": "say",
+                              "text": "It won't budge."
+                            },
+                            {
+                              "op": "say",
+                              "text": "Still shut: the mechanical latch. Its cable runs up to the weather vane."
+                            }
+                          ]
+                        }
+                      ],
+                      "else": [
+                        {
+                          "op": "ifFlag",
+                          "flag": "vane_turned",
+                          "then": [
+                            {
+                              "op": "say",
+                              "text": "It won't budge."
+                            },
+                            {
+                              "op": "say",
+                              "text": "Still shut: the keyhole."
+                            }
+                          ],
+                          "else": [
+                            {
+                              "op": "say",
+                              "text": "It won't budge."
+                            },
+                            {
+                              "op": "say",
+                              "text": "Still shut: the keyhole and the mechanical latch."
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ],
+                  "else": [
+                    {
+                      "op": "ifFlag",
+                      "flag": "hatch_lock_ok",
+                      "then": [
+                        {
+                          "op": "ifFlag",
+                          "flag": "vane_turned",
+                          "then": [
+                            {
+                              "op": "say",
+                              "text": "It won't budge."
+                            },
+                            {
+                              "op": "say",
+                              "text": "Still shut: the card reader."
+                            }
+                          ],
+                          "else": [
+                            {
+                              "op": "say",
+                              "text": "It won't budge."
+                            },
+                            {
+                              "op": "say",
+                              "text": "Still shut: the card reader and the mechanical latch."
+                            }
+                          ]
+                        }
+                      ],
+                      "else": [
+                        {
+                          "op": "ifFlag",
+                          "flag": "vane_turned",
+                          "then": [
+                            {
+                              "op": "say",
+                              "text": "It won't budge."
+                            },
+                            {
+                              "op": "say",
+                              "text": "Still shut: the card reader and the keyhole."
+                            }
+                          ],
+                          "else": [
+                            {
+                              "op": "say",
+                              "text": "It won't budge."
+                            },
+                            {
+                              "op": "say",
+                              "text": "All three are shut. Obviously."
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
                 }
               ]
             }
           ],
           "CLOSE": [
             {
-              "op": "say",
-              "text": "Already closed and locked. Fort Knox wishes it had this security."
+              "op": "ifFlag",
+              "flag": "basement_unlocked",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "I'm not closing it. Three locks took me long enough."
+                }
+              ],
+              "else": [
+                {
+                  "op": "say",
+                  "text": "Already closed and locked. Three times over."
+                }
+              ]
             }
           ],
           "PUSH": [
@@ -879,7 +1362,7 @@
           "GIVE": [
             {
               "op": "say",
-              "text": "The shaft hatch's keycard slot waits patiently. It only accepts one thing: the right credentials."
+              "text": "The hatch doesn't take gifts. It takes a card, a key and a turned vane. It's very particular."
             }
           ]
         }
@@ -1201,31 +1684,342 @@
       "script": [
         {
           "op": "ifFlag",
-          "flag": "vane_turned",
+          "flag": "hatch_reader_ok",
           "then": [
             {
-              "op": "sayBrief",
-              "text": "The keycard beeps. Green light. The hatch swings open — a service ladder descends into darkness.",
-              "duration": 1500
-            },
-            {
-              "op": "setFlag",
-              "flag": "basement_unlocked",
-              "value": true
-            },
-            {
-              "op": "fadeToScene",
-              "sceneId": "basement",
-              "spawn": {
-                "x": 50,
-                "y": 90
-              }
+              "op": "say",
+              "text": "The reader's already green. It likes Adrian's face. One of us should."
             }
           ],
           "else": [
             {
+              "op": "setFlag",
+              "flag": "hatch_reader_ok",
+              "value": true
+            },
+            {
               "op": "say",
-              "text": "The keycard beeps but the hatch doesn't move. A mechanical latch underneath still holds it shut. Something else on this roof controls that lock."
+              "text": "Beep. Green light. The reader thinks I'm Adrian. It's not the first to make that mistake."
+            },
+            {
+              "op": "ifFlag",
+              "flag": "hatch_reader_ok",
+              "then": [
+                {
+                  "op": "ifFlag",
+                  "flag": "hatch_lock_ok",
+                  "then": [
+                    {
+                      "op": "ifFlag",
+                      "flag": "vane_turned",
+                      "then": [
+                        {
+                          "op": "setFlag",
+                          "flag": "basement_unlocked",
+                          "value": true
+                        },
+                        {
+                          "op": "ifFlag",
+                          "flag": "chapter_2_complete",
+                          "then": [],
+                          "else": [
+                            {
+                              "op": "setFlag",
+                              "flag": "chapter_2_complete",
+                              "value": true
+                            },
+                            {
+                              "op": "achievement",
+                              "text": "Chapter 2 Complete: The Receptionist"
+                            }
+                          ]
+                        },
+                        {
+                          "op": "playSound",
+                          "key": "hatch_metal"
+                        },
+                        {
+                          "op": "say",
+                          "text": "Three locks. Adrian trusts nobody. Including, apparently, Adrian."
+                        },
+                        {
+                          "op": "sayBrief",
+                          "text": "The hatch swings open. A ladder, a long drop, and that blinking. Down I go.",
+                          "duration": 1500
+                        },
+                        {
+                          "op": "fadeToScene",
+                          "sceneId": "basement",
+                          "spawn": {
+                            "x": 50,
+                            "y": 90
+                          }
+                        }
+                      ],
+                      "else": [
+                        {
+                          "op": "say",
+                          "text": "Still shut: the mechanical latch. Its cable runs up to the weather vane."
+                        }
+                      ]
+                    }
+                  ],
+                  "else": [
+                    {
+                      "op": "ifFlag",
+                      "flag": "vane_turned",
+                      "then": [
+                        {
+                          "op": "say",
+                          "text": "Still shut: the keyhole."
+                        }
+                      ],
+                      "else": [
+                        {
+                          "op": "say",
+                          "text": "Still shut: the keyhole and the mechanical latch."
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "else": [
+                {
+                  "op": "ifFlag",
+                  "flag": "hatch_lock_ok",
+                  "then": [
+                    {
+                      "op": "ifFlag",
+                      "flag": "vane_turned",
+                      "then": [
+                        {
+                          "op": "say",
+                          "text": "Still shut: the card reader."
+                        }
+                      ],
+                      "else": [
+                        {
+                          "op": "say",
+                          "text": "Still shut: the card reader and the mechanical latch."
+                        }
+                      ]
+                    }
+                  ],
+                  "else": [
+                    {
+                      "op": "ifFlag",
+                      "flag": "vane_turned",
+                      "then": [
+                        {
+                          "op": "say",
+                          "text": "Still shut: the card reader and the keyhole."
+                        }
+                      ],
+                      "else": [
+                        {
+                          "op": "say",
+                          "text": "All three are shut. Obviously."
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "items": [
+        "terminal_key",
+        "hs_roof_access_panel"
+      ],
+      "result": null,
+      "script": [
+        {
+          "op": "ifFlag",
+          "flag": "hatch_lock_ok",
+          "then": [
+            {
+              "op": "say",
+              "text": "Already unlocked. The key stays with me. I've got a feeling I'll need it again."
+            }
+          ],
+          "else": [
+            {
+              "op": "setFlag",
+              "flag": "hatch_lock_ok",
+              "value": true
+            },
+            {
+              "op": "say",
+              "text": "The terminal key fits the keyhole. Click. Thirty-eight pages, finally worth it."
+            },
+            {
+              "op": "ifFlag",
+              "flag": "hatch_reader_ok",
+              "then": [
+                {
+                  "op": "ifFlag",
+                  "flag": "hatch_lock_ok",
+                  "then": [
+                    {
+                      "op": "ifFlag",
+                      "flag": "vane_turned",
+                      "then": [
+                        {
+                          "op": "setFlag",
+                          "flag": "basement_unlocked",
+                          "value": true
+                        },
+                        {
+                          "op": "ifFlag",
+                          "flag": "chapter_2_complete",
+                          "then": [],
+                          "else": [
+                            {
+                              "op": "setFlag",
+                              "flag": "chapter_2_complete",
+                              "value": true
+                            },
+                            {
+                              "op": "achievement",
+                              "text": "Chapter 2 Complete: The Receptionist"
+                            }
+                          ]
+                        },
+                        {
+                          "op": "playSound",
+                          "key": "hatch_metal"
+                        },
+                        {
+                          "op": "say",
+                          "text": "Three locks. Adrian trusts nobody. Including, apparently, Adrian."
+                        },
+                        {
+                          "op": "sayBrief",
+                          "text": "The hatch swings open. A ladder, a long drop, and that blinking. Down I go.",
+                          "duration": 1500
+                        },
+                        {
+                          "op": "fadeToScene",
+                          "sceneId": "basement",
+                          "spawn": {
+                            "x": 50,
+                            "y": 90
+                          }
+                        }
+                      ],
+                      "else": [
+                        {
+                          "op": "say",
+                          "text": "Still shut: the mechanical latch. Its cable runs up to the weather vane."
+                        }
+                      ]
+                    }
+                  ],
+                  "else": [
+                    {
+                      "op": "ifFlag",
+                      "flag": "vane_turned",
+                      "then": [
+                        {
+                          "op": "say",
+                          "text": "Still shut: the keyhole."
+                        }
+                      ],
+                      "else": [
+                        {
+                          "op": "say",
+                          "text": "Still shut: the keyhole and the mechanical latch."
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "else": [
+                {
+                  "op": "ifFlag",
+                  "flag": "hatch_lock_ok",
+                  "then": [
+                    {
+                      "op": "ifFlag",
+                      "flag": "vane_turned",
+                      "then": [
+                        {
+                          "op": "say",
+                          "text": "Still shut: the card reader."
+                        }
+                      ],
+                      "else": [
+                        {
+                          "op": "say",
+                          "text": "Still shut: the card reader and the mechanical latch."
+                        }
+                      ]
+                    }
+                  ],
+                  "else": [
+                    {
+                      "op": "ifFlag",
+                      "flag": "vane_turned",
+                      "then": [
+                        {
+                          "op": "say",
+                          "text": "Still shut: the card reader and the keyhole."
+                        }
+                      ],
+                      "else": [
+                        {
+                          "op": "say",
+                          "text": "All three are shut. Obviously."
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "items": [
+        "pizza_slice",
+        "hs_weather_vane"
+      ],
+      "result": null,
+      "script": [
+        {
+          "op": "ifFlag",
+          "flag": "vane_greased",
+          "then": [
+            {
+              "op": "say",
+              "text": "It's greased enough. Any more and it's a deep-fat fryer."
+            }
+          ],
+          "else": [
+            {
+              "op": "removeItem",
+              "id": "pizza_slice"
+            },
+            {
+              "op": "setFlag",
+              "flag": "vane_greased",
+              "value": true
+            },
+            {
+              "op": "say",
+              "text": "I rub the slice all over the pivot. The rust drinks it like it's been waiting."
+            },
+            {
+              "op": "say",
+              "text": "Adrian's diet finally contributes to the infrastructure."
             }
           ]
         }

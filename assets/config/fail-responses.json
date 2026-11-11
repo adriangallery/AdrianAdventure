@@ -142,6 +142,9 @@
       { "items": ["leaky_pen", "mystery_envelope"], "lines": ["I could forge a new seal with the pen. Penny already resealed it. Badly. Two bad seals don't make a good one."] },
       { "items": ["leaky_pen", "vet_bill"], "lines": ["I'm not writing on Gerald's medical records. Blue ink would upset him. He's yellow."] },
       { "items": ["leaky_pen", "keycard"], "lines": ["I try to doodle a moustache on Adrian's keycard photo. The pen leaks a beard instead. I wipe it off. Mostly."] },
+      { "items": ["pizza_slice", "keycard"], "lines": ["Grease on the keycard. The reader would never trust me again. Readers hold grudges."] },
+      { "items": ["pizza_slice", "terminal_key"], "lines": ["I'm not greasing the terminal key. It already slides into things just fine."] },
+      { "items": ["pizza_slice", "energy_drink"], "lines": ["Pizza and an energy drink. The full Adrian. I'm not ready for the full Adrian."] },
       { "items": ["fence_plank", "ledger"], "lines": ["The plank got the Ledger out. The Ledger doesn't owe it anything. That's not how leverage works."] }
     ]
   },
@@ -325,6 +328,11 @@
       "I try the pen on it. Blue drips everywhere. Nothing gets signed, everything gets stained.",
       "Not the right time for the pen. It leaks anyway. It doesn't care about timing.",
       "I hold the pen over it. A drop falls. I watch it fall. That's the whole plan, apparently."
+    ],
+    "pizza_slice": [
+      "I rub the slice on it. Now it's greasy and still useless. Grease isn't magic. Mostly.",
+      "This doesn't need lubricant. Something on this building does. Something rusty.",
+      "I hold the slice up to it. A drop of grease falls. Nothing else happens. Nothing ever does."
     ]
   }
 }
