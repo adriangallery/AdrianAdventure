@@ -1,12 +1,11 @@
 {
-  "_doc": "A2.9/A2.9a: diario de Dex, capítulo 2 (lobby, upstairs, rooftop). A3.4a: Penny y el abrigo (p2_coat, notas de Penny); A3.4c: cajón de Terms & Conditions (p2_drawer). A3.4b: veleta engrasada con pizza (p2_vane) y escotilla de tres cierres (p2_hatch: el capítulo acaba al bajar). A3.4d: Fernando (g2_fernando opcional, p2_fernando al final de la lista: Anon lo atiende solo después de que Penny prohíba la cafeína, y hasta regarlo). Ver qa/README.md § Diario.",
+  "_doc": "A2.9/A2.9a: diario de Dex, capítulo 2 (lobby, upstairs, rooftop). A3.4a: Penny y el abrigo (p2_coat, notas de Penny); A3.4c: cajón de Terms & Conditions (p2_drawer). A3.4b: veleta engrasada con pizza (p2_vane) y escotilla de tres cierres (p2_hatch: el capítulo acaba al bajar). A3.4d: Fernando (sin objetivo propio: el test pide 3-4 por capítulo; notas n2_fernando/n2_golden/n2_founder y p2_fernando al final de la lista: Anon lo atiende solo después de que Penny prohíba la cafeína, y hasta regarlo). Ver qa/README.md § Diario.",
   "chapter": 2,
   "goals": [
     { "id": "g2_keycard", "text": "Get Adrian's keycard out of his coat. Past Penny.", "doneWhen": "has_keycard" },
     { "id": "g2_receptionist", "text": "Ask Penny about Patient Zero.", "doneWhen": "receptionist_mentioned_pz" },
     { "id": "g2_office", "text": "Search Adrian's office upstairs.", "doneWhen": "found_terminal_key" },
-    { "id": "g2_blink", "text": "Find out what's blinking down below.", "doneWhen": "chapter_2_complete" },
-    { "id": "g2_fernando", "text": "Optional: get Fernando a drink he'll actually accept.", "doneWhen": "plant_watered" }
+    { "id": "g2_blink", "text": "Find out what's blinking down below.", "doneWhen": "chapter_2_complete" }
   ],
   "notes": [
     { "id": "n2_penny", "text": "Penny guards Adrian's coat. She doesn't read other people's mail. Unless it's marked confidential.", "shownWhen": "penny_mail_hint" },
