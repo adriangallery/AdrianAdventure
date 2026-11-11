@@ -135,6 +135,19 @@ def smooth(t):
     return B.smooth(t)
 
 
+def shoulder_pos(P, s, lean_deg):
+    """Hombro con la cadera desplazada y el tronco inclinado `lean_deg` (+ = hacia delante) sobre la columna."""
+    sx = 1 if s == 'L' else -1
+    pivot = Vector((0, 0, 1.08)) + P.hips_off
+    S = Vector(B.side(B.SHOULDER, sx)) + P.hips_off
+    return pivot + Matrix.Rotation(math.radians(lean_deg), 3, 'X') @ (S - pivot)
+
+
+def hang(P, s, lean_deg):
+    sx = 1 if s == 'L' else -1
+    P.hand[s] = shoulder_pos(P, s, lean_deg) + (Vector(B.side(B.WRIST, sx)) - Vector(B.side(B.SHOULDER, sx)))
+
+
 def arm_swing(P, s, deg, bend=0.0):
     """Muñeca colgando del hombro girada `deg` grados hacia delante (+) y algo doblada al ir delante."""
     sx = 1 if s == 'L' else -1
@@ -170,9 +183,9 @@ def walk_pose(p, stride):
     w = 2 * math.pi * p
     P.hips_off = Vector((0.012 * math.sin(w), -0.0, -0.05 - 0.018 * math.cos(2 * w)))
     P.hips_rot = [((0, 0, 1), 6 * math.cos(w)), ((0, 1, 0), 2.5 * math.sin(w))]
-    P.spine_rot = [((1, 0, 0), -4)]  # algo inclinado hacia delante
+    P.spine_rot = [((1, 0, 0), 4)]  # algo inclinado hacia delante
     P.chest_rot = [((0, 0, 1), -10 * math.cos(w)), ((0, 1, 0), -2 * math.sin(w))]
-    P.head_rot = [((0, 0, 1), 4 * math.cos(w)), ((1, 0, 0), 3)]
+    P.head_rot = [((0, 0, 1), 4 * math.cos(w)), ((1, 0, 0), -3)]
     for s, sgn in (('L', -1), ('R', 1)):
         a = sgn * 22 * math.cos(w)  # brazo contrario a la pierna
         arm_swing(P, s, a, bend=0.06 * max(0.0, a) / 22)
@@ -212,9 +225,13 @@ def reach_pose(e, target_rel, crouch=0.0, lean=0.0, tiptoe=0.0, hand='R', both=F
     """Alcanzar: e ∈ [0,1] = cuánto; target_rel = muñeca respecto al pie (armature)."""
     P = idle_pose(0)
     P.hips_off = Vector((0, -0.03 * e * (lean > 0), -crouch * e + 0.04 * tiptoe * e))
-    P.spine_rot = [((1, 0, 0), -lean * 0.5 * e)]
-    P.chest_rot = [((1, 0, 0), -lean * 0.5 * e)]
-    P.head_rot = [((1, 0, 0), -lean * 0.4 * e)]
+    # giro +X = inclinarse hacia delante (hacia -Y); la cabeza compensa para seguir mirando al objeto
+    P.spine_rot = [((1, 0, 0), lean * 0.5 * e)]
+    P.chest_rot = [((1, 0, 0), lean * 0.5 * e)]
+    P.head_rot = [((1, 0, 0), -lean * 0.25 * e)]
+    # la mano que no alcanza cuelga del hombro (que baja con la cadera y se adelanta con la inclinación)
+    for s in ('L', 'R'):
+        hang(P, s, lean * e)
     for s in (('L', 'R') if both else (hand,)):
         sx = 1 if s == 'L' else -1
         rest_w = Vector(B.side(B.WRIST, sx)) + P.hips_off
@@ -239,10 +256,10 @@ def gesture_env(i, n):
 
 GESTURES = {
     # nombre: (función de e → Pose)
-    'pick_low': lambda e: reach_pose(e, (-0.12, -0.36, 0.20), crouch=0.30, lean=38),
-    'pick_mid': lambda e: reach_pose(e, (-0.12, -0.42, 0.98), lean=10),
-    'pick_high': lambda e: reach_pose(e, (-0.12, -0.25, 1.62), tiptoe=1.0),
-    'use': lambda e: reach_pose(e, (-0.10, -0.40, 1.10), lean=6),
+    'pick_low': lambda e: reach_pose(e, (-0.20, -0.36, 0.42), crouch=0.38, lean=45),
+    'pick_mid': lambda e: reach_pose(e, (-0.30, -0.36, 1.00), lean=10),
+    'pick_high': lambda e: reach_pose(e, (-0.30, -0.22, 1.72), tiptoe=0.5),
+    'use': lambda e: reach_pose(e, (-0.22, -0.42, 1.10), lean=6),
     'push': lambda e: reach_pose(e, (-0.16, -0.48, 1.12), lean=18, both=True),
     'pull': lambda e: _pull(e),
     'give': lambda e: _give(e),
@@ -253,15 +270,15 @@ def _pull(e):
     P = reach_pose(1.0, (-0.16, -0.42, 1.05), lean=0, both=True)
     k = smooth(e)
     P.hips_off = Vector((0, 0.05 * k, -0.03 * k))
-    P.spine_rot = [((1, 0, 0), 12 * k)]
-    P.chest_rot = [((1, 0, 0), 6 * k)]
+    P.spine_rot = [((1, 0, 0), -12 * k)]
+    P.chest_rot = [((1, 0, 0), -6 * k)]
     for s in ('L', 'R'):
         P.hand[s] = P.hand[s] + Vector((0, 0.10 * k, 0))
     return P
 
 
 def _give(e):
-    P = reach_pose(e, (-0.10, -0.40, 1.05), lean=4)
+    P = reach_pose(e, (-0.24, -0.42, 1.05), lean=4)
     P.hand_rot['R'] = [((0, 1, 0), 70 * e)]  # palma hacia arriba
     P.head_rot = [((1, 0, 0), 4 * e)]
     return P

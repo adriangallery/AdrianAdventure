@@ -73,6 +73,44 @@ export interface IdleTic {
   side: Side;
 }
 
+// ── A2.14: Dex en 3D (sprites pre-renderizados con Blender, art/dex3d) ─────────────────────────────────────────────
+// Claves (PreloadScene, assets/sprites/player3d): player3d_<anim>_<dir>_<i>, dir = down | up | left | right (hacia
+// dónde mira en la PANTALLA, sin espejar). Si existen, mandan sobre los fotogramas de siempre; el mono no tiene.
+export const DEX3D = 'player3d';
+/** Alto de Dex en reposo en píxeles de arte (el de siempre, A2.11): en los fotogramas 3D, la fila de los pies */
+export const DEX_ART_HEIGHT = 103;
+/** Ciclo de andar: 8 fotogramas × 67,5 ms = 540 ms = 2 zancadas de 20 px de arte a 74 px/s (WalkMotion, Footsteps) */
+export const WALK3D_FRAMES = 8;
+export const WALK3D_FRAME_MS = 67.5;
+/** Hablar: 8 fotogramas a 10 fps (boca y cabeza) */
+export const TALK3D_FRAMES = 8;
+export const TALK3D_FRAME_MS = 100;
+/** Gestos: 5 fotogramas repartidos en GESTURE_MS (sale de reposo, llega y vuelve) */
+export const GESTURE3D_FRAMES = 5;
+export type Gesture3d = 'pick_low' | 'pick_mid' | 'pick_high' | 'use' | 'push' | 'pull' | 'give';
+export const GESTURES3D: readonly Gesture3d[] = ['pick_low', 'pick_mid', 'pick_high', 'use', 'push', 'pull', 'give'];
+export type Dir3d = 'down' | 'up' | 'left' | 'right';
+
+export function facingDir3d(f: AnimFacing): Dir3d {
+  return f === 'front' ? 'down' : f === 'back' ? 'up' : f;
+}
+
+/**
+ * Qué gesto 3D toca para un verbo. `rel` = altura del objetivo sobre los pies en fracciones del alto de Dex (0 = suelo,
+ * 1 = cabeza; null = no se sabe): coger bajo (< 0,3), a media altura o alto (> 0,8).
+ */
+export function gestureAnimFor(verb: string, rel: number | null): Gesture3d {
+  if (verb === 'PICK') {
+    if (rel !== null && rel < 0.3) return 'pick_low';
+    if (rel !== null && rel > 0.8) return 'pick_high';
+    return 'pick_mid';
+  }
+  if (verb === 'PUSH') return 'push';
+  if (verb === 'PULL') return 'pull';
+  if (verb === 'GIVE') return 'give';
+  return 'use';
+}
+
 const REST: AnimPose = { texture: null, angle: 0, lift: 0 };
 /** Pose de reposo: la textura de la orientación, ángulo 0 y sin elevación */
 export function restPose(): AnimPose {
@@ -124,6 +162,9 @@ export function facingTexture(prefix: string, facing: AnimFacing, side: Side, ha
  */
 export function walkPose(o: { prefix: string; dir: AnimDir; side: Side; tMs: number; has: HasTexture }): AnimPose & { texture: string } {
   const t = Math.max(0, o.tMs);
+  if (o.prefix === 'player' && o.has(`${DEX3D}_walk_${o.dir}_0`)) {
+    return { texture: `${DEX3D}_walk_${o.dir}_${Math.floor(t / WALK3D_FRAME_MS) % WALK3D_FRAMES}`, angle: 0, lift: 0 };
+  }
   const sideFrames = (side: Side) => `${o.prefix}_walk_${mirrored(side)}_${Math.floor(t / WALK_FRAME_MS) % 3}`;
   if (!isVertical(o.dir)) return { texture: sideFrames(o.dir as Side), angle: 0, lift: 0 };
   const angle = SWAY_DEG * Math.sin((Math.PI * t) / STEP_MS);
@@ -139,6 +180,10 @@ export function walkPose(o: { prefix: string; dir: AnimDir; side: Side; tMs: num
  * (`posed`) solo cabecea.
  */
 export function talkPose(o: { prefix: string; facing: AnimFacing; tMs: number; has: HasTexture; posed?: boolean }): AnimPose {
+  const k3 = `${DEX3D}_talk_${facingDir3d(o.facing)}_`;
+  if (o.prefix === 'player' && !o.posed && o.has(`${k3}0`)) {
+    return { texture: `${k3}${Math.floor(Math.max(0, o.tMs) / TALK3D_FRAME_MS) % TALK3D_FRAMES}`, angle: 0, lift: 0 };
+  }
   const beats = (Math.max(0, o.tMs) / 1000) * TALK_HZ;
   const wave = Math.sin(Math.PI * beats);
   const angle = o.facing === 'left' || o.facing === 'right'
@@ -165,8 +210,13 @@ export function wantsGesture(verb: string): boolean {
  * puntillas (estirón hacia algo colgado); de frente, Front-* hacia el lado del objetivo, inclinado y de puntillas.
  * null cuando ha terminado.
  */
-export function gesturePose(o: { prefix: string; facing: AnimFacing; side: Side; aim: Side | null; tMs: number; has: HasTexture }): AnimPose | null {
+export function gesturePose(o: { prefix: string; facing: AnimFacing; side: Side; aim: Side | null; tMs: number; has: HasTexture; anim?: Gesture3d }): AnimPose | null {
   if (o.tMs >= GESTURE_MS || o.tMs < 0) return null;
+  const k3 = `${DEX3D}_${o.anim ?? 'pick_mid'}_${facingDir3d(o.facing)}_`;
+  if (o.prefix === 'player' && o.has(`${k3}0`)) {
+    const i = Math.min(GESTURE3D_FRAMES - 1, Math.floor((o.tMs / GESTURE_MS) * GESTURE3D_FRAMES));
+    return { texture: `${k3}${i}`, angle: 0, lift: 0 };
+  }
   const e = Math.sin((Math.PI * o.tMs) / GESTURE_MS);
   const sign = (s: Side) => (s === 'right' ? 1 : -1);
   if (o.facing === 'left' || o.facing === 'right') {

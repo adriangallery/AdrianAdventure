@@ -36,7 +36,7 @@ import { FADE_FIRST_MS, FADE_SHORT_MS } from '@/systems/ScenePrefetch';
 import { addNote, callAnon } from '@/systems/Journal';
 import { JOURNAL_CHAPTERS, journalChapter, journalProgress, journalWorld } from '@/systems/JournalData';
 import { spriteScale, worldToArt, isIntegerScale } from '@/systems/PixelScale';
-import { wantsGesture } from '@/systems/PlayerAnim';
+import { gestureAnimFor, wantsGesture } from '@/systems/PlayerAnim';
 import { defaultFacing, lifeSeed, type VoiceState } from '@/systems/NpcLife';
 import { AmbientLayer } from '@/systems/AmbientLayer';
 import type { AmbientQa } from '@/systems/Ambient';
@@ -857,7 +857,10 @@ export class GameScene extends Phaser.Scene {
   private startGesture(verb: Verb, aim: { x: number; y: number } | null): void {
     if (!aim || this.isTrailer || !wantsGesture(verb)) return;
     const dx = aim.x - this.player.pctX;
-    this.player.gesture(Math.abs(dx) < 0.5 ? null : dx > 0 ? 'right' : 'left');
+    // A2.14: altura del objetivo sobre los pies en altos de Dex (coger del suelo, a media altura o en alto)
+    const h = this.player.getWorldHeightPct();
+    const rel = h > 0 ? (this.player.pctY - aim.y) / h : null;
+    this.player.gesture(Math.abs(dx) < 0.5 ? null : dx > 0 ? 'right' : 'left', gestureAnimFor(verb, rel));
   }
 
   /**

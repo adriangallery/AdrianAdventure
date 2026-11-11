@@ -1,0 +1,134 @@
+{
+ "source": "art/dex3d (Blender, A2.14)",
+ "frameWidth": 72,
+ "frameHeight": 108,
+ "artHeight": 103,
+ "origin": [
+  0.5,
+  0.9537037037037037
+ ],
+ "file": "{anim}_{dir}_{i}.png",
+ "strideArtPx": 20,
+ "walkArtPxPerS": 74,
+ "anims": {
+  "idle": {
+   "frames": 4,
+   "fps": 3,
+   "loop": true,
+   "dirs": [
+    "down",
+    "down_right",
+    "right",
+    "up_right",
+    "up",
+    "up_left",
+    "left",
+    "down_left"
+   ]
+  },
+  "walk": {
+   "frames": 8,
+   "fps": 14.815,
+   "loop": true,
+   "dirs": [
+    "down",
+    "down_right",
+    "right",
+    "up_right",
+    "up",
+    "up_left",
+    "left",
+    "down_left"
+   ]
+  },
+  "talk": {
+   "frames": 8,
+   "fps": 10,
+   "loop": true,
+   "dirs": [
+    "down",
+    "right",
+    "left",
+    "down_right",
+    "down_left"
+   ]
+  },
+  "pick_low": {
+   "frames": 5,
+   "fps": 15.625,
+   "loop": false,
+   "dirs": [
+    "down",
+    "right",
+    "up",
+    "left"
+   ]
+  },
+  "pick_mid": {
+   "frames": 5,
+   "fps": 15.625,
+   "loop": false,
+   "dirs": [
+    "down",
+    "right",
+    "up",
+    "left"
+   ]
+  },
+  "pick_high": {
+   "frames": 5,
+   "fps": 15.625,
+   "loop": false,
+   "dirs": [
+    "down",
+    "right",
+    "up",
+    "left"
+   ]
+  },
+  "use": {
+   "frames": 5,
+   "fps": 15.625,
+   "loop": false,
+   "dirs": [
+    "down",
+    "right",
+    "up",
+    "left"
+   ]
+  },
+  "push": {
+   "frames": 5,
+   "fps": 15.625,
+   "loop": false,
+   "dirs": [
+    "down",
+    "right",
+    "up",
+    "left"
+   ]
+  },
+  "pull": {
+   "frames": 5,
+   "fps": 15.625,
+   "loop": false,
+   "dirs": [
+    "down",
+    "right",
+    "up",
+    "left"
+   ]
+  },
+  "give": {
+   "frames": 5,
+   "fps": 15.625,
+   "loop": false,
+   "dirs": [
+    "down",
+    "right",
+    "up",
+    "left"
+   ]
+  }
+ }
+}

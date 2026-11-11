@@ -9,6 +9,7 @@ import { FADE_FIRST_MS, FADE_SHORT_MS, sceneImageAssets, transitionMode, type Tr
 import { pickBgVariant, texturesToEvict, type BgVariant } from '@/systems/SceneTextures';
 import { gameUrlParams } from '@/config/debugParams';
 import { GameScene } from '@/scenes/GameScene';
+import { DEX3D, GESTURE3D_FRAMES, GESTURES3D, TALK3D_FRAMES, WALK3D_FRAMES } from '@/systems/PlayerAnim';
 
 /** A2.7: medida del último cambio de escena (`__qa.state().lastTransition`) */
 export interface LastTransition {
@@ -116,25 +117,38 @@ export class PreloadScene extends Phaser.Scene {
     this.registry.set('fadeInMs', this.mode === 'full' ? FADE_FIRST_MS : FADE_SHORT_MS);
 
     // Player sprites (load once)
+    // A2.14: Dex en 3D (art/dex3d → assets/sprites/player3d, fotogramas de 72×108 con los pies en la fila 103; Player
+    // pone el origen ahí). Las claves de siempre (player_idle*, player_left/right, player_front_*, player_back_*,
+    // player_walk_*) apuntan a fotogramas 3D; las nuevas player3d_<anim>_<dir>_<i> son el andar de 8 fotogramas en 4
+    // direcciones, hablar y los gestos (PlayerAnim). Si TrailerScene cargó antes las claves de siempre con el arte
+    // viejo, se quedan (el tráiler no se toca).
+    const d3 = (name: string) => `assets/sprites/player3d/${name}.png${v}`;
     if (!this.textures.exists('player_idle1')) {
-      for (let i = 1; i <= 4; i++) {
-        this.load.image(`player_idle${i}`, `assets/sprites/player/Idle-${i}.png${v}`);
-      }
+      for (let i = 1; i <= 4; i++) this.load.image(`player_idle${i}`, d3(`idle_down_${i - 1}`));
       for (let i = 0; i <= 2; i++) {
-        this.load.image(`player_walk_left_${i}`, `assets/sprites/player/Walk-Left-${i}.png${v}`);
-        this.load.image(`player_walk_right_${i}`, `assets/sprites/player/Walk-Right-${i}.png${v}`);
+        // espejadas: walk_left = va hacia la DERECHA de la pantalla
+        this.load.image(`player_walk_left_${i}`, d3(`walk_right_${i * 2}`));
+        this.load.image(`player_walk_right_${i}`, d3(`walk_left_${i * 2}`));
       }
-      this.load.image('player_left', `assets/sprites/player/Left.png${v}`);
-      this.load.image('player_right', `assets/sprites/player/Right.png${v}`);
-      this.load.image('player_front_left', `assets/sprites/player/Front-Left.png${v}`);
-      this.load.image('player_front_right', `assets/sprites/player/Front-Right.png${v}`);
-
+      this.load.image('player_left', d3('idle_right_0'));
+      this.load.image('player_right', d3('idle_left_0'));
+      this.load.image('player_front_left', d3('talk_down_1'));
+      this.load.image('player_front_right', d3('talk_down_5'));
     }
-    // A2.2: de espaldas (Player.face('back')); como las de perfil, la clave sigue el nombre del PNG. Aparte del bloque
-    // de arriba porque TrailerScene carga las demás del personaje y no estas.
+    // A2.2: de espaldas (Player.face('back')); Back-Left = de espaldas girado a la derecha
     if (!this.textures.exists('player_back_left')) {
-      this.load.image('player_back_left', `assets/sprites/player/Back-Left.png${v}`);
-      this.load.image('player_back_right', `assets/sprites/player/Back-Right.png${v}`);
+      this.load.image('player_back_left', d3('idle_up_right_0'));
+      this.load.image('player_back_right', d3('idle_up_left_0'));
+    }
+    if (!this.textures.exists(`${DEX3D}_walk_down_0`)) {
+      const dirs = ['down', 'up', 'left', 'right'] as const;
+      for (const dir of dirs) {
+        for (let i = 0; i < WALK3D_FRAMES; i++) this.load.image(`${DEX3D}_walk_${dir}_${i}`, d3(`walk_${dir}_${i}`));
+        if (dir !== 'up') for (let i = 0; i < TALK3D_FRAMES; i++) this.load.image(`${DEX3D}_talk_${dir}_${i}`, d3(`talk_${dir}_${i}`));
+        for (const g of GESTURES3D) {
+          for (let i = 0; i < GESTURE3D_FRAMES; i++) this.load.image(`${DEX3D}_${g}_${dir}_${i}`, d3(`${g}_${dir}_${i}`));
+        }
+      }
     }
 
     // Ape costume sprites (load once, separate from player check)

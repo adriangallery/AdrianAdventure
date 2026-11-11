@@ -178,7 +178,7 @@ export function textureReport(
       kind = scene === opts.currentScene ? 'scene' : 'otherScenes';
     } else if (e.canvas) kind = 'canvas';
     else if (/^(bg_|fg_|overlay_)/.test(e.key)) kind = 'otherScenes';
-    else if (/^(player_|ape_|npc_)/.test(e.key)) kind = 'characters';
+    else if (/^(player_|player3d_|ape_|npc_)/.test(e.key)) kind = 'characters';
     else if (e.key.startsWith('item_')) kind = 'items';
     else if (e.key.startsWith('badge_')) kind = 'badges';
     else kind = 'other';

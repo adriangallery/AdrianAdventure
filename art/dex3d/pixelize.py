@@ -19,8 +19,9 @@ from PIL import Image
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.abspath(os.path.join(HERE, '..', '..'))
-CROP_W = 56
-CROP_H = 103
+CROP_W = 72
+CROP_H = 103  # alto de Dex en reposo (px de arte): de la fila 0 a la de los dedos de frente
+PAD_BOTTOM = 5  # filas bajo los pies para el pie adelantado al andar hacia cámara (el origen sigue en los pies)
 OUTLINE = (12, 8, 10)
 
 
@@ -72,8 +73,8 @@ def pixelize(raw_path, pal, ss, root_col_art, bottom_art):
     out[edge, :3] = OUTLINE
     # recorte con el origen en los pies
     x0 = root_col_art - CROP_W // 2
-    y1 = bottom_art + 1
-    y0 = y1 - CROP_H
+    y0 = bottom_art + 1 - CROP_H
+    y1 = bottom_art + 1 + PAD_BOTTOM
     lost = int(m[:y0].sum() + m[y1:].sum() + m[:, :x0].sum() + m[:, x0 + CROP_W:].sum()) if y0 >= 0 else -1
     return out[y0:y1, x0:x0 + CROP_W], lost
 
@@ -106,7 +107,8 @@ def main():
             rows.append(row)
     manifest = {
         'source': 'art/dex3d (Blender, A2.14)',
-        'frameWidth': CROP_W, 'frameHeight': CROP_H, 'origin': [0.5, 1],
+        'frameWidth': CROP_W, 'frameHeight': CROP_H + PAD_BOTTOM, 'artHeight': CROP_H,
+        'origin': [0.5, CROP_H / (CROP_H + PAD_BOTTOM)],
         'file': '{anim}_{dir}_{i}.png',
         'strideArtPx': 20, 'walkArtPxPerS': 74,
         'anims': anims,
@@ -114,15 +116,16 @@ def main():
     json.dump(manifest, open(os.path.join(args.out, 'dex3d.json'), 'w'), indent=1)
     if args.contact:
         mx = max(len(r) for r in rows)
-        sheet = np.zeros((len(rows) * CROP_H, mx * CROP_W, 4), dtype=np.uint8)
+        FH = CROP_H + PAD_BOTTOM
+        sheet = np.zeros((len(rows) * FH, mx * CROP_W, 4), dtype=np.uint8)
         sheet[..., :3] = (70, 160, 110)
         sheet[..., 3] = 255
         for r, row in enumerate(rows):
             for i, img in enumerate(row):
-                sub = sheet[r * CROP_H:(r + 1) * CROP_H, i * CROP_W:(i + 1) * CROP_W]
+                sub = sheet[r * FH:(r + 1) * FH, i * CROP_W:(i + 1) * CROP_W]
                 m = img[..., 3] > 0
                 sub[m] = img[m]
-        Image.fromarray(sheet, 'RGBA').resize((mx * CROP_W * 3, len(rows) * CROP_H * 3), Image.NEAREST).save(args.contact)
+        Image.fromarray(sheet, 'RGBA').resize((mx * CROP_W * 3, len(rows) * FH * 3), Image.NEAREST).save(args.contact)
 
 
 if __name__ == '__main__':

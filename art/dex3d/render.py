@@ -22,7 +22,7 @@ import build_dex  # noqa: E402
 import animate  # noqa: E402
 
 SS = 4  # supermuestreo: el bruto es ×4 la resolución de arte
-ART_W, ART_H = 64, 116  # lienzo de arte (se recorta luego a 48×103 con el origen en los pies)
+ART_W, ART_H = 80, 116  # lienzo de arte (pixelize recorta a 72 × 108: 103 de Dex + 5 bajo los pies de frente)
 TILT_DEG = 12.0  # cámara algo picada, como los fondos
 ART_HEIGHT = 103  # alto de Dex en reposo (px de arte) = el sprite de siempre
 ROOT_ROW = 108  # fila (en px de arte) del punto de los pies en el lienzo

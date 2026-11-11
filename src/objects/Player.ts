@@ -7,8 +7,8 @@ import { resolvePixelScale, spriteScale, artHeightPct, type DepthScale, type Pix
 import { FootstepTracker } from '@/systems/Footsteps';
 import { actorDepth, sceneObstacles, speedMultiplier, stepToward, walkSpeedWorldPx } from '@/systems/WalkMotion';
 import {
-  IdleTicker, QA_IDLE_SEED, facingForDir, facingTexture, gesturePose, idleTicPose, isVertical, moveDir, talkPose, walkPose,
-  type AnimDir, type AnimPose, type IdleTic, type IdleTicKind, type Side,
+  DEX_ART_HEIGHT, IdleTicker, QA_IDLE_SEED, facingForDir, facingTexture, gesturePose, idleTicPose, isVertical, moveDir, talkPose, walkPose,
+  type AnimDir, type AnimPose, type Gesture3d, type IdleTic, type IdleTicKind, type Side,
 } from '@/systems/PlayerAnim';
 
 const IDLE_FRAME_MS = 400;
@@ -112,7 +112,7 @@ export class Player extends Phaser.GameObjects.Sprite {
   private talkWanted = false;
   private idleFree = false;
   private talkClock = 0;
-  private gestureAnim: { t: number; aim: Side | null } | null = null;
+  private gestureAnim: { t: number; aim: Side | null; anim?: Gesture3d } | null = null;
   private idleTicker: IdleTicker;
   private ticActive = false;
   /** pose(key) de una cinemática: hablar solo cabecea, sin cambiar la textura, y no hay tics */
@@ -154,7 +154,8 @@ export class Player extends Phaser.GameObjects.Sprite {
     const qa = typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('qa') === '1';
     this.idleTicker = new IdleTicker(qa ? QA_IDLE_SEED : (Date.now() ^ Math.floor(Math.random() * 0x7fffffff)) >>> 0);
 
-    this.setOrigin(0.5, 1); // bottom-center (feet = position)
+    // bottom-center (feet = position); A2.14: en los fotogramas 3D los pies están en la fila DEX_ART_HEIGHT
+    this.setOrigin(0.5, (this.frame?.realHeight ?? 0) > DEX_ART_HEIGHT ? DEX_ART_HEIGHT / this.frame.realHeight : 1);
     this.applyPixelScale();
     this.setDepth(actorDepth(spawnPctY, true));
 
@@ -254,6 +255,18 @@ export class Player extends Phaser.GameObjects.Sprite {
     this.applyPixelScale();
   }
 
+  /**
+   * A2.14: los fotogramas 3D miden 108 de alto con los pies en la fila 103 (5 filas debajo para el pie adelantado al
+   * andar hacia cámara): el origen se pone en los pies para cualquier textura más alta que DEX_ART_HEIGHT, así el
+   * punto de los pies y el alto de Dex quedan como siempre (A2.11).
+   */
+  setTexture(key: string | Phaser.Textures.Texture, frame?: string | number): this {
+    super.setTexture(key, frame);
+    const h = this.frame?.realHeight ?? 0;
+    this.setOrigin(0.5, h > DEX_ART_HEIGHT ? DEX_ART_HEIGHT / h : 1);
+    return this;
+  }
+
   private setTextureIfNeeded(key: string): void {
     if (this.texture?.key !== key && this.has(key)) this.setTexture(key);
   }
@@ -303,9 +316,9 @@ export class Player extends Phaser.GameObjects.Sprite {
    * A4.1: gesto breve de alcanzar o coger (PlayerAnim.GESTURE_MS) al actuar sobre un hotspot; `aim` = lado de la
    * pantalla en el que está el objetivo. Va a la vez que el script: no lo retrasa. Andando no hace nada.
    */
-  gesture(aim: Side | null): void {
+  gesture(aim: Side | null, anim?: Gesture3d): void {
     if (this.isMoving() || !this.visible) return;
-    this.gestureAnim = { t: 0, aim };
+    this.gestureAnim = { t: 0, aim, anim };
     this.idleTicker.reset();
     this.ticActive = false;
   }
@@ -395,7 +408,7 @@ export class Player extends Phaser.GameObjects.Sprite {
    * de pantalla), para Facing: girarse no depende del tamaño de la ventana. 103 = alto de la hoja de idle.
    */
   getWorldHeightPct(): number {
-    return artHeightPct(this.frame?.realHeight || 103, this.pixelScale, this.coordSystem.imgH, this.lastScale.depth);
+    return artHeightPct(Math.min(this.frame?.realHeight || DEX_ART_HEIGHT, DEX_ART_HEIGHT), this.pixelScale, this.coordSystem.imgH, this.lastScale.depth);
   }
 
   update(_time: number, delta: number): void {
@@ -538,7 +551,7 @@ export class Player extends Phaser.GameObjects.Sprite {
     if (this.gestureAnim) {
       this.gestureAnim.t += delta;
       const pose = gesturePose({
-        prefix: this.spritePrefix, facing: this.facing, side: this.lastSide, aim: this.gestureAnim.aim, tMs: this.gestureAnim.t, has: this.has,
+        prefix: this.spritePrefix, facing: this.facing, side: this.lastSide, aim: this.gestureAnim.aim, tMs: this.gestureAnim.t, has: this.has, anim: this.gestureAnim.anim,
       });
       if (pose) {
         this.applyPose(pose, fallback());
