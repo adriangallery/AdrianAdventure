@@ -144,6 +144,9 @@
           ],
           "rubber_duck": [
             "I sit the duck in Fernando's pot. They don't get along. I take the duck back."
+          ],
+          "empty_can": [
+            "I tip the empty can over Fernando. Nothing comes out. He noticed. He's keeping score."
           ]
         },
         "name": "Lobby Plant",
@@ -156,8 +159,20 @@
         "scripts": {
           "LOOK": [
             {
-              "op": "say",
-              "text": "A tall plant in a ceramic pot. It looks thirsty. Really thirsty."
+              "op": "ifFlag",
+              "flag": "plant_watered",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "Fernando, freshly rained on. Glossy. Upright. Smug about it."
+                }
+              ],
+              "else": [
+                {
+                  "op": "say",
+                  "text": "A tall plant in a ceramic pot. It looks thirsty. Really thirsty."
+                }
+              ]
             }
           ],
           "USE": [
@@ -242,7 +257,10 @@
               "text": "Back to the entrance.",
               "duration": 1000
             },
-            { "op": "playSound", "key": "door_creak" },
+            {
+              "op": "playSound",
+              "key": "door_creak"
+            },
             {
               "op": "fadeToScene",
               "sceneId": "outside",
@@ -259,7 +277,10 @@
               "text": "Back to the entrance.",
               "duration": 1000
             },
-            { "op": "playSound", "key": "door_creak" },
+            {
+              "op": "playSound",
+              "key": "door_creak"
+            },
             {
               "op": "fadeToScene",
               "sceneId": "outside",
@@ -294,7 +315,10 @@
               "text": "Back to the entrance.",
               "duration": 1000
             },
-            { "op": "playSound", "key": "door_creak" },
+            {
+              "op": "playSound",
+              "key": "door_creak"
+            },
             {
               "op": "fadeToScene",
               "sceneId": "outside",
@@ -311,7 +335,10 @@
               "text": "Back to the entrance.",
               "duration": 1000
             },
-            { "op": "playSound", "key": "door_creak" },
+            {
+              "op": "playSound",
+              "key": "door_creak"
+            },
             {
               "op": "fadeToScene",
               "sceneId": "outside",
@@ -1136,7 +1163,10 @@
           "h": 30
         },
         "onEnter": [
-          { "op": "playSound", "key": "door_creak" },
+          {
+            "op": "playSound",
+            "key": "door_creak"
+          },
           {
             "op": "gotoScene",
             "sceneId": "outside",
@@ -1206,8 +1236,12 @@
         "antenna": "'Are you trying to improve my signal? I'm already at full bars of sarcasm.'"
       },
       "itemDialogues": {
-        "mystery_envelope": { "node": "env_old" },
-        "mystery_envelope_opened": { "node": "env_old" }
+        "mystery_envelope": {
+          "node": "env_old"
+        },
+        "mystery_envelope_opened": {
+          "node": "env_old"
+        }
       }
     }
   ],
@@ -1372,7 +1406,7 @@
         },
         "vip": {
           "speaker": "Penny",
-          "text": "An AdrianZERO holder! VIP access granted. The basement has a special terminal for holders. The doormat at the entrance hides the way down.",
+          "text": "An AdrianZERO holder. Fine. There's a trapdoor under the front doormat. Same locks as the roof hatch, minus the weather vane.",
           "onEnter": [
             {
               "op": "setFlag",
@@ -1380,7 +1414,7 @@
               "value": true
             }
           ],
-          "next": "hub"
+          "next": "vip_2"
         },
         "bye": {
           "speaker": "Penny",
@@ -1418,6 +1452,11 @@
           "speaker": "Penny",
           "text": "Oh. Oh no. Oh, he did NOT.",
           "end": true
+        },
+        "vip_2": {
+          "speaker": "Penny",
+          "text": "Card reader and keyhole. Bring Adrian's card and the key. You didn't hear it from HR.",
+          "next": "hub"
         }
       }
     }
@@ -1651,17 +1690,57 @@
       "script": [
         {
           "op": "ifFlag",
-          "flag": "plant_revived",
+          "flag": "plant_watered",
           "then": [
             {
               "op": "say",
-              "text": "The plant is already thriving. It's practically doing photosynthesis with attitude now."
+              "text": "Fernando's thriving on rain. He doesn't need my vices."
             }
           ],
           "else": [
             {
+              "op": "setFlag",
+              "flag": "penny_no_stimulants",
+              "value": true
+            },
+            {
               "op": "say",
-              "text": "I pour the energy drink on the dying plant. It shudders... then ERUPTS with green! The caffeine kicks in. Leaves burst out, the stem straightens. This plant is WIRED."
+              "text": "NO stimulants. Fernando is in recovery. He only drinks rain.",
+              "speaker": "Penny"
+            },
+            {
+              "op": "say",
+              "text": "Rain. Indoors. In a crypto office. Where would I even... Up. Rain comes from up."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "items": [
+        "rainwater_can",
+        "hs_plant"
+      ],
+      "result": "golden_token",
+      "script": [
+        {
+          "op": "ifFlag",
+          "flag": "plant_watered",
+          "then": [
+            {
+              "op": "say",
+              "text": "Fernando's had his rain. He's hydrated, not greedy."
+            }
+          ],
+          "else": [
+            {
+              "op": "removeItem",
+              "id": "rainwater_can"
+            },
+            {
+              "op": "setFlag",
+              "flag": "plant_watered",
+              "value": true
             },
             {
               "op": "setFlag",
@@ -1669,8 +1748,13 @@
               "value": true
             },
             {
-              "op": "removeItem",
-              "id": "energy_drink"
+              "op": "addItem",
+              "id": "golden_token",
+              "name": "Golden ZERO Token"
+            },
+            {
+              "op": "say",
+              "text": "I pour the rain into Fernando's pot. Penny watches like it's a hostage exchange."
             },
             {
               "op": "wait",
@@ -1678,7 +1762,12 @@
             },
             {
               "op": "say",
-              "text": "The plant vibrates slightly. It's now the most productive organism in this building. 500mg of caffeine will do that."
+              "text": "He's tipping you. He only tips people he likes.",
+              "speaker": "Penny"
+            },
+            {
+              "op": "say",
+              "text": "A golden ZERO token, right out of the soil. Fernando was sitting on a bag this whole time."
             }
           ]
         }

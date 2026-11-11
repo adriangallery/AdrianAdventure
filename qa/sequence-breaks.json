@@ -212,9 +212,9 @@
       ]
     },
     {
-      "id": "abrigo-sin-distraer-a-penny",
+      "id": "abrigo-con-penny-mirando",
       "kind": "sequence-break",
-      "title": "A3.4a: la keycard del abrigo sin distraer a Penny con el sobre",
+      "title": "A3.4a/A3.4e: la keycard del abrigo con Penny mirando (sin distraerla con el sobre)",
       "why": "A3.4a (puzle 2.1): Penny vigila el abrigo; PICK, OPEN, PULL y USE se niegan hasta que el sobre CONFIDENTIAL llega a su escritorio (penny_reading)",
       "goal": {"has": ["keycard"]},
       "steps": [
@@ -292,6 +292,29 @@
         {"do": "act", "verb": "USE", "target": "hs_weather_vane", "expect": {"flags": {"vane_turned": true}}},
         {"do": "use", "item": "keycard", "target": "hs_roof_access_panel", "rejects": "Still shut: the keyhole", "note": "A3.4b: lector y pestillo sin la terminal_key del cajón: no abre", "expect": {"scene": "rooftop", "flags": {"hatch_reader_ok": true}, "unsetFlags": ["basement_unlocked"]}},
         {"do": "act", "verb": "USE", "target": "hs_roof_access_panel", "attempt": true, "rejects": "Still shut: the keyhole", "expect": {"scene": "rooftop", "lacks": ["terminal_key"], "unsetFlags": ["basement_unlocked", "chapter_2_complete", "found_terminal_key"]}}
+      ]
+    },
+    {
+      "id": "planta-con-cafeina",
+      "kind": "sequence-break",
+      "title": "A3.4d/A3.4e: revivir a Fernando con la bebida energética",
+      "why": "A3.4d (puzle 2.7): antes la lata de BULL RUN revivía la planta de un trago; ahora Penny lo prohíbe («NO stimulants... He only drinks rain.»), la lata sigue en el inventario y Fernando solo suelta el Golden Token con lluvia de la parabólica",
+      "goal": {"flags": {"plant_revived": true}},
+      "steps": [
+        {"do": "newGame", "expect": {"scene": "outside"}},
+        {"do": "act", "verb": "USE", "target": "hs_porch_light", "note": "A3.3c: la mitad A del PIN (apagar la lámpara, cogerla)", "expect": {"flags": {"porch_light_off": true}}},
+        {"do": "act", "verb": "PICK", "target": "hs_porch_light", "expect": {"has": ["note_half_a"]}},
+        {"do": "act", "verb": "PULL", "target": "hs_fence", "note": "A3.3c: el tablón y, con él, el nido de la chimenea (mitad B)", "expect": {"has": ["fence_plank"]}},
+        {"do": "use", "item": "fence_plank", "target": "hs_chimney", "expect": {"has": ["note_half_b"]}},
+        {"do": "combine", "items": ["note_half_a", "note_half_b"], "expect": {"has": ["code_note"]}},
+        {"do": "use", "item": "fence_plank", "target": "hs_doormat", "note": "A3.3d: el felpudo HODL está pegado; con el tablón sale el Ledger (llave de hardware)", "expect": {"has": ["ledger"], "flags": {"found_ledger": true}}},
+        {"do": "act", "verb": "OPEN", "target": "hs_mailbox", "note": "A3.3d: un solo OPEN da el sobre y la factura del veterinario (Gerald, la respuesta de la pregunta de seguridad)", "expect": {"has": ["vet_bill", "mystery_envelope"], "flags": {"knows_gerald": true}}},
+        {"do": "use", "item": "code_note", "target": "hs_keypad", "choices": ["vet bill"], "note": "A3.3d: PIN aceptado; DOORIS se presenta (primera vez), llama Anon y hace la pregunta de seguridad: la opción «[The name on the vet bill]» solo sale con la factura; aún falta la llave", "expect": {"scene": "outside", "flags": {"dooris_met": true, "anon_call_1": true, "dooris_pin_ok": true, "dooris_question_ok": true, "door_unlocked": false}}},
+        {"do": "use", "item": "ledger", "target": "hs_keypad", "note": "A3.3d: tercer factor: DOORIS abre («One factor was a duck») y el árbol cambia de escena al cerrarse", "expect": {"scene": "lobby"}},
+        {"do": "act", "verb": "USE", "target": "hs_stairs_up", "expect": {"scene": "upstairs"}},
+        {"do": "act", "verb": "PICK", "target": "hs_energy_drink", "expect": {"has": ["energy_drink"]}},
+        {"do": "walk", "x": 2, "y": 97.5, "trigger": "tr_to_lobby", "untilScene": "lobby", "note": "vuelta a pie al lobby", "expect": {"scene": "lobby"}},
+        {"do": "use", "item": "energy_drink", "target": "hs_plant", "attempt": true, "rejects": "NO stimulants", "expect": {"scene": "lobby", "has": ["energy_drink"], "lacks": ["golden_token"], "flags": {"penny_no_stimulants": true}, "unsetFlags": ["plant_revived", "plant_watered"]}}
       ]
     }
   ]

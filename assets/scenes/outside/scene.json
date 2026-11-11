@@ -32,7 +32,12 @@
     "sprite": null
   },
   "pixelScale": 4.5,
-  "depthScale": { "yTop": 83, "yBottom": 92, "scaleTop": 0.53, "scaleBottom": 1 },
+  "depthScale": {
+    "yTop": 83,
+    "yBottom": 92,
+    "scaleTop": 0.53,
+    "scaleBottom": 1
+  },
   "ui": {
     "verbs": [
       "LOOK",
@@ -120,7 +125,10 @@
               "op": "ifFlag",
               "flag": "door_unlocked",
               "then": [
-                { "op": "playSound", "key": "door_creak" },
+                {
+                  "op": "playSound",
+                  "key": "door_creak"
+                },
                 {
                   "op": "fadeToScene",
                   "sceneId": "lobby",
@@ -165,7 +173,10 @@
               "op": "ifFlag",
               "flag": "door_unlocked",
               "then": [
-                { "op": "playSound", "key": "door_creak" },
+                {
+                  "op": "playSound",
+                  "key": "door_creak"
+                },
                 {
                   "op": "fadeToScene",
                   "sceneId": "lobby",
@@ -580,7 +591,7 @@
           "LOOK": [
             {
               "op": "say",
-              "text": "Warm light inside. I can see monitor screens glowing \u2014 someone's been running code."
+              "text": "Warm light inside. I can see monitor screens glowing — someone's been running code."
             }
           ],
           "USE": [
@@ -918,7 +929,7 @@
                   "else": [
                     {
                       "op": "say",
-                      "text": "I sift through the junk mail... a sealed envelope marked 'CONFIDENTIAL \u2014 PATIENT ZERO'. And, stuck to it, a vet bill."
+                      "text": "I sift through the junk mail... a sealed envelope marked 'CONFIDENTIAL — PATIENT ZERO'. And, stuck to it, a vet bill."
                     },
                     {
                       "op": "addItem",
@@ -1010,7 +1021,7 @@
                   "else": [
                     {
                       "op": "say",
-                      "text": "I sift through the junk mail... a sealed envelope marked 'CONFIDENTIAL \u2014 PATIENT ZERO'. And, stuck to it, a vet bill."
+                      "text": "I sift through the junk mail... a sealed envelope marked 'CONFIDENTIAL — PATIENT ZERO'. And, stuck to it, a vet bill."
                     },
                     {
                       "op": "addItem",
@@ -1051,7 +1062,10 @@
             }
           ],
           "OPEN": [
-            { "op": "playSound", "key": "paper_rustle" },
+            {
+              "op": "playSound",
+              "key": "paper_rustle"
+            },
             {
               "op": "ifFlag",
               "flag": "found_vet_bill",
@@ -1097,7 +1111,7 @@
                   "else": [
                     {
                       "op": "say",
-                      "text": "I sift through the junk mail... a sealed envelope marked 'CONFIDENTIAL \u2014 PATIENT ZERO'. And, stuck to it, a vet bill."
+                      "text": "I sift through the junk mail... a sealed envelope marked 'CONFIDENTIAL — PATIENT ZERO'. And, stuck to it, a vet bill."
                     },
                     {
                       "op": "addItem",
@@ -1146,7 +1160,7 @@
           "PUSH": [
             {
               "op": "say",
-              "text": "I push the mailbox post. It wobbles \u2014 years of neglect."
+              "text": "I push the mailbox post. It wobbles — years of neglect."
             }
           ],
           "PULL": [
@@ -1304,20 +1318,122 @@
               "flag": "vip_rug_hint",
               "then": [
                 {
-                  "op": "say",
-                  "text": "I slide the doormat aside. Underneath \u2014 a hidden trapdoor with the AdrianZERO logo etched into it. Penny wasn't kidding."
-                },
-                {
-                  "op": "achievement",
-                  "text": "VIP ACCESS \u2014 Found the holder-only shortcut to the basement"
-                },
-                {
-                  "op": "fadeToScene",
-                  "sceneId": "basement",
-                  "spawn": {
-                    "x": 50,
-                    "y": 90
-                  }
+                  "op": "ifFlag",
+                  "flag": "basement_unlocked",
+                  "then": [
+                    {
+                      "op": "playSound",
+                      "key": "hatch_metal"
+                    },
+                    {
+                      "op": "fadeToScene",
+                      "sceneId": "basement",
+                      "spawn": {
+                        "x": 50,
+                        "y": 90
+                      }
+                    },
+                    {
+                      "op": "sayBrief",
+                      "text": "The trapdoor again. Down I go.",
+                      "duration": 1200
+                    }
+                  ],
+                  "else": [
+                    {
+                      "op": "ifHasItem",
+                      "id": "keycard",
+                      "then": [
+                        {
+                          "op": "ifHasItem",
+                          "id": "terminal_key",
+                          "then": [
+                            {
+                              "op": "ifFlag",
+                              "flag": "chapter_2_complete",
+                              "then": [],
+                              "else": [
+                                {
+                                  "op": "setFlag",
+                                  "flag": "chapter_2_complete",
+                                  "value": true
+                                },
+                                {
+                                  "op": "achievement",
+                                  "text": "Chapter 2 Complete: The Receptionist"
+                                }
+                              ]
+                            },
+                            {
+                              "op": "setFlag",
+                              "flag": "basement_unlocked",
+                              "value": true
+                            },
+                            {
+                              "op": "achievement",
+                              "text": "VIP ACCESS — Took the holder trapdoor to the basement"
+                            },
+                            {
+                              "op": "say",
+                              "text": "Under the mat: a trapdoor with the AdrianZERO logo. A card reader and a keyhole. No weather vane."
+                            },
+                            {
+                              "op": "say",
+                              "text": "Card, key, click. Holders skip the weather vane. Not the paperwork."
+                            },
+                            {
+                              "op": "playSound",
+                              "key": "hatch_metal"
+                            },
+                            {
+                              "op": "fadeToScene",
+                              "sceneId": "basement",
+                              "spawn": {
+                                "x": 50,
+                                "y": 90
+                              }
+                            }
+                          ],
+                          "else": [
+                            {
+                              "op": "say",
+                              "text": "Under the mat: a trapdoor with the AdrianZERO logo. A card reader and a keyhole. No weather vane."
+                            },
+                            {
+                              "op": "say",
+                              "text": "Locked. The keyhole wants the key from Adrian's desk."
+                            }
+                          ]
+                        }
+                      ],
+                      "else": [
+                        {
+                          "op": "ifHasItem",
+                          "id": "terminal_key",
+                          "then": [
+                            {
+                              "op": "say",
+                              "text": "Under the mat: a trapdoor with the AdrianZERO logo. A card reader and a keyhole. No weather vane."
+                            },
+                            {
+                              "op": "say",
+                              "text": "Locked. The card reader wants Adrian's keycard."
+                            }
+                          ],
+                          "else": [
+                            {
+                              "op": "say",
+                              "text": "Under the mat: a trapdoor with the AdrianZERO logo. A card reader and a keyhole. No weather vane."
+                            },
+                            {
+                              "op": "say",
+                              "text": "Locked. It wants Adrian's keycard and a key. I have neither."
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
                 }
               ],
               "else": [
@@ -1358,16 +1474,122 @@
               "flag": "vip_rug_hint",
               "then": [
                 {
-                  "op": "say",
-                  "text": "I lift the doormat again. The hidden trapdoor with the AdrianZERO logo \u2014 VIP access to the basement."
-                },
-                {
-                  "op": "fadeToScene",
-                  "sceneId": "basement",
-                  "spawn": {
-                    "x": 50,
-                    "y": 90
-                  }
+                  "op": "ifFlag",
+                  "flag": "basement_unlocked",
+                  "then": [
+                    {
+                      "op": "playSound",
+                      "key": "hatch_metal"
+                    },
+                    {
+                      "op": "fadeToScene",
+                      "sceneId": "basement",
+                      "spawn": {
+                        "x": 50,
+                        "y": 90
+                      }
+                    },
+                    {
+                      "op": "sayBrief",
+                      "text": "The trapdoor again. Down I go.",
+                      "duration": 1200
+                    }
+                  ],
+                  "else": [
+                    {
+                      "op": "ifHasItem",
+                      "id": "keycard",
+                      "then": [
+                        {
+                          "op": "ifHasItem",
+                          "id": "terminal_key",
+                          "then": [
+                            {
+                              "op": "ifFlag",
+                              "flag": "chapter_2_complete",
+                              "then": [],
+                              "else": [
+                                {
+                                  "op": "setFlag",
+                                  "flag": "chapter_2_complete",
+                                  "value": true
+                                },
+                                {
+                                  "op": "achievement",
+                                  "text": "Chapter 2 Complete: The Receptionist"
+                                }
+                              ]
+                            },
+                            {
+                              "op": "setFlag",
+                              "flag": "basement_unlocked",
+                              "value": true
+                            },
+                            {
+                              "op": "achievement",
+                              "text": "VIP ACCESS — Took the holder trapdoor to the basement"
+                            },
+                            {
+                              "op": "say",
+                              "text": "Under the mat: a trapdoor with the AdrianZERO logo. A card reader and a keyhole. No weather vane."
+                            },
+                            {
+                              "op": "say",
+                              "text": "Card, key, click. Holders skip the weather vane. Not the paperwork."
+                            },
+                            {
+                              "op": "playSound",
+                              "key": "hatch_metal"
+                            },
+                            {
+                              "op": "fadeToScene",
+                              "sceneId": "basement",
+                              "spawn": {
+                                "x": 50,
+                                "y": 90
+                              }
+                            }
+                          ],
+                          "else": [
+                            {
+                              "op": "say",
+                              "text": "Under the mat: a trapdoor with the AdrianZERO logo. A card reader and a keyhole. No weather vane."
+                            },
+                            {
+                              "op": "say",
+                              "text": "Locked. The keyhole wants the key from Adrian's desk."
+                            }
+                          ]
+                        }
+                      ],
+                      "else": [
+                        {
+                          "op": "ifHasItem",
+                          "id": "terminal_key",
+                          "then": [
+                            {
+                              "op": "say",
+                              "text": "Under the mat: a trapdoor with the AdrianZERO logo. A card reader and a keyhole. No weather vane."
+                            },
+                            {
+                              "op": "say",
+                              "text": "Locked. The card reader wants Adrian's keycard."
+                            }
+                          ],
+                          "else": [
+                            {
+                              "op": "say",
+                              "text": "Under the mat: a trapdoor with the AdrianZERO logo. A card reader and a keyhole. No weather vane."
+                            },
+                            {
+                              "op": "say",
+                              "text": "Locked. It wants Adrian's keycard and a key. I have neither."
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
                 }
               ],
               "else": [
@@ -1402,16 +1624,122 @@
               "flag": "vip_rug_hint",
               "then": [
                 {
-                  "op": "say",
-                  "text": "I shove the mat aside. There it is \u2014 a hidden hatch, VIP access to the basement. Holders only."
-                },
-                {
-                  "op": "fadeToScene",
-                  "sceneId": "basement",
-                  "spawn": {
-                    "x": 50,
-                    "y": 90
-                  }
+                  "op": "ifFlag",
+                  "flag": "basement_unlocked",
+                  "then": [
+                    {
+                      "op": "playSound",
+                      "key": "hatch_metal"
+                    },
+                    {
+                      "op": "fadeToScene",
+                      "sceneId": "basement",
+                      "spawn": {
+                        "x": 50,
+                        "y": 90
+                      }
+                    },
+                    {
+                      "op": "sayBrief",
+                      "text": "The trapdoor again. Down I go.",
+                      "duration": 1200
+                    }
+                  ],
+                  "else": [
+                    {
+                      "op": "ifHasItem",
+                      "id": "keycard",
+                      "then": [
+                        {
+                          "op": "ifHasItem",
+                          "id": "terminal_key",
+                          "then": [
+                            {
+                              "op": "ifFlag",
+                              "flag": "chapter_2_complete",
+                              "then": [],
+                              "else": [
+                                {
+                                  "op": "setFlag",
+                                  "flag": "chapter_2_complete",
+                                  "value": true
+                                },
+                                {
+                                  "op": "achievement",
+                                  "text": "Chapter 2 Complete: The Receptionist"
+                                }
+                              ]
+                            },
+                            {
+                              "op": "setFlag",
+                              "flag": "basement_unlocked",
+                              "value": true
+                            },
+                            {
+                              "op": "achievement",
+                              "text": "VIP ACCESS — Took the holder trapdoor to the basement"
+                            },
+                            {
+                              "op": "say",
+                              "text": "Under the mat: a trapdoor with the AdrianZERO logo. A card reader and a keyhole. No weather vane."
+                            },
+                            {
+                              "op": "say",
+                              "text": "Card, key, click. Holders skip the weather vane. Not the paperwork."
+                            },
+                            {
+                              "op": "playSound",
+                              "key": "hatch_metal"
+                            },
+                            {
+                              "op": "fadeToScene",
+                              "sceneId": "basement",
+                              "spawn": {
+                                "x": 50,
+                                "y": 90
+                              }
+                            }
+                          ],
+                          "else": [
+                            {
+                              "op": "say",
+                              "text": "Under the mat: a trapdoor with the AdrianZERO logo. A card reader and a keyhole. No weather vane."
+                            },
+                            {
+                              "op": "say",
+                              "text": "Locked. The keyhole wants the key from Adrian's desk."
+                            }
+                          ]
+                        }
+                      ],
+                      "else": [
+                        {
+                          "op": "ifHasItem",
+                          "id": "terminal_key",
+                          "then": [
+                            {
+                              "op": "say",
+                              "text": "Under the mat: a trapdoor with the AdrianZERO logo. A card reader and a keyhole. No weather vane."
+                            },
+                            {
+                              "op": "say",
+                              "text": "Locked. The card reader wants Adrian's keycard."
+                            }
+                          ],
+                          "else": [
+                            {
+                              "op": "say",
+                              "text": "Under the mat: a trapdoor with the AdrianZERO logo. A card reader and a keyhole. No weather vane."
+                            },
+                            {
+                              "op": "say",
+                              "text": "Locked. It wants Adrian's keycard and a key. I have neither."
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
                 }
               ],
               "else": [
@@ -1428,16 +1756,122 @@
               "flag": "vip_rug_hint",
               "then": [
                 {
-                  "op": "say",
-                  "text": "I yank the mat back. The trapdoor underneath is still there. VIP shortcut to the basement."
-                },
-                {
-                  "op": "fadeToScene",
-                  "sceneId": "basement",
-                  "spawn": {
-                    "x": 50,
-                    "y": 90
-                  }
+                  "op": "ifFlag",
+                  "flag": "basement_unlocked",
+                  "then": [
+                    {
+                      "op": "playSound",
+                      "key": "hatch_metal"
+                    },
+                    {
+                      "op": "fadeToScene",
+                      "sceneId": "basement",
+                      "spawn": {
+                        "x": 50,
+                        "y": 90
+                      }
+                    },
+                    {
+                      "op": "sayBrief",
+                      "text": "The trapdoor again. Down I go.",
+                      "duration": 1200
+                    }
+                  ],
+                  "else": [
+                    {
+                      "op": "ifHasItem",
+                      "id": "keycard",
+                      "then": [
+                        {
+                          "op": "ifHasItem",
+                          "id": "terminal_key",
+                          "then": [
+                            {
+                              "op": "ifFlag",
+                              "flag": "chapter_2_complete",
+                              "then": [],
+                              "else": [
+                                {
+                                  "op": "setFlag",
+                                  "flag": "chapter_2_complete",
+                                  "value": true
+                                },
+                                {
+                                  "op": "achievement",
+                                  "text": "Chapter 2 Complete: The Receptionist"
+                                }
+                              ]
+                            },
+                            {
+                              "op": "setFlag",
+                              "flag": "basement_unlocked",
+                              "value": true
+                            },
+                            {
+                              "op": "achievement",
+                              "text": "VIP ACCESS — Took the holder trapdoor to the basement"
+                            },
+                            {
+                              "op": "say",
+                              "text": "Under the mat: a trapdoor with the AdrianZERO logo. A card reader and a keyhole. No weather vane."
+                            },
+                            {
+                              "op": "say",
+                              "text": "Card, key, click. Holders skip the weather vane. Not the paperwork."
+                            },
+                            {
+                              "op": "playSound",
+                              "key": "hatch_metal"
+                            },
+                            {
+                              "op": "fadeToScene",
+                              "sceneId": "basement",
+                              "spawn": {
+                                "x": 50,
+                                "y": 90
+                              }
+                            }
+                          ],
+                          "else": [
+                            {
+                              "op": "say",
+                              "text": "Under the mat: a trapdoor with the AdrianZERO logo. A card reader and a keyhole. No weather vane."
+                            },
+                            {
+                              "op": "say",
+                              "text": "Locked. The keyhole wants the key from Adrian's desk."
+                            }
+                          ]
+                        }
+                      ],
+                      "else": [
+                        {
+                          "op": "ifHasItem",
+                          "id": "terminal_key",
+                          "then": [
+                            {
+                              "op": "say",
+                              "text": "Under the mat: a trapdoor with the AdrianZERO logo. A card reader and a keyhole. No weather vane."
+                            },
+                            {
+                              "op": "say",
+                              "text": "Locked. The card reader wants Adrian's keycard."
+                            }
+                          ],
+                          "else": [
+                            {
+                              "op": "say",
+                              "text": "Under the mat: a trapdoor with the AdrianZERO logo. A card reader and a keyhole. No weather vane."
+                            },
+                            {
+                              "op": "say",
+                              "text": "Locked. It wants Adrian's keycard and a key. I have neither."
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
                 }
               ],
               "else": [
@@ -1547,7 +1981,7 @@
           "LOOK": [
             {
               "op": "say",
-              "text": "Wooden power pole. The original Layer 1 \u2014 electrical infrastructure."
+              "text": "Wooden power pole. The original Layer 1 — electrical infrastructure."
             }
           ],
           "USE": [
@@ -2222,7 +2656,10 @@
                   "flag": "has_plank",
                   "value": true
                 },
-                { "op": "playSound", "key": "plank_pull" },
+                {
+                  "op": "playSound",
+                  "key": "plank_pull"
+                },
                 {
                   "op": "addItem",
                   "id": "fence_plank",
@@ -2412,7 +2849,10 @@
                   "flag": "found_note_half_b",
                   "value": true
                 },
-                { "op": "playSound", "key": "nest_fall" },
+                {
+                  "op": "playSound",
+                  "key": "nest_fall"
+                },
                 {
                   "op": "addItem",
                   "id": "note_half_b",
@@ -2718,7 +3158,15 @@
     "music": "retro-adventure",
     "ambience": "crickets",
     "footstep": "gravel",
-    "surfaces": [{"x":30.9,"y":82.5,"w":16.3,"h":8.6,"footstep":"wood"}],
+    "surfaces": [
+      {
+        "x": 30.9,
+        "y": 82.5,
+        "w": 16.3,
+        "h": 8.6,
+        "footstep": "wood"
+      }
+    ],
     "sfx": {}
   },
   "transitions": {
@@ -2921,7 +3369,10 @@
               "flag": "chapter_1_complete",
               "value": true
             },
-            { "op": "playSound", "key": "door_creak" },
+            {
+              "op": "playSound",
+              "key": "door_creak"
+            },
             {
               "op": "fadeToScene",
               "sceneId": "lobby",
@@ -2942,7 +3393,7 @@
           "onEnter": [
             {
               "op": "achievement",
-              "text": "CHAPTER 1 COMPLETE \u2014 Breaking & Entering"
+              "text": "CHAPTER 1 COMPLETE — Breaking & Entering"
             }
           ]
         },

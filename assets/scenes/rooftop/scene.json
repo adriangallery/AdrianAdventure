@@ -61,6 +61,9 @@
           ],
           "energy_drink": [
             "I'm not pouring BULL RUN into a satellite dish. The pigeons have enough energy."
+          ],
+          "rainwater_can": [
+            "The can's already full. So is the dish. We've reached equilibrium."
           ]
         },
         "name": "Satellite Dish",
@@ -74,11 +77,11 @@
           "LOOK": [
             {
               "op": "say",
-              "text": "A massive satellite dish pointed at the sky. This isn't for TV. It's running a full Base node via satellite. Decentralization taken literally."
+              "text": "A three-metre bowl of rainwater. The best-funded birdbath in the city."
             },
             {
               "op": "say",
-              "text": "The dish points toward a geostationary orbit. Someone configured this to maintain connection even if all ground infrastructure fails. Adrian was preparing for something."
+              "text": "It also runs a full Base node via satellite. Decentralization taken literally."
             }
           ],
           "USE": [
@@ -1460,7 +1463,10 @@
               "text": "I head back downstairs.",
               "duration": 800
             },
-            { "op": "playSound", "key": "door_creak" },
+            {
+              "op": "playSound",
+              "key": "door_creak"
+            },
             {
               "op": "fadeToScene",
               "sceneId": "upstairs",
@@ -1476,7 +1482,10 @@
               "text": "Back to the trading floor.",
               "duration": 800
             },
-            { "op": "playSound", "key": "door_creak" },
+            {
+              "op": "playSound",
+              "key": "door_creak"
+            },
             {
               "op": "fadeToScene",
               "sceneId": "upstairs",
@@ -1510,7 +1519,10 @@
               "text": "I push through the door and head back down.",
               "duration": 800
             },
-            { "op": "playSound", "key": "door_creak" },
+            {
+              "op": "playSound",
+              "key": "door_creak"
+            },
             {
               "op": "fadeToScene",
               "sceneId": "upstairs",
@@ -1556,7 +1568,10 @@
               "text": "I lift the hatch and climb down the ladder into the lobby.",
               "duration": 1200
             },
-            { "op": "playSound", "key": "hatch_metal" },
+            {
+              "op": "playSound",
+              "key": "hatch_metal"
+            },
             {
               "op": "fadeToScene",
               "sceneId": "lobby",
@@ -1584,7 +1599,10 @@
               "text": "I pull the hatch open and descend into the lobby.",
               "duration": 1200
             },
-            { "op": "playSound", "key": "hatch_metal" },
+            {
+              "op": "playSound",
+              "key": "hatch_metal"
+            },
             {
               "op": "fadeToScene",
               "sceneId": "lobby",
@@ -1612,7 +1630,10 @@
               "text": "I pull the hatch open and lower myself into the lobby.",
               "duration": 1200
             },
-            { "op": "playSound", "key": "hatch_metal" },
+            {
+              "op": "playSound",
+              "key": "hatch_metal"
+            },
             {
               "op": "fadeToScene",
               "sceneId": "lobby",
@@ -2020,6 +2041,45 @@
             {
               "op": "say",
               "text": "Adrian's diet finally contributes to the infrastructure."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "items": [
+        "empty_can",
+        "hs_satellite_dish"
+      ],
+      "result": "rainwater_can",
+      "script": [
+        {
+          "op": "ifFlag",
+          "flag": "has_rainwater",
+          "then": [
+            {
+              "op": "say",
+              "text": "I already took my share. The pigeons are watching."
+            }
+          ],
+          "else": [
+            {
+              "op": "removeItem",
+              "id": "empty_can"
+            },
+            {
+              "op": "setFlag",
+              "flag": "has_rainwater",
+              "value": true
+            },
+            {
+              "op": "addItem",
+              "id": "rainwater_can",
+              "name": "Can of Rainwater"
+            },
+            {
+              "op": "say",
+              "text": "I dip the can in the dish. Rainwater, filtered through a satellite node. Artisanal."
             }
           ]
         }

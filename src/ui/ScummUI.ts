@@ -555,6 +555,9 @@ export class ScummUI {
     vip_floppy: "A VIP floppy disc with a gold label. Holders only. I'm not sure I'm a holder. The floppy seems sure.",
     clinic_sign_in_sheet: "The clinic's own sign-in sheet. Names, dates, diagnoses. The handwriting gets worse with every patient.",
     mystery_envelope: "A sealed envelope: 'CONFIDENTIAL — PATIENT ZERO'. Somebody around here would love to read it. Not me. Mostly.",
+    // A3.4d: la cadena opcional de Fernando
+    empty_can: "An empty can of BULL RUN. The mining rig drank it in one go. It holds nothing now. Except potential.",
+    rainwater_can: "A BULL RUN can full of rooftop rain. Filtered through a satellite dish. Fernando's drink of choice.",
     ape_costume: "A full ape costume from the Alpha Pack. Realistic fur, expressive face, diamond-shaped buttons. When worn, I blend in with the Liquidity Pool apes. USE to put it on or take it off.",
   };
 

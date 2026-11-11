@@ -333,6 +333,16 @@
       "I rub the slice on it. Now it's greasy and still useless. Grease isn't magic. Mostly.",
       "This doesn't need lubricant. Something on this building does. Something rusty.",
       "I hold the slice up to it. A drop of grease falls. Nothing else happens. Nothing ever does."
+    ],
+    "empty_can": [
+      "I offer it the empty can. It's empty. So is the gesture.",
+      "Nothing comes out. Something around here wants it full. Of something.",
+      "I tap the can on it. Hollow sound. Same as my portfolio."
+    ],
+    "rainwater_can": [
+      "I'm not wasting good rain on that. Someone in this building only drinks rain.",
+      "I hold the can over it. A drop falls. Nothing grows. Wrong customer.",
+      "That doesn't need watering. Something green downstairs does."
     ]
   }
 }

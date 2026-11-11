@@ -732,3 +732,48 @@ test('A2.9: el rescate del watchdog aplica journalNote como estado; callAnon esp
   await done;
   assert.equal(ctx.getState().flags.after_call, true);
 });
+
+// A3.4d/A3.4e (`trampilla-vip-sin-keycard`): la trampilla VIP del felpudo (outside.hs_doormat, tras la rama VIP de
+// Penny, que pide un AdrianZERO real) tiene el mismo lector y la misma cerradura que la escotilla: sin keycard o sin
+// terminal_key no baja al sótano. El runner del walkthrough no puede simular la posesión de un NFT (el gate ERC721
+// del diálogo lee la cadena), así que el atajo se prueba aquí con los scripts del scene.json.
+test('A3.4d: la trampilla VIP pide keycard y terminal_key y ahorra solo la veleta', async () => {
+  const { readFileSync } = await import('node:fs');
+  const outside = JSON.parse(readFileSync(new URL('../assets/scenes/outside/scene.json', import.meta.url), 'utf8'));
+  const mat = outside.regions.hotspots.find((h) => h.id === 'hs_doormat');
+  const run = async (verb, { flags = {}, items = [] }) => {
+    const ctx = makeCtx();
+    for (const [f, v] of Object.entries(flags)) setFlag(ctx, f, v);
+    for (const id of items) ctx.addItem(id, id);
+    ctx.log.length = 0;
+    const done = new ScriptEngine(ctx).execute(mat.scripts[verb]);
+    for (let i = 0; i < 50 && !ctx.log.some((l) => l.startsWith('goto')); i++) {
+      await flush();
+      while (ctx.says.length) ctx.says.shift().resolve();
+    }
+    await done;
+    return { ctx, state: ctx.getState() };
+  };
+  for (const verb of ['USE', 'OPEN', 'PUSH', 'PULL']) {
+    // Sin la pista de Penny (sin AdrianZERO), el felpudo no enseña ninguna trampilla
+    let r = await run(verb, { items: ['keycard', 'terminal_key'] });
+    assert.ok(!r.ctx.log.some((l) => l.startsWith('goto')), `${verb} sin vip_rug_hint no baja`);
+    // trampilla-vip-sin-keycard: con la pista y la terminal_key, sin keycard
+    r = await run(verb, { flags: { vip_rug_hint: true }, items: ['terminal_key'] });
+    assert.ok(!r.ctx.log.some((l) => l.startsWith('goto')), `${verb} sin keycard no baja`);
+    assert.ok(r.ctx.log.some((l) => /card reader wants Adrian's keycard/.test(l)), `${verb} dice que falta la keycard`);
+    assert.equal(r.state.flags.basement_unlocked, undefined);
+    assert.equal(r.state.flags.chapter_2_complete, undefined);
+    // sin terminal_key
+    r = await run(verb, { flags: { vip_rug_hint: true }, items: ['keycard'] });
+    assert.ok(!r.ctx.log.some((l) => l.startsWith('goto')), `${verb} sin terminal_key no baja`);
+    assert.ok(r.ctx.log.some((l) => /keyhole wants the key/.test(l)));
+    // con las dos (sin veleta ni pizza): baja, cierra el capítulo 2 y no gasta nada
+    r = await run(verb, { flags: { vip_rug_hint: true }, items: ['keycard', 'terminal_key'] });
+    assert.ok(r.ctx.log.includes('goto basement'), `${verb} con keycard y terminal_key baja al sótano`);
+    assert.equal(r.state.flags.basement_unlocked, true);
+    assert.equal(r.state.flags.chapter_2_complete, true);
+    assert.equal(r.state.flags.vane_turned, undefined);
+    assert.deepEqual(r.state.inventory.map((i) => i.id).sort(), ['keycard', 'terminal_key']);
+  }
+});
