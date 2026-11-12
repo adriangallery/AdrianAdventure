@@ -3,7 +3,8 @@
 // A2.15 sin parámetro, suave, media, tope):
 //   1) outside: de la acera a la puerta (andar de perfil: dexpapel_walk_* a saltos; actual: dex2d_walk_*), escala fija
 //      (A2.13), entera (A2.8) y alto 103 (A2.11);
-//   2) lobby: andar de perfil y hacia la cámara; hablar con Penny (TALK) y UNA frase larga del jugador (~7 s) para ver
+//   2) lobby: andar de perfil y hacia la cámara; hablar con Penny (TALK) y UNA frase larga del jugador (~7 s, sayBrief
+//      emitido directamente a UIScene: runScript la saltaría con su toque sintético) para ver
 //      si la mezcla mandíbula + brazos tiene gracia o cansa (sin voz en headless: la mandíbula va a cadencia libre);
 //   3) coger el abrigo (PICK; con papel, 3 poses).
 // Comprueba que sin ?dex=papel no se carga NINGÚN dexpapel_* y que con papel la mandíbula se ve al hablar.
@@ -143,7 +144,7 @@ for (const v of VARIANTS) {
   if (err) problems.push(`${v} TALK Penny: ${err}`);
   await demo.settle({ tap: [640, 40], calm: 2, every: 300 });
   await page.evaluate(() => window.__qa.runScript([{ op: 'actorFace', actor: 'player', dir: 'front' }]));
-  err = await during(`${v} · frase larga (~7 s)`, (t) => window.__demoRun(window.__qa.runScript([{ op: 'sayBrief', text: t, duration: 7000 }])), [LONG], 20000);
+  err = await during(`${v} · frase larga (~7 s)`, (t) => window.__demoRun(new Promise((res) => window.__game.scene.getScene('UIScene').events.emit('sayBrief', t, 7000, undefined, res))), [LONG], 20000);
   if (err) problems.push(`${v} frase larga: ${err}`);
   s = await stats(true);
   console.log(`${v} habla: talking ${s.talking} · mandíbula visible en ${s.jaw} frames (máx ${s.jawMax} px, de lado ${s.jawSide}) · poses ${s.poses.join('')}`);
