@@ -1,5 +1,5 @@
-// Demo de V6 para Adrián (regla visual): en móvil, TOCAR un objeto = mirarlo y MANTENER PULSADO = su
-// acción principal (anillo de progreso de 450 ms).
+// Demo de V6 para Adrián (regla visual): en móvil, MANTENER PULSADO un objeto = su acción principal (anillo de
+// progreso de 450 ms). A1.14: TOCAR un objeto con Walk ya no es mirarlo: Dex anda hacia él sin frase (SCUMM clásico).
 // Uso: BASE_URL=http://127.0.0.1:4173 node scripts/lib/demo.mjs run hold
 import { startDemo } from './lib/demo.mjs';
 
@@ -33,12 +33,13 @@ const target = await page.evaluate(() => {
 });
 console.log('objetivo', JSON.stringify(target));
 
-// 1) Tocar = mirar
+// 1) Tocar = andar hacia él (A1.14), sin verbo ni frase
 await demo.film(500);
 await page.touchscreen.tap(target.x, target.y);
 await demo.film(1800);
 const afterTap = await page.evaluate(() => window.__verbs.slice());
-if (!(await settle())) await demo.fail('El diálogo de «mirar» no se cerró');
+const tapWalk = await page.evaluate(() => window.__qa?.state().walkTarget ?? null);
+if (!(await settle())) await demo.fail('La escena no quedó libre tras tocar');
 await demo.film(400);
 
 // 2) Mantener pulsado = acción principal (toque de 700 ms con captura del anillo)
@@ -59,9 +60,10 @@ await demo.end();
 console.log('tras tocar', JSON.stringify(afterTap));
 console.log('tras mantener', JSON.stringify(afterHold));
 console.log(`${demo.frames} frames`);
-const tapOk = afterTap.length === 1 && afterTap[0].verb === 'LOOK';
+console.log('andar al tocar', JSON.stringify(tapWalk));
+const tapOk = afterTap.length === 0 && (!tapWalk || (tapWalk.target === target.id && tapWalk.verb === 'WALK'));
 const holdVerbs = afterHold.slice(afterTap.length).map((e) => e.verb);
 // La acción puede llegar al instante (TALK/sin alcance) o al terminar de andar
 const holdOk = holdVerbs.includes(target.main) && !holdVerbs.includes('LOOK');
-if (!tapOk) await demo.fail('Tocar no disparó LOOK');
+if (!tapOk) await demo.fail(`Tocar no anduvo (A1.14): verbos ${JSON.stringify(afterTap)}, walkTarget ${JSON.stringify(tapWalk)}`);
 if (!holdOk) await demo.fail(`Mantener no disparó ${target.main}: ${JSON.stringify(holdVerbs)}`);
