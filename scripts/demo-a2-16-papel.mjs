@@ -8,8 +8,8 @@
 //      si la mezcla mandíbula + brazos tiene gracia o cansa (sin voz en headless: la mandíbula va a cadencia libre);
 //   3) coger el abrigo (PICK; con papel, 3 poses).
 // Comprueba que sin ?dex=papel no se carga NINGÚN dexpapel_* y que con papel la mandíbula se ve al hablar.
-// GIF: uno por variante, demo-out/a2-16-papel/a2-16-papel-<variante>.gif, y el del runner (todas seguidas, 1 de cada 3
-// fotogramas: va a ×3, solo de resumen).
+// GIF: uno por variante, demo-out/a2-16-papel/a2-16-papel-<variante>.gif, y el del runner (todas seguidas, 1 de cada 5
+// fotogramas: va rápido, solo de resumen).
 // Una sola variante: PAPEL=tope node scripts/lib/demo.mjs run a2-16-papel. Termina en «problemas: ninguno».
 import { spawnSync } from 'node:child_process';
 import { readdirSync, renameSync, rmSync } from 'node:fs';
@@ -175,17 +175,18 @@ for (const r of ranges) {
   if (!r.count) continue;
   const gif = join(demo.dir, `${demo.name}-${r.v}.gif`);
   const out = spawnSync('ffmpeg', [
+    // 1 de cada 2 fotogramas a 4 fps: las capturas salen a ~4-5 por segundo, así que va casi a tiempo real y pesa la mitad
     '-loglevel', 'error', '-y', '-framerate', String(FPS), '-start_number', String(r.first), '-i', join(demo.dir, 'frames', '%03d.png'),
-    '-frames:v', String(r.count), '-vf', `fps=${FPS},split[a][b];[a]palettegen[p];[b][p]paletteuse`, gif,
+    '-frames:v', String(Math.ceil(r.count / 2)), '-vf', `select=not(mod(n\\,2)),setpts=N/4/TB,fps=4,split[a][b];[a]palettegen[p];[b][p]paletteuse`, gif,
   ], { stdio: 'inherit' });
   console.log(`${r.v}: ${r.count} fotogramas → ${out.status === 0 ? gif : `ffmpeg falló (${out.status ?? out.error?.message})`}`);
 }
-// El GIF del runner (todas las variantes seguidas) a 1 de cada 3 fotogramas, para no pasar de ~10 MB
+// El GIF del runner (todas las variantes seguidas) a 1 de cada 5 fotogramas, para no pasar de ~10 MB
 const fdir = join(demo.dir, 'frames');
 const all = readdirSync(fdir).filter((f) => f.endsWith('.png')).sort();
 let k = 0;
 for (let i = 0; i < all.length; i++) {
-  if (i % 3) rmSync(join(fdir, all[i]));
+  if (i % 5) rmSync(join(fdir, all[i]));
   else renameSync(join(fdir, all[i]), join(fdir, `k${String(k++).padStart(4, '0')}.png`));
 }
 for (let i = 0; i < k; i++) renameSync(join(fdir, `k${String(i).padStart(4, '0')}.png`), join(fdir, `${String(i).padStart(3, '0')}.png`));
