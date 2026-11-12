@@ -277,7 +277,7 @@ export function installQa(game: Phaser.Game): void {
   const note = (line: string) => {
     logTotal++;
     log.push(line);
-    if (log.length > 60) log.shift();
+    if (log.length > 300) log.shift();
   };
   const onSay = (text: unknown) => note(`«${String(text).slice(0, 160)}»`);
 
