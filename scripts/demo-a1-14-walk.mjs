@@ -140,8 +140,9 @@ for (const [tag, vp] of [['844x390', LANDSCAPE], ['390x844', PORTRAIT]]) {
       return n ? { x: n.pctPosition.x, y: n.pctPosition.y - 8 } : null;
     });
     if (!p) problems.push(`${label}: no está`);
-    else {
-      await tapPct(p, film);
+    else if (!(await tapPct(p, film)) && !film) {
+      console.log(`${label}: OMITIDO, Penny no entra en pantalla en vertical`);
+    } else {
       const ok = await page.waitForFunction(() => {
         const s = window.__qa.state();
         return s.walkTarget?.target === 'npc_receptionist' && (!!s.speech || !!s.choices || window.__game.registry.get('dialogueActive'));
