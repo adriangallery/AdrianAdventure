@@ -146,6 +146,16 @@
                         {
                           "op": "say",
                           "text": "Patient Zero is me. I'm the case I couldn't crack."
+                        },
+                        {
+                          "op": "say",
+                          "text": "HI, OWNER. MISSED ME? LET'S GET YOU BACK ON THE CHARTS.",
+                          "speaker": "PZ-BOT"
+                        },
+                        {
+                          "op": "dialogue",
+                          "npcId": "pzbot_final",
+                          "treeId": "pzbot_final"
                         }
                       ]
                     }
@@ -279,8 +289,9 @@
                   "flag": "monitor_revealed",
                   "then": [
                     {
-                      "op": "say",
-                      "text": "My whole file. Every trade. Every mistake. It was always here."
+                      "op": "dialogue",
+                      "npcId": "pzbot_final",
+                      "treeId": "pzbot_final"
                     }
                   ],
                   "else": [
@@ -335,6 +346,16 @@
                                 {
                                   "op": "say",
                                   "text": "Patient Zero is me. I'm the case I couldn't crack."
+                                },
+                                {
+                                  "op": "say",
+                                  "text": "HI, OWNER. MISSED ME? LET'S GET YOU BACK ON THE CHARTS.",
+                                  "speaker": "PZ-BOT"
+                                },
+                                {
+                                  "op": "dialogue",
+                                  "npcId": "pzbot_final",
+                                  "treeId": "pzbot_final"
                                 }
                               ]
                             }
@@ -392,8 +413,9 @@
                   "flag": "monitor_revealed",
                   "then": [
                     {
-                      "op": "say",
-                      "text": "My whole file. Every trade. Every mistake. It was always here."
+                      "op": "dialogue",
+                      "npcId": "pzbot_final",
+                      "treeId": "pzbot_final"
                     }
                   ],
                   "else": [
@@ -1235,7 +1257,225 @@
     "triggers": []
   },
   "npcs": [],
-  "dialogues": {},
+  "dialogues": {
+    "pzbot_final": {
+      "start": "intro",
+      "nodes": {
+        "intro": {
+          "speaker": "PZ-BOT",
+          "text": "OWNER DETECTED. RESUMING STRATEGY: BUY HIGH, FEEL LOW. OBJECTIONS?",
+          "next": "hub"
+        },
+        "hub": {
+          "choices": [
+            {
+              "text": "Let's settle this.",
+              "next": "i2"
+            },
+            {
+              "text": "What happens if I win?",
+              "next": "prize"
+            },
+            {
+              "text": "Not now.",
+              "next": "bye",
+              "exit": true
+            }
+          ]
+        },
+        "prize": {
+          "speaker": "PZ-BOT",
+          "text": "YOU WON'T. BUT IF YOU DO, I SHUT DOWN. NOT WORRIED.",
+          "next": "hub"
+        },
+        "bye": {
+          "speaker": "PZ-BOT",
+          "text": "I'LL BE HERE. I'M ALWAYS HERE. CHECK THE CHARTS.",
+          "end": true
+        },
+        "i2": {
+          "speaker": "PZ-BOT",
+          "text": "I'VE SEEN BETTER HANDS ON A BROKEN CLOCK.",
+          "choices": [
+            {
+              "text": "At least mine float. Yours sank in a kiddie pool.",
+              "when": "fud_r1",
+              "next": "lose"
+            },
+            {
+              "text": "A broken clock is right twice a day. You're on a streak of zero.",
+              "when": "fud_r2",
+              "next": "i4"
+            },
+            {
+              "text": "Then today they'll hear you lose.",
+              "when": "fud_r4",
+              "next": "lose"
+            },
+            {
+              "text": "Clocks are... hard?",
+              "when": "!fud_r2",
+              "next": "lose"
+            }
+          ]
+        },
+        "i4": {
+          "speaker": "PZ-BOT",
+          "text": "NOBODY IN THIS CLINIC HAS EVER HEARD OF YOU.",
+          "choices": [
+            {
+              "text": "And you sold the bottom so often, they gave you a loyalty card.",
+              "when": "fud_r3",
+              "next": "lose"
+            },
+            {
+              "text": "I can tell. They left the receipts floating in the pool.",
+              "when": "fud_r6",
+              "next": "lose"
+            },
+            {
+              "text": "Then today they'll hear you lose.",
+              "when": "fud_r4",
+              "next": "i6"
+            },
+            {
+              "text": "They will. Eventually. Probably.",
+              "when": "!fud_r4",
+              "next": "lose"
+            }
+          ]
+        },
+        "i6": {
+          "speaker": "PZ-BOT",
+          "text": "I'VE BEEN LIQUIDATED BY BETTER PEOPLE THAN YOU.",
+          "choices": [
+            {
+              "text": "A broken clock is right twice a day. You're on a streak of zero.",
+              "when": "fud_r2",
+              "next": "lose"
+            },
+            {
+              "text": "Still more detail than your exit plan.",
+              "when": "fud_r5",
+              "next": "lose"
+            },
+            {
+              "text": "I can tell. They left the receipts floating in the pool.",
+              "when": "fud_r6",
+              "next": "i_final"
+            },
+            {
+              "text": "Name three.",
+              "when": "!fud_r6",
+              "next": "lose"
+            }
+          ]
+        },
+        "i_final": {
+          "speaker": "PZ-BOT",
+          "text": "WE WERE A TEAM. YOU USED TO BE FUN.",
+          "choices": [
+            {
+              "text": "I'm not you anymore.",
+              "when": "patient_zero_revealed",
+              "next": "win"
+            },
+            {
+              "text": "At least mine float. Yours sank in a kiddie pool.",
+              "when": "fud_r1",
+              "next": "lose"
+            },
+            {
+              "text": "[Show the Rare Pepe] This.",
+              "when": "found_pepememe",
+              "next": "pepe"
+            }
+          ]
+        },
+        "pepe": {
+          "speaker": "PZ-BOT",
+          "text": "A FROG. I MINTED THAT FROG. NICE TRY.",
+          "next": "lose"
+        },
+        "lose": {
+          "speaker": "PZ-BOT",
+          "text": "HA. I KNOW ALL YOUR MOVES. I AM YOUR MOVES.",
+          "onEnter": [
+            {
+              "op": "ifFlag",
+              "flag": "pzbot_losses_1",
+              "then": [
+                {
+                  "op": "setFlag",
+                  "flag": "pzbot_losses_2",
+                  "value": true
+                },
+                {
+                  "op": "setFlag",
+                  "flag": "fud_r2",
+                  "value": true
+                },
+                {
+                  "op": "setFlag",
+                  "flag": "fud_r4",
+                  "value": true
+                },
+                {
+                  "op": "setFlag",
+                  "flag": "fud_r6",
+                  "value": true
+                }
+              ],
+              "else": [
+                {
+                  "op": "setFlag",
+                  "flag": "pzbot_losses_1",
+                  "value": true
+                }
+              ]
+            }
+          ],
+          "next": "h_recall"
+        },
+        "h_recall": {
+          "when": "pzbot_losses_2",
+          "text": "Wait. That is the FUD Chad never used. The pool taught me the answers. I remember now.",
+          "end": true,
+          "next": "lose_end"
+        },
+        "lose_end": {
+          "speaker": "PZ-BOT",
+          "text": "RUN IT BACK. I HAVE ALL NIGHT. I HAVE ALL YOUR NIGHTS.",
+          "end": true
+        },
+        "win": {
+          "speaker": "PZ-BOT",
+          "text": "...VOICE MATCH 100 %. BUT YOU DON'T SOUND LIKE ME.",
+          "onEnter": [
+            {
+              "op": "setFlag",
+              "flag": "pzbot_off",
+              "value": true
+            }
+          ],
+          "next": "win_2"
+        },
+        "win_2": {
+          "text": "I used to be you. Now I just wait, read, and ask.",
+          "next": "win_3"
+        },
+        "win_3": {
+          "speaker": "PZ-BOT",
+          "text": "SHUTTING DOWN. DON'T FORGET TO HODL—",
+          "next": "win_4"
+        },
+        "win_4": {
+          "text": "...Is that a phone? Behind the glass.",
+          "end": true
+        }
+      }
+    }
+  },
   "items": {
     "sceneItems": []
   },
@@ -1322,6 +1562,16 @@
                     {
                       "op": "say",
                       "text": "Patient Zero is me. I'm the case I couldn't crack."
+                    },
+                    {
+                      "op": "say",
+                      "text": "HI, OWNER. MISSED ME? LET'S GET YOU BACK ON THE CHARTS.",
+                      "speaker": "PZ-BOT"
+                    },
+                    {
+                      "op": "dialogue",
+                      "npcId": "pzbot_final",
+                      "treeId": "pzbot_final"
                     }
                   ]
                 }
