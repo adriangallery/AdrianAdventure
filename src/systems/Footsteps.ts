@@ -16,9 +16,10 @@
 export const STRIDE_ART_PX = 30;
 /** Un salto mayor que esto (teletransporte, cambio de escena) no cuenta como andar */
 export const MAX_STEP_JUMP_ART_PX = STRIDE_ART_PX * 3;
-/** Desafino al azar (cents) y volumen de cada paso */
+/** Desafino al azar (cents) y volumen de cada paso. A4.7: a la mitad (0,42 → 0,21) mientras Adrián elige otros pasos */
 export const STEP_DETUNE_CENTS = 120;
-export const STEP_VOLUME = 0.42;
+export const STEP_VOLUME_A44 = 0.42;
+export const STEP_VOLUME = STEP_VOLUME_A44 / 2;
 /** Superficies con efectos generados (scripts/audio/sfx-recipes.mjs) */
 export const SURFACES = ['wood', 'gravel', 'concrete', 'tile', 'metal', 'carpet', 'grass'] as const;
 

@@ -4,7 +4,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 
 const {
-  FootstepTracker, surfaceAt, stepSound, stepKey, STRIDE_ART_PX, MAX_STEP_JUMP_ART_PX, STEP_DETUNE_CENTS, STEP_VOLUME, SURFACES,
+  FootstepTracker, surfaceAt, stepSound, stepKey, STRIDE_ART_PX, MAX_STEP_JUMP_ART_PX, STEP_DETUNE_CENTS, STEP_VOLUME, STEP_VOLUME_A44, SURFACES,
 } = await import(process.env.FOOTSTEPS_PATH ?? '../src/systems/Footsteps.ts');
 
 test('surfaceAt: el rectángulo de surfaces manda sobre footstep; sin nada, muda', () => {
@@ -53,6 +53,8 @@ test('stepSound: clave por superficie y pie, desafino dentro del margen y volume
   assert.equal(a.detune, -STEP_DETUNE_CENTS);
   assert.equal(b.detune, STEP_DETUNE_CENTS);
   assert.equal(a.volume, STEP_VOLUME);
+  assert.equal(STEP_VOLUME, 0.21, 'A4.7: los pasos de siempre suenan a la mitad (0,42 → 0,21)');
+  assert.equal(STEP_VOLUME, STEP_VOLUME_A44 / 2);
   assert.ok(stepSound('gravel', 0, 0.5, 0.5).volume < STEP_VOLUME, 'más lejos, más bajo');
   assert.ok(stepSound('gravel', 0, 0.5, 0).volume > 0);
 });
