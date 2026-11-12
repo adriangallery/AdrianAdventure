@@ -61,15 +61,7 @@
           "LOOK": [
             {
               "op": "say",
-              "text": "Dawn breaks over the mountains. The first block of a new day."
-            },
-            {
-              "op": "say",
-              "text": "Everything looks different now. The pixels are the same, but I see them differently."
-            },
-            {
-              "op": "say",
-              "text": "Maybe that's what recovery looks like."
+              "text": "The sun comes up. I wait for it to dip. It does not. It is just the sun."
             }
           ],
           "USE": [
@@ -139,7 +131,7 @@
             },
             {
               "op": "say",
-              "text": "A new sign hangs on the door: 'PATIENT ZERO REHABILITATION CLINIC \u2014 NOW HIRING'."
+              "text": "A new sign hangs on the door: 'PATIENT ZERO REHABILITATION CLINIC — NOW HIRING'."
             },
             {
               "op": "say",
@@ -293,7 +285,7 @@
               "then": [
                 {
                   "op": "say",
-                  "text": "I take the first step down the mountain. The adventure continues... on-chain."
+                  "text": "I take the first step down the mountain. Gerald would be proud. Probably."
                 },
                 {
                   "op": "credits"
@@ -302,7 +294,7 @@
               "else": [
                 {
                   "op": "say",
-                  "text": "Not yet. I should take in the view first."
+                  "text": "Not yet. That NOW HIRING sign is staring at me."
                 }
               ]
             }
@@ -368,14 +360,64 @@
         "scripts": {
           "LOOK": [
             {
-              "op": "say",
-              "text": "A wooden sign: 'NOW HIRING.' The paint is fresh. They need new staff. After my visit, I'm not surprised. I left that treatment room looking like I'd seen my own liquidation history."
+              "op": "ifFlag",
+              "flag": "signed_up",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "NOW HIRING. And under it, my name. Smudged. Official."
+                }
+              ],
+              "else": [
+                {
+                  "op": "say",
+                  "text": "A sign: 'NOW HIRING. Apply within. Bring your own pen.'"
+                }
+              ]
             }
           ],
           "USE": [
             {
-              "op": "say",
-              "text": "I straighten the sign. It's surprisingly well-built. Better craftsmanship than most DApp front-ends."
+              "op": "ifFlag",
+              "flag": "signed_up",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "Already signed. Twice would look desperate."
+                }
+              ],
+              "else": [
+                {
+                  "op": "ifHasItem",
+                  "id": "leaky_pen",
+                  "then": [
+                    {
+                      "op": "say",
+                      "text": "Bring your own pen, it says. I happen to own a very specific pen."
+                    }
+                  ],
+                  "else": [
+                    {
+                      "op": "setFlag",
+                      "flag": "signed_up",
+                      "value": true
+                    },
+                    {
+                      "op": "setFlag",
+                      "flag": "game_complete",
+                      "value": true
+                    },
+                    {
+                      "op": "achievement",
+                      "text": "GAME COMPLETE: ZEROadventure II"
+                    },
+                    {
+                      "op": "say",
+                      "text": "No pen. There is a pencil on a string. I sign. Detective Dex. Zero cases. One job."
+                    }
+                  ]
+                }
+              ]
             }
           ],
           "TALK": [
@@ -435,7 +477,7 @@
           "LOOK": [
             {
               "op": "say",
-              "text": "Birds circling in the dawn sky. Free. No gas fees. No slippage. Just vibes. They're the only creatures that truly understand what 'to the moon' means."
+              "text": "Birds. And one duck. Not Gerald. Gerald doesn't fly. Gerald floats."
             }
           ],
           "USE": [
@@ -555,57 +597,60 @@
         }
       }
     ],
-    "triggers": [
-      {
-        "id": "tr_epilogue_start",
-        "once": true,
-        "bounds": {
-          "x": 25,
-          "y": 65,
-          "w": 40,
-          "h": 25
-        },
-        "onEnter": [
-          {
-            "op": "wait",
-            "ms": 2000
-          },
-          {
-            "op": "say",
-            "text": "..."
-          },
-          {
-            "op": "say",
-            "text": "Fresh air. Real sunlight. When was the last time I looked up from a screen?"
-          },
-          {
-            "op": "say",
-            "text": "Patient Zero. It was me all along. But maybe knowing is the cure."
-          },
-          {
-            "op": "ifFlag",
-            "flag": "game_complete",
-            "then": [],
-            "else": [
-              {
-                "op": "setFlag",
-                "flag": "game_complete",
-                "value": true
-              },
-              {
-                "op": "achievement",
-                "text": "GAME COMPLETE: ZEROadventure II"
-              }
-            ]
-          }
-        ]
-      }
-    ]
+    "triggers": []
   },
   "items": {
     "sceneItems": []
   },
-  "combos": [],
+  "combos": [
+    {
+      "items": [
+        "leaky_pen",
+        "hs_now_hiring_sign"
+      ],
+      "result": "sign_up",
+      "script": [
+        {
+          "op": "ifFlag",
+          "flag": "signed_up",
+          "then": [
+            {
+              "op": "say",
+              "text": "Already signed. Twice would look desperate."
+            }
+          ],
+          "else": [
+            {
+              "op": "setFlag",
+              "flag": "signed_up",
+              "value": true
+            },
+            {
+              "op": "setFlag",
+              "flag": "game_complete",
+              "value": true
+            },
+            {
+              "op": "achievement",
+              "text": "GAME COMPLETE: ZEROadventure II"
+            },
+            {
+              "op": "say",
+              "text": "I sign with the Mt. Gox pen. It leaks all over my name."
+            },
+            {
+              "op": "say",
+              "text": "Still leaking. Still useful. There's hope for all of us."
+            },
+            {
+              "op": "say",
+              "text": "Detective Dex. Zero cases. One job."
+            }
+          ]
+        }
+      ]
+    }
+  ],
   "audio": {
     "music": "epilogue",
     "variation": {
@@ -701,6 +746,78 @@
       "count": 3,
       "alpha": 1,
       "when": "porch_light_off"
+    }
+  ],
+  "onEnter": [
+    {
+      "op": "ifFlag",
+      "flag": "epilogue_intro_shown",
+      "then": [],
+      "else": [
+        {
+          "op": "cinematicStart"
+        },
+        {
+          "op": "setFlag",
+          "flag": "epilogue_intro_shown",
+          "value": true
+        },
+        {
+          "op": "cameraPan",
+          "x": 28,
+          "y": 22,
+          "ms": 2500
+        },
+        {
+          "op": "say",
+          "text": "Sunrise. Not a green candle. Not a breakout. Just... a sunrise."
+        },
+        {
+          "op": "say",
+          "text": "The moths from the lamp fly past me, straight at the sun. Ambitious."
+        },
+        {
+          "op": "cameraPan",
+          "x": 45,
+          "y": 70,
+          "ms": 1500
+        },
+        {
+          "op": "say",
+          "text": "My phone rings. Penny."
+        },
+        {
+          "op": "say",
+          "text": "Dex. Penny. HR has approved your hiring.",
+          "speaker": "Penny"
+        },
+        {
+          "op": "say",
+          "text": "Who's HR?"
+        },
+        {
+          "op": "say",
+          "text": "I am HR.",
+          "speaker": "Penny"
+        },
+        {
+          "op": "say",
+          "text": "Also, DOORIS has something to say. I patched her through.",
+          "speaker": "Penny"
+        },
+        {
+          "op": "say",
+          "text": "Good morning, Dex. Voice match: 100 %. Welcome home.",
+          "speaker": "DOORIS"
+        },
+        {
+          "op": "say",
+          "text": "She said my name. Not 'unknown wallet'. My name."
+        },
+        {
+          "op": "cinematicEnd"
+        }
+      ]
     }
   ]
 }
