@@ -72,13 +72,93 @@
           "LOOK": [
             {
               "op": "say",
-              "text": "A single reclining chair facing the monitor. Clinical. Cold. The armrests are worn smooth by anxious hands. The seat cushion is still warm. How long ago did Patient Zero leave? Minutes? Hours?"
+              "text": "One reclining chair, facing the monitor. Straps on the armrests. Comfy. Restraints optional. Hopefully."
             }
           ],
           "USE": [
             {
-              "op": "say",
-              "text": "I sit down in the chair. It adjusts to my weight automatically. The monitor's glow washes over me. For a moment, I feel like I've been here before. Like I've always been here."
+              "op": "ifFlag",
+              "flag": "patient_seated",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "Still strapped in. Optional, they said."
+                }
+              ],
+              "else": [
+                {
+                  "op": "setFlag",
+                  "flag": "patient_seated",
+                  "value": true
+                },
+                {
+                  "op": "say",
+                  "text": "I sit. The straps close on their own. *click*"
+                },
+                {
+                  "op": "say",
+                  "text": "Optional, they said."
+                },
+                {
+                  "op": "ifFlag",
+                  "flag": "backup_loaded",
+                  "then": [
+                    {
+                      "op": "ifFlag",
+                      "flag": "monitor_revealed",
+                      "then": [],
+                      "else": [
+                        {
+                          "op": "setFlag",
+                          "flag": "monitor_revealed",
+                          "value": true
+                        },
+                        {
+                          "op": "setFlag",
+                          "flag": "patient_zero_revealed",
+                          "value": true
+                        },
+                        {
+                          "op": "setFlag",
+                          "flag": "patient_zero_found",
+                          "value": true
+                        },
+                        {
+                          "op": "achievement",
+                          "text": "PATIENT ZERO — Identity Revealed"
+                        },
+                        {
+                          "op": "say",
+                          "text": "The monitor hums. Green text crawls up the screen."
+                        },
+                        {
+                          "op": "monitorReveal"
+                        },
+                        {
+                          "op": "say",
+                          "text": "VOICE MATCH: 100 %. WELCOME BACK, PATIENT ZERO.",
+                          "speaker": "PZ-BOT"
+                        },
+                        {
+                          "op": "say",
+                          "text": "A hundred percent. DOORIS only gave me eighty-seven."
+                        },
+                        {
+                          "op": "say",
+                          "text": "Patient Zero is me. I'm the case I couldn't crack."
+                        }
+                      ]
+                    }
+                  ],
+                  "else": [
+                    {
+                      "op": "say",
+                      "text": "PATIENT SEATED. INSERT BACKUP.",
+                      "speaker": "PZ-BOT"
+                    }
+                  ]
+                }
+              ]
             }
           ],
           "TALK": [
@@ -150,91 +230,180 @@
         "scripts": {
           "LOOK": [
             {
-              "op": "say",
-              "text": "The monitor shows wallet transaction history. Wait... those are MY transactions. The mints, the swaps, the failed transactions. Every gas fee, every approval. The charts on the wall... they're MY portfolio. Patient Zero... is ME?"
+              "op": "ifFlag",
+              "flag": "pzbot_off",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "Black screen. Just my reflection. It looks rested. Weird."
+                }
+              ],
+              "else": [
+                {
+                  "op": "ifFlag",
+                  "flag": "monitor_revealed",
+                  "then": [
+                    {
+                      "op": "say",
+                      "text": "My whole file. VOICE MATCH 100 %. Hi, me."
+                    }
+                  ],
+                  "else": [
+                    {
+                      "op": "say",
+                      "text": "RESTORE FROM COLD STORAGE: INSERT BACKUP. PATIENT MUST BE SEATED.",
+                      "speaker": "PZ-BOT"
+                    },
+                    {
+                      "op": "say",
+                      "text": "It wants a disk and my backside. Bossy screen."
+                    }
+                  ]
+                }
+              ]
             }
           ],
           "USE": [
             {
               "op": "ifFlag",
-              "flag": "monitor_revealed",
+              "flag": "pzbot_off",
               "then": [
                 {
                   "op": "say",
-                  "text": "The monitor still shows my complete history. Every trade. Every mistake. Every moment of hope. It's all here. It was always here."
+                  "text": "Off. For good. Healthiest screen in the building."
                 }
               ],
               "else": [
                 {
-                  "op": "wait",
-                  "ms": 1500
-                },
-                {
-                  "op": "say",
-                  "text": "The monitor hums to life. Green text on black screen..."
-                },
-                {
-                  "op": "monitorReveal"
-                },
-                {
-                  "op": "say",
-                  "text": "It shows... a wallet address. Wait."
-                },
-                {
-                  "op": "say",
-                  "text": "Those are MY transactions."
-                },
-                {
-                  "op": "say",
-                  "text": "The charts on the wall... they're MY portfolio. Every trade. Every mint. Every mistake."
-                },
-                {
-                  "op": "say",
-                  "text": "Patient Zero... is ME?"
-                },
-                {
-                  "op": "say",
-                  "text": "\"Congratulations. You found yourself.\""
-                },
-                {
-                  "op": "say",
-                  "text": "\"The first step to recovery is admitting you have a problem.\""
-                },
-                {
-                  "op": "say",
-                  "text": "\"The second step? ...There is no second step in crypto.\""
-                },
-                {
-                  "op": "setFlag",
+                  "op": "ifFlag",
                   "flag": "monitor_revealed",
-                  "value": true
-                },
-                {
-                  "op": "setFlag",
-                  "flag": "patient_zero_revealed",
-                  "value": true
-                },
-                {
-                  "op": "setFlag",
-                  "flag": "patient_zero_found",
-                  "value": true
-                },
-                {
-                  "op": "setFlag",
-                  "flag": "chapter_5_complete",
-                  "value": true
-                },
-                {
-                  "op": "achievement",
-                  "text": "PATIENT ZERO \u2014 Identity Revealed"
+                  "then": [
+                    {
+                      "op": "say",
+                      "text": "My whole file. Every trade. Every mistake. It was always here."
+                    }
+                  ],
+                  "else": [
+                    {
+                      "op": "ifFlag",
+                      "flag": "backup_loaded",
+                      "then": [
+                        {
+                          "op": "ifFlag",
+                          "flag": "patient_seated",
+                          "then": [
+                            {
+                              "op": "ifFlag",
+                              "flag": "monitor_revealed",
+                              "then": [],
+                              "else": [
+                                {
+                                  "op": "setFlag",
+                                  "flag": "monitor_revealed",
+                                  "value": true
+                                },
+                                {
+                                  "op": "setFlag",
+                                  "flag": "patient_zero_revealed",
+                                  "value": true
+                                },
+                                {
+                                  "op": "setFlag",
+                                  "flag": "patient_zero_found",
+                                  "value": true
+                                },
+                                {
+                                  "op": "achievement",
+                                  "text": "PATIENT ZERO — Identity Revealed"
+                                },
+                                {
+                                  "op": "say",
+                                  "text": "The monitor hums. Green text crawls up the screen."
+                                },
+                                {
+                                  "op": "monitorReveal"
+                                },
+                                {
+                                  "op": "say",
+                                  "text": "VOICE MATCH: 100 %. WELCOME BACK, PATIENT ZERO.",
+                                  "speaker": "PZ-BOT"
+                                },
+                                {
+                                  "op": "say",
+                                  "text": "A hundred percent. DOORIS only gave me eighty-seven."
+                                },
+                                {
+                                  "op": "say",
+                                  "text": "Patient Zero is me. I'm the case I couldn't crack."
+                                }
+                              ]
+                            }
+                          ],
+                          "else": [
+                            {
+                              "op": "say",
+                              "text": "The backup's in. Now it wants me in the chair."
+                            }
+                          ]
+                        }
+                      ],
+                      "else": [
+                        {
+                          "op": "ifFlag",
+                          "flag": "patient_seated",
+                          "then": [
+                            {
+                              "op": "say",
+                              "text": "I'm seated. It still wants the backup. A disk, not my feelings."
+                            }
+                          ],
+                          "else": [
+                            {
+                              "op": "say",
+                              "text": "INSERT BACKUP. PATIENT MUST BE SEATED.",
+                              "speaker": "PZ-BOT"
+                            },
+                            {
+                              "op": "say",
+                              "text": "It wants a disk and my backside. In that order, ideally."
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
                 }
               ]
             }
           ],
           "TALK": [
             {
-              "op": "say",
-              "text": "I talk to the monitor. It displays: 'VOICE RECOGNIZED. WELCOME BACK.' Back? I've never been here. ...have I?"
+              "op": "ifFlag",
+              "flag": "pzbot_off",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "Nobody home. Finally."
+                }
+              ],
+              "else": [
+                {
+                  "op": "ifFlag",
+                  "flag": "monitor_revealed",
+                  "then": [
+                    {
+                      "op": "say",
+                      "text": "My whole file. Every trade. Every mistake. It was always here."
+                    }
+                  ],
+                  "else": [
+                    {
+                      "op": "say",
+                      "text": "I talk to the monitor. It displays: 'VOICE RECOGNIZED. WELCOME BACK.' Back? I've never been here. ...have I?"
+                    }
+                  ]
+                }
+              ]
             }
           ],
           "PICK": [
@@ -371,7 +540,10 @@
                   "op": "say",
                   "text": "Time to face the world. With the truth."
                 },
-                { "op": "playSound", "key": "door_creak" },
+                {
+                  "op": "playSound",
+                  "key": "door_creak"
+                },
                 {
                   "op": "fadeToScene",
                   "sceneId": "epilogue_outside",
@@ -410,7 +582,10 @@
                   "op": "say",
                   "text": "Time to face the world. With the truth."
                 },
-                { "op": "playSound", "key": "door_creak" },
+                {
+                  "op": "playSound",
+                  "key": "door_creak"
+                },
                 {
                   "op": "fadeToScene",
                   "sceneId": "epilogue_outside",
@@ -443,7 +618,10 @@
                   "op": "say",
                   "text": "Time to face the world. With the truth."
                 },
-                { "op": "playSound", "key": "door_creak" },
+                {
+                  "op": "playSound",
+                  "key": "door_creak"
+                },
                 {
                   "op": "fadeToScene",
                   "sceneId": "epilogue_outside",
@@ -542,7 +720,7 @@
                     },
                     {
                       "op": "say",
-                      "text": "\"The patients never make it this far \u2014 they stay in the lobby refreshing charts.\""
+                      "text": "\"The patients never make it this far — they stay in the lobby refreshing charts.\""
                     },
                     {
                       "op": "say",
@@ -554,7 +732,7 @@
                     },
                     {
                       "op": "say",
-                      "text": "\"\u2014 Adrian\""
+                      "text": "\"— Adrian\""
                     }
                   ]
                 }
@@ -678,7 +856,7 @@
           "USE": [
             {
               "op": "say",
-              "text": "I touch the plaque. It's warm. The engraving shifts \u2014 showing my $ZERO balance, my first transaction, my time in the ecosystem. Patient Zero was always a founder."
+              "text": "I touch the plaque. It's warm. The engraving shifts — showing my $ZERO balance, my first transaction, my time in the ecosystem. Patient Zero was always a founder."
             }
           ],
           "TALK": [
@@ -785,8 +963,37 @@
           ],
           "PICK": [
             {
-              "op": "say",
-              "text": "A glass of water with fingerprints on it. Still half full. Or half empty, depending on your portfolio."
+              "op": "ifHasItem",
+              "id": "floppy_disk",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "A glass of water with fingerprints on it. Still half full. Or half empty, depending on your portfolio."
+                }
+              ],
+              "else": [
+                {
+                  "op": "ifFlag",
+                  "flag": "backup_loaded",
+                  "then": [
+                    {
+                      "op": "say",
+                      "text": "A glass of water with fingerprints on it. Still half full. Or half empty, depending on your portfolio."
+                    }
+                  ],
+                  "else": [
+                    {
+                      "op": "addItem",
+                      "id": "floppy_disk",
+                      "name": "Floppy Disk"
+                    },
+                    {
+                      "op": "say",
+                      "text": "Under the glass, a spare disk: BACKUP (2). Someone knew I'd lose the first one."
+                    }
+                  ]
+                }
+              ]
             }
           ],
           "OPEN": [
@@ -839,7 +1046,7 @@
           "LOOK": [
             {
               "op": "say",
-              "text": "A massive observation window, completely shattered. Through the spider-web of cracks I can see another room \u2014 a recliner, filing cabinets, monitors. Someone was watching from in there. Watching the patients. Watching ME. The glass broke from the inside. Whoever was observing... tried to get out."
+              "text": "A massive observation window, completely shattered. Through the spider-web of cracks I can see another room — a recliner, filing cabinets, monitors. Someone was watching from in there. Watching the patients. Watching ME. The glass broke from the inside. Whoever was observing... tried to get out."
             }
           ],
           "USE": [
@@ -857,7 +1064,7 @@
           "PICK": [
             {
               "op": "say",
-              "text": "I carefully pull a shard of glass from the frame. It catches the light from the monitor \u2014 green text reflected in the fragment. For a second, I see my own face in it. Patient. Observer. Same person."
+              "text": "I carefully pull a shard of glass from the frame. It catches the light from the monitor — green text reflected in the fragment. For a second, I see my own face in it. Patient. Observer. Same person."
             }
           ],
           "OPEN": [
@@ -887,7 +1094,7 @@
           "GIVE": [
             {
               "op": "say",
-              "text": "The window has already been given enough \u2014 someone's fist, apparently. Or maybe their forehead. Depends on how bad the portfolio charts looked that day."
+              "text": "The window has already been given enough — someone's fist, apparently. Or maybe their forehead. Depends on how bad the portfolio charts looked that day."
             }
           ]
         }
@@ -923,13 +1130,13 @@
           "PICK": [
             {
               "op": "say",
-              "text": "I try to pull a cable loose. It won't budge. Bolted to the floor. These aren't decorative \u2014 they're load-bearing infrastructure. Like the one validator keeping a chain alive."
+              "text": "I try to pull a cable loose. It won't budge. Bolted to the floor. These aren't decorative — they're load-bearing infrastructure. Like the one validator keeping a chain alive."
             }
           ],
           "OPEN": [
             {
               "op": "say",
-              "text": "I pry open a floor panel where the cables converge. Beneath: a junction box labeled 'BIOMETRIC FEED \u2014 TREATMENT SUITE A.' This chair wasn't just reading wallets. It was reading bodies."
+              "text": "I pry open a floor panel where the cables converge. Beneath: a junction box labeled 'BIOMETRIC FEED — TREATMENT SUITE A.' This chair wasn't just reading wallets. It was reading bodies."
             }
           ],
           "CLOSE": [
@@ -1025,62 +1232,7 @@
         }
       }
     ],
-    "triggers": [
-      {
-        "id": "tr_game_complete",
-        "once": false,
-        "bounds": {
-          "x": 15,
-          "y": 82.2,
-          "w": 70,
-          "h": 15
-        },
-        "onEnter": [
-          {
-            "op": "ifFlag",
-            "flag": "patient_zero_revealed",
-            "then": [
-              {
-                "op": "ifFlag",
-                "flag": "chapter_5_complete",
-                "then": [],
-                "else": [
-                  {
-                    "op": "setFlag",
-                    "flag": "chapter_5_complete",
-                    "value": true
-                  },
-                  {
-                    "op": "achievement",
-                    "text": "PATIENT ZERO \u2014 Identity Revealed"
-                  },
-                  {
-                    "op": "wait",
-                    "ms": 4000
-                  },
-                  {
-                    "op": "narrative",
-                    "lines": [
-                      "You were never looking for someone else.",
-                      "You were looking for yourself.",
-                      "",
-                      "The clinic is always open.",
-                      "Unlike most exchanges during a bank run.",
-                      "",
-                      "PATIENT ZERO STATUS: FOUND"
-                    ]
-                  },
-                  {
-                    "op": "achievement",
-                    "text": "GAME COMPLETE: ZEROadventure II"
-                  }
-                ]
-              }
-            ]
-          }
-        ]
-      }
-    ]
+    "triggers": []
   },
   "npcs": [],
   "dialogues": {},
@@ -1088,6 +1240,98 @@
     "sceneItems": []
   },
   "combos": [
+    {
+      "items": [
+        "floppy_disk",
+        "hs_monitor"
+      ],
+      "result": "load_backup",
+      "script": [
+        {
+          "op": "ifFlag",
+          "flag": "backup_loaded",
+          "then": [
+            {
+              "op": "say",
+              "text": "Already loaded. The screen is waiting for my backside."
+            }
+          ],
+          "else": [
+            {
+              "op": "setFlag",
+              "flag": "backup_loaded",
+              "value": true
+            },
+            {
+              "op": "playSound",
+              "key": "floppy_insert"
+            },
+            {
+              "op": "say",
+              "text": "BACKUP — DO NOT LOSE. I didn't. For once."
+            },
+            {
+              "op": "say",
+              "text": "RESTORING FROM COLD STORAGE... PATIENT MUST BE SEATED.",
+              "speaker": "PZ-BOT"
+            },
+            {
+              "op": "ifFlag",
+              "flag": "patient_seated",
+              "then": [
+                {
+                  "op": "ifFlag",
+                  "flag": "monitor_revealed",
+                  "then": [],
+                  "else": [
+                    {
+                      "op": "setFlag",
+                      "flag": "monitor_revealed",
+                      "value": true
+                    },
+                    {
+                      "op": "setFlag",
+                      "flag": "patient_zero_revealed",
+                      "value": true
+                    },
+                    {
+                      "op": "setFlag",
+                      "flag": "patient_zero_found",
+                      "value": true
+                    },
+                    {
+                      "op": "achievement",
+                      "text": "PATIENT ZERO — Identity Revealed"
+                    },
+                    {
+                      "op": "say",
+                      "text": "The monitor hums. Green text crawls up the screen."
+                    },
+                    {
+                      "op": "monitorReveal"
+                    },
+                    {
+                      "op": "say",
+                      "text": "VOICE MATCH: 100 %. WELCOME BACK, PATIENT ZERO.",
+                      "speaker": "PZ-BOT"
+                    },
+                    {
+                      "op": "say",
+                      "text": "A hundred percent. DOORIS only gave me eighty-seven."
+                    },
+                    {
+                      "op": "say",
+                      "text": "Patient Zero is me. I'm the case I couldn't crack."
+                    }
+                  ]
+                }
+              ],
+              "else": []
+            }
+          ]
+        }
+      ]
+    },
     {
       "items": [
         "floppy_box",
@@ -1137,7 +1381,7 @@
             },
             {
               "op": "achievement",
-              "text": "PRESERVED \u2014 Your floppies hold the story of Patient Zero"
+              "text": "PRESERVED — Your floppies hold the story of Patient Zero"
             }
           ]
         }
