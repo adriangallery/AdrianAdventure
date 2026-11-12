@@ -139,7 +139,7 @@ for (const v of VARIANTS) {
   await during(`${v} · lobby`, () => window.__demoRun(window.__qa.walk(40, 92)));
   await during(`${v} · lobby`, () => window.__demoRun(window.__qa.walk(55.5, 98)));
   await stats(true);
-  err = await during(`${v} · habla con Penny`, () => window.__demoRun(window.__qa.act('TALK', 'npc_receptionist', [], 1800)), [], 60000);
+  err = await during(`${v} · habla con Penny`, () => window.__demoRun(window.__qa.act('TALK', 'npc_receptionist', ['Whose coat', 'come back later'], 1800)), [], 60000);
   if (err) problems.push(`${v} TALK Penny: ${err}`);
   await demo.settle({ tap: [640, 40], calm: 2, every: 300 });
   await page.evaluate(() => window.__qa.runScript([{ op: 'actorFace', actor: 'player', dir: 'front' }]));
