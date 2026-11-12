@@ -2,6 +2,8 @@ import Phaser from 'phaser';
 import { TEXT_SPEEDS, MUSIC_LEVELS, TEXT_SPEED_LABEL, MUSIC_LEVEL_LABEL, getTextSpeed, setTextSpeed, getMusicLevel, setMusicLevel, musicVolumeFor } from '@/systems/Settings';
 import type { GameState } from '@/types/game.types';
 import { SaveLoadSystem } from '@/systems/SaveLoadSystem';
+import { savedSpawn } from '@/systems/SaveMigration';
+import { ScummUI } from './ScummUI';
 import { getWalletState, getSessionAuth, authorizeSession } from '@/web3/wallet';
 import { exportSignedWalletSave, importWalletSave, saveForWalletRemote, loadRemoteSlots, type WalletSave } from '@/web3/wallet-save';
 import {
@@ -160,6 +162,11 @@ export class SaveButton {
       if (!next.achievements) next.achievements = [];
       this.scene.registry.set('gameState', next);
       this.scene.registry.set('currentSceneId', next.currentScene);
+      // A7.2 (J-7): Dex aparece donde se guardó (partidas viejas o posición corrupta: spawn por defecto de la escena)
+      // y el panel de verbos, desplegado
+      const spawn = savedSpawn(next);
+      if (spawn) this.scene.registry.set('spawnOverride', spawn); else this.scene.registry.remove('spawnOverride');
+      ScummUI.resetCollapsed();
       cleanup();
       this.scene.scene.stop('UIScene');
       this.scene.scene.stop('GameScene');
