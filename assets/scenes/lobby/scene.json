@@ -1187,6 +1187,11 @@
         "x": 24.2,
         "y": 65.3
       },
+      "walkTo": {
+        "x": 39.4,
+        "y": 94
+      },
+      "face": "left",
       "dialogueTreeId": "receptionist_intro",
       "giveResponses": {
         "_default": [

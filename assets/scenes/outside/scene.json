@@ -2396,14 +2396,69 @@
                   "flag": "has_code",
                   "then": [
                     {
-                      "op": "say",
-                      "text": "I could type the code. The keypad has a speaker grille, though. It wants a word first."
+                      "op": "ifFlag",
+                      "flag": "dooris_pin_ok",
+                      "then": [
+                        {
+                          "op": "say",
+                          "text": "I could type the code. The keypad has a speaker grille, though. It wants a word first."
+                        }
+                      ],
+                      "else": [
+                        {
+                          "op": "playSound",
+                          "key": "keypad_success"
+                        },
+                        {
+                          "op": "setFlag",
+                          "flag": "dooris_pin_ok",
+                          "value": true
+                        },
+                        {
+                          "op": "setFlag",
+                          "flag": "has_code",
+                          "value": true
+                        },
+                        {
+                          "op": "say",
+                          "text": "7... 3... 1... 4."
+                        },
+                        {
+                          "op": "say",
+                          "text": "PIN accepted. Both halves. Somebody was patient.",
+                          "speaker": "DOORIS"
+                        }
+                      ]
                     }
                   ],
                   "else": [
                     {
-                      "op": "say",
-                      "text": "I tap a few buttons. The keypad doesn't want buttons. It wants a conversation."
+                      "op": "ifHasItem",
+                      "id": "note_half_a",
+                      "then": [
+                        {
+                          "op": "ifHasItem",
+                          "id": "note_half_b",
+                          "then": [
+                            {
+                              "op": "say",
+                              "text": "Half a PIN in each pocket. The keypad wants all four digits at once. I should put the note back together first."
+                            }
+                          ],
+                          "else": [
+                            {
+                              "op": "say",
+                              "text": "I tap a few buttons. The keypad doesn't want buttons. It wants a conversation."
+                            }
+                          ]
+                        }
+                      ],
+                      "else": [
+                        {
+                          "op": "say",
+                          "text": "I tap a few buttons. The keypad doesn't want buttons. It wants a conversation."
+                        }
+                      ]
                     }
                   ]
                 },
@@ -3383,13 +3438,23 @@
           "text": "Three factors. One duck. Breaking and entering. Mostly entering.",
           "when": "door_unlocked",
           "end": true,
-          "next": "ask",
+          "next": "pin_halves",
           "onEnter": [
             {
               "op": "achievement",
               "text": "CHAPTER 1 COMPLETE — Breaking & Entering"
             }
           ]
+        },
+        "pin_halves": {
+          "speaker": "DOORIS",
+          "text": "Two halves of a PIN are not a PIN. They're a puzzle. Put them together, then talk to me.",
+          "when": [
+            "!dooris_pin_ok",
+            "item:note_half_a",
+            "item:note_half_b"
+          ],
+          "next": "ask"
         },
         "ask": {
           "speaker": "DOORIS",
@@ -3422,6 +3487,14 @@
               "text": "Can't you just scan my face?",
               "once": true,
               "next": "faceid"
+            },
+            {
+              "text": "[Read out the PIN on the note]",
+              "when": [
+                "item:code_note",
+                "!dooris_pin_ok"
+              ],
+              "next": "say_pin"
             },
             {
               "text": "I'll come back.",
@@ -3509,7 +3582,49 @@
           "speaker": "DOORIS",
           "text": "Still missing: a PIN. Four digits. Adrian hid them. He hides everything.",
           "when": "!dooris_pin_ok",
-          "next": "missing_key"
+          "next": "missing_key",
+          "choices": [
+            {
+              "text": "[Read out the PIN on the note]",
+              "when": [
+                "item:code_note"
+              ],
+              "next": "say_pin"
+            },
+            {
+              "text": "I'll come back.",
+              "when": [
+                "item:code_note"
+              ],
+              "exit": true,
+              "next": "bye"
+            }
+          ]
+        },
+        "say_pin": {
+          "text": "7... 3... 1... 4.",
+          "onEnter": [
+            {
+              "op": "playSound",
+              "key": "keypad_success"
+            },
+            {
+              "op": "setFlag",
+              "flag": "dooris_pin_ok",
+              "value": true
+            },
+            {
+              "op": "setFlag",
+              "flag": "has_code",
+              "value": true
+            }
+          ],
+          "next": "pin_ok"
+        },
+        "pin_ok": {
+          "speaker": "DOORIS",
+          "text": "PIN accepted. Both halves. Somebody was patient.",
+          "next": "gate"
         },
         "missing_key": {
           "speaker": "DOORIS",

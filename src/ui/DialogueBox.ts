@@ -3,7 +3,7 @@ import { charDelayMs } from '@/systems/Settings';
 import { TWP, FONT, SPEECH_COLORS } from '@/config/theme';
 import type { SceneData } from '@/types/scene.types';
 import {
-  isAnchorOnScreen, placeSpeech, speakerKind, speechColor, speechFontSize, speechStroke, speechWrapWidth, topY,
+  isAnchorOnScreen, placeSpeech, speakerKind, speechColor, speechFontSize, speechStroke, speechWrapWidth, TOP_UI_INSET,
   type HeadAnchor, type SpeakerKind, type SpeechMode,
 } from './speechLayout';
 
@@ -38,6 +38,8 @@ interface Current {
   mode: SpeechMode | null;
   head: HeadAnchor | null;
   wrap: number;
+  /** A7.2: wrap más estrecho que pidió `placeSpeech` para poner el bloque a un lado (se queda para este mensaje) */
+  narrow: number;
   w: number;
   h: number;
 }
@@ -183,7 +185,7 @@ export class DialogueBox {
     const size = speechFontSize(this.scene.scale);
     this.text.setFontSize(`${size.body}px`).setStroke(TWP.DIALOGUE_STROKE, speechStroke(size.body)).setColor(color);
     this.speakerText.setFontSize(`${size.speaker}px`).setText(kind !== 'player' ? speaker ?? '' : '');
-    this.current = { speaker: speaker ?? null, kind, who, color, mode: null, head: null, wrap: 0, w: 0, h: 0 };
+    this.current = { speaker: speaker ?? null, kind, who, color, mode: null, head: null, wrap: 0, narrow: 0, w: 0, h: 0 };
     this.layout();
   }
 
@@ -209,12 +211,22 @@ export class DialogueBox {
 
     // Fuera de pantalla o sin cabeza: arriba-centro (con su ancho de wrap); se vuelve a medir solo si cambia
     const anchor = isAnchorOnScreen(head, vp) ? head : null;
-    const wrap = speechWrapWidth(vp, anchor ? 'head' : 'top');
+    const base = speechWrapWidth(vp, anchor ? 'head' : 'top');
+    const wrap = anchor && cur.narrow > 0 ? Math.min(base, cur.narrow) : base;
     if (cur.wrap !== wrap) this.measure(wrap);
     // A2.10: en cinemática el panel está oculto bajo la franja inferior, que es la banda de subtítulos
     const band = (this.scene.registry.get('cinematicBand') as { top: number; bottom: number } | null | undefined) ?? null;
     const panelH = band ? 0 : ((this.scene.registry.get('scummPanelHeight') as number | undefined) ?? 0);
-    const p = placeSpeech({ head: anchor, vp, textW: cur.w, textH: cur.h, bottomInset: panelH, band });
+    // A7.2 (J-5): fuera de cinemática, la franja de los botones de arriba no se pisa (en cinemática se esconden)
+    const topInset = band ? 0 : TOP_UI_INSET;
+    const nameH = this.speakerText.text ? this.speakerText.height + 4 : 0;
+    const place = () => placeSpeech({ head: anchor, vp, textW: cur.w, textH: cur.h, bottomInset: panelH, band, topInset, nameH });
+    let p = place();
+    if (p.wantWrap && anchor && p.wantWrap < cur.wrap) {
+      cur.narrow = p.wantWrap;
+      this.measure(p.wantWrap);
+      p = place();
+    }
 
     cur.mode = p.mode;
     cur.head = p.mode === 'head' && anchor ? { x: anchor.x, headY: anchor.headY, footY: anchor.footY } : null;
@@ -224,7 +236,7 @@ export class DialogueBox {
       return;
     }
     // Arriba-centro, como antes de A2.3 (o A2.10: en la franja inferior): con el nombre de quien habla encima
-    const y = p.mode === 'band' ? p.y : topY(vp);
+    const y = p.y;
     if (this.speakerText.text) {
       this.speakerText.setPosition(p.x, y - 4).setVisible(true);
       this.text.setPosition(p.x, y + 2);

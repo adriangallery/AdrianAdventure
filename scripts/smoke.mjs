@@ -770,6 +770,58 @@ await step('guardado A1.12: sobrescribir → recargar → cargar, sin cargas de 
   }
 });
 
+// A7.2 (J-7, buzón del jugador): en móvil apaisado, guardar en el slot 1, andar a otro sitio y cargar el slot 1
+// tocando «Load» (el botón DOM queda encima del asa del panel de verbos). Dex tiene que aparecer donde se guardó (no donde
+// estaba ni en el spawn) y el panel de verbos, desplegado (antes el «soltar» del toque plegaba el panel).
+const LANDSCAPE = { width: 844, height: 390, deviceScaleFactor: 1, isMobile: true, hasTouch: true };
+await step('guardado A7.2: cargar en la misma escena → Dex en la posición guardada y panel de verbos desplegado (844×390)', async () => {
+  const ctx = await browser.createBrowserContext();
+  try {
+    const p = await a12Page(ctx, LANDSCAPE);
+    await SP.openGame(p, BASE);
+    await p.evaluate(() => window.__qa.dismissAll());
+    const pos = () => p.evaluate(() => {
+      const g = window.__game.scene.getScene('GameScene');
+      const ui = window.__game.scene.getScene('UIScene');
+      return { x: g.player.pctX, y: g.player.pctY, expanded: ui.getScummUI().isExpanded() };
+    });
+    // Un punto lejos del sitio donde se va a guardar, para que «aparece donde estaba antes de cargar» se note
+    const start = await pos();
+    const target = await p.evaluate((sx) => {
+      for (const x of [75, 70, 65, 80, 25, 30, 20]) for (const y of [92, 90, 88, 94]) {
+        if (Math.abs(x - sx) > 20 && window.__qa.isWalkable(x, y)) return { x, y };
+      }
+      return null;
+    }, start.x);
+    a12Fail(target, `no hay un punto andable lejos de ${JSON.stringify(start)}`);
+    await SP.openPanel(p);
+    await SP.tapSlot(p, 1);
+    const st = await SP.waitStatus(p);
+    a12Fail(st.kind === 'ok', `guardar: ${JSON.stringify(st)}`);
+    const saved = (await SP.localSlot(p, 1)).state.playerPosition;
+    a12Fail(saved && Math.abs(saved.pctX - start.x) < 1 && Math.abs(saved.pctY - start.y) < 1, `el slot no guarda la posición: ${JSON.stringify({ saved, start })}`);
+    await SP.closePanel(p);
+    await p.evaluate((t) => window.__qa.walk(t.x, t.y), target);
+    const moved = await pos();
+    a12Fail(Math.abs(moved.x - start.x) > 10, `Dex no anduvo: ${JSON.stringify({ start, moved })}`);
+    await SP.openPanel(p);
+    await SP.tab(p, 'load');
+    await SP.tapSlot(p, 1);
+    await SP.confirm(p, true);
+    await p.waitForFunction(() => !document.getElementById('save-load-overlay'), { timeout: 20000, polling: 200 });
+    await new Promise((r) => setTimeout(r, 1500));
+    await SP.waitInGame(p, 'outside');
+    await new Promise((r) => setTimeout(r, 1500));
+    const after = await pos();
+    await p.screenshot({ path: `${SHOTS}/a72-cargado.png` });
+    console.log(`    guardado en ${JSON.stringify(start)} · anduvo a ${JSON.stringify(moved)} · cargado ${JSON.stringify(after)}`);
+    a12Fail(Math.abs(after.x - start.x) < 2 && Math.abs(after.y - start.y) < 2, `Dex no está donde se guardó: ${JSON.stringify({ start, after })}`);
+    a12Fail(after.expanded, 'tras cargar, el panel de verbos está plegado');
+  } finally {
+    await ctx.close();
+  }
+});
+
 await step('guardado A1.12 con wallet: nube verificada, 500 → error visible, sin firma → pedir firma (nube simulada)', async () => {
   const ctx = await browser.createBrowserContext();
   try {

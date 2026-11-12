@@ -4,7 +4,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 
-const { migrateGameState, migrateSave, SAVE_VERSION, RENAMED_FLAGS } = await import(
+const { migrateGameState, migrateSave, savedSpawn, SAVE_VERSION, RENAMED_FLAGS } = await import(
   process.env.SAVE_MIGRATION_PATH ?? '../src/systems/SaveMigration.ts'
 );
 
@@ -97,4 +97,23 @@ test('A2.9: journal válido se conserva; lo corrupto se limpia (misma regla que 
     const s = migrateGameState({ ...oldState({}), journal: bad });
     assert.equal('journal' in s, false, `descarta ${JSON.stringify(bad)}`);
   }
+});
+
+test('A7.2: playerPosition válida se conserva (sin campos de más) y da el spawn al cargar', () => {
+  const s = migrateGameState({ ...oldState({}), currentScene: 'outside', playerPosition: { pctX: 18.5, pctY: 88, z: 1 } });
+  assert.deepEqual(s.playerPosition, { pctX: 18.5, pctY: 88 });
+  assert.deepEqual(savedSpawn(s), { x: 18.5, y: 88 });
+});
+
+test('A7.2: partida vieja sin posición o con posición corrupta → spawn por defecto (null), sin inventar el campo', () => {
+  const old = migrateGameState(oldState({}));
+  assert.equal('playerPosition' in old, false);
+  assert.equal(savedSpawn(old), null);
+  for (const bad of [null, 'x', 7, [1, 2], { pctX: 10 }, { pctX: '10', pctY: 50 }, { pctX: NaN, pctY: 50 }, { pctX: 10, pctY: 140 }, { pctX: -1, pctY: 50 }]) {
+    const s = migrateGameState({ ...oldState({}), playerPosition: bad });
+    assert.equal('playerPosition' in s, false, `descarta ${JSON.stringify(bad)}`);
+    assert.equal(savedSpawn({ playerPosition: bad }), null);
+  }
+  assert.equal(savedSpawn(null), null);
+  assert.equal(savedSpawn(undefined), null);
 });

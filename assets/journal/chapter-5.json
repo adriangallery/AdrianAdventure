@@ -1,14 +1,19 @@
 {
-  "_doc": "A2.9/A2.9a: diario de Dex, capítulo 5 tal como es HOY (de la autorización de Satoshi al epílogo). Se reescribe en A3.7. Ver qa/README.md § Diario.",
+  "_doc": "A3.7e: diario de Dex, capítulo 5 y epílogo según la biblia (5.1–5.6 y E.1): respaldo, sillón, revelación, duelo final con PZ-BOT, Adrian tras el cristal, nota, salida y firma del NOW HIRING. Puzles en el orden de la ruta (Anon da la pista del último abierto). Ver qa/README.md § Diario.",
   "chapter": 5,
   "goals": [
-    { "id": "g5_room", "text": "Get into the treatment room.", "doneWhen": "chapter_5_intro_shown" },
     { "id": "g5_truth", "text": "Find out who Patient Zero is.", "doneWhen": "patient_zero_revealed" },
-    { "id": "g5_out", "text": "Walk out of there.", "doneWhen": "game_complete" }
+    { "id": "g5_pzbot", "text": "Switch off PZ-BOT. With words.", "doneWhen": "pzbot_off" },
+    { "id": "g5_anon", "text": "Find out who Anon is.", "doneWhen": "met_adrian" },
+    { "id": "g5_out", "text": "Walk out of there. Sign something.", "doneWhen": "game_complete" }
   ],
   "notes": [
-    { "id": "n5_monitor", "text": "The monitor showed my own transactions. Every mint. Every mistake. Patient Zero... is me?", "shownWhen": "patient_zero_revealed" },
-    { "id": "n5_adrian", "text": "Took Adrian's handwritten note from the treatment room.", "shownWhen": "found_adrian_note" }
+    { "id": "n5_backup", "text": "Loaded the BACKUP floppy into the monitor. DO NOT LOSE. I didn't.", "shownWhen": "backup_loaded" },
+    { "id": "n5_monitor", "text": "VOICE MATCH 100 %. Patient Zero is me. The case I couldn't crack.", "shownWhen": "patient_zero_revealed" },
+    { "id": "n5_pzbot", "text": "PZ-BOT used the FUD Chad never used. I answered with the pool's comebacks. It shut down.", "shownWhen": "pzbot_off" },
+    { "id": "n5_adrian", "text": "Anon is Adrian. Behind the glass, with a phone, the whole time.", "shownWhen": "met_adrian" },
+    { "id": "n5_note", "text": "Adrian's note: waiting, reading, asking. That's the cure. Gerald says hi.", "shownWhen": "found_adrian_note" },
+    { "id": "n5_hired", "text": "Penny called. HR approved my hiring. Penny is HR.", "shownWhen": "epilogue_intro_shown" }
   ],
   "puzzles": [
     {
@@ -21,23 +26,73 @@
       ]
     },
     {
-      "id": "p5_monitor",
-      "openWhen": "chapter_5_intro_shown",
-      "doneWhen": "monitor_revealed",
+      "id": "p5_backup",
+      "openWhen": ["chapter_5_intro_shown", "!game_complete"],
+      "doneWhen": "backup_loaded",
       "hints": [
-        "One chair. One screen. Sit with it.",
-        "The monitor wants to be used, not looked at.",
-        "Use the monitor."
+        "Read what the monitor is asking for.",
+        "It wants a backup. You've carried one since the basement.",
+        "Use the floppy disk on the monitor."
+      ]
+    },
+    {
+      "id": "p5_chair",
+      "openWhen": ["backup_loaded", "!game_complete"],
+      "doneWhen": "patient_seated",
+      "hints": [
+        "Patient must be seated. Guess who the patient is.",
+        "There's only one chair in that room.",
+        "Use the chair."
+      ]
+    },
+    {
+      "id": "p5_duel",
+      "openWhen": ["monitor_revealed", "!game_complete"],
+      "doneWhen": "pzbot_off",
+      "hints": [
+        "It's Chad's leftover FUD. You heard the answers at the pool.",
+        "Shallow end, deep end, the bar. The last answer is just the truth.",
+        "Streak of zero. They'll hear you lose. Receipts in the pool. I'm not you anymore."
+      ]
+    },
+    {
+      "id": "p5_adrian",
+      "openWhen": ["pzbot_off", "!game_complete"],
+      "doneWhen": "met_adrian",
+      "hints": [
+        "Something is ringing. Not your phone.",
+        "Behind the broken glass.",
+        "Talk to the observation window."
+      ]
+    },
+    {
+      "id": "p5_note",
+      "openWhen": ["met_adrian", "!game_complete"],
+      "doneWhen": "found_adrian_note",
+      "hints": [
+        "I told you to read something.",
+        "The little table by the chair.",
+        "Pick up the note on the table."
       ]
     },
     {
       "id": "p5_exit",
-      "openWhen": "patient_zero_revealed",
-      "doneWhen": "game_complete",
+      "openWhen": ["found_adrian_note", "!game_complete"],
+      "doneWhen": "chapter_5_complete",
       "hints": [
         "You found what you came for. Now leave.",
         "The door behind you.",
         "Use the exit door."
+      ]
+    },
+    {
+      "id": "p5_sign",
+      "openWhen": ["epilogue_intro_shown", "!game_complete"],
+      "doneWhen": "signed_up",
+      "hints": [
+        "Read the sign. It's practically begging.",
+        "Bring your own pen. You have a famous one.",
+        "Use the leaky pen on the NOW HIRING sign."
       ]
     }
   ],
