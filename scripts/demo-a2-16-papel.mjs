@@ -8,13 +8,15 @@
 //      si la mezcla mandíbula + brazos tiene gracia o cansa (sin voz en headless: la mandíbula va a cadencia libre);
 //   3) coger el abrigo (PICK; con papel, 3 poses).
 // Comprueba que sin ?dex=papel no se carga NINGÚN dexpapel_* y que con papel la mandíbula se ve al hablar.
-// GIF: el del runner (todas seguidas) y uno por variante: demo-out/a2-16-papel/a2-16-papel-<variante>.gif.
+// GIF: uno por variante, demo-out/a2-16-papel/a2-16-papel-<variante>.gif, y el del runner (todas seguidas, 1 de cada 3
+// fotogramas: va a ×3, solo de resumen).
 // Una sola variante: PAPEL=tope node scripts/lib/demo.mjs run a2-16-papel. Termina en «problemas: ninguno».
 import { spawnSync } from 'node:child_process';
+import { readdirSync, renameSync, rmSync } from 'node:fs';
 import { join } from 'node:path';
 import { startDemo, sleep } from './lib/demo.mjs';
 
-const CLIP = { width: 440, height: 420 };
+const CLIP = { width: 340, height: 360 };
 const ALL = ['actual', 'suave', 'media', 'tope'];
 const VARIANTS = process.env.PAPEL ? process.env.PAPEL.split(',').filter((v) => ALL.includes(v)) : ALL;
 const FPS = 8;
@@ -98,6 +100,7 @@ async function during(label, start, args = [], maxMs = 40000) {
   while (Date.now() - t0 < maxMs) {
     await capture(label);
     if (await page.evaluate(() => window.__demoDone)) break;
+    await sleep(40);
   }
   if (!(await page.evaluate(() => window.__demoDone))) return `no terminó en ${maxMs} ms`;
   return page.evaluate(() => window.__demoErr);
@@ -140,10 +143,11 @@ for (const v of VARIANTS) {
   await during(`${v} · lobby`, () => window.__demoRun(window.__qa.walk(40, 92)));
   await during(`${v} · lobby`, () => window.__demoRun(window.__qa.walk(55.5, 98)));
   await stats(true);
-  err = await during(`${v} · habla con Penny`, () => window.__demoRun(window.__qa.act('TALK', 'npc_receptionist', ['Whose coat', 'come back later'], 1800)), [], 60000);
+  err = await during(`${v} · habla con Penny`, () => window.__demoRun(window.__qa.act('TALK', 'npc_receptionist', ['Whose coat', 'come back later'])), [], 60000);
   if (err) problems.push(`${v} TALK Penny: ${err}`);
   await demo.settle({ tap: [640, 40], calm: 2, every: 300 });
-  await page.evaluate(() => window.__qa.runScript([{ op: 'actorFace', actor: 'player', dir: 'front' }]));
+  await page.evaluate(() => window.__qa.runScript([{ op: 'actorFace', actor: 'player', dir: 'front' }]))
+    .catch((e) => problems.push(`${v} actorFace tras hablar con Penny: ${String(e?.message || e).split('\n')[0]}`));
   err = await during(`${v} · frase larga (~7 s)`, (t) => window.__demoRun(new Promise((res) => window.__game.scene.getScene('UIScene').events.emit('sayBrief', t, 7000, undefined, res))), [LONG], 20000);
   if (err) problems.push(`${v} frase larga: ${err}`);
   s = await stats(true);
@@ -176,6 +180,15 @@ for (const r of ranges) {
   ], { stdio: 'inherit' });
   console.log(`${r.v}: ${r.count} fotogramas → ${out.status === 0 ? gif : `ffmpeg falló (${out.status ?? out.error?.message})`}`);
 }
+// El GIF del runner (todas las variantes seguidas) a 1 de cada 3 fotogramas, para no pasar de ~10 MB
+const fdir = join(demo.dir, 'frames');
+const all = readdirSync(fdir).filter((f) => f.endsWith('.png')).sort();
+let k = 0;
+for (let i = 0; i < all.length; i++) {
+  if (i % 3) rmSync(join(fdir, all[i]));
+  else renameSync(join(fdir, all[i]), join(fdir, `k${String(k++).padStart(4, '0')}.png`));
+}
+for (let i = 0; i < k; i++) renameSync(join(fdir, `k${String(i).padStart(4, '0')}.png`), join(fdir, `${String(i).padStart(3, '0')}.png`));
 if (pageErrors.length) problems.push(`errores en la página: ${pageErrors.slice(0, 5).join(' | ')}`);
 console.log(`fotogramas: ${demo.frames}`);
 console.log(`problemas: ${problems.length ? problems.join(' | ') : 'ninguno'}`);
