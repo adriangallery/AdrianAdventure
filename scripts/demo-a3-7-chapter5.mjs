@@ -28,7 +28,7 @@ const flagsOf = (st) => Object.fromEntries(Object.entries(st.flags).filter(([k])
 /** Lo que hay en pantalla: texto (y quién), elección pendiente y si el juego está ocupado. */
 const probe = () => page.evaluate(() => {
   const st = window.__qa.state();
-  return { text: st.speech?.text ?? null, speaker: st.speech?.speaker ?? null, choices: st.choices ? st.choices.map((c) => c.text) : null, busy: (st.busy ?? []).length > 0, scene: st.scene };
+  return { text: st.speech?.text ?? null, speaker: st.speech?.speaker ?? null, choices: st.choices ? st.choices.map((c) => c.text) : null, busy: (st.busy ?? []).length > 0, waiting: (st.busy ?? []).some((b) => b === 'script' || b === 'cinematic') && !(st.busy ?? []).some((b) => b === 'walking' || b === 'transition' || b === 'entering'), scene: st.scene };
 });
 
 /** Empieza una acción como un clic real (verbo, objeto del inventario y toque en el hotspot), sin cerrar textos. */
@@ -93,8 +93,9 @@ async function follow(viewId, stills, choices = []) {
     // Andar y transiciones a ×3 (un fotograma de cada tres): la demo tiene que quedarse en < 120 s
     // Si el toque cayó con la frase aún escribiéndose (la completa en vez de pasarla), otro toque
     if (r.text && Date.now() - lastTapAt > 1500) { await page.evaluate(() => window.__game.scene.getScene('GameScene').qaSyntheticTap()); lastTapAt = Date.now(); }
-    // El monitor (monitorReveal) y la tarjeta del capítulo esperan un toque de verdad: sin texto y ocupado > 2,5 s, un clic
-    if (!r.text && r.busy && Date.now() - lastTapAt > 2500) { await page.mouse.click(...view.tap); lastTapAt = Date.now(); }
+    // El monitor (monitorReveal) y la tarjeta del capítulo esperan un toque de verdad: sin texto y con un script parado > 2,5 s, un clic.
+    // Nunca mientras Dex anda: desde A1.14 un clic en la escena con WALK es andar, y cancelaría la acción pendiente
+    if (!r.text && r.waiting && Date.now() - lastTapAt > 2500) { await page.mouse.click(...view.tap); lastTapAt = Date.now(); }
     if (r.text || r.busy) { calm = 0; if (busyTick++ % 3 === 0) await demo.shot(); await demo.sleep(150); continue; }
     lastText = null;
     calm++;
