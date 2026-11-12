@@ -172,6 +172,8 @@ export class UIScene extends Phaser.Scene {
       blockedReason: () => this.journalBlockedReason(),
       playVoice: (text) => this.voiceSystem.play(text),
       stopVoice: () => this.voiceSystem.stop(),
+      skipText: () => (this.journalBlockedReason() === 'texto en pantalla' || this.journalBlockedReason() === 'script en marcha')
+        && this.skipSpeech(),
     });
     this.time.addEvent({ delay: 400, loop: true, callback: () => this.journal?.refresh() });
 
@@ -425,6 +427,18 @@ export class UIScene extends Phaser.Scene {
     if (this.walletButton?.contains(x, y)) return 'el botón Wallet';
     if (this.journal?.containsButton(x, y)) return 'el botón del diario';
     return null;
+  }
+
+  /**
+   * A1.14: cierra la frase suelta en pantalla (no cinemática, no árbol de diálogo, sin elección pendiente) sin esperar
+   * al tiempo mínimo de lectura. true si cerró una.
+   */
+  skipSpeech(): boolean {
+    if (!this.dialogueBox?.isVisible()) return false;
+    if (this.registry.get('cinematicMode') || ((this.registry.get('cinematicActive') as number | undefined) ?? 0) > 0) return false;
+    if (this.registry.get('dialogueActive') || this.choicePanel?.isAwaitingChoice()) return false;
+    this.dialogueBox.skip();
+    return true;
   }
 
   /** A2.9: el diario (GameScene lo abre y cierra con J/Esc; la API de QA lo lee). */
