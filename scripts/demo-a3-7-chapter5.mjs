@@ -32,7 +32,9 @@ const probe = () => page.evaluate(() => {
 });
 
 /** Empieza una acción como un clic real (verbo, objeto del inventario y toque en el hotspot), sin cerrar textos. */
-function start(verb, target, item = null) {
+async function start(verb, target, item = null) {
+  // Como __qa.act: el toque solo cuenta cuando la escena acepta entrada (enfriamiento tras cerrar un texto o un diálogo)
+  await page.waitForFunction(() => !window.__game.scene.getScene('GameScene').qaIsInputBlocked(), { timeout: 5000, polling: 50 }).catch(() => {});
   return page.evaluate((verb, target, item) => {
     const g = window.__game;
     const gs = g.scene.getScene('GameScene');
@@ -81,8 +83,8 @@ async function follow(viewId, stills, choices = []) {
       calm = 0;
       lastText = r.text;
       seen.push({ speaker: r.speaker, text: r.text });
-      for (const [re, label] of stills) if (re.test(r.text)) await demo.still(`${viewId}-${label}`);
       await demo.film(Math.min(1100, Math.max(500, r.text.length * 13)));
+      for (const [re, label] of stills) if (re.test(r.text)) await demo.still(`${viewId}-${label}`);
       await page.evaluate(() => window.__game.scene.getScene('GameScene').qaSyntheticTap());
       lastTapAt = Date.now();
       await demo.sleep(250);
@@ -141,6 +143,7 @@ for (const [tag, what, act, stills, ok, line, choices = []] of steps) {
   const seen = await follow(view.id, stills.map(([re, label]) => [re, label]), choices);
   if (SETTLE.has(tag)) await demo.settle({ tap: view.tap });
   const st = await qaState();
+  if (!seen.length) console.log(`  [diag] ${tag}: sin frases · busy ${JSON.stringify(st.busy)} · jugador ${JSON.stringify(st.player)} · walkTarget ${JSON.stringify(st.walkTarget)} · path ${JSON.stringify(st.path)} · verbo ${st.verb}`);
   v.steps.push({ tag, what, seen, scene: st.scene, flags: flagsOf(st), inventory: st.inventory });
   console.log(`${what}: ${seen.map((x) => `${x.speaker ?? 'Dex'}: «${x.text}»`).join(' / ')} · ${st.scene} ${JSON.stringify(flagsOf(st))}`);
   if (line && !seen.some((x) => line.test(x.text))) bad(`${what}: no se vio la frase ${line}`);
