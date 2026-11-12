@@ -645,7 +645,7 @@ export class GameScene extends Phaser.Scene {
       scriptRunning: this.scriptEngine.isRunning(),
     });
     if (policy === 'skip-and-execute') {
-      if (this.registry.get('dialogueShowing')) this.skipSpeech();
+      if (this.registry.get('dialogueShowing')) this.skipBark();
       this.deferredTap = { wx: pointer.worldX, wy: pointer.worldY, sy: pointer.y, touch: pointer.wasTouch, button: pointer.button, at: this.time.now };
       return;
     }
@@ -662,9 +662,9 @@ export class GameScene extends Phaser.Scene {
   }
 
   /** A1.14: cierra la frase en pantalla (UIScene/DialogueBox), sin esperar al tiempo mínimo de lectura. */
-  private skipSpeech(): void {
+  private skipBark(): void {
     if (!this.scene.isActive('UIScene')) return;
-    (this.scene.get('UIScene') as UIScene).skipSpeech?.();
+    (this.scene.get('UIScene') as UIScene).skipBark?.();
   }
 
   /** A1.14: ejecuta el toque guardado al saltar una frase cuando el juego queda libre (o lo descarta). */

@@ -330,11 +330,6 @@ export class DialogueBox {
     });
   }
 
-  /** A1.14: cierra el texto en pantalla ya (sin typewriter ni tiempo mínimo de lectura), como un toque que lo cierra. */
-  skip(): void {
-    this.dismiss();
-  }
-
   isVisible(): boolean {
     return this.visible;
   }

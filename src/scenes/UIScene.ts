@@ -173,7 +173,7 @@ export class UIScene extends Phaser.Scene {
       playVoice: (text) => this.voiceSystem.play(text),
       stopVoice: () => this.voiceSystem.stop(),
       skipText: () => (this.journalBlockedReason() === 'texto en pantalla' || this.journalBlockedReason() === 'script en marcha')
-        && this.skipSpeech(),
+        && this.skipBark(),
     });
     this.time.addEvent({ delay: 400, loop: true, callback: () => this.journal?.refresh() });
 
@@ -433,7 +433,7 @@ export class UIScene extends Phaser.Scene {
    * A1.14: cierra la frase suelta en pantalla (no cinemática, no árbol de diálogo, sin elección pendiente) sin esperar
    * al tiempo mínimo de lectura. true si cerró una.
    */
-  skipSpeech(): boolean {
+  skipBark(): boolean {
     if (!this.dialogueBox?.isVisible()) return false;
     if (this.registry.get('cinematicMode') || ((this.registry.get('cinematicActive') as number | undefined) ?? 0) > 0) return false;
     if (this.registry.get('dialogueActive') || this.choicePanel?.isAwaitingChoice()) return false;
