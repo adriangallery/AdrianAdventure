@@ -358,7 +358,7 @@ export class Player extends Phaser.GameObjects.Sprite {
     const top = this.y - this.height * this.originY * s;
     this.jaw.setScale(s);
     this.jaw.setPosition(left + (at[0] + st.dx) * s, top + (at[1] + st.dy) * s);
-    this.jaw.setDepth(this.depth + 0.001);
+    this.jaw.setDepth(this.depth + 0.0001); // justo encima de Dex (por debajo del desempate de 0,0005 con las NPC)
     this.jaw.setVisible(this.visible);
     this.jawWanted = true;
   }
