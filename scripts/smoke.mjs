@@ -561,6 +561,110 @@ await step('diario: abrir y cerrar el móvil con toques reales en 390x844 (y J/E
   }
 });
 
+// A1.14: «se queda enganchado y cuesta que camine». Con el dedo REAL de Chrome (no la API que llama a walk) en móvil
+// apaisado 844x390: en outside, de junto al pilar del porche, tocar el carport (suelo cubierto por hs_carport) hace
+// ANDAR a Dex hasta allí sin frase (antes: LOOK sin andar); un toque justo al salir una frase la cierra Y anda; tras
+// una acción con verbo el panel vuelve a WALK; en el lobby, tocar el suelo (hs_floor_tiles) anda y tocar a Penny la
+// acerca y abre su charla.
+await step('andar A1.14: toques reales en outside y lobby (carport desde el pilar, frase saltada, verbo a WALK)', async () => {
+  const ctx = await browser.createBrowserContext();
+  const p = await ctx.newPage();
+  await p.setViewport({ width: 844, height: 390, isMobile: true, hasTouch: true, deviceScaleFactor: 1 });
+  p.on('pageerror', (err) => fail(`[andar A1.14] error de página: ${err.message}`));
+  const wait = (fn, arg, timeout = SCENE_TIMEOUT) => p.waitForFunction(fn, { timeout, polling: 100 }, arg);
+  const st = () => p.evaluate(() => {
+    const s = window.__qa.state();
+    return { player: s.player, walkTarget: s.walkTarget, verb: s.verb, speech: s.speech?.text ?? null, ready: s.ready, scene: s.scene };
+  });
+  /** Punto de pantalla (CSS) de un punto del fondo en % */
+  const screenOf = (x, y) => p.evaluate((pt) => {
+    const gs = window.__game.scene.getScene('GameScene');
+    const s = gs.coordSystem.pctToScreen(pt.x, pt.y);
+    const cam = gs.cameras.main;
+    const r = window.__game.canvas.getBoundingClientRect();
+    const k = r.width / gs.scale.width;
+    return { x: r.left + (s.x - cam.scrollX) * k, y: r.top + (s.y - cam.scrollY) * k };
+  }, { x, y });
+  const tap = async (x, y) => { const s = await screenOf(x, y); await p.touchscreen.tap(s.x, s.y); };
+  const settle = () => wait(() => {
+    const gs = window.__game.scene.getScene('GameScene');
+    return !gs.player.isMoving() && window.__qa.state().ready;
+  }, undefined, 20000);
+  const open = async (scene) => {
+    await p.goto(`${BASE}/?qa=1&scene=${scene}`, { waitUntil: 'domcontentloaded' });
+    await wait((id) => !!window.__qa && window.__game?.scene?.isActive('UIScene') && window.__game.registry.get('currentSceneId') === id, scene);
+    await p.evaluate(() => window.__qa.dismissAll());
+    await wait(() => window.__qa.state().ready, undefined, 30000);
+  };
+  try {
+    await open('outside');
+    // Junto al pilar del porche (borde derecho del porche), como en la captura del 12-nov
+    await p.evaluate(() => window.__qa.walk(46.5, 90));
+    await settle();
+    let s = await st();
+    console.log(`    junto al pilar: ${JSON.stringify(s.player)}`);
+    // 1) WALK + toque en el carport (hotspot que cubre el suelo) → anda hasta allí, sin frase
+    await tap(77, 72);
+    await new Promise((r) => setTimeout(r, 300));
+    s = await st();
+    if (s.speech) throw new Error(`tocar el carport con Walk dijo una frase: «${s.speech}»`);
+    if (s.walkTarget?.verb !== 'WALK' || !s.walkTarget?.walkTo) throw new Error(`tocar el carport no anda: walkTarget ${JSON.stringify(s.walkTarget)}`);
+    await settle();
+    s = await st();
+    if (Math.abs(s.player.x - 77) > 3) throw new Error(`no llegó al carport: Dex en ${JSON.stringify(s.player)}`);
+    await p.screenshot({ path: `${SHOTS}/zz-andar-carport-844x390.png` });
+    // 2) Toque justo al salir una frase: la salta Y anda (antes el toque se gastaba en cerrarla)
+    await p.evaluate(() => window.__game.scene.getScene('UIScene').events.emit('say', 'Test line from A1.14.'));
+    await new Promise((r) => setTimeout(r, 200));
+    await tap(20, 95);
+    await new Promise((r) => setTimeout(r, 400));
+    s = await st();
+    if (s.speech) throw new Error(`el toque no cerró la frase: «${s.speech}»`);
+    await settle();
+    s = await st();
+    if (Math.abs(s.player.x - 20) > 3) throw new Error(`el toque que saltó la frase no anduvo: Dex en ${JSON.stringify(s.player)}`);
+    // 3) Verbo del panel → acción → vuelve a WALK
+    await p.evaluate(() => window.__game.scene.getScene('UIScene').scummUI.selectVerb('LOOK'));
+    await tap(60.5, 72);
+    await wait(() => !!window.__qa.state().speech, undefined, 10000).catch(() => { throw new Error('LOOK en el buzón no dijo nada'); });
+    s = await st();
+    if (s.verb !== 'WALK') throw new Error(`tras LOOK en el buzón el verbo es ${s.verb}, no WALK`);
+    // Y el toque siguiente en el suelo cierra la frase y anda (no «Look at»)
+    await tap(50, 95);
+    await new Promise((r) => setTimeout(r, 400));
+    await settle();
+    s = await st();
+    if (Math.abs(s.player.x - 50) > 3 || s.speech) throw new Error(`tras la frase el toque en el suelo no anduvo: ${JSON.stringify(s)}`);
+
+    // 4) Lobby: suelo (hs_floor_tiles) y Penny
+    await open('lobby');
+    await tap(50, 90);
+    await new Promise((r) => setTimeout(r, 300));
+    s = await st();
+    if (s.speech) throw new Error(`tocar el suelo del lobby dijo una frase: «${s.speech}»`);
+    await settle();
+    s = await st();
+    if (Math.abs(s.player.x - 50) > 3 || Math.abs(s.player.y - 90) > 3) throw new Error(`tocar el suelo del lobby no anduvo: Dex en ${JSON.stringify(s.player)}`);
+    const penny = await p.evaluate(() => {
+      const gs = window.__game.scene.getScene('GameScene');
+      const n = gs.npcs.find((x) => x.npcId === 'npc_receptionist');
+      const m = n.getWorldTransformMatrix();
+      const cam = gs.cameras.main;
+      const r = window.__game.canvas.getBoundingClientRect();
+      const k = r.width / gs.scale.width;
+      return { x: r.left + (m.tx - cam.scrollX) * k, y: r.top + (m.ty - n.height * n.scale * 0.5 - cam.scrollY) * k };
+    });
+    await p.touchscreen.tap(penny.x, penny.y);
+    await wait(() => {
+      const s = window.__qa.state();
+      return s.walkTarget?.target === 'npc_receptionist' && (!!s.speech || !!s.choices || window.__game.registry.get('dialogueActive'));
+    }, undefined, 15000).catch(async () => { throw new Error(`tocar a Penny no la abordó: ${JSON.stringify(await st())}`); });
+    await p.screenshot({ path: `${SHOTS}/zz-andar-penny-844x390.png` });
+  } finally {
+    await ctx.close();
+  }
+});
+
 await step('respuestas de fallo: un verbo sin script dice la frase 0 de su bolsa y luego otra (A2.5)', async () => {
   const failData = JSON.parse(readFileSync('assets/config/fail-responses.json', 'utf8'));
   const ctx = await browser.createBrowserContext();

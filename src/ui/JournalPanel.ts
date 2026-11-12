@@ -51,6 +51,11 @@ export interface JournalHooks {
   /** Voz de Anon (VoiceSystem.play con el texto) */
   playVoice: (text: string) => void;
   stopVoice: () => void;
+  /**
+   * A1.14: si lo único que lo bloquea es una frase suelta en pantalla, la cierra y devuelve true (el botón se abre al
+   * quedar libre: el toque no se pierde en cerrar la frase).
+   */
+  skipText?: () => boolean;
 }
 
 /** Botón: a la derecha del de trofeos (BadgePanel, x 33-63), misma altura y tamaño que Save. */
@@ -166,13 +171,18 @@ export class JournalPanel {
   }
 
   /** Abre el diario. false si ahora no se puede (cinemática, diálogo, script…; `blockedReason`). */
-  open(tab: JournalTab = 'goals'): boolean {
+  open(tab: JournalTab = 'goals', retry = 1): boolean {
     if (this.destroyed) return false;
     if (this.overlay) {
       this.showTab(tab);
       return true;
     }
     if (this.hooks.blockedReason()) {
+      // A1.14: el toque que cierra una frase suelta también abre el diario (reintenta cuando acaba el script)
+      if (retry > 0 && this.hooks.skipText?.()) {
+        this.scene.time.delayedCall(60, () => { this.open(tab, retry - 1); });
+        return false;
+      }
       this.scene.tweens.add({ targets: this.button, x: BTN.x + 3, duration: 50, yoyo: true, repeat: 2, onComplete: () => this.button.setX(BTN.x) });
       return false;
     }

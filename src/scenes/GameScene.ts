@@ -27,6 +27,7 @@ import type { Address } from 'viem';
 import type { ScummUI } from '@/ui/ScummUI';
 import type { UIScene } from '@/scenes/UIScene';
 import { actorDepth } from '@/systems/WalkMotion';
+import { decideTap, deferredTapVerdict, textTapPolicy, walkPointFor } from '@/systems/TapDecision';
 import { approachHotspot, approachTalk, lookFacing, type Approach, type ApproachTarget, type Facing, type FacingOptions } from '@/systems/Facing';
 import { defaultVerbFor, exitVerbFor, focusOf, isDoubleClick, keyAction, primaryVerb } from '@/systems/DesktopControls';
 import { CinematicDirector, type CinematicQaState, type CinematicUi } from '@/systems/CinematicDirector';
@@ -145,6 +146,10 @@ export class GameScene extends Phaser.Scene {
   private firedTriggers: Set<string> = new Set();
   /** Frame-based cooldown: ignore clicks for 1 frame after script finishes */
   private inputCooldownFrames = 0;
+  /** A1.14: toque que saltó una frase, a ejecutar cuando el juego quede libre */
+  private deferredTap: { wx: number; wy: number; sy: number; touch: boolean; button: number; at: number } | null = null;
+  /** A1.14: el último toque fue con el dedo (al llegar se limpia la línea de acción: no hay ratón que la refresque) */
+  private lastInputTouch = false;
   private walletUnsub: (() => void) | null = null;
   private boundScheduleResize: (() => void) | null = null;
 
@@ -335,8 +340,11 @@ export class GameScene extends Phaser.Scene {
     this.events.removeAllListeners('player:arrived');
     this.pending = null;
     this.lastApproach = null;
+    this.deferredTap = null;
     this.events.on('player:arrived', () => {
       const pending = this.pending;
+      // A1.14: con el dedo no hay hover que refresque la línea de acción: al llegar queda limpia
+      if (!pending && this.lastInputTouch) this.events.emit('hotspot:hover', null);
       if (!pending) return;
       this.pending = null;
       // Algo tomó el control mientras andaba: no se actúa
@@ -546,6 +554,8 @@ export class GameScene extends Phaser.Scene {
 
     // Tick down input cooldown (prevents dismiss-click from triggering next action)
     if (this.inputCooldownFrames > 0) this.inputCooldownFrames--;
+    // A1.14: el toque que saltó una frase se ejecuta en cuanto no hay nada que lo bloquee
+    if (this.deferredTap) this.tickDeferredTap();
 
     // Walk-through trigger detection — disabled in trailer mode. A2.1: Player también la llama tras cada tramo del
     // camino (onStep), así que un frame largo no se salta un trigger estrecho
@@ -622,22 +632,68 @@ export class GameScene extends Phaser.Scene {
     if (this.cinema?.isActive()) this.cinema.noteTap(pointer.wasTouch);
     const blocked = this.scriptEngine.isRunning() || !!this.registry.get('dialogueActive') || !!this.registry.get('dialogueShowing');
     if (blocked) this.beginFastForwardHold(pointer);
-    if (this.scriptEngine.isRunning()) return;
-    if (this.inputCooldownFrames > 0) return;
-    // Block all game input while dialogue tree is running (choices, etc.)
-    if (this.registry.get('dialogueActive')) return;
-    // Block game input while any dialogue text is showing (including fallback messages)
-    if (this.registry.get('dialogueShowing')) return;
-
-    // Ignore the click that just dismissed a dialogue (same frame / same tick)
+    // A1.14: un toque durante una frase suelta (no cinemática ni diálogo) la salta Y se ejecuta en cuanto el juego
+    // queda libre (antes se «gastaba» en cerrarla, o se perdía del todo antes del tiempo mínimo de lectura). En
+    // cinemáticas, árboles de diálogo y elecciones sigue siendo solo «siguiente».
     const dismissedAt = this.registry.get('dialogueDismissedAt') as number | undefined;
-    if (dismissedAt !== undefined && this.time.now - dismissedAt < 50) return;
+    const policy = textTapPolicy({
+      textShowing: !!this.registry.get('dialogueShowing'),
+      justDismissed: dismissedAt !== undefined && this.time.now - dismissedAt < 50,
+      cinematic: this.isCinematicNow(),
+      dialogueActive: !!this.registry.get('dialogueActive'),
+      awaitingChoice: this.awaitingChoice(),
+      scriptRunning: this.scriptEngine.isRunning(),
+    });
+    if (policy === 'skip-and-execute') {
+      if (this.registry.get('dialogueShowing')) this.skipBark();
+      this.deferredTap = { wx: pointer.worldX, wy: pointer.worldY, sy: pointer.y, touch: pointer.wasTouch, button: pointer.button, at: this.time.now };
+      return;
+    }
+    if (policy === 'skip-only') return;
+    if (this.inputCooldownFrames > 0) return;
+    this.deferredTap = null;
+    this.executeTap(pointer.worldX, pointer.worldY, pointer.y, pointer.wasTouch, pointer.button, pointer);
+  }
 
-    const hit = this.hitTestAt(pointer.worldX, pointer.worldY, pointer.y, pointer.wasTouch);
+  /** A1.14: cinemática en marcha (modo cine, overlay o director): ahí un toque solo avanza. */
+  private isCinematicNow(): boolean {
+    return !!this.registry.get('cinematicMode') || ((this.registry.get('cinematicActive') as number | undefined) ?? 0) > 0
+      || !!this.cinema?.isActive();
+  }
+
+  /** A1.14: cierra la frase en pantalla (UIScene/DialogueBox), sin esperar al tiempo mínimo de lectura. */
+  private skipBark(): void {
+    if (!this.scene.isActive('UIScene')) return;
+    (this.scene.get('UIScene') as UIScene).skipBark?.();
+  }
+
+  /** A1.14: ejecuta el toque guardado al saltar una frase cuando el juego queda libre (o lo descarta). */
+  private tickDeferredTap(): void {
+    const t = this.deferredTap;
+    if (!t) return;
+    const verdict = deferredTapVerdict({
+      textShowing: !!this.registry.get('dialogueShowing'),
+      scriptRunning: this.scriptEngine.isRunning(),
+      dialogueActive: !!this.registry.get('dialogueActive') || this.awaitingChoice(),
+      cinematic: this.isCinematicNow(),
+      sceneChanging: !!this.registry.get('sceneTransition') || !!this.registry.get('journalOpen'),
+    }, this.time.now - t.at);
+    if (verdict === 'wait') return;
+    this.deferredTap = null;
+    if (verdict === 'run') this.executeTap(t.wx, t.wy, t.sy, t.touch, t.button, null);
+  }
+
+  /**
+   * El toque ya admitido (nada que lo bloquee). `pointer` solo si el dedo sigue siendo el de este toque (para
+   * mantener pulsado); un toque diferido tras saltar una frase llega sin él y se trata como un toque corto.
+   */
+  private executeTap(wx: number, wy: number, sy: number, touch: boolean, button: number, pointer: Phaser.Input.Pointer | null): void {
+    this.lastInputTouch = touch;
+    const hit = this.hitTestAt(wx, wy, sy, touch);
     if (hit.kind === 'none') return;
 
     // A2.4: clic derecho (solo ratón) = verbo por defecto del hotspot o NPC, sin mirar el panel
-    if (!pointer.wasTouch && pointer.button === 2) {
+    if (!touch && button === 2) {
       this.lastClick = null;
       this.rightClickHit(hit);
       return;
@@ -656,13 +712,16 @@ export class GameScene extends Phaser.Scene {
     if (hotspot) this.flashHotspot(hotspot);
     if (hotspot) this.events.emit('hotspot:focus', hotspot);
 
-    // V6: con el dedo y sin verbo elegido, tocar un hotspot = mirar y mantener pulsado = acción principal
-    if (pointer.wasTouch && hotspot && !selectedItem && verb === Verb.WALK) {
-      this.beginTouchHold(pointer, hotspot);
+    // V6 + A1.14: con el dedo y sin verbo elegido, tocar un hotspot = ANDAR hacia él (antes era mirar sin andar) y
+    // mantener pulsado = acción principal
+    const action = decideTap({ verb, target: hotspot ? 'hotspot' : 'floor', hasItem: !!selectedItem, touch });
+    if (action === 'hold-or-walk' && hotspot) {
+      if (pointer?.isDown) this.beginTouchHold(pointer, hotspot, pct);
+      else this.walkToHotspot(hotspot, pct);
       return;
     }
 
-    this.leftClickScene(pct, hotspot, !pointer.wasTouch);
+    this.leftClickScene(pct, hotspot, !touch);
   }
 
   /**
@@ -793,6 +852,7 @@ export class GameScene extends Phaser.Scene {
           }
           this.events.emit('npc:tapped', npc.npcId, itemTree, itemDialogue.node);
         });
+        this.afterVerbAction(scummUI);
         return;
       }
       // A2.5: pareja específica > _default de la NPC > bolsa del objeto > bolsa genérica (src/systems/FailResponses.ts)
@@ -800,9 +860,11 @@ export class GameScene extends Phaser.Scene {
       const responses = npcVerb === 'GIVE' ? npcData?.giveResponses : npcData?.useResponses;
       const response = failResponses.itemOnNpc(npcVerb, selectedItem.id, { id: npc.npcId, responses }, this.currentSceneId()).text;
       this.approachAndRun(npc.npcId, verb, plan, () => this.scene.get('UIScene').events.emit('say', response, npc.npcName));
+      this.afterVerbAction(scummUI);
       return;
     }
     this.approachAndRun(npc.npcId, verb, plan, () => this.events.emit('npc:tapped', npc.npcId, npc.dialogueTreeId));
+    this.afterVerbAction(scummUI);
   }
 
   // ─── A2.2: acercarse y mirar hacia el objetivo ───
@@ -963,17 +1025,47 @@ export class GameScene extends Phaser.Scene {
           this.scene.get('UIScene').events.emit('say', failResponses.itemOnHotspot(item.id, hs, this.currentSceneId()).text);
         }
       });
+      this.afterVerbAction(scummUI);
       return;
     }
 
-    if (verb === Verb.WALK || !hotspot) {
+    if (!hotspot) {
       this.pending = null;
       this.lastApproach = null;
       this.player.walkToPct(pct.x, pct.y);
       return;
     }
+    // A1.14: WALK sobre un hotspot = andar (al punto tocado si es suelo, si no a su walkTo), sin frase
+    if (verb === Verb.WALK) {
+      this.walkToHotspot(hotspot, pct);
+      return;
+    }
     // A2.2: LOOK se gira sin andar; TALK anda a distancia de conversación; USE, PICK, OPEN… a su walkTo
     this.runHotspotVerb(hotspot, verb);
+    this.afterVerbAction(scummUI);
+  }
+
+  /**
+   * A1.14: WALK sobre un hotspot. Al punto tocado si se pisa y se llega (hotspots de suelo: camino, carport,
+   * baldosas), si no a su `walkTo` explícito, y si no al tocado (la ruta lleva al alcanzable más cercano). Sin frase.
+   */
+  private walkToHotspot(hotspot: HotspotData, pct: { x: number; y: number }): void {
+    const reachable = this.player.canReachPct(pct.x, pct.y);
+    const explicit = hotspot.walkTo && Number.isFinite(hotspot.walkTo.x) && Number.isFinite(hotspot.walkTo.y) ? hotspot.walkTo : null;
+    const to = walkPointFor(pct, reachable, explicit);
+    this.pending = null;
+    this.lastApproach = { target: hotspot.id, verb: Verb.WALK, walkTo: { ...to }, face: null };
+    this.player.walkToPct(to.x, to.y);
+  }
+
+  /**
+   * A1.14: tras una acción con verbo u objeto elegidos en el panel, el verbo vuelve a WALK (SCUMM clásico) y la línea
+   * de acción se limpia (antes se quedaba «Open Carport» o «Talk to Checkered Floor» con texto viejo).
+   */
+  private afterVerbAction(scummUI: ScummUI | undefined): void {
+    if (!scummUI) return;
+    scummUI.resetSelection?.();
+    scummUI.setHoveredObject?.(null);
   }
 
   private handlePointerMove(pointer: Phaser.Input.Pointer): void {
@@ -1164,8 +1256,8 @@ export class GameScene extends Phaser.Scene {
     this.inputCooldownFrames = Math.max(this.inputCooldownFrames, 6);
   }
 
-  /** V6: empieza un toque sobre un hotspot; al soltar antes de HOLD_MS se mira y si se mantiene se hace la acción principal. */
-  private beginTouchHold(pointer: Phaser.Input.Pointer, hotspot: HotspotData): void {
+  /** V6: empieza un toque sobre un hotspot; al soltar antes de HOLD_MS anda hacia él (A1.14) y si se mantiene hace la acción principal. */
+  private beginTouchHold(pointer: Phaser.Input.Pointer, hotspot: HotspotData, pct: { x: number; y: number }): void {
     this.cancelTouchHold();
     this.events.emit('hotspot:hover', hotspot.name);
     const x = pointer.x, y = pointer.y;
@@ -1192,7 +1284,8 @@ export class GameScene extends Phaser.Scene {
       if (!this.touchHold) return;
       this.touchHold.timer.remove();
       cleanup();
-      this.runHotspotVerb(hotspot, Verb.LOOK);
+      // A1.14: toque corto con WALK = andar hacia el hotspot (antes: LOOK sin andar)
+      this.walkToHotspot(hotspot, pct);
     };
     const onMove = (p: Phaser.Input.Pointer) => {
       if (Math.hypot(p.x - x, p.y - y) > GameScene.HOLD_SLOP_PX && this.touchHold) {
