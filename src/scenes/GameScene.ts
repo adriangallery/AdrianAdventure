@@ -941,13 +941,21 @@ export class GameScene extends Phaser.Scene {
    * A4.1: lo que la animación del jugador necesita saber de la escena: si tiene texto en pantalla (UIScene, A2.3:
    * speaker vacío o del jugador) y si la escena está libre para un tic de reposo.
    */
-  private playerAnimContext(): { talking: boolean; idleFree: boolean } {
+  private playerAnimContext(): { talking: boolean; idleFree: boolean; voiceLevel: number | null } {
     const ui = this.scene.isActive('UIScene') ? (this.scene.get('UIScene') as UIScene) : null;
-    const talking = ui?.getSpeech()?.kind === 'player';
+    const speech = ui?.getSpeech() ?? null;
+    const talking = speech?.kind === 'player';
+    // A2.16: nivel de la voz del jugador (mandíbula del «Dex de papel»); null si no suena su clip o no se puede medir
+    let voiceLevel: number | null = null;
+    if (talking && this.player?.isPaper()) {
+      const voice = this.registry.get('voiceSystem') as VoiceSystem | undefined;
+      const clip = voice?.clipInfo();
+      if (clip?.playing && clip.text === speech?.text) voiceLevel = voice?.level() ?? null;
+    }
     const idleFree = !this.isTrailer && !this.scriptEngine?.isRunning()
       && !this.registry.get('dialogueActive') && !this.registry.get('dialogueShowing')
       && !this.registry.get('cinematicMode') && !this.registry.get('journalOpen');
-    return { talking, idleFree };
+    return { talking, idleFree, voiceLevel };
   }
 
   /**
