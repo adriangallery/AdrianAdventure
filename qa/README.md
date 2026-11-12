@@ -150,6 +150,15 @@ no salen (`lastChoices.absent`, `when: fud_rN`), solo la salida torpe, y Chad ga
 La clínica sin admisión (keycard revocada, puerta sin pruebas, respuesta honesta) y la autorización sin ficha («You
 bring vibes») van como rechazos dentro de la ruta crítica, para no rejugar otra vez los capítulos 1-3 en el CI.
 
+A3.7e (capítulo 5) añade `salida-sin-apagar-pzbot`: la ruta crítica hasta la treatment room (sin redimensiones, Anon,
+diario ni comprobaciones visuales), disquete al monitor y sillón (revelación, se sale del árbol `pzbot_final` con «Not
+now.») y USE de la salida: sigue cerrada («still something I need to see»; la salida pide `found_adrian_note`, que pide
+`met_adrian`, que pide `pzbot_off`). El monitor antes de tiempo (sin respaldo ni sillón), la salida nada más entrar,
+la derrota en el duelo, la salida con el teléfono sonando y los créditos sin firmar van como rechazos de la ruta
+crítica, que llega ya hasta la firma del NOW HIRING (`game_complete`) y los créditos. El duelo final sin réplicas no
+es alcanzable jugando (las fuentes de la piscina dan las seis); para partidas viejas, la 2.ª derrota pone
+`fud_r2`/`fud_r4`/`fud_r6` (A3.7b).
+
 A3.3c (PIN partido, capítulo 1) añade tres rutas que deben quedarse fuera: `nota-con-lampara-encendida` (OPEN y PICK de
 la lámpara sin apagarla: «Hot. Hot hot hot.» y ninguna mitad), `nido-sin-tablon` (USE, PULL y PICK de la chimenea sin
 `fence_plank`: el nido no cae) y `puerta-con-media-nota` (`note_half_a` en el teclado: respuesta de fallo, la puerta sigue
