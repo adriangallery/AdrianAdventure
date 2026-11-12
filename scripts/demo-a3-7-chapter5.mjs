@@ -55,7 +55,7 @@ const choose = (want) => page.evaluate((want) => {
 }, want);
 
 /** Sigue las frases y las opciones hasta que el juego queda libre: un fotograma por frase, un toque para pasar. */
-async function follow(view, stills, choices = []) {
+async function follow(viewId, stills, choices = []) {
   const queue = [...choices];
   const seen = [];
   let lastText = null;
@@ -69,9 +69,9 @@ async function follow(view, stills, choices = []) {
       calm = 0;
       await demo.film(600);
       const want = queue.shift();
-      if (want === undefined) { bad(`${view}: opciones sin respuesta prevista (${r.choices.join(' | ')})`); break; }
+      if (want === undefined) { bad(`${viewId}: opciones sin respuesta prevista (${r.choices.join(' | ')})`); break; }
       const err = await choose(want);
-      if (err) { bad(`${view}: ${err} entre ${r.choices.join(' | ')}`); break; }
+      if (err) { bad(`${viewId}: ${err} entre ${r.choices.join(' | ')}`); break; }
       seen.push({ speaker: '>', text: want });
       lastText = null;
       await demo.sleep(300);
@@ -81,7 +81,7 @@ async function follow(view, stills, choices = []) {
       calm = 0;
       lastText = r.text;
       seen.push({ speaker: r.speaker, text: r.text });
-      for (const [re, label] of stills) if (re.test(r.text)) await demo.still(`${view}-${label}`);
+      for (const [re, label] of stills) if (re.test(r.text)) await demo.still(`${viewId}-${label}`);
       await demo.film(Math.min(1100, Math.max(500, r.text.length * 13)));
       await page.evaluate(() => window.__game.scene.getScene('GameScene').qaSyntheticTap());
       lastTapAt = Date.now();
