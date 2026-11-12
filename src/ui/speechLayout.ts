@@ -7,6 +7,11 @@
  *
  * - `head`: el bloque queda centrado sobre la cabeza, con su borde inferior `gap` px por encima; si no cabe, se
  *   pega al margen izquierdo, derecho o superior (y nunca baja del panel inferior).
+ *   A7.2 (J-5): si por arriba no cabe sin tapar la cabeza (cabeza muy alta, texto largo), el bloque se pone a un lado
+ *   de quien habla (`side`), a la altura de la cabeza; si tampoco cabe a lo ancho, pide un wrap más estrecho
+ *   (`wantWrap`) para que quien llama lo vuelva a medir y a colocar.
+ * - A7.2 (J-5): `topInset` reserva la franja de los botones de arriba (guardar, ayuda, móvil, wallet): ni el modo
+ *   `head` ni el `top` (con el nombre de quien habla encima) se meten en ella.
  * - `top`: el modo de siempre, arriba en el centro. Es el del narrador/sistema y el de reserva cuando quien habla
  *   no está en la escena, no se ve (hidePlayer, closeups, tráiler) o se ha salido de la pantalla.
  */
@@ -37,7 +42,19 @@ export interface SpeechPlacement {
   y: number;
   /** Se ha pegado a algún borde (solo en modo head) */
   clamped: { left: boolean; right: boolean; top: boolean; bottom: boolean };
+  /** A7.2: en modo head, el bloque va a ese lado de quien habla porque por encima le taparía la cabeza */
+  side?: 'left' | 'right';
+  /** A7.2: el bloque no cabe a ningún lado con su ancho: volver a medirlo con este wrap y colocarlo otra vez */
+  wantWrap?: number;
 }
+
+/**
+ * A7.2 (J-5): alto de la franja de los botones de arriba (SaveButton, ayuda, móvil y WalletButton: y = 8, alto 24).
+ * DialogueBox la pasa como `topInset` fuera de las cinemáticas (en ellas los botones se esconden).
+ */
+export const TOP_UI_INSET = 32;
+/** A7.2: ancho mínimo de un bloque puesto a un lado de quien habla (menos que esto no se lee) */
+export const SIDE_WRAP_MIN = 140;
 
 /** Margen mínimo entre el texto y el borde de la pantalla */
 export const SPEECH_MARGIN = 8;
@@ -88,9 +105,13 @@ export function speechWrapWidth(vp: Viewport, mode: SpeechMode = 'head'): number
   return Math.floor(Math.min(avail, want));
 }
 
-/** Y del modo arriba-centro (6 % del alto, mínimo 20 px), como antes de A2.3. */
-export function topY(vp: Viewport): number {
-  return Math.max(20, vp.height * 0.06);
+/**
+ * Y del modo arriba-centro (6 % del alto, mínimo 20 px), como antes de A2.3. A7.2: con `topInset` (franja de los
+ * botones de arriba) baja lo justo para que el nombre de quien habla (`nameH`, va encima del texto) no la pise.
+ */
+export function topY(vp: Viewport, topInset = 0, nameH = 0): number {
+  const base = Math.max(20, vp.height * 0.06);
+  return topInset > 0 ? Math.max(base, topInset + SPEECH_MARGIN + nameH) : base;
 }
 
 /** ¿Se ve quien habla? Su x dentro de la pantalla y algo de su cuerpo dentro en vertical. */
@@ -116,6 +137,10 @@ export interface PlaceOptions {
    * (modo `band`); sobre la cabeza no pisa ninguna de las dos.
    */
   band?: { top: number; bottom: number } | null;
+  /** A7.2: franja de arriba reservada a los botones (px desde el borde superior); 0 o sin pasar = nada */
+  topInset?: number;
+  /** A7.2: alto del nombre de quien habla en el modo arriba-centro (va encima del texto) */
+  nameH?: number;
 }
 
 /** A2.10: Y del subtítulo en la franja inferior: centrado en ella, sin salirse por abajo. */
@@ -134,7 +159,7 @@ export function placeSpeech(o: PlaceOptions): SpeechPlacement {
   const band = o.band && o.band.bottom > 0 ? o.band : null;
   if (!isAnchorOnScreen(o.head, vp)) {
     if (band) return { mode: 'band', x: vp.width / 2, y: bandY(vp, band.bottom, o.textH, margin), clamped: none };
-    return { mode: 'top', x: vp.width / 2, y: topY(vp), clamped: none };
+    return { mode: 'top', x: vp.width / 2, y: topY(vp, o.topInset ?? 0, o.nameH ?? 0), clamped: none };
   }
 
   const head = o.head;
@@ -155,7 +180,7 @@ export function placeSpeech(o: PlaceOptions): SpeechPlacement {
 
   let y = head.headY - gap - o.textH;
   const maxY = vp.height - Math.max(o.bottomInset ?? 0, band?.bottom ?? 0) - margin - o.textH;
-  const minY = (band?.top ?? 0) + margin;
+  const minY = Math.max(band?.top ?? 0, o.topInset ?? 0) + margin;
   if (y > maxY) {
     y = maxY;
     clamped.bottom = true;
@@ -164,7 +189,34 @@ export function placeSpeech(o: PlaceOptions): SpeechPlacement {
     y = minY;
     clamped.top = true;
   }
+  // A7.2 (J-5): pegado arriba, el bloque bajaría sobre la cabeza de quien habla: mejor a un lado
+  if (clamped.top && y + o.textH > head.headY - gap) {
+    const side = placeBeside(o, head, minY, maxY, margin, gap);
+    if (side) return side;
+  }
   return { mode: 'head', x, y, clamped };
+}
+
+/**
+ * A7.2 (J-5): el bloque a un lado de quien habla, a la altura de la cabeza, en el lado con más sitio. Deja libre el
+ * cuerpo (media anchura estimada por su alto). Si no cabe con su ancho, pide `wantWrap` (el sitio que hay); con
+ * menos de SIDE_WRAP_MIN px a los dos lados devuelve null (se queda arriba, como antes).
+ */
+function placeBeside(o: PlaceOptions, head: HeadAnchor, minY: number, maxY: number, margin: number, gap: number): SpeechPlacement | null {
+  const { vp } = o;
+  const bodyHalf = clamp((head.footY - head.headY) * 0.2, 12, 60);
+  const rightSpace = vp.width - margin - (head.x + bodyHalf + gap);
+  const leftSpace = head.x - bodyHalf - gap - margin;
+  const right = rightSpace >= leftSpace;
+  const space = Math.floor(right ? rightSpace : leftSpace);
+  if (space < SIDE_WRAP_MIN) return null;
+  const w = Math.min(o.textW, space);
+  const x = right ? head.x + bodyHalf + gap + w / 2 : head.x - bodyHalf - gap - w / 2;
+  const top = Math.max(minY, Math.min(head.headY - o.textH / 3, maxY));
+  const clamped = { left: !right && w === space, right: right && w === space, top: top === minY, bottom: top === maxY && top !== minY };
+  const placed: SpeechPlacement = { mode: 'head', x, y: top, clamped, side: right ? 'right' : 'left' };
+  if (o.textW > space) placed.wantWrap = space;
+  return placed;
 }
 
 /**

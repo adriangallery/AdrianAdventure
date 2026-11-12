@@ -12,6 +12,8 @@ import type { GameState } from '@/types/game.types';
  *      versión): si no es un objeto se descarta; si lo es, se queda solo lo que tenga la forma esperada (la misma regla
  *      que `progressFrom` de Journal.ts).
  *      A1.13: campo aditivo `runId` (id de partida, opcional, sin subir versión): si no es un id válido se descarta.
+ *      A7.2: `playerPosition` (ya existía, opcional) se sanea: si no son dos números finitos en 0..100 se descarta y
+ *      la partida carga en el spawn por defecto de la escena (ver `savedSpawn`).
  *
  * Toda partida que entra en el juego pasa por aquí: los slots locales (`SaveLoadSystem.getAllSlots`), la
  * partida de la wallet en localStorage y la de la nube (`wallet-save`: `loadLocal`, `loadRemoteSlots`,
@@ -80,8 +82,29 @@ export function migrateGameState<T extends Partial<GameState> | null | undefined
   if (state.runId !== undefined && !(typeof state.runId === 'string' && /^[A-Za-z0-9_-]{1,40}$/.test(state.runId))) {
     delete state.runId;
   }
+  // A7.2: posición del jugador en la escena guardada (en %); corrupta = se descarta (spawn por defecto)
+  if (state.playerPosition !== undefined) {
+    const pos = cleanPosition(state.playerPosition);
+    if (pos) state.playerPosition = pos; else delete state.playerPosition;
+  }
   if (typeof state.saveVersion !== 'number' || state.saveVersion < SAVE_VERSION) state.saveVersion = SAVE_VERSION;
   return state;
+}
+
+function cleanPosition(raw: unknown): { pctX: number; pctY: number } | null {
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return null;
+  const { pctX, pctY } = raw as Record<string, unknown>;
+  const ok = (v: unknown): v is number => typeof v === 'number' && Number.isFinite(v) && v >= 0 && v <= 100;
+  return ok(pctX) && ok(pctY) ? { pctX, pctY } : null;
+}
+
+/**
+ * A7.2: punto donde aparece el jugador al cargar `state`: su `playerPosition` si es válida, o `null` (= el spawn por
+ * defecto de la escena; partidas viejas o posición corrupta). `{ x, y }` en %, el formato de `spawnOverride`.
+ */
+export function savedSpawn(state: Partial<GameState> | null | undefined): { x: number; y: number } | null {
+  const p = state && typeof state === 'object' ? cleanPosition(state.playerPosition) : null;
+  return p ? { x: p.pctX, y: p.pctY } : null;
 }
 
 /** Migra el `state` de cualquier envoltorio de partida (`SaveSlot`, `WalletSave`) y devuelve el envoltorio. */

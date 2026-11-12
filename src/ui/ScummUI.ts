@@ -153,7 +153,18 @@ export class ScummUI {
       .setInteractive({ useHandCursor: true });
     hb.add(hitArea);
 
-    hitArea.on('pointerup', () => this.toggle());
+    // A7.2 (J-7): solo pliega/despliega un toque que EMPIEZA y acaba en el asa, sobre el lienzo. Phaser también entrega
+    // el «soltar» que ocurre fuera del lienzo (p. ej. el botón «Load» del panel DOM de guardado, que queda encima del
+    // asa en móvil apaisado): ese toque plegaba el panel, se recordaba en localStorage y la partida cargada salía sin verbos.
+    let downHere = false;
+    const onCanvas = (p: Phaser.Input.Pointer) => !p.event || p.event.target === this.scene.game.canvas;
+    hitArea.on('pointerdown', (p: Phaser.Input.Pointer) => { downHere = onCanvas(p); });
+    hitArea.on('pointerout', () => { downHere = false; });
+    hitArea.on('pointerup', (p: Phaser.Input.Pointer) => {
+      const ok = downHere && onCanvas(p);
+      downHere = false;
+      if (ok) this.toggle();
+    });
 
     this.container.add(hb);
     this.handleBar = hb;
@@ -315,6 +326,9 @@ export class ScummUI {
   private static readCollapsed(): boolean {
     try { return localStorage.getItem('adrian_adventure_panel_collapsed') === '1'; } catch { return false; }
   }
+
+  /** A7.2 (J-7): al cargar una partida el panel de verbos sale desplegado (lo llama SaveButton antes de reiniciar la UI). */
+  static resetCollapsed(): void { ScummUI.writeCollapsed(false); }
 
   private static writeCollapsed(v: boolean): void {
     try { localStorage.setItem('adrian_adventure_panel_collapsed', v ? '1' : '0'); } catch { /* sin almacenamiento */ }

@@ -38,7 +38,7 @@
         {"do": "use", "item": "ledger", "target": "hs_keypad", "choices": ["come back"], "rejects": "without asking", "note": "A3.3d (1.6): segundo factor: «Ledger detected. Please don't plug things into me without asking.» DOORIS vuelve a la pregunta (sin la factura, sin respuesta) y Dex se va", "expect": {"scene": "outside", "flags": {"dooris_key_ok": true, "door_unlocked": false}, "lastChoices": {"absent": ["vet bill"]}}},
         {"do": "act", "verb": "PICK", "target": "hs_mailbox", "holdTextMs": 35000, "rejects": "best friend is a rubber duck", "note": "A2.2: walkTo y face explícitos en outside (a la izquierda del buzón, mirando a la derecha). A3.3d (1.5): un solo PICK/OPEN da el sobre (capítulo 2 y 4) y la factura del veterinario de Gerald (knows_gerald). A1.1: el texto se deja 35 s en pantalla antes del addItem y el setFlag; el watchdog no debe cortar el script", "expect": {"has": ["mystery_envelope", "vet_bill"], "flags": {"found_envelope": true, "found_vet_bill": true, "knows_gerald": true}}},
         {"do": "callAnon", "note": "A3.3d: con la factura y la llave verificada, el puzle abierto más avanzado es p1_question (openWhen dooris_met + knows_gerald)", "expect": {"journal": {"anon": {"puzzle": "p1_question", "level": 1, "notPuzzle": "p1_mail"}}}},
-        {"do": "act", "verb": "TALK", "target": "hs_keypad", "choices": ["Satoshi", "vet bill"], "rejects": "Still missing: a PIN", "note": "A3.3d (1.5): la pregunta de seguridad. «Satoshi.» falla con burla y lockout (vuelve al hub sin repetir la pregunta); «[The name on the vet bill]» ya está (item:vet_bill) y acierta: «Gerald. Correct. He's a very good boy. He's a duck.» Falta el PIN y DOORIS lo dice", "expect": {"scene": "outside", "flags": {"dooris_question_ok": true, "dooris_key_ok": true, "dooris_pin_ok": false, "door_unlocked": false}, "lastChoices": {"used": ["Satoshi"], "fresh": ["vet bill"]}}},
+        {"do": "act", "verb": "TALK", "target": "hs_keypad", "choices": ["Satoshi", "vet bill", "come back"], "rejects": "Still missing: a PIN", "note": "A3.3d (1.5): la pregunta de seguridad. «Satoshi.» falla con burla y lockout (vuelve al hub sin repetir la pregunta); «[The name on the vet bill]» ya está (item:vet_bill) y acierta: «Gerald. Correct. He's a very good boy. He's a duck.» Falta el PIN y DOORIS lo dice. A7.2 (J-4): con code_note en el inventario, «Still missing: a PIN» ofrece decirlo («[Read out the PIN on the note]», when item:code_note); aquí Dex se va para teclearlo con la nota en el paso siguiente", "expect": {"scene": "outside", "flags": {"dooris_question_ok": true, "dooris_key_ok": true, "dooris_pin_ok": false, "door_unlocked": false}, "lastChoices": {"fresh": ["PIN on the note", "come back"]}}},
         {"do": "use", "item": "code_note", "target": "hs_keypad", "rejects": "One factor was a duck", "note": "A3.3d (1.6): tercer factor: «PIN accepted» y DOORIS abre («Three-factor authentication complete. One factor was a duck.»); el árbol cambia de escena al cerrarse. A3.2: la apertura del lobby (pan a Penny, subtítulos, tarjeta del capítulo 2) es una cinemática que corre y termina", "expect": {"scene": "lobby", "audio": {"sfxPlayed": ["door_creak", "stinger_chapter_major"], "ambience": "office_hum", "surface": "tile"}, "flags": {"door_unlocked": true, "chapter_1_complete": true, "chapter_2_intro_shown": true, "dooris_pin_ok": true}, "cinematic": {"active": false, "endedMin": 1, "skipped": false, "following": true, "zoom": 1}, "pixel": {"integer": true, "pixelScale": 7}}},
 
         { "do": "act", "verb": "LOOK", "target": "hs_coat", "rejects": "card-shaped in the breast pocket", "note": "A3.4a (2.1): el LOOK del abrigo anuncia la keycard", "expect": { "scene": "lobby", "lacks": ["keycard"] } },
@@ -174,6 +174,23 @@
       ]
     },
     {
+      "id": "pin-mitades-y-teclado",
+      "kind": "walkthrough",
+      "title": "A7.2 (J-4): con las dos mitades sin juntar el teclado y DOORIS dicen que hay que juntarlas; con la nota entera, USE teclado teclea el PIN",
+      "goal": {"scene": "outside", "has": ["code_note"], "flags": {"dooris_pin_ok": true, "door_unlocked": false}},
+      "steps": [
+        {"do": "newGame", "expect": {"scene": "outside"}},
+        {"do": "act", "verb": "USE", "target": "hs_porch_light", "expect": {"flags": {"porch_light_off": true}}},
+        {"do": "act", "verb": "PICK", "target": "hs_porch_light", "expect": {"has": ["note_half_a"]}},
+        {"do": "act", "verb": "PULL", "target": "hs_fence", "expect": {"has": ["fence_plank"]}},
+        {"do": "use", "item": "fence_plank", "target": "hs_chimney", "expect": {"has": ["note_half_a", "note_half_b"]}},
+        {"do": "act", "verb": "USE", "target": "hs_keypad", "choices": ["come back"], "rejects": "put the note back together", "note": "Dex lo dice antes de la conversación (y no «It wants a conversation»); DOORIS se presenta y lo repite: «Two halves of a PIN are not a PIN»", "expect": {"scene": "outside", "has": ["note_half_a", "note_half_b"], "flags": {"dooris_met": true, "dooris_pin_ok": false, "door_unlocked": false}, "lastChoices": {"absent": ["PIN on the note"]}}},
+        {"do": "act", "verb": "TALK", "target": "hs_front_door", "choices": ["come back"], "rejects": "Two halves of a PIN are not a PIN", "expect": {"scene": "outside", "flags": {"dooris_pin_ok": false}}},
+        {"do": "combine", "items": ["note_half_a", "note_half_b"], "expect": {"has": ["code_note"], "flags": {"has_code": true}}},
+        {"do": "act", "verb": "USE", "target": "hs_keypad", "choices": ["come back"], "rejects": "7\\.\\.\\. 3\\.\\.\\. 1\\.\\.\\. 4", "note": "camino a: con la nota entera, USE teclado teclea el PIN (keypad_success) sin elegir la nota", "expect": {"scene": "outside", "has": ["code_note"], "flags": {"dooris_pin_ok": true, "door_unlocked": false}, "audio": {"sfxPlayed": ["keypad_success"]}}}
+      ]
+    },
+    {
       "id": "controles-escritorio",
       "kind": "walkthrough",
       "title": "A2.4: teclado y ratón de escritorio en el lobby (Tab, atajos de verbos, clic derecho, Esc y doble clic en una salida)",
@@ -187,7 +204,7 @@
         {"do": "combine", "items": ["note_half_a", "note_half_b"], "expect": {"has": ["code_note"]}},
         {"do": "use", "item": "fence_plank", "target": "hs_doormat", "note": "A3.3d: el felpudo HODL está pegado; con el tablón sale el Ledger (llave de hardware)", "expect": {"has": ["ledger"], "flags": {"found_ledger": true}}},
         {"do": "act", "verb": "OPEN", "target": "hs_mailbox", "note": "A3.3d: un solo OPEN da el sobre y la factura del veterinario (Gerald, la respuesta de la pregunta de seguridad)", "expect": {"has": ["vet_bill", "mystery_envelope"], "flags": {"knows_gerald": true}}},
-        {"do": "use", "item": "code_note", "target": "hs_keypad", "choices": ["vet bill"], "note": "A3.3d: PIN aceptado; DOORIS se presenta (primera vez), llama Anon y hace la pregunta de seguridad: la opción «[The name on the vet bill]» solo sale con la factura; aún falta la llave", "expect": {"scene": "outside", "flags": {"dooris_met": true, "anon_call_1": true, "dooris_pin_ok": true, "dooris_question_ok": true, "door_unlocked": false}}},
+        {"do": "act", "verb": "USE", "target": "hs_keypad", "choices": ["vet bill"], "rejects": "Somebody was patient", "note": "A7.2 (J-4, camino a): USE teclado con code_note en el inventario lo teclea igual que usar la nota sobre él: PIN aceptado; DOORIS se presenta (primera vez), llama Anon y hace la pregunta de seguridad; aún falta la llave", "expect": {"scene": "outside", "flags": {"dooris_met": true, "anon_call_1": true, "dooris_pin_ok": true, "dooris_question_ok": true, "door_unlocked": false}}},
         {"do": "use", "item": "ledger", "target": "hs_keypad", "note": "A3.3d: tercer factor: DOORIS abre («One factor was a duck») y el árbol cambia de escena al cerrarse", "expect": {"scene": "lobby"}},
 
         { "do": "key", "key": "Tab", "phase": "down", "note": "mantener Tab: resalta los hotspots que se pueden pulsar y la NPC", "expect": { "highlighted": { "min": 6, "includes": ["hs_stairs_up", "hs_frontdoor", "hs_coat", "hs_plant", "npc_receptionist"] } } },
@@ -221,7 +238,7 @@
         {"do": "combine", "items": ["note_half_a", "note_half_b"], "expect": {"has": ["code_note"]}},
         {"do": "use", "item": "fence_plank", "target": "hs_doormat", "note": "A3.3d: el felpudo HODL está pegado; con el tablón sale el Ledger (llave de hardware)", "expect": {"has": ["ledger"], "flags": {"found_ledger": true}}},
         {"do": "act", "verb": "OPEN", "target": "hs_mailbox", "note": "A3.3d: un solo OPEN da el sobre y la factura del veterinario (Gerald, la respuesta de la pregunta de seguridad)", "expect": {"has": ["vet_bill", "mystery_envelope"], "flags": {"knows_gerald": true}}},
-        {"do": "use", "item": "code_note", "target": "hs_keypad", "choices": ["vet bill"], "note": "A3.3d: PIN aceptado; DOORIS se presenta (primera vez), llama Anon y hace la pregunta de seguridad: la opción «[The name on the vet bill]» solo sale con la factura; aún falta la llave", "expect": {"scene": "outside", "flags": {"dooris_met": true, "anon_call_1": true, "dooris_pin_ok": true, "dooris_question_ok": true, "door_unlocked": false}}},
+        {"do": "act", "verb": "TALK", "target": "hs_keypad", "choices": ["PIN on the note", "vet bill"], "rejects": "Somebody was patient", "note": "A7.2 (J-4, camino b): en la conversación con DOORIS, con code_note, sale «[Read out the PIN on the note]» (when item:code_note): PIN aceptado, DOORIS repite la pregunta (ya sin la opción del PIN) y Gerald la responde; aún falta la llave", "expect": {"scene": "outside", "flags": {"dooris_met": true, "anon_call_1": true, "dooris_pin_ok": true, "dooris_question_ok": true, "door_unlocked": false}, "lastChoices": {"absent": ["PIN on the note"]}}},
         {"do": "use", "item": "ledger", "target": "hs_keypad", "note": "A3.3d: tercer factor: DOORIS abre («One factor was a duck») y el árbol cambia de escena al cerrarse", "expect": {"scene": "lobby"}},
         {"do": "runScript", "note": "la cinemática entera: los textos avanzan solos (voz o caracteres)", "ops": [
           {"op": "cinematicStart"},
