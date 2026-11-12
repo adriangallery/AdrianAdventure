@@ -804,7 +804,7 @@
                   {
                     "op": "narrative",
                     "lines": [
-                      "The printout shows coordinates. A clinic in the mountains.",
+                      "The blue X on the map sits on a clinic. Up here, in the mountains.",
                       "\"Patient Zero Rehabilitation Clinic — Est. Block 0\"",
                       "Dr. Satoshi runs the operation. Treats on-chain addiction.",
                       "Patient Zero escaped. And you're getting closer to finding out why."
@@ -943,7 +943,7 @@
             {
               "op": "narrative",
               "lines": [
-                "The printout shows coordinates. A clinic in the mountains.",
+                "The blue X on the map sits on a clinic. Up here, in the mountains.",
                 "\"Patient Zero Rehabilitation Clinic — Est. Block 0\"",
                 "Dr. Satoshi runs the operation. Treats on-chain addiction.",
                 "Patient Zero escaped. And you're getting closer to finding out why."

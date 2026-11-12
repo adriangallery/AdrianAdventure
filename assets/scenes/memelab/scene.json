@@ -442,42 +442,66 @@
         "scripts": {
           "LOOK": [
             {
-              "op": "say",
-              "text": "It's a rare Pepe printout, wearing 3D glasses just like mine! It sits on the desk, perfectly preserved. The rarest of rare. The meme to end all memes."
+              "op": "ifFlag",
+              "flag": "memelab_clear_vision",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "It's a rare Pepe printout, wearing 3D glasses just like mine! It sits on the desk, perfectly preserved. The rarest of rare. The meme to end all memes."
+                }
+              ],
+              "else": [
+                {
+                  "op": "say",
+                  "text": "A green smudge on the desk, doubled in red and blue. It might be a frog. It might be my headache."
+                }
+              ]
             }
           ],
           "PICK": [
             {
               "op": "ifFlag",
-              "flag": "found_pepememe",
+              "flag": "memelab_clear_vision",
               "then": [
                 {
-                  "op": "say",
-                  "text": "I already have the rare Pepe. One is enough. The meme market can't handle more supply."
+                  "op": "ifFlag",
+                  "flag": "found_pepememe",
+                  "then": [
+                    {
+                      "op": "say",
+                      "text": "I already have the rare Pepe. One is enough. The meme market can't handle more supply."
+                    }
+                  ],
+                  "else": [
+                    {
+                      "op": "setFlag",
+                      "flag": "found_pepememe",
+                      "value": true
+                    },
+                    {
+                      "op": "addItem",
+                      "id": "pepememe",
+                      "name": "Rare Pepe"
+                    },
+                    {
+                      "op": "playSound",
+                      "key": "discovery"
+                    },
+                    {
+                      "op": "say",
+                      "text": "I carefully pick up the rare Pepe. It feels... warm? Like holding pure meme energy. The eyes seem to follow me."
+                    },
+                    {
+                      "op": "say",
+                      "text": "A label on the back: 'SPECIMEN #001 — by P.Z. Do not expose to normies.' P.Z. Same initials as Patient Zero. Coincidence. Surely."
+                    }
+                  ]
                 }
               ],
               "else": [
                 {
-                  "op": "setFlag",
-                  "flag": "found_pepememe",
-                  "value": true
-                },
-                {
-                  "op": "addItem",
-                  "id": "pepememe",
-                  "name": "Rare Pepe"
-                },
-                {
-                  "op": "playSound",
-                  "key": "discovery"
-                },
-                {
                   "op": "say",
-                  "text": "I carefully pick up the rare Pepe. It feels... warm? Like holding pure meme energy. The eyes seem to follow me."
-                },
-                {
-                  "op": "say",
-                  "text": "A label on the back reads: 'SPECIMEN #001 — THE ORIGINAL. Do not expose to normies. Handle with diamond hands.'"
+                  "text": "I grab at a green blur on the desk. Red-blue fringes everywhere. Is it a frog? A stapler? A frog-shaped stapler? I can't tell like this."
                 }
               ]
             }
@@ -624,33 +648,41 @@
       "result": "clear_vision",
       "script": [
         {
-          "op": "playSound",
-          "key": "item_use"
-        },
-        {
-          "op": "say",
-          "text": "I put on the 3D glasses. The world shifts... red and blue channels merge..."
-        },
-        {
-          "op": "setFlag",
+          "op": "ifFlag",
           "flag": "memelab_clear_vision",
-          "value": true
-        },
-        {
-          "op": "playSound",
-          "key": "discovery"
-        },
-        {
-          "op": "say",
-          "text": "Everything snaps into focus! The MemeLAB is revealed in its full glory — a complete meme engineering facility!"
-        },
-        {
-          "op": "say",
-          "text": "No wonder they hid it behind anaglyph distortion. They didn't want anyone sane to find this place."
-        },
-        {
-          "op": "say",
-          "text": "Wait... is that... a Pepe? A rare Pepe, just sitting there on the desk! I couldn't see it before through the distortion!"
+          "then": [
+            {
+              "op": "say",
+              "text": "Already seeing clearly. Two pairs is the limit. Three and I'd see the future."
+            }
+          ],
+          "else": [
+            {
+              "op": "setFlag",
+              "flag": "memelab_clear_vision",
+              "value": true
+            },
+            {
+              "op": "playSound",
+              "key": "item_use"
+            },
+            {
+              "op": "say",
+              "text": "I put the reversed 3D glasses on over my own. Red on the right. The room is red-blue on the wrong side too..."
+            },
+            {
+              "op": "playSound",
+              "key": "discovery"
+            },
+            {
+              "op": "say",
+              "text": "...and the two cancel out. Two wrong glasses make a right. First time in my life."
+            },
+            {
+              "op": "say",
+              "text": "Wait... is that... a Pepe? A rare Pepe, just sitting there on the desk! I couldn't see it before through the distortion!"
+            }
+          ]
         }
       ]
     },
@@ -662,29 +694,41 @@
       "result": "clear_vision_alt1",
       "script": [
         {
-          "op": "playSound",
-          "key": "item_use"
-        },
-        {
-          "op": "say",
-          "text": "I put on the 3D glasses to read the screen better. The anaglyph dissolves..."
-        },
-        {
-          "op": "setFlag",
+          "op": "ifFlag",
           "flag": "memelab_clear_vision",
-          "value": true
-        },
-        {
-          "op": "playSound",
-          "key": "discovery"
-        },
-        {
-          "op": "say",
-          "text": "The entire room snaps into focus! I can finally see everything clearly. This is a full meme engineering laboratory!"
-        },
-        {
-          "op": "say",
-          "text": "And over on the desk... is that a rare Pepe? It was invisible through the distortion!"
+          "then": [
+            {
+              "op": "say",
+              "text": "Already seeing clearly. Two pairs is the limit. Three and I'd see the future."
+            }
+          ],
+          "else": [
+            {
+              "op": "setFlag",
+              "flag": "memelab_clear_vision",
+              "value": true
+            },
+            {
+              "op": "playSound",
+              "key": "item_use"
+            },
+            {
+              "op": "say",
+              "text": "I put the reversed 3D glasses on over my own. Red on the right. The room is red-blue on the wrong side too..."
+            },
+            {
+              "op": "playSound",
+              "key": "discovery"
+            },
+            {
+              "op": "say",
+              "text": "...and the two cancel out. Two wrong glasses make a right. First time in my life."
+            },
+            {
+              "op": "say",
+              "text": "And over on the desk... is that a rare Pepe? It was invisible through the distortion!"
+            }
+          ]
         }
       ]
     },
@@ -696,25 +740,41 @@
       "result": "clear_vision_alt2",
       "script": [
         {
-          "op": "playSound",
-          "key": "item_use"
-        },
-        {
-          "op": "say",
-          "text": "I put on the glasses to read the board. The red-blue haze melts away..."
-        },
-        {
-          "op": "setFlag",
+          "op": "ifFlag",
           "flag": "memelab_clear_vision",
-          "value": true
-        },
-        {
-          "op": "playSound",
-          "key": "discovery"
-        },
-        {
-          "op": "say",
-          "text": "Crystal clear! The whole MemeLAB is revealed. And look — a rare Pepe on the desk! Hidden in plain sight by the anaglyph!"
+          "then": [
+            {
+              "op": "say",
+              "text": "Already seeing clearly. Two pairs is the limit. Three and I'd see the future."
+            }
+          ],
+          "else": [
+            {
+              "op": "setFlag",
+              "flag": "memelab_clear_vision",
+              "value": true
+            },
+            {
+              "op": "playSound",
+              "key": "item_use"
+            },
+            {
+              "op": "say",
+              "text": "I put the reversed 3D glasses on over my own. Red on the right. The room is red-blue on the wrong side too..."
+            },
+            {
+              "op": "playSound",
+              "key": "discovery"
+            },
+            {
+              "op": "say",
+              "text": "...and the two cancel out. Two wrong glasses make a right. First time in my life."
+            },
+            {
+              "op": "say",
+              "text": "Crystal clear! The whole MemeLAB is revealed. And look — a rare Pepe on the desk! Hidden in plain sight by the anaglyph!"
+            }
+          ]
         }
       ]
     },
@@ -726,25 +786,41 @@
       "result": "clear_vision_alt3",
       "script": [
         {
-          "op": "playSound",
-          "key": "item_use"
-        },
-        {
-          "op": "say",
-          "text": "I put on the 3D glasses. The anaglyph effect dissolves instantly!"
-        },
-        {
-          "op": "setFlag",
+          "op": "ifFlag",
           "flag": "memelab_clear_vision",
-          "value": true
-        },
-        {
-          "op": "playSound",
-          "key": "discovery"
-        },
-        {
-          "op": "say",
-          "text": "Now I can see the MemeLAB clearly. Including a rare Pepe that was hidden by the distortion!"
+          "then": [
+            {
+              "op": "say",
+              "text": "Already seeing clearly. Two pairs is the limit. Three and I'd see the future."
+            }
+          ],
+          "else": [
+            {
+              "op": "setFlag",
+              "flag": "memelab_clear_vision",
+              "value": true
+            },
+            {
+              "op": "playSound",
+              "key": "item_use"
+            },
+            {
+              "op": "say",
+              "text": "I put the reversed 3D glasses on over my own. Red on the right. The room is red-blue on the wrong side too..."
+            },
+            {
+              "op": "playSound",
+              "key": "discovery"
+            },
+            {
+              "op": "say",
+              "text": "...and the two cancel out. Two wrong glasses make a right. First time in my life."
+            },
+            {
+              "op": "say",
+              "text": "Now I can see the MemeLAB clearly. Including a rare Pepe that was hidden by the distortion!"
+            }
+          ]
         }
       ]
     },
@@ -756,25 +832,41 @@
       "result": "clear_vision_alt4",
       "script": [
         {
-          "op": "playSound",
-          "key": "item_use"
-        },
-        {
-          "op": "say",
-          "text": "I put on the 3D glasses. The anaglyph effect dissolves instantly!"
-        },
-        {
-          "op": "setFlag",
+          "op": "ifFlag",
           "flag": "memelab_clear_vision",
-          "value": true
-        },
-        {
-          "op": "playSound",
-          "key": "discovery"
-        },
-        {
-          "op": "say",
-          "text": "The room snaps into focus. A complete meme lab! And look — a rare Pepe, hidden by the distortion!"
+          "then": [
+            {
+              "op": "say",
+              "text": "Already seeing clearly. Two pairs is the limit. Three and I'd see the future."
+            }
+          ],
+          "else": [
+            {
+              "op": "setFlag",
+              "flag": "memelab_clear_vision",
+              "value": true
+            },
+            {
+              "op": "playSound",
+              "key": "item_use"
+            },
+            {
+              "op": "say",
+              "text": "I put the reversed 3D glasses on over my own. Red on the right. The room is red-blue on the wrong side too..."
+            },
+            {
+              "op": "playSound",
+              "key": "discovery"
+            },
+            {
+              "op": "say",
+              "text": "...and the two cancel out. Two wrong glasses make a right. First time in my life."
+            },
+            {
+              "op": "say",
+              "text": "The room snaps into focus. A complete meme lab! And look — a rare Pepe, hidden by the distortion!"
+            }
+          ]
         }
       ]
     },
@@ -786,25 +878,41 @@
       "result": "clear_vision_alt5",
       "script": [
         {
-          "op": "playSound",
-          "key": "item_use"
-        },
-        {
-          "op": "say",
-          "text": "I put on the glasses before pushing anything. The anaglyph clears!"
-        },
-        {
-          "op": "setFlag",
+          "op": "ifFlag",
           "flag": "memelab_clear_vision",
-          "value": true
-        },
-        {
-          "op": "playSound",
-          "key": "discovery"
-        },
-        {
-          "op": "say",
-          "text": "Smart move. Now I can see clearly — this is a full MemeLAB. And is that a Pepe on the desk?"
+          "then": [
+            {
+              "op": "say",
+              "text": "Already seeing clearly. Two pairs is the limit. Three and I'd see the future."
+            }
+          ],
+          "else": [
+            {
+              "op": "setFlag",
+              "flag": "memelab_clear_vision",
+              "value": true
+            },
+            {
+              "op": "playSound",
+              "key": "item_use"
+            },
+            {
+              "op": "say",
+              "text": "I put the reversed 3D glasses on over my own. Red on the right. The room is red-blue on the wrong side too..."
+            },
+            {
+              "op": "playSound",
+              "key": "discovery"
+            },
+            {
+              "op": "say",
+              "text": "...and the two cancel out. Two wrong glasses make a right. First time in my life."
+            },
+            {
+              "op": "say",
+              "text": "Smart move. Now I can see clearly — this is a full MemeLAB. And is that a Pepe on the desk?"
+            }
+          ]
         }
       ]
     },
@@ -816,25 +924,41 @@
       "result": "clear_vision_alt6",
       "script": [
         {
-          "op": "playSound",
-          "key": "item_use"
-        },
-        {
-          "op": "say",
-          "text": "I put on the glasses. The world stops being a headache..."
-        },
-        {
-          "op": "setFlag",
+          "op": "ifFlag",
           "flag": "memelab_clear_vision",
-          "value": true
-        },
-        {
-          "op": "playSound",
-          "key": "discovery"
-        },
-        {
-          "op": "say",
-          "text": "Finally! Clear vision reveals the MemeLAB in all its glory. And a rare Pepe I couldn't see before!"
+          "then": [
+            {
+              "op": "say",
+              "text": "Already seeing clearly. Two pairs is the limit. Three and I'd see the future."
+            }
+          ],
+          "else": [
+            {
+              "op": "setFlag",
+              "flag": "memelab_clear_vision",
+              "value": true
+            },
+            {
+              "op": "playSound",
+              "key": "item_use"
+            },
+            {
+              "op": "say",
+              "text": "I put the reversed 3D glasses on over my own. Red on the right. The room is red-blue on the wrong side too..."
+            },
+            {
+              "op": "playSound",
+              "key": "discovery"
+            },
+            {
+              "op": "say",
+              "text": "...and the two cancel out. Two wrong glasses make a right. First time in my life."
+            },
+            {
+              "op": "say",
+              "text": "Finally! Clear vision reveals the MemeLAB in all its glory. And a rare Pepe I couldn't see before!"
+            }
+          ]
         }
       ]
     }
@@ -886,7 +1010,7 @@
         },
         {
           "op": "say",
-          "text": "If only I had something to help me see through this optical chaos..."
+          "text": "My glasses are prescription. This room needs a second opinion."
         }
       ]
     }

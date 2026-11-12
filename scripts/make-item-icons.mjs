@@ -17,6 +17,8 @@
 //   scrap_paper.png  (A3.5a) el papel en blanco de la mesa del sótano: arrugado, con el borde de arriba rasgado
 //   fake_alpha.png   (A3.5b) scrap_paper.png con garabatos de tinta azul («BUY $GERALD. TRUST ME.») y una mancha del boli
 //   marked_map.png   (A3.5c) printout.png con una X de tinta azul encima: el mapa marcado
+//   patient_wristband.png (A3.6a) pulsera de paciente de la clínica: banda blanca en anillo, etiqueta lila y cierre
+//   sobriety_chip.png (A3.6e) la ficha de sobriedad de Chad: moneda de bronce con un «0» grabado
 // Sin arte de pago: las mitades salen de code_note.png, la factura de receipt.png y el tablón se dibuja aquí.
 // Determinista (sin azar).
 import fs from 'node:fs';
@@ -491,6 +493,52 @@ function markedMap(printout) {
   return out;
 }
 
+// A3.6a: pulsera de paciente (banda blanca en anillo visto en perspectiva, etiqueta lila de la clínica y cierre)
+function patientWristband() {
+  const g = blank(64, 64);
+  const OUT = [30, 26, 46], W = [236, 236, 244], SH = [184, 184, 200], LAB = [200, 180, 255], INK = [70, 50, 120];
+  const cx = 32, cy = 34, rx = 22, ry = 12, th = 5;
+  const inBand = (x, y) => {
+    const dx = (x + 0.5 - cx) / rx, dy = (y + 0.5 - cy) / ry;
+    const d = Math.sqrt(dx * dx + dy * dy);
+    const dxi = (x + 0.5 - cx) / (rx - th), dyi = (y + 0.5 - cy) / (ry - th * 0.55);
+    return d <= 1 && Math.sqrt(dxi * dxi + dyi * dyi) >= 1;
+  };
+  for (let y = 0; y < 64; y++) for (let x = 0; x < 64; x++) if (inBand(x, y)) set(g, x, y, y < cy ? SH : W);
+  for (let y = 0; y < 64; y++) for (let x = 0; x < 64; x++) {
+    if (!inBand(x, y)) continue;
+    if (!inBand(x - 1, y) || !inBand(x + 1, y) || !inBand(x, y - 1) || !inBand(x, y + 1)) set(g, x, y, OUT);
+  }
+  // etiqueta delante (abajo) con dos renglones de «tinta»
+  for (let y = 40; y < 50; y++) for (let x = 24; x < 41; x++) set(g, x, y, x === 24 || x === 40 || y === 40 || y === 49 ? OUT : LAB);
+  for (const [y, x0, x1] of [[43, 27, 38], [46, 27, 34]]) for (let x = x0; x <= x1; x++) set(g, x, y, INK);
+  // cierre a la izquierda
+  for (let y = 30; y < 38; y++) for (let x = 9; x < 14; x++) set(g, x, y, x === 9 || x === 13 || y === 30 || y === 37 ? OUT : [150, 150, 170]);
+  return up2(g);
+}
+
+// A3.6e: ficha de sobriedad (moneda de bronce con canto, un «0» grabado y un brillo)
+function sobrietyChip() {
+  const g = blank(64, 64);
+  const OUT = [50, 30, 10], BR = [184, 120, 56], DK = [130, 80, 34], HI = [236, 190, 120];
+  const cx = 32, cy = 32, r = 22;
+  for (let y = 0; y < 64; y++) for (let x = 0; x < 64; x++) {
+    const d = Math.hypot(x + 0.5 - cx, y + 0.5 - cy);
+    if (d > r) continue;
+    let c = d > r - 1.2 ? OUT : d > r - 4 ? DK : BR;
+    if (d <= r - 4 && x + y < 46) c = HI.map((v, i) => Math.round((v + BR[i]) / 2));
+    set(g, x, y, c);
+  }
+  // «0» grabado
+  for (let y = 0; y < 64; y++) for (let x = 0; x < 64; x++) {
+    const dx = (x + 0.5 - cx) / 7, dy = (y + 0.5 - cy) / 11;
+    const d = Math.sqrt(dx * dx + dy * dy);
+    if (d <= 1 && d >= 0.62) set(g, x, y, OUT);
+  }
+  for (let i = 0; i < 4; i++) set(g, 20 + i, 18 - i, [255, 240, 200]);
+  return up2(g);
+}
+
 function main() {
   const note = decodePng(fs.readFileSync(path.join(ITEMS, 'code_note.png')));
   const receipt = decodePng(fs.readFileSync(path.join(ITEMS, 'receipt.png')));
@@ -510,7 +558,8 @@ function main() {
   const printout = decodePng(fs.readFileSync(path.join(ITEMS, 'printout.png')));
   const scrap = scrapPaper();
   const outs = { note_half_a: a.img, note_half_b: b, fence_plank: plank(), vet_bill: vetBill(receipt), leaky_pen: leakyPen(), pizza_slice: pizzaSlice(), empty_can: canVariant(can, 'empty'), rainwater_can: canVariant(can, 'rain'),
-    extension_cord: extensionCord(), scrap_paper: scrap, fake_alpha: fakeAlpha(scrap), marked_map: markedMap(printout) };
+    extension_cord: extensionCord(), scrap_paper: scrap, fake_alpha: fakeAlpha(scrap), marked_map: markedMap(printout),
+    patient_wristband: patientWristband(), sobriety_chip: sobrietyChip() };
   for (const [id, img] of Object.entries(outs)) {
     const file = path.join(ITEMS, `${id}.png`);
     fs.writeFileSync(file, encodePng(img));

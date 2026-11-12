@@ -363,6 +363,16 @@
       "I check the map against it. The X isn't here. The X is up the mountain.",
       "The map is for the mountain, not for this.",
       "I unfold the map. It points the other way. Outside. Up."
+    ],
+    "patient_wristband": [
+      "I flash my wristband at it. It is unimpressed by my diagnosis.",
+      "The wristband says I'm a patient. Not that I'm useful.",
+      "I hold up my wrist. Nobody here checks bracelets but the clinic."
+    ],
+    "sobriety_chip": [
+      "The sobriety chip does nothing here. Sobriety rarely does.",
+      "I offer the chip. Worth nothing. It agrees.",
+      "This token is for the doctor. He collects them."
     ]
   }
 }
