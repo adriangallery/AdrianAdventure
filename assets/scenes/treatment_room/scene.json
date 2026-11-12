@@ -556,8 +556,13 @@
           "USE": [
             {
               "op": "ifFlag",
-              "flag": "patient_zero_revealed",
+              "flag": "found_adrian_note",
               "then": [
+                {
+                  "op": "setFlag",
+                  "flag": "chapter_5_complete",
+                  "value": true
+                },
                 {
                   "op": "say",
                   "text": "Time to face the world. With the truth."
@@ -577,8 +582,32 @@
               ],
               "else": [
                 {
-                  "op": "say",
-                  "text": "Not yet. There's still something I need to see in this room."
+                  "op": "ifFlag",
+                  "flag": "met_adrian",
+                  "then": [
+                    {
+                      "op": "say",
+                      "text": "Not before I read Adrian's note."
+                    }
+                  ],
+                  "else": [
+                    {
+                      "op": "ifFlag",
+                      "flag": "pzbot_off",
+                      "then": [
+                        {
+                          "op": "say",
+                          "text": "That phone behind the glass is still ringing. Somebody wants me."
+                        }
+                      ],
+                      "else": [
+                        {
+                          "op": "say",
+                          "text": "Not yet. There's still something I need to see in this room."
+                        }
+                      ]
+                    }
+                  ]
                 }
               ]
             }
@@ -598,8 +627,13 @@
           "OPEN": [
             {
               "op": "ifFlag",
-              "flag": "patient_zero_revealed",
+              "flag": "found_adrian_note",
               "then": [
+                {
+                  "op": "setFlag",
+                  "flag": "chapter_5_complete",
+                  "value": true
+                },
                 {
                   "op": "say",
                   "text": "Time to face the world. With the truth."
@@ -619,8 +653,32 @@
               ],
               "else": [
                 {
-                  "op": "say",
-                  "text": "Not yet. There's still something I need to see in this room."
+                  "op": "ifFlag",
+                  "flag": "met_adrian",
+                  "then": [
+                    {
+                      "op": "say",
+                      "text": "Not before I read Adrian's note."
+                    }
+                  ],
+                  "else": [
+                    {
+                      "op": "ifFlag",
+                      "flag": "pzbot_off",
+                      "then": [
+                        {
+                          "op": "say",
+                          "text": "That phone behind the glass is still ringing. Somebody wants me."
+                        }
+                      ],
+                      "else": [
+                        {
+                          "op": "say",
+                          "text": "Not yet. There's still something I need to see in this room."
+                        }
+                      ]
+                    }
+                  ]
                 }
               ]
             }
@@ -634,8 +692,13 @@
           "PUSH": [
             {
               "op": "ifFlag",
-              "flag": "patient_zero_revealed",
+              "flag": "found_adrian_note",
               "then": [
+                {
+                  "op": "setFlag",
+                  "flag": "chapter_5_complete",
+                  "value": true
+                },
                 {
                   "op": "say",
                   "text": "Time to face the world. With the truth."
@@ -655,8 +718,32 @@
               ],
               "else": [
                 {
-                  "op": "say",
-                  "text": "Not yet. There's still something I need to see in this room."
+                  "op": "ifFlag",
+                  "flag": "met_adrian",
+                  "then": [
+                    {
+                      "op": "say",
+                      "text": "Not before I read Adrian's note."
+                    }
+                  ],
+                  "else": [
+                    {
+                      "op": "ifFlag",
+                      "flag": "pzbot_off",
+                      "then": [
+                        {
+                          "op": "say",
+                          "text": "That phone behind the glass is still ringing. Somebody wants me."
+                        }
+                      ],
+                      "else": [
+                        {
+                          "op": "say",
+                          "text": "Not yet. There's still something I need to see in this room."
+                        }
+                      ]
+                    }
+                  ]
                 }
               ]
             }
@@ -688,17 +775,29 @@
           "LOOK": [
             {
               "op": "ifFlag",
-              "flag": "patient_zero_revealed",
+              "flag": "met_adrian",
               "then": [
                 {
                   "op": "say",
-                  "text": "A handwritten note on the table. Adrian's handwriting."
+                  "text": "Adrian's handwriting. Neater than his wallet."
                 }
               ],
               "else": [
                 {
-                  "op": "say",
-                  "text": "A small table with papers. I should look at the monitor first."
+                  "op": "ifFlag",
+                  "flag": "patient_zero_revealed",
+                  "then": [
+                    {
+                      "op": "say",
+                      "text": "A folded note. Not my turn yet, apparently."
+                    }
+                  ],
+                  "else": [
+                    {
+                      "op": "say",
+                      "text": "A small table with papers. I should look at the monitor first."
+                    }
+                  ]
                 }
               ]
             }
@@ -706,18 +805,18 @@
           "PICK": [
             {
               "op": "ifFlag",
-              "flag": "patient_zero_revealed",
+              "flag": "found_adrian_note",
               "then": [
                 {
+                  "op": "say",
+                  "text": "I've already read it. Words that changed everything."
+                }
+              ],
+              "else": [
+                {
                   "op": "ifFlag",
-                  "flag": "found_adrian_note",
+                  "flag": "met_adrian",
                   "then": [
-                    {
-                      "op": "say",
-                      "text": "I've already read it. Words that changed everything."
-                    }
-                  ],
-                  "else": [
                     {
                       "op": "setFlag",
                       "flag": "found_adrian_note",
@@ -730,39 +829,43 @@
                     },
                     {
                       "op": "say",
-                      "text": "The note reads:"
+                      "text": "Dex. If you're reading this, the game worked.",
+                      "speaker": "Adrian"
                     },
                     {
                       "op": "say",
-                      "text": "\"If you're reading this, the game worked.\""
+                      "text": "You were never a saboteur. You were a patient who walked out too early.",
+                      "speaker": "Adrian"
                     },
                     {
                       "op": "say",
-                      "text": "\"You're not a patient. You're a builder.\""
+                      "text": "Everything you solved, you solved by waiting, reading, and asking. That's the cure.",
+                      "speaker": "Adrian"
                     },
                     {
                       "op": "say",
-                      "text": "\"The patients never make it this far — they stay in the lobby refreshing charts.\""
-                    },
+                      "text": "Also, Gerald says hi. — A.",
+                      "speaker": "Adrian"
+                    }
+                  ],
+                  "else": [
                     {
-                      "op": "say",
-                      "text": "\"You explored. You solved puzzles. You made it to the end.\""
-                    },
-                    {
-                      "op": "say",
-                      "text": "\"That makes you different. Welcome to the team.\""
-                    },
-                    {
-                      "op": "say",
-                      "text": "\"— Adrian\""
+                      "op": "ifFlag",
+                      "flag": "patient_zero_revealed",
+                      "then": [
+                        {
+                          "op": "say",
+                          "text": "Not yet. Something in this room still has my attention."
+                        }
+                      ],
+                      "else": [
+                        {
+                          "op": "say",
+                          "text": "I should check the monitor first."
+                        }
+                      ]
                     }
                   ]
-                }
-              ],
-              "else": [
-                {
-                  "op": "say",
-                  "text": "I should check the monitor first."
                 }
               ]
             }
@@ -1067,20 +1170,150 @@
         "scripts": {
           "LOOK": [
             {
-              "op": "say",
-              "text": "A massive observation window, completely shattered. Through the spider-web of cracks I can see another room — a recliner, filing cabinets, monitors. Someone was watching from in there. Watching the patients. Watching ME. The glass broke from the inside. Whoever was observing... tried to get out."
+              "op": "ifFlag",
+              "flag": "met_adrian",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "Adrian. Behind the glass. Waving like this is normal."
+                }
+              ],
+              "else": [
+                {
+                  "op": "ifFlag",
+                  "flag": "pzbot_off",
+                  "then": [
+                    {
+                      "op": "say",
+                      "text": "A phone is ringing in the observation room. Somebody is standing in the dark."
+                    }
+                  ],
+                  "else": [
+                    {
+                      "op": "say",
+                      "text": "A massive observation window, completely shattered. Through the spider-web of cracks I can see another room — a recliner, filing cabinets, monitors. Someone was watching from in there. Watching the patients. Watching ME. The glass broke from the inside. Whoever was observing... tried to get out."
+                    }
+                  ]
+                }
+              ]
             }
           ],
           "USE": [
             {
-              "op": "say",
-              "text": "I peer through a gap in the shattered glass. The observation room is dark now. Dusty. A coffee mug sits on the desk, still half full. Whoever was watching Patient Zero left in a hurry. Or maybe they realized they were watching themselves."
+              "op": "ifFlag",
+              "flag": "pzbot_off",
+              "then": [
+                {
+                  "op": "ifFlag",
+                  "flag": "met_adrian",
+                  "then": [
+                    {
+                      "op": "say",
+                      "text": "Read the note, Dex. Then go outside.",
+                      "speaker": "Adrian"
+                    }
+                  ],
+                  "else": [
+                    {
+                      "op": "say",
+                      "text": "The ringing stops. Someone in there picks up."
+                    },
+                    {
+                      "op": "setFlag",
+                      "flag": "met_adrian",
+                      "value": true
+                    },
+                    {
+                      "op": "say",
+                      "text": "You took your time.",
+                      "speaker": "Adrian"
+                    },
+                    {
+                      "op": "say",
+                      "text": "I was being patient. Apparently that's my thing now."
+                    },
+                    {
+                      "op": "say",
+                      "text": "Anon was me. Every call. Sorry about the hold music.",
+                      "speaker": "Adrian"
+                    },
+                    {
+                      "op": "say",
+                      "text": "You're Adrian. The guy with the duck."
+                    },
+                    {
+                      "op": "say",
+                      "text": "Gerald. Read the note on the table, Dex. Then go outside.",
+                      "speaker": "Adrian"
+                    }
+                  ]
+                }
+              ],
+              "else": [
+                {
+                  "op": "say",
+                  "text": "I peer through a gap in the shattered glass. The observation room is dark now. Dusty. A coffee mug sits on the desk, still half full. Whoever was watching Patient Zero left in a hurry. Or maybe they realized they were watching themselves."
+                }
+              ]
             }
           ],
           "TALK": [
             {
-              "op": "say",
-              "text": "'Hello? Anyone still in there?' My voice echoes through the broken glass and dies in the empty room. The only answer is the hum of a monitor left on standby. Even the observers got liquidated eventually."
+              "op": "ifFlag",
+              "flag": "met_adrian",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "Read the note, Dex. Then go outside.",
+                  "speaker": "Adrian"
+                }
+              ],
+              "else": [
+                {
+                  "op": "ifFlag",
+                  "flag": "pzbot_off",
+                  "then": [
+                    {
+                      "op": "say",
+                      "text": "The ringing stops. Someone in there picks up."
+                    },
+                    {
+                      "op": "setFlag",
+                      "flag": "met_adrian",
+                      "value": true
+                    },
+                    {
+                      "op": "say",
+                      "text": "You took your time.",
+                      "speaker": "Adrian"
+                    },
+                    {
+                      "op": "say",
+                      "text": "I was being patient. Apparently that's my thing now."
+                    },
+                    {
+                      "op": "say",
+                      "text": "Anon was me. Every call. Sorry about the hold music.",
+                      "speaker": "Adrian"
+                    },
+                    {
+                      "op": "say",
+                      "text": "You're Adrian. The guy with the duck."
+                    },
+                    {
+                      "op": "say",
+                      "text": "Gerald. Read the note on the table, Dex. Then go outside.",
+                      "speaker": "Adrian"
+                    }
+                  ],
+                  "else": [
+                    {
+                      "op": "say",
+                      "text": "'Hello? Anyone still in there?' My voice echoes through the broken glass and dies in the empty room. The only answer is the hum of a monitor left on standby. Even the observers got liquidated eventually."
+                    }
+                  ]
+                }
+              ]
             }
           ],
           "PICK": [
@@ -1784,6 +2017,21 @@
       "floorY": 90,
       "period": 3500,
       "color": "#a8d8ff"
+    }
+  ],
+  "conditionalOverlays": [
+    {
+      "id": "adrian_silhouette",
+      "sprite": "overlay_adrian_silhouette",
+      "format": "webp",
+      "bounds": {
+        "x": 27.2091,
+        "y": 41.6667,
+        "w": 2.1013,
+        "h": 26.9097
+      },
+      "flag": "met_adrian",
+      "depth": 5
     }
   ]
 }
