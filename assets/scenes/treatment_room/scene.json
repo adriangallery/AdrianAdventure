@@ -1528,7 +1528,7 @@
         },
         "i2": {
           "speaker": "PZ-BOT",
-          "text": "I'VE SEEN BETTER HANDS ON A BROKEN CLOCK.",
+          "text": "OWNER. I'VE SEEN BETTER HANDS ON A BROKEN CLOCK.",
           "choices": [
             {
               "text": "At least mine float. Yours sank in a kiddie pool.",
@@ -1580,7 +1580,7 @@
         },
         "i6": {
           "speaker": "PZ-BOT",
-          "text": "I'VE BEEN LIQUIDATED BY BETTER PEOPLE THAN YOU.",
+          "text": "OWNER. I'VE BEEN LIQUIDATED BY BETTER PEOPLE THAN YOU.",
           "choices": [
             {
               "text": "A broken clock is right twice a day. You're on a streak of zero.",
