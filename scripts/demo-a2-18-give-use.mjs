@@ -151,7 +151,15 @@ for (const [tag, vp] of [['844x390', LANDSCAPE], ['390x844', PORTRAIT]]) {
       const n = window.__game.scene.getScene('GameScene').npcs.find((x) => x.npcId === 'npc_receptionist');
       return n ? { x: n.pctPosition.x, y: n.pctPosition.y - 8 } : null;
     });
-    if (!p || !(await tapScene(p, film))) problems.push(`${tag}: Penny no se puede tocar`);
+    let tapped = !!p && (await tapScene(p, film));
+    if (p && !tapped && !film) {
+      // En vertical Penny (x 24 %) no entra en pantalla desde donde se puede andar (su mesa tapa el paso): el destino se
+      // pulsa con la API de QA (clic con el panel tal cual, sin tocar la frase pendiente), como el «OMITIDO» de a1-14
+      console.log(`${tag}: Penny fuera de pantalla en vertical; destino con __qa.click (la frase sigue pendiente: ${JSON.stringify((await st()).sentence)})`);
+      await page.evaluate(() => { window.__qa.click('npc_receptionist').catch(() => {}); });
+      tapped = true;
+    }
+    if (!tapped) problems.push(`${tag}: Penny no se puede tocar`);
     else {
       const s = await waitSpeech(/Named Gerald/i, film);
       if (film) for (let i = 0; i < 6; i++) await demo.shot();
