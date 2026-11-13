@@ -767,9 +767,9 @@
         "name": "Note on Table",
         "bounds": {
           "x": 64,
-          "y": 64.4,
+          "y": 61.5,
           "w": 4.8,
-          "h": 5.6
+          "h": 8.5
         },
         "scripts": {
           "LOOK": [
@@ -2031,6 +2031,20 @@
         "h": 26.9097
       },
       "flag": "met_adrian",
+      "depth": 5
+    },
+    {
+      "id": "note_folded",
+      "sprite": "overlay_note_folded",
+      "format": "webp",
+      "bounds": {
+        "x": 65.4903,
+        "y": 61.5451,
+        "w": 3.1789,
+        "h": 6.5972
+      },
+      "flag": "found_adrian_note",
+      "invert": true,
       "depth": 5
     }
   ]

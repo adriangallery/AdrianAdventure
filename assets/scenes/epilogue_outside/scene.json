@@ -266,10 +266,10 @@
         "id": "hs_path_forward",
         "name": "Path Down the Mountain",
         "bounds": {
-          "x": 0,
-          "y": 93.6,
-          "w": 25,
-          "h": 6.4
+          "x": 12,
+          "y": 84,
+          "w": 9.5,
+          "h": 16
         },
         "scripts": {
           "LOOK": [

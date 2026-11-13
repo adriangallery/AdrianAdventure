@@ -3397,6 +3397,33 @@
       },
       "flag": "has_plank",
       "depth": 5
+    },
+    {
+      "id": "doormat_lump",
+      "sprite": "overlay_doormat_lump",
+      "format": "webp",
+      "bounds": {
+        "x": 31.9774,
+        "y": 82.3785,
+        "w": 8.028,
+        "h": 5.9028
+      },
+      "flag": "found_ledger",
+      "invert": true,
+      "depth": 5
+    },
+    {
+      "id": "doormat_peeled",
+      "sprite": "overlay_doormat_peeled",
+      "format": "webp",
+      "bounds": {
+        "x": 31.9774,
+        "y": 82.3785,
+        "w": 8.028,
+        "h": 5.9028
+      },
+      "flag": "found_ledger",
+      "depth": 5
     }
   ],
   "dialogues": {

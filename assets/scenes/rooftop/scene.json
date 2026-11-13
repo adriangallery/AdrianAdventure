@@ -822,10 +822,10 @@
         },
         "name": "Service Shaft Hatch",
         "bounds": {
-          "x": 58.4,
-          "y": 82.3,
-          "w": 14,
-          "h": 11.8
+          "x": 57,
+          "y": 81.3,
+          "w": 18.1,
+          "h": 13.7
         },
         "scripts": {
           "LOOK": [
