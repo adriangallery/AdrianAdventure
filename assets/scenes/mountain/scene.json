@@ -930,6 +930,18 @@
       "h": 28.5
     }
   ],
+  "foregroundLayers": [
+    {
+      "id": "rocks_right",
+      "bounds": {
+        "x": 78.5,
+        "y": 60,
+        "w": 21.5,
+        "h": 40
+      },
+      "baseY": 89.5
+    }
+  ],
   "onEnter": [
     {
       "op": "ifFlag",
