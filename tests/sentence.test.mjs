@@ -29,7 +29,8 @@ test('USE de un objeto que se usa solo (disfraz): al momento, sin frase pendient
   const { next, action } = S.tapItem(S.idle('USE'), 'ape_costume', { immediateUse: (id) => id === 'ape_costume' });
   assert.deepEqual(action, { kind: 'immediate', verb: 'USE', item: 'ape_costume' });
   assert.equal(S.isPending(next), false);
-  // con GIVE el disfraz sí espera destino
+  // con WALK (sin verbo elegido) sigue el modo «Use X with ...» de siempre; con GIVE el disfraz sí espera destino
+  assert.equal(S.tapItem(S.idle('WALK'), 'ape_costume', { immediateUse: () => true }).action.kind, 'pending');
   assert.equal(S.tapItem(S.idle('GIVE'), 'ape_costume', { immediateUse: () => true }).action.kind, 'pending');
 });
 

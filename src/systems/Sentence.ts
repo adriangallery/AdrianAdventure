@@ -55,7 +55,8 @@ export function tapItem(s: Sentence, itemId: string, opts: { immediateUse?: (id:
     return { next: idle('WALK'), action: { kind: 'resolve', verb: s.verb, item: s.item as string, target: itemId } };
   }
   const verb = s.verb === 'WALK' ? 'USE' : s.verb;
-  if (verb === 'USE' && opts.immediateUse?.(itemId)) return { next: idle(s.verb), action: { kind: 'immediate', verb: 'USE', item: itemId } };
+  // con USE elegido (no con WALK, que deja «Use X with …» como siempre)
+  if (s.verb === 'USE' && opts.immediateUse?.(itemId)) return { next: idle(s.verb), action: { kind: 'immediate', verb: 'USE', item: itemId } };
   if (isTwoObject(verb)) return { next: { verb, item: itemId }, action: { kind: 'pending', verb, item: itemId } };
   return { next: s, action: { kind: 'immediate', verb, item: itemId } };
 }
