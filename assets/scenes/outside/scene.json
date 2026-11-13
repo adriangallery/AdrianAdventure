@@ -718,10 +718,10 @@
         },
         "name": "Chimney",
         "bounds": {
-          "x": 41.5,
-          "y": 0.6,
-          "w": 5.7,
-          "h": 33.5
+          "x": 41.9,
+          "y": 0.2,
+          "w": 5.3,
+          "h": 33.9
         },
         "scripts": {
           "LOOK": [
@@ -3362,14 +3362,14 @@
       "sprite": "overlay_nest",
       "format": "webp",
       "bounds": {
-        "x": 41.4871,
-        "y": 0.6944,
-        "w": 4.6067,
-        "h": 9.7222
+        "x": 41.9181,
+        "y": 0.2604,
+        "w": 3.5291,
+        "h": 7.1181
       },
       "flag": "nest_down",
       "invert": true,
-      "depth": 5
+      "depth": 0
     },
     {
       "id": "plank_loose",
@@ -3793,16 +3793,17 @@
       "id": "nest_foil_glint",
       "kind": "flicker",
       "area": {
-        "x": 42.95,
-        "y": 4.2,
-        "w": 0.7,
-        "h": 2.2
+        "x": 43.7,
+        "y": 3.3,
+        "w": 0.35,
+        "h": 1.1
       },
       "shape": "ellipse",
-      "color": "#ffffff",
-      "alpha": 0.95,
-      "alphaMin": 0.1,
-      "period": 120,
+      "color": "#fff6d4",
+      "alpha": 0.5,
+      "alphaMin": 0,
+      "period": 160,
+      "depth": 0,
       "when": "!nest_down"
     }
   ]
