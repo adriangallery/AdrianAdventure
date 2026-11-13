@@ -219,7 +219,7 @@ function rasterize(layers) {
 }
 
 // Dónde va cada cosa (px del fondo 3712×1152)
-const NEST_AT = { ox: 1690, oy: 44 }; // corona derecha de la chimenea (1580–1757, y≈45–80), con el cielo detrás
+const NEST_AT = { ox: 1560, oy: 46 }; // corona izquierda de la chimenea (1580–1757, y≈45–80), con el cielo detrás: en vertical la derecha la tapa el botón Connect
 const SLOT_X = 72; // tercer tablón de la valla (72–100 px), cuyo canto de arriba está en y≈700
 const SLOT_Y = 698;
 
@@ -261,7 +261,7 @@ if (PREVIEW) {
   const after = await sharp(bg).composite(ov(['fence_gap'])).png().toBuffer();
   const zoom = (img, l, t, w, h, k, name) =>
     sharp(img).extract({ left: l, top: t, width: w, height: h }).resize(w * k, h * k, { kernel: 'nearest' }).png().toFile(join(PREVIEW, name));
-  await zoom(before, 1540, 0, 360, 200, 2, 'nest-zoom.png');
+  await zoom(before, 1440, 0, 400, 200, 2, 'nest-zoom.png');
   await zoom(before, 0, 560, 260, 320, 2, 'plank-zoom.png');
   await zoom(after, 0, 560, 260, 320, 2, 'gap-zoom.png');
   await sharp(before).resize(844).png().toFile(join(PREVIEW, 'scene844-before.png'));
