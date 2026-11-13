@@ -67,25 +67,25 @@
           "LOOK": [
             {
               "op": "say",
-              "text": "Each server has a label: 'FloorEngine', 'TraitLab', 'SweepBot'. LEDs blink furiously. These servers are running Adrian's entire ecosystem. Every NFT render, every floor sweep, every trait swap flows through here."
+              "text": "Labels: 'FloorEngine', 'TraitLab', 'SweepBot'. LEDs blinking like they're late for something. Adrian's whole ecosystem lives in this cupboard."
             }
           ],
           "USE": [
             {
               "op": "say",
-              "text": "I touch a server. It's warm. Really warm. Like holding a phone that's been running a DEX aggregator for 6 hours."
+              "text": "I touch a server. It's warm. Bath-water warm. I could hatch an egg on it. Gerald would approve."
             }
           ],
           "TALK": [
             {
               "op": "say",
-              "text": "The servers hum in unison. A low drone. The sound of thousands of transactions being indexed. It's almost... musical."
+              "text": "The servers hum back in unison. Low, steady. A monastery choir that only knows one note."
             }
           ],
           "PICK": [
             {
               "op": "say",
-              "text": "I can't take a server rack. That would literally rug the entire ecosystem."
+              "text": "It's taller than me, heavier than me and better employed than me. It stays."
             }
           ],
           "OPEN": [
@@ -97,13 +97,13 @@
           "CLOSE": [
             {
               "op": "say",
-              "text": "I close the panel. The servers keep running. Uptime is everything."
+              "text": "I close the panel. The note stays inside, guarding its Tuesdays."
             }
           ],
           "PUSH": [
             {
               "op": "say",
-              "text": "I push a server blade back into its slot. The rack shudders. A monitoring alert fires somewhere. Oops."
+              "text": "I push a blade back into its slot. The rack shudders. Somewhere, a pager ruins someone's dinner."
             }
           ],
           "PULL": [
@@ -115,7 +115,7 @@
           "GIVE": [
             {
               "op": "say",
-              "text": "The servers demand electricity, not gifts. Although more RAM wouldn't hurt."
+              "text": "The servers want electricity, not presents. I'm fresh out of electricity."
             }
           ]
         }
@@ -138,19 +138,19 @@
           "LOOK": [
             {
               "op": "say",
-              "text": "This rack is completely dead. No lights, no hum. The label reads 'AdrianAuctions'. A burn mark on the chassis tells the story. Overheated during a bidding war. Never recovered."
+              "text": "A dead rack labelled 'AdrianAuctions'. No lights, no hum, one big burn mark. Cooked mid-bidding war."
             }
           ],
           "USE": [
             {
               "op": "say",
-              "text": "I flip the power switch. Nothing. Not even a spark. This server gave its life during the great auction frenzy of '24."
+              "text": "I flip the power switch. Nothing. Not even a spark. It's not sleeping. It's gone."
             }
           ],
           "TALK": [
             {
               "op": "say",
-              "text": "Silence. The dead rack speaks no more. A moment of silence for fallen infrastructure."
+              "text": "I say a few words. The rack says none. Fitting, for a funeral."
             }
           ],
           "PICK": [
@@ -160,7 +160,7 @@
               "then": [
                 {
                   "op": "say",
-                  "text": "Nothing else salvageable."
+                  "text": "Nothing else worth prying out. I checked twice. Respectfully."
                 }
               ],
               "else": [
@@ -176,7 +176,7 @@
                 },
                 {
                   "op": "say",
-                  "text": "I pry out a fused processor. The heat from that bidding war literally melted it. A relic of unchecked on-chain ambition."
+                  "text": "I pry out a fused processor. Melted in the shape of a tiny scream. I'll keep it."
                 }
               ]
             }
@@ -184,7 +184,7 @@
           "OPEN": [
             {
               "op": "say",
-              "text": "I open the panel. Charred components, a melted SSD, and the faint smell of burnt silicon. The hard drives are fused together."
+              "text": "I open the panel. Charred boards, a melted SSD, and the smell of toast nobody wanted."
             }
           ],
           "CLOSE": [
@@ -196,7 +196,7 @@
           "PUSH": [
             {
               "op": "say",
-              "text": "I push the dead rack. It tips slightly. Empty inside. All the data is gone. Like tears in rain."
+              "text": "I push the dead rack. It wobbles, thinks about falling on me, and decides I'm not worth it."
             }
           ],
           "PULL": [
@@ -208,7 +208,7 @@
           "GIVE": [
             {
               "op": "say",
-              "text": "This server is beyond saving. Not even a full hardware refresh could bring it back. Like most projects after a bear market."
+              "text": "Too late for gifts. Flowers, maybe. It's that kind of rack now."
             }
           ]
         }
@@ -399,19 +399,19 @@
           "OPEN": [
             {
               "op": "say",
-              "text": "I type 'open sesame'. The terminal responds: 'This is a production server, not a fairy tale. Try sudo.' I don't have sudo."
+              "text": "I type 'open sesame'. The terminal replies: 'Try sudo.' I don't have sudo. I barely have a plan."
             }
           ],
           "CLOSE": [
             {
               "op": "say",
-              "text": "I type 'exit'. The terminal responds: 'Goodbye. Please close the door on your way out. Actually, don't. There is no door.'"
+              "text": "I type 'exit'. The terminal types 'no'. We stare at each other."
             }
           ],
           "PUSH": [
             {
               "op": "say",
-              "text": "I push Enter repeatedly. The terminal fills with error messages. Classic sysadmin move."
+              "text": "I mash Enter. The screen fills with errors. I feel like a real professional."
             }
           ],
           "PULL": [
@@ -423,7 +423,7 @@
           "GIVE": [
             {
               "op": "say",
-              "text": "The terminal only accepts valid commands. And occasionally profanity, which it ignores silently."
+              "text": "The terminal accepts commands and insults. It ignores both with the same face."
             }
           ]
         }
@@ -455,37 +455,37 @@
           "USE": [
             {
               "op": "say",
-              "text": "I turn the temperature dial. The unit groans louder. The servers seem happier. Like overclocked GPUs with a water cooler."
+              "text": "I turn the dial. The unit groans louder. The servers sigh with relief. Somebody's happy."
             }
           ],
           "TALK": [
             {
               "op": "say",
-              "text": "The cooling system speaks in rattles and drips. The language of entropy. Of heat death. Of servers running too hot for too long."
+              "text": "Rattle. Drip. Rattle. It's either Morse code or a cry for help. Probably both."
             }
           ],
           "PICK": [
             {
               "op": "say",
-              "text": "I catch a drop of water from the leak. Cold as a bear market winter. Refreshing."
+              "text": "I catch a drop from the leak. Ice cold. My hand files a complaint."
             }
           ],
           "OPEN": [
             {
               "op": "say",
-              "text": "I open the maintenance panel. Coolant pipes, a filter that hasn't been changed in years, and a family of spiders who've made this their DeFi protocol."
+              "text": "I open the panel. Coolant pipes, an ancient filter and a family of spiders who pay no rent."
             }
           ],
           "CLOSE": [
             {
               "op": "say",
-              "text": "I close the panel. The rattling continues. Some things just can't be fixed."
+              "text": "I close the panel. The spiders didn't wave. The rattling continues."
             }
           ],
           "PUSH": [
             {
               "op": "say",
-              "text": "I push the unit. More water leaks. That's probably not good. Like pushing a button in production."
+              "text": "I push the unit. More water leaks. I stop pushing. Detective work is mostly knowing when to stop."
             }
           ],
           "PULL": [
@@ -497,7 +497,7 @@
           "GIVE": [
             {
               "op": "say",
-              "text": "The cooling system needs a plumber, not a player character. But I appreciate the sentiment."
+              "text": "It needs a plumber, not a present. I'm neither."
             }
           ]
         }
@@ -508,7 +508,7 @@
           "_default": [
             "That's not heavy enough to break the glass. I need a tool — something heavy, or something I can swing.",
             "I tap the glass with it. The glass stays. I need something I can swing.",
-            "Emergency glass, non-emergency object. Doesn't work."
+            "Emergency glass, non-emergency object. The glass can tell."
           ]
         },
         "name": "Emergency Switch",
@@ -630,25 +630,25 @@
           "TALK": [
             {
               "op": "say",
-              "text": "I lean close to the switch. 'Should I?' The switch doesn't answer. Switches never do. They just flip."
+              "text": "'Should I?' I whisper. The switch stays red and silent. Very peer-pressure of it."
             }
           ],
           "PICK": [
             {
               "op": "say",
-              "text": "The switch is mounted to the wall. I can't take it. I can only flip it. If I dare."
+              "text": "It's bolted to the wall. I can flip it, not pocket it. Switches have rules."
             }
           ],
           "OPEN": [
             {
               "op": "say",
-              "text": "The glass panel is sealed. No hinge, no latch. Break it or leave it. Like most smart contracts."
+              "text": "Sealed glass. No hinge, no latch. Break it or leave it. The glass doesn't negotiate."
             }
           ],
           "CLOSE": [
             {
               "op": "say",
-              "text": "Nothing to close here. The glass is either intact or broken. There is no in-between."
+              "text": "Nothing to close. The glass is intact or it isn't. Glass doesn't do half measures."
             }
           ],
           "PUSH": [
@@ -690,7 +690,7 @@
           "GIVE": [
             {
               "op": "say",
-              "text": "The emergency switch doesn't accept gifts. It only accepts reckless decisions."
+              "text": "The switch doesn't take gifts. It takes reckless decisions. I have those."
             }
           ]
         }
@@ -708,25 +708,25 @@
           "LOOK": [
             {
               "op": "say",
-              "text": "A thick cable conduit drops from the ceiling. Fiber optic, copper, and something that glows faintly blue. The blockchain's umbilical cord."
+              "text": "A fat bundle of cables drops from the ceiling. Fibre, copper, and one that glows blue. I don't ask about that one."
             }
           ],
           "USE": [
             {
               "op": "say",
-              "text": "I trace the cables. They come from the lab above and feed every server in this room. Cut this and the whole ecosystem goes dark."
+              "text": "I trace the cables up into the lab. Every server drinks from this bundle. I keep my scissors to myself."
             }
           ],
           "TALK": [
             {
               "op": "say",
-              "text": "The cables hum with data. Millions of transactions per second, reduced to a gentle vibration. The sound of DeFi sleeping."
+              "text": "I put my ear to the cables. A gentle buzz. Like a fridge that's thinking about something."
             }
           ],
           "PICK": [
             {
               "op": "say",
-              "text": "I'm not yanking cables out of a live server room. I may be reckless, but I'm not an ISP technician."
+              "text": "I'm not yanking cables out of a live server room. I like my eyebrows where they are."
             }
           ],
           "OPEN": [
@@ -738,13 +738,13 @@
           "CLOSE": [
             {
               "op": "say",
-              "text": "I wrap the sheath back. The conduit looks as good as new. Which is to say, terrible."
+              "text": "I wrap the sheath back. Bob will never know. Probably."
             }
           ],
           "PUSH": [
             {
               "op": "say",
-              "text": "I push the conduit. It sways gently. Somewhere, a transaction probably just timed out."
+              "text": "I push the conduit. It sways. Upstairs, something beeps once. I don't push it again."
             }
           ],
           "PULL": [
@@ -756,7 +756,7 @@
           "GIVE": [
             {
               "op": "say",
-              "text": "The conduit doesn't want gifts. It wants bandwidth. Always more bandwidth."
+              "text": "The conduit wants bandwidth, not presents. It's a very simple creature."
             }
           ]
         }
@@ -788,13 +788,13 @@
           "USE": [
             {
               "op": "say",
-              "text": "I stomp on a tile. It shifts slightly. Cold air rushes up from below. Nature's air conditioning, funded by electricity bills."
+              "text": "I stomp on a tile. It shifts. Cold air shoots up my trouser leg. Uninvited."
             }
           ],
           "TALK": [
             {
               "op": "say",
-              "text": "My footsteps echo on the raised floor. Each step sounds like a block confirmation. Tap. Tap. Finalized."
+              "text": "'Hello?' The floor answers in hollow echoes. It's mostly air down there. Like me."
             }
           ],
           "PICK": [
@@ -809,7 +809,7 @@
               "then": [
                 {
                   "op": "say",
-                  "text": "I lift a floor tile. Below: a rat's nest of cables, a forgotten USB drive, and what appears to be a half-eaten sandwich from 2023."
+                  "text": "I lift a tile. Cables, a lost USB stick and half a sandwich with seniority."
                 }
               ],
               "else": [
@@ -872,7 +872,7 @@
               "then": [
                 {
                   "op": "say",
-                  "text": "I pry open a tile. The underfloor is like Ethereum's mempool — chaotic, congested, and full of things waiting to be processed."
+                  "text": "I pry up a tile. Cables knotted like headphones in a pocket. For years."
                 }
               ],
               "else": [
@@ -931,25 +931,25 @@
             },
             {
               "op": "say",
-              "text": "I put the tile back. It clicks into place with satisfying finality. Like closing a position in profit. Rare but satisfying."
+              "text": "I put the tile back. It clicks into place. The most satisfying thing that's happened all week."
             }
           ],
           "PUSH": [
             {
               "op": "say",
-              "text": "I push a tile sideways. It grinds against its neighbor. The floor was not designed for this kind of interaction."
+              "text": "I push a tile sideways. It grinds against its neighbour. Neighbours. Always the same."
             }
           ],
           "PULL": [
             {
               "op": "say",
-              "text": "I pull up a floor tile. A cold wind blows from below. The server room's own liquidity undercurrent."
+              "text": "I pull up a tile. A cold wind blows out. Somewhere under here, it's winter."
             }
           ],
           "GIVE": [
             {
               "op": "say",
-              "text": "The floor tiles accept only gravity. And the occasional dropped screw."
+              "text": "The floor accepts gravity and dropped screws. Nothing personal."
             }
           ]
         }
@@ -967,25 +967,25 @@
           "LOOK": [
             {
               "op": "say",
-              "text": "Faded blueprints etched into the wall. Network diagrams, IP ranges, and a hand-drawn map labeled 'ADRIAN INFRASTRUCTURE v0.1'. This is where it all began."
+              "text": "Faded network diagrams on the wall, titled 'ADRIAN INFRASTRUCTURE v0.1'. Version zero point one. Everything starts as a doodle."
             }
           ],
           "USE": [
             {
               "op": "say",
-              "text": "I trace the diagram with my finger. Every server, every bot, every contract \u2014 all mapped out. Adrian was meticulous. Obsessively so."
+              "text": "I trace the diagram with a finger. Every server and every bot, mapped out with a ruler. Adrian owned a ruler. Of course he did."
             }
           ],
           "TALK": [
             {
               "op": "say",
-              "text": "The schematics don't talk. But they tell a story. One of scale, ambition, and way too many server processes running at once."
+              "text": "The schematics don't talk. They just sit there, being more organised than me."
             }
           ],
           "PICK": [
             {
               "op": "say",
-              "text": "They're etched into the wall. Like on-chain data \u2014 permanent and impossible to take with you."
+              "text": "They're etched into the wall. I'd need the wall. I don't have pockets for walls."
             }
           ],
           "OPEN": [
@@ -997,25 +997,25 @@
           "CLOSE": [
             {
               "op": "say",
-              "text": "I step back from the schematics. Some things are better viewed from a distance. Like my portfolio."
+              "text": "I step back. From here it looks like a spider's tax return."
             }
           ],
           "PUSH": [
             {
               "op": "say",
-              "text": "I push on the wall panel. It's solid. These schematics aren't going anywhere. Literally immutable."
+              "text": "I push the wall. The wall stays. Walls are good at that."
             }
           ],
           "PULL": [
             {
               "op": "say",
-              "text": "I try to peel the blueprint off. It's bonded to the wall. Permanent deployment, no rollback possible."
+              "text": "I try to peel the blueprint off. It's part of the wall now. They've been together too long."
             }
           ],
           "GIVE": [
             {
               "op": "say",
-              "text": "The wall schematics are read-only. No write access for visitors."
+              "text": "I offer the wall my pen. The wall has enough lines already."
             }
           ]
         }
@@ -1039,7 +1039,7 @@
           "USE": [
             {
               "op": "say",
-              "text": "I try to wipe it off. The paint is permanent. Whoever HxT is, they committed to this tag like a diamond-handed holder."
+              "text": "I try to wipe it off. My thumb turns orange. The tag doesn't even notice."
             }
           ],
           "TALK": [
@@ -1051,7 +1051,7 @@
           "PICK": [
             {
               "op": "say",
-              "text": "I can't peel graffiti off a wall. Trust me, the landlord has tried."
+              "text": "Graffiti doesn't come off walls. The landlord's fingernails can confirm."
             }
           ],
           "OPEN": [
@@ -1063,7 +1063,7 @@
           "CLOSE": [
             {
               "op": "say",
-              "text": "I can't close a graffiti. It's open-source art. Permissionless expression."
+              "text": "You can't close a graffiti. I checked with the wall."
             }
           ],
           "PUSH": [
@@ -1081,7 +1081,7 @@
           "GIVE": [
             {
               "op": "say",
-              "text": "What do you give a graffiti artist? Respect. And maybe a bigger wall."
+              "text": "What do you give a graffiti artist? A bigger wall. I don't have one on me."
             }
           ]
         }

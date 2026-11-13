@@ -239,43 +239,43 @@
           "TALK": [
             {
               "op": "say",
-              "text": "The CRT buzzes: 'Been mining since block zero... still waiting for my moment.'"
+              "text": "The CRT buzzes. It sounds like a fridge with opinions."
             }
           ],
           "PICK": [
             {
               "op": "say",
-              "text": "The computer is bolted to the desk. It's not going anywhere, just like my unrealized gains."
+              "text": "Bolted to the desk. And it weighs more than my car. Probably worth less, too."
             }
           ],
           "OPEN": [
             {
               "op": "say",
-              "text": "I open the disk drive. Empty. This machine is waiting for something to read."
+              "text": "I open the disk drive. Empty. It looks hungry. For floppies, specifically."
             }
           ],
           "CLOSE": [
             {
               "op": "say",
-              "text": "I close the disk drive. The CRT continues its eternal green glow."
+              "text": "I close the drive. The CRT keeps glowing green. Smug about it."
             }
           ],
           "PUSH": [
             {
               "op": "say",
-              "text": "I push a key on the keyboard. The CRT flickers. 'DO NOT MASH KEYS' appears on screen."
+              "text": "I press a key. The screen flickers: 'DO NOT MASH KEYS.' I wasn't mashing. I was pressing. Firmly."
             }
           ],
           "PULL": [
             {
               "op": "say",
-              "text": "I pull the keyboard closer. A cockroach scurries out. Even bugs live on-chain now."
+              "text": "I pull the keyboard closer. A cockroach scurries out. It was here first. It has seniority."
             }
           ],
           "GIVE": [
             {
               "op": "say",
-              "text": "The CRT doesn't accept gifts. It only accepts Adrian's Ledger and floppy disks."
+              "text": "The CRT doesn't take gifts. It takes Adrian's Ledger and floppy disks. Picky eater."
             }
           ]
         }
@@ -293,7 +293,7 @@
           "LOOK": [
             {
               "op": "say",
-              "text": "Wooden stairs leading back up. They creak ominously with each step."
+              "text": "Wooden stairs back up. Every step creaks a different note. Adrian's basement has a xylophone."
             }
           ],
           "USE": [
@@ -331,37 +331,37 @@
           "TALK": [
             {
               "op": "say",
-              "text": "The stairs creak. I interpret that as 'careful, these are old'."
+              "text": "The stairs creak. I translate: 'Careful. We're older than you.'"
             }
           ],
           "PICK": [
             {
               "op": "say",
-              "text": "A loose nail sticks out of one step. Tetanus is always an adventure, but I'll pass."
+              "text": "A loose nail sticks out of a step. I'm up to date on my tetanus. I'd like to stay that way."
             }
           ],
           "CLOSE": [
             {
               "op": "say",
-              "text": "Stairs don't close. They're always open for business."
+              "text": "Stairs don't close. Lucky. I'd be stuck down here."
             }
           ],
           "PUSH": [
             {
               "op": "say",
-              "text": "I push the banister. It wobbles. This whole place is held together by hope and duct tape."
+              "text": "I push the banister. It wobbles. Held together by hope and one heroic screw."
             }
           ],
           "PULL": [
             {
               "op": "say",
-              "text": "I pull a loose board. Splinters. That's what I get for interacting with legacy infrastructure."
+              "text": "I pull a loose board. Splinter. Adrian's woodwork bites. The fence warned me."
             }
           ],
           "GIVE": [
             {
               "op": "say",
-              "text": "Stairs don't accept offerings. They're not a gas fee."
+              "text": "I offer the stairs my respect. They creak. Accepted, I think."
             }
           ]
         }
@@ -379,19 +379,19 @@
           "LOOK": [
             {
               "op": "say",
-              "text": "A small desk with a tiny monitor and some chairs. Papers scattered everywhere. Someone was working late."
+              "text": "A small desk, a tiny monitor, papers everywhere. Somebody was working late. Or living here."
             }
           ],
           "USE": [
             {
               "op": "say",
-              "text": "I sit down and look at the papers. Mostly scribbled calculations and the word 'WAGMI' circled repeatedly."
+              "text": "I sit and read the papers. Sums, crossed-out sums, and 'WAGMI' circled until the pen went through."
             }
           ],
           "TALK": [
             {
               "op": "say",
-              "text": "I talk to the desk lamp. It flickers sympathetically."
+              "text": "I talk to the desk lamp. It flickers. A good listener. Bad at advice."
             }
           ],
           "PICK": [
@@ -405,7 +405,7 @@
                   "then": [
                     {
                       "op": "say",
-                      "text": "I already grabbed everything useful from this desk."
+                      "text": "Nothing left but receipts. I don't do receipts. I'm a detective, not an accountant."
                     }
                   ],
                   "else": [
@@ -469,7 +469,7 @@
                   "then": [
                     {
                       "op": "say",
-                      "text": "I already grabbed everything useful from this desk."
+                      "text": "Nothing left but receipts. I don't do receipts. I'm a detective, not an accountant."
                     }
                   ],
                   "else": [
@@ -525,25 +525,25 @@
           "CLOSE": [
             {
               "op": "say",
-              "text": "I close the drawer. The dust settles back."
+              "text": "I close the drawer. The dust settles back in, relieved."
             }
           ],
           "PUSH": [
             {
               "op": "say",
-              "text": "I push the desk. Papers fly everywhere. WAGMI notes scatter like failed transactions."
+              "text": "I push the desk. Papers go everywhere. I pick none of them up. Like a professional."
             }
           ],
           "PULL": [
             {
               "op": "say",
-              "text": "I pull the desk drawer out completely. Just a dead spider and a mint condition 'Buy Bitcoin' sticker."
+              "text": "I pull the drawer all the way out. A dead spider and a rubber band. The spider had a good run."
             }
           ],
           "GIVE": [
             {
               "op": "say",
-              "text": "The desk doesn't want anything. It already has too much on its plate. Literally."
+              "text": "The desk doesn't want anything. It has enough on its plate. There's an actual plate."
             }
           ]
         }
@@ -561,55 +561,55 @@
           "LOOK": [
             {
               "op": "say",
-              "text": "A single light bulb hanging from a wire. It swings slightly, casting dancing shadows. Very noir."
+              "text": "A bare bulb on a wire, swinging. Shadows everywhere. Finally, a room that suits a detective."
             }
           ],
           "USE": [
             {
               "op": "say",
-              "text": "I pull the chain. The light flickers but stays on. Persistent, like a good miner."
+              "text": "I pull the chain. The light flickers and refuses to go out. Stubborn. I like it."
             }
           ],
           "TALK": [
             {
               "op": "say",
-              "text": "I stare into the light. It stares back. We have an understanding."
+              "text": "I stare into the light. Now I see a purple bulb everywhere. Good job, me."
             }
           ],
           "PICK": [
             {
               "op": "say",
-              "text": "I'm not touching a bare light bulb. I've made bad decisions but not THAT bad."
+              "text": "I'm not grabbing a hot bulb. I've made bad decisions. Not hot-bulb bad."
             }
           ],
           "OPEN": [
             {
               "op": "say",
-              "text": "I can't open a light bulb. Well, I could, but it would cease to be a light bulb."
+              "text": "I could open a light bulb. Once. Then it's glass on the floor."
             }
           ],
           "CLOSE": [
             {
               "op": "say",
-              "text": "I pull the chain again. Darkness. Then I pull it again. Light! Fun."
+              "text": "I pull the chain. Dark. Pull. Light. Dark. Light. I should probably be investigating."
             }
           ],
           "PUSH": [
             {
               "op": "say",
-              "text": "I push the bulb. It swings like a pendulum. The shadows dance. Spooky proof-of-swing."
+              "text": "I push the bulb. It swings. The shadows swing. I get a little seasick."
             }
           ],
           "PULL": [
             {
               "op": "say",
-              "text": "I pull the wire. The light drops an inch. Now it's a slightly lower hanging light."
+              "text": "I pull the wire. The bulb drops an inch. Now it's low-hanging. Like my standards."
             }
           ],
           "GIVE": [
             {
               "op": "say",
-              "text": "I can't give energy to a light bulb. That's the electrician's job."
+              "text": "The bulb wants electricity. I've only got charm. Not compatible."
             }
           ]
         }
@@ -627,37 +627,37 @@
           "LOOK": [
             {
               "op": "say",
-              "text": "Speakers, an old amp, and various electronic equipment. The early days of the lab's setup."
+              "text": "Speakers, an old amp and a rack of gear. Adrian's garage-band era. Or his server era. Hard to tell."
             }
           ],
           "USE": [
             {
               "op": "say",
-              "text": "I flip a switch on the amp. A low hum fills the basement. Vintage vibes."
+              "text": "I flip the amp on. A low hum fills the basement. The bulb sways along."
             }
           ],
           "TALK": [
             {
               "op": "say",
-              "text": "I talk into a microphone connected to the amp. My voice echoes: 'Hello? Is this thing on?'"
+              "text": "I tap the microphone. 'Is this thing on?' It is. The basement now knows."
             }
           ],
           "PICK": [
             {
               "op": "say",
-              "text": "The equipment is all wired together. I'd need hours to untangle it."
+              "text": "It's all wired together. Unplugging one thing means unplugging everything. Including me."
             }
           ],
           "OPEN": [
             {
               "op": "say",
-              "text": "I open the equipment cabinet. Cables, adapters, and a lone AUX cable. The holy grail."
+              "text": "I open the cabinet. Cables, adapters and an AUX cable. Every party's missing piece."
             }
           ],
           "CLOSE": [
             {
               "op": "say",
-              "text": "I close the cabinet. The cables spill out again. Entropy wins."
+              "text": "I close the cabinet. The cables push it open again. They want out."
             }
           ],
           "PUSH": [
@@ -716,13 +716,13 @@
           "PULL": [
             {
               "op": "say",
-              "text": "I pull an AUX cable. The entire rack shifts. Everything's connected, like a blockchain."
+              "text": "I pull an AUX cable. The whole rack shifts. Something behind it wants attention."
             }
           ],
           "GIVE": [
             {
               "op": "say",
-              "text": "The amp doesn't accept donations. It only accepts sick guitar riffs."
+              "text": "The amp doesn't want gifts. It wants a guitar solo. I can't play."
             }
           ]
         }
@@ -740,19 +740,19 @@
           "LOOK": [
             {
               "op": "say",
-              "text": "A worn leather armchair. It's seen better days. And worse trades."
+              "text": "A worn leather armchair. It has a me-shaped dent. I've never sat in it. Probably."
             }
           ],
           "USE": [
             {
               "op": "say",
-              "text": "I sit down. The cushion sighs under my weight. We share a moment of mutual exhaustion."
+              "text": "I sit. The cushion sighs. So do I. We understand each other."
             }
           ],
           "TALK": [
             {
               "op": "say",
-              "text": "I whisper to the armchair: 'What secrets have you heard?' It creaks in response."
+              "text": "'What have you heard down here?' The chair creaks. Everyone's a cryptic witness tonight."
             },
             {
               "op": "setFlag",
@@ -808,31 +808,31 @@
           "PICK": [
             {
               "op": "say",
-              "text": "I check between the cushions... a coin! Just a regular quarter though. 0.25 USD. Off-chain."
+              "text": "I check between the cushions. A quarter. A real one. I keep it. Finders keepers."
             }
           ],
           "OPEN": [
             {
               "op": "say",
-              "text": "I flip the cushion. Nothing but crumbs and regret."
+              "text": "I flip the cushion. Crumbs. Pizza crumbs. Upstairs pizza, I'd bet."
             }
           ],
           "CLOSE": [
             {
               "op": "say",
-              "text": "I put the cushion back. The chair returns to its default state."
+              "text": "I put the cushion back. Nobody will ever know I was here."
             }
           ],
           "PUSH": [
             {
               "op": "say",
-              "text": "I push the armchair. It slides, revealing years of dust bunnies. The original NFTs \u2014 Non-Fungible Tumbleweeds."
+              "text": "I push the armchair. Years of dust bunnies. A whole colony. I leave them their kingdom."
             }
           ],
           "PULL": [
             {
               "op": "say",
-              "text": "I pull the armrest. It comes off. I put it back. Pretend that didn't happen."
+              "text": "I pull the armrest. It comes off. I put it back. Nobody saw that."
             }
           ],
           "GIVE": [
@@ -856,55 +856,55 @@
           "LOOK": [
             {
               "op": "say",
-              "text": "Old checkered tile floor. Some tiles are cracked. Each crack tells a story of a late-night coding session."
+              "text": "Checkered tiles, some cracked. Someone dropped something heavy down here. More than once."
             }
           ],
           "USE": [
             {
               "op": "say",
-              "text": "I stomp on a loose tile. It wobbles. Just a wobbly tile, nothing hidden."
+              "text": "I stomp on a loose tile. It wobbles. No secret. Just bad grouting."
             }
           ],
           "TALK": [
             {
               "op": "say",
-              "text": "My footsteps echo on the tiles. The basement acknowledges my presence."
+              "text": "'Hello?' My voice bounces off the tiles. The floor isn't chatty."
             }
           ],
           "PICK": [
             {
               "op": "say",
-              "text": "I pry at a loose tile. Just dirt underneath. No secret passages."
+              "text": "I pry up a tile. Dirt. Just dirt. I put it back like I meant to."
             }
           ],
           "OPEN": [
             {
               "op": "say",
-              "text": "I check for trapdoors. Nothing. This is the bottom level."
+              "text": "No trapdoors. This is the bottom. Literally, for once."
             }
           ],
           "CLOSE": [
             {
               "op": "say",
-              "text": "The floor is as closed as it gets."
+              "text": "The floor's closed. Any more closed and it'd be a wall."
             }
           ],
           "PUSH": [
             {
               "op": "say",
-              "text": "I push a tile with my foot. It clicks. Nothing happens. Anticlimactic."
+              "text": "I push a tile with my foot. It clicks. My heart skips. Nothing. Thanks, tile."
             }
           ],
           "PULL": [
             {
               "op": "say",
-              "text": "I pull up a loose tile. Dirt, worms, and a bottle cap. The original Layer 0."
+              "text": "I pull up a tile. Dirt, a worm and a bottle cap. The worm looks annoyed."
             }
           ],
           "GIVE": [
             {
               "op": "say",
-              "text": "I can't give the floor anything it doesn't already have. Mostly dust and footprints."
+              "text": "The floor already has everything. Dust, footprints, a worm. It's set."
             }
           ]
         }
@@ -926,13 +926,13 @@
               "then": [
                 {
                   "op": "say",
-                  "text": "The mouse cable still dangles from the desk. A reminder of its sacrifice."
+                  "text": "Just the cable now, dangling. The mouse lives in my pocket. It's an upgrade."
                 }
               ],
               "else": [
                 {
                   "op": "say",
-                  "text": "A computer mouse dangling off the edge of the desk by its severed cable. It has seen better days."
+                  "text": "A computer mouse hanging off the desk by a frayed cable. It's given up. I recognise the look."
                 }
               ]
             }
@@ -940,7 +940,7 @@
           "USE": [
             {
               "op": "say",
-              "text": "I try to click it. The left button barely responds. This mouse is beyond repair."
+              "text": "I click it. The left button just sighs. This mouse has retired."
             }
           ],
           "TALK": [
@@ -980,31 +980,31 @@
           "OPEN": [
             {
               "op": "say",
-              "text": "I pop open the mouse shell. Inside: a dusty scroll wheel and shattered dreams."
+              "text": "I pop the shell open. A dusty scroll wheel and one crumb. The crumb was living there."
             }
           ],
           "CLOSE": [
             {
               "op": "say",
-              "text": "I snap the shell back. It doesn't click shut anymore. Ironic for a mouse."
+              "text": "I snap the shell back. It won't click shut. A mouse that can't click. Poor thing."
             }
           ],
           "PUSH": [
             {
               "op": "say",
-              "text": "I push the mouse across the desk. It slides without resistance. No friction pad left."
+              "text": "I push the mouse across the desk. It slides like it's trying to escape."
             }
           ],
           "PULL": [
             {
               "op": "say",
-              "text": "I pull the dangling cable. The mouse swings like a sad pendulum."
+              "text": "I pull the cable. The mouse swings like a tiny sad pendulum."
             }
           ],
           "GIVE": [
             {
               "op": "say",
-              "text": "I wouldn't give this mouse to my worst enemy. Actually, maybe to that one guy in the Telegram chat."
+              "text": "Nobody here wants a dead mouse. Not even the cockroach."
             }
           ]
         }
@@ -1022,19 +1022,19 @@
           "LOOK": [
             {
               "op": "say",
-              "text": "Scraps of paper pinned to the wall. Scrawled diagrams, wallet addresses, and one note that just says 'TRUST NO ONE' in red marker."
+              "text": "Notes pinned to the wall. Diagrams, arrows, and one in red marker: 'TRUST NO ONE.' Not even DOORIS?"
             }
           ],
           "USE": [
             {
               "op": "say",
-              "text": "I try to decode the diagrams. It's either a smart contract architecture or a conspiracy board. Hard to tell the difference."
+              "text": "I try to follow the diagrams. Arrows to arrows to a drawing of a duck. Gerald gets everywhere."
             }
           ],
           "TALK": [
             {
               "op": "say",
-              "text": "The notes rustle in the draft. They're whispering alpha. Or just whispering."
+              "text": "The notes rustle in the draft. It sounds like gossip. Penny would love it down here."
             }
           ],
           "PICK": [
@@ -1046,19 +1046,19 @@
           "OPEN": [
             {
               "op": "say",
-              "text": "I unfold one note. Inside: a seed phrase. Just kidding. It's a grocery list. Ramen, energy drinks, more ramen."
+              "text": "I unfold a note. A shopping list: ramen, BULL RUN, more ramen, 'duck food?'"
             }
           ],
           "CLOSE": [
             {
               "op": "say",
-              "text": "I fold the note back up. Some secrets are better left crumpled."
+              "text": "I fold the note back up. Some lists are private."
             }
           ],
           "PUSH": [
             {
               "op": "say",
-              "text": "I push the thumbtack deeper. The note holds firm. Unlike most stablecoins."
+              "text": "I push the thumbtack deeper. Ow. That was my thumb. Hence the name."
             }
           ],
           "PULL": [
@@ -1070,7 +1070,7 @@
           "GIVE": [
             {
               "op": "say",
-              "text": "These notes belong to the wall. It's a decentralized bulletin board."
+              "text": "I'm not adding to the wall. It's Adrian's conspiracy. He can hang his own."
             }
           ]
         }
@@ -1088,25 +1088,25 @@
           "LOOK": [
             {
               "op": "say",
-              "text": "Rusty pipes and wooden beams run across the ceiling. They drip occasionally. The basement's own liquidity pool."
+              "text": "Rusty pipes. They drip in a rhythm. Drip. Drip. Buy. ...Dex, they're pipes."
             }
           ],
           "USE": [
             {
               "op": "say",
-              "text": "I tap a pipe. It clangs and echoes through the basement. Somewhere above, someone probably thinks there's a ghost."
+              "text": "I tap a pipe. It clangs all through the house. Somewhere upstairs, a moth panics."
             }
           ],
           "TALK": [
             {
               "op": "say",
-              "text": "The pipes gurgle. In plumber Morse code, that means 'maintenance overdue since 2019.'"
+              "text": "The pipes gurgle. In plumber, that's 'call someone who isn't you.'"
             }
           ],
           "PICK": [
             {
               "op": "say",
-              "text": "I'm not ripping pipes out of the ceiling. I've seen what happens when you break infrastructure. It's called 'a bridge exploit.'"
+              "text": "I'm not ripping pipes out of the ceiling. I've seen what happens. It's called 'a flood'."
             }
           ],
           "OPEN": [
@@ -1118,25 +1118,25 @@
           "CLOSE": [
             {
               "op": "say",
-              "text": "I close the valve tighter. The dripping stops. First thing I've successfully closed since my leveraged position."
+              "text": "I tighten the valve. The dripping stops. Then starts again, out of spite."
             }
           ],
           "PUSH": [
             {
               "op": "say",
-              "text": "I push on a pipe. It bows slightly. These pipes have load-bearing anxiety, just like me."
+              "text": "I push a pipe. It bows. These pipes have load-bearing anxiety. Relatable."
             }
           ],
           "PULL": [
             {
               "op": "say",
-              "text": "I pull a loose pipe fitting. Rust flakes rain down. Proof-of-decay."
+              "text": "I pull a loose fitting. Rust rains on my head. I've earned that."
             }
           ],
           "GIVE": [
             {
               "op": "say",
-              "text": "The pipes want a plumber, not an adventurer. But they'll take what they can get."
+              "text": "The pipes want a plumber. They got a detective. Nobody's happy."
             }
           ]
         }
@@ -1154,55 +1154,55 @@
           "LOOK": [
             {
               "op": "say",
-              "text": "Rough stone walls. Old, solid, unyielding. Like a whale's conviction during a market crash."
+              "text": "Rough stone walls. Old and cold. This basement is older than Adrian's whole company."
             }
           ],
           "USE": [
             {
               "op": "say",
-              "text": "I run my hand along the stone. Cold and damp. This basement predates the internet, let alone the blockchain."
+              "text": "I run my hand along the stone. Cold, damp. I wipe my hand on my jeans. Detective work."
             }
           ],
           "TALK": [
             {
               "op": "say",
-              "text": "I talk to the wall. It's more responsive than most Discord mods."
+              "text": "I talk to the wall. It lets me finish. That's more than Penny does."
             }
           ],
           "PICK": [
             {
               "op": "say",
-              "text": "I pry at a loose stone. It doesn't budge. These walls were built to last, like a proper Layer 1."
+              "text": "I pry at a loose stone. It doesn't budge. It's the least loose loose stone I've met."
             }
           ],
           "OPEN": [
             {
               "op": "say",
-              "text": "No hidden passages here. Real life isn't Monkey Island. ...or is it?"
+              "text": "No hidden passage. Not in this wall. ...The rack, though. That rack looks shifty."
             }
           ],
           "CLOSE": [
             {
               "op": "say",
-              "text": "The walls are already closed. That's kind of their whole thing."
+              "text": "The walls are already closed. That's their entire job."
             }
           ],
           "PUSH": [
             {
               "op": "say",
-              "text": "I push the wall. The wall wins. Immutability: 1, Me: 0."
+              "text": "I push the wall. The wall wins. Walls always win."
             }
           ],
           "PULL": [
             {
               "op": "say",
-              "text": "I pull at a stone. My fingernails disagree with this plan. Strongly."
+              "text": "I pull at a stone. My fingernails file a complaint."
             }
           ],
           "GIVE": [
             {
               "op": "say",
-              "text": "The walls don't accept bribes. Truly decentralized governance."
+              "text": "I try to bribe the wall. Incorruptible. Also a wall."
             }
           ]
         }
