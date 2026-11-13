@@ -65,12 +65,13 @@ const probe = (hsId, ovId) => page.evaluate(([hid, oid]) => {
   return out;
 }, [hsId, ovId ?? null]);
 
-/** Punto andable más cercano al centro del hotspot (busca en una rejilla de 1 %) */
+/** Punto andable más cercano a la derecha del hotspot (busca en una rejilla de 1 %) */
 const nearestWalkable = (hsId) => page.evaluate((hid) => {
   const gs = window.__game.scene.getScene('GameScene');
   const json = gs.cache.json.get(`scene_${window.__qa.state().scene}`);
   const b = json.regions.hotspots.find((h) => h.id === hid).bounds;
-  const cx = b.x + b.w / 2, cy = b.y + b.h / 2;
+  // A la derecha del hotspot (no encima): en los objetos del suelo Dex los taparía en la captura
+  const cx = Math.min(97, b.x + b.w + 5), cy = b.y + b.h / 2;
   let best = null, bd = Infinity;
   for (let x = 0.5; x < 100; x += 1) for (let y = 40.5; y < 100; y += 1) {
     if (!window.__qa.isWalkable(x, y)) continue;
