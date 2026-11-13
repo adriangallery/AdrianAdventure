@@ -585,6 +585,10 @@
       {
         "id": "hs_boulders",
         "name": "Boulders",
+        "walkTo": {
+          "x": 88,
+          "y": 91
+        },
         "bounds": {
           "x": 82,
           "y": 55,
