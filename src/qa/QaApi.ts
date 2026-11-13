@@ -264,6 +264,8 @@ export interface QaApi {
    * ninguna wallet, no firma y no cambia el guardado en la nube. Solo existe con ?qa=1.
    */
   mockWeb3(mock: Web3MockInput | null | 'off'): QaState;
+  /** A3.10 (demos): cuánto deja la API el dashboard del rig a la vista, ya cargado, antes de cerrarlo con su X (400 ms) */
+  holdDashboard(ms: number): void;
 }
 
 const SETTLE_TIMEOUT_MS = 120_000;
@@ -294,6 +296,7 @@ export function installQa(game: Phaser.Game): void {
   let lastChoices: Choice[] | null = null;
   /** A3.10: ver QaState.lastDashboard */
   let lastDashboard: DashboardQaState | null = null;
+  let dashboardHoldMs = 400;
   const note = (line: string) => {
     logTotal++;
     log.push(line);
@@ -389,7 +392,7 @@ export function installQa(game: Phaser.Game): void {
         // A3.10: como un jugador: espera a que cargue, lo lee y lo cierra con la X (el script sigue al cerrarlo)
         const dq = gs().getDashboardQa();
         if (dq.open && dq.phase !== 'loading') {
-          await sleep(400);
+          await sleep(dashboardHoldMs);
           lastDashboard = gs().getDashboardQa();
           note(`DASHBOARD ${lastDashboard.phase}: ${lastDashboard.rows.join(' | ')}`);
           (document.getElementById('rigdash-close') as HTMLButtonElement | null)?.click();
@@ -824,6 +827,10 @@ export function installQa(game: Phaser.Game): void {
       if (address !== null && !/^0x[0-9a-fA-F]{40}$/.test(address)) throw new QaError('error', `fakeWallet: «${address}» no es una dirección`);
       note(`FAKE WALLET ${address ?? 'off'}${address && !signed ? ' (sin firma)' : ''}`);
       qaFakeWallet(address as `0x${string}` | null, signed);
+    },
+
+    holdDashboard(ms) {
+      dashboardHoldMs = Math.max(0, Math.min(Number(ms) || 0, 60_000));
     },
 
     mockWeb3(mock) {

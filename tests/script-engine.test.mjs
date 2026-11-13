@@ -777,3 +777,111 @@ test('A3.4d: la trampilla VIP pide keycard y terminal_key y ahorra solo la velet
     assert.deepEqual(r.state.inventory.map((i) => i.id).sort(), ['keycard', 'terminal_key']);
   }
 });
+
+// ─── A3.10: el Mining Rig enseña el dashboard y las recompensas web3 hacen algo ───────────────────
+test('A3.10: showDashboard espera a que se cierre el panel; el rig da logro, flag y la pista del PIN una vez', async () => {
+  const { readFileSync } = await import('node:fs');
+  const upstairs = JSON.parse(readFileSync(new URL('../assets/scenes/upstairs/scene.json', import.meta.url), 'utf8'));
+  const rig = upstairs.regions.hotspots.find((h) => h.id === 'hs_computer');
+  const run = async (holder, flags = {}) => {
+    const ctx = makeCtx();
+    for (const [f, v] of Object.entries(flags)) setFlag(ctx, f, v);
+    ctx.log.length = 0;
+    let closePanel = null;
+    ctx.checkGating = async (rule) => { ctx.log.push(`gate ${rule.type} ${rule.minBalance}`); return holder; };
+    ctx.showDashboard = () => { ctx.log.push('dashboard'); return new Promise((r) => { closePanel = r; }); };
+    const done = new ScriptEngine(ctx).execute(rig.scripts.USE);
+    for (let i = 0; i < 60; i++) {
+      await flush();
+      while (ctx.says.length) ctx.says.shift().resolve();
+      if (closePanel) {
+        // Mientras el panel está abierto el script no sigue
+        assert.ok(!ctx.log.some((l) => l.startsWith('achievement')), 'el logro llega al cerrar el panel');
+        const c = closePanel; closePanel = null; c();
+      }
+    }
+    await done;
+    return { ctx, state: ctx.getState() };
+  };
+  let r = await run(true);
+  assert.ok(r.ctx.log.includes('gate ZERO_BALANCE 1000'));
+  assert.ok(r.ctx.log.includes('dashboard'));
+  assert.equal(r.state.flags.rig_dashboard_seen, true);
+  assert.ok(r.ctx.log.includes('achievement HOLDER: TraitLab Insider — the rig read your real wallet'));
+  assert.ok(r.ctx.log.some((l) => /0301/.test(l) && l.startsWith('say')), 'dice el PIN al cerrar');
+  // Segunda vez: panel otra vez, sin logro repetido
+  r = await run(true, { rig_dashboard_seen: true });
+  assert.ok(r.ctx.log.includes('dashboard'));
+  assert.ok(!r.ctx.log.some((l) => l.startsWith('achievement')));
+  // Sin $ZERO: la respuesta del else, sin panel ni recompensa, y el script termina
+  r = await run(false);
+  assert.ok(!r.ctx.log.includes('dashboard'));
+  assert.equal(r.state.flags.rig_dashboard_seen, undefined);
+  assert.ok(r.ctx.log.some((l) => /Needs 1000 \$ZERO/.test(l)));
+});
+
+test('A3.10: showDashboard sin panel en el contexto avisa y el script sigue', async () => {
+  const ctx = makeCtx();
+  const done = new ScriptEngine(ctx).execute([{ op: 'showDashboard' }, { op: 'setFlag', flag: 'after', value: true }]);
+  await flush();
+  await done;
+  assert.equal(ctx.getState().flags.after, true);
+});
+
+test('A3.10: auditoría — cada web3Require tiene regla válida, su then hace algo más que hablar y su else contesta', async () => {
+  const { readFileSync, readdirSync } = await import('node:fs');
+  const dir = new URL('../assets/scenes/', import.meta.url);
+  const found = [];
+  const walk = (ops, where) => {
+    for (const op of ops ?? []) {
+      if (!op || typeof op !== 'object') continue;
+      if (op.op === 'web3Require') found.push({ op, where });
+      for (const k of ['then', 'else', 'onSuccess', 'onFail']) if (Array.isArray(op[k])) walk(op[k], where);
+    }
+  };
+  for (const id of readdirSync(dir)) {
+    let scene;
+    try { scene = JSON.parse(readFileSync(new URL(`${id}/scene.json`, dir), 'utf8')); } catch { continue; }
+    for (const h of scene.regions?.hotspots ?? []) for (const [verb, ops] of Object.entries(h.scripts ?? {})) walk(ops, `${id}.${h.id}.${verb}`);
+  }
+  assert.ok(found.length >= 6, `esperaba al menos 6 web3Require (hay ${found.length})`);
+  const deep = (ops) => (ops ?? []).flatMap((o) => [o, ...deep(o.then), ...deep(o.else)]);
+  for (const { op, where } of found) {
+    assert.ok(op.rule && ['ERC721', 'ERC1155', 'ERC20', 'ZERO_BALANCE'].includes(op.rule.type), `${where}: regla sin type válido`);
+    const thenOps = deep(op.then).map((o) => o.op);
+    const hasEffect = thenOps.some((o) => !['say', 'sayBrief', 'wait', 'ifFlag'].includes(o));
+    assert.ok(hasEffect, `${where}: el then solo habla (${thenOps.join(', ')})`);
+    assert.ok(Array.isArray(op.else) && op.else.length, `${where}: sin else`);
+  }
+});
+
+test('A3.10: mock web3 de QA — gates sin red y filas del dashboard', async () => {
+  const { normalizeWeb3Mock, mockGateResult, setWeb3Mock, getWeb3Mock, MOCK_CONTRACTS } = await import('../src/web3/web3Mock.ts');
+  const { dashboardRows, dashboardStatus, formatZero, shortAddress } = await import('../src/web3/dashboardData.ts');
+  assert.equal(getWeb3Mock(), undefined, 'sin activar = red real');
+  const m = normalizeWeb3Mock({ zero: '5000', adrianZero: [7, { id: 12, name: 'ZERO Twelve' }], lab: [{ id: 1001, name: 'Cap', balance: 2 }], punks: 1 });
+  assert.equal(mockGateResult({ type: 'ZERO_BALANCE', minBalance: '1000' }, m), true);
+  assert.equal(mockGateResult({ type: 'ZERO_BALANCE', minBalance: '9000' }, m), false);
+  assert.equal(mockGateResult({ type: 'ERC721', contract: MOCK_CONTRACTS.ADRIAN_ZERO, minBalance: 1 }, m), true);
+  assert.equal(mockGateResult({ type: 'ERC721', contract: MOCK_CONTRACTS.ADRIAN_PUNKS, minBalance: 1 }, m), true);
+  assert.equal(mockGateResult({ type: 'ERC1155', tokenId: 1001, minBalance: 2 }, m), true);
+  assert.equal(mockGateResult({ type: 'ZERO_BALANCE', minBalance: '1' }, null), false, 'null = sin cartera');
+  assert.equal(mockGateResult(undefined, m), false, 'regla rota = no se cumple');
+  assert.throws(() => normalizeWeb3Mock({ zero: '1e18' }));
+  setWeb3Mock(m); assert.equal(getWeb3Mock(), m); setWeb3Mock(undefined);
+  assert.equal(formatZero(5000n * 10n ** 18n), '5,000');
+  assert.equal(formatZero(1234n * 10n ** 18n + 5n * 10n ** 17n), '1,234.5');
+  assert.equal(shortAddress('0x1234567890abcdef1234567890abcdef12345678'), '0x1234…5678');
+  const rows = dashboardRows({ address: m.address, zeroWei: 5000n * 10n ** 18n, adrianZeroCount: 2, punksCount: 1, tokens: { adrianZero: ['AdrianZERO #7', 'ZERO Twelve'], lab: ['Cap ×2'], labCount: 2 }, errors: [], simulated: true });
+  const text = rows.map((r) => `${r.label}: ${r.value}`).join('\n');
+  assert.match(text, /\$ZERO: 5,000/);
+  assert.match(text, /AdrianZERO: 2/);
+  assert.match(text, /ZERO Twelve/);
+  assert.match(text, /Traits \(LAB\): 2: Cap ×2/);
+  // Lectura parcial: lo que falló avisa y lo demás se enseña
+  const partial = { address: m.address, zeroWei: null, adrianZeroCount: 3, punksCount: null, tokens: null, errors: ['zero', 'tokens'], simulated: false };
+  const prow = dashboardRows(partial);
+  assert.ok(prow.find((r) => r.label === '$ZERO').warn);
+  assert.equal(prow.find((r) => r.label === 'AdrianZERO').value, '3');
+  assert.match(dashboardStatus(partial), /PARTIAL READ/);
+});
