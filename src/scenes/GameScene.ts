@@ -697,15 +697,9 @@ export class GameScene extends Phaser.Scene {
     const hit = this.hitTestAt(wx, wy, sy, touch);
     if (hit.kind === 'none') return;
 
-    // A2.4: clic derecho (solo ratón) = verbo por defecto del hotspot o NPC, sin mirar el panel.
-    // A2.18: con una frase a medias («Give X to …») el clic derecho solo la cancela, como SCUMM
+    // A2.4: clic derecho (solo ratón) = verbo por defecto del hotspot o NPC, sin mirar el panel
     if (!touch && button === 2) {
       this.lastClick = null;
-      const { scummUI, selectedItem } = this.uiSelection();
-      if (selectedItem) {
-        scummUI?.resetSelection?.();
-        return;
-      }
       this.rightClickHit(hit);
       return;
     }
@@ -754,9 +748,16 @@ export class GameScene extends Phaser.Scene {
 
   /**
    * A2.4: clic derecho. NPC → TALK; hotspot → su verbo por defecto (`defaultVerbFor`: el que hace algo de verdad, o
-   * LOOK); fondo → andar. No cambia el verbo ni el objeto elegidos en el panel.
+   * LOOK); fondo → andar. No cambia el verbo elegido en el panel. A2.18: con un objeto elegido (frase a medias) solo la cancela.
    */
   private rightClickHit(hit: Exclude<TapHit, { kind: 'none' }>): void {
+    // A2.18: con una frase a medias («Give X to …») el clic derecho solo la cancela, como SCUMM
+    const { scummUI, selectedItem } = this.uiSelection();
+    if (selectedItem) {
+      scummUI?.resetSelection?.();
+      scummUI?.setHoveredObject?.(null);
+      return;
+    }
     if (hit.kind === 'npc') {
       this.dispatchNpcTap(hit.npc, Verb.TALK, null, undefined);
       return;
