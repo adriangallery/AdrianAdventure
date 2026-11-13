@@ -65,13 +65,14 @@ const probe = (hsId, ovId) => page.evaluate(([hid, oid]) => {
   return out;
 }, [hsId, ovId ?? null]);
 
-/** Punto andable más cercano a la derecha del hotspot (busca en una rejilla de 1 %) */
-const nearestWalkable = (hsId) => page.evaluate((hid) => {
+/** Punto andable más cercano al hotspot (busca en una rejilla de 1 %) */
+const nearestWalkable = (hsId, beside) => page.evaluate(([hid, side]) => {
   const gs = window.__game.scene.getScene('GameScene');
   const json = gs.cache.json.get(`scene_${window.__qa.state().scene}`);
   const b = json.regions.hotspots.find((h) => h.id === hid).bounds;
-  // A la derecha del hotspot (no encima): en los objetos del suelo Dex los taparía en la captura
-  const cx = Math.min(97, b.x + b.w + 5), cy = b.y + b.h / 2;
+  // Apaisado: a la derecha del hotspot (no encima), que en los objetos del suelo Dex los taparía en la captura.
+  // Vertical: en el centro (la cámara es estrecha y, si no, se va de lado).
+  const cx = side ? Math.min(97, b.x + b.w + 5) : b.x + b.w / 2, cy = b.y + b.h / 2;
   let best = null, bd = Infinity;
   for (let x = 0.5; x < 100; x += 1) for (let y = 40.5; y < 100; y += 1) {
     if (!window.__qa.isWalkable(x, y)) continue;
@@ -79,7 +80,7 @@ const nearestWalkable = (hsId) => page.evaluate((hid) => {
     if (d < bd) { bd = d; best = [x, y]; }
   }
   return best;
-}, hsId);
+}, [hsId, !!beside]);
 
 for (const [i, { tag, viewport }] of VIEWPORTS.entries()) {
   if (i > 0) await page.setViewport(viewport);
@@ -89,7 +90,7 @@ for (const [i, { tag, viewport }] of VIEWPORTS.entries()) {
     await demo.openScene(c.scene);
     await demo.settle({ tap: [Math.round(viewport.width / 2), 40] });
     await page.evaluate(() => window.__qa.dismissAll());
-    const spot = await nearestWalkable(c.hs);
+    const spot = await nearestWalkable(c.hs, tag === 'land');
     check(!!spot, `${tag} ${c.scene}: punto andable junto a ${c.hs} ${JSON.stringify(spot)}`);
     // El clic para andar puede caer bajo el panel de verbos (vertical): entonces Dex se queda donde aparece
     if (spot) await page.evaluate(([x, y]) => window.__qa.walk(x, y), spot).catch((e) => console.log(`  (${tag} ${c.scene}: no anda a ${spot}: ${String(e.message).split('\n')[0]})`));
