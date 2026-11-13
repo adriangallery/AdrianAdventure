@@ -1,0 +1,286 @@
+{
+  "tracks": {
+    "clinical": {
+      "bpm": 122.92,
+      "beatsPerBar": 4,
+      "firstDownbeatSec": 0.383,
+      "barSec": 1.9525,
+      "bars": 98,
+      "durationSec": 192.44,
+      "loopStartSec": 0.383,
+      "loopEndSec": 191.727,
+      "key": {
+        "tonic": 4,
+        "mode": "minor"
+      },
+      "confidence": {
+        "tempo": 3.9,
+        "downbeat": 1.63,
+        "key": 0.78
+      },
+      "sections": [
+        {
+          "id": "A1",
+          "startBar": 0,
+          "bars": 12,
+          "energyDb": -21.5
+        },
+        {
+          "id": "B1",
+          "startBar": 12,
+          "bars": 8,
+          "energyDb": -25.9
+        },
+        {
+          "id": "C1",
+          "startBar": 20,
+          "bars": 28,
+          "energyDb": -20.2
+        },
+        {
+          "id": "D1",
+          "startBar": 48,
+          "bars": 36,
+          "energyDb": -23.7
+        },
+        {
+          "id": "E1",
+          "startBar": 84,
+          "bars": 14,
+          "energyDb": -30.7
+        }
+      ]
+    },
+    "epilogue": {
+      "bpm": 85,
+      "beatsPerBar": 4,
+      "firstDownbeatSec": 0.313,
+      "barSec": 2.8235,
+      "bars": 69,
+      "durationSec": 197.96,
+      "loopStartSec": 0.313,
+      "loopEndSec": 195.137,
+      "key": {
+        "tonic": 0,
+        "mode": "major"
+      },
+      "confidence": {
+        "tempo": 5.45,
+        "downbeat": 2.06,
+        "key": 0.9
+      },
+      "sections": [
+        {
+          "id": "A1",
+          "startBar": 0,
+          "bars": 28,
+          "energyDb": -16.9
+        },
+        {
+          "id": "B1",
+          "startBar": 28,
+          "bars": 24,
+          "energyDb": -16.3
+        },
+        {
+          "id": "A2",
+          "startBar": 52,
+          "bars": 8,
+          "energyDb": -17
+        },
+        {
+          "id": "A3",
+          "startBar": 60,
+          "bars": 9,
+          "energyDb": -16
+        }
+      ]
+    },
+    "retro-adventure": {
+      "bpm": 90,
+      "beatsPerBar": 4,
+      "firstDownbeatSec": 0.186,
+      "barSec": 2.6667,
+      "bars": 72,
+      "durationSec": 193.64,
+      "loopStartSec": 0.186,
+      "loopEndSec": 192.186,
+      "key": {
+        "tonic": 2,
+        "mode": "major"
+      },
+      "confidence": {
+        "tempo": 6.84,
+        "downbeat": 1.07,
+        "key": 0.88
+      },
+      "sections": [
+        {
+          "id": "A1",
+          "startBar": 0,
+          "bars": 16,
+          "energyDb": -18.7
+        },
+        {
+          "id": "B1",
+          "startBar": 16,
+          "bars": 8,
+          "energyDb": -17.3
+        },
+        {
+          "id": "C1",
+          "startBar": 24,
+          "bars": 28,
+          "energyDb": -18.5
+        },
+        {
+          "id": "D1",
+          "startBar": 52,
+          "bars": 12,
+          "energyDb": -17.5
+        },
+        {
+          "id": "E1",
+          "startBar": 64,
+          "bars": 8,
+          "energyDb": -17.1
+        }
+      ]
+    },
+    "retroadrian": {
+      "bpm": 90.1,
+      "beatsPerBar": 4,
+      "firstDownbeatSec": 0.464,
+      "barSec": 2.6637,
+      "bars": 39,
+      "durationSec": 106.75,
+      "loopStartSec": 0.464,
+      "loopEndSec": 104.349,
+      "key": {
+        "tonic": 9,
+        "mode": "minor"
+      },
+      "confidence": {
+        "tempo": 3.27,
+        "downbeat": 1.1,
+        "key": 0.79
+      },
+      "sections": [
+        {
+          "id": "A1",
+          "startBar": 0,
+          "bars": 20,
+          "energyDb": -22.3
+        },
+        {
+          "id": "B1",
+          "startBar": 20,
+          "bars": 8,
+          "energyDb": -20.4
+        },
+        {
+          "id": "C1",
+          "startBar": 28,
+          "bars": 11,
+          "energyDb": -17.2
+        }
+      ]
+    },
+    "tension": {
+      "bpm": 132,
+      "beatsPerBar": 4,
+      "firstDownbeatSec": 0.244,
+      "barSec": 1.8182,
+      "bars": 122,
+      "durationSec": 223.28,
+      "loopStartSec": 0.244,
+      "loopEndSec": 222.062,
+      "key": {
+        "tonic": 4,
+        "mode": "minor"
+      },
+      "confidence": {
+        "tempo": 3.81,
+        "downbeat": 2.37,
+        "key": 0.69
+      },
+      "sections": [
+        {
+          "id": "A1",
+          "startBar": 0,
+          "bars": 28,
+          "energyDb": -19.4
+        },
+        {
+          "id": "B1",
+          "startBar": 28,
+          "bars": 48,
+          "energyDb": -16.6
+        },
+        {
+          "id": "C1",
+          "startBar": 76,
+          "bars": 12,
+          "energyDb": -21.7
+        },
+        {
+          "id": "D1",
+          "startBar": 88,
+          "bars": 12,
+          "energyDb": -14.4
+        },
+        {
+          "id": "E1",
+          "startBar": 100,
+          "bars": 22,
+          "energyDb": -22
+        }
+      ]
+    },
+    "vista": {
+      "bpm": 82,
+      "beatsPerBar": 4,
+      "firstDownbeatSec": 0.139,
+      "barSec": 2.9268,
+      "bars": 81,
+      "durationSec": 240,
+      "loopStartSec": 0.139,
+      "loopEndSec": 237.212,
+      "key": {
+        "tonic": 7,
+        "mode": "minor"
+      },
+      "confidence": {
+        "tempo": 3.34,
+        "downbeat": 1.37,
+        "key": 0.78
+      },
+      "sections": [
+        {
+          "id": "A1",
+          "startBar": 0,
+          "bars": 44,
+          "energyDb": -20.7
+        },
+        {
+          "id": "B1",
+          "startBar": 44,
+          "bars": 12,
+          "energyDb": -22.1
+        },
+        {
+          "id": "C1",
+          "startBar": 56,
+          "bars": 12,
+          "energyDb": -26.8
+        },
+        {
+          "id": "D1",
+          "startBar": 68,
+          "bars": 13,
+          "energyDb": -23.1
+        }
+      ]
+    }
+  }
+}
