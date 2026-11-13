@@ -9,6 +9,9 @@ export function describe(s) {
   switch (s.do) {
     case 'act': return `${s.verb} ${s.target}${s.holdTextMs ? ` (texto ${s.holdTextMs / 1000} s)` : ''}`;
     case 'use': return `USE ${s.item} → ${s.target}`;
+    // A2.18
+    case 'give': return `GIVE ${s.item} → ${s.target}`;
+    case 'pick': return `${s.verb} ${s.item} (inventario)`;
     case 'combine': return `USE ${s.items.join(' + ')}`;
     case 'talk': return `TALK ${s.npc}${s.choices?.length ? ` [${s.choices.join(' / ')}]` : ''}`;
     case 'walk': return `WALK ${s.x},${s.y}${s.trigger ? ` (${s.trigger})` : ''}${s.untilScene ? ` → ${s.untilScene}` : ''}`;
@@ -85,6 +88,8 @@ export function check(expect, st, ctx = {}) {
   if (expect.ambient) f.push(...checkAmbient(expect.ambient, st));
   // A2.5: última respuesta de fallo (tipo, objeto, objetivo, verbo, bolsa y texto)
   if (expect.failResponse) f.push(...checkFailResponse(expect.failResponse, st));
+  // A2.18: frase de la línea de acción («Give X to …» pendiente o ya resuelta)
+  if (expect.sentence) f.push(...checkSentence(expect.sentence, st));
   // A4.4: audio (ambiente pedido, superficie bajo los pies, pasos, efectos pedidos durante el paso)
   if (expect.audio) f.push(...checkAudio(expect.audio, st, ctx.before));
   // A3.10: dashboard del Mining Rig
@@ -243,6 +248,22 @@ export function checkFailResponse(want, st) {
     if (want[k] !== undefined && r[k] !== want[k]) f.push(`respuesta de fallo: ${k} «${r[k]}», se esperaba «${want[k]}»`);
   }
   if (want.text !== undefined && !new RegExp(want.text, 'i').test(r.text ?? '')) f.push(`respuesta de fallo «${r.text}», no casa con /${want.text}/`);
+  return f;
+}
+
+/**
+ * A2.18: `expect.sentence` contra `st.sentence` (línea de acción): `verb`, `item` (null = sin objeto) y `pending` (iguales) y
+ * `text` (expresión regular, sin mayúsculas: lo que se ve, p. ej. «^Give .* to\\.\\.\\.$»).
+ */
+export function checkSentence(want, st) {
+  const s = st.sentence;
+  if (s === undefined) return ['el juego no expone `sentence` en state() (API de QA anterior a A2.18)'];
+  if (!s) return ['sin línea de acción (no hay partida)'];
+  const f = [];
+  for (const k of ['verb', 'item', 'pending']) {
+    if (want[k] !== undefined && s[k] !== want[k]) f.push(`frase: ${k} «${s[k]}», se esperaba «${want[k]}»`);
+  }
+  if (want.text !== undefined && !new RegExp(want.text, 'i').test(s.text ?? '')) f.push(`frase «${s.text}», no casa con /${want.text}/`);
   return f;
 }
 
@@ -482,7 +503,7 @@ export function checkRejects(step, before, after) {
 /** Pasos que hacen clic en un hotspot o NPC de la escena (y no combinan objetos del inventario). */
 export function tapsScene(step, before) {
   if (['act', 'talk', 'click', 'rightclick', 'doubleclick'].includes(step.do)) return true;
-  if (step.do === 'use') return !(before?.inventory ?? []).includes(step.target);
+  if (step.do === 'use' || step.do === 'give') return !(before?.inventory ?? []).includes(step.target);
   return false;
 }
 
@@ -528,6 +549,12 @@ export function routeDefects(route, opts = {}) {
     }
     if (s.do === 'key' && (typeof s.key !== 'string' || !s.key || !['press', 'down', 'up', undefined].includes(s.phase))) {
       out.push(`paso ${i + 1} (${describe(s)}): "key" necesita "key" (KeyboardEvent.key) y "phase" press|down|up si lo lleva`);
+    }
+    if (s.do === 'give' && (typeof s.item !== 'string' || typeof s.target !== 'string' || !s.item || !s.target)) {
+      out.push(`paso ${i + 1} (${describe(s)}): "give" necesita "item" y "target"`);
+    }
+    if (s.do === 'pick' && (typeof s.verb !== 'string' || typeof s.item !== 'string' || !s.verb || !s.item)) {
+      out.push(`paso ${i + 1} (${describe(s)}): "pick" necesita "verb" e "item"`);
     }
     if (['click', 'rightclick', 'doubleclick'].includes(s.do) && (typeof s.target !== 'string' || !s.target)) {
       out.push(`paso ${i + 1} (${describe(s)}): "${s.do}" necesita "target"`);

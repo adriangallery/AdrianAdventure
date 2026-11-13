@@ -225,6 +225,38 @@
       ]
     },
     {
+      "id": "dar-y-usar-a-medias",
+      "kind": "walkthrough",
+      "title": "A2.18: «Give X to …» y «Use X with …» de dos pasos en el lobby (Penny, un hotspot sin script, otro objeto; cancelar con Esc, otro verbo y clic derecho)",
+      "goal": { "scene": "lobby", "has": ["vet_bill", "ledger", "code_note", "fence_plank"] },
+      "steps": [
+        { "do": "newGame", "expect": { "scene": "outside" } },
+        {"do": "act", "verb": "USE", "target": "hs_porch_light", "note": "A3.3c: la mitad A del PIN (apagar la lámpara, cogerla)", "expect": {"flags": {"porch_light_off": true}}},
+        {"do": "act", "verb": "PICK", "target": "hs_porch_light", "expect": {"has": ["note_half_a"]}},
+        {"do": "act", "verb": "PULL", "target": "hs_fence", "note": "A3.3c: el tablón y, con él, el nido de la chimenea (mitad B)", "expect": {"has": ["fence_plank"]}},
+        {"do": "use", "item": "fence_plank", "target": "hs_chimney", "expect": {"has": ["note_half_b"]}},
+        {"do": "combine", "items": ["note_half_a", "note_half_b"], "expect": {"has": ["code_note"]}},
+        {"do": "use", "item": "fence_plank", "target": "hs_doormat", "note": "A3.3d: el felpudo HODL está pegado; con el tablón sale el Ledger (llave de hardware)", "expect": {"has": ["ledger"], "flags": {"found_ledger": true}}},
+        {"do": "act", "verb": "OPEN", "target": "hs_mailbox", "note": "A3.3d: un solo OPEN da el sobre y la factura del veterinario (Gerald, la respuesta de la pregunta de seguridad)", "expect": {"has": ["vet_bill", "mystery_envelope"], "flags": {"knows_gerald": true}}},
+        {"do": "act", "verb": "USE", "target": "hs_keypad", "choices": ["vet bill"], "rejects": "Somebody was patient", "note": "A7.2 (J-4, camino a): USE teclado con code_note en el inventario lo teclea igual que usar la nota sobre él: PIN aceptado; DOORIS se presenta (primera vez), llama Anon y hace la pregunta de seguridad; aún falta la llave", "expect": {"scene": "outside", "flags": {"dooris_met": true, "anon_call_1": true, "dooris_pin_ok": true, "dooris_question_ok": true, "door_unlocked": false}}},
+        {"do": "use", "item": "ledger", "target": "hs_keypad", "note": "A3.3d: tercer factor: DOORIS abre («One factor was a duck») y el árbol cambia de escena al cerrarse", "expect": {"scene": "lobby"}},
+        {"do": "pick", "verb": "GIVE", "item": "vet_bill", "note": "A2.18: GIVE + objeto ya no contesta «Nobody here to give it to.»: la frase queda «Give Vet Bill to...» esperando destino", "expect": {"scene": "lobby", "verb": "GIVE", "sentence": {"verb": "GIVE", "item": "vet_bill", "pending": true, "text": "^give .+ to\\.\\.\\.$"}}},
+        {"do": "click", "target": "npc_receptionist", "rejects": "For a duck\\. Named Gerald", "note": "A2.18: el destino resuelve la frase: Penny contesta con su pareja giveResponses.vet_bill; el panel vuelve a Walk y la factura sigue en el inventario", "expect": {"scene": "lobby", "has": ["vet_bill"], "verb": "WALK", "sentence": {"pending": false, "item": null}, "walkTarget": {"target": "npc_receptionist", "verb": "GIVE"}, "failResponse": {"kind": "item-npc", "verb": "GIVE", "item": "vet_bill", "target": "npc_receptionist", "bag": "npc:lobby/npc_receptionist:GIVE:vet_bill"}}},
+        {"do": "give", "item": "fence_plank", "target": "npc_receptionist", "rejects": "Strict no-gifts policy", "note": "A2.18: sin pareja ni frase propia del objeto: el _default de Penny (frase 0 con ?qa=1)", "expect": {"scene": "lobby", "has": ["fence_plank"], "failResponse": {"kind": "item-npc", "verb": "GIVE", "item": "fence_plank", "bag": "npc:lobby/npc_receptionist:GIVE:_default"}}},
+        {"do": "give", "item": "ledger", "target": "hs_poster", "rejects": "Give it to whom", "note": "A2.18: dar algo a un hotspot (no es una persona): bolsa verbDefaults.GIVE, va hasta él y no dispara combos de USE", "expect": {"scene": "lobby", "has": ["ledger"], "walkTarget": {"target": "hs_poster", "verb": "GIVE"}, "failResponse": {"kind": "item-hotspot", "verb": "GIVE", "item": "ledger", "target": "hs_poster", "bag": "verb:GIVE"}}},
+        {"do": "pick", "verb": "USE", "item": "fence_plank", "note": "A2.18: USE + objeto: «Use Fence Plank with...» pendiente", "expect": {"verb": "USE", "sentence": {"verb": "USE", "item": "fence_plank", "pending": true, "text": "^use .+ with\\.\\.\\.$"}}},
+        {"do": "click", "target": "hs_poster", "rejects": "poke it with the plank", "note": "A2.18: USE con un hotspot sin script ni pareja: bolsa de mal uso del objeto (items.fence_plank, frase 0)", "expect": {"scene": "lobby", "verb": "WALK", "sentence": {"pending": false}, "walkTarget": {"target": "hs_poster", "verb": "USE"}, "failResponse": {"kind": "item-hotspot", "verb": "USE", "item": "fence_plank", "target": "hs_poster", "bag": "item:fence_plank"}}},
+        {"do": "pick", "verb": "GIVE", "item": "code_note", "expect": {"sentence": {"verb": "GIVE", "item": "code_note", "pending": true}}},
+        {"do": "key", "key": "Escape", "note": "A2.18: Esc cancela la frase a medias (y el verbo)", "expect": {"verb": "WALK", "sentence": {"pending": false, "item": null}}},
+        {"do": "pick", "verb": "GIVE", "item": "code_note", "expect": {"sentence": {"pending": true}}},
+        {"do": "key", "key": "l", "note": "A2.18: pulsar otro verbo (aquí su tecla) cancela la frase", "expect": {"verb": "LOOK", "sentence": {"verb": "LOOK", "pending": false, "item": null}}},
+        {"do": "pick", "verb": "GIVE", "item": "vet_bill", "expect": {"sentence": {"pending": true}}},
+        {"do": "rightclick", "target": "npc_receptionist", "note": "A2.18: con una frase a medias el clic derecho solo la cancela (no habla con Penny ni va hacia ella: el último acercamiento sigue siendo el del póster)", "expect": {"verb": "WALK", "sentence": {"pending": false, "item": null}, "walkTarget": {"target": "hs_poster", "verb": "USE"}}},
+        {"do": "give", "item": "ledger", "target": "code_note", "rejects": "nobody takes anything", "note": "A2.18: dar un objeto a otro objeto: bolsa verbDefaults.GIVE (frase 1: la 0 salió con el póster)", "expect": {"has": ["ledger", "code_note"], "failResponse": {"kind": "item-item", "verb": "GIVE", "item": "ledger", "target": "code_note", "bag": "verb:GIVE"}}},
+        {"do": "pick", "verb": "LOOK", "item": "ledger", "rejects": "fresh from under a doormat", "note": "A2.18: los verbos de un objeto sobre el inventario siguen al momento", "expect": {"verb": "LOOK", "sentence": {"pending": false}}}
+      ]
+    },
+    {
       "id": "cinematica",
       "kind": "walkthrough",
       "title": "A2.10: cinemática de ejemplo en el lobby (franjas, pan a la recepcionista, zoom, el jugador anda y se gira, subtítulos, sacudida e iris) vista entera y saltada con Esc: mismo estado final y todo restaurado",
