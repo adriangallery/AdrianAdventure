@@ -125,7 +125,14 @@ export function evaluatePosition(m, refsDoc, npcRefs = []) {
   const info = [];
   const refs = [...(refsDoc?.refs || []).filter((r) => !r.npc), ...npcRefs];
   const fixed = refsDoc?.scalePolicy === 'fixed';
-  const near = nearestRef(refs, m.feetY, m.feetX);
+  // Solo cuentan para fallar las referencias medidas a ojo (measured !== false) y las NPC; las demás, informativas
+  const near = nearestRef(refs.filter((r) => r.measured !== false), m.feetY, m.feetX);
+  const rough = nearestRef(refs.filter((r) => r.measured === false), m.feetY, m.feetX);
+  if (rough) {
+    const exp = expectedDexPct(rough.ref, rough.ref.box.h);
+    const dev = m.heightPct / exp - 1;
+    if (Math.abs(dev) > SCALE_TOL) info.push({ type: 'scale-rough', ref: rough.ref.id, dev: r2(dev), msg: `Dex ${pc(dev)} frente a ${rough.ref.label} (caja sin medir: bounds del hotspot)` });
+  }
   let scale = null;
   if (near) {
     const exp = expectedDexPct(near.ref, near.ref.heightPct ?? near.ref.box.h);

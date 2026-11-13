@@ -1,0 +1,2090 @@
+{
+ "scene": "basement",
+ "scalePolicy": "measure",
+ "summary": {
+  "positions": 50,
+  "failing": 50,
+  "byType": {
+   "scale": 38,
+   "feet": 50
+  }
+ },
+ "positions": [
+  {
+   "id": "grid-7.4-87.5",
+   "kind": "grid",
+   "x": 7.4,
+   "y": 87.5,
+   "feet": {
+    "x": 7.4,
+    "y": 87.5
+   },
+   "dexBox": {
+    "x": 4.16,
+    "y": 29.38,
+    "w": 6.48,
+    "h": 58.12
+   },
+   "heightPct": 58.12,
+   "walkable": true,
+   "maskOk": false,
+   "cover": {},
+   "scale": {
+    "ref": "hs_left_desk",
+    "expected": 49,
+    "got": 58.12,
+    "dev": 0.19,
+    "baseDy": 9.5
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_left_desk",
+     "dev": 0.19,
+     "msg": "Dex +19 % frente a escritorio (58.12 % y se esperaba 49 %)"
+    },
+    {
+     "type": "feet",
+     "msg": "pies fuera del azul de la walkmask (7.4, 87.5)"
+    }
+   ],
+   "info": [],
+   "score": 1.88,
+   "shot": "capturas/basement/000.png"
+  },
+  {
+   "id": "grid-7.4-90.5",
+   "kind": "grid",
+   "x": 7.4,
+   "y": 90.5,
+   "feet": {
+    "x": 7.4,
+    "y": 90.5
+   },
+   "dexBox": {
+    "x": 4.16,
+    "y": 32.38,
+    "w": 6.48,
+    "h": 58.12
+   },
+   "heightPct": 58.12,
+   "walkable": true,
+   "maskOk": false,
+   "cover": {},
+   "scale": null,
+   "failures": [
+    {
+     "type": "feet",
+     "msg": "pies fuera del azul de la walkmask (7.4, 90.5)"
+    }
+   ],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 1.5,
+   "shot": "capturas/basement/001.png"
+  },
+  {
+   "id": "grid-15.1-87.5",
+   "kind": "grid",
+   "x": 15.1,
+   "y": 87.5,
+   "feet": {
+    "x": 15.1,
+    "y": 87.5
+   },
+   "dexBox": {
+    "x": 11.86,
+    "y": 29.38,
+    "w": 6.48,
+    "h": 58.12
+   },
+   "heightPct": 58.12,
+   "walkable": true,
+   "maskOk": false,
+   "cover": {},
+   "scale": {
+    "ref": "hs_left_desk",
+    "expected": 49,
+    "got": 58.12,
+    "dev": 0.19,
+    "baseDy": 9.5
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_left_desk",
+     "dev": 0.19,
+     "msg": "Dex +19 % frente a escritorio (58.12 % y se esperaba 49 %)"
+    },
+    {
+     "type": "feet",
+     "msg": "pies fuera del azul de la walkmask (15.1, 87.5)"
+    }
+   ],
+   "info": [],
+   "score": 1.88,
+   "shot": "capturas/basement/002.png"
+  },
+  {
+   "id": "grid-15.1-90.5",
+   "kind": "grid",
+   "x": 15.1,
+   "y": 90.5,
+   "feet": {
+    "x": 15.1,
+    "y": 90.5
+   },
+   "dexBox": {
+    "x": 11.86,
+    "y": 32.38,
+    "w": 6.48,
+    "h": 58.12
+   },
+   "heightPct": 58.12,
+   "walkable": true,
+   "maskOk": false,
+   "cover": {},
+   "scale": null,
+   "failures": [
+    {
+     "type": "feet",
+     "msg": "pies fuera del azul de la walkmask (15.1, 90.5)"
+    }
+   ],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 1.5,
+   "shot": "capturas/basement/003.png"
+  },
+  {
+   "id": "grid-22.8-87.5",
+   "kind": "grid",
+   "x": 22.8,
+   "y": 87.5,
+   "feet": {
+    "x": 22.8,
+    "y": 87.5
+   },
+   "dexBox": {
+    "x": 19.56,
+    "y": 29.38,
+    "w": 6.48,
+    "h": 58.12
+   },
+   "heightPct": 58.12,
+   "walkable": true,
+   "maskOk": false,
+   "cover": {},
+   "scale": {
+    "ref": "hs_left_desk",
+    "expected": 49,
+    "got": 58.12,
+    "dev": 0.19,
+    "baseDy": 9.5
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_left_desk",
+     "dev": 0.19,
+     "msg": "Dex +19 % frente a escritorio (58.12 % y se esperaba 49 %)"
+    },
+    {
+     "type": "feet",
+     "msg": "pies fuera del azul de la walkmask (22.8, 87.5)"
+    }
+   ],
+   "info": [],
+   "score": 1.88,
+   "shot": "capturas/basement/004.png"
+  },
+  {
+   "id": "grid-22.8-90.5",
+   "kind": "grid",
+   "x": 22.8,
+   "y": 90.5,
+   "feet": {
+    "x": 22.8,
+    "y": 90.5
+   },
+   "dexBox": {
+    "x": 19.56,
+    "y": 32.38,
+    "w": 6.48,
+    "h": 58.12
+   },
+   "heightPct": 58.12,
+   "walkable": true,
+   "maskOk": false,
+   "cover": {},
+   "scale": null,
+   "failures": [
+    {
+     "type": "feet",
+     "msg": "pies fuera del azul de la walkmask (22.8, 90.5)"
+    }
+   ],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 1.5,
+   "shot": "capturas/basement/005.png"
+  },
+  {
+   "id": "grid-30.5-87.5",
+   "kind": "grid",
+   "x": 30.5,
+   "y": 87.5,
+   "feet": {
+    "x": 30.5,
+    "y": 87.5
+   },
+   "dexBox": {
+    "x": 27.26,
+    "y": 29.38,
+    "w": 6.48,
+    "h": 58.12
+   },
+   "heightPct": 58.12,
+   "walkable": true,
+   "maskOk": false,
+   "cover": {},
+   "scale": {
+    "ref": "hs_left_desk",
+    "expected": 49,
+    "got": 58.12,
+    "dev": 0.19,
+    "baseDy": 9.5
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_left_desk",
+     "dev": 0.19,
+     "msg": "Dex +19 % frente a escritorio (58.12 % y se esperaba 49 %)"
+    },
+    {
+     "type": "feet",
+     "msg": "pies fuera del azul de la walkmask (30.5, 87.5)"
+    }
+   ],
+   "info": [],
+   "score": 1.88,
+   "shot": "capturas/basement/006.png"
+  },
+  {
+   "id": "grid-30.5-90.5",
+   "kind": "grid",
+   "x": 30.5,
+   "y": 90.5,
+   "feet": {
+    "x": 30.5,
+    "y": 90.5
+   },
+   "dexBox": {
+    "x": 27.26,
+    "y": 32.38,
+    "w": 6.48,
+    "h": 58.12
+   },
+   "heightPct": 58.12,
+   "walkable": true,
+   "maskOk": false,
+   "cover": {},
+   "scale": null,
+   "failures": [
+    {
+     "type": "feet",
+     "msg": "pies fuera del azul de la walkmask (30.5, 90.5)"
+    }
+   ],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 1.5,
+   "shot": "capturas/basement/007.png"
+  },
+  {
+   "id": "grid-38.3-87.5",
+   "kind": "grid",
+   "x": 38.3,
+   "y": 87.5,
+   "feet": {
+    "x": 38.3,
+    "y": 87.5
+   },
+   "dexBox": {
+    "x": 35.06,
+    "y": 29.38,
+    "w": 6.48,
+    "h": 58.12
+   },
+   "heightPct": 58.12,
+   "walkable": true,
+   "maskOk": false,
+   "cover": {
+    "hs_armchair": 0
+   },
+   "scale": {
+    "ref": "hs_left_desk",
+    "expected": 49,
+    "got": 58.12,
+    "dev": 0.19,
+    "baseDy": 9.5
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_left_desk",
+     "dev": 0.19,
+     "msg": "Dex +19 % frente a escritorio (58.12 % y se esperaba 49 %)"
+    },
+    {
+     "type": "feet",
+     "msg": "pies fuera del azul de la walkmask (38.3, 87.5)"
+    }
+   ],
+   "info": [],
+   "score": 1.88,
+   "shot": "capturas/basement/008.png"
+  },
+  {
+   "id": "grid-38.3-90.5",
+   "kind": "grid",
+   "x": 38.3,
+   "y": 90.5,
+   "feet": {
+    "x": 38.3,
+    "y": 90.5
+   },
+   "dexBox": {
+    "x": 35.06,
+    "y": 32.38,
+    "w": 6.48,
+    "h": 58.12
+   },
+   "heightPct": 58.12,
+   "walkable": true,
+   "maskOk": false,
+   "cover": {
+    "hs_armchair": 0
+   },
+   "scale": null,
+   "failures": [
+    {
+     "type": "feet",
+     "msg": "pies fuera del azul de la walkmask (38.3, 90.5)"
+    }
+   ],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 1.5,
+   "shot": "capturas/basement/009.png"
+  },
+  {
+   "id": "grid-46-87.5",
+   "kind": "grid",
+   "x": 46,
+   "y": 87.5,
+   "feet": {
+    "x": 46,
+    "y": 87.5
+   },
+   "dexBox": {
+    "x": 42.76,
+    "y": 29.38,
+    "w": 6.48,
+    "h": 58.12
+   },
+   "heightPct": 58.12,
+   "walkable": true,
+   "maskOk": false,
+   "cover": {
+    "hs_left_desk": 0,
+    "hs_armchair": 0
+   },
+   "scale": {
+    "ref": "hs_left_desk",
+    "expected": 49,
+    "got": 58.12,
+    "dev": 0.19,
+    "baseDy": 9.5
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_left_desk",
+     "dev": 0.19,
+     "msg": "Dex +19 % frente a escritorio (58.12 % y se esperaba 49 %)"
+    },
+    {
+     "type": "feet",
+     "msg": "pies fuera del azul de la walkmask (46, 87.5)"
+    }
+   ],
+   "info": [],
+   "score": 1.88,
+   "shot": "capturas/basement/010.png"
+  },
+  {
+   "id": "grid-46-90.5",
+   "kind": "grid",
+   "x": 46,
+   "y": 90.5,
+   "feet": {
+    "x": 46,
+    "y": 90.5
+   },
+   "dexBox": {
+    "x": 42.76,
+    "y": 32.38,
+    "w": 6.48,
+    "h": 58.12
+   },
+   "heightPct": 58.12,
+   "walkable": true,
+   "maskOk": false,
+   "cover": {
+    "hs_left_desk": 0,
+    "hs_armchair": 0
+   },
+   "scale": null,
+   "failures": [
+    {
+     "type": "feet",
+     "msg": "pies fuera del azul de la walkmask (46, 90.5)"
+    }
+   ],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 1.5,
+   "shot": "capturas/basement/011.png"
+  },
+  {
+   "id": "grid-53.7-87.5",
+   "kind": "grid",
+   "x": 53.7,
+   "y": 87.5,
+   "feet": {
+    "x": 53.7,
+    "y": 87.5
+   },
+   "dexBox": {
+    "x": 50.46,
+    "y": 29.38,
+    "w": 6.48,
+    "h": 58.12
+   },
+   "heightPct": 58.12,
+   "walkable": true,
+   "maskOk": false,
+   "cover": {
+    "hs_left_desk": 0
+   },
+   "scale": {
+    "ref": "hs_left_desk",
+    "expected": 49,
+    "got": 58.12,
+    "dev": 0.19,
+    "baseDy": 9.5
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_left_desk",
+     "dev": 0.19,
+     "msg": "Dex +19 % frente a escritorio (58.12 % y se esperaba 49 %)"
+    },
+    {
+     "type": "feet",
+     "msg": "pies fuera del azul de la walkmask (53.7, 87.5)"
+    }
+   ],
+   "info": [],
+   "score": 1.88,
+   "shot": "capturas/basement/012.png"
+  },
+  {
+   "id": "grid-53.7-90.5",
+   "kind": "grid",
+   "x": 53.7,
+   "y": 90.5,
+   "feet": {
+    "x": 53.7,
+    "y": 90.5
+   },
+   "dexBox": {
+    "x": 50.46,
+    "y": 32.38,
+    "w": 6.48,
+    "h": 58.12
+   },
+   "heightPct": 58.12,
+   "walkable": true,
+   "maskOk": false,
+   "cover": {
+    "hs_left_desk": 0
+   },
+   "scale": null,
+   "failures": [
+    {
+     "type": "feet",
+     "msg": "pies fuera del azul de la walkmask (53.7, 90.5)"
+    }
+   ],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 1.5,
+   "shot": "capturas/basement/013.png"
+  },
+  {
+   "id": "grid-61.5-87.5",
+   "kind": "grid",
+   "x": 61.5,
+   "y": 87.5,
+   "feet": {
+    "x": 61.5,
+    "y": 87.5
+   },
+   "dexBox": {
+    "x": 58.26,
+    "y": 29.38,
+    "w": 6.48,
+    "h": 58.12
+   },
+   "heightPct": 58.12,
+   "walkable": true,
+   "maskOk": false,
+   "cover": {
+    "hs_left_desk": 0
+   },
+   "scale": {
+    "ref": "hs_left_desk",
+    "expected": 49,
+    "got": 58.12,
+    "dev": 0.19,
+    "baseDy": 9.5
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_left_desk",
+     "dev": 0.19,
+     "msg": "Dex +19 % frente a escritorio (58.12 % y se esperaba 49 %)"
+    },
+    {
+     "type": "feet",
+     "msg": "pies fuera del azul de la walkmask (61.5, 87.5)"
+    }
+   ],
+   "info": [],
+   "score": 1.88,
+   "shot": "capturas/basement/014.png"
+  },
+  {
+   "id": "grid-61.5-90.5",
+   "kind": "grid",
+   "x": 61.5,
+   "y": 90.5,
+   "feet": {
+    "x": 61.5,
+    "y": 90.5
+   },
+   "dexBox": {
+    "x": 58.26,
+    "y": 32.38,
+    "w": 6.48,
+    "h": 58.12
+   },
+   "heightPct": 58.12,
+   "walkable": true,
+   "maskOk": false,
+   "cover": {
+    "hs_left_desk": 0
+   },
+   "scale": null,
+   "failures": [
+    {
+     "type": "feet",
+     "msg": "pies fuera del azul de la walkmask (61.5, 90.5)"
+    }
+   ],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 1.5,
+   "shot": "capturas/basement/015.png"
+  },
+  {
+   "id": "grid-69.2-87.5",
+   "kind": "grid",
+   "x": 69.2,
+   "y": 87.5,
+   "feet": {
+    "x": 69.2,
+    "y": 87.5
+   },
+   "dexBox": {
+    "x": 65.96,
+    "y": 29.38,
+    "w": 6.48,
+    "h": 58.12
+   },
+   "heightPct": 58.12,
+   "walkable": true,
+   "maskOk": false,
+   "cover": {
+    "hs_left_desk": 0
+   },
+   "scale": {
+    "ref": "hs_left_desk",
+    "expected": 49,
+    "got": 58.12,
+    "dev": 0.19,
+    "baseDy": 9.5
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_left_desk",
+     "dev": 0.19,
+     "msg": "Dex +19 % frente a escritorio (58.12 % y se esperaba 49 %)"
+    },
+    {
+     "type": "feet",
+     "msg": "pies fuera del azul de la walkmask (69.2, 87.5)"
+    }
+   ],
+   "info": [],
+   "score": 1.88,
+   "shot": "capturas/basement/016.png"
+  },
+  {
+   "id": "grid-69.2-90.5",
+   "kind": "grid",
+   "x": 69.2,
+   "y": 90.5,
+   "feet": {
+    "x": 69.2,
+    "y": 90.5
+   },
+   "dexBox": {
+    "x": 65.96,
+    "y": 32.38,
+    "w": 6.48,
+    "h": 58.12
+   },
+   "heightPct": 58.12,
+   "walkable": true,
+   "maskOk": false,
+   "cover": {
+    "hs_left_desk": 0
+   },
+   "scale": null,
+   "failures": [
+    {
+     "type": "feet",
+     "msg": "pies fuera del azul de la walkmask (69.2, 90.5)"
+    }
+   ],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 1.5,
+   "shot": "capturas/basement/017.png"
+  },
+  {
+   "id": "grid-76.9-87.5",
+   "kind": "grid",
+   "x": 76.9,
+   "y": 87.5,
+   "feet": {
+    "x": 76.9,
+    "y": 87.5
+   },
+   "dexBox": {
+    "x": 73.66,
+    "y": 29.38,
+    "w": 6.48,
+    "h": 58.12
+   },
+   "heightPct": 58.12,
+   "walkable": true,
+   "maskOk": false,
+   "cover": {
+    "hs_equipment": 0
+   },
+   "scale": {
+    "ref": "hs_left_desk",
+    "expected": 49,
+    "got": 58.12,
+    "dev": 0.19,
+    "baseDy": 9.5
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_left_desk",
+     "dev": 0.19,
+     "msg": "Dex +19 % frente a escritorio (58.12 % y se esperaba 49 %)"
+    },
+    {
+     "type": "feet",
+     "msg": "pies fuera del azul de la walkmask (76.9, 87.5)"
+    }
+   ],
+   "info": [],
+   "score": 1.88,
+   "shot": "capturas/basement/018.png"
+  },
+  {
+   "id": "grid-76.9-90.5",
+   "kind": "grid",
+   "x": 76.9,
+   "y": 90.5,
+   "feet": {
+    "x": 76.9,
+    "y": 90.5
+   },
+   "dexBox": {
+    "x": 73.66,
+    "y": 32.38,
+    "w": 6.48,
+    "h": 58.12
+   },
+   "heightPct": 58.12,
+   "walkable": true,
+   "maskOk": false,
+   "cover": {
+    "hs_equipment": 0
+   },
+   "scale": null,
+   "failures": [
+    {
+     "type": "feet",
+     "msg": "pies fuera del azul de la walkmask (76.9, 90.5)"
+    }
+   ],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 1.5,
+   "shot": "capturas/basement/019.png"
+  },
+  {
+   "id": "grid-84.6-87.5",
+   "kind": "grid",
+   "x": 84.6,
+   "y": 87.5,
+   "feet": {
+    "x": 84.6,
+    "y": 87.5
+   },
+   "dexBox": {
+    "x": 81.36,
+    "y": 29.38,
+    "w": 6.48,
+    "h": 58.12
+   },
+   "heightPct": 58.12,
+   "walkable": true,
+   "maskOk": false,
+   "cover": {
+    "hs_equipment": 0
+   },
+   "scale": {
+    "ref": "hs_left_desk",
+    "expected": 49,
+    "got": 58.12,
+    "dev": 0.19,
+    "baseDy": 9.5
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_left_desk",
+     "dev": 0.19,
+     "msg": "Dex +19 % frente a escritorio (58.12 % y se esperaba 49 %)"
+    },
+    {
+     "type": "feet",
+     "msg": "pies fuera del azul de la walkmask (84.6, 87.5)"
+    }
+   ],
+   "info": [],
+   "score": 1.88,
+   "shot": "capturas/basement/020.png"
+  },
+  {
+   "id": "grid-84.6-90.5",
+   "kind": "grid",
+   "x": 84.6,
+   "y": 90.5,
+   "feet": {
+    "x": 84.6,
+    "y": 90.5
+   },
+   "dexBox": {
+    "x": 81.36,
+    "y": 32.38,
+    "w": 6.48,
+    "h": 58.12
+   },
+   "heightPct": 58.12,
+   "walkable": true,
+   "maskOk": false,
+   "cover": {
+    "hs_equipment": 0
+   },
+   "scale": null,
+   "failures": [
+    {
+     "type": "feet",
+     "msg": "pies fuera del azul de la walkmask (84.6, 90.5)"
+    }
+   ],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 1.5,
+   "shot": "capturas/basement/021.png"
+  },
+  {
+   "id": "grid-5.1-77.1",
+   "kind": "grid",
+   "x": 5.1,
+   "y": 77.1,
+   "feet": {
+    "x": 5.1,
+    "y": 77.1
+   },
+   "dexBox": {
+    "x": 1.86,
+    "y": 18.98,
+    "w": 6.48,
+    "h": 58.12
+   },
+   "heightPct": 58.12,
+   "walkable": true,
+   "maskOk": false,
+   "cover": {},
+   "scale": {
+    "ref": "hs_left_desk",
+    "expected": 49,
+    "got": 58.12,
+    "dev": 0.19,
+    "baseDy": 0.9
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_left_desk",
+     "dev": 0.19,
+     "msg": "Dex +19 % frente a escritorio (58.12 % y se esperaba 49 %)"
+    },
+    {
+     "type": "feet",
+     "msg": "pies fuera del azul de la walkmask (5.1, 77.1)"
+    }
+   ],
+   "info": [],
+   "score": 1.88,
+   "shot": "capturas/basement/022.png"
+  },
+  {
+   "id": "grid-5.1-80.4",
+   "kind": "grid",
+   "x": 5.1,
+   "y": 80.4,
+   "feet": {
+    "x": 5.1,
+    "y": 80.4
+   },
+   "dexBox": {
+    "x": 1.86,
+    "y": 22.28,
+    "w": 6.48,
+    "h": 58.12
+   },
+   "heightPct": 58.12,
+   "walkable": true,
+   "maskOk": false,
+   "cover": {},
+   "scale": {
+    "ref": "hs_left_desk",
+    "expected": 49,
+    "got": 58.12,
+    "dev": 0.19,
+    "baseDy": 2.4
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_left_desk",
+     "dev": 0.19,
+     "msg": "Dex +19 % frente a escritorio (58.12 % y se esperaba 49 %)"
+    },
+    {
+     "type": "feet",
+     "msg": "pies fuera del azul de la walkmask (5.1, 80.4)"
+    }
+   ],
+   "info": [],
+   "score": 1.88,
+   "shot": "capturas/basement/023.png"
+  },
+  {
+   "id": "grid-5.1-83.7",
+   "kind": "grid",
+   "x": 5.1,
+   "y": 83.7,
+   "feet": {
+    "x": 5.1,
+    "y": 83.7
+   },
+   "dexBox": {
+    "x": 1.86,
+    "y": 25.58,
+    "w": 6.48,
+    "h": 58.12
+   },
+   "heightPct": 58.12,
+   "walkable": true,
+   "maskOk": false,
+   "cover": {},
+   "scale": {
+    "ref": "hs_left_desk",
+    "expected": 49,
+    "got": 58.12,
+    "dev": 0.19,
+    "baseDy": 5.7
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_left_desk",
+     "dev": 0.19,
+     "msg": "Dex +19 % frente a escritorio (58.12 % y se esperaba 49 %)"
+    },
+    {
+     "type": "feet",
+     "msg": "pies fuera del azul de la walkmask (5.1, 83.7)"
+    }
+   ],
+   "info": [],
+   "score": 1.88,
+   "shot": "capturas/basement/024.png"
+  },
+  {
+   "id": "grid-5.1-87",
+   "kind": "grid",
+   "x": 5.1,
+   "y": 87,
+   "feet": {
+    "x": 5.1,
+    "y": 87
+   },
+   "dexBox": {
+    "x": 1.86,
+    "y": 28.88,
+    "w": 6.48,
+    "h": 58.12
+   },
+   "heightPct": 58.12,
+   "walkable": true,
+   "maskOk": false,
+   "cover": {},
+   "scale": {
+    "ref": "hs_left_desk",
+    "expected": 49,
+    "got": 58.12,
+    "dev": 0.19,
+    "baseDy": 9
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_left_desk",
+     "dev": 0.19,
+     "msg": "Dex +19 % frente a escritorio (58.12 % y se esperaba 49 %)"
+    },
+    {
+     "type": "feet",
+     "msg": "pies fuera del azul de la walkmask (5.1, 87)"
+    }
+   ],
+   "info": [],
+   "score": 1.88,
+   "shot": "capturas/basement/025.png"
+  },
+  {
+   "id": "grid-33.6-79.6",
+   "kind": "grid",
+   "x": 33.6,
+   "y": 79.6,
+   "feet": {
+    "x": 33.6,
+    "y": 79.6
+   },
+   "dexBox": {
+    "x": 30.36,
+    "y": 21.48,
+    "w": 6.48,
+    "h": 58.12
+   },
+   "heightPct": 58.12,
+   "walkable": true,
+   "maskOk": false,
+   "cover": {},
+   "scale": {
+    "ref": "hs_left_desk",
+    "expected": 49,
+    "got": 58.12,
+    "dev": 0.19,
+    "baseDy": 1.6
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_left_desk",
+     "dev": 0.19,
+     "msg": "Dex +19 % frente a escritorio (58.12 % y se esperaba 49 %)"
+    },
+    {
+     "type": "feet",
+     "msg": "pies fuera del azul de la walkmask (33.6, 79.6)"
+    }
+   ],
+   "info": [],
+   "score": 1.88,
+   "shot": "capturas/basement/026.png"
+  },
+  {
+   "id": "grid-33.6-82.4",
+   "kind": "grid",
+   "x": 33.6,
+   "y": 82.4,
+   "feet": {
+    "x": 33.6,
+    "y": 82.4
+   },
+   "dexBox": {
+    "x": 30.36,
+    "y": 24.28,
+    "w": 6.48,
+    "h": 58.12
+   },
+   "heightPct": 58.12,
+   "walkable": true,
+   "maskOk": false,
+   "cover": {},
+   "scale": {
+    "ref": "hs_left_desk",
+    "expected": 49,
+    "got": 58.12,
+    "dev": 0.19,
+    "baseDy": 4.4
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_left_desk",
+     "dev": 0.19,
+     "msg": "Dex +19 % frente a escritorio (58.12 % y se esperaba 49 %)"
+    },
+    {
+     "type": "feet",
+     "msg": "pies fuera del azul de la walkmask (33.6, 82.4)"
+    }
+   ],
+   "info": [],
+   "score": 1.88,
+   "shot": "capturas/basement/027.png"
+  },
+  {
+   "id": "grid-33.6-85.1",
+   "kind": "grid",
+   "x": 33.6,
+   "y": 85.1,
+   "feet": {
+    "x": 33.6,
+    "y": 85.1
+   },
+   "dexBox": {
+    "x": 30.36,
+    "y": 26.98,
+    "w": 6.48,
+    "h": 58.12
+   },
+   "heightPct": 58.12,
+   "walkable": true,
+   "maskOk": false,
+   "cover": {},
+   "scale": {
+    "ref": "hs_left_desk",
+    "expected": 49,
+    "got": 58.12,
+    "dev": 0.19,
+    "baseDy": 7.1
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_left_desk",
+     "dev": 0.19,
+     "msg": "Dex +19 % frente a escritorio (58.12 % y se esperaba 49 %)"
+    },
+    {
+     "type": "feet",
+     "msg": "pies fuera del azul de la walkmask (33.6, 85.1)"
+    }
+   ],
+   "info": [],
+   "score": 1.88,
+   "shot": "capturas/basement/028.png"
+  },
+  {
+   "id": "grid-33.6-87.9",
+   "kind": "grid",
+   "x": 33.6,
+   "y": 87.9,
+   "feet": {
+    "x": 33.6,
+    "y": 87.9
+   },
+   "dexBox": {
+    "x": 30.36,
+    "y": 29.78,
+    "w": 6.48,
+    "h": 58.12
+   },
+   "heightPct": 58.12,
+   "walkable": true,
+   "maskOk": false,
+   "cover": {},
+   "scale": {
+    "ref": "hs_left_desk",
+    "expected": 49,
+    "got": 58.12,
+    "dev": 0.19,
+    "baseDy": 9.9
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_left_desk",
+     "dev": 0.19,
+     "msg": "Dex +19 % frente a escritorio (58.12 % y se esperaba 49 %)"
+    },
+    {
+     "type": "feet",
+     "msg": "pies fuera del azul de la walkmask (33.6, 87.9)"
+    }
+   ],
+   "info": [],
+   "score": 1.88,
+   "shot": "capturas/basement/029.png"
+  },
+  {
+   "id": "hs_main_computer",
+   "kind": "arrival",
+   "x": 38.7,
+   "y": 78.7,
+   "feet": {
+    "x": 38.7,
+    "y": 78.7
+   },
+   "dexBox": {
+    "x": 35.46,
+    "y": 20.58,
+    "w": 6.48,
+    "h": 58.12
+   },
+   "heightPct": 58.12,
+   "walkable": true,
+   "maskOk": false,
+   "cover": {
+    "hs_armchair": 0
+   },
+   "scale": {
+    "ref": "hs_left_desk",
+    "expected": 49,
+    "got": 58.12,
+    "dev": 0.19,
+    "baseDy": 0.7
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_left_desk",
+     "dev": 0.19,
+     "msg": "Dex +19 % frente a escritorio (58.12 % y se esperaba 49 %)"
+    },
+    {
+     "type": "feet",
+     "msg": "pies fuera del azul de la walkmask (38.7, 78.7)"
+    }
+   ],
+   "info": [],
+   "score": 1.88,
+   "shot": "capturas/basement/030.png"
+  },
+  {
+   "id": "hs_stairs",
+   "kind": "arrival",
+   "x": 6.8,
+   "y": 75.9,
+   "feet": {
+    "x": 6.8,
+    "y": 75.9
+   },
+   "dexBox": {
+    "x": 3.56,
+    "y": 17.78,
+    "w": 6.48,
+    "h": 58.12
+   },
+   "heightPct": 58.12,
+   "walkable": true,
+   "maskOk": false,
+   "cover": {},
+   "scale": {
+    "ref": "hs_equipment",
+    "expected": 49.58,
+    "got": 58.12,
+    "dev": 0.17,
+    "baseDy": 0.4
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_equipment",
+     "dev": 0.17,
+     "msg": "Dex +17 % frente a rack de equipos (58.12 % y se esperaba 49.58 %)"
+    },
+    {
+     "type": "feet",
+     "msg": "pies fuera del azul de la walkmask (6.8, 75.9)"
+    }
+   ],
+   "info": [],
+   "score": 1.84,
+   "shot": "capturas/basement/031.png"
+  },
+  {
+   "id": "hs_left_desk",
+   "kind": "arrival",
+   "x": 38.7,
+   "y": 78.7,
+   "feet": {
+    "x": 38.7,
+    "y": 78.7
+   },
+   "dexBox": {
+    "x": 35.46,
+    "y": 20.58,
+    "w": 6.48,
+    "h": 58.12
+   },
+   "heightPct": 58.12,
+   "walkable": true,
+   "maskOk": false,
+   "cover": {
+    "hs_armchair": 0
+   },
+   "scale": {
+    "ref": "hs_left_desk",
+    "expected": 49,
+    "got": 58.12,
+    "dev": 0.19,
+    "baseDy": 0.7
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_left_desk",
+     "dev": 0.19,
+     "msg": "Dex +19 % frente a escritorio (58.12 % y se esperaba 49 %)"
+    },
+    {
+     "type": "feet",
+     "msg": "pies fuera del azul de la walkmask (38.7, 78.7)"
+    }
+   ],
+   "info": [],
+   "score": 1.88,
+   "shot": "capturas/basement/032.png"
+  },
+  {
+   "id": "hs_hanging_light",
+   "kind": "arrival",
+   "x": 6.8,
+   "y": 75.9,
+   "feet": {
+    "x": 6.8,
+    "y": 75.9
+   },
+   "dexBox": {
+    "x": 3.56,
+    "y": 17.78,
+    "w": 6.48,
+    "h": 58.12
+   },
+   "heightPct": 58.12,
+   "walkable": true,
+   "maskOk": false,
+   "cover": {},
+   "scale": {
+    "ref": "hs_equipment",
+    "expected": 49.58,
+    "got": 58.12,
+    "dev": 0.17,
+    "baseDy": 0.4
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_equipment",
+     "dev": 0.17,
+     "msg": "Dex +17 % frente a rack de equipos (58.12 % y se esperaba 49.58 %)"
+    },
+    {
+     "type": "feet",
+     "msg": "pies fuera del azul de la walkmask (6.8, 75.9)"
+    }
+   ],
+   "info": [],
+   "score": 1.84,
+   "shot": "capturas/basement/033.png"
+  },
+  {
+   "id": "hs_equipment",
+   "kind": "arrival",
+   "x": 79.8,
+   "y": 86.5,
+   "feet": {
+    "x": 79.8,
+    "y": 86.5
+   },
+   "dexBox": {
+    "x": 76.56,
+    "y": 28.38,
+    "w": 6.48,
+    "h": 58.12
+   },
+   "heightPct": 58.12,
+   "walkable": true,
+   "maskOk": false,
+   "cover": {
+    "hs_equipment": 0
+   },
+   "scale": {
+    "ref": "hs_left_desk",
+    "expected": 49,
+    "got": 58.12,
+    "dev": 0.19,
+    "baseDy": 8.5
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_left_desk",
+     "dev": 0.19,
+     "msg": "Dex +19 % frente a escritorio (58.12 % y se esperaba 49 %)"
+    },
+    {
+     "type": "feet",
+     "msg": "pies fuera del azul de la walkmask (79.8, 86.5)"
+    }
+   ],
+   "info": [],
+   "score": 1.88,
+   "shot": "capturas/basement/034.png"
+  },
+  {
+   "id": "hs_armchair",
+   "kind": "arrival",
+   "x": 38.7,
+   "y": 78.7,
+   "feet": {
+    "x": 38.7,
+    "y": 78.7
+   },
+   "dexBox": {
+    "x": 35.46,
+    "y": 20.58,
+    "w": 6.48,
+    "h": 58.12
+   },
+   "heightPct": 58.12,
+   "walkable": true,
+   "maskOk": false,
+   "cover": {
+    "hs_armchair": 0
+   },
+   "scale": {
+    "ref": "hs_left_desk",
+    "expected": 49,
+    "got": 58.12,
+    "dev": 0.19,
+    "baseDy": 0.7
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_left_desk",
+     "dev": 0.19,
+     "msg": "Dex +19 % frente a escritorio (58.12 % y se esperaba 49 %)"
+    },
+    {
+     "type": "feet",
+     "msg": "pies fuera del azul de la walkmask (38.7, 78.7)"
+    }
+   ],
+   "info": [],
+   "score": 1.88,
+   "shot": "capturas/basement/035.png"
+  },
+  {
+   "id": "hs_floor",
+   "kind": "arrival",
+   "x": 82.3,
+   "y": 90,
+   "feet": {
+    "x": 82.3,
+    "y": 90
+   },
+   "dexBox": {
+    "x": 79.06,
+    "y": 31.88,
+    "w": 6.48,
+    "h": 58.12
+   },
+   "heightPct": 58.12,
+   "walkable": true,
+   "maskOk": false,
+   "cover": {
+    "hs_equipment": 0
+   },
+   "scale": null,
+   "failures": [
+    {
+     "type": "feet",
+     "msg": "pies fuera del azul de la walkmask (82.3, 90)"
+    }
+   ],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 1.5,
+   "shot": "capturas/basement/036.png"
+  },
+  {
+   "id": "hs_dead_mouse",
+   "kind": "arrival",
+   "x": 87.5,
+   "y": 86.5,
+   "feet": {
+    "x": 87.5,
+    "y": 86.5
+   },
+   "dexBox": {
+    "x": 84.26,
+    "y": 28.38,
+    "w": 6.48,
+    "h": 58.12
+   },
+   "heightPct": 58.12,
+   "walkable": true,
+   "maskOk": false,
+   "cover": {},
+   "scale": {
+    "ref": "hs_left_desk",
+    "expected": 49,
+    "got": 58.12,
+    "dev": 0.19,
+    "baseDy": 8.5
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_left_desk",
+     "dev": 0.19,
+     "msg": "Dex +19 % frente a escritorio (58.12 % y se esperaba 49 %)"
+    },
+    {
+     "type": "feet",
+     "msg": "pies fuera del azul de la walkmask (87.5, 86.5)"
+    }
+   ],
+   "info": [],
+   "score": 1.88,
+   "shot": "capturas/basement/037.png"
+  },
+  {
+   "id": "hs_wall_notes",
+   "kind": "arrival",
+   "x": 88,
+   "y": 86.5,
+   "feet": {
+    "x": 88,
+    "y": 86.5
+   },
+   "dexBox": {
+    "x": 84.76,
+    "y": 28.38,
+    "w": 6.48,
+    "h": 58.12
+   },
+   "heightPct": 58.12,
+   "walkable": true,
+   "maskOk": false,
+   "cover": {},
+   "scale": {
+    "ref": "hs_left_desk",
+    "expected": 49,
+    "got": 58.12,
+    "dev": 0.19,
+    "baseDy": 8.5
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_left_desk",
+     "dev": 0.19,
+     "msg": "Dex +19 % frente a escritorio (58.12 % y se esperaba 49 %)"
+    },
+    {
+     "type": "feet",
+     "msg": "pies fuera del azul de la walkmask (88, 86.5)"
+    }
+   ],
+   "info": [],
+   "score": 1.88,
+   "shot": "capturas/basement/038.png"
+  },
+  {
+   "id": "hs_ceiling_pipes",
+   "kind": "arrival",
+   "x": 38.7,
+   "y": 78.7,
+   "feet": {
+    "x": 38.7,
+    "y": 78.7
+   },
+   "dexBox": {
+    "x": 35.46,
+    "y": 20.58,
+    "w": 6.48,
+    "h": 58.12
+   },
+   "heightPct": 58.12,
+   "walkable": true,
+   "maskOk": false,
+   "cover": {
+    "hs_armchair": 0
+   },
+   "scale": {
+    "ref": "hs_left_desk",
+    "expected": 49,
+    "got": 58.12,
+    "dev": 0.19,
+    "baseDy": 0.7
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_left_desk",
+     "dev": 0.19,
+     "msg": "Dex +19 % frente a escritorio (58.12 % y se esperaba 49 %)"
+    },
+    {
+     "type": "feet",
+     "msg": "pies fuera del azul de la walkmask (38.7, 78.7)"
+    }
+   ],
+   "info": [],
+   "score": 1.88,
+   "shot": "capturas/basement/039.png"
+  },
+  {
+   "id": "hs_stone_walls",
+   "kind": "arrival",
+   "x": 88,
+   "y": 86.5,
+   "feet": {
+    "x": 88,
+    "y": 86.5
+   },
+   "dexBox": {
+    "x": 84.76,
+    "y": 28.38,
+    "w": 6.48,
+    "h": 58.12
+   },
+   "heightPct": 58.12,
+   "walkable": true,
+   "maskOk": false,
+   "cover": {},
+   "scale": {
+    "ref": "hs_left_desk",
+    "expected": 49,
+    "got": 58.12,
+    "dev": 0.19,
+    "baseDy": 8.5
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_left_desk",
+     "dev": 0.19,
+     "msg": "Dex +19 % frente a escritorio (58.12 % y se esperaba 49 %)"
+    },
+    {
+     "type": "feet",
+     "msg": "pies fuera del azul de la walkmask (88, 86.5)"
+    }
+   ],
+   "info": [],
+   "score": 1.88,
+   "shot": "capturas/basement/040.png"
+  },
+  {
+   "id": "hs_left_desk:izq",
+   "kind": "ref",
+   "x": 38.7,
+   "y": 78.7,
+   "feet": {
+    "x": 38.7,
+    "y": 78.7
+   },
+   "dexBox": {
+    "x": 35.46,
+    "y": 20.58,
+    "w": 6.48,
+    "h": 58.12
+   },
+   "heightPct": 58.12,
+   "walkable": true,
+   "maskOk": false,
+   "cover": {
+    "hs_armchair": 0
+   },
+   "scale": {
+    "ref": "hs_left_desk",
+    "expected": 49,
+    "got": 58.12,
+    "dev": 0.19,
+    "baseDy": 0.7
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_left_desk",
+     "dev": 0.19,
+     "msg": "Dex +19 % frente a escritorio (58.12 % y se esperaba 49 %)"
+    },
+    {
+     "type": "feet",
+     "msg": "pies fuera del azul de la walkmask (38.7, 78.7)"
+    }
+   ],
+   "info": [],
+   "score": 1.88,
+   "shot": "capturas/basement/041.png"
+  },
+  {
+   "id": "hs_left_desk:der",
+   "kind": "ref",
+   "x": 69.8,
+   "y": 86.5,
+   "feet": {
+    "x": 69.8,
+    "y": 86.5
+   },
+   "dexBox": {
+    "x": 66.56,
+    "y": 28.38,
+    "w": 6.48,
+    "h": 58.12
+   },
+   "heightPct": 58.12,
+   "walkable": true,
+   "maskOk": false,
+   "cover": {
+    "hs_left_desk": 0
+   },
+   "scale": {
+    "ref": "hs_left_desk",
+    "expected": 49,
+    "got": 58.12,
+    "dev": 0.19,
+    "baseDy": 8.5
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_left_desk",
+     "dev": 0.19,
+     "msg": "Dex +19 % frente a escritorio (58.12 % y se esperaba 49 %)"
+    },
+    {
+     "type": "feet",
+     "msg": "pies fuera del azul de la walkmask (69.8, 86.5)"
+    }
+   ],
+   "info": [],
+   "score": 1.88,
+   "shot": "capturas/basement/042.png"
+  },
+  {
+   "id": "hs_left_desk:detrás",
+   "kind": "ref",
+   "x": 57.8,
+   "y": 86.5,
+   "feet": {
+    "x": 57.8,
+    "y": 86.5
+   },
+   "dexBox": {
+    "x": 54.56,
+    "y": 28.38,
+    "w": 6.48,
+    "h": 58.12
+   },
+   "heightPct": 58.12,
+   "walkable": true,
+   "maskOk": false,
+   "cover": {
+    "hs_left_desk": 0
+   },
+   "scale": {
+    "ref": "hs_left_desk",
+    "expected": 49,
+    "got": 58.12,
+    "dev": 0.19,
+    "baseDy": 8.5
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_left_desk",
+     "dev": 0.19,
+     "msg": "Dex +19 % frente a escritorio (58.12 % y se esperaba 49 %)"
+    },
+    {
+     "type": "feet",
+     "msg": "pies fuera del azul de la walkmask (57.8, 86.5)"
+    }
+   ],
+   "info": [],
+   "score": 1.88,
+   "shot": "capturas/basement/043.png"
+  },
+  {
+   "id": "hs_equipment:izq",
+   "kind": "ref",
+   "x": 73.6,
+   "y": 86.5,
+   "feet": {
+    "x": 73.6,
+    "y": 86.5
+   },
+   "dexBox": {
+    "x": 70.36,
+    "y": 28.38,
+    "w": 6.48,
+    "h": 58.12
+   },
+   "heightPct": 58.12,
+   "walkable": true,
+   "maskOk": false,
+   "cover": {
+    "hs_equipment": 0
+   },
+   "scale": {
+    "ref": "hs_left_desk",
+    "expected": 49,
+    "got": 58.12,
+    "dev": 0.19,
+    "baseDy": 8.5
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_left_desk",
+     "dev": 0.19,
+     "msg": "Dex +19 % frente a escritorio (58.12 % y se esperaba 49 %)"
+    },
+    {
+     "type": "feet",
+     "msg": "pies fuera del azul de la walkmask (73.6, 86.5)"
+    }
+   ],
+   "info": [],
+   "score": 1.88,
+   "shot": "capturas/basement/044.png"
+  },
+  {
+   "id": "hs_equipment:der",
+   "kind": "ref",
+   "x": 86,
+   "y": 86.5,
+   "feet": {
+    "x": 86,
+    "y": 86.5
+   },
+   "dexBox": {
+    "x": 82.76,
+    "y": 28.38,
+    "w": 6.48,
+    "h": 58.12
+   },
+   "heightPct": 58.12,
+   "walkable": true,
+   "maskOk": false,
+   "cover": {
+    "hs_equipment": 0
+   },
+   "scale": {
+    "ref": "hs_left_desk",
+    "expected": 49,
+    "got": 58.12,
+    "dev": 0.19,
+    "baseDy": 8.5
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_left_desk",
+     "dev": 0.19,
+     "msg": "Dex +19 % frente a escritorio (58.12 % y se esperaba 49 %)"
+    },
+    {
+     "type": "feet",
+     "msg": "pies fuera del azul de la walkmask (86, 86.5)"
+    }
+   ],
+   "info": [],
+   "score": 1.88,
+   "shot": "capturas/basement/045.png"
+  },
+  {
+   "id": "hs_equipment:detrás",
+   "kind": "ref",
+   "x": 79.8,
+   "y": 86.5,
+   "feet": {
+    "x": 79.8,
+    "y": 86.5
+   },
+   "dexBox": {
+    "x": 76.56,
+    "y": 28.38,
+    "w": 6.48,
+    "h": 58.12
+   },
+   "heightPct": 58.12,
+   "walkable": true,
+   "maskOk": false,
+   "cover": {
+    "hs_equipment": 0
+   },
+   "scale": {
+    "ref": "hs_left_desk",
+    "expected": 49,
+    "got": 58.12,
+    "dev": 0.19,
+    "baseDy": 8.5
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_left_desk",
+     "dev": 0.19,
+     "msg": "Dex +19 % frente a escritorio (58.12 % y se esperaba 49 %)"
+    },
+    {
+     "type": "feet",
+     "msg": "pies fuera del azul de la walkmask (79.8, 86.5)"
+    }
+   ],
+   "info": [],
+   "score": 1.88,
+   "shot": "capturas/basement/046.png"
+  },
+  {
+   "id": "hs_armchair:izq",
+   "kind": "ref",
+   "x": 37.7,
+   "y": 78.7,
+   "feet": {
+    "x": 37.7,
+    "y": 78.7
+   },
+   "dexBox": {
+    "x": 34.46,
+    "y": 20.58,
+    "w": 6.48,
+    "h": 58.12
+   },
+   "heightPct": 58.12,
+   "walkable": true,
+   "maskOk": false,
+   "cover": {
+    "hs_armchair": 0
+   },
+   "scale": {
+    "ref": "hs_left_desk",
+    "expected": 49,
+    "got": 58.12,
+    "dev": 0.19,
+    "baseDy": 0.7
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_left_desk",
+     "dev": 0.19,
+     "msg": "Dex +19 % frente a escritorio (58.12 % y se esperaba 49 %)"
+    },
+    {
+     "type": "feet",
+     "msg": "pies fuera del azul de la walkmask (37.7, 78.7)"
+    }
+   ],
+   "info": [],
+   "score": 1.88,
+   "shot": "capturas/basement/047.png"
+  },
+  {
+   "id": "hs_armchair:der",
+   "kind": "ref",
+   "x": 38.7,
+   "y": 78.7,
+   "feet": {
+    "x": 38.7,
+    "y": 78.7
+   },
+   "dexBox": {
+    "x": 35.46,
+    "y": 20.58,
+    "w": 6.48,
+    "h": 58.12
+   },
+   "heightPct": 58.12,
+   "walkable": true,
+   "maskOk": false,
+   "cover": {
+    "hs_armchair": 0
+   },
+   "scale": {
+    "ref": "hs_left_desk",
+    "expected": 49,
+    "got": 58.12,
+    "dev": 0.19,
+    "baseDy": 0.7
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_left_desk",
+     "dev": 0.19,
+     "msg": "Dex +19 % frente a escritorio (58.12 % y se esperaba 49 %)"
+    },
+    {
+     "type": "feet",
+     "msg": "pies fuera del azul de la walkmask (38.7, 78.7)"
+    }
+   ],
+   "info": [],
+   "score": 1.88,
+   "shot": "capturas/basement/048.png"
+  },
+  {
+   "id": "hs_armchair:detrás",
+   "kind": "ref",
+   "x": 38.7,
+   "y": 78.7,
+   "feet": {
+    "x": 38.7,
+    "y": 78.7
+   },
+   "dexBox": {
+    "x": 35.46,
+    "y": 20.58,
+    "w": 6.48,
+    "h": 58.12
+   },
+   "heightPct": 58.12,
+   "walkable": true,
+   "maskOk": false,
+   "cover": {
+    "hs_armchair": 0
+   },
+   "scale": {
+    "ref": "hs_left_desk",
+    "expected": 49,
+    "got": 58.12,
+    "dev": 0.19,
+    "baseDy": 0.7
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_left_desk",
+     "dev": 0.19,
+     "msg": "Dex +19 % frente a escritorio (58.12 % y se esperaba 49 %)"
+    },
+    {
+     "type": "feet",
+     "msg": "pies fuera del azul de la walkmask (38.7, 78.7)"
+    }
+   ],
+   "info": [],
+   "score": 1.88,
+   "shot": "capturas/basement/049.png"
+  }
+ ]
+}

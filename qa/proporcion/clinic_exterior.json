@@ -1,0 +1,2365 @@
+{
+ "scene": "clinic_exterior",
+ "scalePolicy": "measure",
+ "summary": {
+  "positions": 65,
+  "failing": 46,
+  "byType": {
+   "scale": 46
+  }
+ },
+ "positions": [
+  {
+   "id": "grid-9.4-92.7",
+   "kind": "grid",
+   "x": 9.4,
+   "y": 92.7,
+   "feet": {
+    "x": 9.4,
+    "y": 92.7
+   },
+   "dexBox": {
+    "x": 7.28,
+    "y": 54.71,
+    "w": 4.24,
+    "h": 37.99
+   },
+   "heightPct": 38.01,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": {
+    "ref": "hs_bench",
+    "expected": 20.59,
+    "got": 38.01,
+    "dev": 0.85,
+    "baseDy": 6.8
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_bench",
+     "dev": 0.85,
+     "msg": "Dex +85 % frente a banco de espera (38.01 % y se esperaba 20.59 %)"
+    }
+   ],
+   "info": [],
+   "score": 1.7,
+   "shot": "capturas/clinic_exterior/000.png"
+  },
+  {
+   "id": "grid-9.4-95.6",
+   "kind": "grid",
+   "x": 9.4,
+   "y": 95.6,
+   "feet": {
+    "x": 9.4,
+    "y": 95.6
+   },
+   "dexBox": {
+    "x": 7.22,
+    "y": 56.44,
+    "w": 4.37,
+    "h": 39.16
+   },
+   "heightPct": 39.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": {
+    "ref": "hs_bench",
+    "expected": 20.59,
+    "got": 39.18,
+    "dev": 0.9,
+    "baseDy": 9.7
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_bench",
+     "dev": 0.9,
+     "msg": "Dex +90 % frente a banco de espera (39.18 % y se esperaba 20.59 %)"
+    }
+   ],
+   "info": [],
+   "score": 1.8,
+   "shot": "capturas/clinic_exterior/001.png"
+  },
+  {
+   "id": "grid-9.4-98.5",
+   "kind": "grid",
+   "x": 9.4,
+   "y": 98.5,
+   "feet": {
+    "x": 9.4,
+    "y": 98.5
+   },
+   "dexBox": {
+    "x": 7.21,
+    "y": 59.18,
+    "w": 4.38,
+    "h": 39.32
+   },
+   "heightPct": 39.34,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "grid-17.3-92.7",
+   "kind": "grid",
+   "x": 17.3,
+   "y": 92.7,
+   "feet": {
+    "x": 17.3,
+    "y": 92.7
+   },
+   "dexBox": {
+    "x": 15.18,
+    "y": 54.71,
+    "w": 4.24,
+    "h": 37.99
+   },
+   "heightPct": 38.01,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": {
+    "ref": "hs_bench",
+    "expected": 20.59,
+    "got": 38.01,
+    "dev": 0.85,
+    "baseDy": 6.8
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_bench",
+     "dev": 0.85,
+     "msg": "Dex +85 % frente a banco de espera (38.01 % y se esperaba 20.59 %)"
+    }
+   ],
+   "info": [],
+   "score": 1.7,
+   "shot": "capturas/clinic_exterior/003.png"
+  },
+  {
+   "id": "grid-17.3-95.6",
+   "kind": "grid",
+   "x": 17.3,
+   "y": 95.6,
+   "feet": {
+    "x": 17.3,
+    "y": 95.6
+   },
+   "dexBox": {
+    "x": 15.12,
+    "y": 56.44,
+    "w": 4.37,
+    "h": 39.16
+   },
+   "heightPct": 39.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": {
+    "ref": "hs_bench",
+    "expected": 20.59,
+    "got": 39.18,
+    "dev": 0.9,
+    "baseDy": 9.7
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_bench",
+     "dev": 0.9,
+     "msg": "Dex +90 % frente a banco de espera (39.18 % y se esperaba 20.59 %)"
+    }
+   ],
+   "info": [],
+   "score": 1.8,
+   "shot": "capturas/clinic_exterior/004.png"
+  },
+  {
+   "id": "grid-17.3-98.5",
+   "kind": "grid",
+   "x": 17.3,
+   "y": 98.5,
+   "feet": {
+    "x": 17.3,
+    "y": 98.5
+   },
+   "dexBox": {
+    "x": 15.11,
+    "y": 59.18,
+    "w": 4.38,
+    "h": 39.32
+   },
+   "heightPct": 39.34,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "grid-25.2-92.7",
+   "kind": "grid",
+   "x": 25.2,
+   "y": 92.7,
+   "feet": {
+    "x": 25.2,
+    "y": 92.7
+   },
+   "dexBox": {
+    "x": 23.08,
+    "y": 54.71,
+    "w": 4.24,
+    "h": 37.99
+   },
+   "heightPct": 38.01,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": {
+    "ref": "hs_bench",
+    "expected": 20.59,
+    "got": 38.01,
+    "dev": 0.85,
+    "baseDy": 6.8
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_bench",
+     "dev": 0.85,
+     "msg": "Dex +85 % frente a banco de espera (38.01 % y se esperaba 20.59 %)"
+    }
+   ],
+   "info": [],
+   "score": 1.7,
+   "shot": "capturas/clinic_exterior/006.png"
+  },
+  {
+   "id": "grid-25.2-95.6",
+   "kind": "grid",
+   "x": 25.2,
+   "y": 95.6,
+   "feet": {
+    "x": 25.2,
+    "y": 95.6
+   },
+   "dexBox": {
+    "x": 23.02,
+    "y": 56.44,
+    "w": 4.37,
+    "h": 39.16
+   },
+   "heightPct": 39.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": {
+    "ref": "hs_bench",
+    "expected": 20.59,
+    "got": 39.18,
+    "dev": 0.9,
+    "baseDy": 9.7
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_bench",
+     "dev": 0.9,
+     "msg": "Dex +90 % frente a banco de espera (39.18 % y se esperaba 20.59 %)"
+    }
+   ],
+   "info": [],
+   "score": 1.8,
+   "shot": "capturas/clinic_exterior/007.png"
+  },
+  {
+   "id": "grid-25.2-98.5",
+   "kind": "grid",
+   "x": 25.2,
+   "y": 98.5,
+   "feet": {
+    "x": 25.2,
+    "y": 98.5
+   },
+   "dexBox": {
+    "x": 23.01,
+    "y": 59.18,
+    "w": 4.38,
+    "h": 39.32
+   },
+   "heightPct": 39.34,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "grid-33.1-92.7",
+   "kind": "grid",
+   "x": 33.1,
+   "y": 92.7,
+   "feet": {
+    "x": 33.1,
+    "y": 92.7
+   },
+   "dexBox": {
+    "x": 30.98,
+    "y": 54.71,
+    "w": 4.24,
+    "h": 37.99
+   },
+   "heightPct": 38.01,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_trash_can": 0
+   },
+   "scale": {
+    "ref": "hs_bench",
+    "expected": 20.59,
+    "got": 38.01,
+    "dev": 0.85,
+    "baseDy": 6.8
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_bench",
+     "dev": 0.85,
+     "msg": "Dex +85 % frente a banco de espera (38.01 % y se esperaba 20.59 %)"
+    }
+   ],
+   "info": [],
+   "score": 1.7,
+   "shot": "capturas/clinic_exterior/009.png"
+  },
+  {
+   "id": "grid-33.1-95.6",
+   "kind": "grid",
+   "x": 33.1,
+   "y": 95.6,
+   "feet": {
+    "x": 33.1,
+    "y": 95.6
+   },
+   "dexBox": {
+    "x": 30.92,
+    "y": 56.44,
+    "w": 4.37,
+    "h": 39.16
+   },
+   "heightPct": 39.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_trash_can": 0
+   },
+   "scale": {
+    "ref": "hs_bench",
+    "expected": 20.59,
+    "got": 39.18,
+    "dev": 0.9,
+    "baseDy": 9.7
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_bench",
+     "dev": 0.9,
+     "msg": "Dex +90 % frente a banco de espera (39.18 % y se esperaba 20.59 %)"
+    }
+   ],
+   "info": [],
+   "score": 1.8,
+   "shot": "capturas/clinic_exterior/010.png"
+  },
+  {
+   "id": "grid-33.1-98.5",
+   "kind": "grid",
+   "x": 33.1,
+   "y": 98.5,
+   "feet": {
+    "x": 33.1,
+    "y": 98.5
+   },
+   "dexBox": {
+    "x": 30.91,
+    "y": 59.18,
+    "w": 4.38,
+    "h": 39.32
+   },
+   "heightPct": 39.34,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_trash_can": 0
+   },
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "grid-40.9-92.7",
+   "kind": "grid",
+   "x": 40.9,
+   "y": 92.7,
+   "feet": {
+    "x": 40.9,
+    "y": 92.7
+   },
+   "dexBox": {
+    "x": 38.78,
+    "y": 54.71,
+    "w": 4.24,
+    "h": 37.99
+   },
+   "heightPct": 38.01,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": {
+    "ref": "hs_bench",
+    "expected": 20.59,
+    "got": 38.01,
+    "dev": 0.85,
+    "baseDy": 6.8
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_bench",
+     "dev": 0.85,
+     "msg": "Dex +85 % frente a banco de espera (38.01 % y se esperaba 20.59 %)"
+    }
+   ],
+   "info": [],
+   "score": 1.7,
+   "shot": "capturas/clinic_exterior/012.png"
+  },
+  {
+   "id": "grid-40.9-95.6",
+   "kind": "grid",
+   "x": 40.9,
+   "y": 95.6,
+   "feet": {
+    "x": 40.9,
+    "y": 95.6
+   },
+   "dexBox": {
+    "x": 38.72,
+    "y": 56.44,
+    "w": 4.37,
+    "h": 39.16
+   },
+   "heightPct": 39.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": {
+    "ref": "hs_bench",
+    "expected": 20.59,
+    "got": 39.18,
+    "dev": 0.9,
+    "baseDy": 9.7
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_bench",
+     "dev": 0.9,
+     "msg": "Dex +90 % frente a banco de espera (39.18 % y se esperaba 20.59 %)"
+    }
+   ],
+   "info": [],
+   "score": 1.8,
+   "shot": "capturas/clinic_exterior/013.png"
+  },
+  {
+   "id": "grid-40.9-98.5",
+   "kind": "grid",
+   "x": 40.9,
+   "y": 98.5,
+   "feet": {
+    "x": 40.9,
+    "y": 98.5
+   },
+   "dexBox": {
+    "x": 38.71,
+    "y": 59.18,
+    "w": 4.38,
+    "h": 39.32
+   },
+   "heightPct": 39.34,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "grid-48.8-92.7",
+   "kind": "grid",
+   "x": 48.8,
+   "y": 92.7,
+   "feet": {
+    "x": 48.8,
+    "y": 92.7
+   },
+   "dexBox": {
+    "x": 46.68,
+    "y": 54.71,
+    "w": 4.24,
+    "h": 37.99
+   },
+   "heightPct": 38.01,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_main_entrance": 0
+   },
+   "scale": {
+    "ref": "hs_bench",
+    "expected": 20.59,
+    "got": 38.01,
+    "dev": 0.85,
+    "baseDy": 6.8
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_bench",
+     "dev": 0.85,
+     "msg": "Dex +85 % frente a banco de espera (38.01 % y se esperaba 20.59 %)"
+    }
+   ],
+   "info": [],
+   "score": 1.7,
+   "shot": "capturas/clinic_exterior/015.png"
+  },
+  {
+   "id": "grid-48.8-95.6",
+   "kind": "grid",
+   "x": 48.8,
+   "y": 95.6,
+   "feet": {
+    "x": 48.8,
+    "y": 95.6
+   },
+   "dexBox": {
+    "x": 46.62,
+    "y": 56.44,
+    "w": 4.37,
+    "h": 39.16
+   },
+   "heightPct": 39.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_main_entrance": 0
+   },
+   "scale": {
+    "ref": "hs_bench",
+    "expected": 20.59,
+    "got": 39.18,
+    "dev": 0.9,
+    "baseDy": 9.7
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_bench",
+     "dev": 0.9,
+     "msg": "Dex +90 % frente a banco de espera (39.18 % y se esperaba 20.59 %)"
+    }
+   ],
+   "info": [],
+   "score": 1.8,
+   "shot": "capturas/clinic_exterior/016.png"
+  },
+  {
+   "id": "grid-48.8-98.5",
+   "kind": "grid",
+   "x": 48.8,
+   "y": 98.5,
+   "feet": {
+    "x": 48.8,
+    "y": 98.5
+   },
+   "dexBox": {
+    "x": 46.61,
+    "y": 59.18,
+    "w": 4.38,
+    "h": 39.32
+   },
+   "heightPct": 39.34,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_main_entrance": 0
+   },
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "grid-56.7-92.7",
+   "kind": "grid",
+   "x": 56.7,
+   "y": 92.7,
+   "feet": {
+    "x": 56.7,
+    "y": 92.7
+   },
+   "dexBox": {
+    "x": 54.58,
+    "y": 54.71,
+    "w": 4.24,
+    "h": 37.99
+   },
+   "heightPct": 38.01,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": {
+    "ref": "hs_bench",
+    "expected": 20.59,
+    "got": 38.01,
+    "dev": 0.85,
+    "baseDy": 6.8
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_bench",
+     "dev": 0.85,
+     "msg": "Dex +85 % frente a banco de espera (38.01 % y se esperaba 20.59 %)"
+    }
+   ],
+   "info": [],
+   "score": 1.7,
+   "shot": "capturas/clinic_exterior/018.png"
+  },
+  {
+   "id": "grid-56.7-95.6",
+   "kind": "grid",
+   "x": 56.7,
+   "y": 95.6,
+   "feet": {
+    "x": 56.7,
+    "y": 95.6
+   },
+   "dexBox": {
+    "x": 54.52,
+    "y": 56.44,
+    "w": 4.37,
+    "h": 39.16
+   },
+   "heightPct": 39.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": {
+    "ref": "hs_bench",
+    "expected": 20.59,
+    "got": 39.18,
+    "dev": 0.9,
+    "baseDy": 9.7
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_bench",
+     "dev": 0.9,
+     "msg": "Dex +90 % frente a banco de espera (39.18 % y se esperaba 20.59 %)"
+    }
+   ],
+   "info": [],
+   "score": 1.8,
+   "shot": "capturas/clinic_exterior/019.png"
+  },
+  {
+   "id": "grid-56.7-98.5",
+   "kind": "grid",
+   "x": 56.7,
+   "y": 98.5,
+   "feet": {
+    "x": 56.7,
+    "y": 98.5
+   },
+   "dexBox": {
+    "x": 54.51,
+    "y": 59.18,
+    "w": 4.38,
+    "h": 39.32
+   },
+   "heightPct": 39.34,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "grid-64.6-92.7",
+   "kind": "grid",
+   "x": 64.6,
+   "y": 92.7,
+   "feet": {
+    "x": 64.6,
+    "y": 92.7
+   },
+   "dexBox": {
+    "x": 62.48,
+    "y": 54.71,
+    "w": 4.24,
+    "h": 37.99
+   },
+   "heightPct": 38.01,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_bench": 0
+   },
+   "scale": {
+    "ref": "hs_bench",
+    "expected": 20.59,
+    "got": 38.01,
+    "dev": 0.85,
+    "baseDy": 6.8
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_bench",
+     "dev": 0.85,
+     "msg": "Dex +85 % frente a banco de espera (38.01 % y se esperaba 20.59 %)"
+    }
+   ],
+   "info": [],
+   "score": 1.7,
+   "shot": "capturas/clinic_exterior/021.png"
+  },
+  {
+   "id": "grid-64.6-95.6",
+   "kind": "grid",
+   "x": 64.6,
+   "y": 95.6,
+   "feet": {
+    "x": 64.6,
+    "y": 95.6
+   },
+   "dexBox": {
+    "x": 62.42,
+    "y": 56.44,
+    "w": 4.37,
+    "h": 39.16
+   },
+   "heightPct": 39.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_bench": 0
+   },
+   "scale": {
+    "ref": "hs_bench",
+    "expected": 20.59,
+    "got": 39.18,
+    "dev": 0.9,
+    "baseDy": 9.7
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_bench",
+     "dev": 0.9,
+     "msg": "Dex +90 % frente a banco de espera (39.18 % y se esperaba 20.59 %)"
+    }
+   ],
+   "info": [],
+   "score": 1.8,
+   "shot": "capturas/clinic_exterior/022.png"
+  },
+  {
+   "id": "grid-64.6-98.5",
+   "kind": "grid",
+   "x": 64.6,
+   "y": 98.5,
+   "feet": {
+    "x": 64.6,
+    "y": 98.5
+   },
+   "dexBox": {
+    "x": 62.41,
+    "y": 59.18,
+    "w": 4.38,
+    "h": 39.32
+   },
+   "heightPct": 39.34,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_bench": 0
+   },
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "grid-72.4-92.7",
+   "kind": "grid",
+   "x": 72.4,
+   "y": 92.7,
+   "feet": {
+    "x": 72.4,
+    "y": 92.7
+   },
+   "dexBox": {
+    "x": 70.28,
+    "y": 54.71,
+    "w": 4.24,
+    "h": 37.99
+   },
+   "heightPct": 38.01,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_visitor_box": 0
+   },
+   "scale": {
+    "ref": "hs_bench",
+    "expected": 20.59,
+    "got": 38.01,
+    "dev": 0.85,
+    "baseDy": 6.8
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_bench",
+     "dev": 0.85,
+     "msg": "Dex +85 % frente a banco de espera (38.01 % y se esperaba 20.59 %)"
+    }
+   ],
+   "info": [],
+   "score": 1.7,
+   "shot": "capturas/clinic_exterior/024.png"
+  },
+  {
+   "id": "grid-72.4-95.6",
+   "kind": "grid",
+   "x": 72.4,
+   "y": 95.6,
+   "feet": {
+    "x": 72.4,
+    "y": 95.6
+   },
+   "dexBox": {
+    "x": 70.22,
+    "y": 56.44,
+    "w": 4.37,
+    "h": 39.16
+   },
+   "heightPct": 39.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_visitor_box": 0
+   },
+   "scale": {
+    "ref": "hs_bench",
+    "expected": 20.59,
+    "got": 39.18,
+    "dev": 0.9,
+    "baseDy": 9.7
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_bench",
+     "dev": 0.9,
+     "msg": "Dex +90 % frente a banco de espera (39.18 % y se esperaba 20.59 %)"
+    }
+   ],
+   "info": [],
+   "score": 1.8,
+   "shot": "capturas/clinic_exterior/025.png"
+  },
+  {
+   "id": "grid-72.4-98.5",
+   "kind": "grid",
+   "x": 72.4,
+   "y": 98.5,
+   "feet": {
+    "x": 72.4,
+    "y": 98.5
+   },
+   "dexBox": {
+    "x": 70.21,
+    "y": 59.18,
+    "w": 4.38,
+    "h": 39.32
+   },
+   "heightPct": 39.34,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_visitor_box": 0
+   },
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "grid-80.3-92.7",
+   "kind": "grid",
+   "x": 80.3,
+   "y": 92.7,
+   "feet": {
+    "x": 80.3,
+    "y": 92.7
+   },
+   "dexBox": {
+    "x": 78.18,
+    "y": 54.71,
+    "w": 4.24,
+    "h": 37.99
+   },
+   "heightPct": 38.01,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": {
+    "ref": "hs_bench",
+    "expected": 20.59,
+    "got": 38.01,
+    "dev": 0.85,
+    "baseDy": 6.8
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_bench",
+     "dev": 0.85,
+     "msg": "Dex +85 % frente a banco de espera (38.01 % y se esperaba 20.59 %)"
+    }
+   ],
+   "info": [],
+   "score": 1.7,
+   "shot": "capturas/clinic_exterior/027.png"
+  },
+  {
+   "id": "grid-80.3-95.6",
+   "kind": "grid",
+   "x": 80.3,
+   "y": 95.6,
+   "feet": {
+    "x": 80.3,
+    "y": 95.6
+   },
+   "dexBox": {
+    "x": 78.12,
+    "y": 56.44,
+    "w": 4.37,
+    "h": 39.16
+   },
+   "heightPct": 39.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": {
+    "ref": "hs_bench",
+    "expected": 20.59,
+    "got": 39.18,
+    "dev": 0.9,
+    "baseDy": 9.7
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_bench",
+     "dev": 0.9,
+     "msg": "Dex +90 % frente a banco de espera (39.18 % y se esperaba 20.59 %)"
+    }
+   ],
+   "info": [],
+   "score": 1.8,
+   "shot": "capturas/clinic_exterior/028.png"
+  },
+  {
+   "id": "grid-80.3-98.5",
+   "kind": "grid",
+   "x": 80.3,
+   "y": 98.5,
+   "feet": {
+    "x": 80.3,
+    "y": 98.5
+   },
+   "dexBox": {
+    "x": 78.11,
+    "y": 59.18,
+    "w": 4.38,
+    "h": 39.32
+   },
+   "heightPct": 39.34,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "grid-88.2-92.7",
+   "kind": "grid",
+   "x": 88.2,
+   "y": 92.7,
+   "feet": {
+    "x": 88.2,
+    "y": 92.7
+   },
+   "dexBox": {
+    "x": 86.08,
+    "y": 54.71,
+    "w": 4.24,
+    "h": 37.99
+   },
+   "heightPct": 38.01,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": {
+    "ref": "hs_bench",
+    "expected": 20.59,
+    "got": 38.01,
+    "dev": 0.85,
+    "baseDy": 6.8
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_bench",
+     "dev": 0.85,
+     "msg": "Dex +85 % frente a banco de espera (38.01 % y se esperaba 20.59 %)"
+    }
+   ],
+   "info": [],
+   "score": 1.7,
+   "shot": "capturas/clinic_exterior/030.png"
+  },
+  {
+   "id": "grid-88.2-95.6",
+   "kind": "grid",
+   "x": 88.2,
+   "y": 95.6,
+   "feet": {
+    "x": 88.2,
+    "y": 95.6
+   },
+   "dexBox": {
+    "x": 86.02,
+    "y": 56.44,
+    "w": 4.37,
+    "h": 39.16
+   },
+   "heightPct": 39.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": {
+    "ref": "hs_bench",
+    "expected": 20.59,
+    "got": 39.18,
+    "dev": 0.9,
+    "baseDy": 9.7
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_bench",
+     "dev": 0.9,
+     "msg": "Dex +90 % frente a banco de espera (39.18 % y se esperaba 20.59 %)"
+    }
+   ],
+   "info": [],
+   "score": 1.8,
+   "shot": "capturas/clinic_exterior/031.png"
+  },
+  {
+   "id": "grid-88.2-98.5",
+   "kind": "grid",
+   "x": 88.2,
+   "y": 98.5,
+   "feet": {
+    "x": 88.2,
+    "y": 98.5
+   },
+   "dexBox": {
+    "x": 86.01,
+    "y": 59.18,
+    "w": 4.38,
+    "h": 39.32
+   },
+   "heightPct": 39.34,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "grid-96.1-92.7",
+   "kind": "grid",
+   "x": 96.1,
+   "y": 92.7,
+   "feet": {
+    "x": 96.1,
+    "y": 92.7
+   },
+   "dexBox": {
+    "x": 93.98,
+    "y": 54.71,
+    "w": 4.24,
+    "h": 37.99
+   },
+   "heightPct": 38.01,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": {
+    "ref": "hs_bench",
+    "expected": 20.59,
+    "got": 38.01,
+    "dev": 0.85,
+    "baseDy": 6.8
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_bench",
+     "dev": 0.85,
+     "msg": "Dex +85 % frente a banco de espera (38.01 % y se esperaba 20.59 %)"
+    }
+   ],
+   "info": [],
+   "score": 1.7,
+   "shot": "capturas/clinic_exterior/033.png"
+  },
+  {
+   "id": "grid-96.1-95.6",
+   "kind": "grid",
+   "x": 96.1,
+   "y": 95.6,
+   "feet": {
+    "x": 96.1,
+    "y": 95.6
+   },
+   "dexBox": {
+    "x": 93.92,
+    "y": 56.44,
+    "w": 4.37,
+    "h": 39.16
+   },
+   "heightPct": 39.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": {
+    "ref": "hs_bench",
+    "expected": 20.59,
+    "got": 39.18,
+    "dev": 0.9,
+    "baseDy": 9.7
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_bench",
+     "dev": 0.9,
+     "msg": "Dex +90 % frente a banco de espera (39.18 % y se esperaba 20.59 %)"
+    }
+   ],
+   "info": [],
+   "score": 1.8,
+   "shot": "capturas/clinic_exterior/034.png"
+  },
+  {
+   "id": "grid-96.1-98.5",
+   "kind": "grid",
+   "x": 96.1,
+   "y": 98.5,
+   "feet": {
+    "x": 96.1,
+    "y": 98.5
+   },
+   "dexBox": {
+    "x": 93.91,
+    "y": 59.18,
+    "w": 4.38,
+    "h": 39.32
+   },
+   "heightPct": 39.34,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "grid-14.2-73",
+   "kind": "grid",
+   "x": 14.2,
+   "y": 73,
+   "feet": {
+    "x": 14.2,
+    "y": 73
+   },
+   "dexBox": {
+    "x": 12.52,
+    "y": 42.94,
+    "w": 3.35,
+    "h": 30.06
+   },
+   "heightPct": 30.07,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": {
+    "ref": "hs_trash_can",
+    "expected": 27.22,
+    "got": 30.07,
+    "dev": 0.1,
+    "baseDy": 8
+   },
+   "failures": [],
+   "info": [],
+   "score": 0
+  },
+  {
+   "id": "grid-14.2-75.8",
+   "kind": "grid",
+   "x": 14.2,
+   "y": 75.8,
+   "feet": {
+    "x": 14.2,
+    "y": 75.8
+   },
+   "dexBox": {
+    "x": 12.46,
+    "y": 44.62,
+    "w": 3.48,
+    "h": 31.18
+   },
+   "heightPct": 31.2,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": {
+    "ref": "hs_trash_can",
+    "expected": 27.22,
+    "got": 31.2,
+    "dev": 0.15,
+    "baseDy": 5.2
+   },
+   "failures": [],
+   "info": [],
+   "score": 0
+  },
+  {
+   "id": "grid-14.2-78.7",
+   "kind": "grid",
+   "x": 14.2,
+   "y": 78.7,
+   "feet": {
+    "x": 14.2,
+    "y": 78.7
+   },
+   "dexBox": {
+    "x": 12.4,
+    "y": 46.35,
+    "w": 3.61,
+    "h": 32.35
+   },
+   "heightPct": 32.37,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": {
+    "ref": "hs_trash_can",
+    "expected": 27.22,
+    "got": 32.37,
+    "dev": 0.19,
+    "baseDy": 2.3
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_trash_can",
+     "dev": 0.19,
+     "msg": "Dex +19 % frente a papelera (32.37 % y se esperaba 27.22 %)"
+    }
+   ],
+   "info": [],
+   "score": 0.38,
+   "shot": "capturas/clinic_exterior/038.png"
+  },
+  {
+   "id": "grid-14.2-81.5",
+   "kind": "grid",
+   "x": 14.2,
+   "y": 81.5,
+   "feet": {
+    "x": 14.2,
+    "y": 81.5
+   },
+   "dexBox": {
+    "x": 12.33,
+    "y": 48.02,
+    "w": 3.73,
+    "h": 33.48
+   },
+   "heightPct": 33.5,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": {
+    "ref": "hs_trash_can",
+    "expected": 27.22,
+    "got": 33.5,
+    "dev": 0.23,
+    "baseDy": 0.5
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_trash_can",
+     "dev": 0.23,
+     "msg": "Dex +23 % frente a papelera (33.5 % y se esperaba 27.22 %)"
+    }
+   ],
+   "info": [],
+   "score": 0.46,
+   "shot": "capturas/clinic_exterior/039.png"
+  },
+  {
+   "id": "grid-14.2-84.3",
+   "kind": "grid",
+   "x": 14.2,
+   "y": 84.3,
+   "feet": {
+    "x": 14.2,
+    "y": 84.3
+   },
+   "dexBox": {
+    "x": 12.27,
+    "y": 49.69,
+    "w": 3.86,
+    "h": 34.61
+   },
+   "heightPct": 34.62,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": {
+    "ref": "hs_visitor_box",
+    "expected": 21.88,
+    "got": 34.62,
+    "dev": 0.58,
+    "baseDy": 0.3
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_visitor_box",
+     "dev": 0.58,
+     "msg": "Dex +58 % frente a buzón de visitas (34.62 % y se esperaba 21.88 %)"
+    }
+   ],
+   "info": [],
+   "score": 1.16,
+   "shot": "capturas/clinic_exterior/040.png"
+  },
+  {
+   "id": "grid-14.2-87.2",
+   "kind": "grid",
+   "x": 14.2,
+   "y": 87.2,
+   "feet": {
+    "x": 14.2,
+    "y": 87.2
+   },
+   "dexBox": {
+    "x": 12.21,
+    "y": 51.42,
+    "w": 3.99,
+    "h": 35.78
+   },
+   "heightPct": 35.79,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": {
+    "ref": "hs_bench",
+    "expected": 20.59,
+    "got": 35.79,
+    "dev": 0.74,
+    "baseDy": 1.3
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_bench",
+     "dev": 0.74,
+     "msg": "Dex +74 % frente a banco de espera (35.79 % y se esperaba 20.59 %)"
+    }
+   ],
+   "info": [],
+   "score": 1.48,
+   "shot": "capturas/clinic_exterior/041.png"
+  },
+  {
+   "id": "grid-14.2-90",
+   "kind": "grid",
+   "x": 14.2,
+   "y": 90,
+   "feet": {
+    "x": 14.2,
+    "y": 90
+   },
+   "dexBox": {
+    "x": 12.14,
+    "y": 53.09,
+    "w": 4.11,
+    "h": 36.91
+   },
+   "heightPct": 36.92,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": {
+    "ref": "hs_bench",
+    "expected": 20.59,
+    "got": 36.92,
+    "dev": 0.79,
+    "baseDy": 4.1
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_bench",
+     "dev": 0.79,
+     "msg": "Dex +79 % frente a banco de espera (36.92 % y se esperaba 20.59 %)"
+    }
+   ],
+   "info": [],
+   "score": 1.58,
+   "shot": "capturas/clinic_exterior/042.png"
+  },
+  {
+   "id": "hs_clinic_sign",
+   "kind": "arrival",
+   "x": 17.7,
+   "y": 72.1,
+   "feet": {
+    "x": 17.7,
+    "y": 72.1
+   },
+   "dexBox": {
+    "x": 16.04,
+    "y": 42.41,
+    "w": 3.31,
+    "h": 29.69
+   },
+   "heightPct": 29.71,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": {
+    "ref": "hs_trash_can",
+    "expected": 27.22,
+    "got": 29.71,
+    "dev": 0.09,
+    "baseDy": 8.9
+   },
+   "failures": [],
+   "info": [],
+   "score": 0
+  },
+  {
+   "id": "hs_main_entrance",
+   "kind": "arrival",
+   "x": 49.5,
+   "y": 91.7,
+   "feet": {
+    "x": 49.5,
+    "y": 91.7
+   },
+   "dexBox": {
+    "x": 47.4,
+    "y": 54.11,
+    "w": 4.19,
+    "h": 37.59
+   },
+   "heightPct": 37.61,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_main_entrance": 0
+   },
+   "scale": {
+    "ref": "hs_bench",
+    "expected": 20.59,
+    "got": 37.61,
+    "dev": 0.83,
+    "baseDy": 5.8
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_bench",
+     "dev": 0.83,
+     "msg": "Dex +83 % frente a banco de espera (37.61 % y se esperaba 20.59 %)"
+    }
+   ],
+   "info": [],
+   "score": 1.66,
+   "shot": "capturas/clinic_exterior/044.png"
+  },
+  {
+   "id": "hs_visitor_box",
+   "kind": "arrival",
+   "x": 17.7,
+   "y": 84.6,
+   "feet": {
+    "x": 17.7,
+    "y": 84.6
+   },
+   "dexBox": {
+    "x": 15.76,
+    "y": 49.87,
+    "w": 3.87,
+    "h": 34.73
+   },
+   "heightPct": 34.75,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": {
+    "ref": "hs_visitor_box",
+    "expected": 21.88,
+    "got": 34.75,
+    "dev": 0.59,
+    "baseDy": 0
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_visitor_box",
+     "dev": 0.59,
+     "msg": "Dex +59 % frente a buzón de visitas (34.75 % y se esperaba 21.88 %)"
+    }
+   ],
+   "info": [],
+   "score": 1.18,
+   "shot": "capturas/clinic_exterior/045.png"
+  },
+  {
+   "id": "hs_building",
+   "kind": "arrival",
+   "x": 17.7,
+   "y": 72.1,
+   "feet": {
+    "x": 17.7,
+    "y": 72.1
+   },
+   "dexBox": {
+    "x": 16.04,
+    "y": 42.41,
+    "w": 3.31,
+    "h": 29.69
+   },
+   "heightPct": 29.71,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": {
+    "ref": "hs_trash_can",
+    "expected": 27.22,
+    "got": 29.71,
+    "dev": 0.09,
+    "baseDy": 8.9
+   },
+   "failures": [],
+   "info": [],
+   "score": 0
+  },
+  {
+   "id": "hs_security_camera",
+   "kind": "arrival",
+   "x": 17.7,
+   "y": 72.1,
+   "feet": {
+    "x": 17.7,
+    "y": 72.1
+   },
+   "dexBox": {
+    "x": 16.04,
+    "y": 42.41,
+    "w": 3.31,
+    "h": 29.69
+   },
+   "heightPct": 29.71,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": {
+    "ref": "hs_trash_can",
+    "expected": 27.22,
+    "got": 29.71,
+    "dev": 0.09,
+    "baseDy": 8.9
+   },
+   "failures": [],
+   "info": [],
+   "score": 0
+  },
+  {
+   "id": "hs_bench",
+   "kind": "arrival",
+   "x": 64.7,
+   "y": 91.7,
+   "feet": {
+    "x": 64.7,
+    "y": 91.7
+   },
+   "dexBox": {
+    "x": 62.6,
+    "y": 54.11,
+    "w": 4.19,
+    "h": 37.59
+   },
+   "heightPct": 37.61,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_bench": 0
+   },
+   "scale": {
+    "ref": "hs_bench",
+    "expected": 20.59,
+    "got": 37.61,
+    "dev": 0.83,
+    "baseDy": 5.8
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_bench",
+     "dev": 0.83,
+     "msg": "Dex +83 % frente a banco de espera (37.61 % y se esperaba 20.59 %)"
+    }
+   ],
+   "info": [],
+   "score": 1.66,
+   "shot": "capturas/clinic_exterior/048.png"
+  },
+  {
+   "id": "hs_posters",
+   "kind": "arrival",
+   "x": 17.7,
+   "y": 72.1,
+   "feet": {
+    "x": 17.7,
+    "y": 72.1
+   },
+   "dexBox": {
+    "x": 16.04,
+    "y": 42.41,
+    "w": 3.31,
+    "h": 29.69
+   },
+   "heightPct": 29.71,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": {
+    "ref": "hs_trash_can",
+    "expected": 27.22,
+    "got": 29.71,
+    "dev": 0.09,
+    "baseDy": 8.9
+   },
+   "failures": [],
+   "info": [],
+   "score": 0
+  },
+  {
+   "id": "hs_trash_can",
+   "kind": "arrival",
+   "x": 17.7,
+   "y": 81,
+   "feet": {
+    "x": 17.7,
+    "y": 81
+   },
+   "dexBox": {
+    "x": 15.84,
+    "y": 47.72,
+    "w": 3.71,
+    "h": 33.28
+   },
+   "heightPct": 33.29,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": {
+    "ref": "hs_trash_can",
+    "expected": 27.22,
+    "got": 33.29,
+    "dev": 0.22,
+    "baseDy": 0
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_trash_can",
+     "dev": 0.22,
+     "msg": "Dex +22 % frente a papelera (33.29 % y se esperaba 27.22 %)"
+    }
+   ],
+   "info": [],
+   "score": 0.44,
+   "shot": "capturas/clinic_exterior/050.png"
+  },
+  {
+   "id": "hs_graffiti_gwei",
+   "kind": "arrival",
+   "x": 17.7,
+   "y": 74.5,
+   "feet": {
+    "x": 17.7,
+    "y": 74.5
+   },
+   "dexBox": {
+    "x": 15.99,
+    "y": 43.84,
+    "w": 3.42,
+    "h": 30.66
+   },
+   "heightPct": 30.67,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": {
+    "ref": "hs_trash_can",
+    "expected": 27.22,
+    "got": 30.67,
+    "dev": 0.13,
+    "baseDy": 6.5
+   },
+   "failures": [],
+   "info": [],
+   "score": 0
+  },
+  {
+   "id": "hs_pathway",
+   "kind": "arrival",
+   "x": 14.2,
+   "y": 79.5,
+   "feet": {
+    "x": 14.2,
+    "y": 79.5
+   },
+   "dexBox": {
+    "x": 12.38,
+    "y": 46.82,
+    "w": 3.64,
+    "h": 32.68
+   },
+   "heightPct": 32.69,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": {
+    "ref": "hs_trash_can",
+    "expected": 27.22,
+    "got": 32.69,
+    "dev": 0.2,
+    "baseDy": 1.5
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_trash_can",
+     "dev": 0.2,
+     "msg": "Dex +20 % frente a papelera (32.69 % y se esperaba 27.22 %)"
+    }
+   ],
+   "info": [],
+   "score": 0.4,
+   "shot": "capturas/clinic_exterior/052.png"
+  },
+  {
+   "id": "hs_main_entrance:izq",
+   "kind": "ref",
+   "x": 42.8,
+   "y": 91.7,
+   "feet": {
+    "x": 42.8,
+    "y": 91.7
+   },
+   "dexBox": {
+    "x": 40.7,
+    "y": 54.11,
+    "w": 4.19,
+    "h": 37.59
+   },
+   "heightPct": 37.61,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_main_entrance": 0
+   },
+   "scale": {
+    "ref": "hs_bench",
+    "expected": 20.59,
+    "got": 37.61,
+    "dev": 0.83,
+    "baseDy": 5.8
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_bench",
+     "dev": 0.83,
+     "msg": "Dex +83 % frente a banco de espera (37.61 % y se esperaba 20.59 %)"
+    }
+   ],
+   "info": [],
+   "score": 1.66,
+   "shot": "capturas/clinic_exterior/053.png"
+  },
+  {
+   "id": "hs_main_entrance:der",
+   "kind": "ref",
+   "x": 56.2,
+   "y": 91.7,
+   "feet": {
+    "x": 56.2,
+    "y": 91.7
+   },
+   "dexBox": {
+    "x": 54.1,
+    "y": 54.11,
+    "w": 4.19,
+    "h": 37.59
+   },
+   "heightPct": 37.61,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_main_entrance": 0
+   },
+   "scale": {
+    "ref": "hs_bench",
+    "expected": 20.59,
+    "got": 37.61,
+    "dev": 0.83,
+    "baseDy": 5.8
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_bench",
+     "dev": 0.83,
+     "msg": "Dex +83 % frente a banco de espera (37.61 % y se esperaba 20.59 %)"
+    }
+   ],
+   "info": [],
+   "score": 1.66,
+   "shot": "capturas/clinic_exterior/054.png"
+  },
+  {
+   "id": "hs_main_entrance:detrás",
+   "kind": "ref",
+   "x": 49.5,
+   "y": 91.7,
+   "feet": {
+    "x": 49.5,
+    "y": 91.7
+   },
+   "dexBox": {
+    "x": 47.4,
+    "y": 54.11,
+    "w": 4.19,
+    "h": 37.59
+   },
+   "heightPct": 37.61,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_main_entrance": 0
+   },
+   "scale": {
+    "ref": "hs_bench",
+    "expected": 20.59,
+    "got": 37.61,
+    "dev": 0.83,
+    "baseDy": 5.8
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_bench",
+     "dev": 0.83,
+     "msg": "Dex +83 % frente a banco de espera (37.61 % y se esperaba 20.59 %)"
+    }
+   ],
+   "info": [],
+   "score": 1.66,
+   "shot": "capturas/clinic_exterior/055.png"
+  },
+  {
+   "id": "hs_bench:izq",
+   "kind": "ref",
+   "x": 57.7,
+   "y": 91.7,
+   "feet": {
+    "x": 57.7,
+    "y": 91.7
+   },
+   "dexBox": {
+    "x": 55.6,
+    "y": 54.11,
+    "w": 4.19,
+    "h": 37.59
+   },
+   "heightPct": 37.61,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_bench": 0
+   },
+   "scale": {
+    "ref": "hs_bench",
+    "expected": 20.59,
+    "got": 37.61,
+    "dev": 0.83,
+    "baseDy": 5.8
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_bench",
+     "dev": 0.83,
+     "msg": "Dex +83 % frente a banco de espera (37.61 % y se esperaba 20.59 %)"
+    }
+   ],
+   "info": [],
+   "score": 1.66,
+   "shot": "capturas/clinic_exterior/056.png"
+  },
+  {
+   "id": "hs_bench:der",
+   "kind": "ref",
+   "x": 71.7,
+   "y": 91.7,
+   "feet": {
+    "x": 71.7,
+    "y": 91.7
+   },
+   "dexBox": {
+    "x": 69.6,
+    "y": 54.11,
+    "w": 4.19,
+    "h": 37.59
+   },
+   "heightPct": 37.61,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_bench": 0,
+    "hs_visitor_box": 0
+   },
+   "scale": {
+    "ref": "hs_bench",
+    "expected": 20.59,
+    "got": 37.61,
+    "dev": 0.83,
+    "baseDy": 5.8
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_bench",
+     "dev": 0.83,
+     "msg": "Dex +83 % frente a banco de espera (37.61 % y se esperaba 20.59 %)"
+    }
+   ],
+   "info": [],
+   "score": 1.66,
+   "shot": "capturas/clinic_exterior/057.png"
+  },
+  {
+   "id": "hs_bench:detrás",
+   "kind": "ref",
+   "x": 64.7,
+   "y": 91.7,
+   "feet": {
+    "x": 64.7,
+    "y": 91.7
+   },
+   "dexBox": {
+    "x": 62.6,
+    "y": 54.11,
+    "w": 4.19,
+    "h": 37.59
+   },
+   "heightPct": 37.61,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_bench": 0
+   },
+   "scale": {
+    "ref": "hs_bench",
+    "expected": 20.59,
+    "got": 37.61,
+    "dev": 0.83,
+    "baseDy": 5.8
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_bench",
+     "dev": 0.83,
+     "msg": "Dex +83 % frente a banco de espera (37.61 % y se esperaba 20.59 %)"
+    }
+   ],
+   "info": [],
+   "score": 1.66,
+   "shot": "capturas/clinic_exterior/058.png"
+  },
+  {
+   "id": "hs_trash_can:izq",
+   "kind": "ref",
+   "x": 17.7,
+   "y": 81,
+   "feet": {
+    "x": 17.7,
+    "y": 81
+   },
+   "dexBox": {
+    "x": 15.84,
+    "y": 47.72,
+    "w": 3.71,
+    "h": 33.28
+   },
+   "heightPct": 33.29,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": {
+    "ref": "hs_trash_can",
+    "expected": 27.22,
+    "got": 33.29,
+    "dev": 0.22,
+    "baseDy": 0
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_trash_can",
+     "dev": 0.22,
+     "msg": "Dex +22 % frente a papelera (33.29 % y se esperaba 27.22 %)"
+    }
+   ],
+   "info": [],
+   "score": 0.44,
+   "shot": "capturas/clinic_exterior/059.png"
+  },
+  {
+   "id": "hs_trash_can:der",
+   "kind": "ref",
+   "x": 17.7,
+   "y": 81,
+   "feet": {
+    "x": 17.7,
+    "y": 81
+   },
+   "dexBox": {
+    "x": 15.84,
+    "y": 47.72,
+    "w": 3.71,
+    "h": 33.28
+   },
+   "heightPct": 33.29,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": {
+    "ref": "hs_trash_can",
+    "expected": 27.22,
+    "got": 33.29,
+    "dev": 0.22,
+    "baseDy": 0
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_trash_can",
+     "dev": 0.22,
+     "msg": "Dex +22 % frente a papelera (33.29 % y se esperaba 27.22 %)"
+    }
+   ],
+   "info": [],
+   "score": 0.44,
+   "shot": "capturas/clinic_exterior/060.png"
+  },
+  {
+   "id": "hs_trash_can:detrás",
+   "kind": "ref",
+   "x": 17.7,
+   "y": 80,
+   "feet": {
+    "x": 17.7,
+    "y": 80
+   },
+   "dexBox": {
+    "x": 15.87,
+    "y": 47.12,
+    "w": 3.67,
+    "h": 32.88
+   },
+   "heightPct": 32.89,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": {
+    "ref": "hs_trash_can",
+    "expected": 27.22,
+    "got": 32.89,
+    "dev": 0.21,
+    "baseDy": 1
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_trash_can",
+     "dev": 0.21,
+     "msg": "Dex +21 % frente a papelera (32.89 % y se esperaba 27.22 %)"
+    }
+   ],
+   "info": [],
+   "score": 0.42,
+   "shot": "capturas/clinic_exterior/061.png"
+  },
+  {
+   "id": "hs_visitor_box:izq",
+   "kind": "ref",
+   "x": 69.8,
+   "y": 91.7,
+   "feet": {
+    "x": 69.8,
+    "y": 91.7
+   },
+   "dexBox": {
+    "x": 67.7,
+    "y": 54.11,
+    "w": 4.19,
+    "h": 37.59
+   },
+   "heightPct": 37.61,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_bench": 0,
+    "hs_visitor_box": 0
+   },
+   "scale": {
+    "ref": "hs_bench",
+    "expected": 20.59,
+    "got": 37.61,
+    "dev": 0.83,
+    "baseDy": 5.8
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_bench",
+     "dev": 0.83,
+     "msg": "Dex +83 % frente a banco de espera (37.61 % y se esperaba 20.59 %)"
+    }
+   ],
+   "info": [],
+   "score": 1.66,
+   "shot": "capturas/clinic_exterior/062.png"
+  },
+  {
+   "id": "hs_visitor_box:der",
+   "kind": "ref",
+   "x": 79,
+   "y": 91.7,
+   "feet": {
+    "x": 79,
+    "y": 91.7
+   },
+   "dexBox": {
+    "x": 76.9,
+    "y": 54.11,
+    "w": 4.19,
+    "h": 37.59
+   },
+   "heightPct": 37.61,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_visitor_box": 0
+   },
+   "scale": {
+    "ref": "hs_bench",
+    "expected": 20.59,
+    "got": 37.61,
+    "dev": 0.83,
+    "baseDy": 5.8
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_bench",
+     "dev": 0.83,
+     "msg": "Dex +83 % frente a banco de espera (37.61 % y se esperaba 20.59 %)"
+    }
+   ],
+   "info": [],
+   "score": 1.66,
+   "shot": "capturas/clinic_exterior/063.png"
+  },
+  {
+   "id": "hs_visitor_box:detrás",
+   "kind": "ref",
+   "x": 17.7,
+   "y": 83.6,
+   "feet": {
+    "x": 17.7,
+    "y": 83.6
+   },
+   "dexBox": {
+    "x": 15.79,
+    "y": 49.27,
+    "w": 3.83,
+    "h": 34.33
+   },
+   "heightPct": 34.34,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": {
+    "ref": "hs_trash_can",
+    "expected": 27.22,
+    "got": 34.34,
+    "dev": 0.26,
+    "baseDy": 2.6
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_trash_can",
+     "dev": 0.26,
+     "msg": "Dex +26 % frente a papelera (34.34 % y se esperaba 27.22 %)"
+    }
+   ],
+   "info": [],
+   "score": 0.52,
+   "shot": "capturas/clinic_exterior/064.png"
+  }
+ ]
+}

@@ -1,5 +1,5 @@
 {
-  "_doc": "A2.17: referencias de proporción y profundidad (scripts/proportion-sweep.mjs). box = caja en % del fondo (como scene.json), baseY = línea del suelo donde apoya, realHeightM = alto real aproximado; Dex ≈ 1,75 m. foreground = debe tapar a Dex cuando sus pies quedan por encima de baseY y su caja lo solapa. scalePolicy: measure = el alto de Dex frente a la referencia cuenta como fallo (> 15 %); fixed = escala elegida por Adrián, la medida es solo informativa.",
+  "_doc": "A2.17: referencias de proporción y profundidad (scripts/proportion-sweep.mjs). box = caja en % del fondo (como scene.json), baseY = línea del suelo donde apoya, realHeightM = alto real aproximado; Dex ≈ 1,75 m. foreground = debe tapar a Dex cuando sus pies quedan por encima de baseY y su caja lo solapa. scalePolicy: measure = el alto de Dex frente a la referencia cuenta como fallo (> 15 %); fixed = escala elegida por Adrián, la medida es solo informativa. measured: false = caja tomada de los bounds del hotspot, sin medir a ojo sobre el fondo: su medida de escala es solo informativa hasta que se mida (fase 2).",
   "scene": "rooftop",
   "scalePolicy": "measure",
   "dexHeightM": 1.75,
@@ -31,7 +31,8 @@
       },
       "baseY": 90,
       "source": "bounds del hotspot",
-      "note": "A2.11: no se ve en el fondo"
+      "note": "A2.11: no se ve en el fondo",
+      "measured": false
     },
     {
       "id": "hs_parapet",
@@ -45,7 +46,8 @@
         "h": 6
       },
       "baseY": 73.1,
-      "source": "bounds del hotspot"
+      "source": "bounds del hotspot",
+      "measured": false
     },
     {
       "id": "hs_weather_vane",
@@ -59,7 +61,8 @@
         "h": 45
       },
       "baseY": 64.9,
-      "source": "bounds del hotspot"
+      "source": "bounds del hotspot",
+      "measured": false
     }
   ]
 }

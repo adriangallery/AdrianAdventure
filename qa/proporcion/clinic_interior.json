@@ -1,0 +1,2102 @@
+{
+ "scene": "clinic_interior",
+ "scalePolicy": "measure",
+ "summary": {
+  "positions": 58,
+  "failing": 33,
+  "byType": {
+   "scale": 33
+  }
+ },
+ "positions": [
+  {
+   "id": "grid-13-98.1",
+   "kind": "grid",
+   "x": 13,
+   "y": 98.1,
+   "feet": {
+    "x": 13,
+    "y": 98.1
+   },
+   "dexBox": {
+    "x": 10.26,
+    "y": 48.92,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_water_dispenser": 0
+   },
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "grid-21.3-98.1",
+   "kind": "grid",
+   "x": 21.3,
+   "y": 98.1,
+   "feet": {
+    "x": 21.3,
+    "y": 98.1
+   },
+   "dexBox": {
+    "x": 18.56,
+    "y": 48.92,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_water_dispenser": 0
+   },
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "grid-29.6-98.1",
+   "kind": "grid",
+   "x": 29.6,
+   "y": 98.1,
+   "feet": {
+    "x": 29.6,
+    "y": 98.1
+   },
+   "dexBox": {
+    "x": 26.86,
+    "y": 48.92,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_treatment_door": 0
+   },
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "grid-37.9-98.1",
+   "kind": "grid",
+   "x": 37.9,
+   "y": 98.1,
+   "feet": {
+    "x": 37.9,
+    "y": 98.1
+   },
+   "dexBox": {
+    "x": 35.16,
+    "y": 48.92,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "grid-46.2-98.1",
+   "kind": "grid",
+   "x": 46.2,
+   "y": 98.1,
+   "feet": {
+    "x": 46.2,
+    "y": 98.1
+   },
+   "dexBox": {
+    "x": 43.46,
+    "y": 48.92,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": {
+    "ref": "hs_reception_desk",
+    "expected": 21.48,
+    "got": 49.18,
+    "dev": 1.29,
+    "baseDy": 9.6
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_reception_desk",
+     "dev": 1.29,
+     "msg": "Dex +129 % frente a mostrador de recepción (49.18 % y se esperaba 21.48 %)"
+    }
+   ],
+   "info": [],
+   "score": 2.58,
+   "shot": "capturas/clinic_interior/004.png"
+  },
+  {
+   "id": "grid-54.5-98.1",
+   "kind": "grid",
+   "x": 54.5,
+   "y": 98.1,
+   "feet": {
+    "x": 54.5,
+    "y": 98.1
+   },
+   "dexBox": {
+    "x": 51.76,
+    "y": 48.92,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_waiting_chairs": 0
+   },
+   "scale": {
+    "ref": "hs_reception_desk",
+    "expected": 21.48,
+    "got": 49.18,
+    "dev": 1.29,
+    "baseDy": 9.6
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_reception_desk",
+     "dev": 1.29,
+     "msg": "Dex +129 % frente a mostrador de recepción (49.18 % y se esperaba 21.48 %)"
+    }
+   ],
+   "info": [],
+   "score": 2.58,
+   "shot": "capturas/clinic_interior/005.png"
+  },
+  {
+   "id": "grid-62.7-98.1",
+   "kind": "grid",
+   "x": 62.7,
+   "y": 98.1,
+   "feet": {
+    "x": 62.7,
+    "y": 98.1
+   },
+   "dexBox": {
+    "x": 59.96,
+    "y": 48.92,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_waiting_chairs": 0
+   },
+   "scale": {
+    "ref": "hs_reception_desk",
+    "expected": 21.48,
+    "got": 49.18,
+    "dev": 1.29,
+    "baseDy": 9.6
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_reception_desk",
+     "dev": 1.29,
+     "msg": "Dex +129 % frente a mostrador de recepción (49.18 % y se esperaba 21.48 %)"
+    }
+   ],
+   "info": [],
+   "score": 2.58,
+   "shot": "capturas/clinic_interior/006.png"
+  },
+  {
+   "id": "grid-71-98.1",
+   "kind": "grid",
+   "x": 71,
+   "y": 98.1,
+   "feet": {
+    "x": 71,
+    "y": 98.1
+   },
+   "dexBox": {
+    "x": 68.26,
+    "y": 48.92,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_reception_desk": 0,
+    "hs_filing_cabinet": 0
+   },
+   "scale": {
+    "ref": "hs_reception_desk",
+    "expected": 21.48,
+    "got": 49.18,
+    "dev": 1.29,
+    "baseDy": 9.6
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_reception_desk",
+     "dev": 1.29,
+     "msg": "Dex +129 % frente a mostrador de recepción (49.18 % y se esperaba 21.48 %)"
+    }
+   ],
+   "info": [],
+   "score": 2.58,
+   "shot": "capturas/clinic_interior/007.png"
+  },
+  {
+   "id": "grid-79.3-98.1",
+   "kind": "grid",
+   "x": 79.3,
+   "y": 98.1,
+   "feet": {
+    "x": 79.3,
+    "y": 98.1
+   },
+   "dexBox": {
+    "x": 76.56,
+    "y": 48.92,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_reception_desk": 0
+   },
+   "scale": {
+    "ref": "hs_reception_desk",
+    "expected": 21.48,
+    "got": 49.18,
+    "dev": 1.29,
+    "baseDy": 9.6
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_reception_desk",
+     "dev": 1.29,
+     "msg": "Dex +129 % frente a mostrador de recepción (49.18 % y se esperaba 21.48 %)"
+    }
+   ],
+   "info": [],
+   "score": 2.58,
+   "shot": "capturas/clinic_interior/008.png"
+  },
+  {
+   "id": "grid-87.6-98.1",
+   "kind": "grid",
+   "x": 87.6,
+   "y": 98.1,
+   "feet": {
+    "x": 87.6,
+    "y": 98.1
+   },
+   "dexBox": {
+    "x": 84.86,
+    "y": 48.92,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_reception_desk": 0
+   },
+   "scale": {
+    "ref": "hs_reception_desk",
+    "expected": 21.48,
+    "got": 49.18,
+    "dev": 1.29,
+    "baseDy": 9.6
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_reception_desk",
+     "dev": 1.29,
+     "msg": "Dex +129 % frente a mostrador de recepción (49.18 % y se esperaba 21.48 %)"
+    }
+   ],
+   "info": [],
+   "score": 2.58,
+   "shot": "capturas/clinic_interior/009.png"
+  },
+  {
+   "id": "grid-95.9-98.1",
+   "kind": "grid",
+   "x": 95.9,
+   "y": 98.1,
+   "feet": {
+    "x": 95.9,
+    "y": 98.1
+   },
+   "dexBox": {
+    "x": 93.16,
+    "y": 48.92,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": {
+    "ref": "hs_reception_desk",
+    "expected": 21.48,
+    "got": 49.18,
+    "dev": 1.29,
+    "baseDy": 9.6
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_reception_desk",
+     "dev": 1.29,
+     "msg": "Dex +129 % frente a mostrador de recepción (49.18 % y se esperaba 21.48 %)"
+    }
+   ],
+   "info": [],
+   "score": 2.58,
+   "shot": "capturas/clinic_interior/010.png"
+  },
+  {
+   "id": "grid-26-89.1",
+   "kind": "grid",
+   "x": 26,
+   "y": 89.1,
+   "feet": {
+    "x": 26,
+    "y": 89.1
+   },
+   "dexBox": {
+    "x": 23.26,
+    "y": 39.92,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_treatment_door": 0
+   },
+   "scale": {
+    "ref": "hs_treatment_door",
+    "expected": 44.63,
+    "got": 49.18,
+    "dev": 0.1,
+    "baseDy": 2.1
+   },
+   "failures": [],
+   "info": [],
+   "score": 0
+  },
+  {
+   "id": "grid-26-91.9",
+   "kind": "grid",
+   "x": 26,
+   "y": 91.9,
+   "feet": {
+    "x": 26,
+    "y": 91.9
+   },
+   "dexBox": {
+    "x": 23.26,
+    "y": 42.72,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_treatment_door": 0
+   },
+   "scale": {
+    "ref": "hs_treatment_door",
+    "expected": 44.63,
+    "got": 49.18,
+    "dev": 0.1,
+    "baseDy": 4.9
+   },
+   "failures": [],
+   "info": [],
+   "score": 0
+  },
+  {
+   "id": "grid-26-94.6",
+   "kind": "grid",
+   "x": 26,
+   "y": 94.6,
+   "feet": {
+    "x": 26,
+    "y": 94.6
+   },
+   "dexBox": {
+    "x": 23.26,
+    "y": 45.42,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_treatment_door": 0
+   },
+   "scale": {
+    "ref": "hs_treatment_door",
+    "expected": 44.63,
+    "got": 49.18,
+    "dev": 0.1,
+    "baseDy": 7.6
+   },
+   "failures": [],
+   "info": [],
+   "score": 0
+  },
+  {
+   "id": "grid-26-97.3",
+   "kind": "grid",
+   "x": 26,
+   "y": 97.3,
+   "feet": {
+    "x": 26,
+    "y": 97.3
+   },
+   "dexBox": {
+    "x": 23.26,
+    "y": 48.12,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_treatment_door": 0
+   },
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "grid-33.5-89.1",
+   "kind": "grid",
+   "x": 33.5,
+   "y": 89.1,
+   "feet": {
+    "x": 33.5,
+    "y": 89.1
+   },
+   "dexBox": {
+    "x": 30.76,
+    "y": 39.92,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_treatment_door": 0
+   },
+   "scale": {
+    "ref": "hs_treatment_door",
+    "expected": 44.63,
+    "got": 49.18,
+    "dev": 0.1,
+    "baseDy": 2.1
+   },
+   "failures": [],
+   "info": [],
+   "score": 0
+  },
+  {
+   "id": "grid-33.5-91.9",
+   "kind": "grid",
+   "x": 33.5,
+   "y": 91.9,
+   "feet": {
+    "x": 33.5,
+    "y": 91.9
+   },
+   "dexBox": {
+    "x": 30.76,
+    "y": 42.72,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_treatment_door": 0
+   },
+   "scale": {
+    "ref": "hs_treatment_door",
+    "expected": 44.63,
+    "got": 49.18,
+    "dev": 0.1,
+    "baseDy": 4.9
+   },
+   "failures": [],
+   "info": [],
+   "score": 0
+  },
+  {
+   "id": "grid-33.5-94.6",
+   "kind": "grid",
+   "x": 33.5,
+   "y": 94.6,
+   "feet": {
+    "x": 33.5,
+    "y": 94.6
+   },
+   "dexBox": {
+    "x": 30.76,
+    "y": 45.42,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_treatment_door": 0
+   },
+   "scale": {
+    "ref": "hs_treatment_door",
+    "expected": 44.63,
+    "got": 49.18,
+    "dev": 0.1,
+    "baseDy": 7.6
+   },
+   "failures": [],
+   "info": [],
+   "score": 0
+  },
+  {
+   "id": "grid-33.5-97.3",
+   "kind": "grid",
+   "x": 33.5,
+   "y": 97.3,
+   "feet": {
+    "x": 33.5,
+    "y": 97.3
+   },
+   "dexBox": {
+    "x": 30.76,
+    "y": 48.12,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_treatment_door": 0
+   },
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "grid-38.6-92.7",
+   "kind": "grid",
+   "x": 38.6,
+   "y": 92.7,
+   "feet": {
+    "x": 38.6,
+    "y": 92.7
+   },
+   "dexBox": {
+    "x": 35.86,
+    "y": 43.52,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": {
+    "ref": "hs_reception_desk",
+    "expected": 21.48,
+    "got": 49.18,
+    "dev": 1.29,
+    "baseDy": 4.2
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_reception_desk",
+     "dev": 1.29,
+     "msg": "Dex +129 % frente a mostrador de recepción (49.18 % y se esperaba 21.48 %)"
+    }
+   ],
+   "info": [],
+   "score": 2.58,
+   "shot": "capturas/clinic_interior/019.png"
+  },
+  {
+   "id": "grid-38.6-95.5",
+   "kind": "grid",
+   "x": 38.6,
+   "y": 95.5,
+   "feet": {
+    "x": 38.6,
+    "y": 95.5
+   },
+   "dexBox": {
+    "x": 35.86,
+    "y": 46.32,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": {
+    "ref": "hs_reception_desk",
+    "expected": 21.48,
+    "got": 49.18,
+    "dev": 1.29,
+    "baseDy": 7
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_reception_desk",
+     "dev": 1.29,
+     "msg": "Dex +129 % frente a mostrador de recepción (49.18 % y se esperaba 21.48 %)"
+    }
+   ],
+   "info": [],
+   "score": 2.58,
+   "shot": "capturas/clinic_interior/020.png"
+  },
+  {
+   "id": "grid-38.6-98.2",
+   "kind": "grid",
+   "x": 38.6,
+   "y": 98.2,
+   "feet": {
+    "x": 38.6,
+    "y": 98.2
+   },
+   "dexBox": {
+    "x": 35.86,
+    "y": 49.02,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": {
+    "ref": "hs_reception_desk",
+    "expected": 21.48,
+    "got": 49.18,
+    "dev": 1.29,
+    "baseDy": 9.7
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_reception_desk",
+     "dev": 1.29,
+     "msg": "Dex +129 % frente a mostrador de recepción (49.18 % y se esperaba 21.48 %)"
+    }
+   ],
+   "info": [],
+   "score": 2.58,
+   "shot": "capturas/clinic_interior/021.png"
+  },
+  {
+   "id": "grid-47.3-92.7",
+   "kind": "grid",
+   "x": 47.3,
+   "y": 92.7,
+   "feet": {
+    "x": 47.3,
+    "y": 92.7
+   },
+   "dexBox": {
+    "x": 44.56,
+    "y": 43.52,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": {
+    "ref": "hs_reception_desk",
+    "expected": 21.48,
+    "got": 49.18,
+    "dev": 1.29,
+    "baseDy": 4.2
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_reception_desk",
+     "dev": 1.29,
+     "msg": "Dex +129 % frente a mostrador de recepción (49.18 % y se esperaba 21.48 %)"
+    }
+   ],
+   "info": [],
+   "score": 2.58,
+   "shot": "capturas/clinic_interior/022.png"
+  },
+  {
+   "id": "grid-47.3-95.5",
+   "kind": "grid",
+   "x": 47.3,
+   "y": 95.5,
+   "feet": {
+    "x": 47.3,
+    "y": 95.5
+   },
+   "dexBox": {
+    "x": 44.56,
+    "y": 46.32,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": {
+    "ref": "hs_reception_desk",
+    "expected": 21.48,
+    "got": 49.18,
+    "dev": 1.29,
+    "baseDy": 7
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_reception_desk",
+     "dev": 1.29,
+     "msg": "Dex +129 % frente a mostrador de recepción (49.18 % y se esperaba 21.48 %)"
+    }
+   ],
+   "info": [],
+   "score": 2.58,
+   "shot": "capturas/clinic_interior/023.png"
+  },
+  {
+   "id": "grid-47.3-98.2",
+   "kind": "grid",
+   "x": 47.3,
+   "y": 98.2,
+   "feet": {
+    "x": 47.3,
+    "y": 98.2
+   },
+   "dexBox": {
+    "x": 44.56,
+    "y": 49.02,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": {
+    "ref": "hs_reception_desk",
+    "expected": 21.48,
+    "got": 49.18,
+    "dev": 1.29,
+    "baseDy": 9.7
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_reception_desk",
+     "dev": 1.29,
+     "msg": "Dex +129 % frente a mostrador de recepción (49.18 % y se esperaba 21.48 %)"
+    }
+   ],
+   "info": [],
+   "score": 2.58,
+   "shot": "capturas/clinic_interior/024.png"
+  },
+  {
+   "id": "grid-56.1-92.7",
+   "kind": "grid",
+   "x": 56.1,
+   "y": 92.7,
+   "feet": {
+    "x": 56.1,
+    "y": 92.7
+   },
+   "dexBox": {
+    "x": 53.36,
+    "y": 43.52,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_waiting_chairs": 0
+   },
+   "scale": {
+    "ref": "hs_reception_desk",
+    "expected": 21.48,
+    "got": 49.18,
+    "dev": 1.29,
+    "baseDy": 4.2
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_reception_desk",
+     "dev": 1.29,
+     "msg": "Dex +129 % frente a mostrador de recepción (49.18 % y se esperaba 21.48 %)"
+    }
+   ],
+   "info": [],
+   "score": 2.58,
+   "shot": "capturas/clinic_interior/025.png"
+  },
+  {
+   "id": "grid-56.1-95.5",
+   "kind": "grid",
+   "x": 56.1,
+   "y": 95.5,
+   "feet": {
+    "x": 56.1,
+    "y": 95.5
+   },
+   "dexBox": {
+    "x": 53.36,
+    "y": 46.32,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_waiting_chairs": 0
+   },
+   "scale": {
+    "ref": "hs_reception_desk",
+    "expected": 21.48,
+    "got": 49.18,
+    "dev": 1.29,
+    "baseDy": 7
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_reception_desk",
+     "dev": 1.29,
+     "msg": "Dex +129 % frente a mostrador de recepción (49.18 % y se esperaba 21.48 %)"
+    }
+   ],
+   "info": [],
+   "score": 2.58,
+   "shot": "capturas/clinic_interior/026.png"
+  },
+  {
+   "id": "grid-56.1-98.2",
+   "kind": "grid",
+   "x": 56.1,
+   "y": 98.2,
+   "feet": {
+    "x": 56.1,
+    "y": 98.2
+   },
+   "dexBox": {
+    "x": 53.36,
+    "y": 49.02,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_waiting_chairs": 0
+   },
+   "scale": {
+    "ref": "hs_reception_desk",
+    "expected": 21.48,
+    "got": 49.18,
+    "dev": 1.29,
+    "baseDy": 9.7
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_reception_desk",
+     "dev": 1.29,
+     "msg": "Dex +129 % frente a mostrador de recepción (49.18 % y se esperaba 21.48 %)"
+    }
+   ],
+   "info": [],
+   "score": 2.58,
+   "shot": "capturas/clinic_interior/027.png"
+  },
+  {
+   "id": "grid-64.8-92.7",
+   "kind": "grid",
+   "x": 64.8,
+   "y": 92.7,
+   "feet": {
+    "x": 64.8,
+    "y": 92.7
+   },
+   "dexBox": {
+    "x": 62.06,
+    "y": 43.52,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_waiting_chairs": 0
+   },
+   "scale": {
+    "ref": "hs_reception_desk",
+    "expected": 21.48,
+    "got": 49.18,
+    "dev": 1.29,
+    "baseDy": 4.2
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_reception_desk",
+     "dev": 1.29,
+     "msg": "Dex +129 % frente a mostrador de recepción (49.18 % y se esperaba 21.48 %)"
+    }
+   ],
+   "info": [],
+   "score": 2.58,
+   "shot": "capturas/clinic_interior/028.png"
+  },
+  {
+   "id": "grid-64.8-95.5",
+   "kind": "grid",
+   "x": 64.8,
+   "y": 95.5,
+   "feet": {
+    "x": 64.8,
+    "y": 95.5
+   },
+   "dexBox": {
+    "x": 62.06,
+    "y": 46.32,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_waiting_chairs": 0
+   },
+   "scale": {
+    "ref": "hs_reception_desk",
+    "expected": 21.48,
+    "got": 49.18,
+    "dev": 1.29,
+    "baseDy": 7
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_reception_desk",
+     "dev": 1.29,
+     "msg": "Dex +129 % frente a mostrador de recepción (49.18 % y se esperaba 21.48 %)"
+    }
+   ],
+   "info": [],
+   "score": 2.58,
+   "shot": "capturas/clinic_interior/029.png"
+  },
+  {
+   "id": "grid-64.8-98.2",
+   "kind": "grid",
+   "x": 64.8,
+   "y": 98.2,
+   "feet": {
+    "x": 64.8,
+    "y": 98.2
+   },
+   "dexBox": {
+    "x": 62.06,
+    "y": 49.02,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_waiting_chairs": 0
+   },
+   "scale": {
+    "ref": "hs_reception_desk",
+    "expected": 21.48,
+    "got": 49.18,
+    "dev": 1.29,
+    "baseDy": 9.7
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_reception_desk",
+     "dev": 1.29,
+     "msg": "Dex +129 % frente a mostrador de recepción (49.18 % y se esperaba 21.48 %)"
+    }
+   ],
+   "info": [],
+   "score": 2.58,
+   "shot": "capturas/clinic_interior/030.png"
+  },
+  {
+   "id": "hs_reception_desk",
+   "kind": "arrival",
+   "x": 68.7,
+   "y": 91.8,
+   "feet": {
+    "x": 68.7,
+    "y": 91.8
+   },
+   "dexBox": {
+    "x": 65.96,
+    "y": 42.62,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_filing_cabinet": 0
+   },
+   "scale": {
+    "ref": "hs_reception_desk",
+    "expected": 21.48,
+    "got": 49.18,
+    "dev": 1.29,
+    "baseDy": 3.3
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_reception_desk",
+     "dev": 1.29,
+     "msg": "Dex +129 % frente a mostrador de recepción (49.18 % y se esperaba 21.48 %)"
+    }
+   ],
+   "info": [],
+   "score": 2.58,
+   "shot": "capturas/clinic_interior/031.png"
+  },
+  {
+   "id": "hs_posters",
+   "kind": "arrival",
+   "x": 36.7,
+   "y": 88.3,
+   "feet": {
+    "x": 36.7,
+    "y": 88.3
+   },
+   "dexBox": {
+    "x": 33.96,
+    "y": 39.12,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": {
+    "ref": "hs_treatment_door",
+    "expected": 44.63,
+    "got": 49.18,
+    "dev": 0.1,
+    "baseDy": 1.3
+   },
+   "failures": [],
+   "info": [],
+   "score": 0
+  },
+  {
+   "id": "hs_waiting_chairs",
+   "kind": "arrival",
+   "x": 56.4,
+   "y": 91.8,
+   "feet": {
+    "x": 56.4,
+    "y": 91.8
+   },
+   "dexBox": {
+    "x": 53.66,
+    "y": 42.62,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_waiting_chairs": 0
+   },
+   "scale": {
+    "ref": "hs_reception_desk",
+    "expected": 21.48,
+    "got": 49.18,
+    "dev": 1.29,
+    "baseDy": 3.3
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_reception_desk",
+     "dev": 1.29,
+     "msg": "Dex +129 % frente a mostrador de recepción (49.18 % y se esperaba 21.48 %)"
+    }
+   ],
+   "info": [],
+   "score": 2.58,
+   "shot": "capturas/clinic_interior/033.png"
+  },
+  {
+   "id": "hs_filing_cabinet",
+   "kind": "arrival",
+   "x": 68.7,
+   "y": 91.8,
+   "feet": {
+    "x": 68.7,
+    "y": 91.8
+   },
+   "dexBox": {
+    "x": 65.96,
+    "y": 42.62,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_filing_cabinet": 0
+   },
+   "scale": {
+    "ref": "hs_reception_desk",
+    "expected": 21.48,
+    "got": 49.18,
+    "dev": 1.29,
+    "baseDy": 3.3
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_reception_desk",
+     "dev": 1.29,
+     "msg": "Dex +129 % frente a mostrador de recepción (49.18 % y se esperaba 21.48 %)"
+    }
+   ],
+   "info": [],
+   "score": 2.58,
+   "shot": "capturas/clinic_interior/034.png"
+  },
+  {
+   "id": "hs_treatment_door",
+   "kind": "arrival",
+   "x": 29.5,
+   "y": 88.3,
+   "feet": {
+    "x": 29.5,
+    "y": 88.3
+   },
+   "dexBox": {
+    "x": 26.76,
+    "y": 39.12,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_treatment_door": 0
+   },
+   "scale": {
+    "ref": "hs_treatment_door",
+    "expected": 44.63,
+    "got": 49.18,
+    "dev": 0.1,
+    "baseDy": 1.3
+   },
+   "failures": [],
+   "info": [],
+   "score": 0
+  },
+  {
+   "id": "hs_water_dispenser",
+   "kind": "arrival",
+   "x": 22.8,
+   "y": 88.3,
+   "feet": {
+    "x": 22.8,
+    "y": 88.3
+   },
+   "dexBox": {
+    "x": 20.06,
+    "y": 39.12,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_treatment_door": 0
+   },
+   "scale": {
+    "ref": "hs_treatment_door",
+    "expected": 44.63,
+    "got": 49.18,
+    "dev": 0.1,
+    "baseDy": 1.3
+   },
+   "failures": [],
+   "info": [],
+   "score": 0
+  },
+  {
+   "id": "hs_clinic_photo",
+   "kind": "arrival",
+   "x": 36.7,
+   "y": 88.3,
+   "feet": {
+    "x": 36.7,
+    "y": 88.3
+   },
+   "dexBox": {
+    "x": 33.96,
+    "y": 39.12,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": {
+    "ref": "hs_treatment_door",
+    "expected": 44.63,
+    "got": 49.18,
+    "dev": 0.1,
+    "baseDy": 1.3
+   },
+   "failures": [],
+   "info": [],
+   "score": 0
+  },
+  {
+   "id": "hs_dr_coat",
+   "kind": "arrival",
+   "x": 68.7,
+   "y": 91.8,
+   "feet": {
+    "x": 68.7,
+    "y": 91.8
+   },
+   "dexBox": {
+    "x": 65.96,
+    "y": 42.62,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_filing_cabinet": 0
+   },
+   "scale": {
+    "ref": "hs_reception_desk",
+    "expected": 21.48,
+    "got": 49.18,
+    "dev": 1.29,
+    "baseDy": 3.3
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_reception_desk",
+     "dev": 1.29,
+     "msg": "Dex +129 % frente a mostrador de recepción (49.18 % y se esperaba 21.48 %)"
+    }
+   ],
+   "info": [],
+   "score": 2.58,
+   "shot": "capturas/clinic_interior/038.png"
+  },
+  {
+   "id": "hs_fluorescent_lights",
+   "kind": "arrival",
+   "x": 36.7,
+   "y": 88.3,
+   "feet": {
+    "x": 36.7,
+    "y": 88.3
+   },
+   "dexBox": {
+    "x": 33.96,
+    "y": 39.12,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": {
+    "ref": "hs_treatment_door",
+    "expected": 44.63,
+    "got": 49.18,
+    "dev": 0.1,
+    "baseDy": 1.3
+   },
+   "failures": [],
+   "info": [],
+   "score": 0
+  },
+  {
+   "id": "hs_lightbulb_poster",
+   "kind": "arrival",
+   "x": 36.3,
+   "y": 88.3,
+   "feet": {
+    "x": 36.3,
+    "y": 88.3
+   },
+   "dexBox": {
+    "x": 33.56,
+    "y": 39.12,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_treatment_door": 0
+   },
+   "scale": {
+    "ref": "hs_treatment_door",
+    "expected": 44.63,
+    "got": 49.18,
+    "dev": 0.1,
+    "baseDy": 1.3
+   },
+   "failures": [],
+   "info": [],
+   "score": 0
+  },
+  {
+   "id": "hs_reception_computer",
+   "kind": "arrival",
+   "x": 68.7,
+   "y": 91.8,
+   "feet": {
+    "x": 68.7,
+    "y": 91.8
+   },
+   "dexBox": {
+    "x": 65.96,
+    "y": 42.62,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_filing_cabinet": 0
+   },
+   "scale": {
+    "ref": "hs_reception_desk",
+    "expected": 21.48,
+    "got": 49.18,
+    "dev": 1.29,
+    "baseDy": 3.3
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_reception_desk",
+     "dev": 1.29,
+     "msg": "Dex +129 % frente a mostrador de recepción (49.18 % y se esperaba 21.48 %)"
+    }
+   ],
+   "info": [],
+   "score": 2.58,
+   "shot": "capturas/clinic_interior/041.png"
+  },
+  {
+   "id": "npc_dr_satoshi",
+   "kind": "arrival",
+   "x": 68.7,
+   "y": 91.8,
+   "feet": {
+    "x": 68.7,
+    "y": 91.8
+   },
+   "dexBox": {
+    "x": 65.96,
+    "y": 42.62,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_filing_cabinet": 0
+   },
+   "scale": {
+    "ref": "hs_reception_desk",
+    "expected": 21.48,
+    "got": 49.18,
+    "dev": 1.29,
+    "baseDy": 3.3
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_reception_desk",
+     "dev": 1.29,
+     "msg": "Dex +129 % frente a mostrador de recepción (49.18 % y se esperaba 21.48 %)"
+    }
+   ],
+   "info": [],
+   "score": 2.58,
+   "shot": "capturas/clinic_interior/042.png"
+  },
+  {
+   "id": "hs_treatment_door:izq",
+   "kind": "ref",
+   "x": 23.4,
+   "y": 88.3,
+   "feet": {
+    "x": 23.4,
+    "y": 88.3
+   },
+   "dexBox": {
+    "x": 20.66,
+    "y": 39.12,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_treatment_door": 0
+   },
+   "scale": {
+    "ref": "hs_treatment_door",
+    "expected": 44.63,
+    "got": 49.18,
+    "dev": 0.1,
+    "baseDy": 1.3
+   },
+   "failures": [],
+   "info": [],
+   "score": 0
+  },
+  {
+   "id": "hs_treatment_door:der",
+   "kind": "ref",
+   "x": 35.6,
+   "y": 88.3,
+   "feet": {
+    "x": 35.6,
+    "y": 88.3
+   },
+   "dexBox": {
+    "x": 32.86,
+    "y": 39.12,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_treatment_door": 0
+   },
+   "scale": {
+    "ref": "hs_treatment_door",
+    "expected": 44.63,
+    "got": 49.18,
+    "dev": 0.1,
+    "baseDy": 1.3
+   },
+   "failures": [],
+   "info": [],
+   "score": 0
+  },
+  {
+   "id": "hs_treatment_door:detrás",
+   "kind": "ref",
+   "x": 29.5,
+   "y": 88.3,
+   "feet": {
+    "x": 29.5,
+    "y": 88.3
+   },
+   "dexBox": {
+    "x": 26.76,
+    "y": 39.12,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_treatment_door": 0
+   },
+   "scale": {
+    "ref": "hs_treatment_door",
+    "expected": 44.63,
+    "got": 49.18,
+    "dev": 0.1,
+    "baseDy": 1.3
+   },
+   "failures": [],
+   "info": [],
+   "score": 0
+  },
+  {
+   "id": "hs_reception_desk:izq",
+   "kind": "ref",
+   "x": 68.7,
+   "y": 91.8,
+   "feet": {
+    "x": 68.7,
+    "y": 91.8
+   },
+   "dexBox": {
+    "x": 65.96,
+    "y": 42.62,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_filing_cabinet": 0
+   },
+   "scale": {
+    "ref": "hs_reception_desk",
+    "expected": 21.48,
+    "got": 49.18,
+    "dev": 1.29,
+    "baseDy": 3.3
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_reception_desk",
+     "dev": 1.29,
+     "msg": "Dex +129 % frente a mostrador de recepción (49.18 % y se esperaba 21.48 %)"
+    }
+   ],
+   "info": [],
+   "score": 2.58,
+   "shot": "capturas/clinic_interior/046.png"
+  },
+  {
+   "id": "hs_reception_desk:der",
+   "kind": "ref",
+   "x": 92.5,
+   "y": 96.6,
+   "feet": {
+    "x": 92.5,
+    "y": 96.6
+   },
+   "dexBox": {
+    "x": 89.76,
+    "y": 47.42,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_reception_desk": 0
+   },
+   "scale": {
+    "ref": "hs_reception_desk",
+    "expected": 21.48,
+    "got": 49.18,
+    "dev": 1.29,
+    "baseDy": 8.1
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_reception_desk",
+     "dev": 1.29,
+     "msg": "Dex +129 % frente a mostrador de recepción (49.18 % y se esperaba 21.48 %)"
+    }
+   ],
+   "info": [],
+   "score": 2.58,
+   "shot": "capturas/clinic_interior/047.png"
+  },
+  {
+   "id": "hs_reception_desk:detrás",
+   "kind": "ref",
+   "x": 68.7,
+   "y": 91.8,
+   "feet": {
+    "x": 68.7,
+    "y": 91.8
+   },
+   "dexBox": {
+    "x": 65.96,
+    "y": 42.62,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_filing_cabinet": 0
+   },
+   "scale": {
+    "ref": "hs_reception_desk",
+    "expected": 21.48,
+    "got": 49.18,
+    "dev": 1.29,
+    "baseDy": 3.3
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_reception_desk",
+     "dev": 1.29,
+     "msg": "Dex +129 % frente a mostrador de recepción (49.18 % y se esperaba 21.48 %)"
+    }
+   ],
+   "info": [],
+   "score": 2.58,
+   "shot": "capturas/clinic_interior/048.png"
+  },
+  {
+   "id": "hs_waiting_chairs:izq",
+   "kind": "ref",
+   "x": 36.7,
+   "y": 88.3,
+   "feet": {
+    "x": 36.7,
+    "y": 88.3
+   },
+   "dexBox": {
+    "x": 33.96,
+    "y": 39.12,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": {
+    "ref": "hs_treatment_door",
+    "expected": 44.63,
+    "got": 49.18,
+    "dev": 0.1,
+    "baseDy": 1.3
+   },
+   "failures": [],
+   "info": [],
+   "score": 0
+  },
+  {
+   "id": "hs_waiting_chairs:der",
+   "kind": "ref",
+   "x": 64.5,
+   "y": 91.8,
+   "feet": {
+    "x": 64.5,
+    "y": 91.8
+   },
+   "dexBox": {
+    "x": 61.76,
+    "y": 42.62,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_waiting_chairs": 0
+   },
+   "scale": {
+    "ref": "hs_reception_desk",
+    "expected": 21.48,
+    "got": 49.18,
+    "dev": 1.29,
+    "baseDy": 3.3
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_reception_desk",
+     "dev": 1.29,
+     "msg": "Dex +129 % frente a mostrador de recepción (49.18 % y se esperaba 21.48 %)"
+    }
+   ],
+   "info": [],
+   "score": 2.58,
+   "shot": "capturas/clinic_interior/050.png"
+  },
+  {
+   "id": "hs_waiting_chairs:detrás",
+   "kind": "ref",
+   "x": 56.4,
+   "y": 91.8,
+   "feet": {
+    "x": 56.4,
+    "y": 91.8
+   },
+   "dexBox": {
+    "x": 53.66,
+    "y": 42.62,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_waiting_chairs": 0
+   },
+   "scale": {
+    "ref": "hs_reception_desk",
+    "expected": 21.48,
+    "got": 49.18,
+    "dev": 1.29,
+    "baseDy": 3.3
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_reception_desk",
+     "dev": 1.29,
+     "msg": "Dex +129 % frente a mostrador de recepción (49.18 % y se esperaba 21.48 %)"
+    }
+   ],
+   "info": [],
+   "score": 2.58,
+   "shot": "capturas/clinic_interior/051.png"
+  },
+  {
+   "id": "hs_water_dispenser:izq",
+   "kind": "ref",
+   "x": 22.8,
+   "y": 88.3,
+   "feet": {
+    "x": 22.8,
+    "y": 88.3
+   },
+   "dexBox": {
+    "x": 20.06,
+    "y": 39.12,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_treatment_door": 0
+   },
+   "scale": {
+    "ref": "hs_treatment_door",
+    "expected": 44.63,
+    "got": 49.18,
+    "dev": 0.1,
+    "baseDy": 1.3
+   },
+   "failures": [],
+   "info": [],
+   "score": 0
+  },
+  {
+   "id": "hs_water_dispenser:der",
+   "kind": "ref",
+   "x": 22.8,
+   "y": 88.3,
+   "feet": {
+    "x": 22.8,
+    "y": 88.3
+   },
+   "dexBox": {
+    "x": 20.06,
+    "y": 39.12,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_treatment_door": 0
+   },
+   "scale": {
+    "ref": "hs_treatment_door",
+    "expected": 44.63,
+    "got": 49.18,
+    "dev": 0.1,
+    "baseDy": 1.3
+   },
+   "failures": [],
+   "info": [],
+   "score": 0
+  },
+  {
+   "id": "hs_water_dispenser:detrás",
+   "kind": "ref",
+   "x": 22.8,
+   "y": 88.3,
+   "feet": {
+    "x": 22.8,
+    "y": 88.3
+   },
+   "dexBox": {
+    "x": 20.06,
+    "y": 39.12,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_treatment_door": 0
+   },
+   "scale": {
+    "ref": "hs_treatment_door",
+    "expected": 44.63,
+    "got": 49.18,
+    "dev": 0.1,
+    "baseDy": 1.3
+   },
+   "failures": [],
+   "info": [],
+   "score": 0
+  },
+  {
+   "id": "hs_filing_cabinet:izq",
+   "kind": "ref",
+   "x": 66.4,
+   "y": 91.8,
+   "feet": {
+    "x": 66.4,
+    "y": 91.8
+   },
+   "dexBox": {
+    "x": 63.66,
+    "y": 42.62,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_filing_cabinet": 0
+   },
+   "scale": {
+    "ref": "hs_reception_desk",
+    "expected": 21.48,
+    "got": 49.18,
+    "dev": 1.29,
+    "baseDy": 3.3
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_reception_desk",
+     "dev": 1.29,
+     "msg": "Dex +129 % frente a mostrador de recepción (49.18 % y se esperaba 21.48 %)"
+    }
+   ],
+   "info": [],
+   "score": 2.58,
+   "shot": "capturas/clinic_interior/055.png"
+  },
+  {
+   "id": "hs_filing_cabinet:der",
+   "kind": "ref",
+   "x": 68.7,
+   "y": 91.8,
+   "feet": {
+    "x": 68.7,
+    "y": 91.8
+   },
+   "dexBox": {
+    "x": 65.96,
+    "y": 42.62,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_filing_cabinet": 0
+   },
+   "scale": {
+    "ref": "hs_reception_desk",
+    "expected": 21.48,
+    "got": 49.18,
+    "dev": 1.29,
+    "baseDy": 3.3
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_reception_desk",
+     "dev": 1.29,
+     "msg": "Dex +129 % frente a mostrador de recepción (49.18 % y se esperaba 21.48 %)"
+    }
+   ],
+   "info": [],
+   "score": 2.58,
+   "shot": "capturas/clinic_interior/056.png"
+  },
+  {
+   "id": "hs_filing_cabinet:detrás",
+   "kind": "ref",
+   "x": 68.7,
+   "y": 91.8,
+   "feet": {
+    "x": 68.7,
+    "y": 91.8
+   },
+   "dexBox": {
+    "x": 65.96,
+    "y": 42.62,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_filing_cabinet": 0
+   },
+   "scale": {
+    "ref": "hs_reception_desk",
+    "expected": 21.48,
+    "got": 49.18,
+    "dev": 1.29,
+    "baseDy": 3.3
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_reception_desk",
+     "dev": 1.29,
+     "msg": "Dex +129 % frente a mostrador de recepción (49.18 % y se esperaba 21.48 %)"
+    }
+   ],
+   "info": [],
+   "score": 2.58,
+   "shot": "capturas/clinic_interior/057.png"
+  }
+ ]
+}

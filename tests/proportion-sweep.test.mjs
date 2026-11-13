@@ -60,6 +60,13 @@ test('escala: dentro de ±15 % no falla; fuera sí; con scalePolicy fixed es inf
   assert.equal(fixed.info[0].type, 'scale');
 });
 
+test('referencia sin medir (bounds del hotspot): la escala es informativa', () => {
+  const rough = { ...door, measured: false };
+  const ev = evaluatePosition(at({ heightPct: 60 }), { scalePolicy: 'measure', refs: [rough] });
+  assert.equal(ev.failures.length, 0);
+  assert.equal(ev.info.find((i) => i.type === 'scale-rough')?.ref, 'hs_door');
+});
+
 test('pies: fuera de la zona andable = fallo; fuera de la walkmask = info (el juego no la usa)', () => {
   assert.equal(evaluatePosition(at({ walkable: false }), doc).failures[0].type, 'feet');
   const wm = evaluatePosition(at({ maskOk: false }), doc);
