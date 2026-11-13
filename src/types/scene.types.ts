@@ -68,6 +68,13 @@ export interface SceneData {
    * se pisa). El personaje los rodea con el pathfinding (src/systems/Pathfinding.ts). Sin walkableAreas no hacen nada.
    */
   blockedAreas?: Array<{ x: number; y: number; w: number; h: number }>;
+  /**
+   * A2.17 fase 2: walk-behind por objeto. Trozos de foreground.png (caja en %, como bounds) que no van siempre por
+   * encima de Dex: se dibujan a la profundidad de su línea base (`baseY`, % del alto), ordenados con Dex y las NPC por
+   * la y de los pies (actorDepth). Pies por debajo de la base (y mayor) = Dex delante; por encima = el trozo le tapa.
+   * El resto del primer plano sigue a depth 15 (siempre delante).
+   */
+  foregroundLayers?: Array<{ id: string; bounds: { x: number; y: number; w: number; h: number }; baseY: number }>;
   npcs?: NPCData[];
   dialogues?: Record<string, DialogueTreeData>;
   /** Scripts that run automatically when the scene loads */

@@ -16,7 +16,9 @@
         "h": 70
       },
       "baseY": 89,
-      "source": "qa/proportion-refs.json (medido a ojo en A2.11)"
+      "source": "qa/proportion-refs.json (medido a ojo en A2.11)",
+      "measured": false,
+      "exception": "A2.11: puerta blindada sobredimensionada en el dibujo (Dex/puerta 0,67, ya era excepción con skipDemo). La escala se juzga frente a la mesita (medida a ojo), con la que Dex cuadra."
     },
     {
       "id": "hs_chair",
@@ -36,17 +38,16 @@
     {
       "id": "hs_side_table",
       "label": "mesita metálica",
-      "realHeightM": 0.8,
+      "realHeightM": 0.85,
       "foreground": false,
       "box": {
-        "x": 59.8,
-        "y": 69.7,
-        "w": 8.5,
-        "h": 8.7
+        "x": 59.4,
+        "y": 65.5,
+        "w": 10,
+        "h": 24.2
       },
-      "baseY": 78.4,
-      "source": "bounds del hotspot",
-      "measured": false
+      "baseY": 89.7,
+      "source": "A2.17 fase 2: medido a ojo sobre background.png (rejilla del 10 %) (bandeja ≈ 65,5, ruedas ≈ 89,7; carrito médico ≈ 0,85 m)"
     }
   ]
 }

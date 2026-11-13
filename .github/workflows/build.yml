@@ -133,9 +133,9 @@ jobs:
           name: walkthrough-shots-critica
           path: walkthrough-shots/
 
-  # A2.17: revisor de proporción y profundidad (scripts/proportion-sweep.mjs). Fase 1 = INFORME: el paso compara con
-  # qa/proporcion-baseline.json (--strict) pero con continue-on-error, así que un fallo nuevo se ve en el job sin
-  # romper el CI. Fase 2: quitar continue-on-error y pasa a ser puerta.
+  # A2.17: revisor de proporción y profundidad (scripts/proportion-sweep.mjs). Desde la fase 2 es PUERTA: --strict falla
+  # con cualquier fallo que no esté en qa/proporcion-baseline.json (los que quedan están explicados en
+  # docs/progreso/A2.17.md). Para aceptar uno a propósito: --write-baseline y explicarlo en la nota.
   proporcion:
     needs: build
     if: ${{ !cancelled() && (needs.build.result == 'success' || (needs.build.result == 'skipped' && inputs.BASE_URL)) }}
@@ -165,8 +165,7 @@ jobs:
           for i in $(seq 1 60); do curl -sf http://127.0.0.1:4173/ >/dev/null && exit 0; sleep 1; done
           cat preview.log; exit 1
 
-      - name: Barrido de proporción (informe; --strict contra la base de fallos conocidos)
-        continue-on-error: true
+      - name: Barrido de proporción (puerta; --strict contra la base de fallos conocidos)
         run: node scripts/proportion-sweep.mjs --strict --out proporcion-out
         env:
           BASE_URL: ${{ inputs.BASE_URL || 'http://127.0.0.1:4173' }}

@@ -61,6 +61,15 @@ type TapHit =
   | { kind: 'npc'; npc: NPC }
   | { kind: 'scene'; pct: { x: number; y: number }; hotspot: HotspotData | null; rawHotspot: HotspotData | null };
 
+/** A2.17 fase 2: caja en % → píxeles enteros de una textura de w×h */
+function pctRectToPx(b: { x: number; y: number; w: number; h: number }, w: number, h: number) {
+  const x0 = Math.max(0, Math.round((b.x / 100) * w));
+  const y0 = Math.max(0, Math.round((b.y / 100) * h));
+  const x1 = Math.min(w, Math.round(((b.x + b.w) / 100) * w));
+  const y1 = Math.min(h, Math.round(((b.y + b.h) / 100) * h));
+  return { x: x0, y: y0, w: Math.max(0, x1 - x0), h: Math.max(0, y1 - y0) };
+}
+
 export class GameScene extends Phaser.Scene {
   private player!: Player;
   private coordSystem!: CoordSystem;
@@ -96,6 +105,8 @@ export class GameScene extends Phaser.Scene {
   private bgFill!: Phaser.GameObjects.Image;
   private bg!: Phaser.GameObjects.Image;
   private fg?: Phaser.GameObjects.Image;
+  /** A2.17 fase 2: trozos del primer plano con walk-behind (foregroundLayers), a la profundidad de su base */
+  private fgLayers: Phaser.GameObjects.Image[] = [];
   private conditionalOverlays: Array<{ id: string; sprite: Phaser.GameObjects.Image; flag: string; invert?: boolean; bounds?: PctRect }> = [];
   /**
    * A1.4: visibilidad forzada por el op `flicker` (id del overlay → visible), por encima de la flag. Es solo
@@ -270,11 +281,22 @@ export class GameScene extends Phaser.Scene {
     // seguía apuntando al de la anterior (ya destruido) y, al liberar su textura, handleResize() rompía en
     // getSourceImage() («reading 'source'»: los rojos de smoke y walkthrough en la PR #56).
     this.fg = undefined;
+    this.fgLayers = [];
     const fgKey = `fg_${sceneId}`;
     if (this.textures.exists(fgKey)) {
-      this.fg = this.add.image(0, 0, fgKey).setOrigin(0, 0);
+      const layers = (sceneData.foregroundLayers ?? []).filter((l) => l.bounds && Number.isFinite(l.baseY));
+      this.fg = this.add.image(0, 0, layers.length ? this.foregroundRest(fgKey, layers) : fgKey).setOrigin(0, 0);
       this.placeOverlay(this.fg);
       this.fg.setDepth(15);
+      // A2.17 fase 2: walk-behind por objeto: cada trozo, recortado de la misma textura, a la profundidad de su base
+      const src = this.textures.get(fgKey).getSourceImage() as { width: number; height: number };
+      for (const l of layers) {
+        const r = pctRectToPx(l.bounds, src.width, src.height);
+        const img = this.add.image(0, 0, fgKey).setOrigin(0, 0).setCrop(r.x, r.y, r.w, r.h);
+        this.placeOverlay(img);
+        img.setDepth(actorDepth(l.baseY));
+        this.fgLayers.push(img);
+      }
     }
 
 
@@ -1153,6 +1175,7 @@ export class GameScene extends Phaser.Scene {
     // A5.1: fondo y primer plano como un overlay a tamaño de fondo (escala del fondo × mundo/textura)
     this.placeOverlay(this.bg);
     if (this.fg) this.placeOverlay(this.fg);
+    for (const l of this.fgLayers) this.placeOverlay(l);
 
     this.player.onResize(this.coordSystem);
 
@@ -1188,6 +1211,26 @@ export class GameScene extends Phaser.Scene {
    * A5.1: también el fondo y el primer plano: la textura puede ser una variante más pequeña que el mundo (render.world) y
    * overlayTransform la estira (mundo / textura) para que cada píxel caiga donde caía.
    */
+  /**
+   * A2.17 fase 2: textura del primer plano SIN los trozos de `foregroundLayers` (borrados con clearRect), para que esos
+   * trozos solo se dibujen una vez (a su profundidad). Se rehace en cada entrada; las de otras escenas se liberan.
+   */
+  private foregroundRest(fgKey: string, layers: NonNullable<SceneData['foregroundLayers']>): string {
+    const key = `fgrest_${fgKey}`;
+    for (const k of this.textures.getTextureKeys()) if (k.startsWith('fgrest_')) this.textures.remove(k);
+    const src = this.textures.get(fgKey).getSourceImage() as HTMLImageElement | HTMLCanvasElement;
+    const tex = this.textures.createCanvas(key, src.width, src.height);
+    if (!tex) return fgKey;
+    const ctx = tex.getContext();
+    ctx.drawImage(src, 0, 0);
+    for (const l of layers) {
+      const r = pctRectToPx(l.bounds, src.width, src.height);
+      ctx.clearRect(r.x, r.y, r.w, r.h);
+    }
+    tex.refresh();
+    return key;
+  }
+
   private placeOverlay(sprite: Phaser.GameObjects.Image, bounds?: PctRect): void {
     const src = sprite.texture.getSourceImage() as { width: number; height: number };
     const o = overlayTransform(

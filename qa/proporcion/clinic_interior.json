@@ -186,8 +186,7 @@
      "msg": "ninguna referencia con la base a menos de 10 % de los pies"
     }
    ],
-   "score": 0,
-   "shot": "capturas/clinic_interior/004.png"
+   "score": 0
   },
   {
    "id": "grid-54.5-98.1",
@@ -224,8 +223,7 @@
      "msg": "ninguna referencia con la base a menos de 10 % de los pies"
     }
    ],
-   "score": 0,
-   "shot": "capturas/clinic_interior/005.png"
+   "score": 0
   },
   {
    "id": "grid-62.7-98.1",
@@ -262,8 +260,7 @@
      "msg": "ninguna referencia con la base a menos de 10 % de los pies"
     }
    ],
-   "score": 0,
-   "shot": "capturas/clinic_interior/006.png"
+   "score": 0
   },
   {
    "id": "grid-71-98.1",
@@ -301,8 +298,7 @@
      "msg": "ninguna referencia con la base a menos de 10 % de los pies"
     }
    ],
-   "score": 0,
-   "shot": "capturas/clinic_interior/007.png"
+   "score": 0
   },
   {
    "id": "grid-79.3-98.1",
@@ -339,8 +335,7 @@
      "msg": "ninguna referencia con la base a menos de 10 % de los pies"
     }
    ],
-   "score": 0,
-   "shot": "capturas/clinic_interior/008.png"
+   "score": 0
   },
   {
    "id": "grid-87.6-98.1",
@@ -377,8 +372,7 @@
      "msg": "ninguna referencia con la base a menos de 10 % de los pies"
     }
    ],
-   "score": 0,
-   "shot": "capturas/clinic_interior/009.png"
+   "score": 0
   },
   {
    "id": "grid-95.9-98.1",
@@ -413,8 +407,7 @@
      "msg": "ninguna referencia con la base a menos de 10 % de los pies"
     }
    ],
-   "score": 0,
-   "shot": "capturas/clinic_interior/010.png"
+   "score": 0
   },
   {
    "id": "grid-26-89.1",
@@ -759,8 +752,7 @@
      "msg": "Dex +129 % frente a mostrador de recepción (caja sin medir: bounds del hotspot)"
     }
    ],
-   "score": 0,
-   "shot": "capturas/clinic_interior/019.png"
+   "score": 0
   },
   {
    "id": "grid-38.6-95.5",
@@ -797,8 +789,7 @@
      "msg": "Dex +129 % frente a mostrador de recepción (caja sin medir: bounds del hotspot)"
     }
    ],
-   "score": 0,
-   "shot": "capturas/clinic_interior/020.png"
+   "score": 0
   },
   {
    "id": "grid-38.6-98.2",
@@ -833,8 +824,7 @@
      "msg": "ninguna referencia con la base a menos de 10 % de los pies"
     }
    ],
-   "score": 0,
-   "shot": "capturas/clinic_interior/021.png"
+   "score": 0
   },
   {
    "id": "grid-47.3-92.7",
@@ -871,8 +861,7 @@
      "msg": "Dex +129 % frente a mostrador de recepción (caja sin medir: bounds del hotspot)"
     }
    ],
-   "score": 0,
-   "shot": "capturas/clinic_interior/022.png"
+   "score": 0
   },
   {
    "id": "grid-47.3-95.5",
@@ -909,8 +898,7 @@
      "msg": "Dex +129 % frente a mostrador de recepción (caja sin medir: bounds del hotspot)"
     }
    ],
-   "score": 0,
-   "shot": "capturas/clinic_interior/023.png"
+   "score": 0
   },
   {
    "id": "grid-47.3-98.2",
@@ -945,8 +933,7 @@
      "msg": "ninguna referencia con la base a menos de 10 % de los pies"
     }
    ],
-   "score": 0,
-   "shot": "capturas/clinic_interior/024.png"
+   "score": 0
   },
   {
    "id": "grid-56.1-92.7",
@@ -985,8 +972,7 @@
      "msg": "Dex +129 % frente a mostrador de recepción (caja sin medir: bounds del hotspot)"
     }
    ],
-   "score": 0,
-   "shot": "capturas/clinic_interior/025.png"
+   "score": 0
   },
   {
    "id": "grid-56.1-95.5",
@@ -1025,8 +1011,7 @@
      "msg": "Dex +129 % frente a mostrador de recepción (caja sin medir: bounds del hotspot)"
     }
    ],
-   "score": 0,
-   "shot": "capturas/clinic_interior/026.png"
+   "score": 0
   },
   {
    "id": "grid-56.1-98.2",
@@ -1063,8 +1048,7 @@
      "msg": "ninguna referencia con la base a menos de 10 % de los pies"
     }
    ],
-   "score": 0,
-   "shot": "capturas/clinic_interior/027.png"
+   "score": 0
   },
   {
    "id": "grid-64.8-92.7",
@@ -1103,8 +1087,7 @@
      "msg": "Dex +129 % frente a mostrador de recepción (caja sin medir: bounds del hotspot)"
     }
    ],
-   "score": 0,
-   "shot": "capturas/clinic_interior/028.png"
+   "score": 0
   },
   {
    "id": "grid-64.8-95.5",
@@ -1143,8 +1126,7 @@
      "msg": "Dex +129 % frente a mostrador de recepción (caja sin medir: bounds del hotspot)"
     }
    ],
-   "score": 0,
-   "shot": "capturas/clinic_interior/029.png"
+   "score": 0
   },
   {
    "id": "grid-64.8-98.2",
@@ -1181,8 +1163,7 @@
      "msg": "ninguna referencia con la base a menos de 10 % de los pies"
     }
    ],
-   "score": 0,
-   "shot": "capturas/clinic_interior/030.png"
+   "score": 0
   },
   {
    "id": "hs_reception_desk",
@@ -1221,8 +1202,7 @@
      "msg": "Dex +129 % frente a mostrador de recepción (caja sin medir: bounds del hotspot)"
     }
    ],
-   "score": 0,
-   "shot": "capturas/clinic_interior/031.png"
+   "score": 0
   },
   {
    "id": "hs_posters",
@@ -1298,8 +1278,7 @@
      "msg": "Dex +129 % frente a mostrador de recepción (caja sin medir: bounds del hotspot)"
     }
    ],
-   "score": 0,
-   "shot": "capturas/clinic_interior/033.png"
+   "score": 0
   },
   {
    "id": "hs_filing_cabinet",
@@ -1338,8 +1317,7 @@
      "msg": "Dex +129 % frente a mostrador de recepción (caja sin medir: bounds del hotspot)"
     }
    ],
-   "score": 0,
-   "shot": "capturas/clinic_interior/034.png"
+   "score": 0
   },
   {
    "id": "hs_treatment_door",
@@ -1493,8 +1471,7 @@
      "msg": "Dex +129 % frente a mostrador de recepción (caja sin medir: bounds del hotspot)"
     }
    ],
-   "score": 0,
-   "shot": "capturas/clinic_interior/038.png"
+   "score": 0
   },
   {
    "id": "hs_fluorescent_lights",
@@ -1609,8 +1586,7 @@
      "msg": "Dex +129 % frente a mostrador de recepción (caja sin medir: bounds del hotspot)"
     }
    ],
-   "score": 0,
-   "shot": "capturas/clinic_interior/041.png"
+   "score": 0
   },
   {
    "id": "npc_dr_satoshi",
@@ -1649,8 +1625,7 @@
      "msg": "Dex +129 % frente a mostrador de recepción (caja sin medir: bounds del hotspot)"
     }
    ],
-   "score": 0,
-   "shot": "capturas/clinic_interior/042.png"
+   "score": 0
   },
   {
    "id": "hs_treatment_door:izq",
@@ -1806,8 +1781,7 @@
      "msg": "Dex +129 % frente a mostrador de recepción (caja sin medir: bounds del hotspot)"
     }
    ],
-   "score": 0,
-   "shot": "capturas/clinic_interior/046.png"
+   "score": 0
   },
   {
    "id": "hs_reception_desk:der",
@@ -1846,8 +1820,7 @@
      "msg": "Dex +129 % frente a mostrador de recepción (caja sin medir: bounds del hotspot)"
     }
    ],
-   "score": 0,
-   "shot": "capturas/clinic_interior/047.png"
+   "score": 0
   },
   {
    "id": "hs_reception_desk:detrás",
@@ -1886,8 +1859,7 @@
      "msg": "Dex +129 % frente a mostrador de recepción (caja sin medir: bounds del hotspot)"
     }
    ],
-   "score": 0,
-   "shot": "capturas/clinic_interior/048.png"
+   "score": 0
   },
   {
    "id": "hs_waiting_chairs:izq",
@@ -1963,8 +1935,7 @@
      "msg": "Dex +129 % frente a mostrador de recepción (caja sin medir: bounds del hotspot)"
     }
    ],
-   "score": 0,
-   "shot": "capturas/clinic_interior/050.png"
+   "score": 0
   },
   {
    "id": "hs_waiting_chairs:detrás",
@@ -2003,8 +1974,7 @@
      "msg": "Dex +129 % frente a mostrador de recepción (caja sin medir: bounds del hotspot)"
     }
    ],
-   "score": 0,
-   "shot": "capturas/clinic_interior/051.png"
+   "score": 0
   },
   {
    "id": "hs_water_dispenser:izq",
@@ -2160,8 +2130,7 @@
      "msg": "Dex +129 % frente a mostrador de recepción (caja sin medir: bounds del hotspot)"
     }
    ],
-   "score": 0,
-   "shot": "capturas/clinic_interior/055.png"
+   "score": 0
   },
   {
    "id": "hs_filing_cabinet:der",
@@ -2200,8 +2169,7 @@
      "msg": "Dex +129 % frente a mostrador de recepción (caja sin medir: bounds del hotspot)"
     }
    ],
-   "score": 0,
-   "shot": "capturas/clinic_interior/056.png"
+   "score": 0
   },
   {
    "id": "hs_filing_cabinet:detrás",
@@ -2240,8 +2208,7 @@
      "msg": "Dex +129 % frente a mostrador de recepción (caja sin medir: bounds del hotspot)"
     }
    ],
-   "score": 0,
-   "shot": "capturas/clinic_interior/057.png"
+   "score": 0
   }
  ]
 }

@@ -24,14 +24,14 @@
       "realHeightM": 1.5,
       "foreground": true,
       "box": {
-        "x": 82,
-        "y": 55,
-        "w": 14,
-        "h": 25
+        "x": 78.5,
+        "y": 60,
+        "w": 21.5,
+        "h": 40
       },
-      "baseY": 80,
-      "source": "bounds del hotspot",
-      "note": "si foreground.png las pinta delante, Dex queda tapado aunque esté delante",
+      "baseY": 89.5,
+      "source": "A2.17 fase 2: caja = foregroundLayers.rocks_right de scene.json",
+      "note": "Las rocas llegan al borde de abajo del cuadro; son un trozo de foreground con walk-behind (base 89,5): pies por debajo = Dex delante, por encima = las rocas le tapan. No sirven de referencia de escala (alto real incierto): measured false.",
       "measured": false
     }
   ]

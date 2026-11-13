@@ -1437,8 +1437,7 @@
      "msg": "pies por detrás de puerta de entrada y se solapan (+89 %): ¿debería taparle?"
     }
    ],
-   "score": 0,
-   "shot": "capturas/lobby/044.png"
+   "score": 0
   },
   {
    "id": "hs_coat",
@@ -1693,8 +1692,7 @@
      "msg": "pies fuera del azul de la walkmask (93.4, 96)"
     }
    ],
-   "score": 0,
-   "shot": "capturas/lobby/052.png"
+   "score": 0
   },
   {
    "id": "hs_frontdoor:detrás",
@@ -1736,8 +1734,7 @@
      "msg": "pies por detrás de puerta de entrada y se solapan (+89 %): ¿debería taparle?"
     }
    ],
-   "score": 0,
-   "shot": "capturas/lobby/053.png"
+   "score": 0
   },
   {
    "id": "hs_plant:izq",

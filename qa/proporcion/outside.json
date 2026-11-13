@@ -2,11 +2,9 @@
  "scene": "outside",
  "scalePolicy": "fixed",
  "summary": {
-  "positions": 79,
-  "failing": 3,
-  "byType": {
-   "occlusion": 3
-  }
+  "positions": 77,
+  "failing": 0,
+  "byType": {}
  },
  "positions": [
   {
@@ -103,35 +101,6 @@
    "score": 0
   },
   {
-   "id": "grid-11.5-92.5",
-   "kind": "grid",
-   "x": 11.5,
-   "y": 92.5,
-   "feet": {
-    "x": 11.5,
-    "y": 92.5
-   },
-   "dexBox": {
-    "x": 10.32,
-    "y": 53.18,
-    "w": 2.37,
-    "h": 39.32
-   },
-   "heightPct": 40.23,
-   "walkable": true,
-   "maskOk": null,
-   "cover": {},
-   "scale": null,
-   "failures": [],
-   "info": [
-    {
-     "type": "scale-noref",
-     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
-    }
-   ],
-   "score": 0
-  },
-  {
    "id": "grid-11.5-95.5",
    "kind": "grid",
    "x": 11.5,
@@ -149,7 +118,9 @@
    "heightPct": 40.23,
    "walkable": true,
    "maskOk": null,
-   "cover": {},
+   "cover": {
+    "hs_bushes": 0.06
+   },
    "scale": null,
    "failures": [],
    "info": [
@@ -178,7 +149,9 @@
    "heightPct": 40.23,
    "walkable": true,
    "maskOk": null,
-   "cover": {},
+   "cover": {
+    "hs_bushes": 0.06
+   },
    "scale": null,
    "failures": [],
    "info": [
@@ -188,45 +161,6 @@
     }
    ],
    "score": 0
-  },
-  {
-   "id": "grid-19.2-92.5",
-   "kind": "grid",
-   "x": 19.2,
-   "y": 92.5,
-   "feet": {
-    "x": 19.2,
-    "y": 92.5
-   },
-   "dexBox": {
-    "x": 18.02,
-    "y": 53.18,
-    "w": 2.37,
-    "h": 39.32
-   },
-   "heightPct": 40.23,
-   "walkable": true,
-   "maskOk": null,
-   "cover": {
-    "hs_bushes": 0
-   },
-   "scale": null,
-   "failures": [
-    {
-     "type": "occlusion",
-     "ref": "hs_bushes",
-     "dev": 0.47,
-     "msg": "pies por detrás de la base de arbustos (92.5 < 97.6) y no le tapa (tapado 0 %)"
-    }
-   ],
-   "info": [
-    {
-     "type": "scale-noref",
-     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
-    }
-   ],
-   "score": 1.47,
-   "shot": "capturas/outside/006.png"
   },
   {
    "id": "grid-19.2-95.5",
@@ -250,22 +184,14 @@
     "hs_bushes": 0
    },
    "scale": null,
-   "failures": [
-    {
-     "type": "occlusion",
-     "ref": "hs_bushes",
-     "dev": 0.54,
-     "msg": "pies por detrás de la base de arbustos (95.5 < 97.6) y no le tapa (tapado 0 %)"
-    }
-   ],
+   "failures": [],
    "info": [
     {
      "type": "scale-noref",
      "msg": "ninguna referencia con la base a menos de 10 % de los pies"
     }
    ],
-   "score": 1.54,
-   "shot": "capturas/outside/007.png"
+   "score": 0
   },
   {
    "id": "grid-19.2-98.5",
@@ -588,18 +514,11 @@
    "failures": [],
    "info": [
     {
-     "type": "scale-rough",
-     "ref": "hs_carport",
-     "dev": 0.84,
-     "msg": "Dex +84 % frente a cochera (caja sin medir: bounds del hotspot)"
-    },
-    {
      "type": "scale-noref",
      "msg": "ninguna referencia con la base a menos de 10 % de los pies"
     }
    ],
-   "score": 0,
-   "shot": "capturas/outside/018.png"
+   "score": 0
   },
   {
    "id": "grid-50-95.5",
@@ -684,18 +603,11 @@
    "failures": [],
    "info": [
     {
-     "type": "scale-rough",
-     "ref": "hs_carport",
-     "dev": 0.84,
-     "msg": "Dex +84 % frente a cochera (caja sin medir: bounds del hotspot)"
-    },
-    {
      "type": "scale-noref",
      "msg": "ninguna referencia con la base a menos de 10 % de los pies"
     }
    ],
-   "score": 0,
-   "shot": "capturas/outside/021.png"
+   "score": 0
   },
   {
    "id": "grid-57.7-95.5",
@@ -782,18 +694,11 @@
    "failures": [],
    "info": [
     {
-     "type": "scale-rough",
-     "ref": "hs_carport",
-     "dev": 0.84,
-     "msg": "Dex +84 % frente a cochera (caja sin medir: bounds del hotspot)"
-    },
-    {
      "type": "scale-noref",
      "msg": "ninguna referencia con la base a menos de 10 % de los pies"
     }
    ],
-   "score": 0,
-   "shot": "capturas/outside/024.png"
+   "score": 0
   },
   {
    "id": "grid-65.4-95.5",
@@ -878,18 +783,11 @@
    "failures": [],
    "info": [
     {
-     "type": "scale-rough",
-     "ref": "hs_carport",
-     "dev": 0.84,
-     "msg": "Dex +84 % frente a cochera (caja sin medir: bounds del hotspot)"
-    },
-    {
      "type": "scale-noref",
      "msg": "ninguna referencia con la base a menos de 10 % de los pies"
     }
    ],
-   "score": 0,
-   "shot": "capturas/outside/027.png"
+   "score": 0
   },
   {
    "id": "grid-73.1-95.5",
@@ -978,18 +876,11 @@
    "failures": [],
    "info": [
     {
-     "type": "scale-rough",
-     "ref": "hs_carport",
-     "dev": 0.84,
-     "msg": "Dex +84 % frente a cochera (caja sin medir: bounds del hotspot)"
-    },
-    {
      "type": "scale-noref",
      "msg": "ninguna referencia con la base a menos de 10 % de los pies"
     }
    ],
-   "score": 0,
-   "shot": "capturas/outside/030.png"
+   "score": 0
   },
   {
    "id": "grid-80.8-95.5",
@@ -1076,18 +967,11 @@
    "failures": [],
    "info": [
     {
-     "type": "scale-rough",
-     "ref": "hs_carport",
-     "dev": 0.84,
-     "msg": "Dex +84 % frente a cochera (caja sin medir: bounds del hotspot)"
-    },
-    {
      "type": "scale-noref",
      "msg": "ninguna referencia con la base a menos de 10 % de los pies"
     }
    ],
-   "score": 0,
-   "shot": "capturas/outside/033.png"
+   "score": 0
   },
   {
    "id": "grid-88.5-95.5",
@@ -1170,18 +1054,11 @@
    "failures": [],
    "info": [
     {
-     "type": "scale-rough",
-     "ref": "hs_carport",
-     "dev": 0.84,
-     "msg": "Dex +84 % frente a cochera (caja sin medir: bounds del hotspot)"
-    },
-    {
      "type": "scale-noref",
      "msg": "ninguna referencia con la base a menos de 10 % de los pies"
     }
    ],
-   "score": 0,
-   "shot": "capturas/outside/036.png"
+   "score": 0
   },
   {
    "id": "grid-96.2-95.5",
@@ -1286,7 +1163,7 @@
     }
    ],
    "score": 0,
-   "shot": "capturas/outside/039.png"
+   "shot": "capturas/outside/037.png"
   },
   {
    "id": "grid-35-86.7",
@@ -1323,8 +1200,7 @@
      "msg": "ninguna referencia con la base a menos de 10 % de los pies"
     }
    ],
-   "score": 0,
-   "shot": "capturas/outside/040.png"
+   "score": 0
   },
   {
    "id": "grid-35-89.6",
@@ -1361,8 +1237,7 @@
      "msg": "ninguna referencia con la base a menos de 10 % de los pies"
     }
    ],
-   "score": 0,
-   "shot": "capturas/outside/041.png"
+   "score": 0
   },
   {
    "id": "grid-43.1-83.9",
@@ -1407,7 +1282,7 @@
     }
    ],
    "score": 0,
-   "shot": "capturas/outside/042.png"
+   "shot": "capturas/outside/040.png"
   },
   {
    "id": "grid-43.1-86.7",
@@ -1442,8 +1317,7 @@
      "msg": "ninguna referencia con la base a menos de 10 % de los pies"
     }
    ],
-   "score": 0,
-   "shot": "capturas/outside/043.png"
+   "score": 0
   },
   {
    "id": "grid-43.1-89.6",
@@ -1478,8 +1352,7 @@
      "msg": "ninguna referencia con la base a menos de 10 % de los pies"
     }
    ],
-   "score": 0,
-   "shot": "capturas/outside/044.png"
+   "score": 0
   },
   {
    "id": "grid-43.1-92.4",
@@ -1584,7 +1457,7 @@
     }
    ],
    "score": 0,
-   "shot": "capturas/outside/047.png"
+   "shot": "capturas/outside/045.png"
   },
   {
    "id": "hs_porch_light",
@@ -1631,7 +1504,7 @@
     }
    ],
    "score": 0,
-   "shot": "capturas/outside/048.png"
+   "shot": "capturas/outside/046.png"
   },
   {
    "id": "hs_main_window",
@@ -1678,7 +1551,7 @@
     }
    ],
    "score": 0,
-   "shot": "capturas/outside/049.png"
+   "shot": "capturas/outside/047.png"
   },
   {
    "id": "hs_left_window",
@@ -1725,19 +1598,19 @@
     }
    ],
    "score": 0,
-   "shot": "capturas/outside/050.png"
+   "shot": "capturas/outside/048.png"
   },
   {
    "id": "hs_chimney",
    "kind": "arrival",
-   "x": 44.4,
+   "x": 44.6,
    "y": 83,
    "feet": {
-    "x": 44.4,
+    "x": 44.6,
     "y": 83
    },
    "dexBox": {
-    "x": 43.22,
+    "x": 43.42,
     "y": 43.68,
     "w": 2.37,
     "h": 39.32
@@ -1770,7 +1643,7 @@
     }
    ],
    "score": 0,
-   "shot": "capturas/outside/051.png"
+   "shot": "capturas/outside/049.png"
   },
   {
    "id": "hs_mailbox",
@@ -1795,18 +1668,11 @@
    "failures": [],
    "info": [
     {
-     "type": "scale-rough",
-     "ref": "hs_carport",
-     "dev": 0.84,
-     "msg": "Dex +84 % frente a cochera (caja sin medir: bounds del hotspot)"
-    },
-    {
      "type": "scale-noref",
      "msg": "ninguna referencia con la base a menos de 10 % de los pies"
     }
    ],
-   "score": 0,
-   "shot": "capturas/outside/052.png"
+   "score": 0
   },
   {
    "id": "hs_bushes",
@@ -1874,8 +1740,7 @@
      "msg": "ninguna referencia con la base a menos de 10 % de los pies"
     }
    ],
-   "score": 0,
-   "shot": "capturas/outside/054.png"
+   "score": 0
   },
   {
    "id": "hs_path",
@@ -1949,7 +1814,7 @@
     }
    ],
    "score": 0,
-   "shot": "capturas/outside/056.png"
+   "shot": "capturas/outside/054.png"
   },
   {
    "id": "hs_trees",
@@ -1984,8 +1849,7 @@
      "msg": "ninguna referencia con la base a menos de 10 % de los pies"
     }
    ],
-   "score": 0,
-   "shot": "capturas/outside/057.png"
+   "score": 0
   },
   {
    "id": "hs_roof",
@@ -2032,7 +1896,7 @@
     }
    ],
    "score": 0,
-   "shot": "capturas/outside/058.png"
+   "shot": "capturas/outside/056.png"
   },
   {
    "id": "hs_carport",
@@ -2069,8 +1933,7 @@
      "msg": "ninguna referencia con la base a menos de 10 % de los pies"
     }
    ],
-   "score": 0,
-   "shot": "capturas/outside/059.png"
+   "score": 0
   },
   {
    "id": "hs_keypad",
@@ -2115,7 +1978,7 @@
     }
    ],
    "score": 0,
-   "shot": "capturas/outside/060.png"
+   "shot": "capturas/outside/058.png"
   },
   {
    "id": "hs_sunset_sky",
@@ -2162,7 +2025,7 @@
     }
    ],
    "score": 0,
-   "shot": "capturas/outside/061.png"
+   "shot": "capturas/outside/059.png"
   },
   {
    "id": "hs_fence",
@@ -2240,7 +2103,7 @@
     }
    ],
    "score": 0,
-   "shot": "capturas/outside/063.png"
+   "shot": "capturas/outside/061.png"
   },
   {
    "id": "hs_front_door:izq",
@@ -2287,7 +2150,7 @@
     }
    ],
    "score": 0,
-   "shot": "capturas/outside/064.png"
+   "shot": "capturas/outside/062.png"
   },
   {
    "id": "hs_front_door:der",
@@ -2332,7 +2195,7 @@
     }
    ],
    "score": 0,
-   "shot": "capturas/outside/065.png"
+   "shot": "capturas/outside/063.png"
   },
   {
    "id": "hs_front_door:detrás",
@@ -2379,7 +2242,7 @@
     }
    ],
    "score": 0,
-   "shot": "capturas/outside/066.png"
+   "shot": "capturas/outside/064.png"
   },
   {
    "id": "hs_mailbox:izq",
@@ -2424,7 +2287,7 @@
     }
    ],
    "score": 0,
-   "shot": "capturas/outside/067.png"
+   "shot": "capturas/outside/065.png"
   },
   {
    "id": "hs_mailbox:der",
@@ -2469,7 +2332,7 @@
     }
    ],
    "score": 0,
-   "shot": "capturas/outside/068.png"
+   "shot": "capturas/outside/066.png"
   },
   {
    "id": "hs_mailbox:detrás",
@@ -2514,20 +2377,20 @@
     }
    ],
    "score": 0,
-   "shot": "capturas/outside/069.png"
+   "shot": "capturas/outside/067.png"
   },
   {
    "id": "hs_bushes:izq",
    "kind": "ref",
-   "x": 11.2,
-   "y": 97.6,
+   "x": 7,
+   "y": 94.5,
    "feet": {
-    "x": 11.2,
-    "y": 97.6
+    "x": 7,
+    "y": 94.5
    },
    "dexBox": {
-    "x": 10.02,
-    "y": 58.28,
+    "x": 5.82,
+    "y": 55.18,
     "w": 2.37,
     "h": 39.32
    },
@@ -2548,15 +2411,15 @@
   {
    "id": "hs_bushes:der",
    "kind": "ref",
-   "x": 26.3,
-   "y": 97.6,
+   "x": 27,
+   "y": 94.5,
    "feet": {
-    "x": 26.3,
-    "y": 97.6
+    "x": 27,
+    "y": 94.5
    },
    "dexBox": {
-    "x": 25.12,
-    "y": 58.28,
+    "x": 25.82,
+    "y": 55.18,
     "w": 2.37,
     "h": 39.32
    },
@@ -2577,15 +2440,15 @@
   {
    "id": "hs_bushes:detrás",
    "kind": "ref",
-   "x": 18.8,
-   "y": 96.6,
+   "x": 31.4,
+   "y": 93.5,
    "feet": {
-    "x": 18.8,
-    "y": 96.6
+    "x": 31.4,
+    "y": 93.5
    },
    "dexBox": {
-    "x": 17.62,
-    "y": 57.28,
+    "x": 30.22,
+    "y": 54.18,
     "w": 2.37,
     "h": 39.32
    },
@@ -2593,25 +2456,17 @@
    "walkable": true,
    "maskOk": null,
    "cover": {
-    "hs_bushes": 0
+    "hs_front_door": 0
    },
    "scale": null,
-   "failures": [
-    {
-     "type": "occlusion",
-     "ref": "hs_bushes",
-     "dev": 0.57,
-     "msg": "pies por detrás de la base de arbustos (96.6 < 97.6) y no le tapa (tapado 0 %)"
-    }
-   ],
+   "failures": [],
    "info": [
     {
      "type": "scale-noref",
      "msg": "ninguna referencia con la base a menos de 10 % de los pies"
     }
    ],
-   "score": 1.57,
-   "shot": "capturas/outside/072.png"
+   "score": 0
   },
   {
    "id": "hs_carport:izq",
@@ -2646,8 +2501,7 @@
      "msg": "ninguna referencia con la base a menos de 10 % de los pies"
     }
    ],
-   "score": 0,
-   "shot": "capturas/outside/073.png"
+   "score": 0
   },
   {
    "id": "hs_carport:der",
@@ -2682,8 +2536,7 @@
      "msg": "ninguna referencia con la base a menos de 10 % de los pies"
     }
    ],
-   "score": 0,
-   "shot": "capturas/outside/074.png"
+   "score": 0
   },
   {
    "id": "hs_carport:detrás",
@@ -2720,8 +2573,7 @@
      "msg": "ninguna referencia con la base a menos de 10 % de los pies"
     }
    ],
-   "score": 0,
-   "shot": "capturas/outside/075.png"
+   "score": 0
   },
   {
    "id": "hs_fence:izq",
@@ -2799,7 +2651,7 @@
     }
    ],
    "score": 0,
-   "shot": "capturas/outside/077.png"
+   "shot": "capturas/outside/075.png"
   },
   {
    "id": "hs_fence:detrás",
@@ -2846,7 +2698,7 @@
     }
    ],
    "score": 0,
-   "shot": "capturas/outside/078.png"
+   "shot": "capturas/outside/076.png"
   }
  ]
 }
