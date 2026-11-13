@@ -116,7 +116,7 @@ export const overlap = (a, b) => {
  * cover: { [refId]: fracción de la caja de Dex ∩ ref tapada por foreground.png (0..1) } }.
  * Devuelve { failures: [{ type, ref?, dev?, msg }], info: [...], score }.
  *   scale     — alto de Dex frente al esperado (> SCALE_TOL); con scalePolicy fixed va a info
- *   feet      — los pies no quedan en suelo andable (o fuera de la walkmask)
+ *   feet      — los pies no quedan en suelo andable (qa.isWalkable); fuera de la walkmask = info (el juego no la usa)
  *   occlusion — objeto de primer plano que debería tapar a Dex (pies por encima de su base y solape) y no le tapa
  *   overdraw  — algo del foreground le tapa estando Dex delante (pies por debajo de la base)
  */
@@ -137,7 +137,8 @@ export function evaluatePosition(m, refsDoc, npcRefs = []) {
     }
   } else info.push({ type: 'scale-noref', msg: 'ninguna referencia con la base a menos de 10 % de los pies' });
   if (m.walkable === false) failures.push({ type: 'feet', msg: `pies fuera de la zona andable (${r2(m.feetX)}, ${r2(m.feetY)})` });
-  else if (m.maskOk === false) failures.push({ type: 'feet', msg: `pies fuera del azul de la walkmask (${r2(m.feetX)}, ${r2(m.feetY)})` });
+  // walkmask.png no la usa el juego (manda walkableAreas) y en varias escenas está desfasada: solo informativo
+  else if (m.maskOk === false) info.push({ type: 'walkmask', msg: `pies fuera del azul de la walkmask (${r2(m.feetX)}, ${r2(m.feetY)})` });
   if (Math.abs(m.feetY - m.y) > 1.5 || Math.abs(m.feetX - m.x) > 1.5) {
     info.push({ type: 'moved', msg: `el juego movió los pies de (${m.x}, ${m.y}) a (${r2(m.feetX)}, ${r2(m.feetY)})` });
   }

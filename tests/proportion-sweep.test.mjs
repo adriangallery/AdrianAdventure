@@ -60,9 +60,11 @@ test('escala: dentro de ±15 % no falla; fuera sí; con scalePolicy fixed es inf
   assert.equal(fixed.info[0].type, 'scale');
 });
 
-test('pies: fuera de la zona andable o de la walkmask', () => {
+test('pies: fuera de la zona andable = fallo; fuera de la walkmask = info (el juego no la usa)', () => {
   assert.equal(evaluatePosition(at({ walkable: false }), doc).failures[0].type, 'feet');
-  assert.equal(evaluatePosition(at({ maskOk: false }), doc).failures[0].type, 'feet');
+  const wm = evaluatePosition(at({ maskOk: false }), doc);
+  assert.equal(wm.failures.length, 0);
+  assert.equal(wm.info.find((i) => i.type === 'walkmask')?.type, 'walkmask');
 });
 
 test('profundidad: primer plano que no tapa, y primer plano que tapa estando delante', () => {

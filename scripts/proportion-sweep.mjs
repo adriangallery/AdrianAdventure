@@ -35,12 +35,28 @@ mkdirSync(OUT, { recursive: true });
 mkdirSync(JSON_DIR, { recursive: true });
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
-const { default: puppeteer } = await import('puppeteer');
-const browser = await puppeteer.launch({ headless: true, args: ['--no-sandbox', '--use-gl=swiftshader', '--enable-webgl', '--ignore-gpu-blocklist'] });
-const page = await browser.newPage();
-await page.setViewport({ ...VP, deviceScaleFactor: 1, isMobile: true, hasTouch: true });
+// --reeval: no abre el navegador; vuelve a evaluar las medidas guardadas en qa/proporcion/<escena>.json con la lógica
+// actual (para ajustar umbrales o referencias sin repetir el barrido) y rehace hojas y base
+const REEVAL = flag('--reeval');
+const { default: puppeteer } = REEVAL ? { default: null } : await import('puppeteer');
+const browser = REEVAL ? null : await puppeteer.launch({ headless: true, args: ['--no-sandbox', '--use-gl=swiftshader', '--enable-webgl', '--ignore-gpu-blocklist'] });
+const page = REEVAL ? null : await browser.newPage();
 const pageErrors = [];
-page.on('pageerror', (e) => pageErrors.push(String(e?.message || e)));
+if (page) {
+  await page.setViewport({ ...VP, deviceScaleFactor: 1, isMobile: true, hasTouch: true });
+  page.on('pageerror', (e) => pageErrors.push(String(e?.message || e)));
+}
+
+/** Medidas guardadas → posiciones evaluadas de nuevo (las NPC se rehacen con el alto que se midió entonces) */
+function reevaluate(scene, refsDoc) {
+  const old = JSON.parse(readFileSync(join(JSON_DIR, `${scene}.json`), 'utf8'));
+  return old.positions.map((p) => {
+    const m = { x: p.x, y: p.y, feetX: p.feet.x, feetY: p.feet.y, box: p.dexBox, heightPct: p.heightPct, walkable: p.walkable, maskOk: p.maskOk, cover: p.cover || {} };
+    const npcRefs = (refsDoc.refs || []).filter((r) => r.npc && p.scale?.ref === r.id).map((r) => ({ ...r, heightPct: (p.scale.expected * r.realHeightM) / (refsDoc.dexHeightM || 1.75) }));
+    const ev = evaluatePosition(m, refsDoc, npcRefs);
+    return { ...p, scale: ev.scale, failures: ev.failures, info: ev.info, score: ev.score };
+  });
+}
 
 async function openScene(scene) {
   await page.goto(`${BASE_URL}/?qa=1&scene=${scene}`, { waitUntil: 'domcontentloaded' });
@@ -158,6 +174,10 @@ for (const scene of scenes) {
   const sceneJson = loadSceneJson(ROOT, scene);
   const points = sweepPoints(sceneJson, refsDoc);
   const shotDir = join(OUT, 'capturas', scene);
+  let positions = [];
+  if (REEVAL) {
+    positions = reevaluate(scene, refsDoc);
+  } else {
   rmSync(shotDir, { recursive: true, force: true });
   mkdirSync(shotDir, { recursive: true });
   try {
@@ -167,7 +187,6 @@ for (const scene of scenes) {
     results.push({ scene, error: String(e?.message || e), positions: [] });
     continue;
   }
-  const positions = [];
   for (const [i, pt] of points.entries()) {
     const m = await measureAt(pt.x, pt.y, refsDoc.refs);
     // NPC: referencia viva (1,7 m) con la caja y el alto que da el juego
@@ -192,6 +211,7 @@ for (const scene of scenes) {
     }
     positions.push(pos);
   }
+  }
   const sum = summarize(scene, positions, 12);
   results.push({ scene, scalePolicy: refsDoc.scalePolicy, ...sum, positionsDetail: positions });
   writeFileSync(join(JSON_DIR, `${scene}.json`), `${JSON.stringify({ scene, scalePolicy: refsDoc.scalePolicy, summary: { positions: sum.positions, failing: sum.failing, byType: sum.byType }, positions }, null, 1)}\n`);
@@ -213,7 +233,7 @@ for (const scene of scenes) {
   }
   console.log(`${scene}: ${sum.positions} posiciones, ${sum.failing} con fallo ${JSON.stringify(sum.byType)} (${Math.round((Date.now() - t0) / 1000)} s)`);
 }
-await browser.close();
+if (browser) await browser.close();
 
 // resumen.png: las 5 peores de cada escena, una fila por escena
 if (sheets.length) {
