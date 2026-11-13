@@ -930,6 +930,14 @@
       "h": 28.5
     }
   ],
+  "blockedAreas": [
+    {
+      "x": 84,
+      "y": 86,
+      "w": 13.6,
+      "h": 3.6
+    }
+  ],
   "foregroundLayers": [
     {
       "id": "rocks_right",
