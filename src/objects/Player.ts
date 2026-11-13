@@ -176,7 +176,7 @@ export class Player extends Phaser.GameObjects.Sprite {
     // A4.1: tics de reposo deterministas con ?qa=1 (demos y rutas repetibles); si no, al azar
     const qa = typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('qa') === '1';
     this.idleTicker = new IdleTicker(qa ? QA_IDLE_SEED : (Date.now() ^ Math.floor(Math.random() * 0x7fffffff)) >>> 0);
-    // A2.16: prueba de estilo «Dex de papel» (también en producción, como ?steps=)
+    // A2.16: prueba de estilo «Dex de papel» (también en producción)
     this.paper = typeof window !== 'undefined' ? parsePaperMode(window.location.search) : null;
     if (this.paper) {
       const spec = PAPER_SPECS[this.paper.intensity];

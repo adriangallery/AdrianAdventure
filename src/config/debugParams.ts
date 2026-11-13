@@ -4,8 +4,6 @@
 // `?hintAfter=<s>` (acortar la espera de las pistas) y `?bg=<ancho>` (A5.1: forzar la variante de fondo, 1280 o 2048)
 // son herramientas de desarrollo y QA. En el build de producción solo valen con `?qa=1` (smoke, demos y walkthrough del
 // CI ya cargan con él); en `npm run dev` valen siempre.
-//
-// A4.7: `?steps=a|b|c` (propuestas de pasos, src/systems/StepVariants.ts) NO es de depuración: vale también en producción.
 
 /** Parámetros que solo se aceptan en desarrollo o con `?qa=1`. */
 export const DEBUG_PARAMS = ['scene', 'skip', 'dev', 'hintAfter', 'bg'] as const;

@@ -47,7 +47,6 @@ import type { AmbientQa } from '@/systems/Ambient';
 import type { VoiceSystem } from '@/systems/VoiceSystem';
 import { failResponses } from '@/systems/FailResponsesData';
 import { surfaceAt, stepSound } from '@/systems/Footsteps';
-import { ensureStepVariantLoaded, playStepVariant } from '@/systems/StepVariantPlayer';
 import { sfxOf } from '@/systems/Sfx';
 import { isStingerKind } from '@/systems/Stingers';
 import { playStinger } from '@/systems/StingerPlayer';
@@ -372,15 +371,11 @@ export class GameScene extends Phaser.Scene {
     // player:arrived (los eventos de la escena sobreviven al reinicio)
     this.events.removeAllListeners('player:footstep');
     this.lastFootstep = null;
-    ensureStepVariantLoaded(this, sceneData.audio);
     this.events.on('player:footstep', (step: { x: number; y: number; foot: 0 | 1; depth: number }) => {
       if (this.isTrailer) return;
       const surface = surfaceAt(sceneData.audio, step.x, step.y);
       this.lastFootstep = { surface, key: null, at: Math.round(performance.now()) };
       if (!surface) return;
-      // A4.7: ?steps=a|b|c (propuestas de pasos); sin parámetro, los de siempre
-      const variantKey = playStepVariant(this, sceneData.audio, surface, step.depth);
-      if (variantKey !== undefined) { this.lastFootstep.key = variantKey; return; }
       const sound = stepSound(surface, step.foot, Math.random(), step.depth);
       this.lastFootstep.key = sound.key;
       sfxOf(this)?.play(sound.key, { volume: sound.volume, detune: sound.detune });
