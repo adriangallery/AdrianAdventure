@@ -1,6 +1,6 @@
 /**
  * A2.16 (plan SCUMM): PRUEBA de estilo «Dex de papel», detrás de `?dex=papel` (y `&papel=suave|media|tope`, por
- * defecto media). Funciona también en producción, como `?steps=` (A4.7). Sin el parámetro el juego es el de A2.15.
+ * defecto media). Funciona también en producción. Sin el parámetro el juego es el de A2.15.
  *
  * Lógica pura, sin Phaser (tests/paper-dex.test.mjs, en `npm run test:engine`); Player solo aplica lo que dice.
  *  - Mismo sprite y piezas del rig (art/dex2d/papel.py → assets/sprites/player/dexpapel, claves `dexpapel_*`).
