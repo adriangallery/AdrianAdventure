@@ -4,8 +4,9 @@
 //   node scripts/text-audit.mjs                 → resumen por escena: frases, flojas y por qué
 //   node scripts/text-audit.mjs --list [escena] → cada frase con su ruta y sus etiquetas de flojera
 //   node scripts/text-audit.mjs --diff <ref>    → frases cambiadas frente a <ref> (tabla por escena, total y %)
-//   node scripts/text-audit.mjs --cited <ref>   → frases que existían en <ref>, ya no existen y siguen citadas
-//                                                 literalmente en qa/, scripts/, tests/ o src/ (sale 1 si hay alguna)
+//   node scripts/text-audit.mjs --cited <ref>   → citas rotas: expresiones de qa/*.json (rejects, text…) que casaban con
+//                                                 un texto hablado de <ref> y ya con ninguno, y citas literales de
+//                                                 textos eliminados en tests/ y scripts/*.mjs (sale 1 si hay alguna)
 //
 // «Frase» = texto de un op say/sayBrief dentro de hotspots[].scripts[VERBO] (a cualquier profundidad), cada valor de
 // hotspots[].useResponses/giveResponses, y cada frase de assets/config/fail-responses.json. No entran diálogos,
@@ -121,22 +122,44 @@ if (args[0] === '--list') {
   for (const [sc, s] of by) console.log(`| ${sc} | ${s.n} | ${s.changed} | ${(100 * s.changed / s.n).toFixed(0)} % |`);
   console.log(`| **Total** | **${n}** | **${changed}** | **${(100 * changed / n).toFixed(1)} %** |`);
 } else if (args[0] === '--cited') {
+  // Todo el texto hablado (scripts/voices/extract.mjs: escenas, diálogos, fail-responses, diario y código), antes y ahora.
+  // <ref> se exporta con `git archive` a un directorio temporal para extraerlo igual que el árbol actual.
   const ref = args[1] ?? 'origin/main';
-  const now = new Set(collect().map((r) => r.text));
-  const gone = [...new Set(collect(ref).map((r) => r.text))].filter((t) => !now.has(t));
-  const files = execFileSync('git', ['-C', ROOT, 'ls-files', 'qa', 'scripts', 'tests', 'src', 'assets/config', 'assets/scenes', 'assets/journal'], { encoding: 'utf8' })
-    .split('\n').filter((f) => /\.(json|mjs|js|ts|cjs)$/.test(f) && f !== FAIL && !f.startsWith('src/config/voice.config'));
-  const bodies = files.map((f) => [f, fs.readFileSync(path.join(ROOT, f), 'utf8')]);
+  const tmp = fs.mkdtempSync(path.join(process.env.TMPDIR ?? '/var/tmp', 'a38-cited-'));
+  execFileSync('sh', ['-c', `git -C "${ROOT}" archive "${ref}" assets/scenes assets/config assets/journal src scripts/voices | tar -x -C "${tmp}"`]);
+  const { extractProject } = await import('./voices/extract.mjs');
+  const texts = (root) => [...new Set(extractProject(root).map((e) => e.text))];
+  const before = texts(tmp); const now = texts(ROOT);
+  fs.rmSync(tmp, { recursive: true, force: true });
+  const nowSet = new Set(now);
+  const gone = before.filter((t) => !nowSet.has(t));
   let bad = 0;
+  // 1) qa/*.json: expresiones regulares (rejects, expect.*.text…) que casaban con algún texto de <ref> y ya con ninguno.
+  const regexes = [];
+  const walk = (v, f, k) => {
+    if (typeof v === 'string') { if (['rejects', 'text', 'said', 'line'].includes(k)) regexes.push([f, v]); }
+    else if (Array.isArray(v)) v.forEach((x) => walk(x, f, k));
+    else if (v && typeof v === 'object') for (const [kk, x] of Object.entries(v)) walk(x, f, kk);
+  };
+  for (const f of fs.readdirSync(path.join(ROOT, 'qa')).filter((x) => x.endsWith('.json'))) walk(JSON.parse(fs.readFileSync(path.join(ROOT, 'qa', f), 'utf8')), `qa/${f}`, '');
+  for (const [f, src] of regexes) {
+    let re; try { re = new RegExp(src, 'i'); } catch { continue; }
+    if (before.some((t) => re.test(t)) && !now.some((t) => re.test(t))) { bad++; console.log(`${f}: /${src}/ ya no casa con ningún texto`); }
+  }
+  // 2) tests/ y scripts/*.mjs: cita literal (frase entera o una oración de ≥ 4 palabras) de un texto eliminado que ya no
+  //    existe en ningún texto actual.
+  const files = execFileSync('git', ['-C', ROOT, 'ls-files', 'tests', 'scripts'], { encoding: 'utf8' }).split('\n')
+    .filter((f) => /\.(mjs|js|cjs)$/.test(f) && f !== 'scripts/text-audit.mjs');
+  const bodies = files.map((f) => [f, fs.readFileSync(path.join(ROOT, f), 'utf8')]);
+  const alive = now.join('\n');
   for (const t of gone) {
-    // cita literal entera o un trozo característico (las rutas de QA suelen citar 3-6 palabras)
-    const probes = [t, ...t.split(/(?<=[.!?])\s+/).filter((p) => p.split(/\s+/).length >= 3)];
+    const probes = [t, ...t.split(/(?<=[.!?])\s+/).filter((p) => p.split(/\s+/).length >= 4)].filter((p) => !alive.includes(p));
     for (const [f, body] of bodies) {
       const hit = probes.find((p) => body.includes(p) || body.includes(JSON.stringify(p).slice(1, -1)));
       if (hit) { bad++; console.log(`${f}: «${hit}»  (de «${t}»)`); }
     }
   }
-  console.log(`${gone.length} frases eliminadas; ${bad} citas vivas`);
+  console.log(`${gone.length} textos hablados eliminados frente a ${ref}; ${bad} citas rotas en qa/, tests/ y scripts/`);
   process.exit(bad ? 1 : 0);
 } else {
   const rows = tags(collect());
