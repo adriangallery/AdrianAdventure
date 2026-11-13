@@ -507,7 +507,9 @@ export class ScummUI {
       this.paintVerbs();
       this.updateActionLine();
       if (action.verb === Verb.GIVE) {
-        this.scene.events.emit('say', failResponses.itemGive(item1.id, item.id, 'item-item').text);
+        // (la respuesta va aparte: el extractor de voces lee los literales de cada emit('say', …))
+        const given = failResponses.itemGive(item1.id, item.id, 'item-item');
+        this.scene.events.emit('say', given.text);
       } else if (this.onItemCombo) {
         this.onItemCombo(item1, item);
       } else {

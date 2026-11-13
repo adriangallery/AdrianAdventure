@@ -17,6 +17,8 @@ hasta el hotspot, combos, gates y diálogos). Nunca pone flags ni da objetos.
 | `act(verb, id, choices?)` | Verbo sobre un hotspot o NPC (`LOOK`, `PICK`, `USE`, `OPEN`, `PUSH`…) |
 | `use(itemId, targetId, choices?)` | Usar un objeto con un hotspot, un NPC u otro objeto |
 | `combine(itemA, itemB)` | Combinar dos objetos del inventario |
+| `give(itemId, targetId, choices?)` | A2.18: «Give X to …» con un NPC, un hotspot u otro objeto (GIVE en el panel, el objeto y el destino) |
+| `pick(verb, itemId)` | A2.18: elige el verbo y pulsa un objeto del inventario SIN destino: con USE o GIVE la frase queda a medias (`state().sentence.pending`), y el destino se pulsa luego con `click`; con otro verbo se resuelve al momento |
 | `talk(npcId, choices[])` | Hablar y responder las elecciones en orden (texto contenido, sin mayúsculas) |
 | `walk(x, y)` | Andar a un punto (en % del fondo); así se prueban las salidas por trigger |
 | `goto(sceneId, spawn?)` | Cambiar de escena como `gotoScene` (solo en rutas del selftest con `allowGoto`, ver abajo) |
@@ -53,7 +55,7 @@ y la ruta falla. Un hotspot que el ratón no alcanza es un fallo, nunca un «el 
 jugador que se distrae, y falla si el script deja de estar en marcha durante la espera. La ruta crítica lo usa
 en `PICK hs_mailbox` (35 s, más que los 30 s del watchdog, con `addItem` y `setFlag` pendientes tras el texto).
 
-Pasos: `newGame`, `act`, `use`, `combine`, `talk`, `walk`, `goto`, `dismissAll`, `wait` (`ms`), `resize`
+Pasos: `newGame`, `act`, `use`, `give` (A2.18), `pick` (A2.18), `combine`, `talk`, `walk`, `goto`, `dismissAll`, `wait` (`ms`), `resize`
 (`width`, `height`) y, desde A2.4, `key` (`key`, `phase` press|down|up), `click`, `rightclick` (`target`, `choices`) y
 `doubleclick` (`target`). A2.4 añade a `expect` `verb` (verbo elegido en el panel), `walkTarget` (`{ target, verb }` del
 último acercamiento) y `highlighted` (`{ min, max, includes, excludes }` sobre `state().highlightedHotspots`, lo resaltado
@@ -997,3 +999,10 @@ tiene que tener sus dos `step_*` en disco y en `sfxKeys`.
   en el lobby; sin sonido no hay pista, así que todo va en Do mayor sin desafino). Demo: `scripts/demo-a4-5-music.mjs` (HUD con las
   dos ganancias del fundido, la tonalidad, las fuentes de ducking y el último stinger: lámpara y nota en Re mayor, voz de Dex con
   la música bajando, lobby → upstairs → rooftop con el cruce retro-adventure → vista).
+
+# Frase de dos pasos (A2.18)
+
+`state().sentence` = `{ verb, item, pending, text }` de la línea de acción (src/systems/Sentence.ts). `expect.sentence` compara
+`verb`, `item` (null = sin objeto) y `pending`, y `text` como expresión regular sin mayúsculas. GIVE + objeto ya no responde al
+pulsarlo: espera destino («Give X to...»). Con frase pendiente, Esc, otro verbo o el clic derecho la cancelan; el suelo vacío la
+mantiene. Ruta `dar-y-usar-a-medias` de `walkthrough.json`; tabla verbo × destino en `docs/progreso/A2.18.md`.
