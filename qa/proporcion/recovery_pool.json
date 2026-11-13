@@ -3,10 +3,8 @@
  "scalePolicy": "measure",
  "summary": {
   "positions": 34,
-  "failing": 8,
-  "byType": {
-   "occlusion": 8
-  }
+  "failing": 0,
+  "byType": {}
  },
  "positions": [
   {
@@ -27,23 +25,23 @@
    "heightPct": 49.18,
    "walkable": true,
    "maskOk": null,
-   "cover": {},
+   "cover": {
+    "hs_trash_pile": 0
+   },
    "scale": null,
    "failures": [],
    "info": [
     {
-     "type": "scale-rough",
-     "ref": "hs_trash_pile",
-     "dev": 0.41,
-     "msg": "Dex +41 % frente a montón de trastos (caja sin medir: bounds del hotspot)"
-    },
-    {
      "type": "scale-noref",
      "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    },
+    {
+     "type": "behind",
+     "ref": "hs_trash_pile",
+     "msg": "pies por detrás de montón de trastos y se solapan (+20 %): ¿debería taparle?"
     }
    ],
-   "score": 0,
-   "shot": "capturas/recovery_pool/000.png"
+   "score": 0
   },
   {
    "id": "grid-23.5-98.3",
@@ -68,18 +66,11 @@
    "failures": [],
    "info": [
     {
-     "type": "scale-rough",
-     "ref": "hs_trash_pile",
-     "dev": 0.41,
-     "msg": "Dex +41 % frente a montón de trastos (caja sin medir: bounds del hotspot)"
-    },
-    {
      "type": "scale-noref",
      "msg": "ninguna referencia con la base a menos de 10 % de los pies"
     }
    ],
-   "score": 0,
-   "shot": "capturas/recovery_pool/001.png"
+   "score": 0
   },
   {
    "id": "grid-31.2-98.3",
@@ -104,18 +95,11 @@
    "failures": [],
    "info": [
     {
-     "type": "scale-rough",
-     "ref": "hs_trash_pile",
-     "dev": 0.41,
-     "msg": "Dex +41 % frente a montón de trastos (caja sin medir: bounds del hotspot)"
-    },
-    {
      "type": "scale-noref",
      "msg": "ninguna referencia con la base a menos de 10 % de los pies"
     }
    ],
-   "score": 0,
-   "shot": "capturas/recovery_pool/002.png"
+   "score": 0
   },
   {
    "id": "grid-38.9-98.3",
@@ -140,18 +124,11 @@
    "failures": [],
    "info": [
     {
-     "type": "scale-rough",
-     "ref": "hs_trash_pile",
-     "dev": 0.41,
-     "msg": "Dex +41 % frente a montón de trastos (caja sin medir: bounds del hotspot)"
-    },
-    {
      "type": "scale-noref",
      "msg": "ninguna referencia con la base a menos de 10 % de los pies"
     }
    ],
-   "score": 0,
-   "shot": "capturas/recovery_pool/003.png"
+   "score": 0
   },
   {
    "id": "grid-46.7-98.3",
@@ -176,18 +153,11 @@
    "failures": [],
    "info": [
     {
-     "type": "scale-rough",
-     "ref": "hs_trash_pile",
-     "dev": 0.41,
-     "msg": "Dex +41 % frente a montón de trastos (caja sin medir: bounds del hotspot)"
-    },
-    {
      "type": "scale-noref",
      "msg": "ninguna referencia con la base a menos de 10 % de los pies"
     }
    ],
-   "score": 0,
-   "shot": "capturas/recovery_pool/004.png"
+   "score": 0
   },
   {
    "id": "grid-54.4-98.3",
@@ -212,18 +182,11 @@
    "failures": [],
    "info": [
     {
-     "type": "scale-rough",
-     "ref": "hs_trash_pile",
-     "dev": 0.41,
-     "msg": "Dex +41 % frente a montón de trastos (caja sin medir: bounds del hotspot)"
-    },
-    {
      "type": "scale-noref",
      "msg": "ninguna referencia con la base a menos de 10 % de los pies"
     }
    ],
-   "score": 0,
-   "shot": "capturas/recovery_pool/005.png"
+   "score": 0
   },
   {
    "id": "grid-62.1-98.3",
@@ -250,18 +213,11 @@
    "failures": [],
    "info": [
     {
-     "type": "scale-rough",
-     "ref": "hs_trash_pile",
-     "dev": 0.41,
-     "msg": "Dex +41 % frente a montón de trastos (caja sin medir: bounds del hotspot)"
-    },
-    {
      "type": "scale-noref",
      "msg": "ninguna referencia con la base a menos de 10 % de los pies"
     }
    ],
-   "score": 0,
-   "shot": "capturas/recovery_pool/006.png"
+   "score": 0
   },
   {
    "id": "grid-69.8-98.3",
@@ -288,18 +244,11 @@
    "failures": [],
    "info": [
     {
-     "type": "scale-rough",
-     "ref": "hs_trash_pile",
-     "dev": 0.41,
-     "msg": "Dex +41 % frente a montón de trastos (caja sin medir: bounds del hotspot)"
-    },
-    {
      "type": "scale-noref",
      "msg": "ninguna referencia con la base a menos de 10 % de los pies"
     }
    ],
-   "score": 0,
-   "shot": "capturas/recovery_pool/007.png"
+   "score": 0
   },
   {
    "id": "grid-77.5-98.3",
@@ -324,18 +273,11 @@
    "failures": [],
    "info": [
     {
-     "type": "scale-rough",
-     "ref": "hs_trash_pile",
-     "dev": 0.41,
-     "msg": "Dex +41 % frente a montón de trastos (caja sin medir: bounds del hotspot)"
-    },
-    {
      "type": "scale-noref",
      "msg": "ninguna referencia con la base a menos de 10 % de los pies"
     }
    ],
-   "score": 0,
-   "shot": "capturas/recovery_pool/008.png"
+   "score": 0
   },
   {
    "id": "hs_pool_group_left",
@@ -360,18 +302,11 @@
    "failures": [],
    "info": [
     {
-     "type": "scale-rough",
-     "ref": "hs_trash_pile",
-     "dev": 0.41,
-     "msg": "Dex +41 % frente a montón de trastos (caja sin medir: bounds del hotspot)"
-    },
-    {
      "type": "scale-noref",
      "msg": "ninguna referencia con la base a menos de 10 % de los pies"
     }
    ],
-   "score": 0,
-   "shot": "capturas/recovery_pool/009.png"
+   "score": 0
   },
   {
    "id": "hs_chad",
@@ -398,18 +333,11 @@
    "failures": [],
    "info": [
     {
-     "type": "scale-rough",
-     "ref": "hs_trash_pile",
-     "dev": 0.41,
-     "msg": "Dex +41 % frente a montón de trastos (caja sin medir: bounds del hotspot)"
-    },
-    {
      "type": "scale-noref",
      "msg": "ninguna referencia con la base a menos de 10 % de los pies"
     }
    ],
-   "score": 0,
-   "shot": "capturas/recovery_pool/010.png"
+   "score": 0
   },
   {
    "id": "hs_pool_group_right",
@@ -434,18 +362,11 @@
    "failures": [],
    "info": [
     {
-     "type": "scale-rough",
-     "ref": "hs_trash_pile",
-     "dev": 0.41,
-     "msg": "Dex +41 % frente a montón de trastos (caja sin medir: bounds del hotspot)"
-    },
-    {
      "type": "scale-noref",
      "msg": "ninguna referencia con la base a menos de 10 % de los pies"
     }
    ],
-   "score": 0,
-   "shot": "capturas/recovery_pool/011.png"
+   "score": 0
   },
   {
    "id": "hs_rubber_duck",
@@ -470,18 +391,11 @@
    "failures": [],
    "info": [
     {
-     "type": "scale-rough",
-     "ref": "hs_trash_pile",
-     "dev": 0.41,
-     "msg": "Dex +41 % frente a montón de trastos (caja sin medir: bounds del hotspot)"
-    },
-    {
      "type": "scale-noref",
      "msg": "ninguna referencia con la base a menos de 10 % de los pies"
     }
    ],
-   "score": 0,
-   "shot": "capturas/recovery_pool/012.png"
+   "score": 0
   },
   {
    "id": "hs_tv",
@@ -506,18 +420,11 @@
    "failures": [],
    "info": [
     {
-     "type": "scale-rough",
-     "ref": "hs_trash_pile",
-     "dev": 0.41,
-     "msg": "Dex +41 % frente a montón de trastos (caja sin medir: bounds del hotspot)"
-    },
-    {
      "type": "scale-noref",
      "msg": "ninguna referencia con la base a menos de 10 % de los pies"
     }
    ],
-   "score": 0,
-   "shot": "capturas/recovery_pool/013.png"
+   "score": 0
   },
   {
    "id": "hs_bar",
@@ -544,18 +451,11 @@
    "failures": [],
    "info": [
     {
-     "type": "scale-rough",
-     "ref": "hs_trash_pile",
-     "dev": 0.41,
-     "msg": "Dex +41 % frente a montón de trastos (caja sin medir: bounds del hotspot)"
-    },
-    {
      "type": "scale-noref",
      "msg": "ninguna referencia con la base a menos de 10 % de los pies"
     }
    ],
-   "score": 0,
-   "shot": "capturas/recovery_pool/014.png"
+   "score": 0
   },
   {
    "id": "hs_robot_bartender",
@@ -582,18 +482,11 @@
    "failures": [],
    "info": [
     {
-     "type": "scale-rough",
-     "ref": "hs_trash_pile",
-     "dev": 0.41,
-     "msg": "Dex +41 % frente a montón de trastos (caja sin medir: bounds del hotspot)"
-    },
-    {
      "type": "scale-noref",
      "msg": "ninguna referencia con la base a menos de 10 % de los pies"
     }
    ],
-   "score": 0,
-   "shot": "capturas/recovery_pool/015.png"
+   "score": 0
   },
   {
    "id": "hs_bananas",
@@ -618,18 +511,11 @@
    "failures": [],
    "info": [
     {
-     "type": "scale-rough",
-     "ref": "hs_trash_pile",
-     "dev": 0.41,
-     "msg": "Dex +41 % frente a montón de trastos (caja sin medir: bounds del hotspot)"
-    },
-    {
      "type": "scale-noref",
      "msg": "ninguna referencia con la base a menos de 10 % de los pies"
     }
    ],
-   "score": 0,
-   "shot": "capturas/recovery_pool/016.png"
+   "score": 0
   },
   {
    "id": "hs_trash_pile",
@@ -653,28 +539,19 @@
     "hs_trash_pile": 0
    },
    "scale": null,
-   "failures": [
-    {
-     "type": "occlusion",
-     "ref": "hs_trash_pile",
-     "dev": 0.22,
-     "msg": "pies por detrás de la base de montón de trastos (99.5 < 100) y no le tapa (tapado 0 %)"
-    }
-   ],
+   "failures": [],
    "info": [
-    {
-     "type": "scale-rough",
-     "ref": "hs_trash_pile",
-     "dev": 0.41,
-     "msg": "Dex +41 % frente a montón de trastos (caja sin medir: bounds del hotspot)"
-    },
     {
      "type": "scale-noref",
      "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    },
+    {
+     "type": "behind",
+     "ref": "hs_trash_pile",
+     "msg": "pies por detrás de montón de trastos y se solapan (+58 %): ¿debería taparle?"
     }
    ],
-   "score": 1.22,
-   "shot": "capturas/recovery_pool/017.png"
+   "score": 0
   },
   {
    "id": "hs_dark_door",
@@ -698,28 +575,19 @@
     "hs_trash_pile": 0
    },
    "scale": null,
-   "failures": [
-    {
-     "type": "occlusion",
-     "ref": "hs_trash_pile",
-     "dev": 0.19,
-     "msg": "pies por detrás de la base de montón de trastos (97 < 100) y no le tapa (tapado 0 %)"
-    }
-   ],
+   "failures": [],
    "info": [
-    {
-     "type": "scale-rough",
-     "ref": "hs_trash_pile",
-     "dev": 0.41,
-     "msg": "Dex +41 % frente a montón de trastos (caja sin medir: bounds del hotspot)"
-    },
     {
      "type": "scale-noref",
      "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    },
+    {
+     "type": "behind",
+     "ref": "hs_trash_pile",
+     "msg": "pies por detrás de montón de trastos y se solapan (+53 %): ¿debería taparle?"
     }
    ],
-   "score": 1.19,
-   "shot": "capturas/recovery_pool/018.png"
+   "score": 0
   },
   {
    "id": "hs_stairs_up",
@@ -739,23 +607,18 @@
    "heightPct": 49.18,
    "walkable": true,
    "maskOk": null,
-   "cover": {},
+   "cover": {
+    "hs_trash_pile": 0
+   },
    "scale": null,
    "failures": [],
    "info": [
-    {
-     "type": "scale-rough",
-     "ref": "hs_trash_pile",
-     "dev": 0.41,
-     "msg": "Dex +41 % frente a montón de trastos (caja sin medir: bounds del hotspot)"
-    },
     {
      "type": "scale-noref",
      "msg": "ninguna referencia con la base a menos de 10 % de los pies"
     }
    ],
-   "score": 0,
-   "shot": "capturas/recovery_pool/019.png"
+   "score": 0
   },
   {
    "id": "hs_brown_book",
@@ -782,18 +645,11 @@
    "failures": [],
    "info": [
     {
-     "type": "scale-rough",
-     "ref": "hs_trash_pile",
-     "dev": 0.41,
-     "msg": "Dex +41 % frente a montón de trastos (caja sin medir: bounds del hotspot)"
-    },
-    {
      "type": "scale-noref",
      "msg": "ninguna referencia con la base a menos de 10 % de los pies"
     }
    ],
-   "score": 0,
-   "shot": "capturas/recovery_pool/020.png"
+   "score": 0
   },
   {
    "id": "hs_blue_book",
@@ -820,18 +676,11 @@
    "failures": [],
    "info": [
     {
-     "type": "scale-rough",
-     "ref": "hs_trash_pile",
-     "dev": 0.41,
-     "msg": "Dex +41 % frente a montón de trastos (caja sin medir: bounds del hotspot)"
-    },
-    {
      "type": "scale-noref",
      "msg": "ninguna referencia con la base a menos de 10 % de los pies"
     }
    ],
-   "score": 0,
-   "shot": "capturas/recovery_pool/021.png"
+   "score": 0
   },
   {
    "id": "hs_dark_door:izq",
@@ -855,28 +704,19 @@
     "hs_trash_pile": 0
    },
    "scale": null,
-   "failures": [
-    {
-     "type": "occlusion",
-     "ref": "hs_trash_pile",
-     "dev": 0.19,
-     "msg": "pies por detrás de la base de montón de trastos (97 < 100) y no le tapa (tapado 0 %)"
-    }
-   ],
+   "failures": [],
    "info": [
-    {
-     "type": "scale-rough",
-     "ref": "hs_trash_pile",
-     "dev": 0.41,
-     "msg": "Dex +41 % frente a montón de trastos (caja sin medir: bounds del hotspot)"
-    },
     {
      "type": "scale-noref",
      "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    },
+    {
+     "type": "behind",
+     "ref": "hs_trash_pile",
+     "msg": "pies por detrás de montón de trastos y se solapan (+53 %): ¿debería taparle?"
     }
    ],
-   "score": 1.19,
-   "shot": "capturas/recovery_pool/022.png"
+   "score": 0
   },
   {
    "id": "hs_dark_door:der",
@@ -900,28 +740,19 @@
     "hs_trash_pile": 0
    },
    "scale": null,
-   "failures": [
-    {
-     "type": "occlusion",
-     "ref": "hs_trash_pile",
-     "dev": 0.19,
-     "msg": "pies por detrás de la base de montón de trastos (97 < 100) y no le tapa (tapado 0 %)"
-    }
-   ],
+   "failures": [],
    "info": [
-    {
-     "type": "scale-rough",
-     "ref": "hs_trash_pile",
-     "dev": 0.41,
-     "msg": "Dex +41 % frente a montón de trastos (caja sin medir: bounds del hotspot)"
-    },
     {
      "type": "scale-noref",
      "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    },
+    {
+     "type": "behind",
+     "ref": "hs_trash_pile",
+     "msg": "pies por detrás de montón de trastos y se solapan (+53 %): ¿debería taparle?"
     }
    ],
-   "score": 1.19,
-   "shot": "capturas/recovery_pool/023.png"
+   "score": 0
   },
   {
    "id": "hs_dark_door:detrás",
@@ -945,28 +776,19 @@
     "hs_trash_pile": 0
    },
    "scale": null,
-   "failures": [
-    {
-     "type": "occlusion",
-     "ref": "hs_trash_pile",
-     "dev": 0.19,
-     "msg": "pies por detrás de la base de montón de trastos (97 < 100) y no le tapa (tapado 0 %)"
-    }
-   ],
+   "failures": [],
    "info": [
-    {
-     "type": "scale-rough",
-     "ref": "hs_trash_pile",
-     "dev": 0.41,
-     "msg": "Dex +41 % frente a montón de trastos (caja sin medir: bounds del hotspot)"
-    },
     {
      "type": "scale-noref",
      "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    },
+    {
+     "type": "behind",
+     "ref": "hs_trash_pile",
+     "msg": "pies por detrás de montón de trastos y se solapan (+53 %): ¿debería taparle?"
     }
    ],
-   "score": 1.19,
-   "shot": "capturas/recovery_pool/024.png"
+   "score": 0
   },
   {
    "id": "hs_chad:izq",
@@ -993,18 +815,11 @@
    "failures": [],
    "info": [
     {
-     "type": "scale-rough",
-     "ref": "hs_trash_pile",
-     "dev": 0.41,
-     "msg": "Dex +41 % frente a montón de trastos (caja sin medir: bounds del hotspot)"
-    },
-    {
      "type": "scale-noref",
      "msg": "ninguna referencia con la base a menos de 10 % de los pies"
     }
    ],
-   "score": 0,
-   "shot": "capturas/recovery_pool/025.png"
+   "score": 0
   },
   {
    "id": "hs_chad:der",
@@ -1031,18 +846,11 @@
    "failures": [],
    "info": [
     {
-     "type": "scale-rough",
-     "ref": "hs_trash_pile",
-     "dev": 0.41,
-     "msg": "Dex +41 % frente a montón de trastos (caja sin medir: bounds del hotspot)"
-    },
-    {
      "type": "scale-noref",
      "msg": "ninguna referencia con la base a menos de 10 % de los pies"
     }
    ],
-   "score": 0,
-   "shot": "capturas/recovery_pool/026.png"
+   "score": 0
   },
   {
    "id": "hs_chad:detrás",
@@ -1069,18 +877,11 @@
    "failures": [],
    "info": [
     {
-     "type": "scale-rough",
-     "ref": "hs_trash_pile",
-     "dev": 0.41,
-     "msg": "Dex +41 % frente a montón de trastos (caja sin medir: bounds del hotspot)"
-    },
-    {
      "type": "scale-noref",
      "msg": "ninguna referencia con la base a menos de 10 % de los pies"
     }
    ],
-   "score": 0,
-   "shot": "capturas/recovery_pool/027.png"
+   "score": 0
   },
   {
    "id": "hs_robot_bartender:izq",
@@ -1107,18 +908,11 @@
    "failures": [],
    "info": [
     {
-     "type": "scale-rough",
-     "ref": "hs_trash_pile",
-     "dev": 0.41,
-     "msg": "Dex +41 % frente a montón de trastos (caja sin medir: bounds del hotspot)"
-    },
-    {
      "type": "scale-noref",
      "msg": "ninguna referencia con la base a menos de 10 % de los pies"
     }
    ],
-   "score": 0,
-   "shot": "capturas/recovery_pool/028.png"
+   "score": 0
   },
   {
    "id": "hs_robot_bartender:der",
@@ -1145,18 +939,11 @@
    "failures": [],
    "info": [
     {
-     "type": "scale-rough",
-     "ref": "hs_trash_pile",
-     "dev": 0.41,
-     "msg": "Dex +41 % frente a montón de trastos (caja sin medir: bounds del hotspot)"
-    },
-    {
      "type": "scale-noref",
      "msg": "ninguna referencia con la base a menos de 10 % de los pies"
     }
    ],
-   "score": 0,
-   "shot": "capturas/recovery_pool/029.png"
+   "score": 0
   },
   {
    "id": "hs_robot_bartender:detrás",
@@ -1183,18 +970,11 @@
    "failures": [],
    "info": [
     {
-     "type": "scale-rough",
-     "ref": "hs_trash_pile",
-     "dev": 0.41,
-     "msg": "Dex +41 % frente a montón de trastos (caja sin medir: bounds del hotspot)"
-    },
-    {
      "type": "scale-noref",
      "msg": "ninguna referencia con la base a menos de 10 % de los pies"
     }
    ],
-   "score": 0,
-   "shot": "capturas/recovery_pool/030.png"
+   "score": 0
   },
   {
    "id": "hs_trash_pile:izq",
@@ -1218,40 +998,31 @@
     "hs_trash_pile": 0
    },
    "scale": null,
-   "failures": [
-    {
-     "type": "occlusion",
-     "ref": "hs_trash_pile",
-     "dev": 0.22,
-     "msg": "pies por detrás de la base de montón de trastos (99.5 < 100) y no le tapa (tapado 0 %)"
-    }
-   ],
+   "failures": [],
    "info": [
-    {
-     "type": "scale-rough",
-     "ref": "hs_trash_pile",
-     "dev": 0.41,
-     "msg": "Dex +41 % frente a montón de trastos (caja sin medir: bounds del hotspot)"
-    },
     {
      "type": "scale-noref",
      "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    },
+    {
+     "type": "behind",
+     "ref": "hs_trash_pile",
+     "msg": "pies por detrás de montón de trastos y se solapan (+58 %): ¿debería taparle?"
     }
    ],
-   "score": 1.22,
-   "shot": "capturas/recovery_pool/031.png"
+   "score": 0
   },
   {
    "id": "hs_trash_pile:der",
    "kind": "ref",
-   "x": 14.7,
+   "x": 17,
    "y": 99.5,
    "feet": {
-    "x": 14.7,
+    "x": 17,
     "y": 99.5
    },
    "dexBox": {
-    "x": 11.96,
+    "x": 14.26,
     "y": 50.32,
     "w": 5.48,
     "h": 49.18
@@ -1263,28 +1034,14 @@
     "hs_trash_pile": 0
    },
    "scale": null,
-   "failures": [
-    {
-     "type": "occlusion",
-     "ref": "hs_trash_pile",
-     "dev": 0.05,
-     "msg": "pies por detrás de la base de montón de trastos (99.5 < 100) y no le tapa (tapado 0 %)"
-    }
-   ],
+   "failures": [],
    "info": [
-    {
-     "type": "scale-rough",
-     "ref": "hs_trash_pile",
-     "dev": 0.41,
-     "msg": "Dex +41 % frente a montón de trastos (caja sin medir: bounds del hotspot)"
-    },
     {
      "type": "scale-noref",
      "msg": "ninguna referencia con la base a menos de 10 % de los pies"
     }
    ],
-   "score": 1.05,
-   "shot": "capturas/recovery_pool/032.png"
+   "score": 0
   },
   {
    "id": "hs_trash_pile:detrás",
@@ -1308,28 +1065,19 @@
     "hs_trash_pile": 0
    },
    "scale": null,
-   "failures": [
-    {
-     "type": "occlusion",
-     "ref": "hs_trash_pile",
-     "dev": 0.21,
-     "msg": "pies por detrás de la base de montón de trastos (99 < 100) y no le tapa (tapado 0 %)"
-    }
-   ],
+   "failures": [],
    "info": [
-    {
-     "type": "scale-rough",
-     "ref": "hs_trash_pile",
-     "dev": 0.41,
-     "msg": "Dex +41 % frente a montón de trastos (caja sin medir: bounds del hotspot)"
-    },
     {
      "type": "scale-noref",
      "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    },
+    {
+     "type": "behind",
+     "ref": "hs_trash_pile",
+     "msg": "pies por detrás de montón de trastos y se solapan (+57 %): ¿debería taparle?"
     }
    ],
-   "score": 1.21,
-   "shot": "capturas/recovery_pool/033.png"
+   "score": 0
   }
  ]
 }

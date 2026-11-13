@@ -46,8 +46,7 @@
      "msg": "pies fuera del azul de la walkmask (4, 96.6)"
     }
    ],
-   "score": 0,
-   "shot": "capturas/upstairs/000.png"
+   "score": 0
   },
   {
    "id": "grid-4-98.9",
@@ -86,8 +85,7 @@
      "msg": "pies fuera del azul de la walkmask (4, 98.9)"
     }
    ],
-   "score": 0,
-   "shot": "capturas/upstairs/001.png"
+   "score": 0
   },
   {
    "id": "grid-12-96.6",
@@ -126,8 +124,7 @@
      "msg": "Dex +48 % frente a cajas apiladas (caja sin medir: bounds del hotspot)"
     }
    ],
-   "score": 0,
-   "shot": "capturas/upstairs/002.png"
+   "score": 0
   },
   {
    "id": "grid-12-98.9",
@@ -164,8 +161,7 @@
      "msg": "ninguna referencia con la base a menos de 10 % de los pies"
     }
    ],
-   "score": 0,
-   "shot": "capturas/upstairs/003.png"
+   "score": 0
   },
   {
    "id": "grid-20.1-96.6",
@@ -204,8 +200,7 @@
      "msg": "Dex +48 % frente a cajas apiladas (caja sin medir: bounds del hotspot)"
     }
    ],
-   "score": 0,
-   "shot": "capturas/upstairs/004.png"
+   "score": 0
   },
   {
    "id": "grid-20.1-98.9",
@@ -242,8 +237,7 @@
      "msg": "ninguna referencia con la base a menos de 10 % de los pies"
     }
    ],
-   "score": 0,
-   "shot": "capturas/upstairs/005.png"
+   "score": 0
   },
   {
    "id": "grid-28.1-96.6",
@@ -280,8 +274,7 @@
      "msg": "Dex +48 % frente a cajas apiladas (caja sin medir: bounds del hotspot)"
     }
    ],
-   "score": 0,
-   "shot": "capturas/upstairs/006.png"
+   "score": 0
   },
   {
    "id": "grid-28.1-98.9",
@@ -316,8 +309,7 @@
      "msg": "ninguna referencia con la base a menos de 10 % de los pies"
     }
    ],
-   "score": 0,
-   "shot": "capturas/upstairs/007.png"
+   "score": 0
   },
   {
    "id": "grid-36.1-96.6",
@@ -358,8 +350,7 @@
      "msg": "pies fuera del azul de la walkmask (36.1, 96.6)"
     }
    ],
-   "score": 0,
-   "shot": "capturas/upstairs/008.png"
+   "score": 0
   },
   {
    "id": "grid-36.1-98.9",
@@ -398,8 +389,7 @@
      "msg": "pies fuera del azul de la walkmask (36.1, 98.9)"
     }
    ],
-   "score": 0,
-   "shot": "capturas/upstairs/009.png"
+   "score": 0
   },
   {
    "id": "grid-44.1-96.6",
@@ -442,8 +432,7 @@
      "msg": "pies fuera del azul de la walkmask (44.1, 96.6)"
     }
    ],
-   "score": 0,
-   "shot": "capturas/upstairs/010.png"
+   "score": 0
   },
   {
    "id": "grid-44.1-98.9",
@@ -484,8 +473,7 @@
      "msg": "pies fuera del azul de la walkmask (44.1, 98.9)"
     }
    ],
-   "score": 0,
-   "shot": "capturas/upstairs/011.png"
+   "score": 0
   },
   {
    "id": "grid-52.1-96.6",
@@ -528,8 +516,7 @@
      "msg": "pies fuera del azul de la walkmask (52.1, 96.6)"
     }
    ],
-   "score": 0,
-   "shot": "capturas/upstairs/012.png"
+   "score": 0
   },
   {
    "id": "grid-52.1-98.9",
@@ -570,8 +557,7 @@
      "msg": "pies fuera del azul de la walkmask (52.1, 98.9)"
     }
    ],
-   "score": 0,
-   "shot": "capturas/upstairs/013.png"
+   "score": 0
   },
   {
    "id": "grid-60.2-96.6",
@@ -610,8 +596,7 @@
      "msg": "Dex +48 % frente a cajas apiladas (caja sin medir: bounds del hotspot)"
     }
    ],
-   "score": 0,
-   "shot": "capturas/upstairs/014.png"
+   "score": 0
   },
   {
    "id": "grid-60.2-98.9",
@@ -648,8 +633,7 @@
      "msg": "ninguna referencia con la base a menos de 10 % de los pies"
     }
    ],
-   "score": 0,
-   "shot": "capturas/upstairs/015.png"
+   "score": 0
   },
   {
    "id": "grid-68.2-96.6",
@@ -686,8 +670,7 @@
      "msg": "Dex +48 % frente a cajas apiladas (caja sin medir: bounds del hotspot)"
     }
    ],
-   "score": 0,
-   "shot": "capturas/upstairs/016.png"
+   "score": 0
   },
   {
    "id": "grid-68.2-98.9",
@@ -722,8 +705,7 @@
      "msg": "ninguna referencia con la base a menos de 10 % de los pies"
     }
    ],
-   "score": 0,
-   "shot": "capturas/upstairs/017.png"
+   "score": 0
   },
   {
    "id": "grid-76.2-96.6",
@@ -766,8 +748,7 @@
      "msg": "pies fuera del azul de la walkmask (76.2, 96.6)"
     }
    ],
-   "score": 0,
-   "shot": "capturas/upstairs/018.png"
+   "score": 0
   },
   {
    "id": "grid-76.2-98.9",
@@ -808,8 +789,7 @@
      "msg": "pies fuera del azul de la walkmask (76.2, 98.9)"
     }
    ],
-   "score": 0,
-   "shot": "capturas/upstairs/019.png"
+   "score": 0
   },
   {
    "id": "hs_desk",
@@ -852,8 +832,7 @@
      "msg": "pies fuera del azul de la walkmask (52.2, 95.9)"
     }
    ],
-   "score": 0,
-   "shot": "capturas/upstairs/020.png"
+   "score": 0
   },
   {
    "id": "hs_boxes",
@@ -896,8 +875,7 @@
      "msg": "pies fuera del azul de la walkmask (79.7, 95.9)"
     }
    ],
-   "score": 0,
-   "shot": "capturas/upstairs/021.png"
+   "score": 0
   },
   {
    "id": "hs_computer",
@@ -936,8 +914,7 @@
      "msg": "Dex +48 % frente a cajas apiladas (caja sin medir: bounds del hotspot)"
     }
    ],
-   "score": 0,
-   "shot": "capturas/upstairs/022.png"
+   "score": 0
   },
   {
    "id": "hs_armchair",
@@ -980,8 +957,7 @@
      "msg": "pies fuera del azul de la walkmask (79.7, 95.9)"
     }
    ],
-   "score": 0,
-   "shot": "capturas/upstairs/023.png"
+   "score": 0
   },
   {
    "id": "hs_roof_hatch",
@@ -1018,8 +994,7 @@
      "msg": "Dex +48 % frente a cajas apiladas (caja sin medir: bounds del hotspot)"
     }
    ],
-   "score": 0,
-   "shot": "capturas/upstairs/024.png"
+   "score": 0
   },
   {
    "id": "hs_desk_lamp",
@@ -1062,8 +1037,7 @@
      "msg": "pies fuera del azul de la walkmask (46.5, 95.9)"
     }
    ],
-   "score": 0,
-   "shot": "capturas/upstairs/025.png"
+   "score": 0
   },
   {
    "id": "hs_pizza_box",
@@ -1106,8 +1080,7 @@
      "msg": "pies fuera del azul de la walkmask (38.8, 95.9)"
     }
    ],
-   "score": 0,
-   "shot": "capturas/upstairs/026.png"
+   "score": 0
   },
   {
    "id": "hs_energy_drink",
@@ -1150,8 +1123,7 @@
      "msg": "pies fuera del azul de la walkmask (45.8, 95.9)"
     }
    ],
-   "score": 0,
-   "shot": "capturas/upstairs/027.png"
+   "score": 0
   },
   {
    "id": "hs_paper_tray",
@@ -1194,8 +1166,7 @@
      "msg": "pies fuera del azul de la walkmask (47, 95.9)"
     }
    ],
-   "score": 0,
-   "shot": "capturas/upstairs/028.png"
+   "score": 0
   },
   {
    "id": "hs_alphapack",
@@ -1232,8 +1203,7 @@
      "msg": "Dex +48 % frente a cajas apiladas (caja sin medir: bounds del hotspot)"
     }
    ],
-   "score": 0,
-   "shot": "capturas/upstairs/029.png"
+   "score": 0
   },
   {
    "id": "hs_desk:izq",
@@ -1276,8 +1246,7 @@
      "msg": "pies fuera del azul de la walkmask (39.7, 95.9)"
     }
    ],
-   "score": 0,
-   "shot": "capturas/upstairs/030.png"
+   "score": 0
   },
   {
    "id": "hs_desk:der",
@@ -1316,8 +1285,7 @@
      "msg": "Dex +48 % frente a cajas apiladas (caja sin medir: bounds del hotspot)"
     }
    ],
-   "score": 0,
-   "shot": "capturas/upstairs/031.png"
+   "score": 0
   },
   {
    "id": "hs_desk:detrás",
@@ -1360,8 +1328,7 @@
      "msg": "pies fuera del azul de la walkmask (52.2, 95.9)"
     }
    ],
-   "score": 0,
-   "shot": "capturas/upstairs/032.png"
+   "score": 0
   },
   {
    "id": "hs_armchair:izq",
@@ -1404,8 +1371,7 @@
      "msg": "pies fuera del azul de la walkmask (75, 95.9)"
     }
    ],
-   "score": 0,
-   "shot": "capturas/upstairs/033.png"
+   "score": 0
   },
   {
    "id": "hs_armchair:der",
@@ -1448,8 +1414,7 @@
      "msg": "pies fuera del azul de la walkmask (79.7, 95.9)"
     }
    ],
-   "score": 0,
-   "shot": "capturas/upstairs/034.png"
+   "score": 0
   },
   {
    "id": "hs_armchair:detrás",
@@ -1492,8 +1457,7 @@
      "msg": "pies fuera del azul de la walkmask (79.7, 95.9)"
     }
    ],
-   "score": 0,
-   "shot": "capturas/upstairs/035.png"
+   "score": 0
   },
   {
    "id": "hs_boxes:izq",
@@ -1536,8 +1500,7 @@
      "msg": "pies fuera del azul de la walkmask (79.7, 95.9)"
     }
    ],
-   "score": 0,
-   "shot": "capturas/upstairs/036.png"
+   "score": 0
   },
   {
    "id": "hs_boxes:der",
@@ -1580,8 +1543,7 @@
      "msg": "pies fuera del azul de la walkmask (79.7, 95.9)"
     }
    ],
-   "score": 0,
-   "shot": "capturas/upstairs/037.png"
+   "score": 0
   },
   {
    "id": "hs_boxes:detrás",
@@ -1624,8 +1586,7 @@
      "msg": "pies fuera del azul de la walkmask (79.7, 95.9)"
     }
    ],
-   "score": 0,
-   "shot": "capturas/upstairs/038.png"
+   "score": 0
   },
   {
    "id": "hs_computer:izq",
@@ -1664,8 +1625,7 @@
      "msg": "Dex +48 % frente a cajas apiladas (caja sin medir: bounds del hotspot)"
     }
    ],
-   "score": 0,
-   "shot": "capturas/upstairs/039.png"
+   "score": 0
   },
   {
    "id": "hs_computer:der",
@@ -1704,8 +1664,7 @@
      "msg": "Dex +48 % frente a cajas apiladas (caja sin medir: bounds del hotspot)"
     }
    ],
-   "score": 0,
-   "shot": "capturas/upstairs/040.png"
+   "score": 0
   },
   {
    "id": "hs_computer:detrás",
@@ -1744,8 +1703,7 @@
      "msg": "Dex +48 % frente a cajas apiladas (caja sin medir: bounds del hotspot)"
     }
    ],
-   "score": 0,
-   "shot": "capturas/upstairs/041.png"
+   "score": 0
   }
  ]
 }
