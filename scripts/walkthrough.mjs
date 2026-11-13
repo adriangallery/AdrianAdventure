@@ -81,6 +81,8 @@ const callQa = (page, step) => page.evaluate(async (s) => {
     // A2.9: diario (móvil de Dex): abrir/cerrar con su botón y llamar a Anon
     case 'journal': return s.action === 'close' ? q.closeJournal() : q.openJournal(s.tab ?? 'goals');
     case 'callAnon': return q.callAnon();
+    // A3.10: web3 simulado sin red (`web3`: objeto = cartera, null = sin cartera, 'off' = red real)
+    case 'mockWeb3': return q.mockWeb3(s.web3 === undefined ? null : s.web3);
     default: throw new Error(`[qa:error] paso desconocido «${s.do}»`);
   }
 }, step);

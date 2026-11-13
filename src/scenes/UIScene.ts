@@ -20,7 +20,7 @@ import { getAchievementByText } from '@/config/achievements.config';
 import { VOICE_TEXT_MAP, NARRATOR_SEQUENCES } from '@/config/voice.config';
 import { getWalletState } from '@/web3/wallet';
 import { loadPatientFile } from '@/web3/tx-history';
-import { checkGatingRule, type GatingRule } from '@/web3/gating';
+import { checkGatingRule, gateAddress, type GatingRule } from '@/web3/gating';
 import type { Address } from 'viem';
 import { bindShutdown } from './lifecycle';
 import { TITLE_CARD_AUTO_MS, subtitleHoldMs } from '@/systems/Cinematics';
@@ -107,7 +107,7 @@ export class UIScene extends Phaser.Scene {
       },
       showChoices: (choices) => this.choicePanel.show(choices),
       checkGating: async (rule: GatingRule) => {
-        const { address } = getWalletState();
+        const address = gateAddress(); // A3.10: cartera real o la simulada de __qa.mockWeb3
         if (!address) return false;
         return checkGatingRule(address as Address, rule);
       },

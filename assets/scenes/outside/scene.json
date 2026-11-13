@@ -1187,16 +1187,30 @@
               "then": [
                 {
                   "op": "web3Require",
-                  "contract": "AdrianZERO",
-                  "method": "balanceOf",
-                  "args": [
-                    "$wallet"
-                  ],
-                  "compare": ">0",
+                  "rule": {
+                    "type": "ERC721",
+                    "contract": "0x6e369bf0e4e0c106192d606fb6d85836d684da75",
+                    "minBalance": 1
+                  },
                   "then": [
                     {
                       "op": "say",
                       "text": "Overgrown bushes in front of the house. Wait... someone spray-painted 'ZERO WAS HERE' on the wall behind them."
+                    },
+                    {
+                      "op": "ifFlag",
+                      "flag": "holder_wall",
+                      "else": [
+                        {
+                          "op": "setFlag",
+                          "flag": "holder_wall",
+                          "value": true
+                        },
+                        {
+                          "op": "achievement",
+                          "text": "HOLDER: Wall Reader — the building recognised your wallet"
+                        }
+                      ]
                     }
                   ],
                   "else": [

@@ -295,6 +295,34 @@
                 {
                   "op": "say",
                   "text": "The rig recognizes my $ZERO balance! It shows me the secret TraitLab dashboard."
+                },
+                {
+                  "op": "showDashboard"
+                },
+                {
+                  "op": "ifFlag",
+                  "flag": "rig_dashboard_seen",
+                  "then": [
+                    {
+                      "op": "say",
+                      "text": "Same numbers. Same sticky note. 0301. The rig doesn't do small talk."
+                    }
+                  ],
+                  "else": [
+                    {
+                      "op": "setFlag",
+                      "flag": "rig_dashboard_seen",
+                      "value": true
+                    },
+                    {
+                      "op": "achievement",
+                      "text": "HOLDER: TraitLab Insider — the rig read your real wallet"
+                    },
+                    {
+                      "op": "say",
+                      "text": "A sysadmin note under the balance: the Ledger PIN is Gerald's birthday. 0301. Adrian's opsec is a sticky note with extra steps."
+                    }
+                  ]
                 }
               ],
               "else": [
