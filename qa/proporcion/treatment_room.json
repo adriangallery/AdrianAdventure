@@ -1,0 +1,1520 @@
+{
+ "scene": "treatment_room",
+ "scalePolicy": "measure",
+ "summary": {
+  "positions": 39,
+  "failing": 37,
+  "byType": {
+   "scale": 37
+  }
+ },
+ "positions": [
+  {
+   "id": "grid-20.6-95",
+   "kind": "grid",
+   "x": 20.6,
+   "y": 95,
+   "feet": {
+    "x": 20.6,
+    "y": 95
+   },
+   "dexBox": {
+    "x": 17.86,
+    "y": 45.82,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": {
+    "ref": "hs_exit_door",
+    "expected": 61.25,
+    "got": 49.18,
+    "dev": -0.2,
+    "baseDy": 6
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_exit_door",
+     "dev": -0.2,
+     "msg": "Dex -20 % frente a puerta de salida (49.18 % y se esperaba 61.25 %)"
+    }
+   ],
+   "info": [],
+   "score": 0.4
+  },
+  {
+   "id": "grid-20.6-98.3",
+   "kind": "grid",
+   "x": 20.6,
+   "y": 98.3,
+   "feet": {
+    "x": 20.6,
+    "y": 98.3
+   },
+   "dexBox": {
+    "x": 17.86,
+    "y": 49.12,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": {
+    "ref": "hs_exit_door",
+    "expected": 61.25,
+    "got": 49.18,
+    "dev": -0.2,
+    "baseDy": 9.3
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_exit_door",
+     "dev": -0.2,
+     "msg": "Dex -20 % frente a puerta de salida (49.18 % y se esperaba 61.25 %)"
+    }
+   ],
+   "info": [],
+   "score": 0.4
+  },
+  {
+   "id": "grid-28.4-95",
+   "kind": "grid",
+   "x": 28.4,
+   "y": 95,
+   "feet": {
+    "x": 28.4,
+    "y": 95
+   },
+   "dexBox": {
+    "x": 25.66,
+    "y": 45.82,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": {
+    "ref": "hs_exit_door",
+    "expected": 61.25,
+    "got": 49.18,
+    "dev": -0.2,
+    "baseDy": 6
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_exit_door",
+     "dev": -0.2,
+     "msg": "Dex -20 % frente a puerta de salida (49.18 % y se esperaba 61.25 %)"
+    }
+   ],
+   "info": [],
+   "score": 0.4
+  },
+  {
+   "id": "grid-28.4-98.3",
+   "kind": "grid",
+   "x": 28.4,
+   "y": 98.3,
+   "feet": {
+    "x": 28.4,
+    "y": 98.3
+   },
+   "dexBox": {
+    "x": 25.66,
+    "y": 49.12,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": {
+    "ref": "hs_exit_door",
+    "expected": 61.25,
+    "got": 49.18,
+    "dev": -0.2,
+    "baseDy": 9.3
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_exit_door",
+     "dev": -0.2,
+     "msg": "Dex -20 % frente a puerta de salida (49.18 % y se esperaba 61.25 %)"
+    }
+   ],
+   "info": [],
+   "score": 0.4
+  },
+  {
+   "id": "grid-36.1-95",
+   "kind": "grid",
+   "x": 36.1,
+   "y": 95,
+   "feet": {
+    "x": 36.1,
+    "y": 95
+   },
+   "dexBox": {
+    "x": 33.36,
+    "y": 45.82,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_chair": 0
+   },
+   "scale": {
+    "ref": "hs_exit_door",
+    "expected": 61.25,
+    "got": 49.18,
+    "dev": -0.2,
+    "baseDy": 6
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_exit_door",
+     "dev": -0.2,
+     "msg": "Dex -20 % frente a puerta de salida (49.18 % y se esperaba 61.25 %)"
+    }
+   ],
+   "info": [],
+   "score": 0.4
+  },
+  {
+   "id": "grid-36.1-98.3",
+   "kind": "grid",
+   "x": 36.1,
+   "y": 98.3,
+   "feet": {
+    "x": 36.1,
+    "y": 98.3
+   },
+   "dexBox": {
+    "x": 33.36,
+    "y": 49.12,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_chair": 0
+   },
+   "scale": {
+    "ref": "hs_exit_door",
+    "expected": 61.25,
+    "got": 49.18,
+    "dev": -0.2,
+    "baseDy": 9.3
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_exit_door",
+     "dev": -0.2,
+     "msg": "Dex -20 % frente a puerta de salida (49.18 % y se esperaba 61.25 %)"
+    }
+   ],
+   "info": [],
+   "score": 0.4
+  },
+  {
+   "id": "grid-43.9-95",
+   "kind": "grid",
+   "x": 43.9,
+   "y": 95,
+   "feet": {
+    "x": 43.9,
+    "y": 95
+   },
+   "dexBox": {
+    "x": 41.16,
+    "y": 45.82,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_chair": 0
+   },
+   "scale": {
+    "ref": "hs_exit_door",
+    "expected": 61.25,
+    "got": 49.18,
+    "dev": -0.2,
+    "baseDy": 6
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_exit_door",
+     "dev": -0.2,
+     "msg": "Dex -20 % frente a puerta de salida (49.18 % y se esperaba 61.25 %)"
+    }
+   ],
+   "info": [],
+   "score": 0.4,
+   "shot": "capturas/treatment_room/006.png"
+  },
+  {
+   "id": "grid-43.9-98.3",
+   "kind": "grid",
+   "x": 43.9,
+   "y": 98.3,
+   "feet": {
+    "x": 43.9,
+    "y": 98.3
+   },
+   "dexBox": {
+    "x": 41.16,
+    "y": 49.12,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_chair": 0
+   },
+   "scale": {
+    "ref": "hs_exit_door",
+    "expected": 61.25,
+    "got": 49.18,
+    "dev": -0.2,
+    "baseDy": 9.3
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_exit_door",
+     "dev": -0.2,
+     "msg": "Dex -20 % frente a puerta de salida (49.18 % y se esperaba 61.25 %)"
+    }
+   ],
+   "info": [],
+   "score": 0.4,
+   "shot": "capturas/treatment_room/007.png"
+  },
+  {
+   "id": "grid-51.7-95",
+   "kind": "grid",
+   "x": 51.7,
+   "y": 95,
+   "feet": {
+    "x": 51.7,
+    "y": 95
+   },
+   "dexBox": {
+    "x": 48.96,
+    "y": 45.82,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_chair": 0
+   },
+   "scale": {
+    "ref": "hs_exit_door",
+    "expected": 61.25,
+    "got": 49.18,
+    "dev": -0.2,
+    "baseDy": 6
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_exit_door",
+     "dev": -0.2,
+     "msg": "Dex -20 % frente a puerta de salida (49.18 % y se esperaba 61.25 %)"
+    }
+   ],
+   "info": [],
+   "score": 0.4,
+   "shot": "capturas/treatment_room/008.png"
+  },
+  {
+   "id": "grid-51.7-98.3",
+   "kind": "grid",
+   "x": 51.7,
+   "y": 98.3,
+   "feet": {
+    "x": 51.7,
+    "y": 98.3
+   },
+   "dexBox": {
+    "x": 48.96,
+    "y": 49.12,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_chair": 0
+   },
+   "scale": {
+    "ref": "hs_exit_door",
+    "expected": 61.25,
+    "got": 49.18,
+    "dev": -0.2,
+    "baseDy": 9.3
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_exit_door",
+     "dev": -0.2,
+     "msg": "Dex -20 % frente a puerta de salida (49.18 % y se esperaba 61.25 %)"
+    }
+   ],
+   "info": [],
+   "score": 0.4,
+   "shot": "capturas/treatment_room/009.png"
+  },
+  {
+   "id": "grid-59.5-95",
+   "kind": "grid",
+   "x": 59.5,
+   "y": 95,
+   "feet": {
+    "x": 59.5,
+    "y": 95
+   },
+   "dexBox": {
+    "x": 56.76,
+    "y": 45.82,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_side_table": 0
+   },
+   "scale": {
+    "ref": "hs_exit_door",
+    "expected": 61.25,
+    "got": 49.18,
+    "dev": -0.2,
+    "baseDy": 6
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_exit_door",
+     "dev": -0.2,
+     "msg": "Dex -20 % frente a puerta de salida (49.18 % y se esperaba 61.25 %)"
+    }
+   ],
+   "info": [],
+   "score": 0.4,
+   "shot": "capturas/treatment_room/010.png"
+  },
+  {
+   "id": "grid-59.5-98.3",
+   "kind": "grid",
+   "x": 59.5,
+   "y": 98.3,
+   "feet": {
+    "x": 59.5,
+    "y": 98.3
+   },
+   "dexBox": {
+    "x": 56.76,
+    "y": 49.12,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_side_table": 0
+   },
+   "scale": {
+    "ref": "hs_exit_door",
+    "expected": 61.25,
+    "got": 49.18,
+    "dev": -0.2,
+    "baseDy": 9.3
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_exit_door",
+     "dev": -0.2,
+     "msg": "Dex -20 % frente a puerta de salida (49.18 % y se esperaba 61.25 %)"
+    }
+   ],
+   "info": [],
+   "score": 0.4,
+   "shot": "capturas/treatment_room/011.png"
+  },
+  {
+   "id": "grid-67.3-95",
+   "kind": "grid",
+   "x": 67.3,
+   "y": 95,
+   "feet": {
+    "x": 67.3,
+    "y": 95
+   },
+   "dexBox": {
+    "x": 64.56,
+    "y": 45.82,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_side_table": 0
+   },
+   "scale": {
+    "ref": "hs_exit_door",
+    "expected": 61.25,
+    "got": 49.18,
+    "dev": -0.2,
+    "baseDy": 6
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_exit_door",
+     "dev": -0.2,
+     "msg": "Dex -20 % frente a puerta de salida (49.18 % y se esperaba 61.25 %)"
+    }
+   ],
+   "info": [],
+   "score": 0.4,
+   "shot": "capturas/treatment_room/012.png"
+  },
+  {
+   "id": "grid-67.3-98.3",
+   "kind": "grid",
+   "x": 67.3,
+   "y": 98.3,
+   "feet": {
+    "x": 67.3,
+    "y": 98.3
+   },
+   "dexBox": {
+    "x": 64.56,
+    "y": 49.12,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_side_table": 0
+   },
+   "scale": {
+    "ref": "hs_exit_door",
+    "expected": 61.25,
+    "got": 49.18,
+    "dev": -0.2,
+    "baseDy": 9.3
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_exit_door",
+     "dev": -0.2,
+     "msg": "Dex -20 % frente a puerta de salida (49.18 % y se esperaba 61.25 %)"
+    }
+   ],
+   "info": [],
+   "score": 0.4,
+   "shot": "capturas/treatment_room/013.png"
+  },
+  {
+   "id": "grid-75-95",
+   "kind": "grid",
+   "x": 75,
+   "y": 95,
+   "feet": {
+    "x": 75,
+    "y": 95
+   },
+   "dexBox": {
+    "x": 72.26,
+    "y": 45.82,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": {
+    "ref": "hs_exit_door",
+    "expected": 61.25,
+    "got": 49.18,
+    "dev": -0.2,
+    "baseDy": 6
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_exit_door",
+     "dev": -0.2,
+     "msg": "Dex -20 % frente a puerta de salida (49.18 % y se esperaba 61.25 %)"
+    }
+   ],
+   "info": [],
+   "score": 0.4,
+   "shot": "capturas/treatment_room/014.png"
+  },
+  {
+   "id": "grid-75-98.3",
+   "kind": "grid",
+   "x": 75,
+   "y": 98.3,
+   "feet": {
+    "x": 75,
+    "y": 98.3
+   },
+   "dexBox": {
+    "x": 72.26,
+    "y": 49.12,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": {
+    "ref": "hs_exit_door",
+    "expected": 61.25,
+    "got": 49.18,
+    "dev": -0.2,
+    "baseDy": 9.3
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_exit_door",
+     "dev": -0.2,
+     "msg": "Dex -20 % frente a puerta de salida (49.18 % y se esperaba 61.25 %)"
+    }
+   ],
+   "info": [],
+   "score": 0.4,
+   "shot": "capturas/treatment_room/015.png"
+  },
+  {
+   "id": "grid-82.8-95",
+   "kind": "grid",
+   "x": 82.8,
+   "y": 95,
+   "feet": {
+    "x": 82.8,
+    "y": 95
+   },
+   "dexBox": {
+    "x": 80.06,
+    "y": 45.82,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": {
+    "ref": "hs_exit_door",
+    "expected": 61.25,
+    "got": 49.18,
+    "dev": -0.2,
+    "baseDy": 6
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_exit_door",
+     "dev": -0.2,
+     "msg": "Dex -20 % frente a puerta de salida (49.18 % y se esperaba 61.25 %)"
+    }
+   ],
+   "info": [],
+   "score": 0.4,
+   "shot": "capturas/treatment_room/016.png"
+  },
+  {
+   "id": "grid-82.8-98.3",
+   "kind": "grid",
+   "x": 82.8,
+   "y": 98.3,
+   "feet": {
+    "x": 82.8,
+    "y": 98.3
+   },
+   "dexBox": {
+    "x": 80.06,
+    "y": 49.12,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": {
+    "ref": "hs_exit_door",
+    "expected": 61.25,
+    "got": 49.18,
+    "dev": -0.2,
+    "baseDy": 9.3
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_exit_door",
+     "dev": -0.2,
+     "msg": "Dex -20 % frente a puerta de salida (49.18 % y se esperaba 61.25 %)"
+    }
+   ],
+   "info": [],
+   "score": 0.4,
+   "shot": "capturas/treatment_room/017.png"
+  },
+  {
+   "id": "hs_chair",
+   "kind": "arrival",
+   "x": 45.6,
+   "y": 93.8,
+   "feet": {
+    "x": 45.6,
+    "y": 93.8
+   },
+   "dexBox": {
+    "x": 42.86,
+    "y": 44.62,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_chair": 0
+   },
+   "scale": {
+    "ref": "hs_exit_door",
+    "expected": 61.25,
+    "got": 49.18,
+    "dev": -0.2,
+    "baseDy": 4.8
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_exit_door",
+     "dev": -0.2,
+     "msg": "Dex -20 % frente a puerta de salida (49.18 % y se esperaba 61.25 %)"
+    }
+   ],
+   "info": [],
+   "score": 0.4,
+   "shot": "capturas/treatment_room/018.png"
+  },
+  {
+   "id": "hs_monitor",
+   "kind": "arrival",
+   "x": 67.6,
+   "y": 93.8,
+   "feet": {
+    "x": 67.6,
+    "y": 93.8
+   },
+   "dexBox": {
+    "x": 64.86,
+    "y": 44.62,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_side_table": 0
+   },
+   "scale": {
+    "ref": "hs_exit_door",
+    "expected": 61.25,
+    "got": 49.18,
+    "dev": -0.2,
+    "baseDy": 4.8
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_exit_door",
+     "dev": -0.2,
+     "msg": "Dex -20 % frente a puerta de salida (49.18 % y se esperaba 61.25 %)"
+    }
+   ],
+   "info": [],
+   "score": 0.4,
+   "shot": "capturas/treatment_room/019.png"
+  },
+  {
+   "id": "hs_charts",
+   "kind": "arrival",
+   "x": 48.3,
+   "y": 93.8,
+   "feet": {
+    "x": 48.3,
+    "y": 93.8
+   },
+   "dexBox": {
+    "x": 45.56,
+    "y": 44.62,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_chair": 0
+   },
+   "scale": {
+    "ref": "hs_exit_door",
+    "expected": 61.25,
+    "got": 49.18,
+    "dev": -0.2,
+    "baseDy": 4.8
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_exit_door",
+     "dev": -0.2,
+     "msg": "Dex -20 % frente a puerta de salida (49.18 % y se esperaba 61.25 %)"
+    }
+   ],
+   "info": [],
+   "score": 0.4,
+   "shot": "capturas/treatment_room/020.png"
+  },
+  {
+   "id": "hs_exit_door",
+   "kind": "arrival",
+   "x": 86.2,
+   "y": 93.8,
+   "feet": {
+    "x": 86.2,
+    "y": 93.8
+   },
+   "dexBox": {
+    "x": 83.46,
+    "y": 44.62,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_exit_door": 0
+   },
+   "scale": {
+    "ref": "hs_exit_door",
+    "expected": 61.25,
+    "got": 49.18,
+    "dev": -0.2,
+    "baseDy": 4.8
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_exit_door",
+     "dev": -0.2,
+     "msg": "Dex -20 % frente a puerta de salida (49.18 % y se esperaba 61.25 %)"
+    }
+   ],
+   "info": [],
+   "score": 0.4,
+   "shot": "capturas/treatment_room/021.png"
+  },
+  {
+   "id": "hs_adrian_note",
+   "kind": "arrival",
+   "x": 66.4,
+   "y": 93.8,
+   "feet": {
+    "x": 66.4,
+    "y": 93.8
+   },
+   "dexBox": {
+    "x": 63.66,
+    "y": 44.62,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_side_table": 0
+   },
+   "scale": {
+    "ref": "hs_exit_door",
+    "expected": 61.25,
+    "got": 49.18,
+    "dev": -0.2,
+    "baseDy": 4.8
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_exit_door",
+     "dev": -0.2,
+     "msg": "Dex -20 % frente a puerta de salida (49.18 % y se esperaba 61.25 %)"
+    }
+   ],
+   "info": [],
+   "score": 0.4,
+   "shot": "capturas/treatment_room/022.png"
+  },
+  {
+   "id": "hs_dark_floor",
+   "kind": "arrival",
+   "x": 57,
+   "y": 99.5,
+   "feet": {
+    "x": 57,
+    "y": 99.5
+   },
+   "dexBox": {
+    "x": 54.26,
+    "y": 50.32,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "hs_founders_plaque",
+   "kind": "arrival",
+   "x": 29.6,
+   "y": 93.8,
+   "feet": {
+    "x": 29.6,
+    "y": 93.8
+   },
+   "dexBox": {
+    "x": 26.86,
+    "y": 44.62,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": {
+    "ref": "hs_exit_door",
+    "expected": 61.25,
+    "got": 49.18,
+    "dev": -0.2,
+    "baseDy": 4.8
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_exit_door",
+     "dev": -0.2,
+     "msg": "Dex -20 % frente a puerta de salida (49.18 % y se esperaba 61.25 %)"
+    }
+   ],
+   "info": [],
+   "score": 0.4
+  },
+  {
+   "id": "hs_ceiling_pipes",
+   "kind": "arrival",
+   "x": 52.8,
+   "y": 93.8,
+   "feet": {
+    "x": 52.8,
+    "y": 93.8
+   },
+   "dexBox": {
+    "x": 50.06,
+    "y": 44.62,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_chair": 0
+   },
+   "scale": {
+    "ref": "hs_exit_door",
+    "expected": 61.25,
+    "got": 49.18,
+    "dev": -0.2,
+    "baseDy": 4.8
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_exit_door",
+     "dev": -0.2,
+     "msg": "Dex -20 % frente a puerta de salida (49.18 % y se esperaba 61.25 %)"
+    }
+   ],
+   "info": [],
+   "score": 0.4,
+   "shot": "capturas/treatment_room/025.png"
+  },
+  {
+   "id": "hs_side_table",
+   "kind": "arrival",
+   "x": 64.1,
+   "y": 93.8,
+   "feet": {
+    "x": 64.1,
+    "y": 93.8
+   },
+   "dexBox": {
+    "x": 61.36,
+    "y": 44.62,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_side_table": 0
+   },
+   "scale": {
+    "ref": "hs_exit_door",
+    "expected": 61.25,
+    "got": 49.18,
+    "dev": -0.2,
+    "baseDy": 4.8
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_exit_door",
+     "dev": -0.2,
+     "msg": "Dex -20 % frente a puerta de salida (49.18 % y se esperaba 61.25 %)"
+    }
+   ],
+   "info": [],
+   "score": 0.4,
+   "shot": "capturas/treatment_room/026.png"
+  },
+  {
+   "id": "hs_observation_window",
+   "kind": "arrival",
+   "x": 20.2,
+   "y": 93.8,
+   "feet": {
+    "x": 20.2,
+    "y": 93.8
+   },
+   "dexBox": {
+    "x": 17.46,
+    "y": 44.62,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": {
+    "ref": "hs_exit_door",
+    "expected": 61.25,
+    "got": 49.18,
+    "dev": -0.2,
+    "baseDy": 4.8
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_exit_door",
+     "dev": -0.2,
+     "msg": "Dex -20 % frente a puerta de salida (49.18 % y se esperaba 61.25 %)"
+    }
+   ],
+   "info": [],
+   "score": 0.4
+  },
+  {
+   "id": "hs_floor_cables",
+   "kind": "arrival",
+   "x": 28.9,
+   "y": 99.5,
+   "feet": {
+    "x": 28.9,
+    "y": 99.5
+   },
+   "dexBox": {
+    "x": 26.16,
+    "y": 50.32,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "hs_wall_decay",
+   "kind": "arrival",
+   "x": 83,
+   "y": 93.8,
+   "feet": {
+    "x": 83,
+    "y": 93.8
+   },
+   "dexBox": {
+    "x": 80.26,
+    "y": 44.62,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": {
+    "ref": "hs_exit_door",
+    "expected": 61.25,
+    "got": 49.18,
+    "dev": -0.2,
+    "baseDy": 4.8
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_exit_door",
+     "dev": -0.2,
+     "msg": "Dex -20 % frente a puerta de salida (49.18 % y se esperaba 61.25 %)"
+    }
+   ],
+   "info": [],
+   "score": 0.4,
+   "shot": "capturas/treatment_room/029.png"
+  },
+  {
+   "id": "hs_exit_door:izq",
+   "kind": "ref",
+   "x": 85.6,
+   "y": 93.8,
+   "feet": {
+    "x": 85.6,
+    "y": 93.8
+   },
+   "dexBox": {
+    "x": 82.86,
+    "y": 44.62,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_exit_door": 0
+   },
+   "scale": {
+    "ref": "hs_exit_door",
+    "expected": 61.25,
+    "got": 49.18,
+    "dev": -0.2,
+    "baseDy": 4.8
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_exit_door",
+     "dev": -0.2,
+     "msg": "Dex -20 % frente a puerta de salida (49.18 % y se esperaba 61.25 %)"
+    }
+   ],
+   "info": [],
+   "score": 0.4,
+   "shot": "capturas/treatment_room/030.png"
+  },
+  {
+   "id": "hs_exit_door:der",
+   "kind": "ref",
+   "x": 86.2,
+   "y": 93.8,
+   "feet": {
+    "x": 86.2,
+    "y": 93.8
+   },
+   "dexBox": {
+    "x": 83.46,
+    "y": 44.62,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_exit_door": 0
+   },
+   "scale": {
+    "ref": "hs_exit_door",
+    "expected": 61.25,
+    "got": 49.18,
+    "dev": -0.2,
+    "baseDy": 4.8
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_exit_door",
+     "dev": -0.2,
+     "msg": "Dex -20 % frente a puerta de salida (49.18 % y se esperaba 61.25 %)"
+    }
+   ],
+   "info": [],
+   "score": 0.4,
+   "shot": "capturas/treatment_room/031.png"
+  },
+  {
+   "id": "hs_exit_door:detrás",
+   "kind": "ref",
+   "x": 86.2,
+   "y": 93.8,
+   "feet": {
+    "x": 86.2,
+    "y": 93.8
+   },
+   "dexBox": {
+    "x": 83.46,
+    "y": 44.62,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_exit_door": 0
+   },
+   "scale": {
+    "ref": "hs_exit_door",
+    "expected": 61.25,
+    "got": 49.18,
+    "dev": -0.2,
+    "baseDy": 4.8
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_exit_door",
+     "dev": -0.2,
+     "msg": "Dex -20 % frente a puerta de salida (49.18 % y se esperaba 61.25 %)"
+    }
+   ],
+   "info": [],
+   "score": 0.4,
+   "shot": "capturas/treatment_room/032.png"
+  },
+  {
+   "id": "hs_chair:izq",
+   "kind": "ref",
+   "x": 35.5,
+   "y": 93.8,
+   "feet": {
+    "x": 35.5,
+    "y": 93.8
+   },
+   "dexBox": {
+    "x": 32.76,
+    "y": 44.62,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_chair": 0
+   },
+   "scale": {
+    "ref": "hs_exit_door",
+    "expected": 61.25,
+    "got": 49.18,
+    "dev": -0.2,
+    "baseDy": 4.8
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_exit_door",
+     "dev": -0.2,
+     "msg": "Dex -20 % frente a puerta de salida (49.18 % y se esperaba 61.25 %)"
+    }
+   ],
+   "info": [],
+   "score": 0.4
+  },
+  {
+   "id": "hs_chair:der",
+   "kind": "ref",
+   "x": 55.7,
+   "y": 93.8,
+   "feet": {
+    "x": 55.7,
+    "y": 93.8
+   },
+   "dexBox": {
+    "x": 52.96,
+    "y": 44.62,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_chair": 0
+   },
+   "scale": {
+    "ref": "hs_exit_door",
+    "expected": 61.25,
+    "got": 49.18,
+    "dev": -0.2,
+    "baseDy": 4.8
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_exit_door",
+     "dev": -0.2,
+     "msg": "Dex -20 % frente a puerta de salida (49.18 % y se esperaba 61.25 %)"
+    }
+   ],
+   "info": [],
+   "score": 0.4,
+   "shot": "capturas/treatment_room/034.png"
+  },
+  {
+   "id": "hs_chair:detrás",
+   "kind": "ref",
+   "x": 45.6,
+   "y": 93.8,
+   "feet": {
+    "x": 45.6,
+    "y": 93.8
+   },
+   "dexBox": {
+    "x": 42.86,
+    "y": 44.62,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_chair": 0
+   },
+   "scale": {
+    "ref": "hs_exit_door",
+    "expected": 61.25,
+    "got": 49.18,
+    "dev": -0.2,
+    "baseDy": 4.8
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_exit_door",
+     "dev": -0.2,
+     "msg": "Dex -20 % frente a puerta de salida (49.18 % y se esperaba 61.25 %)"
+    }
+   ],
+   "info": [],
+   "score": 0.4,
+   "shot": "capturas/treatment_room/035.png"
+  },
+  {
+   "id": "hs_side_table:izq",
+   "kind": "ref",
+   "x": 57.8,
+   "y": 93.8,
+   "feet": {
+    "x": 57.8,
+    "y": 93.8
+   },
+   "dexBox": {
+    "x": 55.06,
+    "y": 44.62,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_side_table": 0
+   },
+   "scale": {
+    "ref": "hs_exit_door",
+    "expected": 61.25,
+    "got": 49.18,
+    "dev": -0.2,
+    "baseDy": 4.8
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_exit_door",
+     "dev": -0.2,
+     "msg": "Dex -20 % frente a puerta de salida (49.18 % y se esperaba 61.25 %)"
+    }
+   ],
+   "info": [],
+   "score": 0.4,
+   "shot": "capturas/treatment_room/036.png"
+  },
+  {
+   "id": "hs_side_table:der",
+   "kind": "ref",
+   "x": 70.3,
+   "y": 93.8,
+   "feet": {
+    "x": 70.3,
+    "y": 93.8
+   },
+   "dexBox": {
+    "x": 67.56,
+    "y": 44.62,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_side_table": 0
+   },
+   "scale": {
+    "ref": "hs_exit_door",
+    "expected": 61.25,
+    "got": 49.18,
+    "dev": -0.2,
+    "baseDy": 4.8
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_exit_door",
+     "dev": -0.2,
+     "msg": "Dex -20 % frente a puerta de salida (49.18 % y se esperaba 61.25 %)"
+    }
+   ],
+   "info": [],
+   "score": 0.4,
+   "shot": "capturas/treatment_room/037.png"
+  },
+  {
+   "id": "hs_side_table:detrás",
+   "kind": "ref",
+   "x": 64.1,
+   "y": 93.8,
+   "feet": {
+    "x": 64.1,
+    "y": 93.8
+   },
+   "dexBox": {
+    "x": 61.36,
+    "y": 44.62,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_side_table": 0
+   },
+   "scale": {
+    "ref": "hs_exit_door",
+    "expected": 61.25,
+    "got": 49.18,
+    "dev": -0.2,
+    "baseDy": 4.8
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_exit_door",
+     "dev": -0.2,
+     "msg": "Dex -20 % frente a puerta de salida (49.18 % y se esperaba 61.25 %)"
+    }
+   ],
+   "info": [],
+   "score": 0.4,
+   "shot": "capturas/treatment_room/038.png"
+  }
+ ]
+}

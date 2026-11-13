@@ -3,10 +3,9 @@
  "scalePolicy": "measure",
  "summary": {
   "positions": 50,
-  "failing": 50,
+  "failing": 38,
   "byType": {
-   "scale": 38,
-   "feet": 50
+   "scale": 38
   }
  },
  "positions": [
@@ -42,14 +41,15 @@
      "ref": "hs_left_desk",
      "dev": 0.19,
      "msg": "Dex +19 % frente a escritorio (58.12 % y se esperaba 49 %)"
-    },
+    }
+   ],
+   "info": [
     {
-     "type": "feet",
+     "type": "walkmask",
      "msg": "pies fuera del azul de la walkmask (7.4, 87.5)"
     }
    ],
-   "info": [],
-   "score": 1.88,
+   "score": 0.38,
    "shot": "capturas/basement/000.png"
   },
   {
@@ -72,19 +72,18 @@
    "maskOk": false,
    "cover": {},
    "scale": null,
-   "failures": [
-    {
-     "type": "feet",
-     "msg": "pies fuera del azul de la walkmask (7.4, 90.5)"
-    }
-   ],
+   "failures": [],
    "info": [
     {
      "type": "scale-noref",
      "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    },
+    {
+     "type": "walkmask",
+     "msg": "pies fuera del azul de la walkmask (7.4, 90.5)"
     }
    ],
-   "score": 1.5,
+   "score": 0,
    "shot": "capturas/basement/001.png"
   },
   {
@@ -119,14 +118,15 @@
      "ref": "hs_left_desk",
      "dev": 0.19,
      "msg": "Dex +19 % frente a escritorio (58.12 % y se esperaba 49 %)"
-    },
+    }
+   ],
+   "info": [
     {
-     "type": "feet",
+     "type": "walkmask",
      "msg": "pies fuera del azul de la walkmask (15.1, 87.5)"
     }
    ],
-   "info": [],
-   "score": 1.88,
+   "score": 0.38,
    "shot": "capturas/basement/002.png"
   },
   {
@@ -149,19 +149,18 @@
    "maskOk": false,
    "cover": {},
    "scale": null,
-   "failures": [
-    {
-     "type": "feet",
-     "msg": "pies fuera del azul de la walkmask (15.1, 90.5)"
-    }
-   ],
+   "failures": [],
    "info": [
     {
      "type": "scale-noref",
      "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    },
+    {
+     "type": "walkmask",
+     "msg": "pies fuera del azul de la walkmask (15.1, 90.5)"
     }
    ],
-   "score": 1.5,
+   "score": 0,
    "shot": "capturas/basement/003.png"
   },
   {
@@ -196,14 +195,15 @@
      "ref": "hs_left_desk",
      "dev": 0.19,
      "msg": "Dex +19 % frente a escritorio (58.12 % y se esperaba 49 %)"
-    },
+    }
+   ],
+   "info": [
     {
-     "type": "feet",
+     "type": "walkmask",
      "msg": "pies fuera del azul de la walkmask (22.8, 87.5)"
     }
    ],
-   "info": [],
-   "score": 1.88,
+   "score": 0.38,
    "shot": "capturas/basement/004.png"
   },
   {
@@ -226,19 +226,18 @@
    "maskOk": false,
    "cover": {},
    "scale": null,
-   "failures": [
-    {
-     "type": "feet",
-     "msg": "pies fuera del azul de la walkmask (22.8, 90.5)"
-    }
-   ],
+   "failures": [],
    "info": [
     {
      "type": "scale-noref",
      "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    },
+    {
+     "type": "walkmask",
+     "msg": "pies fuera del azul de la walkmask (22.8, 90.5)"
     }
    ],
-   "score": 1.5,
+   "score": 0,
    "shot": "capturas/basement/005.png"
   },
   {
@@ -273,14 +272,15 @@
      "ref": "hs_left_desk",
      "dev": 0.19,
      "msg": "Dex +19 % frente a escritorio (58.12 % y se esperaba 49 %)"
-    },
+    }
+   ],
+   "info": [
     {
-     "type": "feet",
+     "type": "walkmask",
      "msg": "pies fuera del azul de la walkmask (30.5, 87.5)"
     }
    ],
-   "info": [],
-   "score": 1.88,
+   "score": 0.38,
    "shot": "capturas/basement/006.png"
   },
   {
@@ -303,19 +303,18 @@
    "maskOk": false,
    "cover": {},
    "scale": null,
-   "failures": [
-    {
-     "type": "feet",
-     "msg": "pies fuera del azul de la walkmask (30.5, 90.5)"
-    }
-   ],
+   "failures": [],
    "info": [
     {
      "type": "scale-noref",
      "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    },
+    {
+     "type": "walkmask",
+     "msg": "pies fuera del azul de la walkmask (30.5, 90.5)"
     }
    ],
-   "score": 1.5,
+   "score": 0,
    "shot": "capturas/basement/007.png"
   },
   {
@@ -352,14 +351,15 @@
      "ref": "hs_left_desk",
      "dev": 0.19,
      "msg": "Dex +19 % frente a escritorio (58.12 % y se esperaba 49 %)"
-    },
+    }
+   ],
+   "info": [
     {
-     "type": "feet",
+     "type": "walkmask",
      "msg": "pies fuera del azul de la walkmask (38.3, 87.5)"
     }
    ],
-   "info": [],
-   "score": 1.88,
+   "score": 0.38,
    "shot": "capturas/basement/008.png"
   },
   {
@@ -384,19 +384,18 @@
     "hs_armchair": 0
    },
    "scale": null,
-   "failures": [
-    {
-     "type": "feet",
-     "msg": "pies fuera del azul de la walkmask (38.3, 90.5)"
-    }
-   ],
+   "failures": [],
    "info": [
     {
      "type": "scale-noref",
      "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    },
+    {
+     "type": "walkmask",
+     "msg": "pies fuera del azul de la walkmask (38.3, 90.5)"
     }
    ],
-   "score": 1.5,
+   "score": 0,
    "shot": "capturas/basement/009.png"
   },
   {
@@ -434,14 +433,15 @@
      "ref": "hs_left_desk",
      "dev": 0.19,
      "msg": "Dex +19 % frente a escritorio (58.12 % y se esperaba 49 %)"
-    },
+    }
+   ],
+   "info": [
     {
-     "type": "feet",
+     "type": "walkmask",
      "msg": "pies fuera del azul de la walkmask (46, 87.5)"
     }
    ],
-   "info": [],
-   "score": 1.88,
+   "score": 0.38,
    "shot": "capturas/basement/010.png"
   },
   {
@@ -467,19 +467,18 @@
     "hs_armchair": 0
    },
    "scale": null,
-   "failures": [
-    {
-     "type": "feet",
-     "msg": "pies fuera del azul de la walkmask (46, 90.5)"
-    }
-   ],
+   "failures": [],
    "info": [
     {
      "type": "scale-noref",
      "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    },
+    {
+     "type": "walkmask",
+     "msg": "pies fuera del azul de la walkmask (46, 90.5)"
     }
    ],
-   "score": 1.5,
+   "score": 0,
    "shot": "capturas/basement/011.png"
   },
   {
@@ -516,14 +515,15 @@
      "ref": "hs_left_desk",
      "dev": 0.19,
      "msg": "Dex +19 % frente a escritorio (58.12 % y se esperaba 49 %)"
-    },
+    }
+   ],
+   "info": [
     {
-     "type": "feet",
+     "type": "walkmask",
      "msg": "pies fuera del azul de la walkmask (53.7, 87.5)"
     }
    ],
-   "info": [],
-   "score": 1.88,
+   "score": 0.38,
    "shot": "capturas/basement/012.png"
   },
   {
@@ -548,19 +548,18 @@
     "hs_left_desk": 0
    },
    "scale": null,
-   "failures": [
-    {
-     "type": "feet",
-     "msg": "pies fuera del azul de la walkmask (53.7, 90.5)"
-    }
-   ],
+   "failures": [],
    "info": [
     {
      "type": "scale-noref",
      "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    },
+    {
+     "type": "walkmask",
+     "msg": "pies fuera del azul de la walkmask (53.7, 90.5)"
     }
    ],
-   "score": 1.5,
+   "score": 0,
    "shot": "capturas/basement/013.png"
   },
   {
@@ -597,14 +596,15 @@
      "ref": "hs_left_desk",
      "dev": 0.19,
      "msg": "Dex +19 % frente a escritorio (58.12 % y se esperaba 49 %)"
-    },
+    }
+   ],
+   "info": [
     {
-     "type": "feet",
+     "type": "walkmask",
      "msg": "pies fuera del azul de la walkmask (61.5, 87.5)"
     }
    ],
-   "info": [],
-   "score": 1.88,
+   "score": 0.38,
    "shot": "capturas/basement/014.png"
   },
   {
@@ -629,19 +629,18 @@
     "hs_left_desk": 0
    },
    "scale": null,
-   "failures": [
-    {
-     "type": "feet",
-     "msg": "pies fuera del azul de la walkmask (61.5, 90.5)"
-    }
-   ],
+   "failures": [],
    "info": [
     {
      "type": "scale-noref",
      "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    },
+    {
+     "type": "walkmask",
+     "msg": "pies fuera del azul de la walkmask (61.5, 90.5)"
     }
    ],
-   "score": 1.5,
+   "score": 0,
    "shot": "capturas/basement/015.png"
   },
   {
@@ -678,14 +677,15 @@
      "ref": "hs_left_desk",
      "dev": 0.19,
      "msg": "Dex +19 % frente a escritorio (58.12 % y se esperaba 49 %)"
-    },
+    }
+   ],
+   "info": [
     {
-     "type": "feet",
+     "type": "walkmask",
      "msg": "pies fuera del azul de la walkmask (69.2, 87.5)"
     }
    ],
-   "info": [],
-   "score": 1.88,
+   "score": 0.38,
    "shot": "capturas/basement/016.png"
   },
   {
@@ -710,19 +710,18 @@
     "hs_left_desk": 0
    },
    "scale": null,
-   "failures": [
-    {
-     "type": "feet",
-     "msg": "pies fuera del azul de la walkmask (69.2, 90.5)"
-    }
-   ],
+   "failures": [],
    "info": [
     {
      "type": "scale-noref",
      "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    },
+    {
+     "type": "walkmask",
+     "msg": "pies fuera del azul de la walkmask (69.2, 90.5)"
     }
    ],
-   "score": 1.5,
+   "score": 0,
    "shot": "capturas/basement/017.png"
   },
   {
@@ -759,14 +758,15 @@
      "ref": "hs_left_desk",
      "dev": 0.19,
      "msg": "Dex +19 % frente a escritorio (58.12 % y se esperaba 49 %)"
-    },
+    }
+   ],
+   "info": [
     {
-     "type": "feet",
+     "type": "walkmask",
      "msg": "pies fuera del azul de la walkmask (76.9, 87.5)"
     }
    ],
-   "info": [],
-   "score": 1.88,
+   "score": 0.38,
    "shot": "capturas/basement/018.png"
   },
   {
@@ -791,19 +791,18 @@
     "hs_equipment": 0
    },
    "scale": null,
-   "failures": [
-    {
-     "type": "feet",
-     "msg": "pies fuera del azul de la walkmask (76.9, 90.5)"
-    }
-   ],
+   "failures": [],
    "info": [
     {
      "type": "scale-noref",
      "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    },
+    {
+     "type": "walkmask",
+     "msg": "pies fuera del azul de la walkmask (76.9, 90.5)"
     }
    ],
-   "score": 1.5,
+   "score": 0,
    "shot": "capturas/basement/019.png"
   },
   {
@@ -840,14 +839,15 @@
      "ref": "hs_left_desk",
      "dev": 0.19,
      "msg": "Dex +19 % frente a escritorio (58.12 % y se esperaba 49 %)"
-    },
+    }
+   ],
+   "info": [
     {
-     "type": "feet",
+     "type": "walkmask",
      "msg": "pies fuera del azul de la walkmask (84.6, 87.5)"
     }
    ],
-   "info": [],
-   "score": 1.88,
+   "score": 0.38,
    "shot": "capturas/basement/020.png"
   },
   {
@@ -872,19 +872,18 @@
     "hs_equipment": 0
    },
    "scale": null,
-   "failures": [
-    {
-     "type": "feet",
-     "msg": "pies fuera del azul de la walkmask (84.6, 90.5)"
-    }
-   ],
+   "failures": [],
    "info": [
     {
      "type": "scale-noref",
      "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    },
+    {
+     "type": "walkmask",
+     "msg": "pies fuera del azul de la walkmask (84.6, 90.5)"
     }
    ],
-   "score": 1.5,
+   "score": 0,
    "shot": "capturas/basement/021.png"
   },
   {
@@ -919,14 +918,21 @@
      "ref": "hs_left_desk",
      "dev": 0.19,
      "msg": "Dex +19 % frente a escritorio (58.12 % y se esperaba 49 %)"
+    }
+   ],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_equipment",
+     "dev": 0.17,
+     "msg": "Dex +17 % frente a rack de equipos (caja sin medir: bounds del hotspot)"
     },
     {
-     "type": "feet",
+     "type": "walkmask",
      "msg": "pies fuera del azul de la walkmask (5.1, 77.1)"
     }
    ],
-   "info": [],
-   "score": 1.88,
+   "score": 0.38,
    "shot": "capturas/basement/022.png"
   },
   {
@@ -961,14 +967,21 @@
      "ref": "hs_left_desk",
      "dev": 0.19,
      "msg": "Dex +19 % frente a escritorio (58.12 % y se esperaba 49 %)"
+    }
+   ],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_equipment",
+     "dev": 0.17,
+     "msg": "Dex +17 % frente a rack de equipos (caja sin medir: bounds del hotspot)"
     },
     {
-     "type": "feet",
+     "type": "walkmask",
      "msg": "pies fuera del azul de la walkmask (5.1, 80.4)"
     }
    ],
-   "info": [],
-   "score": 1.88,
+   "score": 0.38,
    "shot": "capturas/basement/023.png"
   },
   {
@@ -1003,14 +1016,21 @@
      "ref": "hs_left_desk",
      "dev": 0.19,
      "msg": "Dex +19 % frente a escritorio (58.12 % y se esperaba 49 %)"
+    }
+   ],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_equipment",
+     "dev": 0.17,
+     "msg": "Dex +17 % frente a rack de equipos (caja sin medir: bounds del hotspot)"
     },
     {
-     "type": "feet",
+     "type": "walkmask",
      "msg": "pies fuera del azul de la walkmask (5.1, 83.7)"
     }
    ],
-   "info": [],
-   "score": 1.88,
+   "score": 0.38,
    "shot": "capturas/basement/024.png"
   },
   {
@@ -1045,14 +1065,15 @@
      "ref": "hs_left_desk",
      "dev": 0.19,
      "msg": "Dex +19 % frente a escritorio (58.12 % y se esperaba 49 %)"
-    },
+    }
+   ],
+   "info": [
     {
-     "type": "feet",
+     "type": "walkmask",
      "msg": "pies fuera del azul de la walkmask (5.1, 87)"
     }
    ],
-   "info": [],
-   "score": 1.88,
+   "score": 0.38,
    "shot": "capturas/basement/025.png"
   },
   {
@@ -1087,14 +1108,21 @@
      "ref": "hs_left_desk",
      "dev": 0.19,
      "msg": "Dex +19 % frente a escritorio (58.12 % y se esperaba 49 %)"
+    }
+   ],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_equipment",
+     "dev": 0.17,
+     "msg": "Dex +17 % frente a rack de equipos (caja sin medir: bounds del hotspot)"
     },
     {
-     "type": "feet",
+     "type": "walkmask",
      "msg": "pies fuera del azul de la walkmask (33.6, 79.6)"
     }
    ],
-   "info": [],
-   "score": 1.88,
+   "score": 0.38,
    "shot": "capturas/basement/026.png"
   },
   {
@@ -1129,14 +1157,21 @@
      "ref": "hs_left_desk",
      "dev": 0.19,
      "msg": "Dex +19 % frente a escritorio (58.12 % y se esperaba 49 %)"
+    }
+   ],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_equipment",
+     "dev": 0.17,
+     "msg": "Dex +17 % frente a rack de equipos (caja sin medir: bounds del hotspot)"
     },
     {
-     "type": "feet",
+     "type": "walkmask",
      "msg": "pies fuera del azul de la walkmask (33.6, 82.4)"
     }
    ],
-   "info": [],
-   "score": 1.88,
+   "score": 0.38,
    "shot": "capturas/basement/027.png"
   },
   {
@@ -1171,14 +1206,21 @@
      "ref": "hs_left_desk",
      "dev": 0.19,
      "msg": "Dex +19 % frente a escritorio (58.12 % y se esperaba 49 %)"
+    }
+   ],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_equipment",
+     "dev": 0.17,
+     "msg": "Dex +17 % frente a rack de equipos (caja sin medir: bounds del hotspot)"
     },
     {
-     "type": "feet",
+     "type": "walkmask",
      "msg": "pies fuera del azul de la walkmask (33.6, 85.1)"
     }
    ],
-   "info": [],
-   "score": 1.88,
+   "score": 0.38,
    "shot": "capturas/basement/028.png"
   },
   {
@@ -1213,14 +1255,15 @@
      "ref": "hs_left_desk",
      "dev": 0.19,
      "msg": "Dex +19 % frente a escritorio (58.12 % y se esperaba 49 %)"
-    },
+    }
+   ],
+   "info": [
     {
-     "type": "feet",
+     "type": "walkmask",
      "msg": "pies fuera del azul de la walkmask (33.6, 87.9)"
     }
    ],
-   "info": [],
-   "score": 1.88,
+   "score": 0.38,
    "shot": "capturas/basement/029.png"
   },
   {
@@ -1257,14 +1300,21 @@
      "ref": "hs_left_desk",
      "dev": 0.19,
      "msg": "Dex +19 % frente a escritorio (58.12 % y se esperaba 49 %)"
+    }
+   ],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_equipment",
+     "dev": 0.17,
+     "msg": "Dex +17 % frente a rack de equipos (caja sin medir: bounds del hotspot)"
     },
     {
-     "type": "feet",
+     "type": "walkmask",
      "msg": "pies fuera del azul de la walkmask (38.7, 78.7)"
     }
    ],
-   "info": [],
-   "score": 1.88,
+   "score": 0.38,
    "shot": "capturas/basement/030.png"
   },
   {
@@ -1287,26 +1337,33 @@
    "maskOk": false,
    "cover": {},
    "scale": {
-    "ref": "hs_equipment",
-    "expected": 49.58,
+    "ref": "hs_left_desk",
+    "expected": 49,
     "got": 58.12,
-    "dev": 0.17,
-    "baseDy": 0.4
+    "dev": 0.19,
+    "baseDy": 2.1
    },
    "failures": [
     {
      "type": "scale",
+     "ref": "hs_left_desk",
+     "dev": 0.19,
+     "msg": "Dex +19 % frente a escritorio (58.12 % y se esperaba 49 %)"
+    }
+   ],
+   "info": [
+    {
+     "type": "scale-rough",
      "ref": "hs_equipment",
      "dev": 0.17,
-     "msg": "Dex +17 % frente a rack de equipos (58.12 % y se esperaba 49.58 %)"
+     "msg": "Dex +17 % frente a rack de equipos (caja sin medir: bounds del hotspot)"
     },
     {
-     "type": "feet",
+     "type": "walkmask",
      "msg": "pies fuera del azul de la walkmask (6.8, 75.9)"
     }
    ],
-   "info": [],
-   "score": 1.84,
+   "score": 0.38,
    "shot": "capturas/basement/031.png"
   },
   {
@@ -1343,14 +1400,21 @@
      "ref": "hs_left_desk",
      "dev": 0.19,
      "msg": "Dex +19 % frente a escritorio (58.12 % y se esperaba 49 %)"
+    }
+   ],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_equipment",
+     "dev": 0.17,
+     "msg": "Dex +17 % frente a rack de equipos (caja sin medir: bounds del hotspot)"
     },
     {
-     "type": "feet",
+     "type": "walkmask",
      "msg": "pies fuera del azul de la walkmask (38.7, 78.7)"
     }
    ],
-   "info": [],
-   "score": 1.88,
+   "score": 0.38,
    "shot": "capturas/basement/032.png"
   },
   {
@@ -1373,26 +1437,33 @@
    "maskOk": false,
    "cover": {},
    "scale": {
-    "ref": "hs_equipment",
-    "expected": 49.58,
+    "ref": "hs_left_desk",
+    "expected": 49,
     "got": 58.12,
-    "dev": 0.17,
-    "baseDy": 0.4
+    "dev": 0.19,
+    "baseDy": 2.1
    },
    "failures": [
     {
      "type": "scale",
+     "ref": "hs_left_desk",
+     "dev": 0.19,
+     "msg": "Dex +19 % frente a escritorio (58.12 % y se esperaba 49 %)"
+    }
+   ],
+   "info": [
+    {
+     "type": "scale-rough",
      "ref": "hs_equipment",
      "dev": 0.17,
-     "msg": "Dex +17 % frente a rack de equipos (58.12 % y se esperaba 49.58 %)"
+     "msg": "Dex +17 % frente a rack de equipos (caja sin medir: bounds del hotspot)"
     },
     {
-     "type": "feet",
+     "type": "walkmask",
      "msg": "pies fuera del azul de la walkmask (6.8, 75.9)"
     }
    ],
-   "info": [],
-   "score": 1.84,
+   "score": 0.38,
    "shot": "capturas/basement/033.png"
   },
   {
@@ -1429,14 +1500,15 @@
      "ref": "hs_left_desk",
      "dev": 0.19,
      "msg": "Dex +19 % frente a escritorio (58.12 % y se esperaba 49 %)"
-    },
+    }
+   ],
+   "info": [
     {
-     "type": "feet",
+     "type": "walkmask",
      "msg": "pies fuera del azul de la walkmask (79.8, 86.5)"
     }
    ],
-   "info": [],
-   "score": 1.88,
+   "score": 0.38,
    "shot": "capturas/basement/034.png"
   },
   {
@@ -1473,14 +1545,21 @@
      "ref": "hs_left_desk",
      "dev": 0.19,
      "msg": "Dex +19 % frente a escritorio (58.12 % y se esperaba 49 %)"
+    }
+   ],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_equipment",
+     "dev": 0.17,
+     "msg": "Dex +17 % frente a rack de equipos (caja sin medir: bounds del hotspot)"
     },
     {
-     "type": "feet",
+     "type": "walkmask",
      "msg": "pies fuera del azul de la walkmask (38.7, 78.7)"
     }
    ],
-   "info": [],
-   "score": 1.88,
+   "score": 0.38,
    "shot": "capturas/basement/035.png"
   },
   {
@@ -1505,19 +1584,18 @@
     "hs_equipment": 0
    },
    "scale": null,
-   "failures": [
-    {
-     "type": "feet",
-     "msg": "pies fuera del azul de la walkmask (82.3, 90)"
-    }
-   ],
+   "failures": [],
    "info": [
     {
      "type": "scale-noref",
      "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    },
+    {
+     "type": "walkmask",
+     "msg": "pies fuera del azul de la walkmask (82.3, 90)"
     }
    ],
-   "score": 1.5,
+   "score": 0,
    "shot": "capturas/basement/036.png"
   },
   {
@@ -1552,14 +1630,15 @@
      "ref": "hs_left_desk",
      "dev": 0.19,
      "msg": "Dex +19 % frente a escritorio (58.12 % y se esperaba 49 %)"
-    },
+    }
+   ],
+   "info": [
     {
-     "type": "feet",
+     "type": "walkmask",
      "msg": "pies fuera del azul de la walkmask (87.5, 86.5)"
     }
    ],
-   "info": [],
-   "score": 1.88,
+   "score": 0.38,
    "shot": "capturas/basement/037.png"
   },
   {
@@ -1594,14 +1673,15 @@
      "ref": "hs_left_desk",
      "dev": 0.19,
      "msg": "Dex +19 % frente a escritorio (58.12 % y se esperaba 49 %)"
-    },
+    }
+   ],
+   "info": [
     {
-     "type": "feet",
+     "type": "walkmask",
      "msg": "pies fuera del azul de la walkmask (88, 86.5)"
     }
    ],
-   "info": [],
-   "score": 1.88,
+   "score": 0.38,
    "shot": "capturas/basement/038.png"
   },
   {
@@ -1638,14 +1718,21 @@
      "ref": "hs_left_desk",
      "dev": 0.19,
      "msg": "Dex +19 % frente a escritorio (58.12 % y se esperaba 49 %)"
+    }
+   ],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_equipment",
+     "dev": 0.17,
+     "msg": "Dex +17 % frente a rack de equipos (caja sin medir: bounds del hotspot)"
     },
     {
-     "type": "feet",
+     "type": "walkmask",
      "msg": "pies fuera del azul de la walkmask (38.7, 78.7)"
     }
    ],
-   "info": [],
-   "score": 1.88,
+   "score": 0.38,
    "shot": "capturas/basement/039.png"
   },
   {
@@ -1680,14 +1767,15 @@
      "ref": "hs_left_desk",
      "dev": 0.19,
      "msg": "Dex +19 % frente a escritorio (58.12 % y se esperaba 49 %)"
-    },
+    }
+   ],
+   "info": [
     {
-     "type": "feet",
+     "type": "walkmask",
      "msg": "pies fuera del azul de la walkmask (88, 86.5)"
     }
    ],
-   "info": [],
-   "score": 1.88,
+   "score": 0.38,
    "shot": "capturas/basement/040.png"
   },
   {
@@ -1724,14 +1812,21 @@
      "ref": "hs_left_desk",
      "dev": 0.19,
      "msg": "Dex +19 % frente a escritorio (58.12 % y se esperaba 49 %)"
+    }
+   ],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_equipment",
+     "dev": 0.17,
+     "msg": "Dex +17 % frente a rack de equipos (caja sin medir: bounds del hotspot)"
     },
     {
-     "type": "feet",
+     "type": "walkmask",
      "msg": "pies fuera del azul de la walkmask (38.7, 78.7)"
     }
    ],
-   "info": [],
-   "score": 1.88,
+   "score": 0.38,
    "shot": "capturas/basement/041.png"
   },
   {
@@ -1768,14 +1863,15 @@
      "ref": "hs_left_desk",
      "dev": 0.19,
      "msg": "Dex +19 % frente a escritorio (58.12 % y se esperaba 49 %)"
-    },
+    }
+   ],
+   "info": [
     {
-     "type": "feet",
+     "type": "walkmask",
      "msg": "pies fuera del azul de la walkmask (69.8, 86.5)"
     }
    ],
-   "info": [],
-   "score": 1.88,
+   "score": 0.38,
    "shot": "capturas/basement/042.png"
   },
   {
@@ -1812,14 +1908,15 @@
      "ref": "hs_left_desk",
      "dev": 0.19,
      "msg": "Dex +19 % frente a escritorio (58.12 % y se esperaba 49 %)"
-    },
+    }
+   ],
+   "info": [
     {
-     "type": "feet",
+     "type": "walkmask",
      "msg": "pies fuera del azul de la walkmask (57.8, 86.5)"
     }
    ],
-   "info": [],
-   "score": 1.88,
+   "score": 0.38,
    "shot": "capturas/basement/043.png"
   },
   {
@@ -1856,14 +1953,15 @@
      "ref": "hs_left_desk",
      "dev": 0.19,
      "msg": "Dex +19 % frente a escritorio (58.12 % y se esperaba 49 %)"
-    },
+    }
+   ],
+   "info": [
     {
-     "type": "feet",
+     "type": "walkmask",
      "msg": "pies fuera del azul de la walkmask (73.6, 86.5)"
     }
    ],
-   "info": [],
-   "score": 1.88,
+   "score": 0.38,
    "shot": "capturas/basement/044.png"
   },
   {
@@ -1900,14 +1998,15 @@
      "ref": "hs_left_desk",
      "dev": 0.19,
      "msg": "Dex +19 % frente a escritorio (58.12 % y se esperaba 49 %)"
-    },
+    }
+   ],
+   "info": [
     {
-     "type": "feet",
+     "type": "walkmask",
      "msg": "pies fuera del azul de la walkmask (86, 86.5)"
     }
    ],
-   "info": [],
-   "score": 1.88,
+   "score": 0.38,
    "shot": "capturas/basement/045.png"
   },
   {
@@ -1944,14 +2043,15 @@
      "ref": "hs_left_desk",
      "dev": 0.19,
      "msg": "Dex +19 % frente a escritorio (58.12 % y se esperaba 49 %)"
-    },
+    }
+   ],
+   "info": [
     {
-     "type": "feet",
+     "type": "walkmask",
      "msg": "pies fuera del azul de la walkmask (79.8, 86.5)"
     }
    ],
-   "info": [],
-   "score": 1.88,
+   "score": 0.38,
    "shot": "capturas/basement/046.png"
   },
   {
@@ -1988,14 +2088,21 @@
      "ref": "hs_left_desk",
      "dev": 0.19,
      "msg": "Dex +19 % frente a escritorio (58.12 % y se esperaba 49 %)"
+    }
+   ],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_equipment",
+     "dev": 0.17,
+     "msg": "Dex +17 % frente a rack de equipos (caja sin medir: bounds del hotspot)"
     },
     {
-     "type": "feet",
+     "type": "walkmask",
      "msg": "pies fuera del azul de la walkmask (37.7, 78.7)"
     }
    ],
-   "info": [],
-   "score": 1.88,
+   "score": 0.38,
    "shot": "capturas/basement/047.png"
   },
   {
@@ -2032,14 +2139,21 @@
      "ref": "hs_left_desk",
      "dev": 0.19,
      "msg": "Dex +19 % frente a escritorio (58.12 % y se esperaba 49 %)"
+    }
+   ],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_equipment",
+     "dev": 0.17,
+     "msg": "Dex +17 % frente a rack de equipos (caja sin medir: bounds del hotspot)"
     },
     {
-     "type": "feet",
+     "type": "walkmask",
      "msg": "pies fuera del azul de la walkmask (38.7, 78.7)"
     }
    ],
-   "info": [],
-   "score": 1.88,
+   "score": 0.38,
    "shot": "capturas/basement/048.png"
   },
   {
@@ -2076,14 +2190,21 @@
      "ref": "hs_left_desk",
      "dev": 0.19,
      "msg": "Dex +19 % frente a escritorio (58.12 % y se esperaba 49 %)"
+    }
+   ],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_equipment",
+     "dev": 0.17,
+     "msg": "Dex +17 % frente a rack de equipos (caja sin medir: bounds del hotspot)"
     },
     {
-     "type": "feet",
+     "type": "walkmask",
      "msg": "pies fuera del azul de la walkmask (38.7, 78.7)"
     }
    ],
-   "info": [],
-   "score": 1.88,
+   "score": 0.38,
    "shot": "capturas/basement/049.png"
   }
  ]

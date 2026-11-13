@@ -1,0 +1,1084 @@
+{
+ "scene": "epilogue_outside",
+ "scalePolicy": "measure",
+ "summary": {
+  "positions": 37,
+  "failing": 0,
+  "byType": {}
+ },
+ "positions": [
+  {
+   "id": "grid-25.7-82.7",
+   "kind": "grid",
+   "x": 25.7,
+   "y": 82.7,
+   "feet": {
+    "x": 25.7,
+    "y": 82.7
+   },
+   "dexBox": {
+    "x": 24.39,
+    "y": 69.29,
+    "w": 2.63,
+    "h": 13.41
+   },
+   "heightPct": 13.41,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "grid-25.7-85.8",
+   "kind": "grid",
+   "x": 25.7,
+   "y": 85.8,
+   "feet": {
+    "x": 25.7,
+    "y": 85.8
+   },
+   "dexBox": {
+    "x": 24.39,
+    "y": 72.39,
+    "w": 2.63,
+    "h": 13.41
+   },
+   "heightPct": 13.41,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "grid-25.7-89",
+   "kind": "grid",
+   "x": 25.7,
+   "y": 89,
+   "feet": {
+    "x": 25.7,
+    "y": 89
+   },
+   "dexBox": {
+    "x": 24.39,
+    "y": 75.59,
+    "w": 2.63,
+    "h": 13.41
+   },
+   "heightPct": 13.41,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "grid-25.7-92.1",
+   "kind": "grid",
+   "x": 25.7,
+   "y": 92.1,
+   "feet": {
+    "x": 25.7,
+    "y": 92.1
+   },
+   "dexBox": {
+    "x": 24.39,
+    "y": 78.69,
+    "w": 2.63,
+    "h": 13.41
+   },
+   "heightPct": 13.41,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "grid-25.7-95.3",
+   "kind": "grid",
+   "x": 25.7,
+   "y": 95.3,
+   "feet": {
+    "x": 25.7,
+    "y": 95.3
+   },
+   "dexBox": {
+    "x": 24.39,
+    "y": 81.89,
+    "w": 2.63,
+    "h": 13.41
+   },
+   "heightPct": 13.41,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "grid-25.7-98.4",
+   "kind": "grid",
+   "x": 25.7,
+   "y": 98.4,
+   "feet": {
+    "x": 25.7,
+    "y": 98.4
+   },
+   "dexBox": {
+    "x": 24.39,
+    "y": 84.99,
+    "w": 2.63,
+    "h": 13.41
+   },
+   "heightPct": 13.41,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "grid-33.9-82.7",
+   "kind": "grid",
+   "x": 33.9,
+   "y": 82.7,
+   "feet": {
+    "x": 33.9,
+    "y": 82.7
+   },
+   "dexBox": {
+    "x": 32.59,
+    "y": 69.29,
+    "w": 2.63,
+    "h": 13.41
+   },
+   "heightPct": 13.41,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "grid-33.9-85.8",
+   "kind": "grid",
+   "x": 33.9,
+   "y": 85.8,
+   "feet": {
+    "x": 33.9,
+    "y": 85.8
+   },
+   "dexBox": {
+    "x": 32.59,
+    "y": 72.39,
+    "w": 2.63,
+    "h": 13.41
+   },
+   "heightPct": 13.41,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "grid-33.9-89",
+   "kind": "grid",
+   "x": 33.9,
+   "y": 89,
+   "feet": {
+    "x": 33.9,
+    "y": 89
+   },
+   "dexBox": {
+    "x": 32.59,
+    "y": 75.59,
+    "w": 2.63,
+    "h": 13.41
+   },
+   "heightPct": 13.41,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "grid-33.9-92.1",
+   "kind": "grid",
+   "x": 33.9,
+   "y": 92.1,
+   "feet": {
+    "x": 33.9,
+    "y": 92.1
+   },
+   "dexBox": {
+    "x": 32.59,
+    "y": 78.69,
+    "w": 2.63,
+    "h": 13.41
+   },
+   "heightPct": 13.41,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "grid-33.9-95.3",
+   "kind": "grid",
+   "x": 33.9,
+   "y": 95.3,
+   "feet": {
+    "x": 33.9,
+    "y": 95.3
+   },
+   "dexBox": {
+    "x": 32.59,
+    "y": 81.89,
+    "w": 2.63,
+    "h": 13.41
+   },
+   "heightPct": 13.41,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "grid-33.9-98.4",
+   "kind": "grid",
+   "x": 33.9,
+   "y": 98.4,
+   "feet": {
+    "x": 33.9,
+    "y": 98.4
+   },
+   "dexBox": {
+    "x": 32.59,
+    "y": 84.99,
+    "w": 2.63,
+    "h": 13.41
+   },
+   "heightPct": 13.41,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "grid-42.2-82.7",
+   "kind": "grid",
+   "x": 42.2,
+   "y": 82.7,
+   "feet": {
+    "x": 42.2,
+    "y": 82.7
+   },
+   "dexBox": {
+    "x": 40.89,
+    "y": 69.29,
+    "w": 2.63,
+    "h": 13.41
+   },
+   "heightPct": 13.41,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "grid-42.2-85.8",
+   "kind": "grid",
+   "x": 42.2,
+   "y": 85.8,
+   "feet": {
+    "x": 42.2,
+    "y": 85.8
+   },
+   "dexBox": {
+    "x": 40.89,
+    "y": 72.39,
+    "w": 2.63,
+    "h": 13.41
+   },
+   "heightPct": 13.41,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "grid-42.2-89",
+   "kind": "grid",
+   "x": 42.2,
+   "y": 89,
+   "feet": {
+    "x": 42.2,
+    "y": 89
+   },
+   "dexBox": {
+    "x": 40.89,
+    "y": 75.59,
+    "w": 2.63,
+    "h": 13.41
+   },
+   "heightPct": 13.41,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "grid-42.2-92.1",
+   "kind": "grid",
+   "x": 42.2,
+   "y": 92.1,
+   "feet": {
+    "x": 42.2,
+    "y": 92.1
+   },
+   "dexBox": {
+    "x": 40.89,
+    "y": 78.69,
+    "w": 2.63,
+    "h": 13.41
+   },
+   "heightPct": 13.41,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "grid-42.2-95.3",
+   "kind": "grid",
+   "x": 42.2,
+   "y": 95.3,
+   "feet": {
+    "x": 42.2,
+    "y": 95.3
+   },
+   "dexBox": {
+    "x": 40.89,
+    "y": 81.89,
+    "w": 2.63,
+    "h": 13.41
+   },
+   "heightPct": 13.41,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "grid-42.2-98.4",
+   "kind": "grid",
+   "x": 42.2,
+   "y": 98.4,
+   "feet": {
+    "x": 42.2,
+    "y": 98.4
+   },
+   "dexBox": {
+    "x": 40.89,
+    "y": 84.99,
+    "w": 2.63,
+    "h": 13.41
+   },
+   "heightPct": 13.41,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "grid-50.4-82.7",
+   "kind": "grid",
+   "x": 50.4,
+   "y": 82.7,
+   "feet": {
+    "x": 50.4,
+    "y": 82.7
+   },
+   "dexBox": {
+    "x": 49.09,
+    "y": 69.29,
+    "w": 2.63,
+    "h": 13.41
+   },
+   "heightPct": 13.41,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "grid-50.4-85.8",
+   "kind": "grid",
+   "x": 50.4,
+   "y": 85.8,
+   "feet": {
+    "x": 50.4,
+    "y": 85.8
+   },
+   "dexBox": {
+    "x": 49.09,
+    "y": 72.39,
+    "w": 2.63,
+    "h": 13.41
+   },
+   "heightPct": 13.41,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "grid-50.4-89",
+   "kind": "grid",
+   "x": 50.4,
+   "y": 89,
+   "feet": {
+    "x": 50.4,
+    "y": 89
+   },
+   "dexBox": {
+    "x": 49.09,
+    "y": 75.59,
+    "w": 2.63,
+    "h": 13.41
+   },
+   "heightPct": 13.41,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "grid-50.4-92.1",
+   "kind": "grid",
+   "x": 50.4,
+   "y": 92.1,
+   "feet": {
+    "x": 50.4,
+    "y": 92.1
+   },
+   "dexBox": {
+    "x": 49.09,
+    "y": 78.69,
+    "w": 2.63,
+    "h": 13.41
+   },
+   "heightPct": 13.41,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "grid-50.4-95.3",
+   "kind": "grid",
+   "x": 50.4,
+   "y": 95.3,
+   "feet": {
+    "x": 50.4,
+    "y": 95.3
+   },
+   "dexBox": {
+    "x": 49.09,
+    "y": 81.89,
+    "w": 2.63,
+    "h": 13.41
+   },
+   "heightPct": 13.41,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "grid-50.4-98.4",
+   "kind": "grid",
+   "x": 50.4,
+   "y": 98.4,
+   "feet": {
+    "x": 50.4,
+    "y": 98.4
+   },
+   "dexBox": {
+    "x": 49.09,
+    "y": 84.99,
+    "w": 2.63,
+    "h": 13.41
+   },
+   "heightPct": 13.41,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "hs_sunrise",
+   "kind": "arrival",
+   "x": 28,
+   "y": 81.6,
+   "feet": {
+    "x": 28,
+    "y": 81.6
+   },
+   "dexBox": {
+    "x": 26.69,
+    "y": 68.19,
+    "w": 2.63,
+    "h": 13.41
+   },
+   "heightPct": 13.41,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "hs_clinic_door",
+   "kind": "arrival",
+   "x": 54,
+   "y": 81.6,
+   "feet": {
+    "x": 54,
+    "y": 81.6
+   },
+   "dexBox": {
+    "x": 52.69,
+    "y": 68.19,
+    "w": 2.63,
+    "h": 13.41
+   },
+   "heightPct": 13.41,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "hs_mountain_view",
+   "kind": "arrival",
+   "x": 28,
+   "y": 81.6,
+   "feet": {
+    "x": 28,
+    "y": 81.6
+   },
+   "dexBox": {
+    "x": 26.69,
+    "y": 68.19,
+    "w": 2.63,
+    "h": 13.41
+   },
+   "heightPct": 13.41,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "hs_path_forward",
+   "kind": "arrival",
+   "x": 22.1,
+   "y": 99.5,
+   "feet": {
+    "x": 22.1,
+    "y": 99.5
+   },
+   "dexBox": {
+    "x": 20.79,
+    "y": 86.09,
+    "w": 2.63,
+    "h": 13.41
+   },
+   "heightPct": 13.41,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "hs_now_hiring_sign",
+   "kind": "arrival",
+   "x": 54,
+   "y": 81.6,
+   "feet": {
+    "x": 54,
+    "y": 81.6
+   },
+   "dexBox": {
+    "x": 52.69,
+    "y": 68.19,
+    "w": 2.63,
+    "h": 13.41
+   },
+   "heightPct": 13.41,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "hs_birds",
+   "kind": "arrival",
+   "x": 48,
+   "y": 81.6,
+   "feet": {
+    "x": 48,
+    "y": 81.6
+   },
+   "dexBox": {
+    "x": 46.69,
+    "y": 68.19,
+    "w": 2.63,
+    "h": 13.41
+   },
+   "heightPct": 13.41,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "hs_pine_trees",
+   "kind": "arrival",
+   "x": 22.1,
+   "y": 90,
+   "feet": {
+    "x": 22.1,
+    "y": 90
+   },
+   "dexBox": {
+    "x": 20.79,
+    "y": 76.59,
+    "w": 2.63,
+    "h": 13.41
+   },
+   "heightPct": 13.41,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "hs_clinic_door:izq",
+   "kind": "ref",
+   "x": 54,
+   "y": 81.6,
+   "feet": {
+    "x": 54,
+    "y": 81.6
+   },
+   "dexBox": {
+    "x": 52.69,
+    "y": 68.19,
+    "w": 2.63,
+    "h": 13.41
+   },
+   "heightPct": 13.41,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "hs_clinic_door:der",
+   "kind": "ref",
+   "x": 54,
+   "y": 81.6,
+   "feet": {
+    "x": 54,
+    "y": 81.6
+   },
+   "dexBox": {
+    "x": 52.69,
+    "y": 68.19,
+    "w": 2.63,
+    "h": 13.41
+   },
+   "heightPct": 13.41,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "hs_clinic_door:detrás",
+   "kind": "ref",
+   "x": 54,
+   "y": 81.6,
+   "feet": {
+    "x": 54,
+    "y": 81.6
+   },
+   "dexBox": {
+    "x": 52.69,
+    "y": 68.19,
+    "w": 2.63,
+    "h": 13.41
+   },
+   "heightPct": 13.41,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "hs_pine_trees:izq",
+   "kind": "ref",
+   "x": 22.1,
+   "y": 90,
+   "feet": {
+    "x": 22.1,
+    "y": 90
+   },
+   "dexBox": {
+    "x": 20.79,
+    "y": 76.59,
+    "w": 2.63,
+    "h": 13.41
+   },
+   "heightPct": 13.41,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "hs_pine_trees:der",
+   "kind": "ref",
+   "x": 22.1,
+   "y": 90,
+   "feet": {
+    "x": 22.1,
+    "y": 90
+   },
+   "dexBox": {
+    "x": 20.79,
+    "y": 76.59,
+    "w": 2.63,
+    "h": 13.41
+   },
+   "heightPct": 13.41,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "hs_pine_trees:detrás",
+   "kind": "ref",
+   "x": 22.1,
+   "y": 89,
+   "feet": {
+    "x": 22.1,
+    "y": 89
+   },
+   "dexBox": {
+    "x": 20.79,
+    "y": 75.59,
+    "w": 2.63,
+    "h": 13.41
+   },
+   "heightPct": 13.41,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  }
+ ]
+}

@@ -1,0 +1,1751 @@
+{
+ "scene": "upstairs",
+ "scalePolicy": "measure",
+ "summary": {
+  "positions": 42,
+  "failing": 0,
+  "byType": {}
+ },
+ "positions": [
+  {
+   "id": "grid-4-96.6",
+   "kind": "grid",
+   "x": 4,
+   "y": 96.6,
+   "feet": {
+    "x": 4,
+    "y": 96.6
+   },
+   "dexBox": {
+    "x": 0.51,
+    "y": 34.01,
+    "w": 6.98,
+    "h": 62.59
+   },
+   "heightPct": 62.59,
+   "walkable": true,
+   "maskOk": false,
+   "cover": {},
+   "scale": {
+    "ref": "hs_desk",
+    "expected": 63,
+    "got": 62.59,
+    "dev": -0.01,
+    "baseDy": 8.6
+   },
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_boxes",
+     "dev": 0.48,
+     "msg": "Dex +48 % frente a cajas apiladas (caja sin medir: bounds del hotspot)"
+    },
+    {
+     "type": "walkmask",
+     "msg": "pies fuera del azul de la walkmask (4, 96.6)"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/upstairs/000.png"
+  },
+  {
+   "id": "grid-4-98.9",
+   "kind": "grid",
+   "x": 4,
+   "y": 98.9,
+   "feet": {
+    "x": 4,
+    "y": 98.9
+   },
+   "dexBox": {
+    "x": 0.51,
+    "y": 36.31,
+    "w": 6.98,
+    "h": 62.59
+   },
+   "heightPct": 62.59,
+   "walkable": true,
+   "maskOk": false,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_boxes",
+     "dev": 0.48,
+     "msg": "Dex +48 % frente a cajas apiladas (caja sin medir: bounds del hotspot)"
+    },
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    },
+    {
+     "type": "walkmask",
+     "msg": "pies fuera del azul de la walkmask (4, 98.9)"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/upstairs/001.png"
+  },
+  {
+   "id": "grid-12-96.6",
+   "kind": "grid",
+   "x": 12,
+   "y": 96.6,
+   "feet": {
+    "x": 12,
+    "y": 96.6
+   },
+   "dexBox": {
+    "x": 8.51,
+    "y": 34.01,
+    "w": 6.98,
+    "h": 62.59
+   },
+   "heightPct": 62.59,
+   "walkable": true,
+   "maskOk": true,
+   "cover": {
+    "hs_computer": 0
+   },
+   "scale": {
+    "ref": "hs_desk",
+    "expected": 63,
+    "got": 62.59,
+    "dev": -0.01,
+    "baseDy": 8.6
+   },
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_boxes",
+     "dev": 0.48,
+     "msg": "Dex +48 % frente a cajas apiladas (caja sin medir: bounds del hotspot)"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/upstairs/002.png"
+  },
+  {
+   "id": "grid-12-98.9",
+   "kind": "grid",
+   "x": 12,
+   "y": 98.9,
+   "feet": {
+    "x": 12,
+    "y": 98.9
+   },
+   "dexBox": {
+    "x": 8.51,
+    "y": 36.31,
+    "w": 6.98,
+    "h": 62.59
+   },
+   "heightPct": 62.59,
+   "walkable": true,
+   "maskOk": true,
+   "cover": {
+    "hs_computer": 0
+   },
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_boxes",
+     "dev": 0.48,
+     "msg": "Dex +48 % frente a cajas apiladas (caja sin medir: bounds del hotspot)"
+    },
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/upstairs/003.png"
+  },
+  {
+   "id": "grid-20.1-96.6",
+   "kind": "grid",
+   "x": 20.1,
+   "y": 96.6,
+   "feet": {
+    "x": 20.1,
+    "y": 96.6
+   },
+   "dexBox": {
+    "x": 16.61,
+    "y": 34.01,
+    "w": 6.98,
+    "h": 62.59
+   },
+   "heightPct": 62.59,
+   "walkable": true,
+   "maskOk": true,
+   "cover": {
+    "hs_computer": 0
+   },
+   "scale": {
+    "ref": "hs_desk",
+    "expected": 63,
+    "got": 62.59,
+    "dev": -0.01,
+    "baseDy": 8.6
+   },
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_boxes",
+     "dev": 0.48,
+     "msg": "Dex +48 % frente a cajas apiladas (caja sin medir: bounds del hotspot)"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/upstairs/004.png"
+  },
+  {
+   "id": "grid-20.1-98.9",
+   "kind": "grid",
+   "x": 20.1,
+   "y": 98.9,
+   "feet": {
+    "x": 20.1,
+    "y": 98.9
+   },
+   "dexBox": {
+    "x": 16.61,
+    "y": 36.31,
+    "w": 6.98,
+    "h": 62.59
+   },
+   "heightPct": 62.59,
+   "walkable": true,
+   "maskOk": true,
+   "cover": {
+    "hs_computer": 0
+   },
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_boxes",
+     "dev": 0.48,
+     "msg": "Dex +48 % frente a cajas apiladas (caja sin medir: bounds del hotspot)"
+    },
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/upstairs/005.png"
+  },
+  {
+   "id": "grid-28.1-96.6",
+   "kind": "grid",
+   "x": 28.1,
+   "y": 96.6,
+   "feet": {
+    "x": 28.1,
+    "y": 96.6
+   },
+   "dexBox": {
+    "x": 24.61,
+    "y": 34.01,
+    "w": 6.98,
+    "h": 62.59
+   },
+   "heightPct": 62.59,
+   "walkable": true,
+   "maskOk": true,
+   "cover": {},
+   "scale": {
+    "ref": "hs_desk",
+    "expected": 63,
+    "got": 62.59,
+    "dev": -0.01,
+    "baseDy": 8.6
+   },
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_boxes",
+     "dev": 0.48,
+     "msg": "Dex +48 % frente a cajas apiladas (caja sin medir: bounds del hotspot)"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/upstairs/006.png"
+  },
+  {
+   "id": "grid-28.1-98.9",
+   "kind": "grid",
+   "x": 28.1,
+   "y": 98.9,
+   "feet": {
+    "x": 28.1,
+    "y": 98.9
+   },
+   "dexBox": {
+    "x": 24.61,
+    "y": 36.31,
+    "w": 6.98,
+    "h": 62.59
+   },
+   "heightPct": 62.59,
+   "walkable": true,
+   "maskOk": true,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_boxes",
+     "dev": 0.48,
+     "msg": "Dex +48 % frente a cajas apiladas (caja sin medir: bounds del hotspot)"
+    },
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/upstairs/007.png"
+  },
+  {
+   "id": "grid-36.1-96.6",
+   "kind": "grid",
+   "x": 36.1,
+   "y": 96.6,
+   "feet": {
+    "x": 36.1,
+    "y": 96.6
+   },
+   "dexBox": {
+    "x": 32.61,
+    "y": 34.01,
+    "w": 6.98,
+    "h": 62.59
+   },
+   "heightPct": 62.59,
+   "walkable": true,
+   "maskOk": false,
+   "cover": {},
+   "scale": {
+    "ref": "hs_desk",
+    "expected": 63,
+    "got": 62.59,
+    "dev": -0.01,
+    "baseDy": 8.6
+   },
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_boxes",
+     "dev": 0.48,
+     "msg": "Dex +48 % frente a cajas apiladas (caja sin medir: bounds del hotspot)"
+    },
+    {
+     "type": "walkmask",
+     "msg": "pies fuera del azul de la walkmask (36.1, 96.6)"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/upstairs/008.png"
+  },
+  {
+   "id": "grid-36.1-98.9",
+   "kind": "grid",
+   "x": 36.1,
+   "y": 98.9,
+   "feet": {
+    "x": 36.1,
+    "y": 98.9
+   },
+   "dexBox": {
+    "x": 32.61,
+    "y": 36.31,
+    "w": 6.98,
+    "h": 62.59
+   },
+   "heightPct": 62.59,
+   "walkable": true,
+   "maskOk": false,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_boxes",
+     "dev": 0.48,
+     "msg": "Dex +48 % frente a cajas apiladas (caja sin medir: bounds del hotspot)"
+    },
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    },
+    {
+     "type": "walkmask",
+     "msg": "pies fuera del azul de la walkmask (36.1, 98.9)"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/upstairs/009.png"
+  },
+  {
+   "id": "grid-44.1-96.6",
+   "kind": "grid",
+   "x": 44.1,
+   "y": 96.6,
+   "feet": {
+    "x": 44.1,
+    "y": 96.6
+   },
+   "dexBox": {
+    "x": 40.61,
+    "y": 34.01,
+    "w": 6.98,
+    "h": 62.59
+   },
+   "heightPct": 62.59,
+   "walkable": true,
+   "maskOk": false,
+   "cover": {
+    "hs_desk": 0
+   },
+   "scale": {
+    "ref": "hs_desk",
+    "expected": 63,
+    "got": 62.59,
+    "dev": -0.01,
+    "baseDy": 8.6
+   },
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_boxes",
+     "dev": 0.48,
+     "msg": "Dex +48 % frente a cajas apiladas (caja sin medir: bounds del hotspot)"
+    },
+    {
+     "type": "walkmask",
+     "msg": "pies fuera del azul de la walkmask (44.1, 96.6)"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/upstairs/010.png"
+  },
+  {
+   "id": "grid-44.1-98.9",
+   "kind": "grid",
+   "x": 44.1,
+   "y": 98.9,
+   "feet": {
+    "x": 44.1,
+    "y": 98.9
+   },
+   "dexBox": {
+    "x": 40.61,
+    "y": 36.31,
+    "w": 6.98,
+    "h": 62.59
+   },
+   "heightPct": 62.59,
+   "walkable": true,
+   "maskOk": false,
+   "cover": {
+    "hs_desk": 0
+   },
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_boxes",
+     "dev": 0.48,
+     "msg": "Dex +48 % frente a cajas apiladas (caja sin medir: bounds del hotspot)"
+    },
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    },
+    {
+     "type": "walkmask",
+     "msg": "pies fuera del azul de la walkmask (44.1, 98.9)"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/upstairs/011.png"
+  },
+  {
+   "id": "grid-52.1-96.6",
+   "kind": "grid",
+   "x": 52.1,
+   "y": 96.6,
+   "feet": {
+    "x": 52.1,
+    "y": 96.6
+   },
+   "dexBox": {
+    "x": 48.61,
+    "y": 34.01,
+    "w": 6.98,
+    "h": 62.59
+   },
+   "heightPct": 62.59,
+   "walkable": true,
+   "maskOk": false,
+   "cover": {
+    "hs_desk": 0.03
+   },
+   "scale": {
+    "ref": "hs_desk",
+    "expected": 63,
+    "got": 62.59,
+    "dev": -0.01,
+    "baseDy": 8.6
+   },
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_boxes",
+     "dev": 0.48,
+     "msg": "Dex +48 % frente a cajas apiladas (caja sin medir: bounds del hotspot)"
+    },
+    {
+     "type": "walkmask",
+     "msg": "pies fuera del azul de la walkmask (52.1, 96.6)"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/upstairs/012.png"
+  },
+  {
+   "id": "grid-52.1-98.9",
+   "kind": "grid",
+   "x": 52.1,
+   "y": 98.9,
+   "feet": {
+    "x": 52.1,
+    "y": 98.9
+   },
+   "dexBox": {
+    "x": 48.61,
+    "y": 36.31,
+    "w": 6.98,
+    "h": 62.59
+   },
+   "heightPct": 62.59,
+   "walkable": true,
+   "maskOk": false,
+   "cover": {
+    "hs_desk": 0.03
+   },
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_boxes",
+     "dev": 0.48,
+     "msg": "Dex +48 % frente a cajas apiladas (caja sin medir: bounds del hotspot)"
+    },
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    },
+    {
+     "type": "walkmask",
+     "msg": "pies fuera del azul de la walkmask (52.1, 98.9)"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/upstairs/013.png"
+  },
+  {
+   "id": "grid-60.2-96.6",
+   "kind": "grid",
+   "x": 60.2,
+   "y": 96.6,
+   "feet": {
+    "x": 60.2,
+    "y": 96.6
+   },
+   "dexBox": {
+    "x": 56.71,
+    "y": 34.01,
+    "w": 6.98,
+    "h": 62.59
+   },
+   "heightPct": 62.59,
+   "walkable": true,
+   "maskOk": true,
+   "cover": {
+    "hs_desk": 0
+   },
+   "scale": {
+    "ref": "hs_desk",
+    "expected": 63,
+    "got": 62.59,
+    "dev": -0.01,
+    "baseDy": 8.6
+   },
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_boxes",
+     "dev": 0.48,
+     "msg": "Dex +48 % frente a cajas apiladas (caja sin medir: bounds del hotspot)"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/upstairs/014.png"
+  },
+  {
+   "id": "grid-60.2-98.9",
+   "kind": "grid",
+   "x": 60.2,
+   "y": 98.9,
+   "feet": {
+    "x": 60.2,
+    "y": 98.9
+   },
+   "dexBox": {
+    "x": 56.71,
+    "y": 36.31,
+    "w": 6.98,
+    "h": 62.59
+   },
+   "heightPct": 62.59,
+   "walkable": true,
+   "maskOk": true,
+   "cover": {
+    "hs_desk": 0
+   },
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_boxes",
+     "dev": 0.48,
+     "msg": "Dex +48 % frente a cajas apiladas (caja sin medir: bounds del hotspot)"
+    },
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/upstairs/015.png"
+  },
+  {
+   "id": "grid-68.2-96.6",
+   "kind": "grid",
+   "x": 68.2,
+   "y": 96.6,
+   "feet": {
+    "x": 68.2,
+    "y": 96.6
+   },
+   "dexBox": {
+    "x": 64.71,
+    "y": 34.01,
+    "w": 6.98,
+    "h": 62.59
+   },
+   "heightPct": 62.59,
+   "walkable": true,
+   "maskOk": true,
+   "cover": {},
+   "scale": {
+    "ref": "hs_desk",
+    "expected": 63,
+    "got": 62.59,
+    "dev": -0.01,
+    "baseDy": 8.6
+   },
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_boxes",
+     "dev": 0.48,
+     "msg": "Dex +48 % frente a cajas apiladas (caja sin medir: bounds del hotspot)"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/upstairs/016.png"
+  },
+  {
+   "id": "grid-68.2-98.9",
+   "kind": "grid",
+   "x": 68.2,
+   "y": 98.9,
+   "feet": {
+    "x": 68.2,
+    "y": 98.9
+   },
+   "dexBox": {
+    "x": 64.71,
+    "y": 36.31,
+    "w": 6.98,
+    "h": 62.59
+   },
+   "heightPct": 62.59,
+   "walkable": true,
+   "maskOk": true,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_boxes",
+     "dev": 0.48,
+     "msg": "Dex +48 % frente a cajas apiladas (caja sin medir: bounds del hotspot)"
+    },
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/upstairs/017.png"
+  },
+  {
+   "id": "grid-76.2-96.6",
+   "kind": "grid",
+   "x": 76.2,
+   "y": 96.6,
+   "feet": {
+    "x": 76.2,
+    "y": 96.6
+   },
+   "dexBox": {
+    "x": 72.71,
+    "y": 34.01,
+    "w": 6.98,
+    "h": 62.59
+   },
+   "heightPct": 62.59,
+   "walkable": true,
+   "maskOk": false,
+   "cover": {
+    "hs_armchair": 0
+   },
+   "scale": {
+    "ref": "hs_desk",
+    "expected": 63,
+    "got": 62.59,
+    "dev": -0.01,
+    "baseDy": 8.6
+   },
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_boxes",
+     "dev": 0.48,
+     "msg": "Dex +48 % frente a cajas apiladas (caja sin medir: bounds del hotspot)"
+    },
+    {
+     "type": "walkmask",
+     "msg": "pies fuera del azul de la walkmask (76.2, 96.6)"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/upstairs/018.png"
+  },
+  {
+   "id": "grid-76.2-98.9",
+   "kind": "grid",
+   "x": 76.2,
+   "y": 98.9,
+   "feet": {
+    "x": 76.2,
+    "y": 98.9
+   },
+   "dexBox": {
+    "x": 72.71,
+    "y": 36.31,
+    "w": 6.98,
+    "h": 62.59
+   },
+   "heightPct": 62.59,
+   "walkable": true,
+   "maskOk": false,
+   "cover": {
+    "hs_armchair": 0
+   },
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_boxes",
+     "dev": 0.48,
+     "msg": "Dex +48 % frente a cajas apiladas (caja sin medir: bounds del hotspot)"
+    },
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    },
+    {
+     "type": "walkmask",
+     "msg": "pies fuera del azul de la walkmask (76.2, 98.9)"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/upstairs/019.png"
+  },
+  {
+   "id": "hs_desk",
+   "kind": "arrival",
+   "x": 52.2,
+   "y": 95.9,
+   "feet": {
+    "x": 52.2,
+    "y": 95.9
+   },
+   "dexBox": {
+    "x": 48.71,
+    "y": 33.31,
+    "w": 6.98,
+    "h": 62.59
+   },
+   "heightPct": 62.59,
+   "walkable": true,
+   "maskOk": false,
+   "cover": {
+    "hs_desk": 0.03
+   },
+   "scale": {
+    "ref": "hs_desk",
+    "expected": 63,
+    "got": 62.59,
+    "dev": -0.01,
+    "baseDy": 7.9
+   },
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_boxes",
+     "dev": 0.48,
+     "msg": "Dex +48 % frente a cajas apiladas (caja sin medir: bounds del hotspot)"
+    },
+    {
+     "type": "walkmask",
+     "msg": "pies fuera del azul de la walkmask (52.2, 95.9)"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/upstairs/020.png"
+  },
+  {
+   "id": "hs_boxes",
+   "kind": "arrival",
+   "x": 79.7,
+   "y": 95.9,
+   "feet": {
+    "x": 79.7,
+    "y": 95.9
+   },
+   "dexBox": {
+    "x": 76.21,
+    "y": 33.31,
+    "w": 6.98,
+    "h": 62.59
+   },
+   "heightPct": 62.59,
+   "walkable": true,
+   "maskOk": false,
+   "cover": {
+    "hs_armchair": 0
+   },
+   "scale": {
+    "ref": "hs_desk",
+    "expected": 63,
+    "got": 62.59,
+    "dev": -0.01,
+    "baseDy": 7.9
+   },
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_boxes",
+     "dev": 0.48,
+     "msg": "Dex +48 % frente a cajas apiladas (caja sin medir: bounds del hotspot)"
+    },
+    {
+     "type": "walkmask",
+     "msg": "pies fuera del azul de la walkmask (79.7, 95.9)"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/upstairs/021.png"
+  },
+  {
+   "id": "hs_computer",
+   "kind": "arrival",
+   "x": 16.6,
+   "y": 95.9,
+   "feet": {
+    "x": 16.6,
+    "y": 95.9
+   },
+   "dexBox": {
+    "x": 13.11,
+    "y": 33.31,
+    "w": 6.98,
+    "h": 62.59
+   },
+   "heightPct": 62.59,
+   "walkable": true,
+   "maskOk": true,
+   "cover": {
+    "hs_computer": 0
+   },
+   "scale": {
+    "ref": "hs_desk",
+    "expected": 63,
+    "got": 62.59,
+    "dev": -0.01,
+    "baseDy": 7.9
+   },
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_boxes",
+     "dev": 0.48,
+     "msg": "Dex +48 % frente a cajas apiladas (caja sin medir: bounds del hotspot)"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/upstairs/022.png"
+  },
+  {
+   "id": "hs_armchair",
+   "kind": "arrival",
+   "x": 79.7,
+   "y": 95.9,
+   "feet": {
+    "x": 79.7,
+    "y": 95.9
+   },
+   "dexBox": {
+    "x": 76.21,
+    "y": 33.31,
+    "w": 6.98,
+    "h": 62.59
+   },
+   "heightPct": 62.59,
+   "walkable": true,
+   "maskOk": false,
+   "cover": {
+    "hs_armchair": 0
+   },
+   "scale": {
+    "ref": "hs_desk",
+    "expected": 63,
+    "got": 62.59,
+    "dev": -0.01,
+    "baseDy": 7.9
+   },
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_boxes",
+     "dev": 0.48,
+     "msg": "Dex +48 % frente a cajas apiladas (caja sin medir: bounds del hotspot)"
+    },
+    {
+     "type": "walkmask",
+     "msg": "pies fuera del azul de la walkmask (79.7, 95.9)"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/upstairs/023.png"
+  },
+  {
+   "id": "hs_roof_hatch",
+   "kind": "arrival",
+   "x": 31.5,
+   "y": 95.9,
+   "feet": {
+    "x": 31.5,
+    "y": 95.9
+   },
+   "dexBox": {
+    "x": 28.01,
+    "y": 33.31,
+    "w": 6.98,
+    "h": 62.59
+   },
+   "heightPct": 62.59,
+   "walkable": true,
+   "maskOk": true,
+   "cover": {},
+   "scale": {
+    "ref": "hs_desk",
+    "expected": 63,
+    "got": 62.59,
+    "dev": -0.01,
+    "baseDy": 7.9
+   },
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_boxes",
+     "dev": 0.48,
+     "msg": "Dex +48 % frente a cajas apiladas (caja sin medir: bounds del hotspot)"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/upstairs/024.png"
+  },
+  {
+   "id": "hs_desk_lamp",
+   "kind": "arrival",
+   "x": 46.5,
+   "y": 95.9,
+   "feet": {
+    "x": 46.5,
+    "y": 95.9
+   },
+   "dexBox": {
+    "x": 43.01,
+    "y": 33.31,
+    "w": 6.98,
+    "h": 62.59
+   },
+   "heightPct": 62.59,
+   "walkable": true,
+   "maskOk": false,
+   "cover": {
+    "hs_desk": 0
+   },
+   "scale": {
+    "ref": "hs_desk",
+    "expected": 63,
+    "got": 62.59,
+    "dev": -0.01,
+    "baseDy": 7.9
+   },
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_boxes",
+     "dev": 0.48,
+     "msg": "Dex +48 % frente a cajas apiladas (caja sin medir: bounds del hotspot)"
+    },
+    {
+     "type": "walkmask",
+     "msg": "pies fuera del azul de la walkmask (46.5, 95.9)"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/upstairs/025.png"
+  },
+  {
+   "id": "hs_pizza_box",
+   "kind": "arrival",
+   "x": 38.8,
+   "y": 95.9,
+   "feet": {
+    "x": 38.8,
+    "y": 95.9
+   },
+   "dexBox": {
+    "x": 35.31,
+    "y": 33.31,
+    "w": 6.98,
+    "h": 62.59
+   },
+   "heightPct": 62.59,
+   "walkable": true,
+   "maskOk": false,
+   "cover": {
+    "hs_desk": 0
+   },
+   "scale": {
+    "ref": "hs_desk",
+    "expected": 63,
+    "got": 62.59,
+    "dev": -0.01,
+    "baseDy": 7.9
+   },
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_boxes",
+     "dev": 0.48,
+     "msg": "Dex +48 % frente a cajas apiladas (caja sin medir: bounds del hotspot)"
+    },
+    {
+     "type": "walkmask",
+     "msg": "pies fuera del azul de la walkmask (38.8, 95.9)"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/upstairs/026.png"
+  },
+  {
+   "id": "hs_energy_drink",
+   "kind": "arrival",
+   "x": 45.8,
+   "y": 95.9,
+   "feet": {
+    "x": 45.8,
+    "y": 95.9
+   },
+   "dexBox": {
+    "x": 42.31,
+    "y": 33.31,
+    "w": 6.98,
+    "h": 62.59
+   },
+   "heightPct": 62.59,
+   "walkable": true,
+   "maskOk": false,
+   "cover": {
+    "hs_desk": 0
+   },
+   "scale": {
+    "ref": "hs_desk",
+    "expected": 63,
+    "got": 62.59,
+    "dev": -0.01,
+    "baseDy": 7.9
+   },
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_boxes",
+     "dev": 0.48,
+     "msg": "Dex +48 % frente a cajas apiladas (caja sin medir: bounds del hotspot)"
+    },
+    {
+     "type": "walkmask",
+     "msg": "pies fuera del azul de la walkmask (45.8, 95.9)"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/upstairs/027.png"
+  },
+  {
+   "id": "hs_paper_tray",
+   "kind": "arrival",
+   "x": 47,
+   "y": 95.9,
+   "feet": {
+    "x": 47,
+    "y": 95.9
+   },
+   "dexBox": {
+    "x": 43.51,
+    "y": 33.31,
+    "w": 6.98,
+    "h": 62.59
+   },
+   "heightPct": 62.59,
+   "walkable": true,
+   "maskOk": false,
+   "cover": {
+    "hs_desk": 0.01
+   },
+   "scale": {
+    "ref": "hs_desk",
+    "expected": 63,
+    "got": 62.59,
+    "dev": -0.01,
+    "baseDy": 7.9
+   },
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_boxes",
+     "dev": 0.48,
+     "msg": "Dex +48 % frente a cajas apiladas (caja sin medir: bounds del hotspot)"
+    },
+    {
+     "type": "walkmask",
+     "msg": "pies fuera del azul de la walkmask (47, 95.9)"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/upstairs/028.png"
+  },
+  {
+   "id": "hs_alphapack",
+   "kind": "arrival",
+   "x": 69.8,
+   "y": 95.9,
+   "feet": {
+    "x": 69.8,
+    "y": 95.9
+   },
+   "dexBox": {
+    "x": 66.31,
+    "y": 33.31,
+    "w": 6.98,
+    "h": 62.59
+   },
+   "heightPct": 62.59,
+   "walkable": true,
+   "maskOk": true,
+   "cover": {},
+   "scale": {
+    "ref": "hs_desk",
+    "expected": 63,
+    "got": 62.59,
+    "dev": -0.01,
+    "baseDy": 7.9
+   },
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_boxes",
+     "dev": 0.48,
+     "msg": "Dex +48 % frente a cajas apiladas (caja sin medir: bounds del hotspot)"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/upstairs/029.png"
+  },
+  {
+   "id": "hs_desk:izq",
+   "kind": "ref",
+   "x": 39.7,
+   "y": 95.9,
+   "feet": {
+    "x": 39.7,
+    "y": 95.9
+   },
+   "dexBox": {
+    "x": 36.21,
+    "y": 33.31,
+    "w": 6.98,
+    "h": 62.59
+   },
+   "heightPct": 62.59,
+   "walkable": true,
+   "maskOk": false,
+   "cover": {
+    "hs_desk": 0
+   },
+   "scale": {
+    "ref": "hs_desk",
+    "expected": 63,
+    "got": 62.59,
+    "dev": -0.01,
+    "baseDy": 7.9
+   },
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_boxes",
+     "dev": 0.48,
+     "msg": "Dex +48 % frente a cajas apiladas (caja sin medir: bounds del hotspot)"
+    },
+    {
+     "type": "walkmask",
+     "msg": "pies fuera del azul de la walkmask (39.7, 95.9)"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/upstairs/030.png"
+  },
+  {
+   "id": "hs_desk:der",
+   "kind": "ref",
+   "x": 64.6,
+   "y": 95.9,
+   "feet": {
+    "x": 64.6,
+    "y": 95.9
+   },
+   "dexBox": {
+    "x": 61.11,
+    "y": 33.31,
+    "w": 6.98,
+    "h": 62.59
+   },
+   "heightPct": 62.59,
+   "walkable": true,
+   "maskOk": true,
+   "cover": {
+    "hs_desk": 0
+   },
+   "scale": {
+    "ref": "hs_desk",
+    "expected": 63,
+    "got": 62.59,
+    "dev": -0.01,
+    "baseDy": 7.9
+   },
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_boxes",
+     "dev": 0.48,
+     "msg": "Dex +48 % frente a cajas apiladas (caja sin medir: bounds del hotspot)"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/upstairs/031.png"
+  },
+  {
+   "id": "hs_desk:detrás",
+   "kind": "ref",
+   "x": 52.2,
+   "y": 95.9,
+   "feet": {
+    "x": 52.2,
+    "y": 95.9
+   },
+   "dexBox": {
+    "x": 48.71,
+    "y": 33.31,
+    "w": 6.98,
+    "h": 62.59
+   },
+   "heightPct": 62.59,
+   "walkable": true,
+   "maskOk": false,
+   "cover": {
+    "hs_desk": 0.03
+   },
+   "scale": {
+    "ref": "hs_desk",
+    "expected": 63,
+    "got": 62.59,
+    "dev": -0.01,
+    "baseDy": 7.9
+   },
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_boxes",
+     "dev": 0.48,
+     "msg": "Dex +48 % frente a cajas apiladas (caja sin medir: bounds del hotspot)"
+    },
+    {
+     "type": "walkmask",
+     "msg": "pies fuera del azul de la walkmask (52.2, 95.9)"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/upstairs/032.png"
+  },
+  {
+   "id": "hs_armchair:izq",
+   "kind": "ref",
+   "x": 75,
+   "y": 95.9,
+   "feet": {
+    "x": 75,
+    "y": 95.9
+   },
+   "dexBox": {
+    "x": 71.51,
+    "y": 33.31,
+    "w": 6.98,
+    "h": 62.59
+   },
+   "heightPct": 62.59,
+   "walkable": true,
+   "maskOk": false,
+   "cover": {
+    "hs_armchair": 0
+   },
+   "scale": {
+    "ref": "hs_desk",
+    "expected": 63,
+    "got": 62.59,
+    "dev": -0.01,
+    "baseDy": 7.9
+   },
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_boxes",
+     "dev": 0.48,
+     "msg": "Dex +48 % frente a cajas apiladas (caja sin medir: bounds del hotspot)"
+    },
+    {
+     "type": "walkmask",
+     "msg": "pies fuera del azul de la walkmask (75, 95.9)"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/upstairs/033.png"
+  },
+  {
+   "id": "hs_armchair:der",
+   "kind": "ref",
+   "x": 79.7,
+   "y": 95.9,
+   "feet": {
+    "x": 79.7,
+    "y": 95.9
+   },
+   "dexBox": {
+    "x": 76.21,
+    "y": 33.31,
+    "w": 6.98,
+    "h": 62.59
+   },
+   "heightPct": 62.59,
+   "walkable": true,
+   "maskOk": false,
+   "cover": {
+    "hs_armchair": 0
+   },
+   "scale": {
+    "ref": "hs_desk",
+    "expected": 63,
+    "got": 62.59,
+    "dev": -0.01,
+    "baseDy": 7.9
+   },
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_boxes",
+     "dev": 0.48,
+     "msg": "Dex +48 % frente a cajas apiladas (caja sin medir: bounds del hotspot)"
+    },
+    {
+     "type": "walkmask",
+     "msg": "pies fuera del azul de la walkmask (79.7, 95.9)"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/upstairs/034.png"
+  },
+  {
+   "id": "hs_armchair:detrás",
+   "kind": "ref",
+   "x": 79.7,
+   "y": 95.9,
+   "feet": {
+    "x": 79.7,
+    "y": 95.9
+   },
+   "dexBox": {
+    "x": 76.21,
+    "y": 33.31,
+    "w": 6.98,
+    "h": 62.59
+   },
+   "heightPct": 62.59,
+   "walkable": true,
+   "maskOk": false,
+   "cover": {
+    "hs_armchair": 0
+   },
+   "scale": {
+    "ref": "hs_desk",
+    "expected": 63,
+    "got": 62.59,
+    "dev": -0.01,
+    "baseDy": 7.9
+   },
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_boxes",
+     "dev": 0.48,
+     "msg": "Dex +48 % frente a cajas apiladas (caja sin medir: bounds del hotspot)"
+    },
+    {
+     "type": "walkmask",
+     "msg": "pies fuera del azul de la walkmask (79.7, 95.9)"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/upstairs/035.png"
+  },
+  {
+   "id": "hs_boxes:izq",
+   "kind": "ref",
+   "x": 79.7,
+   "y": 95.9,
+   "feet": {
+    "x": 79.7,
+    "y": 95.9
+   },
+   "dexBox": {
+    "x": 76.21,
+    "y": 33.31,
+    "w": 6.98,
+    "h": 62.59
+   },
+   "heightPct": 62.59,
+   "walkable": true,
+   "maskOk": false,
+   "cover": {
+    "hs_armchair": 0
+   },
+   "scale": {
+    "ref": "hs_desk",
+    "expected": 63,
+    "got": 62.59,
+    "dev": -0.01,
+    "baseDy": 7.9
+   },
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_boxes",
+     "dev": 0.48,
+     "msg": "Dex +48 % frente a cajas apiladas (caja sin medir: bounds del hotspot)"
+    },
+    {
+     "type": "walkmask",
+     "msg": "pies fuera del azul de la walkmask (79.7, 95.9)"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/upstairs/036.png"
+  },
+  {
+   "id": "hs_boxes:der",
+   "kind": "ref",
+   "x": 79.7,
+   "y": 95.9,
+   "feet": {
+    "x": 79.7,
+    "y": 95.9
+   },
+   "dexBox": {
+    "x": 76.21,
+    "y": 33.31,
+    "w": 6.98,
+    "h": 62.59
+   },
+   "heightPct": 62.59,
+   "walkable": true,
+   "maskOk": false,
+   "cover": {
+    "hs_armchair": 0
+   },
+   "scale": {
+    "ref": "hs_desk",
+    "expected": 63,
+    "got": 62.59,
+    "dev": -0.01,
+    "baseDy": 7.9
+   },
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_boxes",
+     "dev": 0.48,
+     "msg": "Dex +48 % frente a cajas apiladas (caja sin medir: bounds del hotspot)"
+    },
+    {
+     "type": "walkmask",
+     "msg": "pies fuera del azul de la walkmask (79.7, 95.9)"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/upstairs/037.png"
+  },
+  {
+   "id": "hs_boxes:detrás",
+   "kind": "ref",
+   "x": 79.7,
+   "y": 95.9,
+   "feet": {
+    "x": 79.7,
+    "y": 95.9
+   },
+   "dexBox": {
+    "x": 76.21,
+    "y": 33.31,
+    "w": 6.98,
+    "h": 62.59
+   },
+   "heightPct": 62.59,
+   "walkable": true,
+   "maskOk": false,
+   "cover": {
+    "hs_armchair": 0
+   },
+   "scale": {
+    "ref": "hs_desk",
+    "expected": 63,
+    "got": 62.59,
+    "dev": -0.01,
+    "baseDy": 7.9
+   },
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_boxes",
+     "dev": 0.48,
+     "msg": "Dex +48 % frente a cajas apiladas (caja sin medir: bounds del hotspot)"
+    },
+    {
+     "type": "walkmask",
+     "msg": "pies fuera del azul de la walkmask (79.7, 95.9)"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/upstairs/038.png"
+  },
+  {
+   "id": "hs_computer:izq",
+   "kind": "ref",
+   "x": 8.6,
+   "y": 95.9,
+   "feet": {
+    "x": 8.6,
+    "y": 95.9
+   },
+   "dexBox": {
+    "x": 5.11,
+    "y": 33.31,
+    "w": 6.98,
+    "h": 62.59
+   },
+   "heightPct": 62.59,
+   "walkable": true,
+   "maskOk": true,
+   "cover": {
+    "hs_computer": 0
+   },
+   "scale": {
+    "ref": "hs_desk",
+    "expected": 63,
+    "got": 62.59,
+    "dev": -0.01,
+    "baseDy": 7.9
+   },
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_boxes",
+     "dev": 0.48,
+     "msg": "Dex +48 % frente a cajas apiladas (caja sin medir: bounds del hotspot)"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/upstairs/039.png"
+  },
+  {
+   "id": "hs_computer:der",
+   "kind": "ref",
+   "x": 24.6,
+   "y": 95.9,
+   "feet": {
+    "x": 24.6,
+    "y": 95.9
+   },
+   "dexBox": {
+    "x": 21.11,
+    "y": 33.31,
+    "w": 6.98,
+    "h": 62.59
+   },
+   "heightPct": 62.59,
+   "walkable": true,
+   "maskOk": true,
+   "cover": {
+    "hs_computer": 0
+   },
+   "scale": {
+    "ref": "hs_desk",
+    "expected": 63,
+    "got": 62.59,
+    "dev": -0.01,
+    "baseDy": 7.9
+   },
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_boxes",
+     "dev": 0.48,
+     "msg": "Dex +48 % frente a cajas apiladas (caja sin medir: bounds del hotspot)"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/upstairs/040.png"
+  },
+  {
+   "id": "hs_computer:detrás",
+   "kind": "ref",
+   "x": 16.6,
+   "y": 95.9,
+   "feet": {
+    "x": 16.6,
+    "y": 95.9
+   },
+   "dexBox": {
+    "x": 13.11,
+    "y": 33.31,
+    "w": 6.98,
+    "h": 62.59
+   },
+   "heightPct": 62.59,
+   "walkable": true,
+   "maskOk": true,
+   "cover": {
+    "hs_computer": 0
+   },
+   "scale": {
+    "ref": "hs_desk",
+    "expected": 63,
+    "got": 62.59,
+    "dev": -0.01,
+    "baseDy": 7.9
+   },
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_boxes",
+     "dev": 0.48,
+     "msg": "Dex +48 % frente a cajas apiladas (caja sin medir: bounds del hotspot)"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/upstairs/041.png"
+  }
+ ]
+}

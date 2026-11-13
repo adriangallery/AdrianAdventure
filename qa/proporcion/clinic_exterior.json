@@ -3,10 +3,8 @@
  "scalePolicy": "measure",
  "summary": {
   "positions": 65,
-  "failing": 46,
-  "byType": {
-   "scale": 46
-  }
+  "failing": 0,
+  "byType": {}
  },
  "positions": [
   {
@@ -28,23 +26,21 @@
    "walkable": true,
    "maskOk": null,
    "cover": {},
-   "scale": {
-    "ref": "hs_bench",
-    "expected": 20.59,
-    "got": 38.01,
-    "dev": 0.85,
-    "baseDy": 6.8
-   },
-   "failures": [
+   "scale": null,
+   "failures": [],
+   "info": [
     {
-     "type": "scale",
+     "type": "scale-rough",
      "ref": "hs_bench",
      "dev": 0.85,
-     "msg": "Dex +85 % frente a banco de espera (38.01 % y se esperaba 20.59 %)"
+     "msg": "Dex +85 % frente a banco de espera (caja sin medir: bounds del hotspot)"
+    },
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
     }
    ],
-   "info": [],
-   "score": 1.7,
+   "score": 0,
    "shot": "capturas/clinic_exterior/000.png"
   },
   {
@@ -66,23 +62,21 @@
    "walkable": true,
    "maskOk": null,
    "cover": {},
-   "scale": {
-    "ref": "hs_bench",
-    "expected": 20.59,
-    "got": 39.18,
-    "dev": 0.9,
-    "baseDy": 9.7
-   },
-   "failures": [
+   "scale": null,
+   "failures": [],
+   "info": [
     {
-     "type": "scale",
+     "type": "scale-rough",
      "ref": "hs_bench",
      "dev": 0.9,
-     "msg": "Dex +90 % frente a banco de espera (39.18 % y se esperaba 20.59 %)"
+     "msg": "Dex +90 % frente a banco de espera (caja sin medir: bounds del hotspot)"
+    },
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
     }
    ],
-   "info": [],
-   "score": 1.8,
+   "score": 0,
    "shot": "capturas/clinic_exterior/001.png"
   },
   {
@@ -133,23 +127,21 @@
    "walkable": true,
    "maskOk": null,
    "cover": {},
-   "scale": {
-    "ref": "hs_bench",
-    "expected": 20.59,
-    "got": 38.01,
-    "dev": 0.85,
-    "baseDy": 6.8
-   },
-   "failures": [
+   "scale": null,
+   "failures": [],
+   "info": [
     {
-     "type": "scale",
+     "type": "scale-rough",
      "ref": "hs_bench",
      "dev": 0.85,
-     "msg": "Dex +85 % frente a banco de espera (38.01 % y se esperaba 20.59 %)"
+     "msg": "Dex +85 % frente a banco de espera (caja sin medir: bounds del hotspot)"
+    },
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
     }
    ],
-   "info": [],
-   "score": 1.7,
+   "score": 0,
    "shot": "capturas/clinic_exterior/003.png"
   },
   {
@@ -171,23 +163,21 @@
    "walkable": true,
    "maskOk": null,
    "cover": {},
-   "scale": {
-    "ref": "hs_bench",
-    "expected": 20.59,
-    "got": 39.18,
-    "dev": 0.9,
-    "baseDy": 9.7
-   },
-   "failures": [
+   "scale": null,
+   "failures": [],
+   "info": [
     {
-     "type": "scale",
+     "type": "scale-rough",
      "ref": "hs_bench",
      "dev": 0.9,
-     "msg": "Dex +90 % frente a banco de espera (39.18 % y se esperaba 20.59 %)"
+     "msg": "Dex +90 % frente a banco de espera (caja sin medir: bounds del hotspot)"
+    },
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
     }
    ],
-   "info": [],
-   "score": 1.8,
+   "score": 0,
    "shot": "capturas/clinic_exterior/004.png"
   },
   {
@@ -238,23 +228,21 @@
    "walkable": true,
    "maskOk": null,
    "cover": {},
-   "scale": {
-    "ref": "hs_bench",
-    "expected": 20.59,
-    "got": 38.01,
-    "dev": 0.85,
-    "baseDy": 6.8
-   },
-   "failures": [
+   "scale": null,
+   "failures": [],
+   "info": [
     {
-     "type": "scale",
+     "type": "scale-rough",
      "ref": "hs_bench",
      "dev": 0.85,
-     "msg": "Dex +85 % frente a banco de espera (38.01 % y se esperaba 20.59 %)"
+     "msg": "Dex +85 % frente a banco de espera (caja sin medir: bounds del hotspot)"
+    },
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
     }
    ],
-   "info": [],
-   "score": 1.7,
+   "score": 0,
    "shot": "capturas/clinic_exterior/006.png"
   },
   {
@@ -276,23 +264,21 @@
    "walkable": true,
    "maskOk": null,
    "cover": {},
-   "scale": {
-    "ref": "hs_bench",
-    "expected": 20.59,
-    "got": 39.18,
-    "dev": 0.9,
-    "baseDy": 9.7
-   },
-   "failures": [
+   "scale": null,
+   "failures": [],
+   "info": [
     {
-     "type": "scale",
+     "type": "scale-rough",
      "ref": "hs_bench",
      "dev": 0.9,
-     "msg": "Dex +90 % frente a banco de espera (39.18 % y se esperaba 20.59 %)"
+     "msg": "Dex +90 % frente a banco de espera (caja sin medir: bounds del hotspot)"
+    },
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
     }
    ],
-   "info": [],
-   "score": 1.8,
+   "score": 0,
    "shot": "capturas/clinic_exterior/007.png"
   },
   {
@@ -345,23 +331,21 @@
    "cover": {
     "hs_trash_can": 0
    },
-   "scale": {
-    "ref": "hs_bench",
-    "expected": 20.59,
-    "got": 38.01,
-    "dev": 0.85,
-    "baseDy": 6.8
-   },
-   "failures": [
+   "scale": null,
+   "failures": [],
+   "info": [
     {
-     "type": "scale",
+     "type": "scale-rough",
      "ref": "hs_bench",
      "dev": 0.85,
-     "msg": "Dex +85 % frente a banco de espera (38.01 % y se esperaba 20.59 %)"
+     "msg": "Dex +85 % frente a banco de espera (caja sin medir: bounds del hotspot)"
+    },
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
     }
    ],
-   "info": [],
-   "score": 1.7,
+   "score": 0,
    "shot": "capturas/clinic_exterior/009.png"
   },
   {
@@ -385,23 +369,21 @@
    "cover": {
     "hs_trash_can": 0
    },
-   "scale": {
-    "ref": "hs_bench",
-    "expected": 20.59,
-    "got": 39.18,
-    "dev": 0.9,
-    "baseDy": 9.7
-   },
-   "failures": [
+   "scale": null,
+   "failures": [],
+   "info": [
     {
-     "type": "scale",
+     "type": "scale-rough",
      "ref": "hs_bench",
      "dev": 0.9,
-     "msg": "Dex +90 % frente a banco de espera (39.18 % y se esperaba 20.59 %)"
+     "msg": "Dex +90 % frente a banco de espera (caja sin medir: bounds del hotspot)"
+    },
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
     }
    ],
-   "info": [],
-   "score": 1.8,
+   "score": 0,
    "shot": "capturas/clinic_exterior/010.png"
   },
   {
@@ -454,23 +436,21 @@
    "walkable": true,
    "maskOk": null,
    "cover": {},
-   "scale": {
-    "ref": "hs_bench",
-    "expected": 20.59,
-    "got": 38.01,
-    "dev": 0.85,
-    "baseDy": 6.8
-   },
-   "failures": [
+   "scale": null,
+   "failures": [],
+   "info": [
     {
-     "type": "scale",
+     "type": "scale-rough",
      "ref": "hs_bench",
      "dev": 0.85,
-     "msg": "Dex +85 % frente a banco de espera (38.01 % y se esperaba 20.59 %)"
+     "msg": "Dex +85 % frente a banco de espera (caja sin medir: bounds del hotspot)"
+    },
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
     }
    ],
-   "info": [],
-   "score": 1.7,
+   "score": 0,
    "shot": "capturas/clinic_exterior/012.png"
   },
   {
@@ -492,23 +472,21 @@
    "walkable": true,
    "maskOk": null,
    "cover": {},
-   "scale": {
-    "ref": "hs_bench",
-    "expected": 20.59,
-    "got": 39.18,
-    "dev": 0.9,
-    "baseDy": 9.7
-   },
-   "failures": [
+   "scale": null,
+   "failures": [],
+   "info": [
     {
-     "type": "scale",
+     "type": "scale-rough",
      "ref": "hs_bench",
      "dev": 0.9,
-     "msg": "Dex +90 % frente a banco de espera (39.18 % y se esperaba 20.59 %)"
+     "msg": "Dex +90 % frente a banco de espera (caja sin medir: bounds del hotspot)"
+    },
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
     }
    ],
-   "info": [],
-   "score": 1.8,
+   "score": 0,
    "shot": "capturas/clinic_exterior/013.png"
   },
   {
@@ -561,23 +539,21 @@
    "cover": {
     "hs_main_entrance": 0
    },
-   "scale": {
-    "ref": "hs_bench",
-    "expected": 20.59,
-    "got": 38.01,
-    "dev": 0.85,
-    "baseDy": 6.8
-   },
-   "failures": [
+   "scale": null,
+   "failures": [],
+   "info": [
     {
-     "type": "scale",
+     "type": "scale-rough",
      "ref": "hs_bench",
      "dev": 0.85,
-     "msg": "Dex +85 % frente a banco de espera (38.01 % y se esperaba 20.59 %)"
+     "msg": "Dex +85 % frente a banco de espera (caja sin medir: bounds del hotspot)"
+    },
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
     }
    ],
-   "info": [],
-   "score": 1.7,
+   "score": 0,
    "shot": "capturas/clinic_exterior/015.png"
   },
   {
@@ -601,23 +577,21 @@
    "cover": {
     "hs_main_entrance": 0
    },
-   "scale": {
-    "ref": "hs_bench",
-    "expected": 20.59,
-    "got": 39.18,
-    "dev": 0.9,
-    "baseDy": 9.7
-   },
-   "failures": [
+   "scale": null,
+   "failures": [],
+   "info": [
     {
-     "type": "scale",
+     "type": "scale-rough",
      "ref": "hs_bench",
      "dev": 0.9,
-     "msg": "Dex +90 % frente a banco de espera (39.18 % y se esperaba 20.59 %)"
+     "msg": "Dex +90 % frente a banco de espera (caja sin medir: bounds del hotspot)"
+    },
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
     }
    ],
-   "info": [],
-   "score": 1.8,
+   "score": 0,
    "shot": "capturas/clinic_exterior/016.png"
   },
   {
@@ -670,23 +644,21 @@
    "walkable": true,
    "maskOk": null,
    "cover": {},
-   "scale": {
-    "ref": "hs_bench",
-    "expected": 20.59,
-    "got": 38.01,
-    "dev": 0.85,
-    "baseDy": 6.8
-   },
-   "failures": [
+   "scale": null,
+   "failures": [],
+   "info": [
     {
-     "type": "scale",
+     "type": "scale-rough",
      "ref": "hs_bench",
      "dev": 0.85,
-     "msg": "Dex +85 % frente a banco de espera (38.01 % y se esperaba 20.59 %)"
+     "msg": "Dex +85 % frente a banco de espera (caja sin medir: bounds del hotspot)"
+    },
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
     }
    ],
-   "info": [],
-   "score": 1.7,
+   "score": 0,
    "shot": "capturas/clinic_exterior/018.png"
   },
   {
@@ -708,23 +680,21 @@
    "walkable": true,
    "maskOk": null,
    "cover": {},
-   "scale": {
-    "ref": "hs_bench",
-    "expected": 20.59,
-    "got": 39.18,
-    "dev": 0.9,
-    "baseDy": 9.7
-   },
-   "failures": [
+   "scale": null,
+   "failures": [],
+   "info": [
     {
-     "type": "scale",
+     "type": "scale-rough",
      "ref": "hs_bench",
      "dev": 0.9,
-     "msg": "Dex +90 % frente a banco de espera (39.18 % y se esperaba 20.59 %)"
+     "msg": "Dex +90 % frente a banco de espera (caja sin medir: bounds del hotspot)"
+    },
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
     }
    ],
-   "info": [],
-   "score": 1.8,
+   "score": 0,
    "shot": "capturas/clinic_exterior/019.png"
   },
   {
@@ -777,23 +747,21 @@
    "cover": {
     "hs_bench": 0
    },
-   "scale": {
-    "ref": "hs_bench",
-    "expected": 20.59,
-    "got": 38.01,
-    "dev": 0.85,
-    "baseDy": 6.8
-   },
-   "failures": [
+   "scale": null,
+   "failures": [],
+   "info": [
     {
-     "type": "scale",
+     "type": "scale-rough",
      "ref": "hs_bench",
      "dev": 0.85,
-     "msg": "Dex +85 % frente a banco de espera (38.01 % y se esperaba 20.59 %)"
+     "msg": "Dex +85 % frente a banco de espera (caja sin medir: bounds del hotspot)"
+    },
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
     }
    ],
-   "info": [],
-   "score": 1.7,
+   "score": 0,
    "shot": "capturas/clinic_exterior/021.png"
   },
   {
@@ -817,23 +785,21 @@
    "cover": {
     "hs_bench": 0
    },
-   "scale": {
-    "ref": "hs_bench",
-    "expected": 20.59,
-    "got": 39.18,
-    "dev": 0.9,
-    "baseDy": 9.7
-   },
-   "failures": [
+   "scale": null,
+   "failures": [],
+   "info": [
     {
-     "type": "scale",
+     "type": "scale-rough",
      "ref": "hs_bench",
      "dev": 0.9,
-     "msg": "Dex +90 % frente a banco de espera (39.18 % y se esperaba 20.59 %)"
+     "msg": "Dex +90 % frente a banco de espera (caja sin medir: bounds del hotspot)"
+    },
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
     }
    ],
-   "info": [],
-   "score": 1.8,
+   "score": 0,
    "shot": "capturas/clinic_exterior/022.png"
   },
   {
@@ -888,23 +854,21 @@
    "cover": {
     "hs_visitor_box": 0
    },
-   "scale": {
-    "ref": "hs_bench",
-    "expected": 20.59,
-    "got": 38.01,
-    "dev": 0.85,
-    "baseDy": 6.8
-   },
-   "failures": [
+   "scale": null,
+   "failures": [],
+   "info": [
     {
-     "type": "scale",
+     "type": "scale-rough",
      "ref": "hs_bench",
      "dev": 0.85,
-     "msg": "Dex +85 % frente a banco de espera (38.01 % y se esperaba 20.59 %)"
+     "msg": "Dex +85 % frente a banco de espera (caja sin medir: bounds del hotspot)"
+    },
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
     }
    ],
-   "info": [],
-   "score": 1.7,
+   "score": 0,
    "shot": "capturas/clinic_exterior/024.png"
   },
   {
@@ -928,23 +892,21 @@
    "cover": {
     "hs_visitor_box": 0
    },
-   "scale": {
-    "ref": "hs_bench",
-    "expected": 20.59,
-    "got": 39.18,
-    "dev": 0.9,
-    "baseDy": 9.7
-   },
-   "failures": [
+   "scale": null,
+   "failures": [],
+   "info": [
     {
-     "type": "scale",
+     "type": "scale-rough",
      "ref": "hs_bench",
      "dev": 0.9,
-     "msg": "Dex +90 % frente a banco de espera (39.18 % y se esperaba 20.59 %)"
+     "msg": "Dex +90 % frente a banco de espera (caja sin medir: bounds del hotspot)"
+    },
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
     }
    ],
-   "info": [],
-   "score": 1.8,
+   "score": 0,
    "shot": "capturas/clinic_exterior/025.png"
   },
   {
@@ -997,23 +959,21 @@
    "walkable": true,
    "maskOk": null,
    "cover": {},
-   "scale": {
-    "ref": "hs_bench",
-    "expected": 20.59,
-    "got": 38.01,
-    "dev": 0.85,
-    "baseDy": 6.8
-   },
-   "failures": [
+   "scale": null,
+   "failures": [],
+   "info": [
     {
-     "type": "scale",
+     "type": "scale-rough",
      "ref": "hs_bench",
      "dev": 0.85,
-     "msg": "Dex +85 % frente a banco de espera (38.01 % y se esperaba 20.59 %)"
+     "msg": "Dex +85 % frente a banco de espera (caja sin medir: bounds del hotspot)"
+    },
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
     }
    ],
-   "info": [],
-   "score": 1.7,
+   "score": 0,
    "shot": "capturas/clinic_exterior/027.png"
   },
   {
@@ -1035,23 +995,21 @@
    "walkable": true,
    "maskOk": null,
    "cover": {},
-   "scale": {
-    "ref": "hs_bench",
-    "expected": 20.59,
-    "got": 39.18,
-    "dev": 0.9,
-    "baseDy": 9.7
-   },
-   "failures": [
+   "scale": null,
+   "failures": [],
+   "info": [
     {
-     "type": "scale",
+     "type": "scale-rough",
      "ref": "hs_bench",
      "dev": 0.9,
-     "msg": "Dex +90 % frente a banco de espera (39.18 % y se esperaba 20.59 %)"
+     "msg": "Dex +90 % frente a banco de espera (caja sin medir: bounds del hotspot)"
+    },
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
     }
    ],
-   "info": [],
-   "score": 1.8,
+   "score": 0,
    "shot": "capturas/clinic_exterior/028.png"
   },
   {
@@ -1102,23 +1060,21 @@
    "walkable": true,
    "maskOk": null,
    "cover": {},
-   "scale": {
-    "ref": "hs_bench",
-    "expected": 20.59,
-    "got": 38.01,
-    "dev": 0.85,
-    "baseDy": 6.8
-   },
-   "failures": [
+   "scale": null,
+   "failures": [],
+   "info": [
     {
-     "type": "scale",
+     "type": "scale-rough",
      "ref": "hs_bench",
      "dev": 0.85,
-     "msg": "Dex +85 % frente a banco de espera (38.01 % y se esperaba 20.59 %)"
+     "msg": "Dex +85 % frente a banco de espera (caja sin medir: bounds del hotspot)"
+    },
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
     }
    ],
-   "info": [],
-   "score": 1.7,
+   "score": 0,
    "shot": "capturas/clinic_exterior/030.png"
   },
   {
@@ -1140,23 +1096,21 @@
    "walkable": true,
    "maskOk": null,
    "cover": {},
-   "scale": {
-    "ref": "hs_bench",
-    "expected": 20.59,
-    "got": 39.18,
-    "dev": 0.9,
-    "baseDy": 9.7
-   },
-   "failures": [
+   "scale": null,
+   "failures": [],
+   "info": [
     {
-     "type": "scale",
+     "type": "scale-rough",
      "ref": "hs_bench",
      "dev": 0.9,
-     "msg": "Dex +90 % frente a banco de espera (39.18 % y se esperaba 20.59 %)"
+     "msg": "Dex +90 % frente a banco de espera (caja sin medir: bounds del hotspot)"
+    },
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
     }
    ],
-   "info": [],
-   "score": 1.8,
+   "score": 0,
    "shot": "capturas/clinic_exterior/031.png"
   },
   {
@@ -1207,23 +1161,21 @@
    "walkable": true,
    "maskOk": null,
    "cover": {},
-   "scale": {
-    "ref": "hs_bench",
-    "expected": 20.59,
-    "got": 38.01,
-    "dev": 0.85,
-    "baseDy": 6.8
-   },
-   "failures": [
+   "scale": null,
+   "failures": [],
+   "info": [
     {
-     "type": "scale",
+     "type": "scale-rough",
      "ref": "hs_bench",
      "dev": 0.85,
-     "msg": "Dex +85 % frente a banco de espera (38.01 % y se esperaba 20.59 %)"
+     "msg": "Dex +85 % frente a banco de espera (caja sin medir: bounds del hotspot)"
+    },
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
     }
    ],
-   "info": [],
-   "score": 1.7,
+   "score": 0,
    "shot": "capturas/clinic_exterior/033.png"
   },
   {
@@ -1245,23 +1197,21 @@
    "walkable": true,
    "maskOk": null,
    "cover": {},
-   "scale": {
-    "ref": "hs_bench",
-    "expected": 20.59,
-    "got": 39.18,
-    "dev": 0.9,
-    "baseDy": 9.7
-   },
-   "failures": [
+   "scale": null,
+   "failures": [],
+   "info": [
     {
-     "type": "scale",
+     "type": "scale-rough",
      "ref": "hs_bench",
      "dev": 0.9,
-     "msg": "Dex +90 % frente a banco de espera (39.18 % y se esperaba 20.59 %)"
+     "msg": "Dex +90 % frente a banco de espera (caja sin medir: bounds del hotspot)"
+    },
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
     }
    ],
-   "info": [],
-   "score": 1.8,
+   "score": 0,
    "shot": "capturas/clinic_exterior/034.png"
   },
   {
@@ -1313,10 +1263,10 @@
    "maskOk": null,
    "cover": {},
    "scale": {
-    "ref": "hs_trash_can",
-    "expected": 27.22,
+    "ref": "hs_main_entrance",
+    "expected": 32.46,
     "got": 30.07,
-    "dev": 0.1,
+    "dev": -0.07,
     "baseDy": 8
    },
    "failures": [],
@@ -1343,10 +1293,10 @@
    "maskOk": null,
    "cover": {},
    "scale": {
-    "ref": "hs_trash_can",
-    "expected": 27.22,
+    "ref": "hs_main_entrance",
+    "expected": 32.46,
     "got": 31.2,
-    "dev": 0.15,
+    "dev": -0.04,
     "baseDy": 5.2
    },
    "failures": [],
@@ -1373,22 +1323,22 @@
    "maskOk": null,
    "cover": {},
    "scale": {
-    "ref": "hs_trash_can",
-    "expected": 27.22,
+    "ref": "hs_main_entrance",
+    "expected": 32.46,
     "got": 32.37,
-    "dev": 0.19,
+    "dev": 0,
     "baseDy": 2.3
    },
-   "failures": [
+   "failures": [],
+   "info": [
     {
-     "type": "scale",
+     "type": "scale-rough",
      "ref": "hs_trash_can",
      "dev": 0.19,
-     "msg": "Dex +19 % frente a papelera (32.37 % y se esperaba 27.22 %)"
+     "msg": "Dex +19 % frente a papelera (caja sin medir: bounds del hotspot)"
     }
    ],
-   "info": [],
-   "score": 0.38,
+   "score": 0,
    "shot": "capturas/clinic_exterior/038.png"
   },
   {
@@ -1411,22 +1361,22 @@
    "maskOk": null,
    "cover": {},
    "scale": {
-    "ref": "hs_trash_can",
-    "expected": 27.22,
+    "ref": "hs_main_entrance",
+    "expected": 32.46,
     "got": 33.5,
-    "dev": 0.23,
+    "dev": 0.03,
     "baseDy": 0.5
    },
-   "failures": [
+   "failures": [],
+   "info": [
     {
-     "type": "scale",
+     "type": "scale-rough",
      "ref": "hs_trash_can",
      "dev": 0.23,
-     "msg": "Dex +23 % frente a papelera (33.5 % y se esperaba 27.22 %)"
+     "msg": "Dex +23 % frente a papelera (caja sin medir: bounds del hotspot)"
     }
    ],
-   "info": [],
-   "score": 0.46,
+   "score": 0,
    "shot": "capturas/clinic_exterior/039.png"
   },
   {
@@ -1449,22 +1399,22 @@
    "maskOk": null,
    "cover": {},
    "scale": {
-    "ref": "hs_visitor_box",
-    "expected": 21.88,
+    "ref": "hs_main_entrance",
+    "expected": 32.46,
     "got": 34.62,
-    "dev": 0.58,
-    "baseDy": 0.3
+    "dev": 0.07,
+    "baseDy": 3.3
    },
-   "failures": [
+   "failures": [],
+   "info": [
     {
-     "type": "scale",
+     "type": "scale-rough",
      "ref": "hs_visitor_box",
      "dev": 0.58,
-     "msg": "Dex +58 % frente a buzón de visitas (34.62 % y se esperaba 21.88 %)"
+     "msg": "Dex +58 % frente a buzón de visitas (caja sin medir: bounds del hotspot)"
     }
    ],
-   "info": [],
-   "score": 1.16,
+   "score": 0,
    "shot": "capturas/clinic_exterior/040.png"
   },
   {
@@ -1487,22 +1437,22 @@
    "maskOk": null,
    "cover": {},
    "scale": {
-    "ref": "hs_bench",
-    "expected": 20.59,
+    "ref": "hs_main_entrance",
+    "expected": 32.46,
     "got": 35.79,
-    "dev": 0.74,
-    "baseDy": 1.3
+    "dev": 0.1,
+    "baseDy": 6.2
    },
-   "failures": [
+   "failures": [],
+   "info": [
     {
-     "type": "scale",
+     "type": "scale-rough",
      "ref": "hs_bench",
      "dev": 0.74,
-     "msg": "Dex +74 % frente a banco de espera (35.79 % y se esperaba 20.59 %)"
+     "msg": "Dex +74 % frente a banco de espera (caja sin medir: bounds del hotspot)"
     }
    ],
-   "info": [],
-   "score": 1.48,
+   "score": 0,
    "shot": "capturas/clinic_exterior/041.png"
   },
   {
@@ -1525,22 +1475,22 @@
    "maskOk": null,
    "cover": {},
    "scale": {
-    "ref": "hs_bench",
-    "expected": 20.59,
+    "ref": "hs_main_entrance",
+    "expected": 32.46,
     "got": 36.92,
-    "dev": 0.79,
-    "baseDy": 4.1
+    "dev": 0.14,
+    "baseDy": 9
    },
-   "failures": [
+   "failures": [],
+   "info": [
     {
-     "type": "scale",
+     "type": "scale-rough",
      "ref": "hs_bench",
      "dev": 0.79,
-     "msg": "Dex +79 % frente a banco de espera (36.92 % y se esperaba 20.59 %)"
+     "msg": "Dex +79 % frente a banco de espera (caja sin medir: bounds del hotspot)"
     }
    ],
-   "info": [],
-   "score": 1.58,
+   "score": 0,
    "shot": "capturas/clinic_exterior/042.png"
   },
   {
@@ -1563,10 +1513,10 @@
    "maskOk": null,
    "cover": {},
    "scale": {
-    "ref": "hs_trash_can",
-    "expected": 27.22,
+    "ref": "hs_main_entrance",
+    "expected": 32.46,
     "got": 29.71,
-    "dev": 0.09,
+    "dev": -0.08,
     "baseDy": 8.9
    },
    "failures": [],
@@ -1594,23 +1544,21 @@
    "cover": {
     "hs_main_entrance": 0
    },
-   "scale": {
-    "ref": "hs_bench",
-    "expected": 20.59,
-    "got": 37.61,
-    "dev": 0.83,
-    "baseDy": 5.8
-   },
-   "failures": [
+   "scale": null,
+   "failures": [],
+   "info": [
     {
-     "type": "scale",
+     "type": "scale-rough",
      "ref": "hs_bench",
      "dev": 0.83,
-     "msg": "Dex +83 % frente a banco de espera (37.61 % y se esperaba 20.59 %)"
+     "msg": "Dex +83 % frente a banco de espera (caja sin medir: bounds del hotspot)"
+    },
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
     }
    ],
-   "info": [],
-   "score": 1.66,
+   "score": 0,
    "shot": "capturas/clinic_exterior/044.png"
   },
   {
@@ -1633,22 +1581,22 @@
    "maskOk": null,
    "cover": {},
    "scale": {
-    "ref": "hs_visitor_box",
-    "expected": 21.88,
+    "ref": "hs_main_entrance",
+    "expected": 32.46,
     "got": 34.75,
-    "dev": 0.59,
-    "baseDy": 0
+    "dev": 0.07,
+    "baseDy": 3.6
    },
-   "failures": [
+   "failures": [],
+   "info": [
     {
-     "type": "scale",
+     "type": "scale-rough",
      "ref": "hs_visitor_box",
      "dev": 0.59,
-     "msg": "Dex +59 % frente a buzón de visitas (34.75 % y se esperaba 21.88 %)"
+     "msg": "Dex +59 % frente a buzón de visitas (caja sin medir: bounds del hotspot)"
     }
    ],
-   "info": [],
-   "score": 1.18,
+   "score": 0,
    "shot": "capturas/clinic_exterior/045.png"
   },
   {
@@ -1671,10 +1619,10 @@
    "maskOk": null,
    "cover": {},
    "scale": {
-    "ref": "hs_trash_can",
-    "expected": 27.22,
+    "ref": "hs_main_entrance",
+    "expected": 32.46,
     "got": 29.71,
-    "dev": 0.09,
+    "dev": -0.08,
     "baseDy": 8.9
    },
    "failures": [],
@@ -1701,10 +1649,10 @@
    "maskOk": null,
    "cover": {},
    "scale": {
-    "ref": "hs_trash_can",
-    "expected": 27.22,
+    "ref": "hs_main_entrance",
+    "expected": 32.46,
     "got": 29.71,
-    "dev": 0.09,
+    "dev": -0.08,
     "baseDy": 8.9
    },
    "failures": [],
@@ -1732,23 +1680,21 @@
    "cover": {
     "hs_bench": 0
    },
-   "scale": {
-    "ref": "hs_bench",
-    "expected": 20.59,
-    "got": 37.61,
-    "dev": 0.83,
-    "baseDy": 5.8
-   },
-   "failures": [
+   "scale": null,
+   "failures": [],
+   "info": [
     {
-     "type": "scale",
+     "type": "scale-rough",
      "ref": "hs_bench",
      "dev": 0.83,
-     "msg": "Dex +83 % frente a banco de espera (37.61 % y se esperaba 20.59 %)"
+     "msg": "Dex +83 % frente a banco de espera (caja sin medir: bounds del hotspot)"
+    },
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
     }
    ],
-   "info": [],
-   "score": 1.66,
+   "score": 0,
    "shot": "capturas/clinic_exterior/048.png"
   },
   {
@@ -1771,10 +1717,10 @@
    "maskOk": null,
    "cover": {},
    "scale": {
-    "ref": "hs_trash_can",
-    "expected": 27.22,
+    "ref": "hs_main_entrance",
+    "expected": 32.46,
     "got": 29.71,
-    "dev": 0.09,
+    "dev": -0.08,
     "baseDy": 8.9
    },
    "failures": [],
@@ -1801,22 +1747,22 @@
    "maskOk": null,
    "cover": {},
    "scale": {
-    "ref": "hs_trash_can",
-    "expected": 27.22,
+    "ref": "hs_main_entrance",
+    "expected": 32.46,
     "got": 33.29,
-    "dev": 0.22,
+    "dev": 0.03,
     "baseDy": 0
    },
-   "failures": [
+   "failures": [],
+   "info": [
     {
-     "type": "scale",
+     "type": "scale-rough",
      "ref": "hs_trash_can",
      "dev": 0.22,
-     "msg": "Dex +22 % frente a papelera (33.29 % y se esperaba 27.22 %)"
+     "msg": "Dex +22 % frente a papelera (caja sin medir: bounds del hotspot)"
     }
    ],
-   "info": [],
-   "score": 0.44,
+   "score": 0,
    "shot": "capturas/clinic_exterior/050.png"
   },
   {
@@ -1839,10 +1785,10 @@
    "maskOk": null,
    "cover": {},
    "scale": {
-    "ref": "hs_trash_can",
-    "expected": 27.22,
+    "ref": "hs_main_entrance",
+    "expected": 32.46,
     "got": 30.67,
-    "dev": 0.13,
+    "dev": -0.06,
     "baseDy": 6.5
    },
    "failures": [],
@@ -1869,22 +1815,22 @@
    "maskOk": null,
    "cover": {},
    "scale": {
-    "ref": "hs_trash_can",
-    "expected": 27.22,
+    "ref": "hs_main_entrance",
+    "expected": 32.46,
     "got": 32.69,
-    "dev": 0.2,
+    "dev": 0.01,
     "baseDy": 1.5
    },
-   "failures": [
+   "failures": [],
+   "info": [
     {
-     "type": "scale",
+     "type": "scale-rough",
      "ref": "hs_trash_can",
      "dev": 0.2,
-     "msg": "Dex +20 % frente a papelera (32.69 % y se esperaba 27.22 %)"
+     "msg": "Dex +20 % frente a papelera (caja sin medir: bounds del hotspot)"
     }
    ],
-   "info": [],
-   "score": 0.4,
+   "score": 0,
    "shot": "capturas/clinic_exterior/052.png"
   },
   {
@@ -1908,23 +1854,21 @@
    "cover": {
     "hs_main_entrance": 0
    },
-   "scale": {
-    "ref": "hs_bench",
-    "expected": 20.59,
-    "got": 37.61,
-    "dev": 0.83,
-    "baseDy": 5.8
-   },
-   "failures": [
+   "scale": null,
+   "failures": [],
+   "info": [
     {
-     "type": "scale",
+     "type": "scale-rough",
      "ref": "hs_bench",
      "dev": 0.83,
-     "msg": "Dex +83 % frente a banco de espera (37.61 % y se esperaba 20.59 %)"
+     "msg": "Dex +83 % frente a banco de espera (caja sin medir: bounds del hotspot)"
+    },
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
     }
    ],
-   "info": [],
-   "score": 1.66,
+   "score": 0,
    "shot": "capturas/clinic_exterior/053.png"
   },
   {
@@ -1948,23 +1892,21 @@
    "cover": {
     "hs_main_entrance": 0
    },
-   "scale": {
-    "ref": "hs_bench",
-    "expected": 20.59,
-    "got": 37.61,
-    "dev": 0.83,
-    "baseDy": 5.8
-   },
-   "failures": [
+   "scale": null,
+   "failures": [],
+   "info": [
     {
-     "type": "scale",
+     "type": "scale-rough",
      "ref": "hs_bench",
      "dev": 0.83,
-     "msg": "Dex +83 % frente a banco de espera (37.61 % y se esperaba 20.59 %)"
+     "msg": "Dex +83 % frente a banco de espera (caja sin medir: bounds del hotspot)"
+    },
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
     }
    ],
-   "info": [],
-   "score": 1.66,
+   "score": 0,
    "shot": "capturas/clinic_exterior/054.png"
   },
   {
@@ -1988,23 +1930,21 @@
    "cover": {
     "hs_main_entrance": 0
    },
-   "scale": {
-    "ref": "hs_bench",
-    "expected": 20.59,
-    "got": 37.61,
-    "dev": 0.83,
-    "baseDy": 5.8
-   },
-   "failures": [
+   "scale": null,
+   "failures": [],
+   "info": [
     {
-     "type": "scale",
+     "type": "scale-rough",
      "ref": "hs_bench",
      "dev": 0.83,
-     "msg": "Dex +83 % frente a banco de espera (37.61 % y se esperaba 20.59 %)"
+     "msg": "Dex +83 % frente a banco de espera (caja sin medir: bounds del hotspot)"
+    },
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
     }
    ],
-   "info": [],
-   "score": 1.66,
+   "score": 0,
    "shot": "capturas/clinic_exterior/055.png"
   },
   {
@@ -2028,23 +1968,21 @@
    "cover": {
     "hs_bench": 0
    },
-   "scale": {
-    "ref": "hs_bench",
-    "expected": 20.59,
-    "got": 37.61,
-    "dev": 0.83,
-    "baseDy": 5.8
-   },
-   "failures": [
+   "scale": null,
+   "failures": [],
+   "info": [
     {
-     "type": "scale",
+     "type": "scale-rough",
      "ref": "hs_bench",
      "dev": 0.83,
-     "msg": "Dex +83 % frente a banco de espera (37.61 % y se esperaba 20.59 %)"
+     "msg": "Dex +83 % frente a banco de espera (caja sin medir: bounds del hotspot)"
+    },
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
     }
    ],
-   "info": [],
-   "score": 1.66,
+   "score": 0,
    "shot": "capturas/clinic_exterior/056.png"
   },
   {
@@ -2069,23 +2007,21 @@
     "hs_bench": 0,
     "hs_visitor_box": 0
    },
-   "scale": {
-    "ref": "hs_bench",
-    "expected": 20.59,
-    "got": 37.61,
-    "dev": 0.83,
-    "baseDy": 5.8
-   },
-   "failures": [
+   "scale": null,
+   "failures": [],
+   "info": [
     {
-     "type": "scale",
+     "type": "scale-rough",
      "ref": "hs_bench",
      "dev": 0.83,
-     "msg": "Dex +83 % frente a banco de espera (37.61 % y se esperaba 20.59 %)"
+     "msg": "Dex +83 % frente a banco de espera (caja sin medir: bounds del hotspot)"
+    },
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
     }
    ],
-   "info": [],
-   "score": 1.66,
+   "score": 0,
    "shot": "capturas/clinic_exterior/057.png"
   },
   {
@@ -2109,23 +2045,21 @@
    "cover": {
     "hs_bench": 0
    },
-   "scale": {
-    "ref": "hs_bench",
-    "expected": 20.59,
-    "got": 37.61,
-    "dev": 0.83,
-    "baseDy": 5.8
-   },
-   "failures": [
+   "scale": null,
+   "failures": [],
+   "info": [
     {
-     "type": "scale",
+     "type": "scale-rough",
      "ref": "hs_bench",
      "dev": 0.83,
-     "msg": "Dex +83 % frente a banco de espera (37.61 % y se esperaba 20.59 %)"
+     "msg": "Dex +83 % frente a banco de espera (caja sin medir: bounds del hotspot)"
+    },
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
     }
    ],
-   "info": [],
-   "score": 1.66,
+   "score": 0,
    "shot": "capturas/clinic_exterior/058.png"
   },
   {
@@ -2148,22 +2082,22 @@
    "maskOk": null,
    "cover": {},
    "scale": {
-    "ref": "hs_trash_can",
-    "expected": 27.22,
+    "ref": "hs_main_entrance",
+    "expected": 32.46,
     "got": 33.29,
-    "dev": 0.22,
+    "dev": 0.03,
     "baseDy": 0
    },
-   "failures": [
+   "failures": [],
+   "info": [
     {
-     "type": "scale",
+     "type": "scale-rough",
      "ref": "hs_trash_can",
      "dev": 0.22,
-     "msg": "Dex +22 % frente a papelera (33.29 % y se esperaba 27.22 %)"
+     "msg": "Dex +22 % frente a papelera (caja sin medir: bounds del hotspot)"
     }
    ],
-   "info": [],
-   "score": 0.44,
+   "score": 0,
    "shot": "capturas/clinic_exterior/059.png"
   },
   {
@@ -2186,22 +2120,22 @@
    "maskOk": null,
    "cover": {},
    "scale": {
-    "ref": "hs_trash_can",
-    "expected": 27.22,
+    "ref": "hs_main_entrance",
+    "expected": 32.46,
     "got": 33.29,
-    "dev": 0.22,
+    "dev": 0.03,
     "baseDy": 0
    },
-   "failures": [
+   "failures": [],
+   "info": [
     {
-     "type": "scale",
+     "type": "scale-rough",
      "ref": "hs_trash_can",
      "dev": 0.22,
-     "msg": "Dex +22 % frente a papelera (33.29 % y se esperaba 27.22 %)"
+     "msg": "Dex +22 % frente a papelera (caja sin medir: bounds del hotspot)"
     }
    ],
-   "info": [],
-   "score": 0.44,
+   "score": 0,
    "shot": "capturas/clinic_exterior/060.png"
   },
   {
@@ -2224,22 +2158,22 @@
    "maskOk": null,
    "cover": {},
    "scale": {
-    "ref": "hs_trash_can",
-    "expected": 27.22,
+    "ref": "hs_main_entrance",
+    "expected": 32.46,
     "got": 32.89,
-    "dev": 0.21,
+    "dev": 0.01,
     "baseDy": 1
    },
-   "failures": [
+   "failures": [],
+   "info": [
     {
-     "type": "scale",
+     "type": "scale-rough",
      "ref": "hs_trash_can",
      "dev": 0.21,
-     "msg": "Dex +21 % frente a papelera (32.89 % y se esperaba 27.22 %)"
+     "msg": "Dex +21 % frente a papelera (caja sin medir: bounds del hotspot)"
     }
    ],
-   "info": [],
-   "score": 0.42,
+   "score": 0,
    "shot": "capturas/clinic_exterior/061.png"
   },
   {
@@ -2264,23 +2198,21 @@
     "hs_bench": 0,
     "hs_visitor_box": 0
    },
-   "scale": {
-    "ref": "hs_bench",
-    "expected": 20.59,
-    "got": 37.61,
-    "dev": 0.83,
-    "baseDy": 5.8
-   },
-   "failures": [
+   "scale": null,
+   "failures": [],
+   "info": [
     {
-     "type": "scale",
+     "type": "scale-rough",
      "ref": "hs_bench",
      "dev": 0.83,
-     "msg": "Dex +83 % frente a banco de espera (37.61 % y se esperaba 20.59 %)"
+     "msg": "Dex +83 % frente a banco de espera (caja sin medir: bounds del hotspot)"
+    },
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
     }
    ],
-   "info": [],
-   "score": 1.66,
+   "score": 0,
    "shot": "capturas/clinic_exterior/062.png"
   },
   {
@@ -2304,23 +2236,21 @@
    "cover": {
     "hs_visitor_box": 0
    },
-   "scale": {
-    "ref": "hs_bench",
-    "expected": 20.59,
-    "got": 37.61,
-    "dev": 0.83,
-    "baseDy": 5.8
-   },
-   "failures": [
+   "scale": null,
+   "failures": [],
+   "info": [
     {
-     "type": "scale",
+     "type": "scale-rough",
      "ref": "hs_bench",
      "dev": 0.83,
-     "msg": "Dex +83 % frente a banco de espera (37.61 % y se esperaba 20.59 %)"
+     "msg": "Dex +83 % frente a banco de espera (caja sin medir: bounds del hotspot)"
+    },
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
     }
    ],
-   "info": [],
-   "score": 1.66,
+   "score": 0,
    "shot": "capturas/clinic_exterior/063.png"
   },
   {
@@ -2343,22 +2273,22 @@
    "maskOk": null,
    "cover": {},
    "scale": {
-    "ref": "hs_trash_can",
-    "expected": 27.22,
+    "ref": "hs_main_entrance",
+    "expected": 32.46,
     "got": 34.34,
-    "dev": 0.26,
+    "dev": 0.06,
     "baseDy": 2.6
    },
-   "failures": [
+   "failures": [],
+   "info": [
     {
-     "type": "scale",
+     "type": "scale-rough",
      "ref": "hs_trash_can",
      "dev": 0.26,
-     "msg": "Dex +26 % frente a papelera (34.34 % y se esperaba 27.22 %)"
+     "msg": "Dex +26 % frente a papelera (caja sin medir: bounds del hotspot)"
     }
    ],
-   "info": [],
-   "score": 0.52,
+   "score": 0,
    "shot": "capturas/clinic_exterior/064.png"
   }
  ]

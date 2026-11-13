@@ -220,10 +220,8 @@ for (const scene of scenes) {
   if (worst.length) {
     const tiles = [];
     for (const p of worst) {
-      const f = p.failures[0];
       const label = `${p.kind}:${p.id} (${p.x},${p.y})\n${p.failures.map((x) => `${x.type}${x.dev != null ? ` ${x.type === 'scale' ? `${x.dev > 0 ? '+' : ''}${Math.round(x.dev * 100)}%` : x.dev}` : ''}${x.ref ? ` ${x.ref}` : ''}`).join(' · ')}`;
       tiles.push('-label', label.slice(0, 160), join(OUT, p.shot));
-      void f;
     }
     const sheet = join(OUT, `${scene}.png`);
     try {

@@ -3,10 +3,8 @@
  "scalePolicy": "measure",
  "summary": {
   "positions": 59,
-  "failing": 3,
-  "byType": {
-   "feet": 3
-  }
+  "failing": 0,
+  "byType": {}
  },
  "positions": [
   {
@@ -1427,20 +1425,19 @@
     "dev": -0.07,
     "baseDy": 5.6
    },
-   "failures": [
-    {
-     "type": "feet",
-     "msg": "pies fuera del azul de la walkmask (93.4, 90.4)"
-    }
-   ],
+   "failures": [],
    "info": [
+    {
+     "type": "walkmask",
+     "msg": "pies fuera del azul de la walkmask (93.4, 90.4)"
+    },
     {
      "type": "behind",
      "ref": "hs_frontdoor",
      "msg": "pies por detrás de puerta de entrada y se solapan (+89 %): ¿debería taparle?"
     }
    ],
-   "score": 1.5,
+   "score": 0,
    "shot": "capturas/lobby/044.png"
   },
   {
@@ -1689,14 +1686,14 @@
     "dev": -0.07,
     "baseDy": 0
    },
-   "failures": [
+   "failures": [],
+   "info": [
     {
-     "type": "feet",
+     "type": "walkmask",
      "msg": "pies fuera del azul de la walkmask (93.4, 96)"
     }
    ],
-   "info": [],
-   "score": 1.5,
+   "score": 0,
    "shot": "capturas/lobby/052.png"
   },
   {
@@ -1727,20 +1724,19 @@
     "dev": -0.07,
     "baseDy": 1
    },
-   "failures": [
-    {
-     "type": "feet",
-     "msg": "pies fuera del azul de la walkmask (93.4, 95)"
-    }
-   ],
+   "failures": [],
    "info": [
+    {
+     "type": "walkmask",
+     "msg": "pies fuera del azul de la walkmask (93.4, 95)"
+    },
     {
      "type": "behind",
      "ref": "hs_frontdoor",
      "msg": "pies por detrás de puerta de entrada y se solapan (+89 %): ¿debería taparle?"
     }
    ],
-   "score": 1.5,
+   "score": 0,
    "shot": "capturas/lobby/053.png"
   },
   {

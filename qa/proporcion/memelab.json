@@ -1,0 +1,1994 @@
+{
+ "scene": "memelab",
+ "scalePolicy": "measure",
+ "summary": {
+  "positions": 54,
+  "failing": 0,
+  "byType": {}
+ },
+ "positions": [
+  {
+   "id": "grid-6.9-93.2",
+   "kind": "grid",
+   "x": 6.9,
+   "y": 93.2,
+   "feet": {
+    "x": 6.9,
+    "y": 93.2
+   },
+   "dexBox": {
+    "x": 5.28,
+    "y": 39.55,
+    "w": 3.23,
+    "h": 53.65
+   },
+   "heightPct": 53.65,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_exit_door": 0
+   },
+   "scale": {
+    "ref": "hs_exit_door",
+    "expected": 51.63,
+    "got": 53.65,
+    "dev": 0.04,
+    "baseDy": 5.2
+   },
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_meme_tube",
+     "dev": 0.16,
+     "msg": "Dex +16 % frente a tubo de contención (caja sin medir: bounds del hotspot)"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "grid-6.9-95.9",
+   "kind": "grid",
+   "x": 6.9,
+   "y": 95.9,
+   "feet": {
+    "x": 6.9,
+    "y": 95.9
+   },
+   "dexBox": {
+    "x": 5.28,
+    "y": 42.25,
+    "w": 3.23,
+    "h": 53.65
+   },
+   "heightPct": 53.65,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_exit_door": 0
+   },
+   "scale": {
+    "ref": "hs_exit_door",
+    "expected": 51.63,
+    "got": 53.65,
+    "dev": 0.04,
+    "baseDy": 7.9
+   },
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_meme_tube",
+     "dev": 0.16,
+     "msg": "Dex +16 % frente a tubo de contención (caja sin medir: bounds del hotspot)"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "grid-6.9-98.6",
+   "kind": "grid",
+   "x": 6.9,
+   "y": 98.6,
+   "feet": {
+    "x": 6.9,
+    "y": 98.6
+   },
+   "dexBox": {
+    "x": 5.28,
+    "y": 44.95,
+    "w": 3.23,
+    "h": 53.65
+   },
+   "heightPct": 53.65,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_exit_door": 0
+   },
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "grid-14.6-93.2",
+   "kind": "grid",
+   "x": 14.6,
+   "y": 93.2,
+   "feet": {
+    "x": 14.6,
+    "y": 93.2
+   },
+   "dexBox": {
+    "x": 12.98,
+    "y": 39.55,
+    "w": 3.23,
+    "h": 53.65
+   },
+   "heightPct": 53.65,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": {
+    "ref": "hs_exit_door",
+    "expected": 51.63,
+    "got": 53.65,
+    "dev": 0.04,
+    "baseDy": 5.2
+   },
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_meme_tube",
+     "dev": 0.16,
+     "msg": "Dex +16 % frente a tubo de contención (caja sin medir: bounds del hotspot)"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "grid-14.6-95.9",
+   "kind": "grid",
+   "x": 14.6,
+   "y": 95.9,
+   "feet": {
+    "x": 14.6,
+    "y": 95.9
+   },
+   "dexBox": {
+    "x": 12.98,
+    "y": 42.25,
+    "w": 3.23,
+    "h": 53.65
+   },
+   "heightPct": 53.65,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": {
+    "ref": "hs_exit_door",
+    "expected": 51.63,
+    "got": 53.65,
+    "dev": 0.04,
+    "baseDy": 7.9
+   },
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_meme_tube",
+     "dev": 0.16,
+     "msg": "Dex +16 % frente a tubo de contención (caja sin medir: bounds del hotspot)"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "grid-14.6-98.6",
+   "kind": "grid",
+   "x": 14.6,
+   "y": 98.6,
+   "feet": {
+    "x": 14.6,
+    "y": 98.6
+   },
+   "dexBox": {
+    "x": 12.98,
+    "y": 44.95,
+    "w": 3.23,
+    "h": 53.65
+   },
+   "heightPct": 53.65,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "grid-22.4-93.2",
+   "kind": "grid",
+   "x": 22.4,
+   "y": 93.2,
+   "feet": {
+    "x": 22.4,
+    "y": 93.2
+   },
+   "dexBox": {
+    "x": 20.78,
+    "y": 39.55,
+    "w": 3.23,
+    "h": 53.65
+   },
+   "heightPct": 53.65,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": {
+    "ref": "hs_exit_door",
+    "expected": 51.63,
+    "got": 53.65,
+    "dev": 0.04,
+    "baseDy": 5.2
+   },
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_meme_tube",
+     "dev": 0.16,
+     "msg": "Dex +16 % frente a tubo de contención (caja sin medir: bounds del hotspot)"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "grid-22.4-95.9",
+   "kind": "grid",
+   "x": 22.4,
+   "y": 95.9,
+   "feet": {
+    "x": 22.4,
+    "y": 95.9
+   },
+   "dexBox": {
+    "x": 20.78,
+    "y": 42.25,
+    "w": 3.23,
+    "h": 53.65
+   },
+   "heightPct": 53.65,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": {
+    "ref": "hs_exit_door",
+    "expected": 51.63,
+    "got": 53.65,
+    "dev": 0.04,
+    "baseDy": 7.9
+   },
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_meme_tube",
+     "dev": 0.16,
+     "msg": "Dex +16 % frente a tubo de contención (caja sin medir: bounds del hotspot)"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "grid-22.4-98.6",
+   "kind": "grid",
+   "x": 22.4,
+   "y": 98.6,
+   "feet": {
+    "x": 22.4,
+    "y": 98.6
+   },
+   "dexBox": {
+    "x": 20.78,
+    "y": 44.95,
+    "w": 3.23,
+    "h": 53.65
+   },
+   "heightPct": 53.65,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "grid-30.2-93.2",
+   "kind": "grid",
+   "x": 30.2,
+   "y": 93.2,
+   "feet": {
+    "x": 30.2,
+    "y": 93.2
+   },
+   "dexBox": {
+    "x": 28.58,
+    "y": 39.55,
+    "w": 3.23,
+    "h": 53.65
+   },
+   "heightPct": 53.65,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": {
+    "ref": "hs_exit_door",
+    "expected": 51.63,
+    "got": 53.65,
+    "dev": 0.04,
+    "baseDy": 5.2
+   },
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_meme_tube",
+     "dev": 0.16,
+     "msg": "Dex +16 % frente a tubo de contención (caja sin medir: bounds del hotspot)"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/memelab/009.png"
+  },
+  {
+   "id": "grid-30.2-95.9",
+   "kind": "grid",
+   "x": 30.2,
+   "y": 95.9,
+   "feet": {
+    "x": 30.2,
+    "y": 95.9
+   },
+   "dexBox": {
+    "x": 28.58,
+    "y": 42.25,
+    "w": 3.23,
+    "h": 53.65
+   },
+   "heightPct": 53.65,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": {
+    "ref": "hs_exit_door",
+    "expected": 51.63,
+    "got": 53.65,
+    "dev": 0.04,
+    "baseDy": 7.9
+   },
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_meme_tube",
+     "dev": 0.16,
+     "msg": "Dex +16 % frente a tubo de contención (caja sin medir: bounds del hotspot)"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/memelab/010.png"
+  },
+  {
+   "id": "grid-30.2-98.6",
+   "kind": "grid",
+   "x": 30.2,
+   "y": 98.6,
+   "feet": {
+    "x": 30.2,
+    "y": 98.6
+   },
+   "dexBox": {
+    "x": 28.58,
+    "y": 44.95,
+    "w": 3.23,
+    "h": 53.65
+   },
+   "heightPct": 53.65,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "grid-37.9-93.2",
+   "kind": "grid",
+   "x": 37.9,
+   "y": 93.2,
+   "feet": {
+    "x": 37.9,
+    "y": 93.2
+   },
+   "dexBox": {
+    "x": 36.28,
+    "y": 39.55,
+    "w": 3.23,
+    "h": 53.65
+   },
+   "heightPct": 53.65,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_chemicals": 0
+   },
+   "scale": {
+    "ref": "hs_exit_door",
+    "expected": 51.63,
+    "got": 53.65,
+    "dev": 0.04,
+    "baseDy": 5.2
+   },
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_meme_tube",
+     "dev": 0.16,
+     "msg": "Dex +16 % frente a tubo de contención (caja sin medir: bounds del hotspot)"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/memelab/012.png"
+  },
+  {
+   "id": "grid-37.9-95.9",
+   "kind": "grid",
+   "x": 37.9,
+   "y": 95.9,
+   "feet": {
+    "x": 37.9,
+    "y": 95.9
+   },
+   "dexBox": {
+    "x": 36.28,
+    "y": 42.25,
+    "w": 3.23,
+    "h": 53.65
+   },
+   "heightPct": 53.65,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_chemicals": 0
+   },
+   "scale": {
+    "ref": "hs_exit_door",
+    "expected": 51.63,
+    "got": 53.65,
+    "dev": 0.04,
+    "baseDy": 7.9
+   },
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_meme_tube",
+     "dev": 0.16,
+     "msg": "Dex +16 % frente a tubo de contención (caja sin medir: bounds del hotspot)"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/memelab/013.png"
+  },
+  {
+   "id": "grid-37.9-98.6",
+   "kind": "grid",
+   "x": 37.9,
+   "y": 98.6,
+   "feet": {
+    "x": 37.9,
+    "y": 98.6
+   },
+   "dexBox": {
+    "x": 36.28,
+    "y": 44.95,
+    "w": 3.23,
+    "h": 53.65
+   },
+   "heightPct": 53.65,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_chemicals": 0
+   },
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "grid-45.7-93.2",
+   "kind": "grid",
+   "x": 45.7,
+   "y": 93.2,
+   "feet": {
+    "x": 45.7,
+    "y": 93.2
+   },
+   "dexBox": {
+    "x": 44.08,
+    "y": 39.55,
+    "w": 3.23,
+    "h": 53.65
+   },
+   "heightPct": 53.65,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_meme_tube": 0
+   },
+   "scale": {
+    "ref": "hs_exit_door",
+    "expected": 51.63,
+    "got": 53.65,
+    "dev": 0.04,
+    "baseDy": 5.2
+   },
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_meme_tube",
+     "dev": 0.16,
+     "msg": "Dex +16 % frente a tubo de contención (caja sin medir: bounds del hotspot)"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/memelab/015.png"
+  },
+  {
+   "id": "grid-45.7-95.9",
+   "kind": "grid",
+   "x": 45.7,
+   "y": 95.9,
+   "feet": {
+    "x": 45.7,
+    "y": 95.9
+   },
+   "dexBox": {
+    "x": 44.08,
+    "y": 42.25,
+    "w": 3.23,
+    "h": 53.65
+   },
+   "heightPct": 53.65,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_meme_tube": 0
+   },
+   "scale": {
+    "ref": "hs_exit_door",
+    "expected": 51.63,
+    "got": 53.65,
+    "dev": 0.04,
+    "baseDy": 7.9
+   },
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_meme_tube",
+     "dev": 0.16,
+     "msg": "Dex +16 % frente a tubo de contención (caja sin medir: bounds del hotspot)"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/memelab/016.png"
+  },
+  {
+   "id": "grid-45.7-98.6",
+   "kind": "grid",
+   "x": 45.7,
+   "y": 98.6,
+   "feet": {
+    "x": 45.7,
+    "y": 98.6
+   },
+   "dexBox": {
+    "x": 44.08,
+    "y": 44.95,
+    "w": 3.23,
+    "h": 53.65
+   },
+   "heightPct": 53.65,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_meme_tube": 0
+   },
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "grid-53.5-93.2",
+   "kind": "grid",
+   "x": 53.5,
+   "y": 93.2,
+   "feet": {
+    "x": 53.5,
+    "y": 93.2
+   },
+   "dexBox": {
+    "x": 51.88,
+    "y": 39.55,
+    "w": 3.23,
+    "h": 53.65
+   },
+   "heightPct": 53.65,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_meme_tube": 0
+   },
+   "scale": {
+    "ref": "hs_exit_door",
+    "expected": 51.63,
+    "got": 53.65,
+    "dev": 0.04,
+    "baseDy": 5.2
+   },
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_meme_tube",
+     "dev": 0.16,
+     "msg": "Dex +16 % frente a tubo de contención (caja sin medir: bounds del hotspot)"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/memelab/018.png"
+  },
+  {
+   "id": "grid-53.5-95.9",
+   "kind": "grid",
+   "x": 53.5,
+   "y": 95.9,
+   "feet": {
+    "x": 53.5,
+    "y": 95.9
+   },
+   "dexBox": {
+    "x": 51.88,
+    "y": 42.25,
+    "w": 3.23,
+    "h": 53.65
+   },
+   "heightPct": 53.65,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_meme_tube": 0
+   },
+   "scale": {
+    "ref": "hs_exit_door",
+    "expected": 51.63,
+    "got": 53.65,
+    "dev": 0.04,
+    "baseDy": 7.9
+   },
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_meme_tube",
+     "dev": 0.16,
+     "msg": "Dex +16 % frente a tubo de contención (caja sin medir: bounds del hotspot)"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/memelab/019.png"
+  },
+  {
+   "id": "grid-53.5-98.6",
+   "kind": "grid",
+   "x": 53.5,
+   "y": 98.6,
+   "feet": {
+    "x": 53.5,
+    "y": 98.6
+   },
+   "dexBox": {
+    "x": 51.88,
+    "y": 44.95,
+    "w": 3.23,
+    "h": 53.65
+   },
+   "heightPct": 53.65,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_meme_tube": 0
+   },
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "grid-61.2-93.2",
+   "kind": "grid",
+   "x": 61.2,
+   "y": 93.2,
+   "feet": {
+    "x": 61.2,
+    "y": 93.2
+   },
+   "dexBox": {
+    "x": 59.58,
+    "y": 39.55,
+    "w": 3.23,
+    "h": 53.65
+   },
+   "heightPct": 53.65,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": {
+    "ref": "hs_exit_door",
+    "expected": 51.63,
+    "got": 53.65,
+    "dev": 0.04,
+    "baseDy": 5.2
+   },
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_meme_tube",
+     "dev": 0.16,
+     "msg": "Dex +16 % frente a tubo de contención (caja sin medir: bounds del hotspot)"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/memelab/021.png"
+  },
+  {
+   "id": "grid-61.2-95.9",
+   "kind": "grid",
+   "x": 61.2,
+   "y": 95.9,
+   "feet": {
+    "x": 61.2,
+    "y": 95.9
+   },
+   "dexBox": {
+    "x": 59.58,
+    "y": 42.25,
+    "w": 3.23,
+    "h": 53.65
+   },
+   "heightPct": 53.65,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": {
+    "ref": "hs_exit_door",
+    "expected": 51.63,
+    "got": 53.65,
+    "dev": 0.04,
+    "baseDy": 7.9
+   },
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_meme_tube",
+     "dev": 0.16,
+     "msg": "Dex +16 % frente a tubo de contención (caja sin medir: bounds del hotspot)"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/memelab/022.png"
+  },
+  {
+   "id": "grid-61.2-98.6",
+   "kind": "grid",
+   "x": 61.2,
+   "y": 98.6,
+   "feet": {
+    "x": 61.2,
+    "y": 98.6
+   },
+   "dexBox": {
+    "x": 59.58,
+    "y": 44.95,
+    "w": 3.23,
+    "h": 53.65
+   },
+   "heightPct": 53.65,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "grid-69-93.2",
+   "kind": "grid",
+   "x": 69,
+   "y": 93.2,
+   "feet": {
+    "x": 69,
+    "y": 93.2
+   },
+   "dexBox": {
+    "x": 67.38,
+    "y": 39.55,
+    "w": 3.23,
+    "h": 53.65
+   },
+   "heightPct": 53.65,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": {
+    "ref": "hs_exit_door",
+    "expected": 51.63,
+    "got": 53.65,
+    "dev": 0.04,
+    "baseDy": 5.2
+   },
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_meme_tube",
+     "dev": 0.16,
+     "msg": "Dex +16 % frente a tubo de contención (caja sin medir: bounds del hotspot)"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/memelab/024.png"
+  },
+  {
+   "id": "grid-69-95.9",
+   "kind": "grid",
+   "x": 69,
+   "y": 95.9,
+   "feet": {
+    "x": 69,
+    "y": 95.9
+   },
+   "dexBox": {
+    "x": 67.38,
+    "y": 42.25,
+    "w": 3.23,
+    "h": 53.65
+   },
+   "heightPct": 53.65,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": {
+    "ref": "hs_exit_door",
+    "expected": 51.63,
+    "got": 53.65,
+    "dev": 0.04,
+    "baseDy": 7.9
+   },
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_meme_tube",
+     "dev": 0.16,
+     "msg": "Dex +16 % frente a tubo de contención (caja sin medir: bounds del hotspot)"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/memelab/025.png"
+  },
+  {
+   "id": "grid-69-98.6",
+   "kind": "grid",
+   "x": 69,
+   "y": 98.6,
+   "feet": {
+    "x": 69,
+    "y": 98.6
+   },
+   "dexBox": {
+    "x": 67.38,
+    "y": 44.95,
+    "w": 3.23,
+    "h": 53.65
+   },
+   "heightPct": 53.65,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "grid-76.8-93.2",
+   "kind": "grid",
+   "x": 76.8,
+   "y": 93.2,
+   "feet": {
+    "x": 76.8,
+    "y": 93.2
+   },
+   "dexBox": {
+    "x": 75.18,
+    "y": 39.55,
+    "w": 3.23,
+    "h": 53.65
+   },
+   "heightPct": 53.65,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": {
+    "ref": "hs_exit_door",
+    "expected": 51.63,
+    "got": 53.65,
+    "dev": 0.04,
+    "baseDy": 5.2
+   },
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_meme_tube",
+     "dev": 0.16,
+     "msg": "Dex +16 % frente a tubo de contención (caja sin medir: bounds del hotspot)"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/memelab/027.png"
+  },
+  {
+   "id": "grid-76.8-95.9",
+   "kind": "grid",
+   "x": 76.8,
+   "y": 95.9,
+   "feet": {
+    "x": 76.8,
+    "y": 95.9
+   },
+   "dexBox": {
+    "x": 75.18,
+    "y": 42.25,
+    "w": 3.23,
+    "h": 53.65
+   },
+   "heightPct": 53.65,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": {
+    "ref": "hs_exit_door",
+    "expected": 51.63,
+    "got": 53.65,
+    "dev": 0.04,
+    "baseDy": 7.9
+   },
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_meme_tube",
+     "dev": 0.16,
+     "msg": "Dex +16 % frente a tubo de contención (caja sin medir: bounds del hotspot)"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/memelab/028.png"
+  },
+  {
+   "id": "grid-76.8-98.6",
+   "kind": "grid",
+   "x": 76.8,
+   "y": 98.6,
+   "feet": {
+    "x": 76.8,
+    "y": 98.6
+   },
+   "dexBox": {
+    "x": 75.18,
+    "y": 44.95,
+    "w": 3.23,
+    "h": 53.65
+   },
+   "heightPct": 53.65,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "grid-84.5-93.2",
+   "kind": "grid",
+   "x": 84.5,
+   "y": 93.2,
+   "feet": {
+    "x": 84.5,
+    "y": 93.2
+   },
+   "dexBox": {
+    "x": 82.88,
+    "y": 39.55,
+    "w": 3.23,
+    "h": 53.65
+   },
+   "heightPct": 53.65,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": {
+    "ref": "hs_exit_door",
+    "expected": 51.63,
+    "got": 53.65,
+    "dev": 0.04,
+    "baseDy": 5.2
+   },
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_meme_tube",
+     "dev": 0.16,
+     "msg": "Dex +16 % frente a tubo de contención (caja sin medir: bounds del hotspot)"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/memelab/030.png"
+  },
+  {
+   "id": "grid-84.5-95.9",
+   "kind": "grid",
+   "x": 84.5,
+   "y": 95.9,
+   "feet": {
+    "x": 84.5,
+    "y": 95.9
+   },
+   "dexBox": {
+    "x": 82.88,
+    "y": 42.25,
+    "w": 3.23,
+    "h": 53.65
+   },
+   "heightPct": 53.65,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": {
+    "ref": "hs_exit_door",
+    "expected": 51.63,
+    "got": 53.65,
+    "dev": 0.04,
+    "baseDy": 7.9
+   },
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_meme_tube",
+     "dev": 0.16,
+     "msg": "Dex +16 % frente a tubo de contención (caja sin medir: bounds del hotspot)"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/memelab/031.png"
+  },
+  {
+   "id": "grid-84.5-98.6",
+   "kind": "grid",
+   "x": 84.5,
+   "y": 98.6,
+   "feet": {
+    "x": 84.5,
+    "y": 98.6
+   },
+   "dexBox": {
+    "x": 82.88,
+    "y": 44.95,
+    "w": 3.23,
+    "h": 53.65
+   },
+   "heightPct": 53.65,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "hs_meme_tube",
+   "kind": "arrival",
+   "x": 50.1,
+   "y": 92.3,
+   "feet": {
+    "x": 50.1,
+    "y": 92.3
+   },
+   "dexBox": {
+    "x": 48.48,
+    "y": 38.65,
+    "w": 3.23,
+    "h": 53.65
+   },
+   "heightPct": 53.65,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_meme_tube": 0
+   },
+   "scale": {
+    "ref": "hs_exit_door",
+    "expected": 51.63,
+    "got": 53.65,
+    "dev": 0.04,
+    "baseDy": 4.3
+   },
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_meme_tube",
+     "dev": 0.16,
+     "msg": "Dex +16 % frente a tubo de contención (caja sin medir: bounds del hotspot)"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/memelab/033.png"
+  },
+  {
+   "id": "hs_meme_virus_screen",
+   "kind": "arrival",
+   "x": 25.5,
+   "y": 92.3,
+   "feet": {
+    "x": 25.5,
+    "y": 92.3
+   },
+   "dexBox": {
+    "x": 23.88,
+    "y": 38.65,
+    "w": 3.23,
+    "h": 53.65
+   },
+   "heightPct": 53.65,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": {
+    "ref": "hs_exit_door",
+    "expected": 51.63,
+    "got": 53.65,
+    "dev": 0.04,
+    "baseDy": 4.3
+   },
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_meme_tube",
+     "dev": 0.16,
+     "msg": "Dex +16 % frente a tubo de contención (caja sin medir: bounds del hotspot)"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "hs_rarity_index",
+   "kind": "arrival",
+   "x": 71.6,
+   "y": 92.3,
+   "feet": {
+    "x": 71.6,
+    "y": 92.3
+   },
+   "dexBox": {
+    "x": 69.98,
+    "y": 38.65,
+    "w": 3.23,
+    "h": 53.65
+   },
+   "heightPct": 53.65,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": {
+    "ref": "hs_exit_door",
+    "expected": 51.63,
+    "got": 53.65,
+    "dev": 0.04,
+    "baseDy": 4.3
+   },
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_meme_tube",
+     "dev": 0.16,
+     "msg": "Dex +16 % frente a tubo de contención (caja sin medir: bounds del hotspot)"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/memelab/035.png"
+  },
+  {
+   "id": "hs_chemicals",
+   "kind": "arrival",
+   "x": 36.3,
+   "y": 92.3,
+   "feet": {
+    "x": 36.3,
+    "y": 92.3
+   },
+   "dexBox": {
+    "x": 34.68,
+    "y": 38.65,
+    "w": 3.23,
+    "h": 53.65
+   },
+   "heightPct": 53.65,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_chemicals": 0
+   },
+   "scale": {
+    "ref": "hs_exit_door",
+    "expected": 51.63,
+    "got": 53.65,
+    "dev": 0.04,
+    "baseDy": 4.3
+   },
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_meme_tube",
+     "dev": 0.16,
+     "msg": "Dex +16 % frente a tubo de contención (caja sin medir: bounds del hotspot)"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/memelab/036.png"
+  },
+  {
+   "id": "hs_do_not_push",
+   "kind": "arrival",
+   "x": 87.9,
+   "y": 92.3,
+   "feet": {
+    "x": 87.9,
+    "y": 92.3
+   },
+   "dexBox": {
+    "x": 86.28,
+    "y": 38.65,
+    "w": 3.23,
+    "h": 53.65
+   },
+   "heightPct": 53.65,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_do_not_push": 0
+   },
+   "scale": {
+    "ref": "hs_exit_door",
+    "expected": 51.63,
+    "got": 53.65,
+    "dev": 0.04,
+    "baseDy": 4.3
+   },
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_meme_tube",
+     "dev": 0.16,
+     "msg": "Dex +16 % frente a tubo de contención (caja sin medir: bounds del hotspot)"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/memelab/037.png"
+  },
+  {
+   "id": "hs_slime",
+   "kind": "arrival",
+   "x": 24.6,
+   "y": 92.3,
+   "feet": {
+    "x": 24.6,
+    "y": 92.3
+   },
+   "dexBox": {
+    "x": 22.98,
+    "y": 38.65,
+    "w": 3.23,
+    "h": 53.65
+   },
+   "heightPct": 53.65,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": {
+    "ref": "hs_exit_door",
+    "expected": 51.63,
+    "got": 53.65,
+    "dev": 0.04,
+    "baseDy": 4.3
+   },
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_meme_tube",
+     "dev": 0.16,
+     "msg": "Dex +16 % frente a tubo de contención (caja sin medir: bounds del hotspot)"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "hs_pepememe",
+   "kind": "arrival",
+   "x": 79.9,
+   "y": 92.3,
+   "feet": {
+    "x": 79.9,
+    "y": 92.3
+   },
+   "dexBox": {
+    "x": 78.28,
+    "y": 38.65,
+    "w": 3.23,
+    "h": 53.65
+   },
+   "heightPct": 53.65,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": {
+    "ref": "hs_exit_door",
+    "expected": 51.63,
+    "got": 53.65,
+    "dev": 0.04,
+    "baseDy": 4.3
+   },
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_meme_tube",
+     "dev": 0.16,
+     "msg": "Dex +16 % frente a tubo de contención (caja sin medir: bounds del hotspot)"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/memelab/039.png"
+  },
+  {
+   "id": "hs_exit_door",
+   "kind": "arrival",
+   "x": 8.7,
+   "y": 92.3,
+   "feet": {
+    "x": 8.7,
+    "y": 92.3
+   },
+   "dexBox": {
+    "x": 7.08,
+    "y": 38.65,
+    "w": 3.23,
+    "h": 53.65
+   },
+   "heightPct": 53.65,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_exit_door": 0
+   },
+   "scale": {
+    "ref": "hs_exit_door",
+    "expected": 51.63,
+    "got": 53.65,
+    "dev": 0.04,
+    "baseDy": 4.3
+   },
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_meme_tube",
+     "dev": 0.16,
+     "msg": "Dex +16 % frente a tubo de contención (caja sin medir: bounds del hotspot)"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "hs_equipment_rack",
+   "kind": "arrival",
+   "x": 87,
+   "y": 92.3,
+   "feet": {
+    "x": 87,
+    "y": 92.3
+   },
+   "dexBox": {
+    "x": 85.38,
+    "y": 38.65,
+    "w": 3.23,
+    "h": 53.65
+   },
+   "heightPct": 53.65,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": {
+    "ref": "hs_exit_door",
+    "expected": 51.63,
+    "got": 53.65,
+    "dev": 0.04,
+    "baseDy": 4.3
+   },
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_meme_tube",
+     "dev": 0.16,
+     "msg": "Dex +16 % frente a tubo de contención (caja sin medir: bounds del hotspot)"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/memelab/041.png"
+  },
+  {
+   "id": "hs_exit_door:izq",
+   "kind": "ref",
+   "x": 4,
+   "y": 92.3,
+   "feet": {
+    "x": 4,
+    "y": 92.3
+   },
+   "dexBox": {
+    "x": 2.38,
+    "y": 38.65,
+    "w": 3.23,
+    "h": 53.65
+   },
+   "heightPct": 53.65,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": {
+    "ref": "hs_exit_door",
+    "expected": 51.63,
+    "got": 53.65,
+    "dev": 0.04,
+    "baseDy": 4.3
+   },
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_meme_tube",
+     "dev": 0.16,
+     "msg": "Dex +16 % frente a tubo de contención (caja sin medir: bounds del hotspot)"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "hs_exit_door:der",
+   "kind": "ref",
+   "x": 13.4,
+   "y": 92.3,
+   "feet": {
+    "x": 13.4,
+    "y": 92.3
+   },
+   "dexBox": {
+    "x": 11.78,
+    "y": 38.65,
+    "w": 3.23,
+    "h": 53.65
+   },
+   "heightPct": 53.65,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": {
+    "ref": "hs_exit_door",
+    "expected": 51.63,
+    "got": 53.65,
+    "dev": 0.04,
+    "baseDy": 4.3
+   },
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_meme_tube",
+     "dev": 0.16,
+     "msg": "Dex +16 % frente a tubo de contención (caja sin medir: bounds del hotspot)"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "hs_exit_door:detrás",
+   "kind": "ref",
+   "x": 8.7,
+   "y": 92.3,
+   "feet": {
+    "x": 8.7,
+    "y": 92.3
+   },
+   "dexBox": {
+    "x": 7.08,
+    "y": 38.65,
+    "w": 3.23,
+    "h": 53.65
+   },
+   "heightPct": 53.65,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_exit_door": 0
+   },
+   "scale": {
+    "ref": "hs_exit_door",
+    "expected": 51.63,
+    "got": 53.65,
+    "dev": 0.04,
+    "baseDy": 4.3
+   },
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_meme_tube",
+     "dev": 0.16,
+     "msg": "Dex +16 % frente a tubo de contención (caja sin medir: bounds del hotspot)"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "hs_meme_tube:izq",
+   "kind": "ref",
+   "x": 42.1,
+   "y": 92.3,
+   "feet": {
+    "x": 42.1,
+    "y": 92.3
+   },
+   "dexBox": {
+    "x": 40.48,
+    "y": 38.65,
+    "w": 3.23,
+    "h": 53.65
+   },
+   "heightPct": 53.65,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": {
+    "ref": "hs_exit_door",
+    "expected": 51.63,
+    "got": 53.65,
+    "dev": 0.04,
+    "baseDy": 4.3
+   },
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_meme_tube",
+     "dev": 0.16,
+     "msg": "Dex +16 % frente a tubo de contención (caja sin medir: bounds del hotspot)"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/memelab/045.png"
+  },
+  {
+   "id": "hs_meme_tube:der",
+   "kind": "ref",
+   "x": 58,
+   "y": 92.3,
+   "feet": {
+    "x": 58,
+    "y": 92.3
+   },
+   "dexBox": {
+    "x": 56.38,
+    "y": 38.65,
+    "w": 3.23,
+    "h": 53.65
+   },
+   "heightPct": 53.65,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": {
+    "ref": "hs_exit_door",
+    "expected": 51.63,
+    "got": 53.65,
+    "dev": 0.04,
+    "baseDy": 4.3
+   },
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_meme_tube",
+     "dev": 0.16,
+     "msg": "Dex +16 % frente a tubo de contención (caja sin medir: bounds del hotspot)"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/memelab/046.png"
+  },
+  {
+   "id": "hs_meme_tube:detrás",
+   "kind": "ref",
+   "x": 50.1,
+   "y": 92.3,
+   "feet": {
+    "x": 50.1,
+    "y": 92.3
+   },
+   "dexBox": {
+    "x": 48.48,
+    "y": 38.65,
+    "w": 3.23,
+    "h": 53.65
+   },
+   "heightPct": 53.65,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_meme_tube": 0
+   },
+   "scale": {
+    "ref": "hs_exit_door",
+    "expected": 51.63,
+    "got": 53.65,
+    "dev": 0.04,
+    "baseDy": 4.3
+   },
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_meme_tube",
+     "dev": 0.16,
+     "msg": "Dex +16 % frente a tubo de contención (caja sin medir: bounds del hotspot)"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/memelab/047.png"
+  },
+  {
+   "id": "hs_chemicals:izq",
+   "kind": "ref",
+   "x": 30.2,
+   "y": 92.3,
+   "feet": {
+    "x": 30.2,
+    "y": 92.3
+   },
+   "dexBox": {
+    "x": 28.58,
+    "y": 38.65,
+    "w": 3.23,
+    "h": 53.65
+   },
+   "heightPct": 53.65,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": {
+    "ref": "hs_exit_door",
+    "expected": 51.63,
+    "got": 53.65,
+    "dev": 0.04,
+    "baseDy": 4.3
+   },
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_meme_tube",
+     "dev": 0.16,
+     "msg": "Dex +16 % frente a tubo de contención (caja sin medir: bounds del hotspot)"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/memelab/048.png"
+  },
+  {
+   "id": "hs_chemicals:der",
+   "kind": "ref",
+   "x": 42.3,
+   "y": 92.3,
+   "feet": {
+    "x": 42.3,
+    "y": 92.3
+   },
+   "dexBox": {
+    "x": 40.68,
+    "y": 38.65,
+    "w": 3.23,
+    "h": 53.65
+   },
+   "heightPct": 53.65,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": {
+    "ref": "hs_exit_door",
+    "expected": 51.63,
+    "got": 53.65,
+    "dev": 0.04,
+    "baseDy": 4.3
+   },
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_meme_tube",
+     "dev": 0.16,
+     "msg": "Dex +16 % frente a tubo de contención (caja sin medir: bounds del hotspot)"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/memelab/049.png"
+  },
+  {
+   "id": "hs_chemicals:detrás",
+   "kind": "ref",
+   "x": 36.3,
+   "y": 92.3,
+   "feet": {
+    "x": 36.3,
+    "y": 92.3
+   },
+   "dexBox": {
+    "x": 34.68,
+    "y": 38.65,
+    "w": 3.23,
+    "h": 53.65
+   },
+   "heightPct": 53.65,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_chemicals": 0
+   },
+   "scale": {
+    "ref": "hs_exit_door",
+    "expected": 51.63,
+    "got": 53.65,
+    "dev": 0.04,
+    "baseDy": 4.3
+   },
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_meme_tube",
+     "dev": 0.16,
+     "msg": "Dex +16 % frente a tubo de contención (caja sin medir: bounds del hotspot)"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/memelab/050.png"
+  },
+  {
+   "id": "hs_do_not_push:izq",
+   "kind": "ref",
+   "x": 87.3,
+   "y": 92.3,
+   "feet": {
+    "x": 87.3,
+    "y": 92.3
+   },
+   "dexBox": {
+    "x": 85.68,
+    "y": 38.65,
+    "w": 3.23,
+    "h": 53.65
+   },
+   "heightPct": 53.65,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": {
+    "ref": "hs_exit_door",
+    "expected": 51.63,
+    "got": 53.65,
+    "dev": 0.04,
+    "baseDy": 4.3
+   },
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_meme_tube",
+     "dev": 0.16,
+     "msg": "Dex +16 % frente a tubo de contención (caja sin medir: bounds del hotspot)"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/memelab/051.png"
+  },
+  {
+   "id": "hs_do_not_push:der",
+   "kind": "ref",
+   "x": 87.9,
+   "y": 92.3,
+   "feet": {
+    "x": 87.9,
+    "y": 92.3
+   },
+   "dexBox": {
+    "x": 86.28,
+    "y": 38.65,
+    "w": 3.23,
+    "h": 53.65
+   },
+   "heightPct": 53.65,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_do_not_push": 0
+   },
+   "scale": {
+    "ref": "hs_exit_door",
+    "expected": 51.63,
+    "got": 53.65,
+    "dev": 0.04,
+    "baseDy": 4.3
+   },
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_meme_tube",
+     "dev": 0.16,
+     "msg": "Dex +16 % frente a tubo de contención (caja sin medir: bounds del hotspot)"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/memelab/052.png"
+  },
+  {
+   "id": "hs_do_not_push:detrás",
+   "kind": "ref",
+   "x": 87.9,
+   "y": 92.3,
+   "feet": {
+    "x": 87.9,
+    "y": 92.3
+   },
+   "dexBox": {
+    "x": 86.28,
+    "y": 38.65,
+    "w": 3.23,
+    "h": 53.65
+   },
+   "heightPct": 53.65,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_do_not_push": 0
+   },
+   "scale": {
+    "ref": "hs_exit_door",
+    "expected": 51.63,
+    "got": 53.65,
+    "dev": 0.04,
+    "baseDy": 4.3
+   },
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_meme_tube",
+     "dev": 0.16,
+     "msg": "Dex +16 % frente a tubo de contención (caja sin medir: bounds del hotspot)"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/memelab/053.png"
+  }
+ ]
+}
