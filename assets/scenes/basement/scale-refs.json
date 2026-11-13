@@ -1,0 +1,52 @@
+{
+  "_doc": "A2.17: referencias de proporción y profundidad (scripts/proportion-sweep.mjs). box = caja en % del fondo (como scene.json), baseY = línea del suelo donde apoya, realHeightM = alto real aproximado; Dex ≈ 1,75 m. foreground = debe tapar a Dex cuando sus pies quedan por encima de baseY y su caja lo solapa. scalePolicy: measure = el alto de Dex frente a la referencia cuenta como fallo (> 15 %); fixed = escala elegida por Adrián, la medida es solo informativa. measured: false = caja tomada de los bounds del hotspot, sin medir a ojo sobre el fondo: su medida de escala es solo informativa hasta que se mida (fase 2).",
+  "scene": "basement",
+  "scalePolicy": "measure",
+  "dexHeightM": 1.75,
+  "refs": [
+    {
+      "id": "hs_left_desk",
+      "label": "escritorio",
+      "realHeightM": 0.75,
+      "foreground": false,
+      "box": {
+        "x": 47.8,
+        "y": 57,
+        "w": 20,
+        "h": 21
+      },
+      "baseY": 78,
+      "source": "qa/proportion-refs.json (medido a ojo en A2.11)"
+    },
+    {
+      "id": "hs_equipment",
+      "label": "rack de equipos",
+      "realHeightM": 1.8,
+      "foreground": false,
+      "box": {
+        "x": 75.6,
+        "y": 24.5,
+        "w": 8.4,
+        "h": 51
+      },
+      "baseY": 75.5,
+      "source": "bounds del hotspot",
+      "measured": false
+    },
+    {
+      "id": "hs_armchair",
+      "label": "sillón viejo",
+      "realHeightM": 1,
+      "foreground": false,
+      "box": {
+        "x": 39.7,
+        "y": 48.6,
+        "w": 3.7,
+        "h": 19
+      },
+      "baseY": 67.6,
+      "source": "bounds del hotspot",
+      "measured": false
+    }
+  ]
+}

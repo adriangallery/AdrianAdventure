@@ -1,0 +1,2719 @@
+{
+ "scene": "mountain",
+ "scalePolicy": "measure",
+ "summary": {
+  "positions": 80,
+  "failing": 28,
+  "byType": {
+   "overdraw": 9,
+   "scale": 19
+  }
+ },
+ "positions": [
+  {
+   "id": "grid-18.7-88",
+   "kind": "grid",
+   "x": 18.7,
+   "y": 88,
+   "feet": {
+    "x": 18.7,
+    "y": 88
+   },
+   "dexBox": {
+    "x": 17.01,
+    "y": 57.6,
+    "w": 3.39,
+    "h": 30.4
+   },
+   "heightPct": 30.4,
+   "walkable": true,
+   "maskOk": true,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "grid-18.7-91",
+   "kind": "grid",
+   "x": 18.7,
+   "y": 91,
+   "feet": {
+    "x": 18.7,
+    "y": 91
+   },
+   "dexBox": {
+    "x": 17.01,
+    "y": 60.6,
+    "w": 3.39,
+    "h": 30.4
+   },
+   "heightPct": 30.4,
+   "walkable": true,
+   "maskOk": true,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "grid-18.7-94",
+   "kind": "grid",
+   "x": 18.7,
+   "y": 94,
+   "feet": {
+    "x": 18.7,
+    "y": 94
+   },
+   "dexBox": {
+    "x": 17.01,
+    "y": 63.6,
+    "w": 3.39,
+    "h": 30.4
+   },
+   "heightPct": 30.4,
+   "walkable": true,
+   "maskOk": true,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "grid-18.7-97",
+   "kind": "grid",
+   "x": 18.7,
+   "y": 97,
+   "feet": {
+    "x": 18.7,
+    "y": 97
+   },
+   "dexBox": {
+    "x": 17.01,
+    "y": 66.6,
+    "w": 3.39,
+    "h": 30.4
+   },
+   "heightPct": 30.4,
+   "walkable": true,
+   "maskOk": true,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "grid-26.4-88",
+   "kind": "grid",
+   "x": 26.4,
+   "y": 88,
+   "feet": {
+    "x": 26.4,
+    "y": 88
+   },
+   "dexBox": {
+    "x": 24.71,
+    "y": 57.6,
+    "w": 3.39,
+    "h": 30.4
+   },
+   "heightPct": 30.4,
+   "walkable": true,
+   "maskOk": true,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "grid-26.4-91",
+   "kind": "grid",
+   "x": 26.4,
+   "y": 91,
+   "feet": {
+    "x": 26.4,
+    "y": 91
+   },
+   "dexBox": {
+    "x": 24.71,
+    "y": 60.6,
+    "w": 3.39,
+    "h": 30.4
+   },
+   "heightPct": 30.4,
+   "walkable": true,
+   "maskOk": true,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "grid-26.4-94",
+   "kind": "grid",
+   "x": 26.4,
+   "y": 94,
+   "feet": {
+    "x": 26.4,
+    "y": 94
+   },
+   "dexBox": {
+    "x": 24.71,
+    "y": 63.6,
+    "w": 3.39,
+    "h": 30.4
+   },
+   "heightPct": 30.4,
+   "walkable": true,
+   "maskOk": true,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "grid-26.4-97",
+   "kind": "grid",
+   "x": 26.4,
+   "y": 97,
+   "feet": {
+    "x": 26.4,
+    "y": 97
+   },
+   "dexBox": {
+    "x": 24.71,
+    "y": 66.6,
+    "w": 3.39,
+    "h": 30.4
+   },
+   "heightPct": 30.4,
+   "walkable": true,
+   "maskOk": true,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "grid-34.2-88",
+   "kind": "grid",
+   "x": 34.2,
+   "y": 88,
+   "feet": {
+    "x": 34.2,
+    "y": 88
+   },
+   "dexBox": {
+    "x": 32.51,
+    "y": 57.6,
+    "w": 3.39,
+    "h": 30.4
+   },
+   "heightPct": 30.4,
+   "walkable": true,
+   "maskOk": true,
+   "cover": {
+    "hs_sign": 0
+   },
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "grid-34.2-91",
+   "kind": "grid",
+   "x": 34.2,
+   "y": 91,
+   "feet": {
+    "x": 34.2,
+    "y": 91
+   },
+   "dexBox": {
+    "x": 32.51,
+    "y": 60.6,
+    "w": 3.39,
+    "h": 30.4
+   },
+   "heightPct": 30.4,
+   "walkable": true,
+   "maskOk": true,
+   "cover": {
+    "hs_sign": 0
+   },
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "grid-34.2-94",
+   "kind": "grid",
+   "x": 34.2,
+   "y": 94,
+   "feet": {
+    "x": 34.2,
+    "y": 94
+   },
+   "dexBox": {
+    "x": 32.51,
+    "y": 63.6,
+    "w": 3.39,
+    "h": 30.4
+   },
+   "heightPct": 30.4,
+   "walkable": true,
+   "maskOk": true,
+   "cover": {
+    "hs_sign": 0
+   },
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "grid-34.2-97",
+   "kind": "grid",
+   "x": 34.2,
+   "y": 97,
+   "feet": {
+    "x": 34.2,
+    "y": 97
+   },
+   "dexBox": {
+    "x": 32.51,
+    "y": 66.6,
+    "w": 3.39,
+    "h": 30.4
+   },
+   "heightPct": 30.4,
+   "walkable": true,
+   "maskOk": true,
+   "cover": {
+    "hs_sign": 0
+   },
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "grid-41.9-88",
+   "kind": "grid",
+   "x": 41.9,
+   "y": 88,
+   "feet": {
+    "x": 41.9,
+    "y": 88
+   },
+   "dexBox": {
+    "x": 40.21,
+    "y": 57.6,
+    "w": 3.39,
+    "h": 30.4
+   },
+   "heightPct": 30.4,
+   "walkable": true,
+   "maskOk": true,
+   "cover": {
+    "hs_sign": 0
+   },
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "grid-41.9-91",
+   "kind": "grid",
+   "x": 41.9,
+   "y": 91,
+   "feet": {
+    "x": 41.9,
+    "y": 91
+   },
+   "dexBox": {
+    "x": 40.21,
+    "y": 60.6,
+    "w": 3.39,
+    "h": 30.4
+   },
+   "heightPct": 30.4,
+   "walkable": true,
+   "maskOk": true,
+   "cover": {
+    "hs_sign": 0
+   },
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "grid-41.9-94",
+   "kind": "grid",
+   "x": 41.9,
+   "y": 94,
+   "feet": {
+    "x": 41.9,
+    "y": 94
+   },
+   "dexBox": {
+    "x": 40.21,
+    "y": 63.6,
+    "w": 3.39,
+    "h": 30.4
+   },
+   "heightPct": 30.4,
+   "walkable": true,
+   "maskOk": true,
+   "cover": {
+    "hs_sign": 0
+   },
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "grid-41.9-97",
+   "kind": "grid",
+   "x": 41.9,
+   "y": 97,
+   "feet": {
+    "x": 41.9,
+    "y": 97
+   },
+   "dexBox": {
+    "x": 40.21,
+    "y": 66.6,
+    "w": 3.39,
+    "h": 30.4
+   },
+   "heightPct": 30.4,
+   "walkable": true,
+   "maskOk": true,
+   "cover": {
+    "hs_sign": 0
+   },
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "grid-49.7-88",
+   "kind": "grid",
+   "x": 49.7,
+   "y": 88,
+   "feet": {
+    "x": 49.7,
+    "y": 88
+   },
+   "dexBox": {
+    "x": 48.01,
+    "y": 57.6,
+    "w": 3.39,
+    "h": 30.4
+   },
+   "heightPct": 30.4,
+   "walkable": true,
+   "maskOk": true,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "grid-49.7-91",
+   "kind": "grid",
+   "x": 49.7,
+   "y": 91,
+   "feet": {
+    "x": 49.7,
+    "y": 91
+   },
+   "dexBox": {
+    "x": 48.01,
+    "y": 60.6,
+    "w": 3.39,
+    "h": 30.4
+   },
+   "heightPct": 30.4,
+   "walkable": true,
+   "maskOk": true,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "grid-49.7-94",
+   "kind": "grid",
+   "x": 49.7,
+   "y": 94,
+   "feet": {
+    "x": 49.7,
+    "y": 94
+   },
+   "dexBox": {
+    "x": 48.01,
+    "y": 63.6,
+    "w": 3.39,
+    "h": 30.4
+   },
+   "heightPct": 30.4,
+   "walkable": true,
+   "maskOk": true,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "grid-49.7-97",
+   "kind": "grid",
+   "x": 49.7,
+   "y": 97,
+   "feet": {
+    "x": 49.7,
+    "y": 97
+   },
+   "dexBox": {
+    "x": 48.01,
+    "y": 66.6,
+    "w": 3.39,
+    "h": 30.4
+   },
+   "heightPct": 30.4,
+   "walkable": true,
+   "maskOk": true,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "grid-57.4-88",
+   "kind": "grid",
+   "x": 57.4,
+   "y": 88,
+   "feet": {
+    "x": 57.4,
+    "y": 88
+   },
+   "dexBox": {
+    "x": 55.71,
+    "y": 57.6,
+    "w": 3.39,
+    "h": 30.4
+   },
+   "heightPct": 30.4,
+   "walkable": true,
+   "maskOk": true,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "grid-57.4-91",
+   "kind": "grid",
+   "x": 57.4,
+   "y": 91,
+   "feet": {
+    "x": 57.4,
+    "y": 91
+   },
+   "dexBox": {
+    "x": 55.71,
+    "y": 60.6,
+    "w": 3.39,
+    "h": 30.4
+   },
+   "heightPct": 30.4,
+   "walkable": true,
+   "maskOk": true,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "grid-57.4-94",
+   "kind": "grid",
+   "x": 57.4,
+   "y": 94,
+   "feet": {
+    "x": 57.4,
+    "y": 94
+   },
+   "dexBox": {
+    "x": 55.71,
+    "y": 63.6,
+    "w": 3.39,
+    "h": 30.4
+   },
+   "heightPct": 30.4,
+   "walkable": true,
+   "maskOk": true,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "grid-57.4-97",
+   "kind": "grid",
+   "x": 57.4,
+   "y": 97,
+   "feet": {
+    "x": 57.4,
+    "y": 97
+   },
+   "dexBox": {
+    "x": 55.71,
+    "y": 66.6,
+    "w": 3.39,
+    "h": 30.4
+   },
+   "heightPct": 30.4,
+   "walkable": true,
+   "maskOk": true,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "grid-65.1-88",
+   "kind": "grid",
+   "x": 65.1,
+   "y": 88,
+   "feet": {
+    "x": 65.1,
+    "y": 88
+   },
+   "dexBox": {
+    "x": 63.41,
+    "y": 57.6,
+    "w": 3.39,
+    "h": 30.4
+   },
+   "heightPct": 30.4,
+   "walkable": true,
+   "maskOk": true,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "grid-65.1-91",
+   "kind": "grid",
+   "x": 65.1,
+   "y": 91,
+   "feet": {
+    "x": 65.1,
+    "y": 91
+   },
+   "dexBox": {
+    "x": 63.41,
+    "y": 60.6,
+    "w": 3.39,
+    "h": 30.4
+   },
+   "heightPct": 30.4,
+   "walkable": true,
+   "maskOk": true,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "grid-65.1-94",
+   "kind": "grid",
+   "x": 65.1,
+   "y": 94,
+   "feet": {
+    "x": 65.1,
+    "y": 94
+   },
+   "dexBox": {
+    "x": 63.41,
+    "y": 63.6,
+    "w": 3.39,
+    "h": 30.4
+   },
+   "heightPct": 30.4,
+   "walkable": true,
+   "maskOk": true,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "grid-65.1-97",
+   "kind": "grid",
+   "x": 65.1,
+   "y": 97,
+   "feet": {
+    "x": 65.1,
+    "y": 97
+   },
+   "dexBox": {
+    "x": 63.41,
+    "y": 66.6,
+    "w": 3.39,
+    "h": 30.4
+   },
+   "heightPct": 30.4,
+   "walkable": true,
+   "maskOk": true,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "grid-72.9-88",
+   "kind": "grid",
+   "x": 72.9,
+   "y": 88,
+   "feet": {
+    "x": 72.9,
+    "y": 88
+   },
+   "dexBox": {
+    "x": 71.21,
+    "y": 57.6,
+    "w": 3.39,
+    "h": 30.4
+   },
+   "heightPct": 30.4,
+   "walkable": true,
+   "maskOk": false,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    },
+    {
+     "type": "walkmask",
+     "msg": "pies fuera del azul de la walkmask (72.9, 88)"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/mountain/028.png"
+  },
+  {
+   "id": "grid-72.9-91",
+   "kind": "grid",
+   "x": 72.9,
+   "y": 91,
+   "feet": {
+    "x": 72.9,
+    "y": 91
+   },
+   "dexBox": {
+    "x": 71.21,
+    "y": 60.6,
+    "w": 3.39,
+    "h": 30.4
+   },
+   "heightPct": 30.4,
+   "walkable": true,
+   "maskOk": false,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    },
+    {
+     "type": "walkmask",
+     "msg": "pies fuera del azul de la walkmask (72.9, 91)"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/mountain/029.png"
+  },
+  {
+   "id": "grid-72.9-94",
+   "kind": "grid",
+   "x": 72.9,
+   "y": 94,
+   "feet": {
+    "x": 72.9,
+    "y": 94
+   },
+   "dexBox": {
+    "x": 71.21,
+    "y": 63.6,
+    "w": 3.39,
+    "h": 30.4
+   },
+   "heightPct": 30.4,
+   "walkable": true,
+   "maskOk": false,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    },
+    {
+     "type": "walkmask",
+     "msg": "pies fuera del azul de la walkmask (72.9, 94)"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/mountain/030.png"
+  },
+  {
+   "id": "grid-72.9-97",
+   "kind": "grid",
+   "x": 72.9,
+   "y": 97,
+   "feet": {
+    "x": 72.9,
+    "y": 97
+   },
+   "dexBox": {
+    "x": 71.21,
+    "y": 66.6,
+    "w": 3.39,
+    "h": 30.4
+   },
+   "heightPct": 30.4,
+   "walkable": true,
+   "maskOk": true,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "grid-80.6-88",
+   "kind": "grid",
+   "x": 80.6,
+   "y": 88,
+   "feet": {
+    "x": 80.6,
+    "y": 88
+   },
+   "dexBox": {
+    "x": 78.91,
+    "y": 57.6,
+    "w": 3.39,
+    "h": 30.4
+   },
+   "heightPct": 30.4,
+   "walkable": true,
+   "maskOk": false,
+   "cover": {
+    "hs_boulders": 0.08
+   },
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    },
+    {
+     "type": "walkmask",
+     "msg": "pies fuera del azul de la walkmask (80.6, 88)"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/mountain/032.png"
+  },
+  {
+   "id": "grid-80.6-91",
+   "kind": "grid",
+   "x": 80.6,
+   "y": 91,
+   "feet": {
+    "x": 80.6,
+    "y": 91
+   },
+   "dexBox": {
+    "x": 78.91,
+    "y": 60.6,
+    "w": 3.39,
+    "h": 30.4
+   },
+   "heightPct": 30.4,
+   "walkable": true,
+   "maskOk": false,
+   "cover": {
+    "hs_boulders": 0.1
+   },
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    },
+    {
+     "type": "walkmask",
+     "msg": "pies fuera del azul de la walkmask (80.6, 91)"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/mountain/033.png"
+  },
+  {
+   "id": "grid-80.6-94",
+   "kind": "grid",
+   "x": 80.6,
+   "y": 94,
+   "feet": {
+    "x": 80.6,
+    "y": 94
+   },
+   "dexBox": {
+    "x": 78.91,
+    "y": 63.6,
+    "w": 3.39,
+    "h": 30.4
+   },
+   "heightPct": 30.4,
+   "walkable": true,
+   "maskOk": false,
+   "cover": {
+    "hs_boulders": 0.11
+   },
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    },
+    {
+     "type": "walkmask",
+     "msg": "pies fuera del azul de la walkmask (80.6, 94)"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/mountain/034.png"
+  },
+  {
+   "id": "grid-80.6-97",
+   "kind": "grid",
+   "x": 80.6,
+   "y": 97,
+   "feet": {
+    "x": 80.6,
+    "y": 97
+   },
+   "dexBox": {
+    "x": 78.91,
+    "y": 66.6,
+    "w": 3.39,
+    "h": 30.4
+   },
+   "heightPct": 30.4,
+   "walkable": true,
+   "maskOk": true,
+   "cover": {
+    "hs_boulders": 0.15
+   },
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "grid-88.4-88",
+   "kind": "grid",
+   "x": 88.4,
+   "y": 88,
+   "feet": {
+    "x": 88.4,
+    "y": 88
+   },
+   "dexBox": {
+    "x": 86.71,
+    "y": 57.6,
+    "w": 3.39,
+    "h": 30.4
+   },
+   "heightPct": 30.4,
+   "walkable": true,
+   "maskOk": true,
+   "cover": {
+    "hs_boulders": 0.65
+   },
+   "scale": null,
+   "failures": [
+    {
+     "type": "overdraw",
+     "ref": "hs_boulders",
+     "dev": 0.65,
+     "msg": "Dex está delante de rocas (pies 88 ≥ 80) y el primer plano le tapa (+65 %)"
+    }
+   ],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 1.65,
+   "shot": "capturas/mountain/036.png"
+  },
+  {
+   "id": "grid-88.4-91",
+   "kind": "grid",
+   "x": 88.4,
+   "y": 91,
+   "feet": {
+    "x": 88.4,
+    "y": 91
+   },
+   "dexBox": {
+    "x": 86.71,
+    "y": 60.6,
+    "w": 3.39,
+    "h": 30.4
+   },
+   "heightPct": 30.4,
+   "walkable": true,
+   "maskOk": true,
+   "cover": {
+    "hs_boulders": 0.75
+   },
+   "scale": null,
+   "failures": [
+    {
+     "type": "overdraw",
+     "ref": "hs_boulders",
+     "dev": 0.75,
+     "msg": "Dex está delante de rocas (pies 91 ≥ 80) y el primer plano le tapa (+75 %)"
+    }
+   ],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 1.75,
+   "shot": "capturas/mountain/037.png"
+  },
+  {
+   "id": "grid-88.4-94",
+   "kind": "grid",
+   "x": 88.4,
+   "y": 94,
+   "feet": {
+    "x": 88.4,
+    "y": 94
+   },
+   "dexBox": {
+    "x": 86.71,
+    "y": 63.6,
+    "w": 3.39,
+    "h": 30.4
+   },
+   "heightPct": 30.4,
+   "walkable": true,
+   "maskOk": true,
+   "cover": {
+    "hs_boulders": 0.88
+   },
+   "scale": null,
+   "failures": [
+    {
+     "type": "overdraw",
+     "ref": "hs_boulders",
+     "dev": 0.88,
+     "msg": "Dex está delante de rocas (pies 94 ≥ 80) y el primer plano le tapa (+88 %)"
+    }
+   ],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 1.88,
+   "shot": "capturas/mountain/038.png"
+  },
+  {
+   "id": "grid-88.4-97",
+   "kind": "grid",
+   "x": 88.4,
+   "y": 97,
+   "feet": {
+    "x": 88.4,
+    "y": 97
+   },
+   "dexBox": {
+    "x": 86.71,
+    "y": 66.6,
+    "w": 3.39,
+    "h": 30.4
+   },
+   "heightPct": 30.4,
+   "walkable": true,
+   "maskOk": true,
+   "cover": {
+    "hs_boulders": 0.99
+   },
+   "scale": null,
+   "failures": [
+    {
+     "type": "overdraw",
+     "ref": "hs_boulders",
+     "dev": 0.99,
+     "msg": "Dex está delante de rocas (pies 97 ≥ 80) y el primer plano le tapa (+99 %)"
+    }
+   ],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 1.99,
+   "shot": "capturas/mountain/039.png"
+  },
+  {
+   "id": "grid-96.1-88",
+   "kind": "grid",
+   "x": 96.1,
+   "y": 88,
+   "feet": {
+    "x": 96.1,
+    "y": 88
+   },
+   "dexBox": {
+    "x": 94.41,
+    "y": 57.6,
+    "w": 3.39,
+    "h": 30.4
+   },
+   "heightPct": 30.4,
+   "walkable": true,
+   "maskOk": true,
+   "cover": {
+    "hs_boulders": 0.45
+   },
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "grid-96.1-91",
+   "kind": "grid",
+   "x": 96.1,
+   "y": 91,
+   "feet": {
+    "x": 96.1,
+    "y": 91
+   },
+   "dexBox": {
+    "x": 94.41,
+    "y": 60.6,
+    "w": 3.39,
+    "h": 30.4
+   },
+   "heightPct": 30.4,
+   "walkable": true,
+   "maskOk": true,
+   "cover": {
+    "hs_boulders": 0.53
+   },
+   "scale": null,
+   "failures": [
+    {
+     "type": "overdraw",
+     "ref": "hs_boulders",
+     "dev": 0.53,
+     "msg": "Dex está delante de rocas (pies 91 ≥ 80) y el primer plano le tapa (+53 %)"
+    }
+   ],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 1.53,
+   "shot": "capturas/mountain/041.png"
+  },
+  {
+   "id": "grid-96.1-94",
+   "kind": "grid",
+   "x": 96.1,
+   "y": 94,
+   "feet": {
+    "x": 96.1,
+    "y": 94
+   },
+   "dexBox": {
+    "x": 94.41,
+    "y": 63.6,
+    "w": 3.39,
+    "h": 30.4
+   },
+   "heightPct": 30.4,
+   "walkable": true,
+   "maskOk": true,
+   "cover": {
+    "hs_boulders": 0.62
+   },
+   "scale": null,
+   "failures": [
+    {
+     "type": "overdraw",
+     "ref": "hs_boulders",
+     "dev": 0.62,
+     "msg": "Dex está delante de rocas (pies 94 ≥ 80) y el primer plano le tapa (+62 %)"
+    }
+   ],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 1.62,
+   "shot": "capturas/mountain/042.png"
+  },
+  {
+   "id": "grid-96.1-97",
+   "kind": "grid",
+   "x": 96.1,
+   "y": 97,
+   "feet": {
+    "x": 96.1,
+    "y": 97
+   },
+   "dexBox": {
+    "x": 94.41,
+    "y": 66.6,
+    "w": 3.39,
+    "h": 30.4
+   },
+   "heightPct": 30.4,
+   "walkable": true,
+   "maskOk": true,
+   "cover": {
+    "hs_boulders": 0.76
+   },
+   "scale": null,
+   "failures": [
+    {
+     "type": "overdraw",
+     "ref": "hs_boulders",
+     "dev": 0.76,
+     "msg": "Dex está delante de rocas (pies 97 ≥ 80) y el primer plano le tapa (+76 %)"
+    }
+   ],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 1.76,
+   "shot": "capturas/mountain/043.png"
+  },
+  {
+   "id": "grid-19.1-60.5",
+   "kind": "grid",
+   "x": 19.1,
+   "y": 60.5,
+   "feet": {
+    "x": 19.1,
+    "y": 60.5
+   },
+   "dexBox": {
+    "x": 17.81,
+    "y": 37.29,
+    "w": 2.59,
+    "h": 23.21
+   },
+   "heightPct": 23.21,
+   "walkable": true,
+   "maskOk": false,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    },
+    {
+     "type": "walkmask",
+     "msg": "pies fuera del azul de la walkmask (19.1, 60.5)"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/mountain/044.png"
+  },
+  {
+   "id": "grid-19.1-63.4",
+   "kind": "grid",
+   "x": 19.1,
+   "y": 63.4,
+   "feet": {
+    "x": 19.1,
+    "y": 63.4
+   },
+   "dexBox": {
+    "x": 17.76,
+    "y": 39.38,
+    "w": 2.68,
+    "h": 24.02
+   },
+   "heightPct": 24.02,
+   "walkable": true,
+   "maskOk": false,
+   "cover": {},
+   "scale": {
+    "ref": "hs_sign",
+    "expected": 18.81,
+    "got": 24.02,
+    "dev": 0.28,
+    "baseDy": 7.6
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_sign",
+     "dev": 0.28,
+     "msg": "Dex +28 % frente a cartel de la clínica (con postes) (24.02 % y se esperaba 18.81 %)"
+    }
+   ],
+   "info": [
+    {
+     "type": "walkmask",
+     "msg": "pies fuera del azul de la walkmask (19.1, 63.4)"
+    }
+   ],
+   "score": 0.56,
+   "shot": "capturas/mountain/045.png"
+  },
+  {
+   "id": "grid-19.1-66.2",
+   "kind": "grid",
+   "x": 19.1,
+   "y": 66.2,
+   "feet": {
+    "x": 19.1,
+    "y": 66.2
+   },
+   "dexBox": {
+    "x": 17.72,
+    "y": 41.41,
+    "w": 2.76,
+    "h": 24.79
+   },
+   "heightPct": 24.79,
+   "walkable": true,
+   "maskOk": true,
+   "cover": {},
+   "scale": {
+    "ref": "hs_sign",
+    "expected": 18.81,
+    "got": 24.79,
+    "dev": 0.32,
+    "baseDy": 4.8
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_sign",
+     "dev": 0.32,
+     "msg": "Dex +32 % frente a cartel de la clínica (con postes) (24.79 % y se esperaba 18.81 %)"
+    }
+   ],
+   "info": [],
+   "score": 0.64,
+   "shot": "capturas/mountain/046.png"
+  },
+  {
+   "id": "grid-19.1-69.1",
+   "kind": "grid",
+   "x": 19.1,
+   "y": 69.1,
+   "feet": {
+    "x": 19.1,
+    "y": 69.1
+   },
+   "dexBox": {
+    "x": 17.67,
+    "y": 43.51,
+    "w": 2.85,
+    "h": 25.59
+   },
+   "heightPct": 25.59,
+   "walkable": true,
+   "maskOk": true,
+   "cover": {},
+   "scale": {
+    "ref": "hs_sign",
+    "expected": 18.81,
+    "got": 25.59,
+    "dev": 0.36,
+    "baseDy": 1.9
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_sign",
+     "dev": 0.36,
+     "msg": "Dex +36 % frente a cartel de la clínica (con postes) (25.59 % y se esperaba 18.81 %)"
+    }
+   ],
+   "info": [],
+   "score": 0.72,
+   "shot": "capturas/mountain/047.png"
+  },
+  {
+   "id": "grid-19.1-71.9",
+   "kind": "grid",
+   "x": 19.1,
+   "y": 71.9,
+   "feet": {
+    "x": 19.1,
+    "y": 71.9
+   },
+   "dexBox": {
+    "x": 17.63,
+    "y": 45.54,
+    "w": 2.94,
+    "h": 26.36
+   },
+   "heightPct": 26.36,
+   "walkable": true,
+   "maskOk": true,
+   "cover": {},
+   "scale": {
+    "ref": "hs_sign",
+    "expected": 18.81,
+    "got": 26.36,
+    "dev": 0.4,
+    "baseDy": 0.9
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_sign",
+     "dev": 0.4,
+     "msg": "Dex +40 % frente a cartel de la clínica (con postes) (26.36 % y se esperaba 18.81 %)"
+    }
+   ],
+   "info": [],
+   "score": 0.8,
+   "shot": "capturas/mountain/048.png"
+  },
+  {
+   "id": "grid-19.1-74.8",
+   "kind": "grid",
+   "x": 19.1,
+   "y": 74.8,
+   "feet": {
+    "x": 19.1,
+    "y": 74.8
+   },
+   "dexBox": {
+    "x": 17.59,
+    "y": 47.63,
+    "w": 3.03,
+    "h": 27.17
+   },
+   "heightPct": 27.17,
+   "walkable": true,
+   "maskOk": true,
+   "cover": {},
+   "scale": {
+    "ref": "hs_sign",
+    "expected": 18.81,
+    "got": 27.17,
+    "dev": 0.44,
+    "baseDy": 3.8
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_sign",
+     "dev": 0.44,
+     "msg": "Dex +44 % frente a cartel de la clínica (con postes) (27.17 % y se esperaba 18.81 %)"
+    }
+   ],
+   "info": [],
+   "score": 0.88,
+   "shot": "capturas/mountain/049.png"
+  },
+  {
+   "id": "grid-19.1-77.6",
+   "kind": "grid",
+   "x": 19.1,
+   "y": 77.6,
+   "feet": {
+    "x": 19.1,
+    "y": 77.6
+   },
+   "dexBox": {
+    "x": 17.54,
+    "y": 49.66,
+    "w": 3.11,
+    "h": 27.94
+   },
+   "heightPct": 27.94,
+   "walkable": true,
+   "maskOk": false,
+   "cover": {},
+   "scale": {
+    "ref": "hs_sign",
+    "expected": 18.81,
+    "got": 27.94,
+    "dev": 0.49,
+    "baseDy": 6.6
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_sign",
+     "dev": 0.49,
+     "msg": "Dex +49 % frente a cartel de la clínica (con postes) (27.94 % y se esperaba 18.81 %)"
+    }
+   ],
+   "info": [
+    {
+     "type": "walkmask",
+     "msg": "pies fuera del azul de la walkmask (19.1, 77.6)"
+    }
+   ],
+   "score": 0.98,
+   "shot": "capturas/mountain/050.png"
+  },
+  {
+   "id": "grid-19.1-80.5",
+   "kind": "grid",
+   "x": 19.1,
+   "y": 80.5,
+   "feet": {
+    "x": 19.1,
+    "y": 80.5
+   },
+   "dexBox": {
+    "x": 17.5,
+    "y": 51.76,
+    "w": 3.2,
+    "h": 28.74
+   },
+   "heightPct": 28.74,
+   "walkable": true,
+   "maskOk": true,
+   "cover": {},
+   "scale": {
+    "ref": "hs_sign",
+    "expected": 18.81,
+    "got": 28.74,
+    "dev": 0.53,
+    "baseDy": 9.5
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_sign",
+     "dev": 0.53,
+     "msg": "Dex +53 % frente a cartel de la clínica (con postes) (28.74 % y se esperaba 18.81 %)"
+    }
+   ],
+   "info": [],
+   "score": 1.06
+  },
+  {
+   "id": "grid-19.1-83.3",
+   "kind": "grid",
+   "x": 19.1,
+   "y": 83.3,
+   "feet": {
+    "x": 19.1,
+    "y": 83.3
+   },
+   "dexBox": {
+    "x": 17.45,
+    "y": 53.79,
+    "w": 3.29,
+    "h": 29.51
+   },
+   "heightPct": 29.51,
+   "walkable": true,
+   "maskOk": true,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "grid-19.1-86.2",
+   "kind": "grid",
+   "x": 19.1,
+   "y": 86.2,
+   "feet": {
+    "x": 19.1,
+    "y": 86.2
+   },
+   "dexBox": {
+    "x": 17.41,
+    "y": 55.88,
+    "w": 3.38,
+    "h": 30.32
+   },
+   "heightPct": 30.32,
+   "walkable": true,
+   "maskOk": true,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "grid-26-60.5",
+   "kind": "grid",
+   "x": 26,
+   "y": 60.5,
+   "feet": {
+    "x": 26,
+    "y": 60.5
+   },
+   "dexBox": {
+    "x": 24.71,
+    "y": 37.29,
+    "w": 2.59,
+    "h": 23.21
+   },
+   "heightPct": 23.21,
+   "walkable": true,
+   "maskOk": false,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    },
+    {
+     "type": "walkmask",
+     "msg": "pies fuera del azul de la walkmask (26, 60.5)"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/mountain/054.png"
+  },
+  {
+   "id": "grid-26-63.4",
+   "kind": "grid",
+   "x": 26,
+   "y": 63.4,
+   "feet": {
+    "x": 26,
+    "y": 63.4
+   },
+   "dexBox": {
+    "x": 24.66,
+    "y": 39.38,
+    "w": 2.68,
+    "h": 24.02
+   },
+   "heightPct": 24.02,
+   "walkable": true,
+   "maskOk": false,
+   "cover": {},
+   "scale": {
+    "ref": "hs_sign",
+    "expected": 18.81,
+    "got": 24.02,
+    "dev": 0.28,
+    "baseDy": 7.6
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_sign",
+     "dev": 0.28,
+     "msg": "Dex +28 % frente a cartel de la clínica (con postes) (24.02 % y se esperaba 18.81 %)"
+    }
+   ],
+   "info": [
+    {
+     "type": "walkmask",
+     "msg": "pies fuera del azul de la walkmask (26, 63.4)"
+    }
+   ],
+   "score": 0.56,
+   "shot": "capturas/mountain/055.png"
+  },
+  {
+   "id": "grid-26-66.2",
+   "kind": "grid",
+   "x": 26,
+   "y": 66.2,
+   "feet": {
+    "x": 26,
+    "y": 66.2
+   },
+   "dexBox": {
+    "x": 24.62,
+    "y": 41.41,
+    "w": 2.76,
+    "h": 24.79
+   },
+   "heightPct": 24.79,
+   "walkable": true,
+   "maskOk": true,
+   "cover": {},
+   "scale": {
+    "ref": "hs_sign",
+    "expected": 18.81,
+    "got": 24.79,
+    "dev": 0.32,
+    "baseDy": 4.8
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_sign",
+     "dev": 0.32,
+     "msg": "Dex +32 % frente a cartel de la clínica (con postes) (24.79 % y se esperaba 18.81 %)"
+    }
+   ],
+   "info": [],
+   "score": 0.64,
+   "shot": "capturas/mountain/056.png"
+  },
+  {
+   "id": "grid-26-69.1",
+   "kind": "grid",
+   "x": 26,
+   "y": 69.1,
+   "feet": {
+    "x": 26,
+    "y": 69.1
+   },
+   "dexBox": {
+    "x": 24.57,
+    "y": 43.51,
+    "w": 2.85,
+    "h": 25.59
+   },
+   "heightPct": 25.59,
+   "walkable": true,
+   "maskOk": true,
+   "cover": {},
+   "scale": {
+    "ref": "hs_sign",
+    "expected": 18.81,
+    "got": 25.59,
+    "dev": 0.36,
+    "baseDy": 1.9
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_sign",
+     "dev": 0.36,
+     "msg": "Dex +36 % frente a cartel de la clínica (con postes) (25.59 % y se esperaba 18.81 %)"
+    }
+   ],
+   "info": [],
+   "score": 0.72,
+   "shot": "capturas/mountain/057.png"
+  },
+  {
+   "id": "grid-26-71.9",
+   "kind": "grid",
+   "x": 26,
+   "y": 71.9,
+   "feet": {
+    "x": 26,
+    "y": 71.9
+   },
+   "dexBox": {
+    "x": 24.53,
+    "y": 45.54,
+    "w": 2.94,
+    "h": 26.36
+   },
+   "heightPct": 26.36,
+   "walkable": true,
+   "maskOk": true,
+   "cover": {},
+   "scale": {
+    "ref": "hs_sign",
+    "expected": 18.81,
+    "got": 26.36,
+    "dev": 0.4,
+    "baseDy": 0.9
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_sign",
+     "dev": 0.4,
+     "msg": "Dex +40 % frente a cartel de la clínica (con postes) (26.36 % y se esperaba 18.81 %)"
+    }
+   ],
+   "info": [],
+   "score": 0.8,
+   "shot": "capturas/mountain/058.png"
+  },
+  {
+   "id": "grid-26-74.8",
+   "kind": "grid",
+   "x": 26,
+   "y": 74.8,
+   "feet": {
+    "x": 26,
+    "y": 74.8
+   },
+   "dexBox": {
+    "x": 24.49,
+    "y": 47.63,
+    "w": 3.03,
+    "h": 27.17
+   },
+   "heightPct": 27.17,
+   "walkable": true,
+   "maskOk": true,
+   "cover": {},
+   "scale": {
+    "ref": "hs_sign",
+    "expected": 18.81,
+    "got": 27.17,
+    "dev": 0.44,
+    "baseDy": 3.8
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_sign",
+     "dev": 0.44,
+     "msg": "Dex +44 % frente a cartel de la clínica (con postes) (27.17 % y se esperaba 18.81 %)"
+    }
+   ],
+   "info": [],
+   "score": 0.88,
+   "shot": "capturas/mountain/059.png"
+  },
+  {
+   "id": "grid-26-77.6",
+   "kind": "grid",
+   "x": 26,
+   "y": 77.6,
+   "feet": {
+    "x": 26,
+    "y": 77.6
+   },
+   "dexBox": {
+    "x": 24.44,
+    "y": 49.66,
+    "w": 3.11,
+    "h": 27.94
+   },
+   "heightPct": 27.94,
+   "walkable": true,
+   "maskOk": false,
+   "cover": {},
+   "scale": {
+    "ref": "hs_sign",
+    "expected": 18.81,
+    "got": 27.94,
+    "dev": 0.49,
+    "baseDy": 6.6
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_sign",
+     "dev": 0.49,
+     "msg": "Dex +49 % frente a cartel de la clínica (con postes) (27.94 % y se esperaba 18.81 %)"
+    }
+   ],
+   "info": [
+    {
+     "type": "walkmask",
+     "msg": "pies fuera del azul de la walkmask (26, 77.6)"
+    }
+   ],
+   "score": 0.98,
+   "shot": "capturas/mountain/060.png"
+  },
+  {
+   "id": "grid-26-80.5",
+   "kind": "grid",
+   "x": 26,
+   "y": 80.5,
+   "feet": {
+    "x": 26,
+    "y": 80.5
+   },
+   "dexBox": {
+    "x": 24.4,
+    "y": 51.76,
+    "w": 3.2,
+    "h": 28.74
+   },
+   "heightPct": 28.74,
+   "walkable": true,
+   "maskOk": true,
+   "cover": {},
+   "scale": {
+    "ref": "hs_sign",
+    "expected": 18.81,
+    "got": 28.74,
+    "dev": 0.53,
+    "baseDy": 9.5
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_sign",
+     "dev": 0.53,
+     "msg": "Dex +53 % frente a cartel de la clínica (con postes) (28.74 % y se esperaba 18.81 %)"
+    }
+   ],
+   "info": [],
+   "score": 1.06
+  },
+  {
+   "id": "grid-26-83.3",
+   "kind": "grid",
+   "x": 26,
+   "y": 83.3,
+   "feet": {
+    "x": 26,
+    "y": 83.3
+   },
+   "dexBox": {
+    "x": 24.35,
+    "y": 53.79,
+    "w": 3.29,
+    "h": 29.51
+   },
+   "heightPct": 29.51,
+   "walkable": true,
+   "maskOk": true,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "grid-26-86.2",
+   "kind": "grid",
+   "x": 26,
+   "y": 86.2,
+   "feet": {
+    "x": 26,
+    "y": 86.2
+   },
+   "dexBox": {
+    "x": 24.31,
+    "y": 55.88,
+    "w": 3.38,
+    "h": 30.32
+   },
+   "heightPct": 30.32,
+   "walkable": true,
+   "maskOk": true,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "hs_sign",
+   "kind": "arrival",
+   "x": 28.9,
+   "y": 64.6,
+   "feet": {
+    "x": 28.9,
+    "y": 64.6
+   },
+   "dexBox": {
+    "x": 27.54,
+    "y": 40.25,
+    "w": 2.71,
+    "h": 24.35
+   },
+   "heightPct": 24.35,
+   "walkable": true,
+   "maskOk": true,
+   "cover": {},
+   "scale": {
+    "ref": "hs_sign",
+    "expected": 18.81,
+    "got": 24.35,
+    "dev": 0.29,
+    "baseDy": 6.4
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_sign",
+     "dev": 0.29,
+     "msg": "Dex +29 % frente a cartel de la clínica (con postes) (24.35 % y se esperaba 18.81 %)"
+    }
+   ],
+   "info": [],
+   "score": 0.58,
+   "shot": "capturas/mountain/064.png"
+  },
+  {
+   "id": "hs_winding_path",
+   "kind": "arrival",
+   "x": 69.6,
+   "y": 87,
+   "feet": {
+    "x": 69.6,
+    "y": 87
+   },
+   "dexBox": {
+    "x": 67.91,
+    "y": 56.6,
+    "w": 3.39,
+    "h": 30.4
+   },
+   "heightPct": 30.4,
+   "walkable": true,
+   "maskOk": false,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    },
+    {
+     "type": "walkmask",
+     "msg": "pies fuera del azul de la walkmask (69.6, 87)"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/mountain/065.png"
+  },
+  {
+   "id": "hs_sky",
+   "kind": "arrival",
+   "x": 28.9,
+   "y": 59.6,
+   "feet": {
+    "x": 28.9,
+    "y": 59.6
+   },
+   "dexBox": {
+    "x": 27.62,
+    "y": 36.63,
+    "w": 2.56,
+    "h": 22.97
+   },
+   "heightPct": 22.97,
+   "walkable": true,
+   "maskOk": false,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    },
+    {
+     "type": "walkmask",
+     "msg": "pies fuera del azul de la walkmask (28.9, 59.6)"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/mountain/066.png"
+  },
+  {
+   "id": "hs_trees",
+   "kind": "arrival",
+   "x": 28.9,
+   "y": 59.6,
+   "feet": {
+    "x": 28.9,
+    "y": 59.6
+   },
+   "dexBox": {
+    "x": 27.62,
+    "y": 36.63,
+    "w": 2.56,
+    "h": 22.97
+   },
+   "heightPct": 22.97,
+   "walkable": true,
+   "maskOk": false,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    },
+    {
+     "type": "walkmask",
+     "msg": "pies fuera del azul de la walkmask (28.9, 59.6)"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/mountain/067.png"
+  },
+  {
+   "id": "hs_spring",
+   "kind": "arrival",
+   "x": 22.1,
+   "y": 59.6,
+   "feet": {
+    "x": 22.1,
+    "y": 59.6
+   },
+   "dexBox": {
+    "x": 20.82,
+    "y": 36.63,
+    "w": 2.56,
+    "h": 22.97
+   },
+   "heightPct": 22.97,
+   "walkable": true,
+   "maskOk": false,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    },
+    {
+     "type": "walkmask",
+     "msg": "pies fuera del azul de la walkmask (22.1, 59.6)"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/mountain/068.png"
+  },
+  {
+   "id": "hs_building",
+   "kind": "arrival",
+   "x": 28.9,
+   "y": 59.6,
+   "feet": {
+    "x": 28.9,
+    "y": 59.6
+   },
+   "dexBox": {
+    "x": 27.62,
+    "y": 36.63,
+    "w": 2.56,
+    "h": 22.97
+   },
+   "heightPct": 22.97,
+   "walkable": true,
+   "maskOk": false,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    },
+    {
+     "type": "walkmask",
+     "msg": "pies fuera del azul de la walkmask (28.9, 59.6)"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/mountain/069.png"
+  },
+  {
+   "id": "hs_warning_signs",
+   "kind": "arrival",
+   "x": 28.9,
+   "y": 65.6,
+   "feet": {
+    "x": 28.9,
+    "y": 65.6
+   },
+   "dexBox": {
+    "x": 27.53,
+    "y": 40.98,
+    "w": 2.75,
+    "h": 24.62
+   },
+   "heightPct": 24.62,
+   "walkable": true,
+   "maskOk": true,
+   "cover": {},
+   "scale": {
+    "ref": "hs_sign",
+    "expected": 18.81,
+    "got": 24.62,
+    "dev": 0.31,
+    "baseDy": 5.4
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_sign",
+     "dev": 0.31,
+     "msg": "Dex +31 % frente a cartel de la clínica (con postes) (24.62 % y se esperaba 18.81 %)"
+    }
+   ],
+   "info": [],
+   "score": 0.62,
+   "shot": "capturas/mountain/070.png"
+  },
+  {
+   "id": "hs_boulders",
+   "kind": "arrival",
+   "x": 89,
+   "y": 87,
+   "feet": {
+    "x": 89,
+    "y": 87
+   },
+   "dexBox": {
+    "x": 87.31,
+    "y": 56.6,
+    "w": 3.39,
+    "h": 30.4
+   },
+   "heightPct": 30.4,
+   "walkable": true,
+   "maskOk": true,
+   "cover": {
+    "hs_boulders": 0.63
+   },
+   "scale": null,
+   "failures": [
+    {
+     "type": "overdraw",
+     "ref": "hs_boulders",
+     "dev": 0.63,
+     "msg": "Dex está delante de rocas (pies 87 ≥ 80) y el primer plano le tapa (+63 %)"
+    }
+   ],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 1.63,
+   "shot": "capturas/mountain/071.png"
+  },
+  {
+   "id": "hs_mountain_range",
+   "kind": "arrival",
+   "x": 16.2,
+   "y": 59.6,
+   "feet": {
+    "x": 16.2,
+    "y": 59.6
+   },
+   "dexBox": {
+    "x": 14.92,
+    "y": 36.63,
+    "w": 2.56,
+    "h": 22.97
+   },
+   "heightPct": 22.97,
+   "walkable": true,
+   "maskOk": false,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    },
+    {
+     "type": "walkmask",
+     "msg": "pies fuera del azul de la walkmask (16.2, 59.6)"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/mountain/072.png"
+  },
+  {
+   "id": "hs_wildflowers",
+   "kind": "arrival",
+   "x": 15.3,
+   "y": 90,
+   "feet": {
+    "x": 15.3,
+    "y": 90
+   },
+   "dexBox": {
+    "x": 13.61,
+    "y": 59.6,
+    "w": 3.39,
+    "h": 30.4
+   },
+   "heightPct": 30.4,
+   "walkable": true,
+   "maskOk": true,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "hs_sign:izq",
+   "kind": "ref",
+   "x": 28.9,
+   "y": 71,
+   "feet": {
+    "x": 28.9,
+    "y": 71
+   },
+   "dexBox": {
+    "x": 27.44,
+    "y": 44.88,
+    "w": 2.91,
+    "h": 26.12
+   },
+   "heightPct": 26.12,
+   "walkable": true,
+   "maskOk": true,
+   "cover": {},
+   "scale": {
+    "ref": "hs_sign",
+    "expected": 18.81,
+    "got": 26.12,
+    "dev": 0.39,
+    "baseDy": 0
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_sign",
+     "dev": 0.39,
+     "msg": "Dex +39 % frente a cartel de la clínica (con postes) (26.12 % y se esperaba 18.81 %)"
+    }
+   ],
+   "info": [],
+   "score": 0.78,
+   "shot": "capturas/mountain/074.png"
+  },
+  {
+   "id": "hs_sign:der",
+   "kind": "ref",
+   "x": 28.9,
+   "y": 71,
+   "feet": {
+    "x": 28.9,
+    "y": 71
+   },
+   "dexBox": {
+    "x": 27.44,
+    "y": 44.88,
+    "w": 2.91,
+    "h": 26.12
+   },
+   "heightPct": 26.12,
+   "walkable": true,
+   "maskOk": true,
+   "cover": {},
+   "scale": {
+    "ref": "hs_sign",
+    "expected": 18.81,
+    "got": 26.12,
+    "dev": 0.39,
+    "baseDy": 0
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_sign",
+     "dev": 0.39,
+     "msg": "Dex +39 % frente a cartel de la clínica (con postes) (26.12 % y se esperaba 18.81 %)"
+    }
+   ],
+   "info": [],
+   "score": 0.78,
+   "shot": "capturas/mountain/075.png"
+  },
+  {
+   "id": "hs_sign:detrás",
+   "kind": "ref",
+   "x": 28.9,
+   "y": 70,
+   "feet": {
+    "x": 28.9,
+    "y": 70
+   },
+   "dexBox": {
+    "x": 27.46,
+    "y": 44.16,
+    "w": 2.88,
+    "h": 25.84
+   },
+   "heightPct": 25.84,
+   "walkable": true,
+   "maskOk": true,
+   "cover": {},
+   "scale": {
+    "ref": "hs_sign",
+    "expected": 18.81,
+    "got": 25.84,
+    "dev": 0.37,
+    "baseDy": 1
+   },
+   "failures": [
+    {
+     "type": "scale",
+     "ref": "hs_sign",
+     "dev": 0.37,
+     "msg": "Dex +37 % frente a cartel de la clínica (con postes) (25.84 % y se esperaba 18.81 %)"
+    }
+   ],
+   "info": [],
+   "score": 0.74,
+   "shot": "capturas/mountain/076.png"
+  },
+  {
+   "id": "hs_boulders:izq",
+   "kind": "ref",
+   "x": 80,
+   "y": 87,
+   "feet": {
+    "x": 80,
+    "y": 87
+   },
+   "dexBox": {
+    "x": 78.31,
+    "y": 56.6,
+    "w": 3.39,
+    "h": 30.4
+   },
+   "heightPct": 30.4,
+   "walkable": true,
+   "maskOk": false,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    },
+    {
+     "type": "walkmask",
+     "msg": "pies fuera del azul de la walkmask (80, 87)"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/mountain/077.png"
+  },
+  {
+   "id": "hs_boulders:der",
+   "kind": "ref",
+   "x": 98,
+   "y": 87,
+   "feet": {
+    "x": 98,
+    "y": 87
+   },
+   "dexBox": {
+    "x": 96.31,
+    "y": 56.6,
+    "w": 3.39,
+    "h": 30.4
+   },
+   "heightPct": 30.4,
+   "walkable": true,
+   "maskOk": false,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    },
+    {
+     "type": "walkmask",
+     "msg": "pies fuera del azul de la walkmask (98, 87)"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/mountain/078.png"
+  },
+  {
+   "id": "hs_boulders:detrás",
+   "kind": "ref",
+   "x": 89,
+   "y": 87,
+   "feet": {
+    "x": 89,
+    "y": 87
+   },
+   "dexBox": {
+    "x": 87.31,
+    "y": 56.6,
+    "w": 3.39,
+    "h": 30.4
+   },
+   "heightPct": 30.4,
+   "walkable": true,
+   "maskOk": true,
+   "cover": {
+    "hs_boulders": 0.63
+   },
+   "scale": null,
+   "failures": [
+    {
+     "type": "overdraw",
+     "ref": "hs_boulders",
+     "dev": 0.63,
+     "msg": "Dex está delante de rocas (pies 87 ≥ 80) y el primer plano le tapa (+63 %)"
+    }
+   ],
+   "info": [
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 1.63,
+   "shot": "capturas/mountain/079.png"
+  }
+ ]
+}

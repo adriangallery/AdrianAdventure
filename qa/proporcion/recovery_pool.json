@@ -1,0 +1,1335 @@
+{
+ "scene": "recovery_pool",
+ "scalePolicy": "measure",
+ "summary": {
+  "positions": 34,
+  "failing": 8,
+  "byType": {
+   "occlusion": 8
+  }
+ },
+ "positions": [
+  {
+   "id": "grid-15.8-98.3",
+   "kind": "grid",
+   "x": 15.8,
+   "y": 98.3,
+   "feet": {
+    "x": 15.8,
+    "y": 98.3
+   },
+   "dexBox": {
+    "x": 13.06,
+    "y": 49.12,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_trash_pile",
+     "dev": 0.41,
+     "msg": "Dex +41 % frente a montón de trastos (caja sin medir: bounds del hotspot)"
+    },
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/recovery_pool/000.png"
+  },
+  {
+   "id": "grid-23.5-98.3",
+   "kind": "grid",
+   "x": 23.5,
+   "y": 98.3,
+   "feet": {
+    "x": 23.5,
+    "y": 98.3
+   },
+   "dexBox": {
+    "x": 20.76,
+    "y": 49.12,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_trash_pile",
+     "dev": 0.41,
+     "msg": "Dex +41 % frente a montón de trastos (caja sin medir: bounds del hotspot)"
+    },
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/recovery_pool/001.png"
+  },
+  {
+   "id": "grid-31.2-98.3",
+   "kind": "grid",
+   "x": 31.2,
+   "y": 98.3,
+   "feet": {
+    "x": 31.2,
+    "y": 98.3
+   },
+   "dexBox": {
+    "x": 28.46,
+    "y": 49.12,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_trash_pile",
+     "dev": 0.41,
+     "msg": "Dex +41 % frente a montón de trastos (caja sin medir: bounds del hotspot)"
+    },
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/recovery_pool/002.png"
+  },
+  {
+   "id": "grid-38.9-98.3",
+   "kind": "grid",
+   "x": 38.9,
+   "y": 98.3,
+   "feet": {
+    "x": 38.9,
+    "y": 98.3
+   },
+   "dexBox": {
+    "x": 36.16,
+    "y": 49.12,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_trash_pile",
+     "dev": 0.41,
+     "msg": "Dex +41 % frente a montón de trastos (caja sin medir: bounds del hotspot)"
+    },
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/recovery_pool/003.png"
+  },
+  {
+   "id": "grid-46.7-98.3",
+   "kind": "grid",
+   "x": 46.7,
+   "y": 98.3,
+   "feet": {
+    "x": 46.7,
+    "y": 98.3
+   },
+   "dexBox": {
+    "x": 43.96,
+    "y": 49.12,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_trash_pile",
+     "dev": 0.41,
+     "msg": "Dex +41 % frente a montón de trastos (caja sin medir: bounds del hotspot)"
+    },
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/recovery_pool/004.png"
+  },
+  {
+   "id": "grid-54.4-98.3",
+   "kind": "grid",
+   "x": 54.4,
+   "y": 98.3,
+   "feet": {
+    "x": 54.4,
+    "y": 98.3
+   },
+   "dexBox": {
+    "x": 51.66,
+    "y": 49.12,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_trash_pile",
+     "dev": 0.41,
+     "msg": "Dex +41 % frente a montón de trastos (caja sin medir: bounds del hotspot)"
+    },
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/recovery_pool/005.png"
+  },
+  {
+   "id": "grid-62.1-98.3",
+   "kind": "grid",
+   "x": 62.1,
+   "y": 98.3,
+   "feet": {
+    "x": 62.1,
+    "y": 98.3
+   },
+   "dexBox": {
+    "x": 59.36,
+    "y": 49.12,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_chad": 0
+   },
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_trash_pile",
+     "dev": 0.41,
+     "msg": "Dex +41 % frente a montón de trastos (caja sin medir: bounds del hotspot)"
+    },
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/recovery_pool/006.png"
+  },
+  {
+   "id": "grid-69.8-98.3",
+   "kind": "grid",
+   "x": 69.8,
+   "y": 98.3,
+   "feet": {
+    "x": 69.8,
+    "y": 98.3
+   },
+   "dexBox": {
+    "x": 67.06,
+    "y": 49.12,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_chad": 0
+   },
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_trash_pile",
+     "dev": 0.41,
+     "msg": "Dex +41 % frente a montón de trastos (caja sin medir: bounds del hotspot)"
+    },
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/recovery_pool/007.png"
+  },
+  {
+   "id": "grid-77.5-98.3",
+   "kind": "grid",
+   "x": 77.5,
+   "y": 98.3,
+   "feet": {
+    "x": 77.5,
+    "y": 98.3
+   },
+   "dexBox": {
+    "x": 74.76,
+    "y": 49.12,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_trash_pile",
+     "dev": 0.41,
+     "msg": "Dex +41 % frente a montón de trastos (caja sin medir: bounds del hotspot)"
+    },
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/recovery_pool/008.png"
+  },
+  {
+   "id": "hs_pool_group_left",
+   "kind": "arrival",
+   "x": 36.6,
+   "y": 97,
+   "feet": {
+    "x": 36.6,
+    "y": 97
+   },
+   "dexBox": {
+    "x": 33.86,
+    "y": 47.82,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_trash_pile",
+     "dev": 0.41,
+     "msg": "Dex +41 % frente a montón de trastos (caja sin medir: bounds del hotspot)"
+    },
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/recovery_pool/009.png"
+  },
+  {
+   "id": "hs_chad",
+   "kind": "arrival",
+   "x": 66,
+   "y": 97,
+   "feet": {
+    "x": 66,
+    "y": 97
+   },
+   "dexBox": {
+    "x": 63.26,
+    "y": 47.82,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_chad": 0
+   },
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_trash_pile",
+     "dev": 0.41,
+     "msg": "Dex +41 % frente a montón de trastos (caja sin medir: bounds del hotspot)"
+    },
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/recovery_pool/010.png"
+  },
+  {
+   "id": "hs_pool_group_right",
+   "kind": "arrival",
+   "x": 58.3,
+   "y": 97,
+   "feet": {
+    "x": 58.3,
+    "y": 97
+   },
+   "dexBox": {
+    "x": 55.56,
+    "y": 47.82,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_trash_pile",
+     "dev": 0.41,
+     "msg": "Dex +41 % frente a montón de trastos (caja sin medir: bounds del hotspot)"
+    },
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/recovery_pool/011.png"
+  },
+  {
+   "id": "hs_rubber_duck",
+   "kind": "arrival",
+   "x": 46,
+   "y": 97,
+   "feet": {
+    "x": 46,
+    "y": 97
+   },
+   "dexBox": {
+    "x": 43.26,
+    "y": 47.82,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_trash_pile",
+     "dev": 0.41,
+     "msg": "Dex +41 % frente a montón de trastos (caja sin medir: bounds del hotspot)"
+    },
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/recovery_pool/012.png"
+  },
+  {
+   "id": "hs_tv",
+   "kind": "arrival",
+   "x": 77.3,
+   "y": 97,
+   "feet": {
+    "x": 77.3,
+    "y": 97
+   },
+   "dexBox": {
+    "x": 74.56,
+    "y": 47.82,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_trash_pile",
+     "dev": 0.41,
+     "msg": "Dex +41 % frente a montón de trastos (caja sin medir: bounds del hotspot)"
+    },
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/recovery_pool/013.png"
+  },
+  {
+   "id": "hs_bar",
+   "kind": "arrival",
+   "x": 80.9,
+   "y": 97,
+   "feet": {
+    "x": 80.9,
+    "y": 97
+   },
+   "dexBox": {
+    "x": 78.16,
+    "y": 47.82,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_robot_bartender": 0
+   },
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_trash_pile",
+     "dev": 0.41,
+     "msg": "Dex +41 % frente a montón de trastos (caja sin medir: bounds del hotspot)"
+    },
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/recovery_pool/014.png"
+  },
+  {
+   "id": "hs_robot_bartender",
+   "kind": "arrival",
+   "x": 80.9,
+   "y": 97,
+   "feet": {
+    "x": 80.9,
+    "y": 97
+   },
+   "dexBox": {
+    "x": 78.16,
+    "y": 47.82,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_robot_bartender": 0
+   },
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_trash_pile",
+     "dev": 0.41,
+     "msg": "Dex +41 % frente a montón de trastos (caja sin medir: bounds del hotspot)"
+    },
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/recovery_pool/015.png"
+  },
+  {
+   "id": "hs_bananas",
+   "kind": "arrival",
+   "x": 73.7,
+   "y": 97,
+   "feet": {
+    "x": 73.7,
+    "y": 97
+   },
+   "dexBox": {
+    "x": 70.96,
+    "y": 47.82,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_trash_pile",
+     "dev": 0.41,
+     "msg": "Dex +41 % frente a montón de trastos (caja sin medir: bounds del hotspot)"
+    },
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/recovery_pool/016.png"
+  },
+  {
+   "id": "hs_trash_pile",
+   "kind": "arrival",
+   "x": 12.4,
+   "y": 99.5,
+   "feet": {
+    "x": 12.4,
+    "y": 99.5
+   },
+   "dexBox": {
+    "x": 9.66,
+    "y": 50.32,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_trash_pile": 0
+   },
+   "scale": null,
+   "failures": [
+    {
+     "type": "occlusion",
+     "ref": "hs_trash_pile",
+     "dev": 0.22,
+     "msg": "pies por detrás de la base de montón de trastos (99.5 < 100) y no le tapa (tapado 0 %)"
+    }
+   ],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_trash_pile",
+     "dev": 0.41,
+     "msg": "Dex +41 % frente a montón de trastos (caja sin medir: bounds del hotspot)"
+    },
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 1.22,
+   "shot": "capturas/recovery_pool/017.png"
+  },
+  {
+   "id": "hs_dark_door",
+   "kind": "arrival",
+   "x": 12.4,
+   "y": 97,
+   "feet": {
+    "x": 12.4,
+    "y": 97
+   },
+   "dexBox": {
+    "x": 9.66,
+    "y": 47.82,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_trash_pile": 0
+   },
+   "scale": null,
+   "failures": [
+    {
+     "type": "occlusion",
+     "ref": "hs_trash_pile",
+     "dev": 0.19,
+     "msg": "pies por detrás de la base de montón de trastos (97 < 100) y no le tapa (tapado 0 %)"
+    }
+   ],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_trash_pile",
+     "dev": 0.41,
+     "msg": "Dex +41 % frente a montón de trastos (caja sin medir: bounds del hotspot)"
+    },
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 1.19,
+   "shot": "capturas/recovery_pool/018.png"
+  },
+  {
+   "id": "hs_stairs_up",
+   "kind": "arrival",
+   "x": 16.6,
+   "y": 97,
+   "feet": {
+    "x": 16.6,
+    "y": 97
+   },
+   "dexBox": {
+    "x": 13.86,
+    "y": 47.82,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {},
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_trash_pile",
+     "dev": 0.41,
+     "msg": "Dex +41 % frente a montón de trastos (caja sin medir: bounds del hotspot)"
+    },
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/recovery_pool/019.png"
+  },
+  {
+   "id": "hs_brown_book",
+   "kind": "arrival",
+   "x": 62.8,
+   "y": 97.4,
+   "feet": {
+    "x": 62.8,
+    "y": 97.4
+   },
+   "dexBox": {
+    "x": 60.06,
+    "y": 48.22,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_chad": 0
+   },
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_trash_pile",
+     "dev": 0.41,
+     "msg": "Dex +41 % frente a montón de trastos (caja sin medir: bounds del hotspot)"
+    },
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/recovery_pool/020.png"
+  },
+  {
+   "id": "hs_blue_book",
+   "kind": "arrival",
+   "x": 68,
+   "y": 97.5,
+   "feet": {
+    "x": 68,
+    "y": 97.5
+   },
+   "dexBox": {
+    "x": 65.26,
+    "y": 48.32,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_chad": 0
+   },
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_trash_pile",
+     "dev": 0.41,
+     "msg": "Dex +41 % frente a montón de trastos (caja sin medir: bounds del hotspot)"
+    },
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/recovery_pool/021.png"
+  },
+  {
+   "id": "hs_dark_door:izq",
+   "kind": "ref",
+   "x": 12.4,
+   "y": 97,
+   "feet": {
+    "x": 12.4,
+    "y": 97
+   },
+   "dexBox": {
+    "x": 9.66,
+    "y": 47.82,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_trash_pile": 0
+   },
+   "scale": null,
+   "failures": [
+    {
+     "type": "occlusion",
+     "ref": "hs_trash_pile",
+     "dev": 0.19,
+     "msg": "pies por detrás de la base de montón de trastos (97 < 100) y no le tapa (tapado 0 %)"
+    }
+   ],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_trash_pile",
+     "dev": 0.41,
+     "msg": "Dex +41 % frente a montón de trastos (caja sin medir: bounds del hotspot)"
+    },
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 1.19,
+   "shot": "capturas/recovery_pool/022.png"
+  },
+  {
+   "id": "hs_dark_door:der",
+   "kind": "ref",
+   "x": 12.4,
+   "y": 97,
+   "feet": {
+    "x": 12.4,
+    "y": 97
+   },
+   "dexBox": {
+    "x": 9.66,
+    "y": 47.82,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_trash_pile": 0
+   },
+   "scale": null,
+   "failures": [
+    {
+     "type": "occlusion",
+     "ref": "hs_trash_pile",
+     "dev": 0.19,
+     "msg": "pies por detrás de la base de montón de trastos (97 < 100) y no le tapa (tapado 0 %)"
+    }
+   ],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_trash_pile",
+     "dev": 0.41,
+     "msg": "Dex +41 % frente a montón de trastos (caja sin medir: bounds del hotspot)"
+    },
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 1.19,
+   "shot": "capturas/recovery_pool/023.png"
+  },
+  {
+   "id": "hs_dark_door:detrás",
+   "kind": "ref",
+   "x": 12.4,
+   "y": 97,
+   "feet": {
+    "x": 12.4,
+    "y": 97
+   },
+   "dexBox": {
+    "x": 9.66,
+    "y": 47.82,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_trash_pile": 0
+   },
+   "scale": null,
+   "failures": [
+    {
+     "type": "occlusion",
+     "ref": "hs_trash_pile",
+     "dev": 0.19,
+     "msg": "pies por detrás de la base de montón de trastos (97 < 100) y no le tapa (tapado 0 %)"
+    }
+   ],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_trash_pile",
+     "dev": 0.41,
+     "msg": "Dex +41 % frente a montón de trastos (caja sin medir: bounds del hotspot)"
+    },
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 1.19,
+   "shot": "capturas/recovery_pool/024.png"
+  },
+  {
+   "id": "hs_chad:izq",
+   "kind": "ref",
+   "x": 60.5,
+   "y": 97,
+   "feet": {
+    "x": 60.5,
+    "y": 97
+   },
+   "dexBox": {
+    "x": 57.76,
+    "y": 47.82,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_chad": 0
+   },
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_trash_pile",
+     "dev": 0.41,
+     "msg": "Dex +41 % frente a montón de trastos (caja sin medir: bounds del hotspot)"
+    },
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/recovery_pool/025.png"
+  },
+  {
+   "id": "hs_chad:der",
+   "kind": "ref",
+   "x": 71.5,
+   "y": 97,
+   "feet": {
+    "x": 71.5,
+    "y": 97
+   },
+   "dexBox": {
+    "x": 68.76,
+    "y": 47.82,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_chad": 0
+   },
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_trash_pile",
+     "dev": 0.41,
+     "msg": "Dex +41 % frente a montón de trastos (caja sin medir: bounds del hotspot)"
+    },
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/recovery_pool/026.png"
+  },
+  {
+   "id": "hs_chad:detrás",
+   "kind": "ref",
+   "x": 66,
+   "y": 97,
+   "feet": {
+    "x": 66,
+    "y": 97
+   },
+   "dexBox": {
+    "x": 63.26,
+    "y": 47.82,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_chad": 0
+   },
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_trash_pile",
+     "dev": 0.41,
+     "msg": "Dex +41 % frente a montón de trastos (caja sin medir: bounds del hotspot)"
+    },
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/recovery_pool/027.png"
+  },
+  {
+   "id": "hs_robot_bartender:izq",
+   "kind": "ref",
+   "x": 80,
+   "y": 97,
+   "feet": {
+    "x": 80,
+    "y": 97
+   },
+   "dexBox": {
+    "x": 77.26,
+    "y": 47.82,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_robot_bartender": 0
+   },
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_trash_pile",
+     "dev": 0.41,
+     "msg": "Dex +41 % frente a montón de trastos (caja sin medir: bounds del hotspot)"
+    },
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/recovery_pool/028.png"
+  },
+  {
+   "id": "hs_robot_bartender:der",
+   "kind": "ref",
+   "x": 80.9,
+   "y": 97,
+   "feet": {
+    "x": 80.9,
+    "y": 97
+   },
+   "dexBox": {
+    "x": 78.16,
+    "y": 47.82,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_robot_bartender": 0
+   },
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_trash_pile",
+     "dev": 0.41,
+     "msg": "Dex +41 % frente a montón de trastos (caja sin medir: bounds del hotspot)"
+    },
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/recovery_pool/029.png"
+  },
+  {
+   "id": "hs_robot_bartender:detrás",
+   "kind": "ref",
+   "x": 80.9,
+   "y": 97,
+   "feet": {
+    "x": 80.9,
+    "y": 97
+   },
+   "dexBox": {
+    "x": 78.16,
+    "y": 47.82,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_robot_bartender": 0
+   },
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_trash_pile",
+     "dev": 0.41,
+     "msg": "Dex +41 % frente a montón de trastos (caja sin medir: bounds del hotspot)"
+    },
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0,
+   "shot": "capturas/recovery_pool/030.png"
+  },
+  {
+   "id": "hs_trash_pile:izq",
+   "kind": "ref",
+   "x": 12.4,
+   "y": 99.5,
+   "feet": {
+    "x": 12.4,
+    "y": 99.5
+   },
+   "dexBox": {
+    "x": 9.66,
+    "y": 50.32,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_trash_pile": 0
+   },
+   "scale": null,
+   "failures": [
+    {
+     "type": "occlusion",
+     "ref": "hs_trash_pile",
+     "dev": 0.22,
+     "msg": "pies por detrás de la base de montón de trastos (99.5 < 100) y no le tapa (tapado 0 %)"
+    }
+   ],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_trash_pile",
+     "dev": 0.41,
+     "msg": "Dex +41 % frente a montón de trastos (caja sin medir: bounds del hotspot)"
+    },
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 1.22,
+   "shot": "capturas/recovery_pool/031.png"
+  },
+  {
+   "id": "hs_trash_pile:der",
+   "kind": "ref",
+   "x": 14.7,
+   "y": 99.5,
+   "feet": {
+    "x": 14.7,
+    "y": 99.5
+   },
+   "dexBox": {
+    "x": 11.96,
+    "y": 50.32,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_trash_pile": 0
+   },
+   "scale": null,
+   "failures": [
+    {
+     "type": "occlusion",
+     "ref": "hs_trash_pile",
+     "dev": 0.05,
+     "msg": "pies por detrás de la base de montón de trastos (99.5 < 100) y no le tapa (tapado 0 %)"
+    }
+   ],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_trash_pile",
+     "dev": 0.41,
+     "msg": "Dex +41 % frente a montón de trastos (caja sin medir: bounds del hotspot)"
+    },
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 1.05,
+   "shot": "capturas/recovery_pool/032.png"
+  },
+  {
+   "id": "hs_trash_pile:detrás",
+   "kind": "ref",
+   "x": 12.4,
+   "y": 99,
+   "feet": {
+    "x": 12.4,
+    "y": 99
+   },
+   "dexBox": {
+    "x": 9.66,
+    "y": 49.82,
+    "w": 5.48,
+    "h": 49.18
+   },
+   "heightPct": 49.18,
+   "walkable": true,
+   "maskOk": null,
+   "cover": {
+    "hs_trash_pile": 0
+   },
+   "scale": null,
+   "failures": [
+    {
+     "type": "occlusion",
+     "ref": "hs_trash_pile",
+     "dev": 0.21,
+     "msg": "pies por detrás de la base de montón de trastos (99 < 100) y no le tapa (tapado 0 %)"
+    }
+   ],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_trash_pile",
+     "dev": 0.41,
+     "msg": "Dex +41 % frente a montón de trastos (caja sin medir: bounds del hotspot)"
+    },
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 1.21,
+   "shot": "capturas/recovery_pool/033.png"
+  }
+ ]
+}

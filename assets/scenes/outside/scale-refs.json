@@ -1,0 +1,83 @@
+{
+  "_doc": "A2.17: referencias de proporción y profundidad (scripts/proportion-sweep.mjs). box = caja en % del fondo (como scene.json), baseY = línea del suelo donde apoya, realHeightM = alto real aproximado; Dex ≈ 1,75 m. foreground = debe tapar a Dex cuando sus pies quedan por encima de baseY y su caja lo solapa. scalePolicy: measure = el alto de Dex frente a la referencia cuenta como fallo (> 15 %); fixed = escala elegida por Adrián, la medida es solo informativa. measured: false = caja tomada de los bounds del hotspot, sin medir a ojo sobre el fondo: su medida de escala es solo informativa hasta que se mida (fase 2).",
+  "scene": "outside",
+  "scalePolicy": "fixed",
+  "scaleWhy": "A2.13: escala fija elegida por Adrián (11-nov) y tamaño de A2.11 aprobado; aquí solo cuentan tapados, pies y casos raros",
+  "dexHeightM": 1.75,
+  "refs": [
+    {
+      "id": "hs_front_door",
+      "label": "puerta de la casa",
+      "realHeightM": 2,
+      "foreground": false,
+      "box": {
+        "x": 31.6,
+        "y": 52,
+        "w": 5,
+        "h": 23
+      },
+      "baseY": 75,
+      "source": "qa/proportion-refs.json (medido a ojo en A2.11)"
+    },
+    {
+      "id": "hs_mailbox",
+      "label": "buzón",
+      "realHeightM": 1.2,
+      "foreground": false,
+      "box": {
+        "x": 58.8,
+        "y": 67.6,
+        "w": 3.7,
+        "h": 11.3
+      },
+      "baseY": 78.9,
+      "source": "bounds del hotspot",
+      "measured": false
+    },
+    {
+      "id": "hs_bushes",
+      "label": "arbustos",
+      "realHeightM": 1,
+      "foreground": true,
+      "box": {
+        "x": 13.2,
+        "y": 74.1,
+        "w": 11.1,
+        "h": 23.5
+      },
+      "baseY": 97.6,
+      "source": "bounds del hotspot",
+      "measured": false
+    },
+    {
+      "id": "hs_carport",
+      "label": "cochera",
+      "realHeightM": 2.4,
+      "foreground": false,
+      "box": {
+        "x": 69.3,
+        "y": 57.4,
+        "w": 15,
+        "h": 30
+      },
+      "baseY": 87.4,
+      "source": "bounds del hotspot",
+      "measured": false
+    },
+    {
+      "id": "hs_fence",
+      "label": "valla de madera",
+      "realHeightM": 1.8,
+      "foreground": false,
+      "box": {
+        "x": 0,
+        "y": 45,
+        "w": 5,
+        "h": 30
+      },
+      "baseY": 75,
+      "source": "bounds del hotspot",
+      "measured": false
+    }
+  ]
+}
