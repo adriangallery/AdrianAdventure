@@ -33,7 +33,7 @@ export async function loadDashboard(): Promise<DashboardData | null> {
       punksCount: mock.punks,
       tokens: {
         adrianZero: mock.adrianZero.map((t) => t.name),
-        lab: mock.lab.map((t) => (t.balance > 1 ? `${t.name} ×${t.balance}` : t.name)),
+        lab: mock.lab.map((t) => (t.balance > 1 ? `${t.name} x${t.balance}` : t.name)),
         labCount: mock.lab.reduce((n, t) => n + t.balance, 0),
       },
       errors: [],
@@ -61,7 +61,7 @@ export async function loadDashboard(): Promise<DashboardData | null> {
     const labs = nfts.value.filter((n) => n.contract === labAddr);
     tokens = {
       adrianZero: zs.map((n) => n.name),
-      lab: labs.map((n) => (n.balance > 1 ? `${n.name} ×${n.balance}` : n.name)),
+      lab: labs.map((n) => (n.balance > 1 ? `${n.name} x${n.balance}` : n.name)),
       labCount: labs.reduce((s, n) => s + n.balance, 0),
     };
   } else if (nfts.status === 'fulfilled') {

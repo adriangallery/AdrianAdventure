@@ -872,12 +872,12 @@ test('A3.10: mock web3 de QA — gates sin red y filas del dashboard', async () 
   assert.equal(formatZero(5000n * 10n ** 18n), '5,000');
   assert.equal(formatZero(1234n * 10n ** 18n + 5n * 10n ** 17n), '1,234.5');
   assert.equal(shortAddress('0x1234567890abcdef1234567890abcdef12345678'), '0x1234…5678');
-  const rows = dashboardRows({ address: m.address, zeroWei: 5000n * 10n ** 18n, adrianZeroCount: 2, punksCount: 1, tokens: { adrianZero: ['AdrianZERO #7', 'ZERO Twelve'], lab: ['Cap ×2'], labCount: 2 }, errors: [], simulated: true });
+  const rows = dashboardRows({ address: m.address, zeroWei: 5000n * 10n ** 18n, adrianZeroCount: 2, punksCount: 1, tokens: { adrianZero: ['AdrianZERO #7', 'ZERO Twelve'], lab: ['Cap x2'], labCount: 2 }, errors: [], simulated: true });
   const text = rows.map((r) => `${r.label}: ${r.value}`).join('\n');
   assert.match(text, /\$ZERO: 5,000/);
   assert.match(text, /AdrianZERO: 2/);
   assert.match(text, /ZERO Twelve/);
-  assert.match(text, /Traits \(LAB\): 2: Cap ×2/);
+  assert.match(text, /Traits \(LAB\): 2: Cap x2/);
   // Lectura parcial: lo que falló avisa y lo demás se enseña
   const partial = { address: m.address, zeroWei: null, adrianZeroCount: 3, punksCount: null, tokens: null, errors: ['zero', 'tokens'], simulated: false };
   const prow = dashboardRows(partial);

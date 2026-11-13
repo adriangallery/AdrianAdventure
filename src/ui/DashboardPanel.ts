@@ -49,6 +49,9 @@ const CSS = `
 #rigdash-term .rd-foot{display:flex;gap:8px;padding:8px 12px 10px;border-top:1px solid #1d4a24}
 #rigdash-link{flex:1;min-height:44px;display:flex;align-items:center;justify-content:center;font:inherit;font-size:11px;color:#030a05;background:#8cf070;
   border-radius:22px;text-decoration:none;text-align:center;padding:0 10px}
+#rigdash-term .rd-tip{flex:0 0 auto}
+@media (orientation:landscape){#rigdash-term .rd-body{display:flex;gap:14px;align-items:flex-start}
+  #rigdash-term .rd-main{flex:1;min-width:0}#rigdash-term .rd-tip{flex:0 0 34%;margin-top:4px}}
 #rigdash-term .rd-cursor{display:inline-block;width:.6em;animation:rdblink 1s steps(1) infinite}
 @keyframes rdblink{50%{opacity:0}}
 `;
@@ -114,7 +117,7 @@ export class DashboardPanel {
     link.href = TRAITLAB_URL;
     link.target = '_blank';
     link.rel = 'noopener noreferrer';
-    link.textContent = 'OPEN TRAITLAB ↗';
+    link.textContent = 'OPEN TRAITLAB >';
     link.addEventListener('click', (e) => e.stopPropagation());
     foot.appendChild(link);
 
@@ -145,6 +148,10 @@ export class DashboardPanel {
     const body = this.body;
     if (!body) return;
     body.textContent = '';
+    // En apaisado, filas a la izquierda y la nota del sysadmin a la derecha (siempre a la vista)
+    const main = document.createElement('div');
+    main.className = 'rd-main';
+    body.appendChild(main);
     const rows: string[] = [];
     let status: string;
     if (!d) {
@@ -161,7 +168,7 @@ export class DashboardPanel {
         v.className = 'rd-v';
         v.textContent = r.value;
         row.append(k, v);
-        body.appendChild(row);
+        main.appendChild(row);
         rows.push(`${r.label}: ${r.value}`);
       }
       status = dashboardStatus(d);
@@ -170,7 +177,7 @@ export class DashboardPanel {
     const st = document.createElement('div');
     st.className = 'rd-status';
     st.textContent = `> ${status}`;
-    body.appendChild(st);
+    main.appendChild(st);
     // La recompensa jugable: la nota del sysadmin (atajo del PIN del Ledger, cap. 3)
     const tip = document.createElement('div');
     tip.className = 'rd-tip';
