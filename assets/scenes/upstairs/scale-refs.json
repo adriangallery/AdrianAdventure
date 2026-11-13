@@ -1,0 +1,64 @@
+{
+  "_doc": "A2.17: referencias de proporción y profundidad (scripts/proportion-sweep.mjs). box = caja en % del fondo (como scene.json), baseY = línea del suelo donde apoya, realHeightM = alto real aproximado; Dex ≈ 1,75 m. foreground = debe tapar a Dex cuando sus pies quedan por encima de baseY y su caja lo solapa. scalePolicy: measure = el alto de Dex frente a la referencia cuenta como fallo (> 15 %); fixed = escala elegida por Adrián, la medida es solo informativa.",
+  "scene": "upstairs",
+  "scalePolicy": "measure",
+  "dexHeightM": 1.75,
+  "refs": [
+    {
+      "id": "hs_desk",
+      "label": "escritorio",
+      "realHeightM": 0.75,
+      "foreground": false,
+      "box": {
+        "x": 41.7,
+        "y": 61,
+        "w": 20.9,
+        "h": 27
+      },
+      "baseY": 88,
+      "source": "qa/proportion-refs.json (medido a ojo en A2.11)"
+    },
+    {
+      "id": "hs_armchair",
+      "label": "sillón premium",
+      "realHeightM": 1.1,
+      "foreground": false,
+      "box": {
+        "x": 77,
+        "y": 49.7,
+        "w": 12,
+        "h": 39
+      },
+      "baseY": 88.7,
+      "source": "bounds del hotspot"
+    },
+    {
+      "id": "hs_boxes",
+      "label": "cajas apiladas",
+      "realHeightM": 1.4,
+      "foreground": true,
+      "box": {
+        "x": 89.3,
+        "y": 61.4,
+        "w": 8.2,
+        "h": 33.8
+      },
+      "baseY": 95.2,
+      "source": "bounds del hotspot"
+    },
+    {
+      "id": "hs_computer",
+      "label": "Mining Rig (torre y monitores)",
+      "realHeightM": 1.6,
+      "foreground": false,
+      "box": {
+        "x": 10.6,
+        "y": 31.6,
+        "w": 12,
+        "h": 45
+      },
+      "baseY": 76.6,
+      "source": "bounds del hotspot"
+    }
+  ]
+}

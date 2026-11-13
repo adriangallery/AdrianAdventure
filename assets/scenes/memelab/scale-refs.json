@@ -1,0 +1,64 @@
+{
+  "_doc": "A2.17: referencias de proporción y profundidad (scripts/proportion-sweep.mjs). box = caja en % del fondo (como scene.json), baseY = línea del suelo donde apoya, realHeightM = alto real aproximado; Dex ≈ 1,75 m. foreground = debe tapar a Dex cuando sus pies quedan por encima de baseY y su caja lo solapa. scalePolicy: measure = el alto de Dex frente a la referencia cuenta como fallo (> 15 %); fixed = escala elegida por Adrián, la medida es solo informativa.",
+  "scene": "memelab",
+  "scalePolicy": "measure",
+  "dexHeightM": 1.75,
+  "refs": [
+    {
+      "id": "hs_exit_door",
+      "label": "puerta de salida",
+      "realHeightM": 2,
+      "foreground": false,
+      "box": {
+        "x": 6,
+        "y": 29,
+        "w": 5.4,
+        "h": 59
+      },
+      "baseY": 88,
+      "source": "qa/proportion-refs.json (medido a ojo en A2.11)"
+    },
+    {
+      "id": "hs_meme_tube",
+      "label": "tubo de contención",
+      "realHeightM": 2.6,
+      "foreground": false,
+      "box": {
+        "x": 44.1,
+        "y": 19,
+        "w": 11.9,
+        "h": 69
+      },
+      "baseY": 88,
+      "source": "bounds del hotspot"
+    },
+    {
+      "id": "hs_chemicals",
+      "label": "puesto de químicos",
+      "realHeightM": 1.9,
+      "foreground": false,
+      "box": {
+        "x": 32.2,
+        "y": 34.4,
+        "w": 8.1,
+        "h": 51.3
+      },
+      "baseY": 85.7,
+      "source": "bounds del hotspot"
+    },
+    {
+      "id": "hs_do_not_push",
+      "label": "botón «DO NOT PUSH» (pedestal y panel)",
+      "realHeightM": 1.6,
+      "foreground": false,
+      "box": {
+        "x": 89.3,
+        "y": 34.3,
+        "w": 8,
+        "h": 43.6
+      },
+      "baseY": 77.9,
+      "source": "bounds del hotspot"
+    }
+  ]
+}

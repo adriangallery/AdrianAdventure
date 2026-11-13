@@ -1,0 +1,64 @@
+{
+  "_doc": "A2.17: referencias de proporción y profundidad (scripts/proportion-sweep.mjs). box = caja en % del fondo (como scene.json), baseY = línea del suelo donde apoya, realHeightM = alto real aproximado; Dex ≈ 1,75 m. foreground = debe tapar a Dex cuando sus pies quedan por encima de baseY y su caja lo solapa. scalePolicy: measure = el alto de Dex frente a la referencia cuenta como fallo (> 15 %); fixed = escala elegida por Adrián, la medida es solo informativa.",
+  "scene": "clinic_exterior",
+  "scalePolicy": "measure",
+  "dexHeightM": 1.75,
+  "refs": [
+    {
+      "id": "hs_main_entrance",
+      "label": "puerta de la clínica",
+      "realHeightM": 2,
+      "foreground": false,
+      "box": {
+        "x": 44.8,
+        "y": 43.9,
+        "w": 9.4,
+        "h": 37.1
+      },
+      "baseY": 81,
+      "source": "qa/proportion-refs.json (medido a ojo en A2.11)"
+    },
+    {
+      "id": "hs_bench",
+      "label": "banco de espera",
+      "realHeightM": 0.85,
+      "foreground": false,
+      "box": {
+        "x": 59.7,
+        "y": 75.9,
+        "w": 10,
+        "h": 10
+      },
+      "baseY": 85.9,
+      "source": "bounds del hotspot"
+    },
+    {
+      "id": "hs_trash_can",
+      "label": "papelera",
+      "realHeightM": 0.9,
+      "foreground": false,
+      "box": {
+        "x": 29.7,
+        "y": 67,
+        "w": 3.5,
+        "h": 14
+      },
+      "baseY": 81,
+      "source": "bounds del hotspot"
+    },
+    {
+      "id": "hs_visitor_box",
+      "label": "buzón de visitas",
+      "realHeightM": 1.2,
+      "foreground": false,
+      "box": {
+        "x": 71.8,
+        "y": 69.6,
+        "w": 5.2,
+        "h": 15
+      },
+      "baseY": 84.6,
+      "source": "bounds del hotspot"
+    }
+  ]
+}

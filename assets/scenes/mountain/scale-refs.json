@@ -1,0 +1,37 @@
+{
+  "_doc": "A2.17: referencias de proporción y profundidad (scripts/proportion-sweep.mjs). box = caja en % del fondo (como scene.json), baseY = línea del suelo donde apoya, realHeightM = alto real aproximado; Dex ≈ 1,75 m. foreground = debe tapar a Dex cuando sus pies quedan por encima de baseY y su caja lo solapa. scalePolicy: measure = el alto de Dex frente a la referencia cuenta como fallo (> 15 %); fixed = escala elegida por Adrián, la medida es solo informativa.",
+  "scene": "mountain",
+  "scalePolicy": "measure",
+  "dexHeightM": 1.75,
+  "refs": [
+    {
+      "id": "hs_sign",
+      "label": "cartel de la clínica (con postes)",
+      "realHeightM": 2,
+      "foreground": false,
+      "box": {
+        "x": 35.7,
+        "y": 49.5,
+        "w": 10.1,
+        "h": 21.5
+      },
+      "baseY": 71,
+      "source": "qa/proportion-refs.json (medido a ojo en A2.11)"
+    },
+    {
+      "id": "hs_boulders",
+      "label": "rocas",
+      "realHeightM": 1.5,
+      "foreground": true,
+      "box": {
+        "x": 82,
+        "y": 55,
+        "w": 14,
+        "h": 25
+      },
+      "baseY": 80,
+      "source": "bounds del hotspot",
+      "note": "si foreground.png las pinta delante, Dex queda tapado aunque esté delante"
+    }
+  ]
+}

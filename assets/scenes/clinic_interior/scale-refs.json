@@ -1,0 +1,87 @@
+{
+  "_doc": "A2.17: referencias de proporción y profundidad (scripts/proportion-sweep.mjs). box = caja en % del fondo (como scene.json), baseY = línea del suelo donde apoya, realHeightM = alto real aproximado; Dex ≈ 1,75 m. foreground = debe tapar a Dex cuando sus pies quedan por encima de baseY y su caja lo solapa. scalePolicy: measure = el alto de Dex frente a la referencia cuenta como fallo (> 15 %); fixed = escala elegida por Adrián, la medida es solo informativa.",
+  "scene": "clinic_interior",
+  "scalePolicy": "measure",
+  "dexHeightM": 1.75,
+  "refs": [
+    {
+      "id": "hs_treatment_door",
+      "label": "puerta de la sala de tratamiento",
+      "realHeightM": 2,
+      "foreground": false,
+      "box": {
+        "x": 25.4,
+        "y": 36,
+        "w": 8.2,
+        "h": 51
+      },
+      "baseY": 87,
+      "source": "qa/proportion-refs.json (medido a ojo en A2.11)"
+    },
+    {
+      "id": "hs_reception_desk",
+      "label": "mostrador de recepción",
+      "realHeightM": 1.1,
+      "foreground": true,
+      "box": {
+        "x": 72.4,
+        "y": 75,
+        "w": 18.1,
+        "h": 13.5
+      },
+      "baseY": 88.5,
+      "source": "bounds del hotspot"
+    },
+    {
+      "id": "hs_waiting_chairs",
+      "label": "sillas de espera",
+      "realHeightM": 0.9,
+      "foreground": false,
+      "box": {
+        "x": 50.2,
+        "y": 65.1,
+        "w": 12.3,
+        "h": 20
+      },
+      "baseY": 85.1,
+      "source": "bounds del hotspot"
+    },
+    {
+      "id": "hs_water_dispenser",
+      "label": "dispensador de agua",
+      "realHeightM": 1.3,
+      "foreground": false,
+      "box": {
+        "x": 13.3,
+        "y": 40.6,
+        "w": 6,
+        "h": 43.2
+      },
+      "baseY": 83.8,
+      "source": "bounds del hotspot"
+    },
+    {
+      "id": "hs_filing_cabinet",
+      "label": "archivador",
+      "realHeightM": 1.3,
+      "foreground": false,
+      "box": {
+        "x": 68.4,
+        "y": 38.3,
+        "w": 8,
+        "h": 30
+      },
+      "baseY": 68.3,
+      "source": "bounds del hotspot"
+    },
+    {
+      "id": "npc_dr_satoshi",
+      "label": "NPC Dr. Satoshi",
+      "realHeightM": 1.7,
+      "foreground": false,
+      "npc": true,
+      "baseY": 69.9,
+      "source": "NPC: caja y alto los da el juego (state().pixel.npcs)"
+    }
+  ]
+}

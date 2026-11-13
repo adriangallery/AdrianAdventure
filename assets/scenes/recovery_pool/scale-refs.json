@@ -1,0 +1,64 @@
+{
+  "_doc": "A2.17: referencias de proporción y profundidad (scripts/proportion-sweep.mjs). box = caja en % del fondo (como scene.json), baseY = línea del suelo donde apoya, realHeightM = alto real aproximado; Dex ≈ 1,75 m. foreground = debe tapar a Dex cuando sus pies quedan por encima de baseY y su caja lo solapa. scalePolicy: measure = el alto de Dex frente a la referencia cuenta como fallo (> 15 %); fixed = escala elegida por Adrián, la medida es solo informativa.",
+  "scene": "recovery_pool",
+  "scalePolicy": "measure",
+  "dexHeightM": 1.75,
+  "refs": [
+    {
+      "id": "hs_dark_door",
+      "label": "puerta oscura",
+      "realHeightM": 2,
+      "foreground": false,
+      "box": {
+        "x": 0,
+        "y": 20,
+        "w": 4.6,
+        "h": 54
+      },
+      "baseY": 74,
+      "source": "qa/proportion-refs.json (medido a ojo en A2.11)"
+    },
+    {
+      "id": "hs_chad",
+      "label": "Chad (ape del jacuzzi, sentado)",
+      "realHeightM": 1.2,
+      "foreground": false,
+      "box": {
+        "x": 62.5,
+        "y": 67,
+        "w": 7,
+        "h": 21
+      },
+      "baseY": 88,
+      "source": "bounds del hotspot"
+    },
+    {
+      "id": "hs_robot_bartender",
+      "label": "robot camarero",
+      "realHeightM": 1.7,
+      "foreground": false,
+      "box": {
+        "x": 82,
+        "y": 30,
+        "w": 8,
+        "h": 35
+      },
+      "baseY": 65,
+      "source": "bounds del hotspot"
+    },
+    {
+      "id": "hs_trash_pile",
+      "label": "montón de trastos",
+      "realHeightM": 1,
+      "foreground": true,
+      "box": {
+        "x": 0.7,
+        "y": 80,
+        "w": 12,
+        "h": 20
+      },
+      "baseY": 100,
+      "source": "bounds del hotspot"
+    }
+  ]
+}
