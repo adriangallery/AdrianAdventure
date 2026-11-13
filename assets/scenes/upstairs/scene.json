@@ -76,7 +76,7 @@
           "LOOK": [
             {
               "op": "say",
-              "text": "Three monitors: portfolio performance, yield farming stats, and NFT marketplace analytics."
+              "text": "Three monitors, three charts, one colour: red. I look away. I'm working on that."
             },
             {
               "op": "ifFlag",
@@ -84,7 +84,7 @@
               "then": [
                 {
                   "op": "say",
-                  "text": "The drawer is open and empty. Thirty-eight pages of Terms for one key. I'd read them again. I wouldn't."
+                  "text": "The drawer's empty. Thirty-eight pages of Terms for one key. Worth it. Barely."
                 }
               ],
               "else": [
@@ -117,13 +117,13 @@
           "TALK": [
             {
               "op": "say",
-              "text": "The AI bot says: 'I've been outperforming humans since 2024.'"
+              "text": "The trading bot on screen: 'Outperforming humans since 2024.' It's saying it to an empty room."
             }
           ],
           "PICK": [
             {
               "op": "say",
-              "text": "There's a smartphone on the desk with crypto trading apps still open. The battery is dead. Classic."
+              "text": "A smartphone, battery dead. The last notification says 'PRICE ALERT'. It always does."
             }
           ],
           "OPEN": [
@@ -152,7 +152,7 @@
               "then": [
                 {
                   "op": "say",
-                  "text": "I close the drawer. It doesn't ask me to accept anything this time."
+                  "text": "I close the drawer. It doesn't ask me to accept anything this time. Growth."
                 }
               ],
               "else": [
@@ -166,7 +166,7 @@
           "PUSH": [
             {
               "op": "say",
-              "text": "I push the desk. The monitors wobble. The trading bot panics: 'VOLATILITY DETECTED!'"
+              "text": "I push the desk. The monitors wobble. I steady them like they're mine. They're not mine."
             }
           ],
           "PULL": [
@@ -178,7 +178,7 @@
           "GIVE": [
             {
               "op": "say",
-              "text": "The trading desk doesn't accept deposits. Only the smart contracts do."
+              "text": "The desk doesn't need anything from me. It already got thirty-eight pages of my consent."
             }
           ]
         }
@@ -196,37 +196,37 @@
           "LOOK": [
             {
               "op": "say",
-              "text": "Boxes labeled 'Moon Mission', 'Diamond Hands', 'Lambo Dreams'. All successful!"
+              "text": "Boxes labelled 'Moon Mission', 'Diamond Hands', 'Lambo Dreams'. All taped shut. Optimism, in storage."
             }
           ],
           "USE": [
             {
               "op": "say",
-              "text": "I peek inside one. A limited edition AdrianPunk NFT, sealed and catalogued. This collection isn't meant to be disturbed."
+              "text": "I peek inside one. Bubble wrap inside bubble wrap. Adrian protected everything. Except himself."
             }
           ],
           "TALK": [
             {
               "op": "say",
-              "text": "The boxes hum with positive vibes: 'WAGMI...'"
+              "text": "'Anybody in there?' Bubble wrap pops somewhere. I'm choosing to hear 'no'."
             }
           ],
           "PICK": [
             {
               "op": "say",
-              "text": "There's a rare NFT trading card inside one. It's sealed in a display case — look, don't touch."
+              "text": "A trading card in a sealed display case. Look, don't touch. The motto of this whole house."
             }
           ],
           "OPEN": [
             {
               "op": "say",
-              "text": "Inside: rare memecoins and governance tokens, all neatly organized. Adrian was a collector, not a hoarder. Well... maybe both."
+              "text": "Inside: memorabilia, carefully labelled. Adrian was a collector, not a hoarder. Well... maybe both."
             }
           ],
           "CLOSE": [
             {
               "op": "say",
-              "text": "I close the box. The valuable NFTs are safely stored."
+              "text": "I close the box. Some dreams are better kept taped."
             }
           ],
           "PUSH": [
@@ -238,13 +238,13 @@
           "PULL": [
             {
               "op": "say",
-              "text": "I pull a box off the stack. 'Moon Mission' falls and spills confetti. Bullish confetti."
+              "text": "I pull a box off the stack. 'Moon Mission' falls and spills confetti. Nobody claps."
             }
           ],
           "GIVE": [
             {
               "op": "say",
-              "text": "I can't give away someone else's moon missions. That's not how airdrops work."
+              "text": "Give away Adrian's boxes? Penny has an inventory. Of course Penny has an inventory."
             }
           ]
         }
@@ -281,7 +281,7 @@
           "LOOK": [
             {
               "op": "say",
-              "text": "A high-end setup with multiple GPUs. Mining and trading powerhouse."
+              "text": "A mining rig with more fans than I've ever had. It runs hot and judges quietly."
             }
           ],
           "USE": [
@@ -336,37 +336,37 @@
           "TALK": [
             {
               "op": "say",
-              "text": "The GPUs hum in harmony: 'Hash... hash... hash...'"
+              "text": "The GPUs hum in harmony. Low, steady, slightly smug."
             }
           ],
           "PICK": [
             {
               "op": "say",
-              "text": "There's a USB drive plugged in, labeled 'STRATEGIES'. It's encrypted and soldered to the rig. Not going anywhere."
+              "text": "A USB stick labelled 'STRATEGIES', soldered to the rig. Adrian's alpha, welded shut."
             }
           ],
           "OPEN": [
             {
               "op": "say",
-              "text": "I open the case. High-end GPUs and cooling systems inside."
+              "text": "I open the case. GPUs, fans, and dust bunnies the size of a rubber duck."
             }
           ],
           "CLOSE": [
             {
               "op": "say",
-              "text": "I close the case. The mining continues uninterrupted."
+              "text": "I close the case. The fans keep going. They don't need me."
             }
           ],
           "PUSH": [
             {
               "op": "say",
-              "text": "I push the power button. The rig reboots. Hash rate: temporarily zero. Like my portfolio in 2022."
+              "text": "I push the power button. The rig reboots, sighs, and gets straight back to work. Unlike me."
             }
           ],
           "PULL": [
             {
               "op": "say",
-              "text": "I pull out a GPU. It's warm. Like holding a small sun that turns electricity into disappointment."
+              "text": "I pull out a GPU. It's warm. I put it back before we get attached."
             }
           ],
           "GIVE": [
@@ -395,19 +395,19 @@
           "LOOK": [
             {
               "op": "say",
-              "text": "Where successful traders sit and watch portfolios grow. Built-in massage features."
+              "text": "A massage armchair aimed at the monitors. There's a dent in it exactly my shape. Lots of people are this shape."
             }
           ],
           "USE": [
             {
               "op": "say",
-              "text": "I sit in the armchair. Incredibly comfortable. This is what making it feels like."
+              "text": "I sit. Incredibly comfortable. I can see why Adrian never left. Except he did."
             }
           ],
           "TALK": [
             {
               "op": "say",
-              "text": "The chair purrs: 'You deserve this, diamond hands.'"
+              "text": "The chair purrs something. I didn't catch it. I'm sure it was nice."
             }
           ],
           "PICK": [
@@ -431,13 +431,13 @@
           "OPEN": [
             {
               "op": "say",
-              "text": "Hidden compartments for storing valuables."
+              "text": "Hidden compartments in the armrests. Empty, except for one crumb. A historic crumb."
             }
           ],
           "CLOSE": [
             {
               "op": "say",
-              "text": "The compartments are already closed and secure."
+              "text": "Closed. They click shut like they've got secrets. They don't. I checked."
             }
           ],
           "PUSH": [
@@ -449,13 +449,13 @@
           "PULL": [
             {
               "op": "say",
-              "text": "I pull the lever underneath. Full recline mode. I could watch charts from here all day."
+              "text": "I pull the lever. Full recline. Five more minutes. ...No. There's a case."
             }
           ],
           "GIVE": [
             {
               "op": "say",
-              "text": "This chair is non-transferable. Soulbound furniture."
+              "text": "I'm not giving the chair away. I'm not even sure I'm giving it back."
             }
           ]
         }
@@ -524,7 +524,7 @@
           "TALK": [
             {
               "op": "say",
-              "text": "The hatch creaks. Wind whistles through the gap."
+              "text": "'Anyone up there?' The wind answers. It's not helpful either."
             }
           ],
           "PICK": [
@@ -586,19 +586,19 @@
           "LOOK": [
             {
               "op": "say",
-              "text": "An articulated desk lamp. The only source of light in this cave of a trading floor. It's seen some late-night liquidations."
+              "text": "An articulated desk lamp, the only light in this cave. The moths followed me in."
             }
           ],
           "USE": [
             {
               "op": "say",
-              "text": "I angle the lamp toward the desk. The charts look even more terrifying in direct light."
+              "text": "I angle the lamp at the desk. Brighter charts. Not better charts."
             }
           ],
           "TALK": [
             {
               "op": "say",
-              "text": "'Shine a light on these losses, will you?' The lamp obliges. I immediately regret asking."
+              "text": "'Shine a light on this case, will you?' The lamp obliges. The case stays dark."
             }
           ],
           "PICK": [
@@ -616,19 +616,19 @@
           "CLOSE": [
             {
               "op": "say",
-              "text": "I fold the lamp down. Darkness returns. The green glow of monitors is somehow more ominous now."
+              "text": "I fold the lamp down. The monitors glow green. Even in the dark, they're selling something."
             }
           ],
           "PUSH": [
             {
               "op": "say",
-              "text": "I push the lamp arm. It springs back. Resilient, like a true HODLer."
+              "text": "I push the lamp arm. It springs straight back. Stubborn. I like it."
             }
           ],
           "PULL": [
             {
               "op": "say",
-              "text": "I pull the lamp closer. My shadow looms over the trading screens like a bearish engulfing pattern."
+              "text": "I pull the lamp closer. My shadow fills the screens. I look like a real detective. Finally."
             }
           ],
           "GIVE": [
@@ -674,7 +674,7 @@
           "USE": [
             {
               "op": "say",
-              "text": "I consider eating the ancient pizza. My survival instincts kick in just in time. This pizza predates the last halving."
+              "text": "I consider eating the ancient pizza. My survival instincts win. Narrowly."
             }
           ],
           "TALK": [
@@ -726,7 +726,7 @@
           "OPEN": [
             {
               "op": "say",
-              "text": "Already open. The pizza box has been in this state longer than most DeFi protocols."
+              "text": "Already open. It's been open so long it's basically furniture."
             }
           ],
           "CLOSE": [
@@ -738,13 +738,13 @@
           "PUSH": [
             {
               "op": "say",
-              "text": "I push the box under the desk. Out of sight, out of mind. Like unrealized losses."
+              "text": "I push the box under the desk. Out of sight. Not out of smell."
             }
           ],
           "PULL": [
             {
               "op": "say",
-              "text": "I pull the box toward me. The smell hits. That's not pizza anymore. That's a biohazard."
+              "text": "I pull the box closer. The smell arrives first. It's been waiting."
             }
           ],
           "GIVE": [
@@ -768,13 +768,13 @@
           "LOOK": [
             {
               "op": "say",
-              "text": "A half-empty energy drink can. The label says 'BULL RUN: 500mg Caffeine.' The fuel of every 3 AM trading session."
+              "text": "A half-empty energy drink. 'BULL RUN: 500mg Caffeine.' Adrian's blood type, apparently."
             }
           ],
           "USE": [
             {
               "op": "say",
-              "text": "I take a sip. It's flat and warm. Like the market after a hype cycle. My heart rate increases anyway."
+              "text": "I take a sip. Flat, warm, and now my heart is typing in caps."
             }
           ],
           "TALK": [
@@ -843,19 +843,19 @@
           "OPEN": [
             {
               "op": "say",
-              "text": "Already open. The tab was pulled with the same urgency as a margin call notification."
+              "text": "Already open. Adrian never waited for anything to settle."
             }
           ],
           "CLOSE": [
             {
               "op": "say",
-              "text": "You can't un-open a can. Like you can't un-send a transaction. Irreversible."
+              "text": "You can't un-open a can. I checked. Twice."
             }
           ],
           "PUSH": [
             {
               "op": "say",
-              "text": "I push the can. It rolls across the floor leaving a sticky trail. Like slippage on a DEX."
+              "text": "I push the can. It rolls under the desk, leaving a sticky trail of bad decisions."
             }
           ],
           "PULL": [
@@ -867,7 +867,7 @@
           "GIVE": [
             {
               "op": "say",
-              "text": "Nobody wants a half-empty energy drink. It's the NFT of beverages — unique but valueless."
+              "text": "Nobody wants half a can of BULL RUN. Not even the pizza."
             }
           ]
         }
@@ -891,7 +891,7 @@
           "USE": [
             {
               "op": "say",
-              "text": "I shuffle through the papers. Mostly gas fee receipts and 'Transaction Failed' confirmations."
+              "text": "I shuffle the papers. 'Transaction Failed'. 'Transaction Failed'. A takeaway menu. 'Transaction Failed'."
             }
           ],
           "TALK": [
@@ -931,7 +931,7 @@
           "OPEN": [
             {
               "op": "say",
-              "text": "It's an open tray. Nothing to open. Like my positions — always exposed."
+              "text": "It's an open tray. Nothing to open. It's very upfront about that."
             }
           ],
           "CLOSE": [
@@ -943,13 +943,13 @@
           "PUSH": [
             {
               "op": "say",
-              "text": "I push the tray aside. Papers scatter like panicked traders during a flash crash."
+              "text": "I push the tray aside. Papers slide everywhere. I tidy them up. Penny would want that. I fear Penny."
             }
           ],
           "PULL": [
             {
               "op": "say",
-              "text": "I pull the tray closer. The papers whisper tales of failed swaps and missed airdrops."
+              "text": "I pull the tray closer. Adrian kept receipts. Literally. Hundreds of them."
             }
           ],
           "GIVE": [
@@ -1005,7 +1005,7 @@
                 },
                 {
                   "op": "say",
-                  "text": "This must be what the traders wear when they want to 'ape in' to positions anonymously. Genius and unhinged."
+                  "text": "This must be what traders wear to 'ape in' anonymously. Genius. Unhinged. Both."
                 }
               ]
             }
@@ -1013,7 +1013,7 @@
           "TALK": [
             {
               "op": "say",
-              "text": "I whisper to the pack. 'What alpha do you hold?' The zipper rattles. That's either wind or financial advice."
+              "text": "I whisper to the pack: 'What do you know?' The zipper rattles. No comment."
             }
           ],
           "PICK": [
@@ -1059,7 +1059,7 @@
               "then": [
                 {
                   "op": "say",
-                  "text": "Already opened and emptied. Nothing but lint and broken dreams left inside."
+                  "text": "Already emptied. Lint, a wrapper and the faint smell of ape."
                 }
               ],
               "else": [
@@ -1097,19 +1097,19 @@
           "PUSH": [
             {
               "op": "say",
-              "text": "I nudge the pack with my foot. It slides under the desk. Something rattles inside."
+              "text": "I nudge the pack with my foot. Something rattles. Something always rattles."
             }
           ],
           "PULL": [
             {
               "op": "say",
-              "text": "I drag the pack out from under the desk. It's heavier than expected. What kind of alpha weighs this much?"
+              "text": "I drag the pack out from under the desk. Heavier than it looks. Like most of my decisions."
             }
           ],
           "GIVE": [
             {
               "op": "say",
-              "text": "Nobody here deserves this alpha. I'm keeping the pack."
+              "text": "Nobody here deserves this pack. Nobody's even here."
             }
           ]
         }

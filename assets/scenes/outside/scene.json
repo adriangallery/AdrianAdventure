@@ -232,7 +232,7 @@
           "PICK": [
             {
               "op": "say",
-              "text": "I can't pick up a door."
+              "text": "I'd need a bigger pocket. And a smaller door."
             }
           ],
           "CLOSE": [
@@ -248,7 +248,7 @@
               "else": [
                 {
                   "op": "say",
-                  "text": "Already closed and locked. Thoroughly."
+                  "text": "Closed and locked. Triple-locked, if you ask DOORIS. Don't ask DOORIS."
                 }
               ]
             }
@@ -463,7 +463,7 @@
           "TALK": [
             {
               "op": "say",
-              "text": "The light flickers. Morse code for 'hello'?"
+              "text": "'Hello, lamp.' A moth answers instead. Rudely."
             }
           ],
           "OPEN": [
@@ -543,7 +543,7 @@
           "PUSH": [
             {
               "op": "say",
-              "text": "I push the lamp. It swings and creaks back."
+              "text": "I nudge the lamp. It swings. Three moths file a complaint."
             }
           ],
           "PULL": [
@@ -591,31 +591,31 @@
           "USE": [
             {
               "op": "say",
-              "text": "I tap on the glass. No response."
+              "text": "I tap on the glass. Tap, tap. Even the moths ignore me."
             }
           ],
           "TALK": [
             {
               "op": "say",
-              "text": "'Anyone mining in there?!' ...silence."
+              "text": "'Adrian? You home?' ...The monitors hum. Nobody answers."
             }
           ],
           "PICK": [
             {
               "op": "say",
-              "text": "Can't pick up a window."
+              "text": "It's a window. It comes with the house. The house isn't coming."
             }
           ],
           "OPEN": [
             {
               "op": "say",
-              "text": "Sealed shut from inside. Keeps the private keys safe."
+              "text": "Sealed from the inside and painted over. Nobody opens this window. Ever."
             }
           ],
           "CLOSE": [
             {
               "op": "say",
-              "text": "Already closed."
+              "text": "Already shut. Painted shut, even. Adrian hates drafts."
             }
           ],
           "PUSH": [
@@ -627,7 +627,7 @@
           "PULL": [
             {
               "op": "say",
-              "text": "I pull the window frame. Sealed tight."
+              "text": "I pull the frame. Painted shut. Somebody meant it."
             }
           ],
           "GIVE": [
@@ -657,43 +657,43 @@
           "USE": [
             {
               "op": "say",
-              "text": "Can't reach it through the bushes."
+              "text": "Wade through thorns for a window? No. I have a door to annoy."
             }
           ],
           "TALK": [
             {
               "op": "say",
-              "text": "The curtain moves... wind or someone watching?"
+              "text": "The curtain moves. Wind. Probably. I'm choosing wind."
             }
           ],
           "PICK": [
             {
               "op": "say",
-              "text": "Windows are non-fungible and non-portable."
+              "text": "Windows stay in houses. Ask any burglar. Actually, don't."
             }
           ],
           "OPEN": [
             {
               "op": "say",
-              "text": "Too far through the bushes."
+              "text": "It's behind a wall of thorns. The thorns have opinions."
             }
           ],
           "CLOSE": [
             {
               "op": "say",
-              "text": "Already closed."
+              "text": "Already shut. Painted shut, even. Adrian hates drafts."
             }
           ],
           "PUSH": [
             {
               "op": "say",
-              "text": "I push through the bushes toward the window. Ouch."
+              "text": "I push toward the window. The bushes push back. Harder."
             }
           ],
           "PULL": [
             {
               "op": "say",
-              "text": "I can't reach it through these thorns."
+              "text": "I reach for it. A thorn reaches for me. The thorn's faster."
             }
           ],
           "GIVE": [
@@ -751,7 +751,7 @@
           "TALK": [
             {
               "op": "say",
-              "text": "My voice echoes: '...not your keys, not your coins...'"
+              "text": "'Hello?' The chimney says it back. Sootier."
             },
             {
               "op": "setFlag",
@@ -786,13 +786,13 @@
           "CLOSE": [
             {
               "op": "say",
-              "text": "No chimney controls from here."
+              "text": "I can't close a chimney from the lawn. My arms checked."
             }
           ],
           "PUSH": [
             {
               "op": "say",
-              "text": "I push the bricks. Still solid after all these years."
+              "text": "I push the bricks. The bricks win. They've been training."
             }
           ],
           "PULL": [
@@ -816,7 +816,7 @@
           "GIVE": [
             {
               "op": "say",
-              "text": "Santa's not home."
+              "text": "Nothing goes up a chimney. Santa has a strict one-way policy."
             }
           ]
         }
@@ -894,7 +894,7 @@
                   "then": [
                     {
                       "op": "say",
-                      "text": "Under the old bills, one more: a vet bill, stuck to the bottom. I almost missed it."
+                      "text": "Under the old bills, one more: a vet bill, stuck to the bottom. Patience pays. Annoyingly."
                     },
                     {
                       "op": "addItem",
@@ -917,7 +917,7 @@
                     },
                     {
                       "op": "say",
-                      "text": "Adrian's best friend is a rubber duck. ...I've had worse friends. Most of them were bots."
+                      "text": "Adrian's best friend is a rubber duck. ...I've had worse friends. A duck never unfollows you."
                     }
                   ],
                   "else": [
@@ -956,7 +956,7 @@
                     },
                     {
                       "op": "say",
-                      "text": "Adrian's best friend is a rubber duck. ...I've had worse friends. Most of them were bots."
+                      "text": "Adrian's best friend is a rubber duck. ...I've had worse friends. A duck never unfollows you."
                     }
                   ]
                 }
@@ -986,7 +986,7 @@
                   "then": [
                     {
                       "op": "say",
-                      "text": "Under the old bills, one more: a vet bill, stuck to the bottom. I almost missed it."
+                      "text": "Under the old bills, one more: a vet bill, stuck to the bottom. Patience pays. Annoyingly."
                     },
                     {
                       "op": "addItem",
@@ -1009,7 +1009,7 @@
                     },
                     {
                       "op": "say",
-                      "text": "Adrian's best friend is a rubber duck. ...I've had worse friends. Most of them were bots."
+                      "text": "Adrian's best friend is a rubber duck. ...I've had worse friends. A duck never unfollows you."
                     }
                   ],
                   "else": [
@@ -1048,7 +1048,7 @@
                     },
                     {
                       "op": "say",
-                      "text": "Adrian's best friend is a rubber duck. ...I've had worse friends. Most of them were bots."
+                      "text": "Adrian's best friend is a rubber duck. ...I've had worse friends. A duck never unfollows you."
                     }
                   ]
                 }
@@ -1076,7 +1076,7 @@
                   "then": [
                     {
                       "op": "say",
-                      "text": "Under the old bills, one more: a vet bill, stuck to the bottom. I almost missed it."
+                      "text": "Under the old bills, one more: a vet bill, stuck to the bottom. Patience pays. Annoyingly."
                     },
                     {
                       "op": "addItem",
@@ -1099,7 +1099,7 @@
                     },
                     {
                       "op": "say",
-                      "text": "Adrian's best friend is a rubber duck. ...I've had worse friends. Most of them were bots."
+                      "text": "Adrian's best friend is a rubber duck. ...I've had worse friends. A duck never unfollows you."
                     }
                   ],
                   "else": [
@@ -1138,7 +1138,7 @@
                     },
                     {
                       "op": "say",
-                      "text": "Adrian's best friend is a rubber duck. ...I've had worse friends. Most of them were bots."
+                      "text": "Adrian's best friend is a rubber duck. ...I've had worse friends. A duck never unfollows you."
                     }
                   ]
                 }
@@ -1148,25 +1148,25 @@
           "CLOSE": [
             {
               "op": "say",
-              "text": "I close the mailbox. The flap doesn't stay shut."
+              "text": "I close the flap. It flops open again. Three weeks of habit."
             }
           ],
           "PUSH": [
             {
               "op": "say",
-              "text": "I push the mailbox post. It wobbles — years of neglect."
+              "text": "I push the post. It wobbles. So do I. Long day."
             }
           ],
           "PULL": [
             {
               "op": "say",
-              "text": "I pull on the mailbox door. Rusty hinges protest."
+              "text": "I pull the mailbox door. The hinges scream. Somewhere, a curtain twitches."
             }
           ],
           "GIVE": [
             {
               "op": "say",
-              "text": "I'm not mailing anything right now."
+              "text": "Nothing to mail. No stamps. Nobody to write to. Wow."
             }
           ]
         }
@@ -1216,7 +1216,7 @@
                   "else": [
                     {
                       "op": "say",
-                      "text": "Overgrown bushes in front of the house."
+                      "text": "Overgrown bushes. Adrian gardens like he answers email."
                     }
                   ]
                 }
@@ -1224,7 +1224,7 @@
               "else": [
                 {
                   "op": "say",
-                  "text": "Overgrown bushes in front of the house."
+                  "text": "Overgrown bushes. Adrian gardens like he answers email."
                 }
               ]
             }
@@ -1232,49 +1232,49 @@
           "USE": [
             {
               "op": "say",
-              "text": "I rummage through. Ouch! Thorns. Nothing useful."
+              "text": "I rummage. The thorns rummage back. Nobody finds anything."
             }
           ],
           "TALK": [
             {
               "op": "say",
-              "text": "They rustle back. Nature's protocol."
+              "text": "They rustle back. Fluent in shrub. I'm not."
             }
           ],
           "PICK": [
             {
               "op": "say",
-              "text": "Just leaves."
+              "text": "A leaf. Evidence of autumn. Case closed."
             }
           ],
           "OPEN": [
             {
               "op": "say",
-              "text": "More branches inside. Recursion."
+              "text": "I part the leaves. More leaves. It's leaves all the way down."
             }
           ],
           "CLOSE": [
             {
               "op": "say",
-              "text": "They snap back naturally."
+              "text": "They spring shut behind me. Bushes keep secrets."
             }
           ],
           "PUSH": [
             {
               "op": "say",
-              "text": "I push through the bushes. Thorns grab my jacket."
+              "text": "I push in. The thorns grab my shirt. They want it more than I do."
             }
           ],
           "PULL": [
             {
               "op": "say",
-              "text": "I pull branches aside. More branches behind them."
+              "text": "I pull branches aside. Behind them: branches. Thorough bush."
             }
           ],
           "GIVE": [
             {
               "op": "say",
-              "text": "The bushes don't want my problems."
+              "text": "The bushes have enough problems. Mostly me."
             }
           ]
         }
@@ -1284,7 +1284,7 @@
         "useResponses": {
           "_default": [
             "I press it on the mat. The mat is glued down and unimpressed.",
-            "The mat says HODL. It's not taking anything. It's not giving anything either. Classic.",
+            "The mat isn't taking anything. It's glued down. It doesn't even take hints.",
             "I rub it on the doormat. Cleaner now. Still mine. Still not useful here."
           ],
           "ledger": [
@@ -1343,7 +1343,7 @@
                     },
                     {
                       "op": "sayBrief",
-                      "text": "The trapdoor again. Down I go.",
+                      "text": "The trapdoor again. Down I go. Mind the head. Too late.",
                       "duration": 1200
                     }
                   ],
@@ -1383,7 +1383,7 @@
                             },
                             {
                               "op": "say",
-                              "text": "Under the mat: a trapdoor with the AdrianZERO logo. A card reader and a keyhole. No weather vane."
+                              "text": "Under the mat: a trapdoor with the AdrianZERO logo. Card reader, keyhole, no weather vane. A shortcut."
                             },
                             {
                               "op": "say",
@@ -1405,11 +1405,11 @@
                           "else": [
                             {
                               "op": "say",
-                              "text": "Under the mat: a trapdoor with the AdrianZERO logo. A card reader and a keyhole. No weather vane."
+                              "text": "Under the mat: a trapdoor with the AdrianZERO logo. Card reader, keyhole, no weather vane. A shortcut."
                             },
                             {
                               "op": "say",
-                              "text": "Locked. The keyhole wants the key from Adrian's desk."
+                              "text": "Locked. The keyhole wants the key from Adrian's desk. Not my fingernail."
                             }
                           ]
                         }
@@ -1421,21 +1421,21 @@
                           "then": [
                             {
                               "op": "say",
-                              "text": "Under the mat: a trapdoor with the AdrianZERO logo. A card reader and a keyhole. No weather vane."
+                              "text": "Under the mat: a trapdoor with the AdrianZERO logo. Card reader, keyhole, no weather vane. A shortcut."
                             },
                             {
                               "op": "say",
-                              "text": "Locked. The card reader wants Adrian's keycard."
+                              "text": "Locked. The reader blinks, waiting for Adrian's keycard. Patiently. Unlike me."
                             }
                           ],
                           "else": [
                             {
                               "op": "say",
-                              "text": "Under the mat: a trapdoor with the AdrianZERO logo. A card reader and a keyhole. No weather vane."
+                              "text": "Under the mat: a trapdoor with the AdrianZERO logo. Card reader, keyhole, no weather vane. A shortcut."
                             },
                             {
                               "op": "say",
-                              "text": "Locked. It wants Adrian's keycard and a key. I have neither."
+                              "text": "Locked. It wants Adrian's keycard and a key. I have a doormat."
                             }
                           ]
                         }
@@ -1473,7 +1473,7 @@
           "TALK": [
             {
               "op": "say",
-              "text": "Mats are notoriously quiet."
+              "text": "'Welcome?' The mat says HODL. That's all it ever says."
             }
           ],
           "OPEN": [
@@ -1499,7 +1499,7 @@
                     },
                     {
                       "op": "sayBrief",
-                      "text": "The trapdoor again. Down I go.",
+                      "text": "The trapdoor again. Down I go. Mind the head. Too late.",
                       "duration": 1200
                     }
                   ],
@@ -1539,7 +1539,7 @@
                             },
                             {
                               "op": "say",
-                              "text": "Under the mat: a trapdoor with the AdrianZERO logo. A card reader and a keyhole. No weather vane."
+                              "text": "Under the mat: a trapdoor with the AdrianZERO logo. Card reader, keyhole, no weather vane. A shortcut."
                             },
                             {
                               "op": "say",
@@ -1561,11 +1561,11 @@
                           "else": [
                             {
                               "op": "say",
-                              "text": "Under the mat: a trapdoor with the AdrianZERO logo. A card reader and a keyhole. No weather vane."
+                              "text": "Under the mat: a trapdoor with the AdrianZERO logo. Card reader, keyhole, no weather vane. A shortcut."
                             },
                             {
                               "op": "say",
-                              "text": "Locked. The keyhole wants the key from Adrian's desk."
+                              "text": "Locked. The keyhole wants the key from Adrian's desk. Not my fingernail."
                             }
                           ]
                         }
@@ -1577,21 +1577,21 @@
                           "then": [
                             {
                               "op": "say",
-                              "text": "Under the mat: a trapdoor with the AdrianZERO logo. A card reader and a keyhole. No weather vane."
+                              "text": "Under the mat: a trapdoor with the AdrianZERO logo. Card reader, keyhole, no weather vane. A shortcut."
                             },
                             {
                               "op": "say",
-                              "text": "Locked. The card reader wants Adrian's keycard."
+                              "text": "Locked. The reader blinks, waiting for Adrian's keycard. Patiently. Unlike me."
                             }
                           ],
                           "else": [
                             {
                               "op": "say",
-                              "text": "Under the mat: a trapdoor with the AdrianZERO logo. A card reader and a keyhole. No weather vane."
+                              "text": "Under the mat: a trapdoor with the AdrianZERO logo. Card reader, keyhole, no weather vane. A shortcut."
                             },
                             {
                               "op": "say",
-                              "text": "Locked. It wants Adrian's keycard and a key. I have neither."
+                              "text": "Locked. It wants Adrian's keycard and a key. I have a doormat."
                             }
                           ]
                         }
@@ -1613,7 +1613,7 @@
                   "else": [
                     {
                       "op": "say",
-                      "text": "I get a fingernail under the corner. The corner stays. It's glued down. It says HODL. It means it."
+                      "text": "I get a fingernail under the corner. The corner wins. Glued down. I'd need leverage."
                     }
                   ]
                 }
@@ -1649,7 +1649,7 @@
                     },
                     {
                       "op": "sayBrief",
-                      "text": "The trapdoor again. Down I go.",
+                      "text": "The trapdoor again. Down I go. Mind the head. Too late.",
                       "duration": 1200
                     }
                   ],
@@ -1689,7 +1689,7 @@
                             },
                             {
                               "op": "say",
-                              "text": "Under the mat: a trapdoor with the AdrianZERO logo. A card reader and a keyhole. No weather vane."
+                              "text": "Under the mat: a trapdoor with the AdrianZERO logo. Card reader, keyhole, no weather vane. A shortcut."
                             },
                             {
                               "op": "say",
@@ -1711,11 +1711,11 @@
                           "else": [
                             {
                               "op": "say",
-                              "text": "Under the mat: a trapdoor with the AdrianZERO logo. A card reader and a keyhole. No weather vane."
+                              "text": "Under the mat: a trapdoor with the AdrianZERO logo. Card reader, keyhole, no weather vane. A shortcut."
                             },
                             {
                               "op": "say",
-                              "text": "Locked. The keyhole wants the key from Adrian's desk."
+                              "text": "Locked. The keyhole wants the key from Adrian's desk. Not my fingernail."
                             }
                           ]
                         }
@@ -1727,21 +1727,21 @@
                           "then": [
                             {
                               "op": "say",
-                              "text": "Under the mat: a trapdoor with the AdrianZERO logo. A card reader and a keyhole. No weather vane."
+                              "text": "Under the mat: a trapdoor with the AdrianZERO logo. Card reader, keyhole, no weather vane. A shortcut."
                             },
                             {
                               "op": "say",
-                              "text": "Locked. The card reader wants Adrian's keycard."
+                              "text": "Locked. The reader blinks, waiting for Adrian's keycard. Patiently. Unlike me."
                             }
                           ],
                           "else": [
                             {
                               "op": "say",
-                              "text": "Under the mat: a trapdoor with the AdrianZERO logo. A card reader and a keyhole. No weather vane."
+                              "text": "Under the mat: a trapdoor with the AdrianZERO logo. Card reader, keyhole, no weather vane. A shortcut."
                             },
                             {
                               "op": "say",
-                              "text": "Locked. It wants Adrian's keycard and a key. I have neither."
+                              "text": "Locked. It wants Adrian's keycard and a key. I have a doormat."
                             }
                           ]
                         }
@@ -1781,7 +1781,7 @@
                     },
                     {
                       "op": "sayBrief",
-                      "text": "The trapdoor again. Down I go.",
+                      "text": "The trapdoor again. Down I go. Mind the head. Too late.",
                       "duration": 1200
                     }
                   ],
@@ -1821,7 +1821,7 @@
                             },
                             {
                               "op": "say",
-                              "text": "Under the mat: a trapdoor with the AdrianZERO logo. A card reader and a keyhole. No weather vane."
+                              "text": "Under the mat: a trapdoor with the AdrianZERO logo. Card reader, keyhole, no weather vane. A shortcut."
                             },
                             {
                               "op": "say",
@@ -1843,11 +1843,11 @@
                           "else": [
                             {
                               "op": "say",
-                              "text": "Under the mat: a trapdoor with the AdrianZERO logo. A card reader and a keyhole. No weather vane."
+                              "text": "Under the mat: a trapdoor with the AdrianZERO logo. Card reader, keyhole, no weather vane. A shortcut."
                             },
                             {
                               "op": "say",
-                              "text": "Locked. The keyhole wants the key from Adrian's desk."
+                              "text": "Locked. The keyhole wants the key from Adrian's desk. Not my fingernail."
                             }
                           ]
                         }
@@ -1859,21 +1859,21 @@
                           "then": [
                             {
                               "op": "say",
-                              "text": "Under the mat: a trapdoor with the AdrianZERO logo. A card reader and a keyhole. No weather vane."
+                              "text": "Under the mat: a trapdoor with the AdrianZERO logo. Card reader, keyhole, no weather vane. A shortcut."
                             },
                             {
                               "op": "say",
-                              "text": "Locked. The card reader wants Adrian's keycard."
+                              "text": "Locked. The reader blinks, waiting for Adrian's keycard. Patiently. Unlike me."
                             }
                           ],
                           "else": [
                             {
                               "op": "say",
-                              "text": "Under the mat: a trapdoor with the AdrianZERO logo. A card reader and a keyhole. No weather vane."
+                              "text": "Under the mat: a trapdoor with the AdrianZERO logo. Card reader, keyhole, no weather vane. A shortcut."
                             },
                             {
                               "op": "say",
-                              "text": "Locked. It wants Adrian's keycard and a key. I have neither."
+                              "text": "Locked. It wants Adrian's keycard and a key. I have a doormat."
                             }
                           ]
                         }
@@ -1905,7 +1905,7 @@
           "GIVE": [
             {
               "op": "say",
-              "text": "Nobody gives things TO a doormat."
+              "text": "Things go UNDER a doormat. Not TO it. I've learned that much."
             }
           ]
         }
@@ -1923,37 +1923,37 @@
           "LOOK": [
             {
               "op": "say",
-              "text": "Concrete path to the door. Cracks form blockchain diagrams."
+              "text": "Concrete path to the door. Twenty paces. I counted. Detective habit."
             }
           ],
           "USE": [
             {
               "op": "say",
-              "text": "Walking on it. Left, right. Decentralized movement."
+              "text": "Left foot, right foot. I've got the hang of this."
             }
           ],
           "TALK": [
             {
               "op": "say",
-              "text": "No response. Hardened by years of foot traffic."
+              "text": "'Seen anyone come by?' The path says nothing. Witnesses never do."
             }
           ],
           "PICK": [
             {
               "op": "say",
-              "text": "A pebble. Could be useful... probably not."
+              "text": "A pebble. Not every pebble is a clue. Most, but not this one."
             }
           ],
           "OPEN": [
             {
               "op": "say",
-              "text": "Can't open a sidewalk."
+              "text": "There's no lid on a path. I checked."
             }
           ],
           "CLOSE": [
             {
               "op": "say",
-              "text": "Sidewalks don't close."
+              "text": "It's a path. It's open twenty-four hours."
             }
           ],
           "PUSH": [
@@ -1965,7 +1965,7 @@
           "PULL": [
             {
               "op": "say",
-              "text": "I can't pull a sidewalk."
+              "text": "I tug at a crack. The path stays. Concrete is loyal."
             }
           ],
           "GIVE": [
@@ -1989,37 +1989,37 @@
           "LOOK": [
             {
               "op": "say",
-              "text": "Wooden power pole. The original Layer 1 — electrical infrastructure."
+              "text": "A power pole, humming. Somebody's paying Adrian's electric bill. Not Adrian."
             }
           ],
           "USE": [
             {
               "op": "say",
-              "text": "I'd rather not touch live power lines."
+              "text": "Live wires. I'd like to stay a detective, not become a lamp."
             }
           ],
           "TALK": [
             {
               "op": "say",
-              "text": "The wires hum. Multi-chain technology."
+              "text": "The wires hum back. Same note every time. Very committed."
             }
           ],
           "PICK": [
             {
               "op": "say",
-              "text": "Not an NFT."
+              "text": "I'd need a much bigger pocket. And a utility company that likes me."
             }
           ],
           "OPEN": [
             {
               "op": "say",
-              "text": "Maintenance panel is locked."
+              "text": "The panel's padlocked. Even the pole has better security than me."
             }
           ],
           "CLOSE": [
             {
               "op": "say",
-              "text": "Permanent fixture."
+              "text": "Nothing to close. It's a pole. Standing is its whole thing."
             }
           ],
           "PUSH": [
@@ -2031,7 +2031,7 @@
           "PULL": [
             {
               "op": "say",
-              "text": "I pull on a low cable. Bad idea. I let go immediately."
+              "text": "I grab a low cable. Bad idea. My hair agrees."
             }
           ],
           "GIVE": [
@@ -2055,19 +2055,19 @@
           "LOOK": [
             {
               "op": "say",
-              "text": "Dense trees. Leaves rustle in the evening breeze."
+              "text": "Dense trees. Very dark between them. Good place to hide. ...If you were hiding."
             }
           ],
           "USE": [
             {
               "op": "say",
-              "text": "I lean against a tree. Nature's proof-of-stake."
+              "text": "I lean against a tree. The tree has more patience than me. Everyone does, apparently."
             }
           ],
           "TALK": [
             {
               "op": "say",
-              "text": "They've been here longer than any blockchain. Wise validators."
+              "text": "'Seen Adrian?' The trees rustle. Could be yes. It's wind."
             },
             {
               "op": "setFlag",
@@ -2078,7 +2078,7 @@
           "PICK": [
             {
               "op": "say",
-              "text": "A leaf. Already turning orange. Like my portfolio."
+              "text": "A leaf. It's turning orange. ...I'm not going to say it. I'm working on that."
             }
           ],
           "OPEN": [
@@ -2090,25 +2090,25 @@
           "CLOSE": [
             {
               "op": "say",
-              "text": "Nature's auto-close."
+              "text": "They're trees. They're never really open."
             }
           ],
           "PUSH": [
             {
               "op": "say",
-              "text": "I push against a tree trunk. It's been doing this longer than me."
+              "text": "I push the trunk. It's been standing longer than me. It's better at it."
             }
           ],
           "PULL": [
             {
               "op": "say",
-              "text": "I pull a low branch. It snaps back. Ow."
+              "text": "I pull a low branch. It snaps back. Right on the nose. Fair."
             }
           ],
           "GIVE": [
             {
               "op": "say",
-              "text": "Trees accept only carbon dioxide."
+              "text": "I breathe at the tree. That's all a tree wants. Done."
             }
           ]
         }
@@ -2126,13 +2126,13 @@
           "LOOK": [
             {
               "op": "say",
-              "text": "Red-brown tiles. Solid like a well-written smart contract."
+              "text": "Red-brown tiles. A few missing, like teeth. This house has seen things."
             }
           ],
           "USE": [
             {
               "op": "say",
-              "text": "Can't reach from here. Need a ladder."
+              "text": "Can't reach. I don't own a ladder. I own 3D glasses."
             }
           ],
           "TALK": [
@@ -2144,13 +2144,13 @@
           "PICK": [
             {
               "op": "say",
-              "text": "Way too high."
+              "text": "Way too high. I'd need a ladder. Or better arms."
             }
           ],
           "OPEN": [
             {
               "op": "say",
-              "text": "No attic access from outside."
+              "text": "No attic hatch out here. Whatever's up there stays up there."
             }
           ],
           "CLOSE": [
@@ -2162,7 +2162,7 @@
           "PUSH": [
             {
               "op": "say",
-              "text": "I can't reach the roof from here."
+              "text": "I push the air in the roof's direction. The roof doesn't notice."
             }
           ],
           "PULL": [
@@ -2174,7 +2174,7 @@
           "GIVE": [
             {
               "op": "say",
-              "text": "The pigeons up there don't want anything."
+              "text": "The pigeons up there look well fed. Better fed than me."
             }
           ]
         }
@@ -2192,25 +2192,25 @@
           "LOOK": [
             {
               "op": "say",
-              "text": "Empty carport. Oil stains but no car. Someone left in a hurry."
+              "text": "Empty carport. The oil stains are three weeks old. So is the hurry."
             }
           ],
           "USE": [
             {
               "op": "say",
-              "text": "Nothing to use. Eerily empty."
+              "text": "I stand where a car should be. I don't go anywhere."
             }
           ],
           "TALK": [
             {
               "op": "say",
-              "text": "Footsteps echo. Ghost of a Lambo."
+              "text": "'Hello?' My echo answers. It's no help either."
             }
           ],
           "PICK": [
             {
               "op": "say",
-              "text": "Oil stains. Not useful."
+              "text": "I'm not collecting oil stains. I have standards. Low ones."
             }
           ],
           "OPEN": [
@@ -2222,25 +2222,25 @@
           "CLOSE": [
             {
               "op": "say",
-              "text": "Open-source parking doesn't close."
+              "text": "It's a roof on sticks. There's nothing to close."
             }
           ],
           "PUSH": [
             {
               "op": "say",
-              "text": "I push the carport beam. It wobbles slightly."
+              "text": "I push a beam. The carport wobbles. I stop. We both relax."
             }
           ],
           "PULL": [
             {
               "op": "say",
-              "text": "I pull on the roof edge. Dust falls."
+              "text": "I tug the roof edge. Dust falls. Into my 3D glasses."
             }
           ],
           "GIVE": [
             {
               "op": "say",
-              "text": "The ghost Lambo doesn't need fuel."
+              "text": "I'd leave a note, but there's no windscreen to leave it on."
             }
           ]
         }
@@ -2535,13 +2535,13 @@
           "PULL": [
             {
               "op": "say",
-              "text": "I tug at the keypad. It's firmly mounted. Security by stubbornness."
+              "text": "I tug at the keypad. It's bolted on. It feels like it's taking notes."
             }
           ],
           "GIVE": [
             {
               "op": "say",
-              "text": "I'm not giving a keypad anything. It hasn't earned my trust."
+              "text": "I'm not giving the keypad anything. It hasn't given me anything either. Yet."
             }
           ]
         }
@@ -2559,13 +2559,13 @@
           "LOOK": [
             {
               "op": "say",
-              "text": "A blazing pink and orange sunset. Like watching a candlestick chart go parabolic across the entire sky."
+              "text": "A blazing pink and orange sunset. Lovely. I'm not seeing a chart in it. ...Okay, a small one."
             }
           ],
           "USE": [
             {
               "op": "say",
-              "text": "I try to screenshot the sunset. My phone camera does NOT do it justice. Some things can't be minted."
+              "text": "I try to photograph the sunset. It comes out as orange soup. You had to be there."
             }
           ],
           "TALK": [
@@ -2577,13 +2577,13 @@
           "PICK": [
             {
               "op": "say",
-              "text": "I reach for the sunset. My arm isn't long enough. Story of my trading career."
+              "text": "I reach for the sunset. My arm isn't long enough. Nobody's is."
             }
           ],
           "OPEN": [
             {
               "op": "say",
-              "text": "Can't open the sky. It's already the most permissionless thing in existence."
+              "text": "Can't open the sky. It's already about as open as things get."
             }
           ],
           "CLOSE": [
@@ -2601,13 +2601,13 @@
           "PULL": [
             {
               "op": "say",
-              "text": "I try to pull the sunset back. Time only moves in one direction. Like my portfolio."
+              "text": "I try to pull the sunset back. The sun ignores me. Professionally."
             }
           ],
           "GIVE": [
             {
               "op": "say",
-              "text": "The sky doesn't accept offerings. Not even gas fees."
+              "text": "I offer the sky a nod of respect. It sets anyway. Rude, but fair."
             }
           ]
         }
@@ -2658,7 +2658,7 @@
           "USE": [
             {
               "op": "say",
-              "text": "I lean on the fence. It creaks but holds. More reliable than most DeFi protocols."
+              "text": "I lean on the fence. It creaks. One plank creaks louder. It wants out."
             }
           ],
           "TALK": [
@@ -2688,7 +2688,7 @@
           "OPEN": [
             {
               "op": "say",
-              "text": "No gate here. Just fence all the way. Permissioned access only."
+              "text": "No gate. Just fence, start to finish. Adrian really didn't want visitors."
             }
           ],
           "CLOSE": [
@@ -2761,7 +2761,7 @@
           "LOOK": [
             {
               "op": "say",
-              "text": "Four windows glow warmly on the second floor. Multiple monitor screens visible inside. Someone was running serious operations up there."
+              "text": "Four windows glow upstairs. Monitors, lots of them. Somebody worked late. For three weeks."
             }
           ],
           "USE": [
@@ -2773,31 +2773,31 @@
           "TALK": [
             {
               "op": "say",
-              "text": "'Anyone trading up there?!' The glow of the screens is the only answer. The bots never sleep."
+              "text": "'Adrian?!' The screens glow back. Nobody comes to the window."
             }
           ],
           "PICK": [
             {
               "op": "say",
-              "text": "Can't reach the second floor. I'm not Spider-Man. I'm more of a rug-pull survivor."
+              "text": "Can't reach the second floor. I'm not Spider-Man. I'm barely Dex."
             }
           ],
           "OPEN": [
             {
               "op": "say",
-              "text": "Way too high. I'd need a ladder or a very optimistic leverage position."
+              "text": "Way too high. I'd need a ladder. Or a taller, braver me."
             }
           ],
           "CLOSE": [
             {
               "op": "say",
-              "text": "The curtains are already half-drawn. Privacy mode: on."
+              "text": "The curtains are half-drawn. Someone wanted light, not visitors."
             }
           ],
           "PUSH": [
             {
               "op": "say",
-              "text": "I push against the wall below the windows. The house doesn't budge. Solid foundation."
+              "text": "I push the wall. The house stays. Good house."
             }
           ],
           "PULL": [
@@ -2809,7 +2809,7 @@
           "GIVE": [
             {
               "op": "say",
-              "text": "I can't give anything to windows I can't reach. Story of every failed airdrop claim."
+              "text": "I can't hand anything up there. I throw like a detective. Badly."
             }
           ]
         }
