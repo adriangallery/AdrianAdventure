@@ -157,7 +157,7 @@ export class FailResponses {
 
   /**
    * Objeto a una NPC (USE o GIVE) sin itemDialogues: su mapa (useResponses o giveResponses según el verbo). A2.18: `own`
-   * = frase de DAR propia del objeto (ScummUI.giveLine: «These floppies are soulbound…»): Dex se niega antes de ofrecerlo,
+   * = frase de DAR propia del objeto (ScummUI.giveLine: «I start to offer the floppies…»): Dex se niega antes de ofrecerlo,
    * después de la pareja específica de la NPC y antes de su `_default`. Las bolsas `npc:` las dice la NPC; las demás, Dex
    * (`isNpcBag`).
    */
