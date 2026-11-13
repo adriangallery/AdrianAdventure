@@ -26,7 +26,7 @@ import { getAchievementByText } from '@/config/achievements.config';
 import { bindShutdown } from './lifecycle';
 import { gameUrlParams } from '@/config/debugParams';
 import type { Address } from 'viem';
-import type { ScummUI } from '@/ui/ScummUI';
+import { ScummUI } from '@/ui/ScummUI';
 import type { UIScene } from '@/scenes/UIScene';
 import { actorDepth } from '@/systems/WalkMotion';
 import { decideTap, deferredTapVerdict, textTapPolicy, walkPointFor } from '@/systems/TapDecision';
@@ -46,6 +46,7 @@ import { AmbientLayer } from '@/systems/AmbientLayer';
 import type { AmbientQa } from '@/systems/Ambient';
 import type { VoiceSystem } from '@/systems/VoiceSystem';
 import { failResponses } from '@/systems/FailResponsesData';
+import { isNpcBag } from '@/systems/FailResponses';
 import { surfaceAt, stepSound } from '@/systems/Footsteps';
 import { sfxOf } from '@/systems/Sfx';
 import { isStingerKind } from '@/systems/Stingers';
@@ -696,9 +697,15 @@ export class GameScene extends Phaser.Scene {
     const hit = this.hitTestAt(wx, wy, sy, touch);
     if (hit.kind === 'none') return;
 
-    // A2.4: clic derecho (solo ratón) = verbo por defecto del hotspot o NPC, sin mirar el panel
+    // A2.4: clic derecho (solo ratón) = verbo por defecto del hotspot o NPC, sin mirar el panel.
+    // A2.18: con una frase a medias («Give X to …») el clic derecho solo la cancela, como SCUMM
     if (!touch && button === 2) {
       this.lastClick = null;
+      const { scummUI, selectedItem } = this.uiSelection();
+      if (selectedItem) {
+        scummUI?.resetSelection?.();
+        return;
+      }
       this.rightClickHit(hit);
       return;
     }
@@ -862,8 +869,12 @@ export class GameScene extends Phaser.Scene {
       // A2.5: pareja específica > _default de la NPC > bolsa del objeto > bolsa genérica (src/systems/FailResponses.ts)
       const npcVerb = verb === Verb.GIVE ? 'GIVE' : 'USE';
       const responses = npcVerb === 'GIVE' ? npcData?.giveResponses : npcData?.useResponses;
-      const response = failResponses.itemOnNpc(npcVerb, selectedItem.id, { id: npc.npcId, responses }, this.currentSceneId()).text;
-      this.approachAndRun(npc.npcId, verb, plan, () => this.scene.get('UIScene').events.emit('say', response, npc.npcName));
+      // A2.18: con GIVE, la frase propia del objeto (Dex se niega a darlo) va tras la pareja específica de la NPC
+      const own = npcVerb === 'GIVE' ? ScummUI.giveLine(selectedItem.id) : null;
+      const r = failResponses.itemOnNpc(npcVerb, selectedItem.id, { id: npc.npcId, responses }, this.currentSceneId(), own);
+      // A2.18: lo del mapa de la NPC lo dice ella; las bolsas generales y la negativa propia del objeto, Dex
+      const speaker = isNpcBag(r.bag) ? npc.npcName : undefined;
+      this.approachAndRun(npc.npcId, verb, plan, () => this.scene.get('UIScene').events.emit('say', r.text, speaker));
       this.afterVerbAction(scummUI);
       return;
     }
@@ -1019,6 +1030,18 @@ export class GameScene extends Phaser.Scene {
     selectedItem: InventoryItem | null,
     scummUI: ScummUI | undefined,
   ): void {
+    // A2.18: GIVE [item] to [hotspot]: un hotspot no es una persona (va hasta él y Dex lo dice; nunca dispara un combo de USE)
+    if (selectedItem && hotspot && verb === Verb.GIVE) {
+      const item = selectedItem;
+      const hs = hotspot;
+      scummUI?.clearSelectedItem?.();
+      this.approachAndRun(hs.id, Verb.GIVE, this.planHotspot(hs, Verb.GIVE), () => {
+        this.scene.get('UIScene').events.emit('say', failResponses.itemGive(item.id, hs.id).text);
+      });
+      this.afterVerbAction(scummUI);
+      return;
+    }
+
     // Item combo mode: USE [item] with [hotspot]
     if (selectedItem && hotspot) {
       const item = selectedItem;

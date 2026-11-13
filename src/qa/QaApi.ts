@@ -157,6 +157,11 @@ export interface QaState {
    */
   lastFailResponse: FailResponse | null;
   /**
+   * A2.18: frase de la línea de acción (src/systems/Sentence.ts): `verb`, `item` (objeto elegido o null), `pending` (espera
+   * destino: «Give X to …», «Use X with …») y `text` (lo que se ve). null fuera de la partida.
+   */
+  sentence: { verb: string; item: string | null; pending: boolean; text: string } | null;
+  /**
    * A4.2: vida de cada NPC de la escena (src/systems/NpcLife.ts): `{ id, mirrored, facing, defaultFacing, engaged,
    * talking, mouthOpen, breathPx, blinking, blinkCount, turns, mouthMoves, talkMs, lastTalk, rest, faceLocked }`;
    * `lastTalk` = última conversación `{ faced, facedPlayer, lines, ms, mouthMoves, voice, level }`. Ver § Vida en las NPC.
@@ -208,6 +213,13 @@ export interface QaApi {
   /** `holdTextMs` (A1.1): deja el primer texto del script en pantalla ese tiempo sin cerrarlo antes de seguir. */
   act(verb: string, targetId: string, choiceTexts?: string[], holdTextMs?: number): Promise<QaState>;
   use(itemId: string, targetId: string, choiceTexts?: string[]): Promise<QaState>;
+  /** A2.18: «Give X to …» con un NPC, un hotspot u otro objeto (GIVE en el panel, el objeto y el destino) */
+  give(itemId: string, targetId: string, choiceTexts?: string[]): Promise<QaState>;
+  /**
+   * A2.18: elige un verbo en el panel y pulsa un objeto del inventario, SIN destino: con USE o GIVE la frase queda a
+   * medias (`state().sentence.pending`); con otro verbo se resuelve al momento. El destino, luego con `click`.
+   */
+  pick(verb: string, itemId: string): Promise<QaState>;
   combine(itemA: string, itemB: string): Promise<QaState>;
   talk(npcId: string, choiceTexts?: string[]): Promise<QaState>;
   dismissAll(): Promise<QaState>;
@@ -533,6 +545,7 @@ export function installQa(game: Phaser.Game): void {
       pixel: scene ? scene.qaPixel() : null,
       anim: scene ? scene.qaAnim() : null,
       lastFailResponse: failResponses.last ? { ...failResponses.last } : null,
+      sentence: playing ? panel().getSentence() : null,
       npcLife: scene ? scene.qaNpcLife() : [],
       audio: qaAudio(scene),
       ambient: scene ? scene.qaAmbient() : [],
@@ -624,6 +637,37 @@ export function installQa(game: Phaser.Game): void {
       note(`USE ${itemId} → ${targetId}`);
       tap(target);
       await settle(choiceTexts);
+      return snapshot();
+    },
+
+    async give(itemId, targetId, choiceTexts = []) {
+      await ensureGame();
+      if (!hasItem(itemId)) throw new QaError('blocked', `no tengo «${itemId}» en el inventario`);
+      chooseVerb(Verb.GIVE);
+      if (!panel().clickInventoryItem(itemId) || panel().getSelectedItem()?.id !== itemId) {
+        throw new QaError('error', `no se pudo elegir «${itemId}» con GIVE en el inventario`);
+      }
+      note(`GIVE ${itemId} → ${targetId}`);
+      if (hasItem(targetId)) {
+        panel().clickInventoryItem(targetId);
+        await settle(choiceTexts);
+        return snapshot();
+      }
+      const target = resolveTarget(targetId);
+      await waitInputFree();
+      tap(target);
+      await settle(choiceTexts);
+      return snapshot();
+    },
+
+    async pick(verbName, itemId) {
+      const verb = parseVerb(verbName);
+      await ensureGame();
+      if (!hasItem(itemId)) throw new QaError('blocked', `no tengo «${itemId}» en el inventario`);
+      chooseVerb(verb);
+      note(`${verb} ${itemId} (inventario)`);
+      if (!panel().clickInventoryItem(itemId)) throw new QaError('error', `no se pudo pulsar «${itemId}» en el inventario`);
+      await settle();
       return snapshot();
     },
 

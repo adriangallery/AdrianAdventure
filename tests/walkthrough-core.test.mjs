@@ -6,7 +6,7 @@ import { readFileSync } from 'node:fs';
 import {
   attemptIndex, check, checkAttemptRan, checkCinematic, checkFailResponse, checkHighlighted, checkJournal, checkLastChoices, checkListenerGrowth, checkRejects, checkWalkTarget, classify,
   describe, kindOf, newLogLines, routeDefects, runScriptDefects, selftestDefects, selftestMismatch, tapsScene,
-  checkPixel, notePixel, checkAnim, checkNpc, checkAudio, checkAmbient,
+  checkPixel, notePixel, checkAnim, checkNpc, checkAudio, checkAmbient, checkSentence,
 } from '../scripts/lib/walkthrough-core.mjs';
 
 const readJson = (p) => JSON.parse(readFileSync(new URL(`../${p}`, import.meta.url), 'utf8'));
@@ -660,4 +660,21 @@ test('checkAudio (A4.4): ambiente pedido, superficie, pasos y efectos pedidos du
   assert.deepEqual(checkAudio({ missing: false }, st({ audio: audio({}, { sfx: { last: [], total: 1, counts: { x: 1 }, missing: ['x'] } }) })), ['audio: efectos pedidos que no estaban en caché: x']);
   assert.deepEqual(checkAudio({ ambience: null }, st({ audio: null })), ['sin estado de audio (no hay escena de juego)']);
   assert.match(checkAudio({ ambience: null }, st()).join(), /anterior a A4.4/);
+});
+
+test('A2.18: expect.sentence, pasos give y pick (describe, defectos y tapsScene)', () => {
+  const st = { sentence: { verb: 'GIVE', item: 'ledger', pending: true, text: 'Give Hardware Wallet to...' } };
+  assert.deepEqual(checkSentence({ verb: 'GIVE', item: 'ledger', pending: true, text: '^give .* to\\.\\.\\.$' }, st), []);
+  assert.equal(checkSentence({ pending: false }, st).length, 1);
+  assert.equal(checkSentence({ item: null }, st).length, 1);
+  assert.match(checkSentence({ text: 'Use' }, st)[0], /no casa/);
+  assert.match(checkSentence({ pending: true }, {})[0], /anterior a A2\.18/);
+  assert.deepEqual(check({ sentence: { pending: true } }, { ...st, inventory: [], flags: {}, visited: [], achievements: [] }), []);
+  assert.equal(describe({ do: 'give', item: 'ledger', target: 'npc_receptionist' }), 'GIVE ledger → npc_receptionist');
+  assert.equal(describe({ do: 'pick', verb: 'GIVE', item: 'ledger' }), 'GIVE ledger (inventario)');
+  assert.equal(tapsScene({ do: 'give', item: 'a', target: 'npc_x' }, { inventory: ['a'] }), true);
+  assert.equal(tapsScene({ do: 'give', item: 'a', target: 'b' }, { inventory: ['a', 'b'] }), false);
+  assert.equal(tapsScene({ do: 'pick', verb: 'GIVE', item: 'a' }, { inventory: ['a'] }), false);
+  const defects = routeDefects({ steps: [{ do: 'give', item: 'a' }, { do: 'pick', item: 'a' }] });
+  assert.equal(defects.length, 2);
 });

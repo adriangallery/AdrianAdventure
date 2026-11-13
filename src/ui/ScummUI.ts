@@ -10,6 +10,7 @@ import { VERB_KEYS } from '@/systems/DesktopControls';
 import { failResponses } from '@/systems/FailResponsesData';
 import { MIN_TOUCH_PX } from './touchTarget';
 import { sfxOf } from '@/systems/Sfx';
+import { tapItem, isPending, sentenceText, selectVerb as sentenceSelectVerb } from '@/systems/Sentence';
 
 export const SCUMM_PANEL_MIN_HEIGHT: number = LAYOUT.PANEL_MIN_HEIGHT;
 // A5.2: 44 px (zona táctil del asa en un iPhone; antes 36)
@@ -404,16 +405,10 @@ export class ScummUI {
   selectVerb(verb: Verb): void {
     // A4.4: un tic suave al cambiar de verbo (no al volver a Walk desde el código: resetSelection, QA)
     if (verb !== this.selectedVerb && verb !== Verb.WALK) sfxOf(this.scene)?.play('verb_select', { volume: 0.35 });
-    // Toggle: clicking the already-active verb deselects it (resets to WALK)
-    if (verb === this.selectedVerb && verb !== Verb.WALK) {
-      this.selectedVerb = Verb.WALK;
-    } else {
-      this.selectedVerb = verb;
-    }
-    // Clear item selection when switching verbs
-    if (this.selectedItem && this.selectedVerb !== Verb.USE) {
-      this.selectedItem = null;
-    }
+    // Toggle: clicking the already-active verb deselects it (resets to WALK).
+    // A2.18: pulsar cualquier verbo (otro o el mismo) cancela la frase a medias («Give X to …»): src/systems/Sentence.ts
+    this.selectedVerb = sentenceSelectVerb({ verb: this.selectedVerb, item: this.selectedItem?.id ?? null }, verb).verb as Verb;
+    this.selectedItem = null;
     for (const [v, text] of this.verbTexts) {
       const active = v === this.selectedVerb;
       text.setColor(active ? TWP.VERB_ACTIVE : TWP.VERB_NORMAL);
@@ -445,20 +440,20 @@ export class ScummUI {
     this.updateActionLine();
   }
 
+  /** A2.18 (QA): la frase de la línea de acción: verbo, objeto elegido, si espera destino y el texto que se ve. */
+  getSentence(): { verb: string; item: string | null; pending: boolean; text: string } {
+    const s = { verb: this.selectedVerb as string, item: this.selectedItem?.id ?? null };
+    return { ...s, pending: isPending(s), text: this.actionLine?.text ?? '' };
+  }
+
   private updateActionLine(): void {
-    const verb = VERB_LABELS[this.selectedVerb];
-    if (this.selectedItem) {
-      // Item cursor mode: "Use [item] with [target]"
-      const itemName = this.selectedItem.name;
-      this.actionLine.setText(
-        this.hoveredObject ? `Use ${itemName} with ${this.hoveredObject}` : `Use ${itemName} with...`
-      );
-    } else if (this.selectedVerb === Verb.WALK) {
-      // WALK mode: show target name only when hovering, empty otherwise
-      this.actionLine.setText(this.hoveredObject ? `Walk to ${this.hoveredObject}` : '');
-    } else {
-      this.actionLine.setText(this.hoveredObject ? `${verb} ${this.hoveredObject}` : verb);
-    }
+    // A2.18: «Use X with …» / «Give X to …» mientras espera destino (src/systems/Sentence.ts)
+    const s = { verb: this.selectedVerb as string, item: this.selectedItem?.id ?? null };
+    this.actionLine.setText(sentenceText(s, VERB_LABELS[this.selectedVerb], this.selectedItem?.name ?? null, this.hoveredObject));
+    // A2.18: en un móvil vertical una frase larga («Give Hardware Wallet to Receptionist») no se sale de la pantalla
+    const maxW = this.scene.scale.width - 64;
+    this.actionLine.setScale(1);
+    if (this.actionLine.width > maxW) this.actionLine.setScale(Math.max(0.6, maxW / this.actionLine.width));
   }
 
   setInventory(inv: InventorySystem): void {
@@ -483,22 +478,37 @@ export class ScummUI {
     return true;
   }
 
-  /** Inventory item clicked — behavior depends on current verb. */
-  private selectInventoryItem(item: InventoryItem): void {
-    // LOOK: describe the item
-    if (this.selectedVerb === Verb.LOOK) {
-      // A2.5: sin descripción propia, la bolsa itemVerbDefaults.LOOK (sin plantillas: todo con voz)
-      const desc = ScummUI.ITEM_DESCS[item.id] ?? failResponses.itemVerb(Verb.LOOK, item.id).text;
-      this.scene.events.emit('say', desc);
-      return;
-    }
+  /** A2.18: frase de DAR propia del objeto (antes, la respuesta al pulsarlo con GIVE); null si no tiene. */
+  static giveLine(itemId: string): string | null {
+    return ScummUI.ITEM_VERB_RESPONSES[itemId]?.[Verb.GIVE] ?? null;
+  }
 
-    // Item combo: if we already have an item selected and click a DIFFERENT item
-    if (this.selectedItem && this.selectedItem.id !== item.id) {
-      const item1 = this.selectedItem;
+  /** Paint the active verb in the panel (sin efectos: no toca el objeto elegido). */
+  private paintVerbs(): void {
+    for (const [v, text] of this.verbTexts) text.setColor(v === this.selectedVerb ? TWP.VERB_ACTIVE : TWP.VERB_NORMAL);
+  }
+
+  /**
+   * Inventory item clicked — behavior depends on current verb. A2.18: USE y GIVE dejan la frase a medias («Use X with …»,
+   * «Give X to …») y esperan destino (NPC, hotspot u otro objeto); el resto de verbos se resuelve al momento.
+   */
+  private selectInventoryItem(item: InventoryItem): void {
+    const { next, action } = tapItem(
+      { verb: this.selectedVerb, item: this.selectedItem?.id ?? null },
+      item.id,
+      { immediateUse: (id) => id === 'ape_costume' },
+    );
+
+    if (action.kind === 'resolve') {
+      // Objeto + objeto: «Use X with Y» (combos de global.json) o «Give X to Y» (no es una persona)
+      const item1 = this.selectedItem as InventoryItem;
       this.selectedItem = null;
+      this.selectedVerb = next.verb as Verb;
+      this.paintVerbs();
       this.updateActionLine();
-      if (this.onItemCombo) {
+      if (action.verb === Verb.GIVE) {
+        this.scene.events.emit('say', failResponses.itemGive(item1.id, item.id, 'item-item').text);
+      } else if (this.onItemCombo) {
         this.onItemCombo(item1, item);
       } else {
         this.scene.events.emit('say', failResponses.itemOnItem(item1.id, item.id).text);
@@ -506,8 +516,27 @@ export class ScummUI {
       return;
     }
 
+    if (action.kind === 'drop' || action.kind === 'pending') {
+      this.selectedItem = action.kind === 'pending' ? item : null;
+      this.selectedVerb = next.verb as Verb;
+      this.paintVerbs();
+      this.updateActionLine();
+      if (this.selectedItem) this.onInventorySelect?.(this.selectedItem);
+      return;
+    }
+
+    // Al momento: verbos de un objeto sobre el objeto
+    const verb = action.verb as Verb;
+    // LOOK: describe the item
+    if (verb === Verb.LOOK) {
+      // A2.5: sin descripción propia, la bolsa itemVerbDefaults.LOOK (sin plantillas: todo con voz)
+      const desc = ScummUI.ITEM_DESCS[item.id] ?? failResponses.itemVerb(Verb.LOOK, item.id).text;
+      this.scene.events.emit('say', desc);
+      return;
+    }
+
     // USE + ape_costume: immediate equip/unequip (no combine mode)
-    if (this.selectedVerb === Verb.USE && item.id === 'ape_costume') {
+    if (verb === Verb.USE && item.id === 'ape_costume') {
       const state = this.scene.registry.get('gameState') as GameState | undefined;
       if (state) {
         const wearing = state.flags['ape_costume_worn'] ?? false;
@@ -525,26 +554,8 @@ export class ScummUI {
       return;
     }
 
-    // USE or WALK: toggle "Use X with..." cursor mode
-    if (this.selectedVerb === Verb.USE || this.selectedVerb === Verb.WALK) {
-      if (this.selectedItem?.id === item.id) {
-        this.selectedItem = null;
-      } else {
-        this.selectedItem = item;
-        if (this.selectedVerb !== Verb.USE) {
-          this.selectedVerb = Verb.USE;
-          for (const [v, text] of this.verbTexts) {
-            text.setColor(v === Verb.USE ? TWP.VERB_ACTIVE : TWP.VERB_NORMAL);
-          }
-        }
-      }
-      this.updateActionLine();
-      this.onInventorySelect?.(this.selectedItem!);
-      return;
-    }
-
     // Special item transformations on OPEN
-    if (this.selectedVerb === Verb.OPEN && item.id === 'mystery_envelope' && this.inventory) {
+    if (verb === Verb.OPEN && item.id === 'mystery_envelope' && this.inventory) {
       this.inventory.removeItem('mystery_envelope');
       this.inventory.addItem('mystery_envelope_opened', 'Opened Envelope');
       const state = this.scene.registry.get('gameState');
@@ -553,11 +564,10 @@ export class ScummUI {
       return;
     }
 
-    // Other verbs (OPEN, CLOSE, PUSH, PULL, TALK, GIVE, PICK): show per-item response
+    // Other one-object verbs (OPEN, CLOSE, PUSH, PULL, TALK, PICK): show per-item response
     // A2.5: lo propio del objeto o la bolsa del verbo (assets/config/fail-responses.json itemVerbDefaults)
-    const verbKey = this.selectedVerb;
-    const response = ScummUI.ITEM_VERB_RESPONSES[item.id]?.[verbKey]
-      ?? failResponses.itemVerb(verbKey, item.id).text;
+    const response = ScummUI.ITEM_VERB_RESPONSES[item.id]?.[verb]
+      ?? failResponses.itemVerb(verb, item.id).text;
     this.scene.events.emit('say', response);
   }
 

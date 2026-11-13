@@ -186,3 +186,24 @@ test('escenas reales: useResponses de hotspots y bolsas de NPC sin marcadores, o
   assert.ok(pairs >= 25, `solo ${pairs} parejas objeto + hotspot`);
   assert.equal(npcDefaults, 4, 'Penny y Dr. Satoshi, USE y GIVE');
 });
+
+// ── A2.18: dar a alguien / a algo ──
+
+test('A2.18 GIVE a NPC: pareja de la NPC > negativa propia del objeto > _default > bolsas; isNpcBag', () => {
+  const fr = new FailResponses(data, { deterministic: true });
+  const responses = { duck: 'She squeaks it.', _default: ['No thanks.'] };
+  const own = 'Not giving my duck away.';
+  assert.equal(fr.itemOnNpc('GIVE', 'duck', { id: 'npc_p', responses }, 'lobby', own).text, 'She squeaks it.');
+  const r = fr.itemOnNpc('GIVE', 'key', { id: 'npc_p', responses }, 'lobby', 'My key. Mine.');
+  assert.deepEqual([r.text, r.bag], ['My key. Mine.', 'own:key:GIVE']);
+  assert.equal(fr.itemOnNpc('GIVE', 'key', { id: 'npc_p', responses }, 'lobby', null).bag, 'npc:lobby/npc_p:GIVE:_default');
+  assert.equal(fr.itemOnNpc('GIVE', 'key', { id: 'npc_q' }, 'lobby').bag, 'itemNpc:GIVE');
+  assert.equal(F.isNpcBag('npc:lobby/npc_p:GIVE:_default'), true);
+  for (const b of ['own:key:GIVE', 'item:duck', 'itemNpc:GIVE', 'verb:GIVE']) assert.equal(F.isNpcBag(b), false, b);
+});
+
+test('A2.18 GIVE a un hotspot u objeto: bolsa verbDefaults.GIVE con su tipo', () => {
+  const fr = new FailResponses({ verbDefaults: { GIVE: ['Whom? A.', 'Whom? B.'] } }, { deterministic: true });
+  assert.deepEqual(fr.itemGive('duck', 'hs_poster'), { kind: 'item-hotspot', item: 'duck', target: 'hs_poster', verb: 'GIVE', text: 'Whom? A.', bag: 'verb:GIVE' });
+  assert.deepEqual(fr.itemGive('duck', 'water', 'item-item'), { kind: 'item-item', item: 'duck', target: 'water', verb: 'GIVE', text: 'Whom? B.', bag: 'verb:GIVE' });
+});

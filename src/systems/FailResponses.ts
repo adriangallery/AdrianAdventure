@@ -73,6 +73,9 @@ export function toLines(bag: unknown): string[] {
   return list.filter((t): t is string => typeof t === 'string' && /[A-Za-z0-9]/.test(t) && !hasMarker(t));
 }
 
+/** A2.18: ¿la frase sale del mapa de la NPC (la dice ella) o de una bolsa de Dex? */
+export const isNpcBag = (bag: string): boolean => bag.startsWith('npc:');
+
 const pairKey = (a: string, b: string): string => (a < b ? `${a}+${b}` : `${b}+${a}`);
 
 export class FailResponses {
@@ -152,16 +155,30 @@ export class FailResponses {
     ]);
   }
 
-  /** Objeto a una NPC (USE o GIVE) sin itemDialogues: su mapa (useResponses o giveResponses según el verbo). */
-  itemOnNpc(verb: 'USE' | 'GIVE', itemId: string, npc: { id: string; responses?: ResponseMap }, scene = ''): FailResponse {
+  /**
+   * Objeto a una NPC (USE o GIVE) sin itemDialogues: su mapa (useResponses o giveResponses según el verbo). A2.18: `own`
+   * = frase de DAR propia del objeto (ScummUI.giveLine: «These floppies are soulbound…»): Dex se niega antes de ofrecerlo,
+   * después de la pareja específica de la NPC y antes de su `_default`. Las bolsas `npc:` las dice la NPC; las demás, Dex
+   * (`isNpcBag`).
+   */
+  itemOnNpc(verb: 'USE' | 'GIVE', itemId: string, npc: { id: string; responses?: ResponseMap }, scene = '', own: string | null = null): FailResponse {
     const where = `${scene}/${npc.id}:${verb}`;
     const map = npc.responses ?? {};
     return this.resolve('item-npc', itemId, npc.id, verb, [
       [`npc:${where}:${itemId}`, map[itemId]],
+      [`own:${itemId}:${verb}`, own],
       [`npc:${where}:_default`, map._default],
       [`item:${itemId}`, this.data.items?.[itemId]],
       [`itemNpc:${verb}`, this.data.itemNpc?.[verb]],
     ]);
+  }
+
+  /**
+   * A2.18: «Give X to <hotspot u objeto>» (no es una persona): la bolsa `verbDefaults.GIVE` («Give it to whom? It's not a
+   * person. I checked.»), con voz de Dex. Sin mapas por hotspot: el extractor de voces no los cubriría.
+   */
+  itemGive(itemId: string, targetId: string, kind: 'item-hotspot' | 'item-item' = 'item-hotspot'): FailResponse {
+    return this.resolve(kind, itemId, targetId, 'GIVE', [['verb:GIVE', this.data.verbDefaults?.GIVE]]);
   }
 
   /** Objeto + objeto sin combo de global.json. */

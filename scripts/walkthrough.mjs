@@ -65,6 +65,9 @@ const callQa = (page, step) => page.evaluate(async (s) => {
     case 'newGame': return q.newGame();
     case 'act': return q.act(s.verb, s.target, s.choices ?? [], s.holdTextMs ?? 0);
     case 'use': return q.use(s.item, s.target, s.choices ?? []);
+    // A2.18: «Give X to …» de dos pasos, y elegir verbo + objeto sin destino (frase a medias)
+    case 'give': return q.give(s.item, s.target, s.choices ?? []);
+    case 'pick': return q.pick(s.verb, s.item);
     case 'combine': return q.combine(s.items[0], s.items[1]);
     case 'talk': return q.talk(s.npc, s.choices ?? []);
     case 'walk': return q.walk(s.x, s.y);
