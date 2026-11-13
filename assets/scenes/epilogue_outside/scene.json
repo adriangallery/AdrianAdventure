@@ -267,9 +267,9 @@
         "name": "Path Down the Mountain",
         "bounds": {
           "x": 12,
-          "y": 84,
+          "y": 79,
           "w": 9.5,
-          "h": 16
+          "h": 14
         },
         "scripts": {
           "LOOK": [
