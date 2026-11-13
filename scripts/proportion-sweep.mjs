@@ -90,6 +90,7 @@ async function openScene(scene) {
     window.__sweepMasks = {
       fg: sd?.assets?.foreground ? await load(sd.assets.foreground) : null,
       walk: sd?.assets?.walkmask ? await load(sd.assets.walkmask) : null,
+      layers: sd?.foregroundLayers ?? [],
     };
   }, scene);
 }
@@ -116,7 +117,11 @@ async function measureAt(x, y, refs) {
     const s1 = toScreen(b.right, b.bottom);
     const pix = window.__qa.state().pixel;
     const M = window.__sweepMasks || {};
-    // Fracción de un rectángulo (en %) donde el primer plano es opaco
+    // A2.17 fase 2: trozos del primer plano con walk-behind (foregroundLayers) que quedan DETRÁS de Dex (sus pies por
+    // debajo de la base del trozo, como ordena GameScene por actorDepth): esos píxeles no le tapan
+    const behindDex = (M.layers || []).filter((l) => p.pctY >= l.baseY).map((l) => l.bounds);
+    const inBehind = (px, py) => behindDex.some((b) => px >= b.x && px < b.x + b.w && py >= b.y && py < b.y + b.h);
+    // Fracción de un rectángulo (en %) donde el primer plano es opaco (y se dibuja por encima de Dex)
     const alphaFrac = (r) => {
       const fg = M.fg;
       if (!fg || r.w <= 0 || r.h <= 0) return 0;
@@ -124,7 +129,7 @@ async function measureAt(x, y, refs) {
       const y0 = Math.max(0, Math.floor((r.y / 100) * fg.h)); const y1 = Math.min(fg.h, Math.ceil(((r.y + r.h) / 100) * fg.h));
       const sx = Math.max(1, Math.floor((x1 - x0) / 40)); const sy = Math.max(1, Math.floor((y1 - y0) / 60));
       let n = 0; let on = 0;
-      for (let yy = y0; yy < y1; yy += sy) for (let xx = x0; xx < x1; xx += sx) { n++; if (fg.data[(yy * fg.w + xx) * 4 + 3] > 128) on++; }
+      for (let yy = y0; yy < y1; yy += sy) for (let xx = x0; xx < x1; xx += sx) { n++; if (fg.data[(yy * fg.w + xx) * 4 + 3] > 128 && !inBehind((xx / fg.w) * 100, (yy / fg.h) * 100)) on++; }
       return n ? on / n : 0;
     };
     const cover = {};
