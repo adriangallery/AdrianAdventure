@@ -2,8 +2,10 @@
 //
 // «Lo que hace falta para un puzle tiene que VERSE»: el nido de urracas de `hs_chimney` y el tablón suelto de
 // `hs_fence` no se distinguían en el fondo. Este script pinta, píxel a píxel y de forma determinista:
-//   - overlay_nest.webp         nido de ramitas encima de la corona de la chimenea, con dos urracas (blanco y negro,
-//                               cola azulada) y un brillo de papel de aluminio. Visible mientras NO está `nest_down`.
+//   - overlay_nest.webp         nido de ramitas encima de la corona de la chimenea, con dos urracas y un brillo de papel
+//                               de aluminio. Visible mientras NO está `nest_down`. A3.3h: más pequeño, solo colores del
+//                               fondo, luz del atardecer, sombra de contacto, orla del fondo (sin halo) y depth 0, por
+//                               debajo de las nubes del cielo (`sky_clouds`, depth 1).
 //   - overlay_plank_loose.webp  hueco en la valla + tablón claro torcido colgando de un clavo. Visible sin `has_plank`.
 //   - overlay_fence_gap.webp    solo el hueco (tras coger el tablón, `has_plank`).
 // Cada píxel de arte mide PX = 4,5 px de fondo (el `pixelScale` de outside) y se escala con vecino más cercano. Los

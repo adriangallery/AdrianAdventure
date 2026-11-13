@@ -1,6 +1,7 @@
 // Demo de A3.3f («lo que hace falta para un puzle tiene que VERSE»), en móvil apaisado 844×390 y vertical 390×844:
 //  1) en outside, Dex va a la valla: el tablón suelto (overlay plank_loose) está a la vista y el hueco (fence_gap) no;
-//  2) va bajo la chimenea: el nido de urracas (overlay nest) está a la vista;
+//  2) va bajo la chimenea: el nido de urracas (overlay nest) está a la vista y por debajo de las nubes del cielo
+//     (A3.3h: depth del nido < depth de `sky_clouds`, que pasan por delante);
 //  3) PULL valla: el tablón desaparece y queda el hueco;
 //  4) tablón + chimenea: el nido cae y desaparece.
 // Falla si algún overlay falta, no está visible cuando toca o no cae dentro de la cámara.
@@ -34,6 +35,7 @@ const overlay = (id) => page.evaluate((oid) => {
     // Tamaño en pantalla (px CSS): que se distinga a tamaño móvil
     screenW: Math.round(b.width * cam.zoom),
     screenH: Math.round(b.height * cam.zoom),
+    depth: co.sprite.depth,
   };
 }, id);
 
@@ -77,7 +79,15 @@ for (const [i, { tag, viewport }] of VIEWPORTS.entries()) {
   await page.evaluate(([x, y]) => window.__qa.walk(x, y), nestSpot ?? [46, 93]);
   await demo.film(1500);
   await demo.still(`${tag}-2-nido-antes`);
-  await expectShown('nest', tag, 20);
+  // A3.3h: el nido es ~75 % del de A3.3f (en 844×390 pasa de 39×25 a ≈30×19 px)
+  await expectShown('nest', tag, 15);
+  const nestDepth = (await overlay('nest')).depth;
+  const cloudDepth = await page.evaluate(() => {
+    const amb = window.__game.scene.getScene('GameScene').cache.json.get('scene_outside')?.ambient ?? [];
+    const c = amb.find((a) => a.id === 'sky_clouds');
+    return c ? (c.depth ?? 1) : null;
+  });
+  check(cloudDepth !== null && nestDepth < cloudDepth, `${tag}: el nido (depth ${nestDepth}) va debajo de las nubes (depth ${cloudDepth})`);
 
   // 3) Coger el tablón
   await page.evaluate(() => window.__qa.act('PULL', 'hs_fence'));
