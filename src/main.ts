@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { GAME_CONFIG, DEFAULT_SCENE_ID } from '@/config/game.config';
 import { IS_NATIVE } from '@/config/platform';
 import { gameUrlParams } from '@/config/debugParams';
+import { iconSvg, setIconLabel } from '@/ui/icons';
 
 const game = new Phaser.Game(GAME_CONFIG);
 
@@ -74,8 +75,9 @@ function createSceneSelector(g: Phaser.Game): void {
   ];
 
   const btn = document.createElement('button');
-  btn.textContent = '\u{1F3AC}';
+  btn.innerHTML = iconSvg('clapper', 18);
   btn.title = 'Scene Selector';
+  btn.setAttribute('aria-label', 'Scene Selector');
   btn.style.cssText = `
     position: fixed; bottom: 8px; left: 8px; z-index: 9999;
     width: 36px; height: 36px; border-radius: 50%;
@@ -107,7 +109,7 @@ function createSceneSelector(g: Phaser.Game): void {
     `;
 
     const title = document.createElement('div');
-    title.textContent = '\u{1F3AC} Scene Select';
+    setIconLabel(title, 'clapper', 'Scene Select', 12);
     title.style.cssText = 'color: #f8e848; font-size: 12px; margin-bottom: 16px;';
     modal.appendChild(title);
 

@@ -13,6 +13,7 @@ import {
 import type { GameScene } from '@/scenes/GameScene';
 import { TWP } from '@/config/theme';
 import { setTouchInteractive, touchContains } from './touchTarget';
+import { iconTexture, setIconLabel, type IconName } from './icons';
 
 /**
  * Floppy disk save button — top-left corner.
@@ -33,9 +34,8 @@ export class SaveButton {
       .setStrokeStyle(1, TWP.WALLET_BORDER, 0.6)
       .setOrigin(0, 0), 30, 24);
 
-    const label = scene.add.text(15, 12, '\u{1F4BE}', {
-      fontSize: '14px',
-    }).setOrigin(0.5, 0.5);
+    // A7.3: disquete dibujado (el emoji 💾 salía como cuadradito sin fuente de emoji)
+    const label = scene.add.image(15, 12, iconTexture(scene, 'floppy', 2)).setOrigin(0.5, 0.5);
 
     this.container.add([bg, label]);
     bg.on('pointerdown', () => this.showMenu());
@@ -84,7 +84,7 @@ export class SaveButton {
     let busy = false;
     let remoteSlots: Record<number, WalletSave> | null = null;
     let remoteFailed = false;
-    let status: { kind: StatusKind; text: string; action?: { label: string; id: string; run: () => void } } | null = null;
+    let status: { kind: StatusKind; text: string; action?: { label: string; id: string; run: () => void; icon?: IconName } } | null = null;
 
     const cleanup = () => overlay.remove();
     const viewOf = (slotId: number): SlotView | null => pickSlotView(slotId, saveSystem.loadFromSlot(slotId), remoteSlots?.[slotId]);
@@ -95,7 +95,7 @@ export class SaveButton {
       remoteFailed = remoteSlots === null;
     };
 
-    const setStatus = (kind: StatusKind, text: string, action?: { label: string; id: string; run: () => void }) => {
+    const setStatus = (kind: StatusKind, text: string, action?: { label: string; id: string; run: () => void; icon?: IconName }) => {
       status = { kind, text, action };
       render();
     };
@@ -112,20 +112,20 @@ export class SaveButton {
       if (!sessionUsable(getSessionAuth(), Date.now())) {
         const err = getSessionAuth() ? 'session-expired' : 'no-session';
         setStatus('warn', `Slot ${slotId} saved on this device only. ${saveErrorMessage(err)}`,
-          { label: '✍ Sign & save to cloud', id: 'sign', run: () => void signThen(() => cloudSave(slotId, toSave)) });
+          { label: 'Sign & save to cloud', icon: 'pen', id: 'sign', run: () => void signThen(() => cloudSave(slotId, toSave)) });
         return;
       }
       setStatus('busy', `Saving Slot ${slotId} to the cloud…`);
       const res = await saveForWalletRemote(address!, toSave, sceneName, slotId);
       if (res.ok) {
         await fetchRemote();
-        setStatus('ok', `✅ Slot ${slotId} saved (device + cloud)`);
+        setStatus('ok', `Slot ${slotId} saved (device + cloud)`);
       } else if (res.error === 'no-session' || res.error === 'session-expired') {
         setStatus('warn', `Slot ${slotId} saved on this device only. ${saveErrorMessage(res.error)}`,
-          { label: '✍ Sign & save to cloud', id: 'sign', run: () => void signThen(() => cloudSave(slotId, toSave)) });
+          { label: 'Sign & save to cloud', icon: 'pen', id: 'sign', run: () => void signThen(() => cloudSave(slotId, toSave)) });
       } else {
         setStatus('error', `Slot ${slotId} saved on this device only. ${saveErrorMessage(res.error, res.status)}`,
-          { label: '↻ Retry cloud save', id: 'retry', run: () => void cloudSave(slotId, toSave) });
+          { label: 'Retry cloud save', icon: 'retry', id: 'retry', run: () => void cloudSave(slotId, toSave) });
       }
     };
 
@@ -139,7 +139,7 @@ export class SaveButton {
         const local = saveSystem.saveToSlot(slotId, toSave, sceneName);
         if (!local.ok) { setStatus('error', `Slot ${slotId} NOT saved. ${saveErrorMessage(local.error)}`); return; }
         if (isWallet) await cloudSave(slotId, toSave);
-        else setStatus('ok', `✅ Slot ${slotId} saved`);
+        else setStatus('ok', `Slot ${slotId} saved`);
       } finally {
         busy = false;
         render();
@@ -173,9 +173,10 @@ export class SaveButton {
       this.scene.scene.start('PreloadScene');
     };
 
-    const makeBtn = (text: string, enabled: boolean, onClick: () => void, extra = '') => {
+    const makeBtn = (text: string, enabled: boolean, onClick: () => void, extra = '', icon?: IconName) => {
       const btn = document.createElement('button');
-      btn.textContent = text;
+      if (icon) setIconLabel(btn, icon, text, 12);
+      else btn.textContent = text;
       btn.disabled = !enabled;
       btn.style.cssText = `
         display: block; width: 100%; min-height: 44px; padding: 8px 12px; margin-bottom: 6px; box-sizing: border-box;
@@ -225,12 +226,12 @@ export class SaveButton {
       box.scrollIntoView({ block: 'nearest' });
     };
 
-    const describe = (v: SlotView | null) => v ? `${v.sceneName} — ${formatWhen(v.timestamp)}${v.source === 'cloud' ? ' ☁' : ''}` : 'Empty';
+    const describe = (v: SlotView | null) => v ? `${v.sceneName} — ${formatWhen(v.timestamp)}${v.source === 'cloud' ? ' (cloud)' : ''}` : 'Empty';
 
     const render = () => {
       modal.innerHTML = '';
       const title = document.createElement('div');
-      title.textContent = isWallet ? `\u{1F4BE} ${address!.slice(0, 6)}...${address!.slice(-4)}` : '\u{1F4BE} Save / Load';
+      setIconLabel(title, 'floppy', isWallet ? `${address!.slice(0, 6)}...${address!.slice(-4)}` : 'Save / Load', 14);
       title.style.cssText = 'color: #f8e848; font-size: 10px; margin-bottom: 10px; line-height: 1.5;';
       modal.appendChild(title);
 
@@ -241,7 +242,7 @@ export class SaveButton {
       for (const m of ['save', 'load'] as const) {
         const tab = document.createElement('button');
         const active = m === mode;
-        tab.textContent = m === 'save' ? '\u{1F4BE} SAVE' : '\u{1F4C2} LOAD';
+        setIconLabel(tab, m === 'save' ? 'floppy' : 'folder', m === 'save' ? 'SAVE' : 'LOAD', 12);
         tab.dataset.tab = m;
         tab.setAttribute('role', 'tab');
         tab.setAttribute('aria-selected', String(active));
@@ -264,13 +265,14 @@ export class SaveButton {
         st.id = 'save-status';
         st.dataset.kind = status.kind;
         st.setAttribute('role', status.kind === 'error' ? 'alert' : 'status');
-        st.textContent = status.text;
+        if (status.kind === 'ok') setIconLabel(st, 'check', status.text, 10);
+        else st.textContent = status.text;
         const color = { ok: '#5be37a', error: '#ff6b81', warn: '#f8e848', busy: '#ccc' }[status.kind];
         st.style.cssText = `color: ${color}; border: 1px solid ${color}; border-radius: 6px; font-size: 8px; line-height: 1.7; padding: 8px; margin-bottom: 8px;`;
         modal.appendChild(st);
         if (status.action) {
           const act = status.action;
-          const b = makeBtn(act.label, !busy, act.run, 'text-align: center;');
+          const b = makeBtn(act.label, !busy, act.run, 'text-align: center;', act.icon);
           b.dataset.action = act.id;
           modal.appendChild(b);
         }
@@ -283,7 +285,7 @@ export class SaveButton {
         modal.appendChild(n);
       }
       if (isWallet && !sessionUsable(getSessionAuth(), Date.now()) && status?.action?.id !== 'sign') {
-        const b = makeBtn('✍ Sign to enable cloud saves', true, () => void signThen(async () => { setStatus('ok', 'Cloud saves enabled.'); }), 'text-align: center; color: #3396ff;');
+        const b = makeBtn('Sign to enable cloud saves', true, () => void signThen(async () => { setStatus('ok', 'Cloud saves enabled.'); }), 'text-align: center; color: #3396ff;', 'pen');
         b.dataset.action = 'sign';
         modal.appendChild(b);
       }
@@ -295,8 +297,8 @@ export class SaveButton {
       for (const slotId of slotIds) {
         const view = viewOf(slotId);
         const action = slotTapAction(mode, slotId, view, !!game);
-        const icon = mode === 'save' ? '\u{1F4BE}' : '\u{1F4C2}';
-        const btn = makeBtn(`${icon} ${slotLabel(slotId)}: ${describe(view)}`, action !== 'none' && !busy, () => {
+        const icon: IconName = mode === 'save' ? 'floppy' : 'folder';
+        const btn = makeBtn(`${slotLabel(slotId)}: ${describe(view)}`, action !== 'none' && !busy, () => {
           if (busy) return;
           if (action === 'save-now') void doSave(slotId);
           else if (action === 'confirm-overwrite') {
@@ -311,7 +313,7 @@ export class SaveButton {
               yes: 'Load', onYes: () => performLoad(view.state, slotLabel(slotId)),
             });
           }
-        });
+        }, '', icon);
         btn.dataset.slot = String(slotId);
         btn.dataset.empty = String(!view);
         modal.appendChild(btn);
@@ -332,7 +334,7 @@ export class SaveButton {
 
   /** Ajustes (V6) y, con wallet, exportar/importar partida firmada. */
   private appendExtras(
-    modal: HTMLDivElement, makeBtn: (t: string, en: boolean, fn: () => void, extra?: string) => HTMLButtonElement,
+    modal: HTMLDivElement, makeBtn: (t: string, en: boolean, fn: () => void, extra?: string, icon?: IconName) => HTMLButtonElement,
     isWallet: boolean, address: string | null, gameState: GameState | undefined, sceneName: string,
     load: (state: GameState, what: string) => void,
   ): void {
@@ -340,33 +342,34 @@ export class SaveButton {
     sepSettings.style.cssText = 'border: none; border-top: 1px solid #333; margin: 10px 0;';
     modal.appendChild(sepSettings);
     const music = this.scene.game.registry.get('musicManager') as { toggleMute(): boolean; isMuted(): boolean; setMusicVolume(v: number): void; unlockFromGesture(): void } | null;
-    const speedLabel = () => `⚙ Text speed: ${TEXT_SPEED_LABEL[getTextSpeed()]}`;
+    const speedLabel = () => `Text speed: ${TEXT_SPEED_LABEL[getTextSpeed()]}`;
     const speedBtn: HTMLButtonElement = makeBtn(speedLabel(), true, () => {
       const next = TEXT_SPEEDS[(TEXT_SPEEDS.indexOf(getTextSpeed()) + 1) % TEXT_SPEEDS.length];
       setTextSpeed(next);
-      speedBtn.textContent = speedLabel();
-    });
+      setIconLabel(speedBtn, 'gear', speedLabel(), 12);
+    }, '', 'gear');
     speedBtn.dataset.setting = 'text-speed';
     modal.appendChild(speedBtn);
     if (music) {
-      const muteLabel = () => `♪ Music: ${music.isMuted() ? 'Off' : 'On'}`;
+      const muteLabel = () => `Music: ${music.isMuted() ? 'Off' : 'On'}`;
+      const muteIcon = (): IconName => (music.isMuted() ? 'mute' : 'note');
       // A1.5: al activar el sonido, este clic es el gesto que desbloquea el AudioContext (como «Enable Sound»
       // del menú) y MusicManager descarga entonces la música de la escena; en silencio no se había pedido.
       const muteBtn: HTMLButtonElement = makeBtn(muteLabel(), true, () => {
         if (music.isMuted()) music.unlockFromGesture();
         music.toggleMute();
-        muteBtn.textContent = muteLabel();
-      });
+        setIconLabel(muteBtn, muteIcon(), muteLabel(), 12);
+      }, '', muteIcon());
       muteBtn.dataset.setting = 'music';
       modal.appendChild(muteBtn);
-      const volLabel = () => `♪ Volume: ${MUSIC_LEVEL_LABEL[getMusicLevel() ?? 'low']}`;
+      const volLabel = () => `Volume: ${MUSIC_LEVEL_LABEL[getMusicLevel() ?? 'low']}`;
       const volBtn: HTMLButtonElement = makeBtn(volLabel(), true, () => {
         const cur = getMusicLevel() ?? 'low';
         const next = MUSIC_LEVELS[(MUSIC_LEVELS.indexOf(cur) + 1) % MUSIC_LEVELS.length];
         setMusicLevel(next);
         music.setMusicVolume(musicVolumeFor(next, 0.25));
-        volBtn.textContent = volLabel();
-      });
+        setIconLabel(volBtn, 'speaker', volLabel(), 12);
+      }, '', 'speaker');
       volBtn.dataset.setting = 'volume';
       modal.appendChild(volBtn);
     }
@@ -376,7 +379,7 @@ export class SaveButton {
     sep2.style.cssText = 'border: none; border-top: 1px solid #3396ff44; margin: 10px 0;';
     modal.appendChild(sep2);
 
-    modal.appendChild(makeBtn('\u{1F4E4} Export Signed Save', !!gameState, async () => {
+    modal.appendChild(makeBtn('Export Signed Save', !!gameState, async () => {
       if (!gameState) return;
       const json = await exportSignedWalletSave(gameState, sceneName);
       if (!json) return;
@@ -387,10 +390,10 @@ export class SaveButton {
       a.download = `zeroadventure_${address.slice(0, 8)}_${Date.now()}.json`;
       a.click();
       URL.revokeObjectURL(url);
-    }));
+    }, '', 'export'));
 
     // Importar es una acción explícita (elegir archivo); igual que cargar, guarda antes la partida en «Before load»
-    modal.appendChild(makeBtn('\u{1F4E5} Import Signed Save', true, () => {
+    modal.appendChild(makeBtn('Import Signed Save', true, () => {
       const input = document.createElement('input');
       input.type = 'file';
       input.accept = '.json';
@@ -406,7 +409,7 @@ export class SaveButton {
         reader.readAsText(file);
       };
       input.click();
-    }));
+    }, '', 'import'));
   }
 
   destroy(): void {

@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import type { InventorySystem } from '@/systems/InventorySystem';
 import type { InventoryItem } from '@/types/game.types';
 import { TWP, FONT, LAYOUT } from '@/config/theme';
+import { iconTexture } from './icons';
 
 const ITEM_SIZE = 48;
 const ITEM_GAP = 8;
@@ -47,7 +48,7 @@ export class InventoryDrawer {
 
     const btnBg = scene.add.circle(0, 0, 22, TWP.PANEL_BG, 0.85)
       .setStrokeStyle(2, TWP.INV_SLOT_BORDER, 0.7);
-    const btnIcon = scene.add.text(0, -2, '\u{1F392}', { fontSize: '20px' }).setOrigin(0.5);
+    const btnIcon = scene.add.image(0, -1, iconTexture(scene, 'backpack', 2)).setOrigin(0.5);
     this.badge = scene.add
       .text(14, -14, '0', {
         fontFamily: FONT.FAMILY,
@@ -94,7 +95,7 @@ export class InventoryDrawer {
 
     // Close hint
     this.closeHint = scene.add
-      .text(width - PADDING, 10, '\u{2715}', {
+      .text(width - PADDING, 10, 'X', {
         fontFamily: FONT.FAMILY,
         fontSize: `${tabSize}px`,
         color: TWP.VERB_NORMAL,

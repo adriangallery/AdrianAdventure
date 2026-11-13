@@ -371,9 +371,9 @@ export class CinematicOverlay {
       if (earnedAchievements.length > 0) {
         lines.push({ text: '— YOUR ACHIEVEMENTS —', color: SUBTLE_COLOR, size: smallSize, gap: 10 });
         for (const id of earnedAchievements) {
-          // Use achievement badge emoji based on category
+          // A7.3: ★ (U+2605, está en Press Start 2P) en vez de ⭐
           const name = id.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
-          lines.push({ text: `\u2B50 ${name}`, color: TITLE_COLOR, size: smallSize });
+          lines.push({ text: `\u2605 ${name}`, color: TITLE_COLOR, size: smallSize });
         }
         lines.push({ text: '', color: BODY_COLOR, size: smallSize, gap: 30 });
       }
