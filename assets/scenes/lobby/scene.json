@@ -1018,6 +1018,21 @@
                     {
                       "op": "say",
                       "text": "'BE REAL. BE ADRIAN.' — The original AdrianPunks manifesto. This poster is only visible to OG holders. You earned this view."
+                    },
+                    {
+                      "op": "ifFlag",
+                      "flag": "holder_wall",
+                      "else": [
+                        {
+                          "op": "setFlag",
+                          "flag": "holder_wall",
+                          "value": true
+                        },
+                        {
+                          "op": "achievement",
+                          "text": "HOLDER: Wall Reader — the building recognised your wallet"
+                        }
+                      ]
                     }
                   ],
                   "else": [
@@ -1032,6 +1047,21 @@
                         {
                           "op": "say",
                           "text": "'TO THE MOON!' — A motivational poster for AdrianZERO holders. The rocket has pixel-perfect exhaust flames. Nice touch."
+                        },
+                        {
+                          "op": "ifFlag",
+                          "flag": "holder_wall",
+                          "else": [
+                            {
+                              "op": "setFlag",
+                              "flag": "holder_wall",
+                              "value": true
+                            },
+                            {
+                              "op": "achievement",
+                              "text": "HOLDER: Wall Reader — the building recognised your wallet"
+                            }
+                          ]
                         }
                       ],
                       "else": [
@@ -1067,6 +1097,21 @@
                     {
                       "op": "say",
                       "text": "I touch the poster reverently. OG energy radiates from it. My AdrianPunk approves."
+                    },
+                    {
+                      "op": "ifFlag",
+                      "flag": "holder_wall",
+                      "else": [
+                        {
+                          "op": "setFlag",
+                          "flag": "holder_wall",
+                          "value": true
+                        },
+                        {
+                          "op": "achievement",
+                          "text": "HOLDER: Wall Reader — the building recognised your wallet"
+                        }
+                      ]
                     }
                   ],
                   "else": [
@@ -1081,6 +1126,21 @@
                         {
                           "op": "say",
                           "text": "The poster feels warm. Holder energy confirmed. But imagine how it would look with an AdrianPunk in your wallet..."
+                        },
+                        {
+                          "op": "ifFlag",
+                          "flag": "holder_wall",
+                          "else": [
+                            {
+                              "op": "setFlag",
+                              "flag": "holder_wall",
+                              "value": true
+                            },
+                            {
+                              "op": "achievement",
+                              "text": "HOLDER: Wall Reader — the building recognised your wallet"
+                            }
+                          ]
                         }
                       ],
                       "else": [

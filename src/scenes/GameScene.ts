@@ -17,9 +17,11 @@ import type { SceneData, HotspotData } from '@/types/scene.types';
 import { type GameState, type InventoryItem, Verb, createInitialState } from '@/types/game.types';
 import { TWP, FONT, LAYOUT } from '@/config/theme';
 import { getWalletState, onWalletChange } from '@/web3/wallet';
-import { checkGatingRule, checkGatingRuleCached, type GatingRule } from '@/web3/gating';
+import { checkGatingRule, checkGatingRuleCached, gateAddress, type GatingRule } from '@/web3/gating';
 import { mintItem, mintAchievement, type MintResult } from '@/web3/contracts';
 import { TransactionToast } from '@/ui/TransactionToast';
+import { DashboardPanel, type DashboardQaState } from '@/ui/DashboardPanel';
+import { loadDashboard } from '@/web3/dashboard';
 import { getAchievementByText } from '@/config/achievements.config';
 import { bindShutdown } from './lifecycle';
 import { gameUrlParams } from '@/config/debugParams';
@@ -76,6 +78,8 @@ export class GameScene extends Phaser.Scene {
   /** A4.4 (QA): último paso (superficie bajo los pies y efecto que sonó, null si la superficie es muda) */
   private lastFootstep: { surface: string | null; key: string | null; at: number } | null = null;
   private cinematicOverlay!: CinematicOverlay;
+  /** A3.10: dashboard TraitLab del Mining Rig (op showDashboard); se crea al abrirlo y se destruye en el SHUTDOWN */
+  private dashboardPanel: DashboardPanel | null = null;
   /** A2.10: cinemáticas (cámara, franjas, actores, transiciones); uno por escena, se destruye en SHUTDOWN */
   private cinema?: CinematicDirector;
   private transactionToast!: TransactionToast;
@@ -577,7 +581,7 @@ export class GameScene extends Phaser.Scene {
       if (tr.once && this.firedTriggers.has(tr.id)) continue;
       // Check trigger gate synchronously (uses cache, skips if not cached yet)
       if (tr.gate) {
-        const { address } = getWalletState();
+        const address = gateAddress();
         if (!address) continue;
         const gateResult = checkGatingRuleCached(address as Address, tr.gate as GatingRule);
         if (gateResult === null || gateResult === false) continue;
@@ -632,7 +636,7 @@ export class GameScene extends Phaser.Scene {
   private handlePointerDown(pointer: Phaser.Input.Pointer): void {
     if (this.emittingSynthetic) return;
     // A2.9: con el diario abierto el HTML tapa el lienzo; por si acaso, la escena no recibe toques
-    if (this.registry.get('journalOpen')) return;
+    if (this.registry.get('journalOpen') || this.registry.get('dashboardOpen')) return;
     // A2.10: un toque en cinemática enseña cómo saltarla (mantener pulsado; con ratón, también Esc)
     if (this.cinema?.isActive()) this.cinema.noteTap(pointer.wasTouch);
     const blocked = this.scriptEngine.isRunning() || !!this.registry.get('dialogueActive') || !!this.registry.get('dialogueShowing');
@@ -1486,7 +1490,7 @@ export class GameScene extends Phaser.Scene {
   private autosaveProgressIfIdle(): void {
     if (!this.progressDirty || this.isTrailer) return;
     if (this.scriptEngine.isRunning() || this.registry.get('dialogueShowing') || this.registry.get('dialogueActive')
-      || this.registry.get('journalOpen') || this.registry.get('sceneTransition')) return;
+      || this.registry.get('journalOpen') || this.registry.get('dashboardOpen') || this.registry.get('sceneTransition')) return;
     this.progressDirty = false;
     this.gameState.savedAt = Date.now();
     const title = this.sceneDataLoader?.getSceneData()?.title ?? this.gameState.currentScene;
@@ -1624,6 +1628,8 @@ export class GameScene extends Phaser.Scene {
    */
   private isPresentingToPlayer(countDialogueTree = true): boolean {
     if (this.registry.get('dialogueShowing')) return true;
+    // A3.10: el dashboard del rig espera a que el jugador lo cierre
+    if (this.registry.get('dashboardOpen')) return true;
     if (countDialogueTree && this.registry.get('dialogueActive')) return true;
     if (((this.registry.get('cinematicActive') as number | undefined) ?? 0) > 0) return true;
     if (!this.scene.isActive('UIScene')) return false;
@@ -1664,7 +1670,7 @@ export class GameScene extends Phaser.Scene {
     this.touchedHotspots.add(hotspot.id);
     // Check hotspot-level gate if present
     if (hotspot.gate) {
-      const { address } = getWalletState();
+      const address = gateAddress();
       let gatePassed = false;
       if (address) {
         gatePassed = await checkGatingRule(address as Address, hotspot.gate as GatingRule);
@@ -1730,9 +1736,10 @@ export class GameScene extends Phaser.Scene {
         if (isNew) playStinger(this, 'item'); else sfxOf(this)?.play('item_pickup', { volume: 0.6 });
       },
       removeItem: (id) => this.inventorySystem.removeItem(id),
-      isWalletConnected: () => getWalletState().connected,
+      // A3.10: con __qa.mockWeb3 (solo ?qa=1) cuenta la cartera simulada
+      isWalletConnected: () => gateAddress() !== null,
       checkGating: async (rule: GatingRule) => {
-        const { address } = getWalletState();
+        const address = gateAddress();
         return address ? checkGatingRule(address as Address, rule) : false;
       },
       mintItem: async (tokenId): Promise<MintResult> => mintItem({ tokenId }),
@@ -1803,6 +1810,17 @@ export class GameScene extends Phaser.Scene {
         return new Promise<void>((resolve) => {
           ui.events.emit('showCredits', resolve);
         });
+      },
+      // A3.10: op showDashboard (Mining Rig). Solo lecturas; se resuelve al cerrar el panel
+      showDashboard: async () => {
+        if (run !== this.sceneRun) return;
+        this.dashboardPanel ??= new DashboardPanel();
+        this.registry.set('dashboardOpen', true);
+        try {
+          await this.dashboardPanel.open(loadDashboard());
+        } finally {
+          this.registry.set('dashboardOpen', false);
+        }
       },
       showMonitorReveal: () => {
         const ui = this.scene.get('UIScene');
@@ -2316,11 +2334,20 @@ export class GameScene extends Phaser.Scene {
    * A1.10: enganchado a SHUTDOWN en create() (`bindShutdown`). Idempotente: llamarlo dos veces no rompe. Cuando
    * llega, los plugins de la escena ya han destruido cámaras, objetos, tweens y relojes (ver lifecycle.ts).
    */
+  /** A3.10 (QA): estado del dashboard del Mining Rig */
+  getDashboardQa(): DashboardQaState {
+    return this.dashboardPanel?.qaState() ?? { open: false, phase: null, rows: [], status: null, tip: null };
+  }
+
   shutdown(): void {
     // A1.4: corta un flicker en marcha (el contexto ya no toca overlays de la escena que viene). A2.10: y cierra la
     // cinemática de estos motores; el director suelta sus animaciones (la escena nueva arranca sin franjas)
     this.cinema?.destroy();
     this.cinema = undefined;
+    // A3.10: el dashboard del rig se cierra con la escena (su script, si sigue vivo, continúa y lo corta el cambio)
+    this.dashboardPanel?.destroy();
+    this.dashboardPanel = null;
+    this.registry.set('dashboardOpen', false);
     failResponses.onFail = null;
     this.scriptEngine?.cancelEffects();
     this.dialogueScripts?.cancelEffects();

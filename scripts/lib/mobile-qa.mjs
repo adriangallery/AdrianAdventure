@@ -171,6 +171,7 @@ const callQa = (page, s) => page.evaluate(async (step) => {
     case 'dismissAll': return q.dismissAll();
     case 'journal': return step.action === 'close' ? q.closeJournal() : q.openJournal(step.tab ?? 'goals');
     case 'callAnon': return q.callAnon();
+    case 'mockWeb3': return q.mockWeb3(step.web3 === undefined ? null : step.web3);
     case 'wait': await new Promise((r) => setTimeout(r, step.ms ?? 500)); return q.state();
     default: throw new Error(`[qa:error] paso no soportado en la QA móvil: ${step.do}`);
   }

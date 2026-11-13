@@ -75,6 +75,21 @@ export const ACHIEVEMENTS: AchievementDef[] = [
     tokenId: 20011,
     category: 'holder',
   },
+  // A3.10: recompensas de holder que sí se consiguen (web3Require de upstairs, lobby y outside)
+  {
+    id: 'holder_rig',
+    name: 'TraitLab Insider',
+    description: '1000+ $ZERO — the Mining Rig opened the real TraitLab dashboard (and its sysadmin note)',
+    tokenId: 20018,
+    category: 'holder',
+  },
+  {
+    id: 'holder_wall',
+    name: 'Wall Reader',
+    description: 'AdrianZERO or AdrianPunks holder — saw the real lobby poster or the ZERO WAS HERE graffiti',
+    tokenId: 20019,
+    category: 'holder',
+  },
   {
     id: 'archivist',
     name: 'Archivist',
@@ -152,6 +167,8 @@ export const ACHIEVEMENT_TEXT_TO_ID: Record<string, string> = {
   'GAME COMPLETE: ZEROadventure II': 'game_complete',
   'HOLDER REWARD: VIP Floppy Disc': 'holder_vip_floppy',
   'VIP ACCESS — Found the holder-only shortcut to the basement': 'vip_access',
+  'HOLDER: TraitLab Insider — the rig read your real wallet': 'holder_rig',
+  'HOLDER: Wall Reader — the building recognised your wallet': 'holder_wall',
   'ARCHIVIST — CRT monitors recognized your Floppy collection': 'archivist',
   'ALPHA LEAK — Found Adrian\'s backup trading strategies': 'alpha_leak',
   'GENESIS MINER — Activated the rig\'s original config': 'genesis_miner',

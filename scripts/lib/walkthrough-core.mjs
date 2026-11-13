@@ -25,6 +25,7 @@ export function describe(s) {
     // A2.9: diario (móvil de Dex) y llamada a Anon
     case 'journal': return `JOURNAL ${s.action ?? 'open'}${s.tab ? ` (${s.tab})` : ''}`;
     case 'callAnon': return 'CALL ANON';
+    case 'mockWeb3': return `MOCK WEB3 ${s.web3 === null || s.web3 === undefined ? '(sin cartera)' : s.web3 === 'off' ? 'off' : `${s.web3.zero ?? 0} $ZERO`}`;
     default: return s.do;
   }
 }
@@ -86,6 +87,32 @@ export function check(expect, st, ctx = {}) {
   if (expect.failResponse) f.push(...checkFailResponse(expect.failResponse, st));
   // A4.4: audio (ambiente pedido, superficie bajo los pies, pasos, efectos pedidos durante el paso)
   if (expect.audio) f.push(...checkAudio(expect.audio, st, ctx.before));
+  // A3.10: dashboard del Mining Rig
+  if (expect.dashboard) f.push(...checkDashboard(expect.dashboard, st));
+  return f;
+}
+
+/**
+ * A3.10: `expect.dashboard` contra `st.lastDashboard` (el dashboard del rig que salió en el paso, leído antes de cerrarlo):
+ *  - `shown: false` = no salió; `shown: true` (o cualquier otra clave) = salió;
+ *  - `phase` (loading | ready | error), `rows` (textos que tiene que contener alguna fila, sin mayúsculas), `tip` (true =
+ *    lleva la nota del sysadmin).
+ * Además exige que ya esté cerrado (`st.dashboard.open` false): el juego sigue.
+ */
+export function checkDashboard(exp, st) {
+  const f = [];
+  const d = st.lastDashboard;
+  if (st.dashboard?.open) f.push('el dashboard sigue abierto tras el paso');
+  if (exp.shown === false) {
+    if (d) f.push(`salió el dashboard y no debía (${d.rows.join(' | ')})`);
+    return f;
+  }
+  if (!d) return [...f, 'no salió el dashboard del rig'];
+  if (exp.phase && d.phase !== exp.phase) f.push(`dashboard en «${d.phase}», se esperaba «${exp.phase}»`);
+  for (const want of exp.rows ?? []) {
+    if (!d.rows.some((r) => r.toLowerCase().includes(String(want).toLowerCase()))) f.push(`el dashboard no enseña «${want}» (filas: ${d.rows.join(' | ')})`);
+  }
+  if (exp.tip === true && !d.tip) f.push('el dashboard no lleva la nota del sysadmin');
   return f;
 }
 
@@ -513,6 +540,9 @@ export function routeDefects(route, opts = {}) {
     }
     if (s.do === 'journal' && (!['open', 'close', undefined].includes(s.action) || !['goals', 'notes', 'anon', undefined].includes(s.tab))) {
       out.push(`paso ${i + 1} (${describe(s)}): "journal" lleva "action" open|close y "tab" goals|notes|anon (opcionales)`);
+    }
+    if (s.do === 'mockWeb3' && !(s.web3 === null || s.web3 === 'off' || (typeof s.web3 === 'object' && !Array.isArray(s.web3)))) {
+      out.push(`paso ${i + 1} (${describe(s)}): "mockWeb3" lleva "web3": objeto (cartera), null (sin cartera) u "off"`);
     }
     if (s.do === 'goto' && !opts.allowGoto) {
       out.push(`paso ${i + 1} (${describe(s)}): "goto" se salta puertas y gates; solo vale en rutas del selftest con "allowGoto"`);
