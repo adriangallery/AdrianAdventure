@@ -2136,5 +2136,34 @@
       ],
       "period": 1400
     }
+  ],
+  "conditionalOverlays": [
+    {
+      "id": "door_closed",
+      "sprite": "overlay_door_closed",
+      "format": "webp",
+      "bounds": {
+        "x": 0,
+        "y": 23.4375,
+        "w": 3.3675,
+        "h": 49.9132
+      },
+      "flag": "dark_door_opened",
+      "invert": true,
+      "depth": 5
+    },
+    {
+      "id": "door_open",
+      "sprite": "overlay_door_open",
+      "format": "webp",
+      "bounds": {
+        "x": 0,
+        "y": 23.4375,
+        "w": 3.3675,
+        "h": 50.3472
+      },
+      "flag": "dark_door_opened",
+      "depth": 5
+    }
   ]
 }

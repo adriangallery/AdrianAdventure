@@ -773,10 +773,10 @@
         },
         "name": "Raised Floor Tiles",
         "bounds": {
-          "x": 31.2,
-          "y": 87.7,
-          "w": 38.9,
-          "h": 12.3
+          "x": 26.5,
+          "y": 84.3,
+          "w": 15,
+          "h": 15.7
         },
         "scripts": {
           "LOOK": [
@@ -1345,6 +1345,20 @@
         "h": 31.4236
       },
       "flag": "emergency_glass_broken",
+      "depth": 3
+    },
+    {
+      "id": "tile_lifted",
+      "sprite": "overlay_tile_lifted",
+      "format": "webp",
+      "bounds": {
+        "x": 31.25,
+        "y": 84.2882,
+        "w": 9.9677,
+        "h": 14.4965
+      },
+      "flag": "tiles_opened",
+      "invert": true,
       "depth": 3
     }
   ],
