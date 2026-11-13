@@ -30,6 +30,9 @@ import type { MusicManager, MusicQaState } from '@/systems/MusicManager';
 import type { SfxPlayer, SfxQaState } from '@/systems/Sfx';
 import { stingerLog, type StingerEvent } from '@/systems/StingerPlayer';
 import { qaFakeWallet } from '@/web3/wallet';
+import { normalizeWeb3Mock, setWeb3Mock, getWeb3Mock, type Web3MockInput } from '@/web3/web3Mock';
+import { clearGatingCache } from '@/web3/gating';
+import type { DashboardQaState } from '@/ui/DashboardPanel';
 import { textureReport, type TextureEntry, type TextureReport } from '@/systems/SceneTextures';
 import { sceneImageAssets } from '@/systems/ScenePrefetch';
 import { ASSET_V } from '@/systems/ScenePrefetcher';
@@ -73,6 +76,14 @@ export interface QaState {
    * null si el paso no pidió elegir. Para comprobar opciones usadas en gris u ocultas.
    */
   lastChoices: Choice[] | null;
+  /**
+   * A3.10: dashboard del Mining Rig ahora (`open`, `phase` loading|ready|error, `rows` «etiqueta: valor», `status`, `tip`)
+   * y `lastDashboard`: el último que salió durante el último paso, tal como estaba al cerrarlo la API (null si no salió).
+   */
+  dashboard: DashboardQaState;
+  lastDashboard: DashboardQaState | null;
+  /** A3.10: web3 simulado con `mockWeb3`: 'off' (red real), 'none' (sin cartera) o la dirección simulada */
+  web3Mock: string;
   /** Últimas acciones y textos mostrados, para diagnosticar */
   log: string[];
   /** A0.5: líneas que se han apuntado en `log` desde que arrancó la página (el log solo guarda las 60 últimas) */
@@ -246,6 +257,15 @@ export interface QaApi {
    * save-server interceptado. `signed` = con firma de sesión ya hecha. No llama a ninguna wallet ni RPC real.
    */
   fakeWallet(address: string | null, signed?: boolean): void;
+  /**
+   * A3.10: simula el estado web3 SIN red: `{ zero: '5000', adrianZero: [1, 2], lab: [{ id: 1001, name: 'Cap' }], punks: 1,
+   * fail? }` (cartera con eso), `null` (sin cartera) o `'off'` (deja de simular: lecturas on-chain reales). Alimenta a
+   * `web3Require`, los gates de hotspots, triggers y diálogos, `ifWalletConnected` y el dashboard del rig. No conecta
+   * ninguna wallet, no firma y no cambia el guardado en la nube. Solo existe con ?qa=1.
+   */
+  mockWeb3(mock: Web3MockInput | null | 'off'): QaState;
+  /** A3.10 (demos): cuánto deja la API el dashboard del rig a la vista, ya cargado, antes de cerrarlo con su X (400 ms) */
+  holdDashboard(ms: number): void;
 }
 
 const SETTLE_TIMEOUT_MS = 120_000;
@@ -274,6 +294,9 @@ export function installQa(game: Phaser.Game): void {
   let logTotal = 0;
   /** A2.6: ver QaState.lastChoices */
   let lastChoices: Choice[] | null = null;
+  /** A3.10: ver QaState.lastDashboard */
+  let lastDashboard: DashboardQaState | null = null;
+  let dashboardHoldMs = 400;
   const note = (line: string) => {
     logTotal++;
     log.push(line);
@@ -321,6 +344,8 @@ export function installQa(game: Phaser.Game): void {
     if (ui().getChoicePanel().isAwaitingChoice()) out.push('choice');
     // A2.9: el móvil está dando tono (Anon aún no ha contestado)
     if (ui().getJournal?.()?.isCalling()) out.push('call');
+    // A3.10: dashboard del Mining Rig abierto (settle lo lee y lo cierra con su X)
+    if (registry.get('dashboardOpen')) out.push('dashboard');
     return out;
   };
 
@@ -339,6 +364,7 @@ export function installQa(game: Phaser.Game): void {
   const settle = async (choices: string[] = [], timeoutMs = SETTLE_TIMEOUT_MS): Promise<void> => {
     const queue = [...choices];
     lastChoices = null;
+    lastDashboard = null;
     const t0 = Date.now();
     let calm = 0;
     while (calm < CALM_POLLS) {
@@ -359,6 +385,19 @@ export function installQa(game: Phaser.Game): void {
         if (!choicePanel.choose(idx)) throw new QaError('blocked', `la opción «${options[idx].text}» está bloqueada`);
         note(`> ${options[idx].text}`);
         await sleep(300);
+        continue;
+      }
+      if (reasons.includes('dashboard')) {
+        calm = 0;
+        // A3.10: como un jugador: espera a que cargue, lo lee y lo cierra con la X (el script sigue al cerrarlo)
+        const dq = gs().getDashboardQa();
+        if (dq.open && dq.phase !== 'loading') {
+          await sleep(dashboardHoldMs);
+          lastDashboard = gs().getDashboardQa();
+          note(`DASHBOARD ${lastDashboard.phase}: ${lastDashboard.rows.join(' | ')}`);
+          (document.getElementById('rigdash-close') as HTMLButtonElement | null)?.click();
+        }
+        await sleep(200);
         continue;
       }
       if (reasons.length) {
@@ -475,6 +514,9 @@ export function installQa(game: Phaser.Game): void {
       triggers: scene ? scene.qaTriggers() : [],
       choices: choicePanel?.isAwaitingChoice() ? choicePanel.getOptions() : null,
       lastChoices: lastChoices ? lastChoices.map((o) => ({ ...o })) : null,
+      dashboard: playing ? gs().getDashboardQa() : { open: false, phase: null, rows: [], status: null, tip: null },
+      lastDashboard: lastDashboard ? { ...lastDashboard, rows: [...lastDashboard.rows] } : null,
+      web3Mock: (() => { const m = getWeb3Mock(); return m === undefined ? 'off' : m === null ? 'none' : m.address; })(),
       log: [...log],
       logTotal,
       actions: (registry.get('qaActions') as number | undefined) ?? 0,
@@ -785,6 +827,26 @@ export function installQa(game: Phaser.Game): void {
       if (address !== null && !/^0x[0-9a-fA-F]{40}$/.test(address)) throw new QaError('error', `fakeWallet: «${address}» no es una dirección`);
       note(`FAKE WALLET ${address ?? 'off'}${address && !signed ? ' (sin firma)' : ''}`);
       qaFakeWallet(address as `0x${string}` | null, signed);
+    },
+
+    holdDashboard(ms) {
+      dashboardHoldMs = Math.max(0, Math.min(Number(ms) || 0, 60_000));
+    },
+
+    mockWeb3(mock) {
+      if (mock === 'off') {
+        setWeb3Mock(undefined);
+      } else {
+        try {
+          setWeb3Mock(normalizeWeb3Mock(mock));
+        } catch (e) {
+          throw new QaError('error', e instanceof Error ? e.message : String(e));
+        }
+      }
+      clearGatingCache();
+      const m = getWeb3Mock();
+      note(`MOCK WEB3 ${m === undefined ? 'off' : m === null ? 'sin cartera' : `${m.address} · ${m.zero} $ZERO · ${m.adrianZero.length} AdrianZERO · ${m.lab.length} LAB${m.fail ? ' · lecturas fallan' : ''}`}`);
+      return snapshot();
     },
 
     async newGame() {

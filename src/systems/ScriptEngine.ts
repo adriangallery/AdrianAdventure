@@ -60,6 +60,12 @@ export interface ScriptContext {
   showCredits?: () => Promise<void>;
   /** V6b: monitor del treatment_room — lluvia verde + expediente real de la wallet */
   showMonitorReveal?: () => Promise<void>;
+  /**
+   * A3.10: op `showDashboard` — abre el dashboard TraitLab del Mining Rig (panel a pantalla completa con el saldo de
+   * $ZERO, los AdrianZERO y los traits de la cartera, solo lecturas) y se resuelve al cerrarlo. Presentación pura: no
+   * toca la partida (la recompensa la ponen los ops de estado que vengan detrás en el `then`).
+   */
+  showDashboard?: () => Promise<void>;
   // Transaction toast
   showToast?: (status: 'pending' | 'success' | 'failed', message: string) => void;
   // Costume change
@@ -623,6 +629,12 @@ export class ScriptEngine {
         }
         break;
       }
+
+      case 'showDashboard':
+        // A3.10: { op: "showDashboard" } — panel del Mining Rig; el script sigue al cerrarlo (X, toque fuera, Esc)
+        if (this.ctx.showDashboard) await this.ctx.showDashboard();
+        else console.warn(`ScriptEngine: showDashboard sin panel en ${this.currentLabel || 'script'}`);
+        break;
 
       case 'mintNFT': {
         // { op: "mintNFT", tokenId: 99, onSuccess: [...], onFail: [...] }

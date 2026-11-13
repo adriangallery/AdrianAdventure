@@ -1,4 +1,5 @@
-import { publicClient } from './wallet';
+import { getWalletState, publicClient } from './wallet';
+import { getWeb3Mock, mockGateResult } from './web3Mock';
 import { CONTRACTS, ERC721_ABI, ERC1155_ABI, ERC20_ABI } from '@/config/blockchain.config';
 import type { Address } from 'viem';
 
@@ -37,6 +38,14 @@ function getCached(key: string): boolean | null {
  * Check a single gating rule against an address. Uses cache.
  */
 export async function checkGatingRule(address: Address, rule: GatingRule): Promise<boolean> {
+  // A3.10: con `__qa.mockWeb3` (solo ?qa=1) responde el mock, sin red ni caché
+  const mock = getWeb3Mock();
+  if (mock !== undefined) return mockGateResult(rule, mock);
+  // A3.10: una regla mal escrita (sin `type`) no rompe el script: no se cumple
+  if (!rule || typeof rule !== 'object' || !rule.type) {
+    console.warn('Gating: regla sin type', rule);
+    return false;
+  }
   const key = cacheKey(address, rule);
   const cached = getCached(key);
   if (cached !== null) return cached;
@@ -126,6 +135,8 @@ export async function checkAnyRule(address: Address, rules: GatingRule[]): Promi
  * Returns cached result or null if not cached. Kicks off async check in background.
  */
 export function checkGatingRuleCached(address: Address, rule: GatingRule): boolean | null {
+  const mock = getWeb3Mock();
+  if (mock !== undefined) return mockGateResult(rule, mock);
   const key = cacheKey(address, rule);
   const cached = getCached(key);
   if (cached !== null) return cached;
@@ -137,4 +148,14 @@ export function checkGatingRuleCached(address: Address, rule: GatingRule): boole
 /** Clear the gating cache */
 export function clearGatingCache(): void {
   cache.clear();
+}
+
+/**
+ * A3.10: dirección con la que se comprueban los gates: la de la cartera conectada o, con `__qa.mockWeb3` (solo ?qa=1),
+ * la simulada (null = simulado sin cartera). Todas las comprobaciones de gates del juego pasan por aquí.
+ */
+export function gateAddress(): string | null {
+  const mock = getWeb3Mock();
+  if (mock !== undefined) return mock ? mock.address : null;
+  return getWalletState().address;
 }

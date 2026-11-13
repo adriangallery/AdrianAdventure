@@ -1307,6 +1307,14 @@
               "when": "!knows_gerald"
             },
             {
+              "text": "[The rig's sysadmin note: 0301]",
+              "next": "gerald",
+              "when": [
+                "rig_dashboard_seen",
+                "!knows_gerald"
+              ]
+            },
+            {
               "text": "Unplug it.",
               "next": "bye",
               "exit": true

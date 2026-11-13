@@ -666,6 +666,35 @@
         {"do": "act", "verb": "USE", "target": "hs_chair", "choices": ["Not now"], "rejects": "VOICE MATCH: 100", "expect": {"flags": {"monitor_revealed": true, "patient_zero_revealed": true}, "unsetFlags": ["pzbot_off"]}},
         {"do": "act", "verb": "USE", "target": "hs_exit_door", "attempt": true, "rejects": "still something I need to see", "expect": {"scene": "treatment_room", "unsetFlags": ["pzbot_off", "met_adrian", "found_adrian_note", "chapter_5_complete"]}}
       ]
+    },
+    {
+      "id": "web3-holder-rig",
+      "kind": "walkthrough",
+      "title": "A3.10: con web3 simulado (__qa.mockWeb3), el póster de holders da su logro y el Mining Rig enseña el dashboard con el saldo y da su recompensa; sin cartera, el else y el juego sigue",
+      "goal": {"scene": "upstairs", "flags": {"rig_dashboard_seen": true, "holder_wall": true}},
+      "steps": [
+        {"do": "newGame", "expect": {"scene": "outside"}},
+        {"do": "act", "verb": "USE", "target": "hs_porch_light", "note": "A3.3c: la mitad A del PIN (apagar la lámpara, cogerla)", "expect": {"flags": {"porch_light_off": true}}},
+        {"do": "act", "verb": "PICK", "target": "hs_porch_light", "expect": {"has": ["note_half_a"]}},
+        {"do": "act", "verb": "PULL", "target": "hs_fence", "note": "A3.3c: el tablón y, con él, el nido de la chimenea (mitad B)", "expect": {"has": ["fence_plank"]}},
+        {"do": "use", "item": "fence_plank", "target": "hs_chimney", "expect": {"has": ["note_half_b"]}},
+        {"do": "combine", "items": ["note_half_a", "note_half_b"], "expect": {"has": ["code_note"]}},
+        {"do": "use", "item": "fence_plank", "target": "hs_doormat", "note": "A3.3d: el felpudo HODL está pegado; con el tablón sale el Ledger (llave de hardware)", "expect": {"has": ["ledger"], "flags": {"found_ledger": true}}},
+        {"do": "act", "verb": "OPEN", "target": "hs_mailbox", "note": "A3.3d: un solo OPEN da el sobre y la factura del veterinario (Gerald, la respuesta de la pregunta de seguridad)", "expect": {"has": ["vet_bill", "mystery_envelope"], "flags": {"knows_gerald": true}}},
+        {"do": "use", "item": "code_note", "target": "hs_keypad", "choices": ["vet bill"], "note": "A3.3d: PIN aceptado; DOORIS se presenta (primera vez), llama Anon y hace la pregunta de seguridad: la opción «[The name on the vet bill]» solo sale con la factura; aún falta la llave", "expect": {"scene": "outside", "flags": {"dooris_met": true, "anon_call_1": true, "dooris_pin_ok": true, "dooris_question_ok": true, "door_unlocked": false}}},
+        {"do": "use", "item": "ledger", "target": "hs_keypad", "note": "A3.3d: tercer factor: DOORIS abre («One factor was a duck») y el árbol cambia de escena al cerrarse", "expect": {"scene": "lobby"}},
+        {"do": "mockWeb3", "web3": {"punks": 1}, "note": "A3.10: cartera simulada (sin red) con un AdrianPunk", "expect": {"scene": "lobby"}},
+        {"do": "act", "verb": "LOOK", "target": "hs_poster", "rejects": "You earned this view", "note": "A3.10: el póster de verdad para holders da el logro Wall Reader (una vez)", "expect": {"scene": "lobby", "flags": {"holder_wall": true}, "achievements": ["holder_wall"]}},
+        {"do": "mockWeb3", "web3": null, "note": "A3.10: sin cartera otra vez", "expect": {"scene": "lobby"}},
+        {"do": "use", "item": "mystery_envelope", "target": "hs_monitor_desk", "note": "A3.4a: el sobre en el escritorio distrae a Penny", "expect": {"flags": {"penny_reading": true}}},
+        {"do": "act", "verb": "PICK", "target": "hs_coat", "expect": {"has": ["keycard"]}},
+        {"do": "act", "verb": "USE", "target": "hs_stairs_up", "expect": {"scene": "upstairs"}},
+        {"do": "act", "verb": "USE", "target": "hs_computer", "rejects": "openPack program. Needs 1000", "note": "A3.10: sin cartera el rig contesta el else, sin panel ni recompensa, y el juego sigue", "expect": {"scene": "upstairs", "dashboard": {"shown": false}, "unsetFlags": ["rig_dashboard_seen"]}},
+        {"do": "mockWeb3", "web3": {"zero": "5000", "adrianZero": [7, {"id": 12, "name": "ZERO Twelve"}], "lab": [{"id": 1001, "name": "Lab Coat"}]}, "note": "A3.10: holder simulado con 5000 $ZERO, dos AdrianZERO y un trait", "expect": {"scene": "upstairs"}},
+        {"do": "act", "verb": "USE", "target": "hs_computer", "rejects": "Adrian's opsec is a sticky note", "note": "A3.10: el panel sale con el saldo simulado y la nota del sysadmin; al cerrarlo, logro TraitLab Insider y rig_dashboard_seen (atajo del PIN del Ledger en el sótano)", "expect": {"scene": "upstairs", "dashboard": {"phase": "ready", "rows": ["$ZERO: 5,000", "AdrianZERO: 2", "ZERO Twelve", "Lab Coat"], "tip": true}, "flags": {"rig_dashboard_seen": true}, "achievements": ["holder_rig"]}},
+        {"do": "mockWeb3", "web3": null, "note": "A3.10: se va la cartera: la recompensa se queda", "expect": {"scene": "upstairs", "flags": {"rig_dashboard_seen": true}}},
+        {"do": "act", "verb": "PICK", "target": "hs_pizza_box", "note": "el juego sigue", "expect": {"scene": "upstairs", "has": ["pizza_slice"], "flags": {"rig_dashboard_seen": true}}}
+      ]
     }
   ]
 }
