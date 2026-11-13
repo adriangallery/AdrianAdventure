@@ -26,7 +26,7 @@ import type { NpcLifeQa } from '@/objects/NPC';
 import type { AmbientQa } from '@/systems/Ambient';
 import type { FailResponse } from '@/systems/FailResponses';
 import { failResponses } from '@/systems/FailResponsesData';
-import type { MusicManager, MusicQaState } from '@/systems/MusicManager';
+import type { AdaptiveQaState, MusicManager, MusicQaState } from '@/systems/MusicManager';
 import type { SfxPlayer, SfxQaState } from '@/systems/Sfx';
 import { stingerLog, type StingerEvent } from '@/systems/StingerPlayer';
 import { qaFakeWallet } from '@/web3/wallet';
@@ -228,6 +228,12 @@ export interface QaApi {
   walk(pctX: number, pctY: number): Promise<QaState>;
   /** A2.1: ¿se puede pisar el punto (en %) en la escena actual? walkableAreas menos blockedAreas */
   isWalkable(pctX: number, pctY: number): boolean;
+  /**
+   * A8.1: música adaptativa (iMUSE): estado musical y regla que lo eligió, lugar y arreglo, pista, BPM, tonalidad, compás y
+   * pulso que suenan, sección, próxima salida (`nextExit`: compás, tipo, segundos), cambio programado (`scheduled`), ganancia de
+   * cada capa y las últimas transiciones (hora pedida, hora de salida, compás, puente, tonalidad). null sin MusicManager.
+   */
+  music(): AdaptiveQaState | null;
   /**
    * A2.4: tecla real (KeyboardEvent en `window`, como el teclado): `press` = pulsar y soltar, `down`/`up` = solo
    * pulsar o soltar (Tab se mantiene con `down` y se suelta con `up`). `key` como `KeyboardEvent.key` («l», «Tab», «Escape»).
@@ -721,6 +727,11 @@ export function installQa(game: Phaser.Game): void {
       if (why) throw new QaError('error', `no se puede hacer clic para andar a ${pctX},${pctY}: ${why}`);
       await settle();
       return snapshot();
+    },
+
+    music() {
+      const mm = registry.get('musicManager') as MusicManager | undefined;
+      return mm ? mm.adaptiveQa() : null;
     },
 
     isWalkable(pctX, pctY) {
