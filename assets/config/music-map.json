@@ -1,4 +1,220 @@
 {
+  "$comment": "A8.1 música adaptativa (iMUSE). `tracks` lo mide scripts/audio/analyze-tempo.mjs (no editar a mano); el resto es a mano: planner (espera máxima), rules (estado del juego → estado musical, gana la prioridad mayor), states (capas y sección por estado), places (arreglo del motivo por escena). Ver docs/progreso/A8.1.md.",
+  "planner": {
+    "maxWaitBars": 4,
+    "phraseBars": 4,
+    "minLeadSec": 0.12,
+    "solvedBars": 4
+  },
+  "rules": [
+    {
+      "state": "solved",
+      "priority": 60,
+      "when": {
+        "transient": "solved"
+      }
+    },
+    {
+      "state": "dialogue",
+      "priority": 50,
+      "when": {
+        "dialogue": true
+      }
+    },
+    {
+      "state": "danger",
+      "priority": 40,
+      "when": {
+        "scene": "server_room",
+        "notFlag": "pzbot_off"
+      }
+    },
+    {
+      "state": "danger",
+      "priority": 40,
+      "when": {
+        "scene": "treatment_room",
+        "flag": "admitted"
+      }
+    },
+    {
+      "state": "tension",
+      "priority": 30,
+      "when": {
+        "scene": [
+          "basement",
+          "memelab"
+        ]
+      }
+    },
+    {
+      "state": "tension",
+      "priority": 25,
+      "when": {
+        "item": "keycard",
+        "scene": [
+          "clinic_interior",
+          "recovery_pool"
+        ]
+      }
+    },
+    {
+      "state": "chapterEnd",
+      "priority": 20,
+      "when": {
+        "goalsLeftMax": 1
+      }
+    }
+  ],
+  "states": {
+    "explore": {
+      "layers": [
+        "motif"
+      ],
+      "section": "any",
+      "gain": 1
+    },
+    "dialogue": {
+      "layers": [
+        "pad"
+      ],
+      "section": "calm",
+      "gain": 0.8
+    },
+    "tension": {
+      "layers": [
+        "pulse",
+        "tick"
+      ],
+      "section": "intense",
+      "gain": 1
+    },
+    "danger": {
+      "layers": [
+        "pulse",
+        "tick",
+        "motif"
+      ],
+      "section": "intense",
+      "gain": 1
+    },
+    "solved": {
+      "layers": [
+        "motif",
+        "pad"
+      ],
+      "section": "any",
+      "gain": 1
+    },
+    "chapterEnd": {
+      "layers": [
+        "pad",
+        "pulse"
+      ],
+      "section": "any",
+      "gain": 1
+    }
+  },
+  "defaultPlace": {
+    "octave": 0,
+    "wave": "triangle",
+    "density": 4,
+    "echo": 0.2,
+    "cutoff": 3500
+  },
+  "places": {
+    "outside": {
+      "octave": 1,
+      "wave": "triangle",
+      "density": 8,
+      "echo": 0.45,
+      "cutoff": 6000
+    },
+    "lobby": {
+      "octave": 0,
+      "wave": "square",
+      "density": 4,
+      "echo": 0.15,
+      "cutoff": 2400
+    },
+    "upstairs": {
+      "octave": 0,
+      "wave": "triangle",
+      "density": 4,
+      "echo": 0.1,
+      "cutoff": 2000
+    },
+    "basement": {
+      "octave": -1,
+      "wave": "sine",
+      "density": 2,
+      "echo": 0.5,
+      "cutoff": 900
+    },
+    "memelab": {
+      "octave": -1,
+      "wave": "sine",
+      "density": 2,
+      "echo": 0.35,
+      "cutoff": 1200
+    },
+    "server_room": {
+      "octave": -1,
+      "wave": "square",
+      "density": 4,
+      "echo": 0.2,
+      "cutoff": 1400
+    },
+    "mountain": {
+      "octave": 1,
+      "wave": "sine",
+      "density": 2,
+      "echo": 0.6,
+      "cutoff": 5000
+    },
+    "rooftop": {
+      "octave": 1,
+      "wave": "triangle",
+      "density": 4,
+      "echo": 0.5,
+      "cutoff": 5000
+    },
+    "clinic_exterior": {
+      "octave": 0,
+      "wave": "triangle",
+      "density": 4,
+      "echo": 0.4,
+      "cutoff": 4000
+    },
+    "clinic_interior": {
+      "octave": 0,
+      "wave": "sine",
+      "density": 4,
+      "echo": 0.15,
+      "cutoff": 2500
+    },
+    "treatment_room": {
+      "octave": -1,
+      "wave": "sine",
+      "density": 2,
+      "echo": 0.3,
+      "cutoff": 1200
+    },
+    "recovery_pool": {
+      "octave": 0,
+      "wave": "sine",
+      "density": 2,
+      "echo": 0.55,
+      "cutoff": 2000
+    },
+    "epilogue_outside": {
+      "octave": 1,
+      "wave": "triangle",
+      "density": 8,
+      "echo": 0.4,
+      "cutoff": 6000
+    }
+  },
   "tracks": {
     "clinical": {
       "bpm": 122.92,
@@ -8,7 +224,7 @@
       "bars": 98,
       "durationSec": 192.44,
       "loopStartSec": 0.383,
-      "loopEndSec": 191.727,
+      "loopEndSec": 191.728,
       "key": {
         "tonic": 4,
         "mode": "minor"
@@ -59,7 +275,7 @@
       "bars": 69,
       "durationSec": 197.96,
       "loopStartSec": 0.313,
-      "loopEndSec": 195.137,
+      "loopEndSec": 195.1345,
       "key": {
         "tonic": 0,
         "mode": "major"
@@ -104,7 +320,7 @@
       "bars": 72,
       "durationSec": 193.64,
       "loopStartSec": 0.186,
-      "loopEndSec": 192.186,
+      "loopEndSec": 192.1884,
       "key": {
         "tonic": 2,
         "mode": "major"
@@ -155,7 +371,7 @@
       "bars": 39,
       "durationSec": 106.75,
       "loopStartSec": 0.464,
-      "loopEndSec": 104.349,
+      "loopEndSec": 104.3483,
       "key": {
         "tonic": 9,
         "mode": "minor"
@@ -194,7 +410,7 @@
       "bars": 122,
       "durationSec": 223.28,
       "loopStartSec": 0.244,
-      "loopEndSec": 222.062,
+      "loopEndSec": 222.0644,
       "key": {
         "tonic": 4,
         "mode": "minor"
@@ -245,7 +461,7 @@
       "bars": 81,
       "durationSec": 240,
       "loopStartSec": 0.139,
-      "loopEndSec": 237.212,
+      "loopEndSec": 237.2098,
       "key": {
         "tonic": 7,
         "mode": "minor"

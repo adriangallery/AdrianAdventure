@@ -210,15 +210,18 @@ export function analyzeTrack(file, log = console.log) {
   const sections = sectionBounds(feats);
   const k = detectKey(chroma(pcm));
   const r = (x, n = 3) => Math.round(x * 10 ** n) / 10 ** n;
+  // el final del bucle sale de los valores ya redondeados: así cae exactamente en compás para el motor
+  const fd = r(firstDownbeatSec);
+  const bs = r(barSec, 4);
   const out = {
     bpm: t.bpm,
     beatsPerBar: BEATS_PER_BAR,
-    firstDownbeatSec: r(firstDownbeatSec),
-    barSec: r(barSec, 4),
+    firstDownbeatSec: fd,
+    barSec: bs,
     bars,
     durationSec: r(durationSec, 2),
-    loopStartSec: r(firstDownbeatSec),
-    loopEndSec: r(firstDownbeatSec + bars * barSec),
+    loopStartSec: fd,
+    loopEndSec: r(fd + bars * bs, 4),
     key: { tonic: k.tonic, mode: k.mode },
     confidence: {
       /** pico del peine sobre la mediana del barrido: > 1,6 claro; < 1,3 dudoso */
