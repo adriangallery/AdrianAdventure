@@ -133,6 +133,52 @@ jobs:
           name: walkthrough-shots-critica
           path: walkthrough-shots/
 
+  # A2.17: revisor de proporción y profundidad (scripts/proportion-sweep.mjs). Fase 1 = INFORME: el paso compara con
+  # qa/proporcion-baseline.json (--strict) pero con continue-on-error, así que un fallo nuevo se ve en el job sin
+  # romper el CI. Fase 2: quitar continue-on-error y pasa a ser puerta.
+  proporcion:
+    needs: build
+    if: ${{ !cancelled() && (needs.build.result == 'success' || (needs.build.result == 'skipped' && inputs.BASE_URL)) }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: ImageMagick (hojas de contactos)
+        run: command -v montage >/dev/null || (sudo apt-get update -qq && sudo apt-get install -y -qq imagemagick)
+
+      - name: Build con assets (igual que el Dockerfile del mini)
+        if: ${{ !inputs.BASE_URL }}
+        run: npm run build
+
+      - name: Servir el build
+        if: ${{ !inputs.BASE_URL }}
+        run: |
+          npx vite preview --host 127.0.0.1 --port 4173 --strictPort > preview.log 2>&1 &
+          for i in $(seq 1 60); do curl -sf http://127.0.0.1:4173/ >/dev/null && exit 0; sleep 1; done
+          cat preview.log; exit 1
+
+      - name: Barrido de proporción (informe; --strict contra la base de fallos conocidos)
+        continue-on-error: true
+        run: node scripts/proportion-sweep.mjs --strict --out proporcion-out
+        env:
+          BASE_URL: ${{ inputs.BASE_URL || 'http://127.0.0.1:4173' }}
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: proporcion
+          path: |
+            qa/proporcion/
+            proporcion-out/
+
   walkthrough-atajos:
     needs: build
     if: ${{ !cancelled() && (needs.build.result == 'success' || (needs.build.result == 'skipped' && inputs.BASE_URL)) }}
