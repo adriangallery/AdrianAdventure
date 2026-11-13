@@ -3,10 +3,8 @@
  "scalePolicy": "measure",
  "summary": {
   "positions": 39,
-  "failing": 37,
-  "byType": {
-   "scale": 37
-  }
+  "failing": 0,
+  "byType": {}
  },
  "positions": [
   {
@@ -29,22 +27,15 @@
    "maskOk": null,
    "cover": {},
    "scale": {
-    "ref": "hs_exit_door",
-    "expected": 61.25,
+    "ref": "hs_side_table",
+    "expected": 49.82,
     "got": 49.18,
-    "dev": -0.2,
-    "baseDy": 6
+    "dev": -0.01,
+    "baseDy": 5.3
    },
-   "failures": [
-    {
-     "type": "scale",
-     "ref": "hs_exit_door",
-     "dev": -0.2,
-     "msg": "Dex -20 % frente a puerta de salida (49.18 % y se esperaba 61.25 %)"
-    }
-   ],
+   "failures": [],
    "info": [],
-   "score": 0.4
+   "score": 0
   },
   {
    "id": "grid-20.6-98.3",
@@ -66,22 +57,15 @@
    "maskOk": null,
    "cover": {},
    "scale": {
-    "ref": "hs_exit_door",
-    "expected": 61.25,
+    "ref": "hs_side_table",
+    "expected": 49.82,
     "got": 49.18,
-    "dev": -0.2,
-    "baseDy": 9.3
+    "dev": -0.01,
+    "baseDy": 8.6
    },
-   "failures": [
-    {
-     "type": "scale",
-     "ref": "hs_exit_door",
-     "dev": -0.2,
-     "msg": "Dex -20 % frente a puerta de salida (49.18 % y se esperaba 61.25 %)"
-    }
-   ],
+   "failures": [],
    "info": [],
-   "score": 0.4
+   "score": 0
   },
   {
    "id": "grid-28.4-95",
@@ -103,22 +87,15 @@
    "maskOk": null,
    "cover": {},
    "scale": {
-    "ref": "hs_exit_door",
-    "expected": 61.25,
+    "ref": "hs_side_table",
+    "expected": 49.82,
     "got": 49.18,
-    "dev": -0.2,
-    "baseDy": 6
+    "dev": -0.01,
+    "baseDy": 5.3
    },
-   "failures": [
-    {
-     "type": "scale",
-     "ref": "hs_exit_door",
-     "dev": -0.2,
-     "msg": "Dex -20 % frente a puerta de salida (49.18 % y se esperaba 61.25 %)"
-    }
-   ],
+   "failures": [],
    "info": [],
-   "score": 0.4
+   "score": 0
   },
   {
    "id": "grid-28.4-98.3",
@@ -140,22 +117,15 @@
    "maskOk": null,
    "cover": {},
    "scale": {
-    "ref": "hs_exit_door",
-    "expected": 61.25,
+    "ref": "hs_side_table",
+    "expected": 49.82,
     "got": 49.18,
-    "dev": -0.2,
-    "baseDy": 9.3
+    "dev": -0.01,
+    "baseDy": 8.6
    },
-   "failures": [
-    {
-     "type": "scale",
-     "ref": "hs_exit_door",
-     "dev": -0.2,
-     "msg": "Dex -20 % frente a puerta de salida (49.18 % y se esperaba 61.25 %)"
-    }
-   ],
+   "failures": [],
    "info": [],
-   "score": 0.4
+   "score": 0
   },
   {
    "id": "grid-36.1-95",
@@ -179,22 +149,15 @@
     "hs_chair": 0
    },
    "scale": {
-    "ref": "hs_exit_door",
-    "expected": 61.25,
+    "ref": "hs_side_table",
+    "expected": 49.82,
     "got": 49.18,
-    "dev": -0.2,
-    "baseDy": 6
+    "dev": -0.01,
+    "baseDy": 5.3
    },
-   "failures": [
-    {
-     "type": "scale",
-     "ref": "hs_exit_door",
-     "dev": -0.2,
-     "msg": "Dex -20 % frente a puerta de salida (49.18 % y se esperaba 61.25 %)"
-    }
-   ],
+   "failures": [],
    "info": [],
-   "score": 0.4
+   "score": 0
   },
   {
    "id": "grid-36.1-98.3",
@@ -218,22 +181,15 @@
     "hs_chair": 0
    },
    "scale": {
-    "ref": "hs_exit_door",
-    "expected": 61.25,
+    "ref": "hs_side_table",
+    "expected": 49.82,
     "got": 49.18,
-    "dev": -0.2,
-    "baseDy": 9.3
+    "dev": -0.01,
+    "baseDy": 8.6
    },
-   "failures": [
-    {
-     "type": "scale",
-     "ref": "hs_exit_door",
-     "dev": -0.2,
-     "msg": "Dex -20 % frente a puerta de salida (49.18 % y se esperaba 61.25 %)"
-    }
-   ],
+   "failures": [],
    "info": [],
-   "score": 0.4
+   "score": 0
   },
   {
    "id": "grid-43.9-95",
@@ -257,23 +213,22 @@
     "hs_chair": 0
    },
    "scale": {
-    "ref": "hs_exit_door",
-    "expected": 61.25,
+    "ref": "hs_side_table",
+    "expected": 49.82,
     "got": 49.18,
-    "dev": -0.2,
-    "baseDy": 6
+    "dev": -0.01,
+    "baseDy": 5.3
    },
-   "failures": [
+   "failures": [],
+   "info": [
     {
-     "type": "scale",
+     "type": "scale-rough",
      "ref": "hs_exit_door",
      "dev": -0.2,
-     "msg": "Dex -20 % frente a puerta de salida (49.18 % y se esperaba 61.25 %)"
+     "msg": "Dex -20 % frente a puerta de salida (caja sin medir: bounds del hotspot)"
     }
    ],
-   "info": [],
-   "score": 0.4,
-   "shot": "capturas/treatment_room/006.png"
+   "score": 0
   },
   {
    "id": "grid-43.9-98.3",
@@ -297,23 +252,22 @@
     "hs_chair": 0
    },
    "scale": {
-    "ref": "hs_exit_door",
-    "expected": 61.25,
+    "ref": "hs_side_table",
+    "expected": 49.82,
     "got": 49.18,
-    "dev": -0.2,
-    "baseDy": 9.3
+    "dev": -0.01,
+    "baseDy": 8.6
    },
-   "failures": [
+   "failures": [],
+   "info": [
     {
-     "type": "scale",
+     "type": "scale-rough",
      "ref": "hs_exit_door",
      "dev": -0.2,
-     "msg": "Dex -20 % frente a puerta de salida (49.18 % y se esperaba 61.25 %)"
+     "msg": "Dex -20 % frente a puerta de salida (caja sin medir: bounds del hotspot)"
     }
    ],
-   "info": [],
-   "score": 0.4,
-   "shot": "capturas/treatment_room/007.png"
+   "score": 0
   },
   {
    "id": "grid-51.7-95",
@@ -337,23 +291,22 @@
     "hs_chair": 0
    },
    "scale": {
-    "ref": "hs_exit_door",
-    "expected": 61.25,
+    "ref": "hs_side_table",
+    "expected": 49.82,
     "got": 49.18,
-    "dev": -0.2,
-    "baseDy": 6
+    "dev": -0.01,
+    "baseDy": 5.3
    },
-   "failures": [
+   "failures": [],
+   "info": [
     {
-     "type": "scale",
+     "type": "scale-rough",
      "ref": "hs_exit_door",
      "dev": -0.2,
-     "msg": "Dex -20 % frente a puerta de salida (49.18 % y se esperaba 61.25 %)"
+     "msg": "Dex -20 % frente a puerta de salida (caja sin medir: bounds del hotspot)"
     }
    ],
-   "info": [],
-   "score": 0.4,
-   "shot": "capturas/treatment_room/008.png"
+   "score": 0
   },
   {
    "id": "grid-51.7-98.3",
@@ -377,23 +330,22 @@
     "hs_chair": 0
    },
    "scale": {
-    "ref": "hs_exit_door",
-    "expected": 61.25,
+    "ref": "hs_side_table",
+    "expected": 49.82,
     "got": 49.18,
-    "dev": -0.2,
-    "baseDy": 9.3
+    "dev": -0.01,
+    "baseDy": 8.6
    },
-   "failures": [
+   "failures": [],
+   "info": [
     {
-     "type": "scale",
+     "type": "scale-rough",
      "ref": "hs_exit_door",
      "dev": -0.2,
-     "msg": "Dex -20 % frente a puerta de salida (49.18 % y se esperaba 61.25 %)"
+     "msg": "Dex -20 % frente a puerta de salida (caja sin medir: bounds del hotspot)"
     }
    ],
-   "info": [],
-   "score": 0.4,
-   "shot": "capturas/treatment_room/009.png"
+   "score": 0
   },
   {
    "id": "grid-59.5-95",
@@ -417,23 +369,22 @@
     "hs_side_table": 0
    },
    "scale": {
-    "ref": "hs_exit_door",
-    "expected": 61.25,
+    "ref": "hs_side_table",
+    "expected": 49.82,
     "got": 49.18,
-    "dev": -0.2,
-    "baseDy": 6
+    "dev": -0.01,
+    "baseDy": 5.3
    },
-   "failures": [
+   "failures": [],
+   "info": [
     {
-     "type": "scale",
+     "type": "scale-rough",
      "ref": "hs_exit_door",
      "dev": -0.2,
-     "msg": "Dex -20 % frente a puerta de salida (49.18 % y se esperaba 61.25 %)"
+     "msg": "Dex -20 % frente a puerta de salida (caja sin medir: bounds del hotspot)"
     }
    ],
-   "info": [],
-   "score": 0.4,
-   "shot": "capturas/treatment_room/010.png"
+   "score": 0
   },
   {
    "id": "grid-59.5-98.3",
@@ -457,23 +408,22 @@
     "hs_side_table": 0
    },
    "scale": {
-    "ref": "hs_exit_door",
-    "expected": 61.25,
+    "ref": "hs_side_table",
+    "expected": 49.82,
     "got": 49.18,
-    "dev": -0.2,
-    "baseDy": 9.3
+    "dev": -0.01,
+    "baseDy": 8.6
    },
-   "failures": [
+   "failures": [],
+   "info": [
     {
-     "type": "scale",
+     "type": "scale-rough",
      "ref": "hs_exit_door",
      "dev": -0.2,
-     "msg": "Dex -20 % frente a puerta de salida (49.18 % y se esperaba 61.25 %)"
+     "msg": "Dex -20 % frente a puerta de salida (caja sin medir: bounds del hotspot)"
     }
    ],
-   "info": [],
-   "score": 0.4,
-   "shot": "capturas/treatment_room/011.png"
+   "score": 0
   },
   {
    "id": "grid-67.3-95",
@@ -497,23 +447,22 @@
     "hs_side_table": 0
    },
    "scale": {
-    "ref": "hs_exit_door",
-    "expected": 61.25,
+    "ref": "hs_side_table",
+    "expected": 49.82,
     "got": 49.18,
-    "dev": -0.2,
-    "baseDy": 6
+    "dev": -0.01,
+    "baseDy": 5.3
    },
-   "failures": [
+   "failures": [],
+   "info": [
     {
-     "type": "scale",
+     "type": "scale-rough",
      "ref": "hs_exit_door",
      "dev": -0.2,
-     "msg": "Dex -20 % frente a puerta de salida (49.18 % y se esperaba 61.25 %)"
+     "msg": "Dex -20 % frente a puerta de salida (caja sin medir: bounds del hotspot)"
     }
    ],
-   "info": [],
-   "score": 0.4,
-   "shot": "capturas/treatment_room/012.png"
+   "score": 0
   },
   {
    "id": "grid-67.3-98.3",
@@ -537,23 +486,22 @@
     "hs_side_table": 0
    },
    "scale": {
-    "ref": "hs_exit_door",
-    "expected": 61.25,
+    "ref": "hs_side_table",
+    "expected": 49.82,
     "got": 49.18,
-    "dev": -0.2,
-    "baseDy": 9.3
+    "dev": -0.01,
+    "baseDy": 8.6
    },
-   "failures": [
+   "failures": [],
+   "info": [
     {
-     "type": "scale",
+     "type": "scale-rough",
      "ref": "hs_exit_door",
      "dev": -0.2,
-     "msg": "Dex -20 % frente a puerta de salida (49.18 % y se esperaba 61.25 %)"
+     "msg": "Dex -20 % frente a puerta de salida (caja sin medir: bounds del hotspot)"
     }
    ],
-   "info": [],
-   "score": 0.4,
-   "shot": "capturas/treatment_room/013.png"
+   "score": 0
   },
   {
    "id": "grid-75-95",
@@ -575,23 +523,22 @@
    "maskOk": null,
    "cover": {},
    "scale": {
-    "ref": "hs_exit_door",
-    "expected": 61.25,
+    "ref": "hs_side_table",
+    "expected": 49.82,
     "got": 49.18,
-    "dev": -0.2,
-    "baseDy": 6
+    "dev": -0.01,
+    "baseDy": 5.3
    },
-   "failures": [
+   "failures": [],
+   "info": [
     {
-     "type": "scale",
+     "type": "scale-rough",
      "ref": "hs_exit_door",
      "dev": -0.2,
-     "msg": "Dex -20 % frente a puerta de salida (49.18 % y se esperaba 61.25 %)"
+     "msg": "Dex -20 % frente a puerta de salida (caja sin medir: bounds del hotspot)"
     }
    ],
-   "info": [],
-   "score": 0.4,
-   "shot": "capturas/treatment_room/014.png"
+   "score": 0
   },
   {
    "id": "grid-75-98.3",
@@ -613,23 +560,22 @@
    "maskOk": null,
    "cover": {},
    "scale": {
-    "ref": "hs_exit_door",
-    "expected": 61.25,
+    "ref": "hs_side_table",
+    "expected": 49.82,
     "got": 49.18,
-    "dev": -0.2,
-    "baseDy": 9.3
+    "dev": -0.01,
+    "baseDy": 8.6
    },
-   "failures": [
+   "failures": [],
+   "info": [
     {
-     "type": "scale",
+     "type": "scale-rough",
      "ref": "hs_exit_door",
      "dev": -0.2,
-     "msg": "Dex -20 % frente a puerta de salida (49.18 % y se esperaba 61.25 %)"
+     "msg": "Dex -20 % frente a puerta de salida (caja sin medir: bounds del hotspot)"
     }
    ],
-   "info": [],
-   "score": 0.4,
-   "shot": "capturas/treatment_room/015.png"
+   "score": 0
   },
   {
    "id": "grid-82.8-95",
@@ -651,23 +597,22 @@
    "maskOk": null,
    "cover": {},
    "scale": {
-    "ref": "hs_exit_door",
-    "expected": 61.25,
+    "ref": "hs_side_table",
+    "expected": 49.82,
     "got": 49.18,
-    "dev": -0.2,
-    "baseDy": 6
+    "dev": -0.01,
+    "baseDy": 5.3
    },
-   "failures": [
+   "failures": [],
+   "info": [
     {
-     "type": "scale",
+     "type": "scale-rough",
      "ref": "hs_exit_door",
      "dev": -0.2,
-     "msg": "Dex -20 % frente a puerta de salida (49.18 % y se esperaba 61.25 %)"
+     "msg": "Dex -20 % frente a puerta de salida (caja sin medir: bounds del hotspot)"
     }
    ],
-   "info": [],
-   "score": 0.4,
-   "shot": "capturas/treatment_room/016.png"
+   "score": 0
   },
   {
    "id": "grid-82.8-98.3",
@@ -689,23 +634,22 @@
    "maskOk": null,
    "cover": {},
    "scale": {
-    "ref": "hs_exit_door",
-    "expected": 61.25,
+    "ref": "hs_side_table",
+    "expected": 49.82,
     "got": 49.18,
-    "dev": -0.2,
-    "baseDy": 9.3
+    "dev": -0.01,
+    "baseDy": 8.6
    },
-   "failures": [
+   "failures": [],
+   "info": [
     {
-     "type": "scale",
+     "type": "scale-rough",
      "ref": "hs_exit_door",
      "dev": -0.2,
-     "msg": "Dex -20 % frente a puerta de salida (49.18 % y se esperaba 61.25 %)"
+     "msg": "Dex -20 % frente a puerta de salida (caja sin medir: bounds del hotspot)"
     }
    ],
-   "info": [],
-   "score": 0.4,
-   "shot": "capturas/treatment_room/017.png"
+   "score": 0
   },
   {
    "id": "hs_chair",
@@ -729,23 +673,22 @@
     "hs_chair": 0
    },
    "scale": {
-    "ref": "hs_exit_door",
-    "expected": 61.25,
+    "ref": "hs_side_table",
+    "expected": 49.82,
     "got": 49.18,
-    "dev": -0.2,
-    "baseDy": 4.8
+    "dev": -0.01,
+    "baseDy": 4.1
    },
-   "failures": [
+   "failures": [],
+   "info": [
     {
-     "type": "scale",
+     "type": "scale-rough",
      "ref": "hs_exit_door",
      "dev": -0.2,
-     "msg": "Dex -20 % frente a puerta de salida (49.18 % y se esperaba 61.25 %)"
+     "msg": "Dex -20 % frente a puerta de salida (caja sin medir: bounds del hotspot)"
     }
    ],
-   "info": [],
-   "score": 0.4,
-   "shot": "capturas/treatment_room/018.png"
+   "score": 0
   },
   {
    "id": "hs_monitor",
@@ -769,23 +712,22 @@
     "hs_side_table": 0
    },
    "scale": {
-    "ref": "hs_exit_door",
-    "expected": 61.25,
+    "ref": "hs_side_table",
+    "expected": 49.82,
     "got": 49.18,
-    "dev": -0.2,
-    "baseDy": 4.8
+    "dev": -0.01,
+    "baseDy": 4.1
    },
-   "failures": [
+   "failures": [],
+   "info": [
     {
-     "type": "scale",
+     "type": "scale-rough",
      "ref": "hs_exit_door",
      "dev": -0.2,
-     "msg": "Dex -20 % frente a puerta de salida (49.18 % y se esperaba 61.25 %)"
+     "msg": "Dex -20 % frente a puerta de salida (caja sin medir: bounds del hotspot)"
     }
    ],
-   "info": [],
-   "score": 0.4,
-   "shot": "capturas/treatment_room/019.png"
+   "score": 0
   },
   {
    "id": "hs_charts",
@@ -809,23 +751,22 @@
     "hs_chair": 0
    },
    "scale": {
-    "ref": "hs_exit_door",
-    "expected": 61.25,
+    "ref": "hs_side_table",
+    "expected": 49.82,
     "got": 49.18,
-    "dev": -0.2,
-    "baseDy": 4.8
+    "dev": -0.01,
+    "baseDy": 4.1
    },
-   "failures": [
+   "failures": [],
+   "info": [
     {
-     "type": "scale",
+     "type": "scale-rough",
      "ref": "hs_exit_door",
      "dev": -0.2,
-     "msg": "Dex -20 % frente a puerta de salida (49.18 % y se esperaba 61.25 %)"
+     "msg": "Dex -20 % frente a puerta de salida (caja sin medir: bounds del hotspot)"
     }
    ],
-   "info": [],
-   "score": 0.4,
-   "shot": "capturas/treatment_room/020.png"
+   "score": 0
   },
   {
    "id": "hs_exit_door",
@@ -849,23 +790,22 @@
     "hs_exit_door": 0
    },
    "scale": {
-    "ref": "hs_exit_door",
-    "expected": 61.25,
+    "ref": "hs_side_table",
+    "expected": 49.82,
     "got": 49.18,
-    "dev": -0.2,
-    "baseDy": 4.8
+    "dev": -0.01,
+    "baseDy": 4.1
    },
-   "failures": [
+   "failures": [],
+   "info": [
     {
-     "type": "scale",
+     "type": "scale-rough",
      "ref": "hs_exit_door",
      "dev": -0.2,
-     "msg": "Dex -20 % frente a puerta de salida (49.18 % y se esperaba 61.25 %)"
+     "msg": "Dex -20 % frente a puerta de salida (caja sin medir: bounds del hotspot)"
     }
    ],
-   "info": [],
-   "score": 0.4,
-   "shot": "capturas/treatment_room/021.png"
+   "score": 0
   },
   {
    "id": "hs_adrian_note",
@@ -889,23 +829,22 @@
     "hs_side_table": 0
    },
    "scale": {
-    "ref": "hs_exit_door",
-    "expected": 61.25,
+    "ref": "hs_side_table",
+    "expected": 49.82,
     "got": 49.18,
-    "dev": -0.2,
-    "baseDy": 4.8
+    "dev": -0.01,
+    "baseDy": 4.1
    },
-   "failures": [
+   "failures": [],
+   "info": [
     {
-     "type": "scale",
+     "type": "scale-rough",
      "ref": "hs_exit_door",
      "dev": -0.2,
-     "msg": "Dex -20 % frente a puerta de salida (49.18 % y se esperaba 61.25 %)"
+     "msg": "Dex -20 % frente a puerta de salida (caja sin medir: bounds del hotspot)"
     }
    ],
-   "info": [],
-   "score": 0.4,
-   "shot": "capturas/treatment_room/022.png"
+   "score": 0
   },
   {
    "id": "hs_dark_floor",
@@ -925,15 +864,18 @@
    "heightPct": 49.18,
    "walkable": true,
    "maskOk": null,
-   "cover": {},
-   "scale": null,
+   "cover": {
+    "hs_side_table": 0
+   },
+   "scale": {
+    "ref": "hs_side_table",
+    "expected": 49.82,
+    "got": 49.18,
+    "dev": -0.01,
+    "baseDy": 9.8
+   },
    "failures": [],
-   "info": [
-    {
-     "type": "scale-noref",
-     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
-    }
-   ],
+   "info": [],
    "score": 0
   },
   {
@@ -956,22 +898,15 @@
    "maskOk": null,
    "cover": {},
    "scale": {
-    "ref": "hs_exit_door",
-    "expected": 61.25,
+    "ref": "hs_side_table",
+    "expected": 49.82,
     "got": 49.18,
-    "dev": -0.2,
-    "baseDy": 4.8
+    "dev": -0.01,
+    "baseDy": 4.1
    },
-   "failures": [
-    {
-     "type": "scale",
-     "ref": "hs_exit_door",
-     "dev": -0.2,
-     "msg": "Dex -20 % frente a puerta de salida (49.18 % y se esperaba 61.25 %)"
-    }
-   ],
+   "failures": [],
    "info": [],
-   "score": 0.4
+   "score": 0
   },
   {
    "id": "hs_ceiling_pipes",
@@ -995,23 +930,22 @@
     "hs_chair": 0
    },
    "scale": {
-    "ref": "hs_exit_door",
-    "expected": 61.25,
+    "ref": "hs_side_table",
+    "expected": 49.82,
     "got": 49.18,
-    "dev": -0.2,
-    "baseDy": 4.8
+    "dev": -0.01,
+    "baseDy": 4.1
    },
-   "failures": [
+   "failures": [],
+   "info": [
     {
-     "type": "scale",
+     "type": "scale-rough",
      "ref": "hs_exit_door",
      "dev": -0.2,
-     "msg": "Dex -20 % frente a puerta de salida (49.18 % y se esperaba 61.25 %)"
+     "msg": "Dex -20 % frente a puerta de salida (caja sin medir: bounds del hotspot)"
     }
    ],
-   "info": [],
-   "score": 0.4,
-   "shot": "capturas/treatment_room/025.png"
+   "score": 0
   },
   {
    "id": "hs_side_table",
@@ -1035,23 +969,22 @@
     "hs_side_table": 0
    },
    "scale": {
-    "ref": "hs_exit_door",
-    "expected": 61.25,
+    "ref": "hs_side_table",
+    "expected": 49.82,
     "got": 49.18,
-    "dev": -0.2,
-    "baseDy": 4.8
+    "dev": -0.01,
+    "baseDy": 4.1
    },
-   "failures": [
+   "failures": [],
+   "info": [
     {
-     "type": "scale",
+     "type": "scale-rough",
      "ref": "hs_exit_door",
      "dev": -0.2,
-     "msg": "Dex -20 % frente a puerta de salida (49.18 % y se esperaba 61.25 %)"
+     "msg": "Dex -20 % frente a puerta de salida (caja sin medir: bounds del hotspot)"
     }
    ],
-   "info": [],
-   "score": 0.4,
-   "shot": "capturas/treatment_room/026.png"
+   "score": 0
   },
   {
    "id": "hs_observation_window",
@@ -1073,22 +1006,15 @@
    "maskOk": null,
    "cover": {},
    "scale": {
-    "ref": "hs_exit_door",
-    "expected": 61.25,
+    "ref": "hs_side_table",
+    "expected": 49.82,
     "got": 49.18,
-    "dev": -0.2,
-    "baseDy": 4.8
+    "dev": -0.01,
+    "baseDy": 4.1
    },
-   "failures": [
-    {
-     "type": "scale",
-     "ref": "hs_exit_door",
-     "dev": -0.2,
-     "msg": "Dex -20 % frente a puerta de salida (49.18 % y se esperaba 61.25 %)"
-    }
-   ],
+   "failures": [],
    "info": [],
-   "score": 0.4
+   "score": 0
   },
   {
    "id": "hs_floor_cables",
@@ -1109,14 +1035,15 @@
    "walkable": true,
    "maskOk": null,
    "cover": {},
-   "scale": null,
+   "scale": {
+    "ref": "hs_side_table",
+    "expected": 49.82,
+    "got": 49.18,
+    "dev": -0.01,
+    "baseDy": 9.8
+   },
    "failures": [],
-   "info": [
-    {
-     "type": "scale-noref",
-     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
-    }
-   ],
+   "info": [],
    "score": 0
   },
   {
@@ -1139,23 +1066,22 @@
    "maskOk": null,
    "cover": {},
    "scale": {
-    "ref": "hs_exit_door",
-    "expected": 61.25,
+    "ref": "hs_side_table",
+    "expected": 49.82,
     "got": 49.18,
-    "dev": -0.2,
-    "baseDy": 4.8
+    "dev": -0.01,
+    "baseDy": 4.1
    },
-   "failures": [
+   "failures": [],
+   "info": [
     {
-     "type": "scale",
+     "type": "scale-rough",
      "ref": "hs_exit_door",
      "dev": -0.2,
-     "msg": "Dex -20 % frente a puerta de salida (49.18 % y se esperaba 61.25 %)"
+     "msg": "Dex -20 % frente a puerta de salida (caja sin medir: bounds del hotspot)"
     }
    ],
-   "info": [],
-   "score": 0.4,
-   "shot": "capturas/treatment_room/029.png"
+   "score": 0
   },
   {
    "id": "hs_exit_door:izq",
@@ -1179,23 +1105,22 @@
     "hs_exit_door": 0
    },
    "scale": {
-    "ref": "hs_exit_door",
-    "expected": 61.25,
+    "ref": "hs_side_table",
+    "expected": 49.82,
     "got": 49.18,
-    "dev": -0.2,
-    "baseDy": 4.8
+    "dev": -0.01,
+    "baseDy": 4.1
    },
-   "failures": [
+   "failures": [],
+   "info": [
     {
-     "type": "scale",
+     "type": "scale-rough",
      "ref": "hs_exit_door",
      "dev": -0.2,
-     "msg": "Dex -20 % frente a puerta de salida (49.18 % y se esperaba 61.25 %)"
+     "msg": "Dex -20 % frente a puerta de salida (caja sin medir: bounds del hotspot)"
     }
    ],
-   "info": [],
-   "score": 0.4,
-   "shot": "capturas/treatment_room/030.png"
+   "score": 0
   },
   {
    "id": "hs_exit_door:der",
@@ -1219,23 +1144,22 @@
     "hs_exit_door": 0
    },
    "scale": {
-    "ref": "hs_exit_door",
-    "expected": 61.25,
+    "ref": "hs_side_table",
+    "expected": 49.82,
     "got": 49.18,
-    "dev": -0.2,
-    "baseDy": 4.8
+    "dev": -0.01,
+    "baseDy": 4.1
    },
-   "failures": [
+   "failures": [],
+   "info": [
     {
-     "type": "scale",
+     "type": "scale-rough",
      "ref": "hs_exit_door",
      "dev": -0.2,
-     "msg": "Dex -20 % frente a puerta de salida (49.18 % y se esperaba 61.25 %)"
+     "msg": "Dex -20 % frente a puerta de salida (caja sin medir: bounds del hotspot)"
     }
    ],
-   "info": [],
-   "score": 0.4,
-   "shot": "capturas/treatment_room/031.png"
+   "score": 0
   },
   {
    "id": "hs_exit_door:detrás",
@@ -1259,23 +1183,22 @@
     "hs_exit_door": 0
    },
    "scale": {
-    "ref": "hs_exit_door",
-    "expected": 61.25,
+    "ref": "hs_side_table",
+    "expected": 49.82,
     "got": 49.18,
-    "dev": -0.2,
-    "baseDy": 4.8
+    "dev": -0.01,
+    "baseDy": 4.1
    },
-   "failures": [
+   "failures": [],
+   "info": [
     {
-     "type": "scale",
+     "type": "scale-rough",
      "ref": "hs_exit_door",
      "dev": -0.2,
-     "msg": "Dex -20 % frente a puerta de salida (49.18 % y se esperaba 61.25 %)"
+     "msg": "Dex -20 % frente a puerta de salida (caja sin medir: bounds del hotspot)"
     }
    ],
-   "info": [],
-   "score": 0.4,
-   "shot": "capturas/treatment_room/032.png"
+   "score": 0
   },
   {
    "id": "hs_chair:izq",
@@ -1299,22 +1222,15 @@
     "hs_chair": 0
    },
    "scale": {
-    "ref": "hs_exit_door",
-    "expected": 61.25,
+    "ref": "hs_side_table",
+    "expected": 49.82,
     "got": 49.18,
-    "dev": -0.2,
-    "baseDy": 4.8
+    "dev": -0.01,
+    "baseDy": 4.1
    },
-   "failures": [
-    {
-     "type": "scale",
-     "ref": "hs_exit_door",
-     "dev": -0.2,
-     "msg": "Dex -20 % frente a puerta de salida (49.18 % y se esperaba 61.25 %)"
-    }
-   ],
+   "failures": [],
    "info": [],
-   "score": 0.4
+   "score": 0
   },
   {
    "id": "hs_chair:der",
@@ -1338,23 +1254,22 @@
     "hs_chair": 0
    },
    "scale": {
-    "ref": "hs_exit_door",
-    "expected": 61.25,
+    "ref": "hs_side_table",
+    "expected": 49.82,
     "got": 49.18,
-    "dev": -0.2,
-    "baseDy": 4.8
+    "dev": -0.01,
+    "baseDy": 4.1
    },
-   "failures": [
+   "failures": [],
+   "info": [
     {
-     "type": "scale",
+     "type": "scale-rough",
      "ref": "hs_exit_door",
      "dev": -0.2,
-     "msg": "Dex -20 % frente a puerta de salida (49.18 % y se esperaba 61.25 %)"
+     "msg": "Dex -20 % frente a puerta de salida (caja sin medir: bounds del hotspot)"
     }
    ],
-   "info": [],
-   "score": 0.4,
-   "shot": "capturas/treatment_room/034.png"
+   "score": 0
   },
   {
    "id": "hs_chair:detrás",
@@ -1378,35 +1293,34 @@
     "hs_chair": 0
    },
    "scale": {
-    "ref": "hs_exit_door",
-    "expected": 61.25,
+    "ref": "hs_side_table",
+    "expected": 49.82,
     "got": 49.18,
-    "dev": -0.2,
-    "baseDy": 4.8
+    "dev": -0.01,
+    "baseDy": 4.1
    },
-   "failures": [
+   "failures": [],
+   "info": [
     {
-     "type": "scale",
+     "type": "scale-rough",
      "ref": "hs_exit_door",
      "dev": -0.2,
-     "msg": "Dex -20 % frente a puerta de salida (49.18 % y se esperaba 61.25 %)"
+     "msg": "Dex -20 % frente a puerta de salida (caja sin medir: bounds del hotspot)"
     }
    ],
-   "info": [],
-   "score": 0.4,
-   "shot": "capturas/treatment_room/035.png"
+   "score": 0
   },
   {
    "id": "hs_side_table:izq",
    "kind": "ref",
-   "x": 57.8,
+   "x": 57.4,
    "y": 93.8,
    "feet": {
-    "x": 57.8,
+    "x": 57.4,
     "y": 93.8
    },
    "dexBox": {
-    "x": 55.06,
+    "x": 54.66,
     "y": 44.62,
     "w": 5.48,
     "h": 49.18
@@ -1418,35 +1332,34 @@
     "hs_side_table": 0
    },
    "scale": {
-    "ref": "hs_exit_door",
-    "expected": 61.25,
+    "ref": "hs_side_table",
+    "expected": 49.82,
     "got": 49.18,
-    "dev": -0.2,
-    "baseDy": 4.8
+    "dev": -0.01,
+    "baseDy": 4.1
    },
-   "failures": [
+   "failures": [],
+   "info": [
     {
-     "type": "scale",
+     "type": "scale-rough",
      "ref": "hs_exit_door",
      "dev": -0.2,
-     "msg": "Dex -20 % frente a puerta de salida (49.18 % y se esperaba 61.25 %)"
+     "msg": "Dex -20 % frente a puerta de salida (caja sin medir: bounds del hotspot)"
     }
    ],
-   "info": [],
-   "score": 0.4,
-   "shot": "capturas/treatment_room/036.png"
+   "score": 0
   },
   {
    "id": "hs_side_table:der",
    "kind": "ref",
-   "x": 70.3,
+   "x": 71.4,
    "y": 93.8,
    "feet": {
-    "x": 70.3,
+    "x": 71.4,
     "y": 93.8
    },
    "dexBox": {
-    "x": 67.56,
+    "x": 68.66,
     "y": 44.62,
     "w": 5.48,
     "h": 49.18
@@ -1458,35 +1371,34 @@
     "hs_side_table": 0
    },
    "scale": {
-    "ref": "hs_exit_door",
-    "expected": 61.25,
+    "ref": "hs_side_table",
+    "expected": 49.82,
     "got": 49.18,
-    "dev": -0.2,
-    "baseDy": 4.8
+    "dev": -0.01,
+    "baseDy": 4.1
    },
-   "failures": [
+   "failures": [],
+   "info": [
     {
-     "type": "scale",
+     "type": "scale-rough",
      "ref": "hs_exit_door",
      "dev": -0.2,
-     "msg": "Dex -20 % frente a puerta de salida (49.18 % y se esperaba 61.25 %)"
+     "msg": "Dex -20 % frente a puerta de salida (caja sin medir: bounds del hotspot)"
     }
    ],
-   "info": [],
-   "score": 0.4,
-   "shot": "capturas/treatment_room/037.png"
+   "score": 0
   },
   {
    "id": "hs_side_table:detrás",
    "kind": "ref",
-   "x": 64.1,
+   "x": 64.4,
    "y": 93.8,
    "feet": {
-    "x": 64.1,
+    "x": 64.4,
     "y": 93.8
    },
    "dexBox": {
-    "x": 61.36,
+    "x": 61.66,
     "y": 44.62,
     "w": 5.48,
     "h": 49.18
@@ -1498,23 +1410,22 @@
     "hs_side_table": 0
    },
    "scale": {
-    "ref": "hs_exit_door",
-    "expected": 61.25,
+    "ref": "hs_side_table",
+    "expected": 49.82,
     "got": 49.18,
-    "dev": -0.2,
-    "baseDy": 4.8
+    "dev": -0.01,
+    "baseDy": 4.1
    },
-   "failures": [
+   "failures": [],
+   "info": [
     {
-     "type": "scale",
+     "type": "scale-rough",
      "ref": "hs_exit_door",
      "dev": -0.2,
-     "msg": "Dex -20 % frente a puerta de salida (49.18 % y se esperaba 61.25 %)"
+     "msg": "Dex -20 % frente a puerta de salida (caja sin medir: bounds del hotspot)"
     }
    ],
-   "info": [],
-   "score": 0.4,
-   "shot": "capturas/treatment_room/038.png"
+   "score": 0
   }
  ]
 }

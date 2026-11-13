@@ -585,6 +585,10 @@
       {
         "id": "hs_boulders",
         "name": "Boulders",
+        "walkTo": {
+          "x": 88,
+          "y": 91
+        },
         "bounds": {
           "x": 82,
           "y": 55,
@@ -928,6 +932,26 @@
       "y": 59.1,
       "w": 13.7,
       "h": 28.5
+    }
+  ],
+  "blockedAreas": [
+    {
+      "x": 84,
+      "y": 86,
+      "w": 13.6,
+      "h": 3.6
+    }
+  ],
+  "foregroundLayers": [
+    {
+      "id": "rocks_right",
+      "bounds": {
+        "x": 78.5,
+        "y": 60,
+        "w": 21.5,
+        "h": 40
+      },
+      "baseY": 89.5
     }
   ],
   "onEnter": [

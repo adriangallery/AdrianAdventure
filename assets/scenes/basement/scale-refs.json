@@ -11,12 +11,12 @@
       "foreground": false,
       "box": {
         "x": 47.8,
-        "y": 57,
-        "w": 20,
-        "h": 21
+        "y": 58,
+        "w": 22,
+        "h": 22.5
       },
-      "baseY": 78,
-      "source": "qa/proportion-refs.json (medido a ojo en A2.11)"
+      "baseY": 80.5,
+      "source": "A2.17 fase 2: medido a ojo sobre background.png (rejilla del 10 %) (A2.11 tomaba 57–78; el tablero empieza en ≈ 58 y las patas de delante llegan a ≈ 80,5)"
     },
     {
       "id": "hs_equipment",

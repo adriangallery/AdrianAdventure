@@ -52,16 +52,17 @@
       "id": "hs_trash_pile",
       "label": "montón de trastos",
       "realHeightM": 1,
-      "foreground": true,
+      "foreground": false,
       "box": {
-        "x": 0.7,
-        "y": 80,
-        "w": 12,
-        "h": 20
+        "x": 0,
+        "y": 70,
+        "w": 15,
+        "h": 30
       },
       "baseY": 100,
-      "source": "bounds del hotspot",
-      "measured": false
+      "source": "A2.17 fase 2: medido a ojo sobre background.png (rejilla del 10 %)",
+      "measured": false,
+      "note": "A2.17 fase 2: recovery_pool no tiene foreground.png; el montón está pintado en el fondo y la zona andable empieza en x 11,9, a su borde derecho: Dex queda de pie a su lado (visto en la hoja). foreground false: era un falso positivo."
     }
   ]
 }
