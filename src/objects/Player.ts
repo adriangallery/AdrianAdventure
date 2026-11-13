@@ -7,10 +7,15 @@ import { resolvePixelScale, spriteScale, artHeightPct, type DepthScale, type Pix
 import { FootstepTracker } from '@/systems/Footsteps';
 import { actorDepth, sceneObstacles, speedMultiplier, stepToward, walkSpeedWorldPx } from '@/systems/WalkMotion';
 import {
-  IdleTicker, QA_IDLE_SEED, RIG_IDLE_FRAME_MS, RIG_IDLE_FRAMES, facingForDir, facingTexture, gesturePose, hasRig, idleTicPose, isVertical,
+  GESTURE_MS, IdleTicker, QA_IDLE_SEED, RIG_IDLE_FRAME_MS, RIG_IDLE_FRAMES, facingForDir, facingTexture, gesturePose, hasRig, idleTicPose, isVertical,
   moveDir, rigKey, shrugPose, talkPose, walkPose,
   type AnimDir, type AnimPose, type IdleTic, type IdleTicKind, type PickLevel, type Side,
 } from '@/systems/PlayerAnim';
+import {
+  ArmPoser, JawDriver, PAPER_SPECS, QA_PAPER_SEED, paperJawAnchor, paperJawKey, paperKey, paperPickIndex, paperTalkAnim, paperTalkFrames,
+  paperVWalkIndex, paperWalkKey, parsePaperMode, type JawState, type PaperMode,
+} from '@/systems/PaperDex';
+import { DEXPAPEL_ANIMS } from '@/data/dexPapelFrames';
 
 const IDLE_FRAME_MS = 400;
 
@@ -43,6 +48,8 @@ export interface PlayerAnimQa {
   /** A2.15: usa el rig 2D pre-renderizado (dex2d_*) y encogimiento de hombros en marcha */
   rig: boolean;
   shrug: boolean;
+  /** A2.16: «Dex de papel» (?dex=papel): intensidad, pose de brazos al hablar y mandíbula; null sin el parámetro */
+  paper: { intensity: string; armPose: number | null; jaw: JawState; jawVisible: boolean } | null;
 }
 /**
  * A2.1: tramo máximo (en %) entre dos comprobaciones de triggers. Un frame largo se parte en tramos de este tamaño
@@ -127,6 +134,16 @@ export class Player extends Phaser.GameObjects.Sprite {
   private animAngle = 0;
   private animLiftPx = 0;
 
+  // A2.16: «Dex de papel» (?dex=papel&papel=suave|media|tope; src/systems/PaperDex.ts). null = el Dex de A2.15
+  private paper: PaperMode | null = null;
+  private jawDriver: JawDriver | null = null;
+  private armPoser: ArmPoser | null = null;
+  /** Mandíbula: imagen aparte encima de la cabeza (sin mandíbula) en los fotogramas de hablar */
+  private jaw: Phaser.GameObjects.Image | null = null;
+  private jawWanted = false;
+  private voiceLevel: number | null = null;
+  private paperArmPose: number | null = null;
+
   /**
    * A2.2: hacia dónde mira. 'front' = idle animado (Idle-1..4); el resto, un sprite quieto (ver facingTexture).
    * Al andar pasa a 'left'/'right' según hacia dónde va y así se queda al llegar; GameScene lo gira con face().
@@ -159,6 +176,14 @@ export class Player extends Phaser.GameObjects.Sprite {
     // A4.1: tics de reposo deterministas con ?qa=1 (demos y rutas repetibles); si no, al azar
     const qa = typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('qa') === '1';
     this.idleTicker = new IdleTicker(qa ? QA_IDLE_SEED : (Date.now() ^ Math.floor(Math.random() * 0x7fffffff)) >>> 0);
+    // A2.16: prueba de estilo «Dex de papel» (también en producción, como ?steps=)
+    this.paper = typeof window !== 'undefined' ? parsePaperMode(window.location.search) : null;
+    if (this.paper) {
+      const spec = PAPER_SPECS[this.paper.intensity];
+      const seed = qa ? QA_PAPER_SEED : (Date.now() ^ Math.floor(Math.random() * 0x7fffffff)) >>> 0;
+      this.jawDriver = new JawDriver(spec, seed);
+      this.armPoser = new ArmPoser(spec, seed ^ 0x5a5a);
+    }
 
     this.setOrigin(0.5, 1); // bottom-center (feet = position)
     this.applyPixelScale();
@@ -305,9 +330,47 @@ export class Player extends Phaser.GameObjects.Sprite {
    * A4.1: lo que GameScene sabe y Player no: si el jugador tiene texto en pantalla (cabecea mientras dure) y si la
    * escena está libre para un tic de reposo (sin script, texto, diálogo, cinemática ni diario).
    */
-  setAnimContext(ctx: { talking: boolean; idleFree: boolean }): void {
+  setAnimContext(ctx: { talking: boolean; idleFree: boolean; voiceLevel?: number | null }): void {
     this.talkWanted = ctx.talking;
     this.idleFree = ctx.idleFree;
+    this.voiceLevel = ctx.voiceLevel ?? null;
+  }
+
+  /** A2.16: se pidió ?dex=papel (GameScene solo mide la voz entonces) */
+  isPaper(): boolean {
+    return this.paper !== null;
+  }
+
+  /** A2.16: ¿va en modo papel? Solo Dex sin disfraz, con el rig y con los fotogramas de papel cargados */
+  private paperOn(): boolean {
+    return this.paper !== null && hasRig(this.spritePrefix, this.has) && this.has(paperKey('walk_r_media', 0));
+  }
+
+  /** A2.16: coloca la mandíbula sobre el fotograma de hablar `anim`/`i` con el desajuste de JawDriver */
+  private placeJaw(anim: string, i: number, view: 'front' | 'r' | 'l', st: JawState): void {
+    const at = paperJawAnchor(DEXPAPEL_ANIMS, anim, i);
+    const key = paperJawKey(view);
+    if (!at || !this.has(key)) return;
+    if (!this.jaw) this.jaw = this.scene.add.image(0, 0, key).setOrigin(0, 0);
+    if (this.jaw.texture.key !== key) this.jaw.setTexture(key);
+    const s = this.scaleX;
+    const left = this.x - this.width * this.originX * s;
+    const top = this.y - this.height * this.originY * s;
+    this.jaw.setScale(s);
+    this.jaw.setPosition(left + (at[0] + st.dx) * s, top + (at[1] + st.dy) * s);
+    this.jaw.setDepth(this.depth + 0.0001); // justo encima de Dex (por debajo del desempate de 0,0005 con las NPC)
+    this.jaw.setVisible(this.visible);
+    this.jawWanted = true;
+  }
+
+  private hideJaw(): void {
+    if (this.jaw?.visible) this.jaw.setVisible(false);
+  }
+
+  destroy(fromScene?: boolean): void {
+    this.jaw?.destroy();
+    this.jaw = null;
+    super.destroy(fromScene);
   }
 
   /**
@@ -363,6 +426,10 @@ export class Player extends Phaser.GameObjects.Sprite {
       baseScale: this.lastScale.scale,
       rig: hasRig(this.spritePrefix, this.has),
       shrug: this.shrugAnim !== null,
+      paper: this.paper ? {
+        intensity: this.paper.intensity, armPose: this.paperArmPose, jaw: { ...(this.jawDriver?.state ?? { dx: 0, dy: 0 }) },
+        jawVisible: !!this.jaw?.visible,
+      } : null,
       rest: this.angle === 0 && this.animLiftPx === 0 && this.scaleX === this.lastScale.scale && this.scaleY === this.lastScale.scale,
     };
   }
@@ -422,7 +489,14 @@ export class Player extends Phaser.GameObjects.Sprite {
     return artHeightPct(this.frame?.realHeight || 103, this.pixelScale, this.coordSystem.imgH, this.lastScale.depth);
   }
 
-  update(_time: number, delta: number): void {
+  update(time: number, delta: number): void {
+    // A2.16: la mandíbula solo se ve si este frame ha tocado hablar con papel
+    this.jawWanted = false;
+    this.updateInner(time, delta);
+    if (!this.jawWanted) this.hideJaw();
+  }
+
+  private updateInner(_time: number, delta: number): void {
     // Check costume flag from gameState each frame (driven by ScummUI toggle)
     const state = this.scene.registry.get('gameState') as { flags?: Record<string, boolean> } | undefined;
     const wantApe = state?.flags?.['ape_costume_worn'] ?? false;
@@ -460,7 +534,14 @@ export class Player extends Phaser.GameObjects.Sprite {
       this.setFacing(facingForDir(dir));
       // A2.12: la animación va al mismo ritmo que el avance (zancada fija en píxeles de arte)
       this.walkClock += delta * this.speedMul;
-      this.applyPose(walkPose({ prefix: this.spritePrefix, dir, side: this.lastSide, tMs: this.walkClock, has: this.has }), null);
+      const wp = walkPose({ prefix: this.spritePrefix, dir, side: this.lastSide, tMs: this.walkClock, has: this.has });
+      // A2.16: papel: 4 poses a saltos de perfil (pie de apoyo quieto) y 4 poses sostenidas arriba/abajo
+      if (this.paper && this.paperOn()) {
+        wp.texture = dir === 'left' || dir === 'right'
+          ? paperWalkKey(dir, this.paper.intensity, this.walkClock)
+          : rigKey(dir === 'up' ? 'walk_up' : 'walk_down', paperVWalkIndex(this.walkClock));
+      }
+      this.applyPose(wp, null);
     }
 
     // A2.1: el avance del frame se reparte en tramos cortos por los puntos de paso; tras cada tramo, onStep
@@ -566,6 +647,10 @@ export class Player extends Phaser.GameObjects.Sprite {
         level: this.gestureAnim.level,
       });
       if (pose) {
+        // A2.16: papel: el pick del rig en 3 poses a saltos (sin la intermedia)
+        if (pose.texture?.startsWith('dex2d_pick_') && this.paperOn()) {
+          pose.texture = pose.texture.replace(/_\d+$/, `_${paperPickIndex(this.gestureAnim.t, GESTURE_MS)}`);
+        }
         this.applyPose(pose, fallback());
         return;
       }
@@ -588,11 +673,24 @@ export class Player extends Phaser.GameObjects.Sprite {
       this.talkClock += delta;
       this.idleTicker.reset();
       this.ticActive = false;
+      // A2.16: papel: brazos a saltos (ArmPoser) y la mandíbula aparte con la voz (JawDriver), a destiempo
+      const pt = this.paperOn() && !this.posed ? paperTalkAnim(this.facing) : null;
+      if (pt && this.armPoser && this.jawDriver) {
+        const i = this.armPoser.update(delta, paperTalkFrames(DEXPAPEL_ANIMS, pt.anim));
+        const st = this.jawDriver.update(delta, this.voiceLevel);
+        this.paperArmPose = i;
+        this.applyPose({ texture: paperKey(pt.anim, i), angle: 0, lift: 0 }, fallback());
+        this.placeJaw(pt.anim, i, pt.jaw, st);
+        return;
+      }
       this.applyPose(talkPose({ prefix: this.spritePrefix, facing: this.facing, tMs: this.talkClock, has: this.has, posed: this.posed }), fallback());
       return;
     }
     if (this.talkClock > 0) {
       this.talkClock = 0;
+      this.paperArmPose = null;
+      this.armPoser?.reset();
+      this.jawDriver?.reset();
       this.restoreRest();
     }
 
