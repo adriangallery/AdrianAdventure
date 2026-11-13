@@ -35,6 +35,8 @@
 //      el punto más cercano y el más lejano (min/max de scaleTop/scaleBottom < 0,75), o cualquier depthScale que cambie
 //      el tamaño en una escena de escala fija (FIXED_SCALE_SCENES: `outside`, por decisión de Adrián del 11-nov; la
 //      lista coincide con los `scale: fixed` de qa/proportion-refs.json que llevan depthScale prohibido explícito)
+//   m  props de puzle dibujados (A3.3f, aviso): un `conditionalOverlays[]` cuya flag no pone ningún script (nunca cambia)
+//      o cuya caja (`bounds`) no toca ningún hotspot de la escena (se ve pero no se puede tocar) (overlayPropDefects)
 //
 // Por defecto (f), los spawns fuera de zona de (e), el diario mal formado de (h), los errores de (j) y (k) y (l) son error; el resto, aviso. --strict lo convierte todo en error. Código de salida 1
 // solo si hay errores. Escribe lint-scenes-report.json y lint-scenes-report.md en la raíz del repo.
@@ -104,6 +106,7 @@ export const RULES = {
   j: 'respuestas de fallo',
   k: 'ambiente',
   l: 'cambio de escala',
+  m: 'props de puzle dibujados',
 };
 
 // A2.5: mismos mínimos que src/systems/FailResponses.ts (tests/lint-scenes.test.mjs comprueba que coinciden)
@@ -210,6 +213,26 @@ const ambientColor = (v) => (isNum(v) && Number.isInteger(v) && v >= 0 && v <= 0
  * A4.3: validación de `ambient[]` de una escena, la misma que hace parseAmbient de src/systems/Ambient.ts (un elemento con
  * defectos se salta en el juego). Devuelve { ok: [{ id, kind, when: {ok, bad} }], problems: [texto] }.
  */
+/**
+ * A3.3f: defectos de un overlay condicional que dibuja (o quita) un prop de puzle. `hotspots` = los de su escena y
+ * `written(flag)` dice si algún script pone la flag. Un overlay con caja que no toca ningún hotspot se ve pero no se
+ * puede tocar; uno cuya flag nunca se pone no cambia nunca (con `invert` se queda para siempre, sin él no sale).
+ */
+export function overlayPropDefects(co, hotspots = [], written = () => true) {
+  const out = [];
+  if (typeof co?.flag !== 'string' || !co.flag) return ['sin flag: no se sabe cuándo se ve'];
+  if (!written(co.flag)) out.push(`la flag «${co.flag}» no la pone ningún script: el overlay ${co.invert ? 'no se quita nunca' : 'no sale nunca'}`);
+  const b = co.bounds;
+  if (b && typeof b.x === 'number') {
+    const hits = hotspots.filter((h) => {
+      const r = h?.bounds;
+      return r && b.x < r.x + r.w && r.x < b.x + b.w && b.y < r.y + r.h && r.y < b.y + b.h;
+    });
+    if (!hits.length) out.push('su caja no toca ningún hotspot: se ve, pero no se puede mirar ni usar');
+  }
+  return out;
+}
+
 export function ambientDefects(raw, sceneId = 'scene') {
   const ok = [];
   const problems = [];
@@ -945,6 +968,15 @@ export function lintProject(project) {
   for (const [id, s] of Object.entries(scenes)) {
     if (s.depthScale === undefined) continue;
     for (const d of depthChangeDefects(s.depthScale, FIXED_SCALE_SCENES[id] ?? false)) push('l', 'error', id, 'depthScale', `${id}.depthScale`, `depthScale: ${d}`);
+  }
+
+  // ── (m) props de puzle dibujados (A3.3f): cada overlay condicional cambia alguna vez y cae sobre algo que se toca ──
+  for (const [id, s] of Object.entries(scenes)) {
+    for (const co of s.conditionalOverlays ?? []) {
+      for (const d of overlayPropDefects(co, s.regions?.hotspots ?? [], (f) => writes.has(f) || inCode(f))) {
+        push('m', 'warning', id, co.id, `${id}.conditionalOverlays.${co.id}`, d);
+      }
+    }
   }
 
   // ── (j) respuestas de fallo (A2.5) ──

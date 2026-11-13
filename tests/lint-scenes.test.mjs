@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import {
   lintProject, applyPolicy, parseStringArray, parseWhen, depthScaleDefects, depthScaleWalkDefects, depthChangeDefects, MAX_DEPTH_CHANGE, FIXED_SCALE_SCENES, PIXEL_RANGES, FAIL_MIN, FAIL_VERBS, bagDefects, itemDescIds, loadProject,
-  ambientDefects, AMBIENT_KINDS, AMBIENT_MAX_COUNT, AMBIENT_MAX_PER_SCENE, AMBIENT_ACTIONS,
+  ambientDefects, overlayPropDefects, AMBIENT_KINDS, AMBIENT_MAX_COUNT, AMBIENT_MAX_PER_SCENE, AMBIENT_ACTIONS,
 } from '../scripts/lint-scenes.mjs';
 
 /** Escena mínima válida: fondo, un área caminable de todo el suelo y el spawn dentro. */
@@ -688,4 +688,29 @@ test('l: el tope y las escenas fijas coinciden con scripts/lib/proportion.mjs y 
     if (sc.depthScale !== undefined) assert.deepEqual(depthChangeDefects(sc.depthScale, FIXED_SCALE_SCENES[id] ?? false), [], id);
   }
   assert.equal(scenes.outside.depthScale, undefined, 'outside sin depthScale');
+});
+
+// A3.3f: (m) props de puzle dibujados
+test('overlayPropDefects: flag que nadie pone, caja fuera de todo hotspot, y el caso bueno', () => {
+  const hsList = [{ id: 'hs_chimney', bounds: { x: 43, y: 0, w: 7, h: 34 } }];
+  const nest = { id: 'nest', flag: 'nest_down', invert: true, bounds: { x: 45, y: 0.5, w: 4.6, h: 9.7 } };
+  assert.deepEqual(overlayPropDefects(nest, hsList, () => true), []);
+  assert.match(overlayPropDefects(nest, hsList, () => false)[0], /no se quita nunca/);
+  assert.match(overlayPropDefects({ ...nest, invert: false }, hsList, () => false)[0], /no sale nunca/);
+  assert.match(overlayPropDefects({ ...nest, bounds: { x: 80, y: 50, w: 2, h: 2 } }, hsList)[0], /no toca ningún hotspot/);
+  assert.deepEqual(overlayPropDefects({ id: 'full', flag: 'f' }, []), []); // sin bounds: ocupa el fondo entero
+  assert.equal(overlayPropDefects({ id: 'x' }).length, 1);
+});
+
+test('regla (m) en lintProject: aviso por overlay sin hotspot debajo', () => {
+  const s = scene('room', {
+    regions: { hotspots: [hs('hs_a', { USE: [{ op: 'setFlag', flag: 'gone', value: true }] }, { bounds: { x: 0, y: 0, w: 10, h: 10 } })], triggers: [] },
+    conditionalOverlays: [
+      { id: 'ok', sprite: 'o', flag: 'gone', invert: true, bounds: { x: 2, y: 2, w: 3, h: 3 } },
+      { id: 'lejos', sprite: 'o', flag: 'gone', bounds: { x: 60, y: 60, w: 3, h: 3 } },
+    ],
+  });
+  const m = only(lintProject(project([s])), 'm');
+  assert.deepEqual(m.map((f) => f.id), ['lejos']);
+  assert.equal(m[0].severity, 'warning');
 });

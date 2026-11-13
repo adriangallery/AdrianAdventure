@@ -718,10 +718,10 @@
         },
         "name": "Chimney",
         "bounds": {
-          "x": 43.2,
-          "y": 4.1,
-          "w": 4,
-          "h": 30
+          "x": 41.5,
+          "y": 0.6,
+          "w": 5.7,
+          "h": 33.5
         },
         "scripts": {
           "LOOK": [
@@ -2119,7 +2119,7 @@
         "bounds": {
           "x": 31.5,
           "y": 0,
-          "w": 11.4,
+          "w": 10,
           "h": 7.6
         },
         "scripts": {
@@ -3356,6 +3356,47 @@
       },
       "flag": "porch_light_off",
       "depth": 5
+    },
+    {
+      "id": "nest",
+      "sprite": "overlay_nest",
+      "format": "webp",
+      "bounds": {
+        "x": 41.4871,
+        "y": 0.6944,
+        "w": 4.6067,
+        "h": 9.7222
+      },
+      "flag": "nest_down",
+      "invert": true,
+      "depth": 5
+    },
+    {
+      "id": "plank_loose",
+      "sprite": "overlay_plank_loose",
+      "format": "webp",
+      "bounds": {
+        "x": 0.6735,
+        "y": 59.7222,
+        "w": 2.1821,
+        "h": 11.2847
+      },
+      "flag": "has_plank",
+      "invert": true,
+      "depth": 5
+    },
+    {
+      "id": "fence_gap",
+      "sprite": "overlay_fence_gap",
+      "format": "webp",
+      "bounds": {
+        "x": 1.8858,
+        "y": 60.4167,
+        "w": 0.8351,
+        "h": 10.5035
+      },
+      "flag": "has_plank",
+      "depth": 5
     }
   ],
   "dialogues": {
@@ -3747,6 +3788,22 @@
       "size": 5,
       "alpha": 0.8,
       "blend": "normal"
+    },
+    {
+      "id": "nest_foil_glint",
+      "kind": "flicker",
+      "area": {
+        "x": 42.95,
+        "y": 4.2,
+        "w": 0.7,
+        "h": 2.2
+      },
+      "shape": "ellipse",
+      "color": "#ffffff",
+      "alpha": 0.95,
+      "alphaMin": 0.1,
+      "period": 120,
+      "when": "!nest_down"
     }
   ]
 }
