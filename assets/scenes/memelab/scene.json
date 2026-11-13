@@ -84,7 +84,7 @@
               "then": [
                 {
                   "op": "say",
-                  "text": "A giant containment tube filled with swirling green digital essence. Fragments of viral meme content pulse inside. Labels on the base read: 'SPECIMEN: CONCENTRATED MEME ENERGY — DO NOT RELEASE'."
+                  "text": "A giant tube of swirling green goo. Label: 'CONCENTRATED MEME ENERGY — DO NOT RELEASE'. It looks like it wants to be released."
                 }
               ],
               "else": [
@@ -102,7 +102,7 @@
               "then": [
                 {
                   "op": "say",
-                  "text": "I touch the glass. It's warm. The liquid inside reacts, swirling faster. A readout spikes: 'VIRALITY INDEX: CRITICAL'. Better not disturb it."
+                  "text": "I touch the glass. The goo swirls faster. A readout: 'VIRALITY: CRITICAL'. I take my hand back. Slowly."
                 }
               ],
               "else": [
@@ -116,19 +116,19 @@
           "TALK": [
             {
               "op": "say",
-              "text": "I press my ear to the tube. From inside I hear whispers: '...to the moon... wagmi... gm...' The memes are alive."
+              "text": "I press my ear to the tube. Tiny voices whisper: '...gm... gm... gm...' Polite. Terrifying, but polite."
             }
           ],
           "PICK": [
             {
               "op": "say",
-              "text": "It's bolted to the floor and ceiling. This thing isn't going anywhere. Neither are the memes trapped inside."
+              "text": "Bolted to the floor and the ceiling. Somebody really didn't want this to go for a walk."
             }
           ],
           "PUSH": [
             {
               "op": "say",
-              "text": "I push against the tube. It doesn't budge, but the liquid inside sloshes aggressively. The memes are agitated."
+              "text": "I push the tube. The goo sloshes and glares at me. Goo can glare. I've learned that today."
             }
           ]
         }
@@ -150,11 +150,11 @@
               "then": [
                 {
                   "op": "say",
-                  "text": "The screen reads 'MEME VIRUS 99%'. Progress bar nearly full. Below: 'DEPLOYMENT STATUS: PENDING'. Someone was engineering weaponized memes here."
+                  "text": "'MEME VIRUS 99%. DEPLOYMENT: PENDING.' Somebody built a weapon out of jokes. And left it at ninety-nine."
                 },
                 {
                   "op": "say",
-                  "text": "Log entries scroll: 'MEME_PROPAGATION_RATE: EXPONENTIAL. ESTIMATED_VIRALITY: INFINITE. TARGET: ALL TIMELINES'. This is... terrifying and hilarious."
+                  "text": "The log: 'PROPAGATION: EXPONENTIAL. TARGET: ALL TIMELINES.' Somebody here had very big plans and very small fonts."
                 }
               ],
               "else": [
@@ -186,7 +186,7 @@
           "TALK": [
             {
               "op": "say",
-              "text": "I address the screen directly. 'What are you deploying?' No response. Screens don't talk back. Unlike memes."
+              "text": "'What are you deploying?' The progress bar stays at 99%. It's keeping that last percent for itself."
             }
           ]
         }
@@ -208,11 +208,11 @@
               "then": [
                 {
                   "op": "say",
-                  "text": "A board labeled 'RARITY INDEX' with charts and emoji faces ranked by rarity. It's like a periodic table of memes."
+                  "text": "A board labelled 'RARITY INDEX': little faces ranked by rarity. A periodic table for people who never went outside."
                 },
                 {
                   "op": "say",
-                  "text": "The hierarchy: Common, Uncommon, Rare, Epic, Legendary... and above all, circled in red: 'ULTRA RARE PEPE'. Someone took meme economics very seriously."
+                  "text": "Common, Rare, Epic, Legendary... and circled in red at the top: 'ULTRA RARE PEPE'. Circled three times. Somebody cared."
                 }
               ],
               "else": [
@@ -226,13 +226,13 @@
           "USE": [
             {
               "op": "say",
-              "text": "I trace the rarity tiers with my finger. Each level has a corresponding 'market cap' estimate. They were pricing memes like crypto tokens."
+              "text": "Each tier has a price next to it. Somebody priced frogs. I'm not judging. I'm a bit judging."
             }
           ],
           "PICK": [
             {
               "op": "say",
-              "text": "The board is screwed to the wall. Probably for the best — this kind of research shouldn't leave the lab."
+              "text": "Screwed to the wall. This kind of research should never leave the room. Possibly not even the wall."
             }
           ]
         }
@@ -254,7 +254,7 @@
               "then": [
                 {
                   "op": "say",
-                  "text": "Beakers filled with glowing green liquid. Labels read: 'CONCENTRATED VIRALITY', 'DISTILLED SARCASM', 'PURE IRONY'. This is a meme chemistry lab."
+                  "text": "Glowing beakers labelled 'DISTILLED SARCASM', 'PURE IRONY' and 'DECAF'. Decaf is the scary one."
                 }
               ],
               "else": [
@@ -268,19 +268,19 @@
           "USE": [
             {
               "op": "say",
-              "text": "I'm not drinking that. The last person who did probably became a full-time shitposter on crypto Twitter."
+              "text": "I'm not drinking that. I'm sarcastic enough. Ask anyone. Ask DOORIS."
             }
           ],
           "PICK": [
             {
               "op": "say",
-              "text": "These chemicals should stay right where they are. In a secure, undrinkable location."
+              "text": "These stay on the shelf. I've had enough mystery liquids for one case."
             }
           ],
           "OPEN": [
             {
               "op": "say",
-              "text": "I uncork a beaker. The smell hits me like a trending tweet — sharp, viral, and impossible to ignore. I cork it back immediately."
+              "text": "I uncork a beaker. It smells like a joke I didn't get. I cork it back, fast."
             }
           ]
         }
@@ -302,7 +302,7 @@
               "then": [
                 {
                   "op": "say",
-                  "text": "A big red button with 'DO NOT PUSH' written above it in multiple languages. Classic. The most tempting button in any lab."
+                  "text": "A big red button. 'DO NOT PUSH', in six languages. Every one of them is lying to me."
                 }
               ],
               "else": [
@@ -320,7 +320,7 @@
               "then": [
                 {
                   "op": "say",
-                  "text": "I already pushed it once. The tube is still glowing brighter. I should probably stop pressing mysterious buttons in secret meme labs."
+                  "text": "I already pushed it. The tube is still glowing. Lesson learned. Mostly."
                 }
               ],
               "else": [
@@ -378,7 +378,7 @@
           "OPEN": [
             {
               "op": "say",
-              "text": "It's a button, not a door. But I appreciate the creative thinking."
+              "text": "It's a button. The only way into a button is pushing it. That's how they get you."
             }
           ]
         }
@@ -400,7 +400,7 @@
               "then": [
                 {
                   "op": "say",
-                  "text": "Green slime drips from the ceiling. It smells like digital decay — like if an NFT could decompose. The slime pulses in rhythm with the containment tube."
+                  "text": "Green slime drips from the ceiling, in time with the tube. Like it's listening to the same song."
                 }
               ],
               "else": [
@@ -414,13 +414,13 @@
           "USE": [
             {
               "op": "say",
-              "text": "I'd rather not touch the slime. It's probably sentient by now. And it might have opinions about yield farming."
+              "text": "I'm not touching the slime. It looks like it has opinions. And a lawyer."
             }
           ],
           "PICK": [
             {
               "op": "say",
-              "text": "I am NOT picking up radioactive meme slime. I have standards. Low standards, but standards."
+              "text": "I am NOT pocketing slime. My pockets have been through enough this week."
             }
           ]
         }
@@ -447,7 +447,7 @@
               "then": [
                 {
                   "op": "say",
-                  "text": "It's a rare Pepe printout, wearing 3D glasses just like mine! It sits on the desk, perfectly preserved. The rarest of rare. The meme to end all memes."
+                  "text": "A rare Pepe printout, wearing 3D glasses just like mine. Good taste. Questionable eyesight. Same as me."
                 }
               ],
               "else": [
@@ -469,7 +469,7 @@
                   "then": [
                     {
                       "op": "say",
-                      "text": "I already have the rare Pepe. One is enough. The meme market can't handle more supply."
+                      "text": "I already have the Pepe. One frog per detective. That's the rule."
                     }
                   ],
                   "else": [
@@ -509,13 +509,13 @@
           "USE": [
             {
               "op": "say",
-              "text": "I stare into the Pepe's eyes. It stares back. We share a moment of mutual understanding. Feels good, man."
+              "text": "I stare into Pepe's eyes. He stares back through his 3D glasses. 'They're prescription,' we both don't say."
             }
           ],
           "TALK": [
             {
               "op": "say",
-              "text": "'Hello, Pepe.' The frog says nothing. But somehow I feel... validated. Like getting 1000 likes on a tweet that took 2 seconds to write."
+              "text": "'Hello, Pepe.' The frog says nothing. Still the best conversation I've had all chapter."
             }
           ]
         }
@@ -533,7 +533,7 @@
           "LOOK": [
             {
               "op": "say",
-              "text": "The door back to the Liquidity Pool. Somehow it looks more inviting from this side."
+              "text": "The door back to the pool. From this side, the apes look almost relaxing."
             }
           ],
           "USE": [
@@ -587,7 +587,7 @@
               "then": [
                 {
                   "op": "say",
-                  "text": "A rack of analysis equipment: oscilloscopes, spectrum analyzers, and something labeled 'MEME RESONANCE DETECTOR'. All monitoring the containment tube's output."
+                  "text": "Oscilloscopes, analysers and a box labelled 'MEME RESONANCE DETECTOR'. It's resonating. I don't like it."
                 }
               ],
               "else": [
@@ -607,7 +607,7 @@
           "OPEN": [
             {
               "op": "say",
-              "text": "I open a panel. Inside: a tangle of wires and a sticky note that reads 'IF MEMES ESCAPE, RUN.' Reassuring."
+              "text": "I open a panel. Wires, and a sticky note: 'IF MEMES ESCAPE, RUN.' I check where the door is."
             }
           ]
         }

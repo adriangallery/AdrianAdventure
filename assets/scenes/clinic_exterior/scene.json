@@ -74,49 +74,49 @@
           "USE": [
             {
               "op": "say",
-              "text": "It's a sign, not a terminal."
+              "text": "I tap the sign. It doesn't take bookings. It barely takes rain."
             }
           ],
           "TALK": [
             {
               "op": "say",
-              "text": "The sign doesn't respond. Like customer support during a rug pull."
+              "text": "'Hello?' The sign keeps its own counsel. Very clinical."
             }
           ],
           "PICK": [
             {
               "op": "say",
-              "text": "I try to yank the sign down. It's bolted to the wall with institutional-grade screws. This clinic takes signage seriously."
+              "text": "I tug the sign. Institutional-grade screws. This clinic takes signage seriously."
             }
           ],
           "OPEN": [
             {
               "op": "say",
-              "text": "Signs don't open. Though this one could open your eyes to your on-chain addiction."
+              "text": "Signs don't open. This one just stares until you admit things."
             }
           ],
           "CLOSE": [
             {
               "op": "say",
-              "text": "The clinic is 'always open,' according to the sign. Closing is not in its vocabulary."
+              "text": "'Always open,' says the sign. Says the sign next to a locked door."
             }
           ],
           "PUSH": [
             {
               "op": "say",
-              "text": "I push the sign. It doesn't budge. More immutable than a deployed smart contract."
+              "text": "I push the sign. It doesn't budge. Neither does my opinion of it."
             }
           ],
           "PULL": [
             {
               "op": "say",
-              "text": "I pull on the sign. A screw loosens slightly. The clinic's maintenance budget is clearly all on-chain."
+              "text": "I pull the sign. A screw loosens. I tighten it back. I'm a guest. Sort of."
             }
           ],
           "GIVE": [
             {
               "op": "say",
-              "text": "The sign doesn't accept donations. Try the drop box instead."
+              "text": "The sign doesn't want anything. The drop box, on the other hand, is hungry."
             }
           ]
         }
@@ -541,25 +541,25 @@
           "PULL": [
             {
               "op": "say",
-              "text": "I pull the handle. The scanner beeps angrily."
+              "text": "I pull the handle. The scanner beeps. It's the angry beep."
             }
           ],
           "PICK": [
             {
               "op": "say",
-              "text": "I can't pick up a building entrance."
+              "text": "I'm not taking the door. They'd notice. It's the only door."
             }
           ],
           "CLOSE": [
             {
               "op": "say",
-              "text": "The door is already sealed shut."
+              "text": "It's already shut. Extremely shut. Shut with intent."
             }
           ],
           "GIVE": [
             {
               "op": "say",
-              "text": "The door doesn't accept gifts. The visitor box takes evidence."
+              "text": "Doors don't take gifts. The visitor box takes evidence. Different department."
             }
           ]
         }
@@ -648,25 +648,25 @@
           "TALK": [
             {
               "op": "say",
-              "text": "I whisper into the drop box slot: 'Hello?' My voice echoes inside. Just me and the clipboards. A metaphor for my social life."
+              "text": "I whisper 'Hello?' into the slot. It echoes. Just me and some clipboards. My usual crowd."
             }
           ],
           "CLOSE": [
             {
               "op": "say",
-              "text": "I close the drop box lid. It clicks shut with the finality of a confirmed transaction."
+              "text": "I close the lid. Click. Very final. Like a nurse saying 'next.'"
             }
           ],
           "PUSH": [
             {
               "op": "say",
-              "text": "I push the drop box. It's bolted to the wall. Tamper-proof, like a properly deployed contract."
+              "text": "I push the drop box. Bolted down. Somebody here has had things stolen before."
             }
           ],
           "PULL": [
             {
               "op": "say",
-              "text": "I pull on the drop box. The mounting screws hold firm. Nobody's running away with the visitor logs."
+              "text": "I pull the drop box. It stays. Nobody's running off with the visitor logs. Not today."
             }
           ],
           "GIVE": [
@@ -690,41 +690,41 @@
           "LOOK": [
             {
               "op": "say",
-              "text": "Brutalist architecture. Concrete and steel. The kind of building where hope goes to get a reality check."
+              "text": "Brutalist concrete. The kind of building where hope goes for a reality check."
             },
             {
               "op": "say",
-              "text": "No windows on the ground floor. Privacy for the patients... or containment?"
+              "text": "No windows on the ground floor. Privacy for the patients. Or for the staff."
             }
           ],
           "TALK": [
             {
               "op": "say",
-              "text": "The building absorbs sound. Designed for isolation."
+              "text": "I say hello. The concrete eats it. Lovely acoustics, for screaming."
             }
           ],
           "USE": [
             {
               "op": "say",
-              "text": "I can't use an entire building. I can barely use a DEX without losing money."
+              "text": "Use the whole building? I'll start with the door. Baby steps."
             }
           ],
           "PICK": [
             {
               "op": "say",
-              "text": "I can't pick up a building. My inventory has a size limit and a gas limit."
+              "text": "I can't pick up a building. I checked my pockets. They agreed."
             }
           ],
           "OPEN": [
             {
               "op": "say",
-              "text": "The building has a front entrance. I should try the main door instead of attempting to open the whole structure."
+              "text": "You don't open a building. You open its door. I'm told that's the trick."
             }
           ],
           "CLOSE": [
             {
               "op": "say",
-              "text": "I can't close a building. The clinic is open 24/7, like the blockchain itself."
+              "text": "I can't close a building. That's a job for the council and a lot of paperwork."
             }
           ],
           "PUSH": [
@@ -736,13 +736,13 @@
           "PULL": [
             {
               "op": "say",
-              "text": "I try to pull the building toward me. Civil engineering doesn't work that way. Neither does market manipulation, but people keep trying."
+              "text": "I pull the building toward me. Civil engineering wins. It usually does."
             }
           ],
           "GIVE": [
             {
               "op": "say",
-              "text": "The building doesn't accept gifts. It only accepts patients with depleted wallets and broken dreams."
+              "text": "The building only accepts patients. It's very clear about that. In concrete."
             }
           ]
         }
@@ -769,55 +769,55 @@
             },
             {
               "op": "say",
-              "text": "Or something. Automated surveillance. On-chain, everything is watched."
+              "text": "Or something. Nobody blinks that steadily. Except cameras. And Penny."
             }
           ],
           "TALK": [
             {
               "op": "say",
-              "text": "'Smile, you're on-chain.' The camera doesn't laugh."
+              "text": "'Nice lens.' The camera doesn't take compliments. It takes footage."
             }
           ],
           "USE": [
             {
               "op": "say",
-              "text": "I wave at the camera. The LED blinks faster for a moment."
+              "text": "I wave at the camera. The LED blinks faster. We're basically friends now."
             }
           ],
           "PICK": [
             {
               "op": "say",
-              "text": "I reach for the camera. The LED turns red and starts blinking rapidly. I think I just triggered an alert. Smooth."
+              "text": "I reach for the camera. The LED panics. I think I just triggered an alert. Smooth."
             }
           ],
           "OPEN": [
             {
               "op": "say",
-              "text": "I pry open the camera housing. Inside: a lens, a circuit board, and a tiny sticker that says 'Big Brother is watching your wallet.'"
+              "text": "I'm not prying open the camera. It's recording me deciding not to. Good choice, Dex."
             }
           ],
           "CLOSE": [
             {
               "op": "say",
-              "text": "I try to cover the lens. The camera rotates away from my hand. It's been programmed to resist censorship."
+              "text": "I cover the lens. The camera turns away from my hand. Camera-shy. In a camera."
             }
           ],
           "PUSH": [
             {
               "op": "say",
-              "text": "I push the camera upward. Now it's filming the sky. Cloud surveillance. The most expensive kind."
+              "text": "I nudge the camera up. Now it films the sky. I nudge it back. I'm not a vandal. Yet."
             }
           ],
           "PULL": [
             {
               "op": "say",
-              "text": "I pull the camera toward me. The mounting bracket groans. This thing has been recording since the genesis block."
+              "text": "I pull the camera. The bracket groans. So does someone behind the intercom."
             }
           ],
           "GIVE": [
             {
               "op": "say",
-              "text": "The camera already has my face. That's more than I've given most KYC forms."
+              "text": "The camera already has my face. From every angle. Including the bad one."
             }
           ]
         }
@@ -841,23 +841,23 @@
           "USE": [
             {
               "op": "say",
-              "text": "I sit for a moment. The mountain air is cold but the bench is colder."
+              "text": "I sit for a moment. The mountain air is cold. The bench is personally colder."
             },
             {
               "op": "say",
-              "text": "Someone scratched a wallet address into the seat. Too worn to read. A ghost of a transaction."
+              "text": "Someone scratched initials into the seat. Too worn to read. Waiting rooms do that to people."
             }
           ],
           "TALK": [
             {
               "op": "say",
-              "text": "The bench has heard every sad portfolio story. It's not impressed by mine."
+              "text": "I tell the bench my problems. It's heard worse. It's heard them from this exact spot."
             }
           ],
           "PICK": [
             {
               "op": "say",
-              "text": "I try to lift the bench. It's cemented to the ground. Even the furniture here is staked."
+              "text": "I try to lift the bench. Cemented down. Even the furniture here was admitted for life."
             }
           ],
           "OPEN": [
@@ -869,13 +869,13 @@
           "CLOSE": [
             {
               "op": "say",
-              "text": "Benches don't close. They're always open for business. Like a 24/7 liquidity pool."
+              "text": "Benches don't close. They just wait. Like everyone else out here."
             }
           ],
           "PUSH": [
             {
               "op": "say",
-              "text": "I push the bench. Cemented in place. More committed to its position than any day trader I know."
+              "text": "I push the bench. It doesn't move. It's made its peace with this spot."
             }
           ],
           "PULL": [
@@ -887,7 +887,7 @@
           "GIVE": [
             {
               "op": "say",
-              "text": "The bench has been given enough butts and bad vibes. It's reached its deposit limit."
+              "text": "The bench has received enough. Mostly butts and bad news."
             }
           ]
         }
@@ -923,7 +923,7 @@
           "USE": [
             {
               "op": "say",
-              "text": "The posters are laminated. Professionally done. This clinic has budget."
+              "text": "The posters are laminated. Somebody here really believes in these posters."
             }
           ],
           "TALK": [
@@ -935,25 +935,25 @@
           "PICK": [
             {
               "op": "say",
-              "text": "I try to peel a poster off. Laminated AND glued. The clinic treats its motivational content like a cold wallet — untouchable."
+              "text": "I try to peel a poster off. Laminated AND glued. Motivation, permanently installed."
             }
           ],
           "OPEN": [
             {
               "op": "say",
-              "text": "I lift a poster corner. Behind it: a faded older poster that just says 'JUST HODL.' The OG recovery program."
+              "text": "I lift a corner. Behind it, an older poster: 'HANG IN THERE.' A kitten. Also hanging in there."
             }
           ],
           "CLOSE": [
             {
               "op": "say",
-              "text": "I smooth the poster back against the wall. The 12 Steps stare back at me. Judgmentally."
+              "text": "I smooth the poster flat. The 12 Steps stare back. All twelve of them, judging."
             }
           ],
           "PUSH": [
             {
               "op": "say",
-              "text": "I push on the poster. The wall behind is solid. More solid than any stablecoin backing I've ever audited."
+              "text": "I push on the poster. Solid wall behind. No secret passage. I always check."
             }
           ],
           "PULL": [
@@ -965,7 +965,7 @@
           "GIVE": [
             {
               "op": "say",
-              "text": "The posters are free to read. The real cost is admitting they apply to you."
+              "text": "The posters are free. The catch is admitting they're about you."
             }
           ]
         }
@@ -997,13 +997,13 @@
           "USE": [
             {
               "op": "say",
-              "text": "I dig through the trash. Among the garbage: a receipt for '500 ETH worth of JPEGs' dated 2021. Yikes."
+              "text": "I dig through the trash. Wet paper, cans, a banana with a past. Detective work is glamorous."
             }
           ],
           "TALK": [
             {
               "op": "say",
-              "text": "I peer into the trash can. It stares back. We are kindred spirits — both full of other people's bad decisions."
+              "text": "I peer into the bin. It stares back. Both of us full of other people's bad decisions."
             }
           ],
           "PICK": [
@@ -1017,7 +1017,7 @@
                   "then": [
                     {
                       "op": "say",
-                      "text": "Nothing else worth saving in there. Just regret and empty cans."
+                      "text": "Nothing else in there. Just regret and a banana peel."
                     }
                   ],
                   "else": [
@@ -1027,7 +1027,7 @@
                       "then": [
                         {
                           "op": "say",
-                          "text": "Nothing else worth saving in there. Just regret and empty cans."
+                          "text": "Nothing else in there. Just regret and a banana peel."
                         }
                       ],
                       "else": [
@@ -1037,7 +1037,7 @@
                           "then": [
                             {
                               "op": "say",
-                              "text": "Nothing else worth saving in there. Just regret and empty cans."
+                              "text": "Nothing else in there. Just regret and a banana peel."
                             }
                           ],
                           "else": [
@@ -1124,13 +1124,13 @@
               "then": [
                 {
                   "op": "say",
-                  "text": "I lift the lid. Just empty cans and broken dreams."
+                  "text": "I lift the lid. Empty cans. A banana peel. Somebody's resolve."
                 }
               ],
               "else": [
                 {
                   "op": "say",
-                  "text": "I lift the lid. The smell hits like a failed rebase. But there's something crumpled at the bottom..."
+                  "text": "I lift the lid. The smell hits first. Then I spot something crumpled at the bottom..."
                 },
                 {
                   "op": "addItem",
@@ -1148,25 +1148,25 @@
           "CLOSE": [
             {
               "op": "say",
-              "text": "I slam the lid shut. Some portfolios are better left uninspected."
+              "text": "I close the lid. Gently. The smell was getting ideas."
             }
           ],
           "PUSH": [
             {
               "op": "say",
-              "text": "I push the trash can. It scrapes across concrete. The sound of metal on stone — or paper hands on sell buttons."
+              "text": "I push the bin. It scrapes on the concrete. Somewhere inside, the nurse winces."
             }
           ],
           "PULL": [
             {
               "op": "say",
-              "text": "I pull the trash can closer. Why am I investigating garbage? Because every good detective checks the bins."
+              "text": "I pull the bin closer. Every good detective checks the bins. I read that on a bin."
             }
           ],
           "GIVE": [
             {
               "op": "say",
-              "text": "The trash can accepts everything. No KYC, no slippage, no minimum deposit. The most inclusive protocol I've ever seen."
+              "text": "The bin takes everything, no questions asked. The only thing here without paperwork."
             }
           ]
         }
@@ -1184,43 +1184,43 @@
           "LOOK": [
             {
               "op": "say",
-              "text": "Someone spray-painted 'Gwei' on the wall near the entrance, and 'Degen' further down. The patients were tagging the clinic. Proof-of-vandalism."
+              "text": "'Gwei' and 'Degen', spray-painted. Nurse Gwei must love that."
             }
           ],
           "USE": [
             {
               "op": "say",
-              "text": "I trace the letters. Still fresh. Whoever tagged this was here recently. And clearly not rehabilitated."
+              "text": "I trace the letters. Still tacky. Whoever did this was recent. And not yet cured."
             }
           ],
           "TALK": [
             {
               "op": "say",
-              "text": "I read the graffiti aloud: 'Gwei.' It's a unit of gas, a cry for help, and a tag — all at once."
+              "text": "I read it aloud: 'Gwei.' The intercom crackles, offended. I didn't write it, Nurse."
             }
           ],
           "PICK": [
             {
               "op": "say",
-              "text": "I can't peel graffiti off concrete. It's as permanent as a transaction on the blockchain. No rollbacks."
+              "text": "I can't peel paint off concrete. I tried with a nail. Now my nail is 'Degen' too."
             }
           ],
           "OPEN": [
             {
               "op": "say",
-              "text": "There's nothing to open. Graffiti is already the most open form of expression."
+              "text": "Nothing to open. Graffiti is all front, no back."
             }
           ],
           "CLOSE": [
             {
               "op": "say",
-              "text": "I can't close graffiti. It's open-source art. Permissionless and uncensorable."
+              "text": "I can't close graffiti. I could stand in front of it. That's not a long-term plan."
             }
           ],
           "PUSH": [
             {
               "op": "say",
-              "text": "I push against the tagged wall. The paint doesn't smudge. Committed to the surface forever."
+              "text": "I push the tagged wall. The paint doesn't smudge. Good paint. Bad decisions."
             }
           ],
           "PULL": [
@@ -1232,7 +1232,7 @@
           "GIVE": [
             {
               "op": "say",
-              "text": "The graffiti has already been given to the world. A public good, like Ethereum. Or litter. Depends on your perspective."
+              "text": "The graffiti was a gift to the world. The world didn't ask. It rarely does."
             }
           ]
         }
@@ -1250,55 +1250,55 @@
           "LOOK": [
             {
               "op": "say",
-              "text": "A cracked concrete walkway leading to the clinic entrance. Weeds push through the seams. Nature's own fork of the pavement."
+              "text": "A cracked walkway to the entrance. Weeds push through. Even the weeds want in."
             }
           ],
           "USE": [
             {
               "op": "say",
-              "text": "I follow the path toward the entrance. Each crack in the pavement feels intentional, like breadcrumbs for the lost."
+              "text": "I follow the path. Step on a crack... no. I've had enough bad luck this month."
             }
           ],
           "TALK": [
             {
               "op": "say",
-              "text": "My footsteps echo on the walkway. The path has heard a thousand desperate shuffles toward recovery."
+              "text": "I hum on the path. The echo hums back, slightly off-key. Probably me."
             }
           ],
           "PICK": [
             {
               "op": "say",
-              "text": "I pick up a pebble from a crack. It's been here longer than most crypto projects will ever last."
+              "text": "I pick up a pebble. I put it back. It was here first."
             }
           ],
           "OPEN": [
             {
               "op": "say",
-              "text": "The path is already open. It's always been open. The hard part is choosing to walk it."
+              "text": "The path is open. Paths usually are. That's their whole thing."
             }
           ],
           "CLOSE": [
             {
               "op": "say",
-              "text": "I can't close a path. That's the urban planning department's job. And they don't do weekends."
+              "text": "I can't close a path. That's the council's job. They don't do mountains."
             }
           ],
           "PUSH": [
             {
               "op": "say",
-              "text": "I push forward on the path. Each step closer to the truth about Patient Zero."
+              "text": "I push on. Each step closer to Patient Zero. My calves would like a word."
             }
           ],
           "PULL": [
             {
               "op": "say",
-              "text": "Something about this place pulls me forward and pushes me back at the same time. Like a market at equilibrium."
+              "text": "This place pulls me in and pushes me back at the same time. Like a dentist."
             }
           ],
           "GIVE": [
             {
               "op": "say",
-              "text": "The path gives direction. That's more than any financial advisor ever gave me."
+              "text": "The path already gives directions. To the door. It's got one idea."
             }
           ]
         }
