@@ -250,7 +250,13 @@ if (sheets.length) {
       rows.push(row);
     } catch { /* fila sin hoja */ }
   }
-  if (rows.length) execFileSync('magick', [...rows, '-background', '#222', '-append', join(OUT, 'resumen.png')]);
+  if (rows.length) {
+    // ImageMagick 7 trae `magick`; el 6 de los runners de Ubuntu solo `convert`. El resumen no es parte de la puerta.
+    const args = [...rows, '-background', '#222', '-append', join(OUT, 'resumen.png')];
+    try { execFileSync('magick', args); } catch {
+      try { execFileSync('convert', args); } catch (e) { console.warn(`resumen.png no generado: ${e.message}`); }
+    }
+  }
   for (const r of rows) rmSync(r, { force: true });
 }
 
