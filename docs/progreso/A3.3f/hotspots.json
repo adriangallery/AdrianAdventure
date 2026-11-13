@@ -1,0 +1,727 @@
+[
+  {
+    "scene": "basement",
+    "hotspot": "hs_equipment",
+    "name": "Equipment Rack",
+    "verbs": [
+      "PUSH"
+    ],
+    "screen844x390": {
+      "w": 73,
+      "h": 138
+    },
+    "file": "A3.3f/basement__hs_equipment.webp",
+    "kb": 31
+  },
+  {
+    "scene": "basement",
+    "hotspot": "hs_left_desk",
+    "name": "Small Desk",
+    "verbs": [
+      "PICK"
+    ],
+    "screen844x390": {
+      "w": 174,
+      "h": 38
+    },
+    "file": "A3.3f/basement__hs_left_desk.webp",
+    "kb": 38
+  },
+  {
+    "scene": "basement",
+    "hotspot": "hs_main_computer",
+    "name": "CRT Computer",
+    "verbs": [
+      "USE energy_drink →",
+      "USE ledger →",
+      "USE extension_cord →",
+      "USE burned_chip →",
+      "USE floppy_disk →"
+    ],
+    "screen844x390": {
+      "w": 78,
+      "h": 45
+    },
+    "file": "A3.3f/basement__hs_main_computer.webp",
+    "kb": 13
+  },
+  {
+    "scene": "basement",
+    "hotspot": "hs_stairs",
+    "name": "Basement Stairs",
+    "verbs": [
+      "USE"
+    ],
+    "screen844x390": {
+      "w": 62,
+      "h": 63
+    },
+    "file": "A3.3f/basement__hs_stairs.webp",
+    "kb": 6
+  },
+  {
+    "scene": "clinic_exterior",
+    "hotspot": "hs_main_entrance",
+    "name": "Clinic Entrance",
+    "verbs": [
+      "USE keycard →",
+      "USE"
+    ],
+    "screen844x390": {
+      "w": 82,
+      "h": 101
+    },
+    "file": "A3.3f/clinic_exterior__hs_main_entrance.webp",
+    "kb": 21
+  },
+  {
+    "scene": "clinic_exterior",
+    "hotspot": "hs_trash_can",
+    "name": "Trash Can",
+    "verbs": [
+      "PICK"
+    ],
+    "screen844x390": {
+      "w": 30,
+      "h": 38
+    },
+    "file": "A3.3f/clinic_exterior__hs_trash_can.webp",
+    "kb": 8
+  },
+  {
+    "scene": "clinic_exterior",
+    "hotspot": "hs_visitor_box",
+    "name": "Visitor Drop Box",
+    "verbs": [
+      "USE clinic_note →",
+      "USE energy_drink →"
+    ],
+    "screen844x390": {
+      "w": 45,
+      "h": 41
+    },
+    "file": "A3.3f/clinic_exterior__hs_visitor_box.webp",
+    "kb": 8
+  },
+  {
+    "scene": "clinic_interior",
+    "hotspot": "hs_filing_cabinet",
+    "name": "Filing Cabinet",
+    "verbs": [
+      "PUSH"
+    ],
+    "screen844x390": {
+      "w": 70,
+      "h": 81
+    },
+    "file": "A3.3f/clinic_interior__hs_filing_cabinet.webp",
+    "kb": 10
+  },
+  {
+    "scene": "clinic_interior",
+    "hotspot": "hs_treatment_door",
+    "name": "Treatment Room Door",
+    "verbs": [
+      "USE"
+    ],
+    "screen844x390": {
+      "w": 71,
+      "h": 131
+    },
+    "file": "A3.3f/clinic_interior__hs_treatment_door.webp",
+    "kb": 29
+  },
+  {
+    "scene": "epilogue_outside",
+    "hotspot": "hs_now_hiring_sign",
+    "name": "NOW HIRING Sign",
+    "verbs": [
+      "USE leaky_pen →"
+    ],
+    "screen844x390": {
+      "w": 40,
+      "h": 16
+    },
+    "file": "A3.3f/epilogue_outside__hs_now_hiring_sign.webp",
+    "kb": 8
+  },
+  {
+    "scene": "epilogue_outside",
+    "hotspot": "hs_path_forward",
+    "name": "Path Down the Mountain",
+    "verbs": [
+      "USE"
+    ],
+    "screen844x390": {
+      "w": 124,
+      "h": 17
+    },
+    "file": "A3.3f/epilogue_outside__hs_path_forward.webp",
+    "kb": 15
+  },
+  {
+    "scene": "lobby",
+    "hotspot": "hs_coat",
+    "name": "Wool Coat",
+    "verbs": [
+      "PICK",
+      "USE keycard →"
+    ],
+    "screen844x390": {
+      "w": 42,
+      "h": 98
+    },
+    "file": "A3.3f/lobby__hs_coat.webp",
+    "kb": 7
+  },
+  {
+    "scene": "lobby",
+    "hotspot": "hs_frontdoor",
+    "name": "Main Entrance",
+    "verbs": [
+      "USE"
+    ],
+    "screen844x390": {
+      "w": 54,
+      "h": 184
+    },
+    "file": "A3.3f/lobby__hs_frontdoor.webp",
+    "kb": 12
+  },
+  {
+    "scene": "lobby",
+    "hotspot": "hs_monitor_desk",
+    "name": "Monitor Desk",
+    "verbs": [
+      "USE vet_bill →",
+      "USE mystery_envelope →"
+    ],
+    "screen844x390": {
+      "w": 287,
+      "h": 113
+    },
+    "file": "A3.3f/lobby__hs_monitor_desk.webp",
+    "kb": 38
+  },
+  {
+    "scene": "lobby",
+    "hotspot": "hs_plant",
+    "name": "Lobby Plant",
+    "verbs": [
+      "USE rainwater_can →"
+    ],
+    "screen844x390": {
+      "w": 44,
+      "h": 54
+    },
+    "file": "A3.3f/lobby__hs_plant.webp",
+    "kb": 5
+  },
+  {
+    "scene": "lobby",
+    "hotspot": "hs_poster",
+    "name": "Wall Poster",
+    "verbs": [
+      "PUSH",
+      "PULL",
+      "GIVE",
+      "USE mystery_envelope →"
+    ],
+    "screen844x390": {
+      "w": 38,
+      "h": 55
+    },
+    "file": "A3.3f/lobby__hs_poster.webp",
+    "kb": 3
+  },
+  {
+    "scene": "lobby",
+    "hotspot": "hs_stairs_up",
+    "name": "Stairs to Upstairs",
+    "verbs": [
+      "USE"
+    ],
+    "screen844x390": {
+      "w": 171,
+      "h": 90
+    },
+    "file": "A3.3f/lobby__hs_stairs_up.webp",
+    "kb": 20
+  },
+  {
+    "scene": "memelab",
+    "hotspot": "hs_exit_door",
+    "name": "Door to Liquidity Pool",
+    "verbs": [
+      "USE"
+    ],
+    "screen844x390": {
+      "w": 47,
+      "h": 164
+    },
+    "file": "A3.3f/memelab__hs_exit_door.webp",
+    "kb": 17
+  },
+  {
+    "scene": "memelab",
+    "hotspot": "hs_meme_tube",
+    "name": "Containment Tube",
+    "verbs": [
+      "USE glasses_3d →"
+    ],
+    "screen844x390": {
+      "w": 104,
+      "h": 186
+    },
+    "file": "A3.3f/memelab__hs_meme_tube.webp",
+    "kb": 39
+  },
+  {
+    "scene": "memelab",
+    "hotspot": "hs_pepememe",
+    "name": "Rare Pepe",
+    "verbs": [
+      "PICK"
+    ],
+    "screen844x390": {
+      "w": 49,
+      "h": 38
+    },
+    "file": "A3.3f/memelab__hs_pepememe.webp",
+    "kb": 7
+  },
+  {
+    "scene": "mountain",
+    "hotspot": "hs_winding_path",
+    "name": "Winding Path",
+    "verbs": [
+      "USE"
+    ],
+    "screen844x390": {
+      "w": 88,
+      "h": 101
+    },
+    "file": "A3.3f/mountain__hs_winding_path.webp",
+    "kb": 32
+  },
+  {
+    "scene": "outside",
+    "hotspot": "hs_chimney",
+    "name": "Chimney",
+    "verbs": [
+      "PICK",
+      "USE fence_plank →"
+    ],
+    "screen844x390": {
+      "w": 50,
+      "h": 90
+    },
+    "file": "A3.3f/outside__hs_chimney.webp",
+    "kb": 19
+  },
+  {
+    "scene": "outside",
+    "hotspot": "hs_doormat",
+    "name": "Doormat",
+    "verbs": [
+      "PICK",
+      "USE fence_plank →"
+    ],
+    "screen844x390": {
+      "w": 67,
+      "h": 14
+    },
+    "file": "A3.3f/outside__hs_doormat.webp",
+    "kb": 9
+  },
+  {
+    "scene": "outside",
+    "hotspot": "hs_fence",
+    "name": "Wooden Fence",
+    "verbs": [
+      "PULL"
+    ],
+    "screen844x390": {
+      "w": 44,
+      "h": 81
+    },
+    "file": "A3.3f/outside__hs_fence.webp",
+    "kb": 11
+  },
+  {
+    "scene": "outside",
+    "hotspot": "hs_front_door",
+    "name": "Front Door",
+    "verbs": [
+      "USE"
+    ],
+    "screen844x390": {
+      "w": 44,
+      "h": 71
+    },
+    "file": "A3.3f/outside__hs_front_door.webp",
+    "kb": 13
+  },
+  {
+    "scene": "outside",
+    "hotspot": "hs_keypad",
+    "name": "Keypad",
+    "verbs": [
+      "USE note_half_a →",
+      "USE ledger →",
+      "USE code_note →"
+    ],
+    "screen844x390": {
+      "w": 17,
+      "h": 24
+    },
+    "file": "A3.3f/outside__hs_keypad.webp",
+    "kb": 5
+  },
+  {
+    "scene": "outside",
+    "hotspot": "hs_mailbox",
+    "name": "Mailbox",
+    "verbs": [
+      "PICK"
+    ],
+    "screen844x390": {
+      "w": 32,
+      "h": 30
+    },
+    "file": "A3.3f/outside__hs_mailbox.webp",
+    "kb": 6
+  },
+  {
+    "scene": "outside",
+    "hotspot": "hs_porch_light",
+    "name": "Porch Light",
+    "verbs": [
+      "PICK",
+      "USE"
+    ],
+    "screen844x390": {
+      "w": 26,
+      "h": 22
+    },
+    "file": "A3.3f/outside__hs_porch_light.webp",
+    "kb": 8
+  },
+  {
+    "scene": "recovery_pool",
+    "hotspot": "hs_brown_book",
+    "name": "Brown Leather Book",
+    "verbs": [
+      "OPEN"
+    ],
+    "screen844x390": {
+      "w": 30,
+      "h": 22
+    },
+    "file": "A3.3f/recovery_pool__hs_brown_book.webp",
+    "kb": 5
+  },
+  {
+    "scene": "recovery_pool",
+    "hotspot": "hs_dark_door",
+    "name": "Ominous Door",
+    "verbs": [
+      "USE"
+    ],
+    "screen844x390": {
+      "w": 40,
+      "h": 148
+    },
+    "file": "A3.3f/recovery_pool__hs_dark_door.webp",
+    "kb": 18
+  },
+  {
+    "scene": "recovery_pool",
+    "hotspot": "hs_rubber_duck",
+    "name": "Giant Rubber Duck",
+    "verbs": [
+      "USE"
+    ],
+    "screen844x390": {
+      "w": 52,
+      "h": 41
+    },
+    "file": "A3.3f/recovery_pool__hs_rubber_duck.webp",
+    "kb": 8
+  },
+  {
+    "scene": "recovery_pool",
+    "hotspot": "hs_stairs_up",
+    "name": "Stairs Up",
+    "verbs": [
+      "USE"
+    ],
+    "screen844x390": {
+      "w": 97,
+      "h": 149
+    },
+    "file": "A3.3f/recovery_pool__hs_stairs_up.webp",
+    "kb": 33
+  },
+  {
+    "scene": "recovery_pool",
+    "hotspot": "hs_trash_pile",
+    "name": "Pile of Junk",
+    "verbs": [
+      "PICK"
+    ],
+    "screen844x390": {
+      "w": 104,
+      "h": 54
+    },
+    "file": "A3.3f/recovery_pool__hs_trash_pile.webp",
+    "kb": 12
+  },
+  {
+    "scene": "rooftop",
+    "hotspot": "hs_antenna_array",
+    "name": "Antenna Array",
+    "verbs": [
+      "PICK"
+    ],
+    "screen844x390": {
+      "w": 73,
+      "h": 108
+    },
+    "file": "A3.3f/rooftop__hs_antenna_array.webp",
+    "kb": 18
+  },
+  {
+    "scene": "rooftop",
+    "hotspot": "hs_roof_access_panel",
+    "name": "Service Shaft Hatch",
+    "verbs": [
+      "USE",
+      "USE keycard →",
+      "USE terminal_key →"
+    ],
+    "screen844x390": {
+      "w": 122,
+      "h": 32
+    },
+    "file": "A3.3f/rooftop__hs_roof_access_panel.webp",
+    "kb": 6
+  },
+  {
+    "scene": "rooftop",
+    "hotspot": "hs_satellite_dish",
+    "name": "Satellite Dish",
+    "verbs": [
+      "USE empty_can →"
+    ],
+    "screen844x390": {
+      "w": 131,
+      "h": 119
+    },
+    "file": "A3.3f/rooftop__hs_satellite_dish.webp",
+    "kb": 21
+  },
+  {
+    "scene": "rooftop",
+    "hotspot": "hs_weather_vane",
+    "name": "Weather Vane",
+    "verbs": [
+      "USE",
+      "USE pizza_slice →"
+    ],
+    "screen844x390": {
+      "w": 87,
+      "h": 121
+    },
+    "file": "A3.3f/rooftop__hs_weather_vane.webp",
+    "kb": 10
+  },
+  {
+    "scene": "server_room",
+    "hotspot": "hs_emergency_switch",
+    "name": "Emergency Switch",
+    "verbs": [
+      "USE",
+      "USE antenna →"
+    ],
+    "screen844x390": {
+      "w": 57,
+      "h": 87
+    },
+    "file": "A3.3f/server_room__hs_emergency_switch.webp",
+    "kb": 10
+  },
+  {
+    "scene": "server_room",
+    "hotspot": "hs_raised_floor",
+    "name": "Raised Floor Tiles",
+    "verbs": [
+      "PICK"
+    ],
+    "screen844x390": {
+      "w": 338,
+      "h": 33
+    },
+    "file": "A3.3f/server_room__hs_raised_floor.webp",
+    "kb": 36
+  },
+  {
+    "scene": "server_room",
+    "hotspot": "hs_server_rack_b",
+    "name": "Dead Server Rack",
+    "verbs": [
+      "PICK"
+    ],
+    "screen844x390": {
+      "w": 77,
+      "h": 130
+    },
+    "file": "A3.3f/server_room__hs_server_rack_b.webp",
+    "kb": 28
+  },
+  {
+    "scene": "server_room",
+    "hotspot": "hs_terminal",
+    "name": "Server Terminal",
+    "verbs": [
+      "USE",
+      "USE scrap_paper →",
+      "USE fake_alpha →"
+    ],
+    "screen844x390": {
+      "w": 75,
+      "h": 49
+    },
+    "file": "A3.3f/server_room__hs_terminal.webp",
+    "kb": 12
+  },
+  {
+    "scene": "treatment_room",
+    "hotspot": "hs_adrian_note",
+    "name": "Note on Table",
+    "verbs": [
+      "PICK"
+    ],
+    "screen844x390": {
+      "w": 42,
+      "h": 15
+    },
+    "file": "A3.3f/treatment_room__hs_adrian_note.webp",
+    "kb": 5
+  },
+  {
+    "scene": "treatment_room",
+    "hotspot": "hs_chair",
+    "name": "The Chair",
+    "verbs": [
+      "USE"
+    ],
+    "screen844x390": {
+      "w": 141,
+      "h": 88
+    },
+    "file": "A3.3f/treatment_room__hs_chair.webp",
+    "kb": 34
+  },
+  {
+    "scene": "treatment_room",
+    "hotspot": "hs_exit_door",
+    "name": "Exit Door",
+    "verbs": [
+      "USE"
+    ],
+    "screen844x390": {
+      "w": 68,
+      "h": 177
+    },
+    "file": "A3.3f/treatment_room__hs_exit_door.webp",
+    "kb": 24
+  },
+  {
+    "scene": "treatment_room",
+    "hotspot": "hs_monitor",
+    "name": "The Monitor",
+    "verbs": [
+      "USE",
+      "USE floppy_disk →"
+    ],
+    "screen844x390": {
+      "w": 81,
+      "h": 68
+    },
+    "file": "A3.3f/treatment_room__hs_monitor.webp",
+    "kb": 13
+  },
+  {
+    "scene": "upstairs",
+    "hotspot": "hs_computer",
+    "name": "Mining Rig",
+    "verbs": [
+      "USE energy_drink →",
+      "USE golden_token →"
+    ],
+    "screen844x390": {
+      "w": 104,
+      "h": 121
+    },
+    "file": "A3.3f/upstairs__hs_computer.webp",
+    "kb": 24
+  },
+  {
+    "scene": "upstairs",
+    "hotspot": "hs_desk",
+    "name": "Trading Desk",
+    "verbs": [
+      "USE",
+      "OPEN"
+    ],
+    "screen844x390": {
+      "w": 182,
+      "h": 42
+    },
+    "file": "A3.3f/upstairs__hs_desk.webp",
+    "kb": 34
+  },
+  {
+    "scene": "upstairs",
+    "hotspot": "hs_energy_drink",
+    "name": "Energy Drink",
+    "verbs": [
+      "PICK"
+    ],
+    "screen844x390": {
+      "w": 26,
+      "h": 25
+    },
+    "file": "A3.3f/upstairs__hs_energy_drink.webp",
+    "kb": 3
+  },
+  {
+    "scene": "upstairs",
+    "hotspot": "hs_pizza_box",
+    "name": "Pizza Box",
+    "verbs": [
+      "PICK"
+    ],
+    "screen844x390": {
+      "w": 70,
+      "h": 22
+    },
+    "file": "A3.3f/upstairs__hs_pizza_box.webp",
+    "kb": 6
+  },
+  {
+    "scene": "upstairs",
+    "hotspot": "hs_roof_hatch",
+    "name": "Roof Hatch",
+    "verbs": [
+      "USE"
+    ],
+    "screen844x390": {
+      "w": 129,
+      "h": 35
+    },
+    "file": "A3.3f/upstairs__hs_roof_hatch.webp",
+    "kb": 11
+  }
+]
