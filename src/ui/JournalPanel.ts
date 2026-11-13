@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { FONT, SPEECH_COLORS, TWP } from '@/config/theme';
 import { setTouchInteractive, touchContains } from './touchTarget';
+import { iconEl } from './icons';
 import { sfxOf } from '@/systems/Sfx';
 import { goalStingers, type GoalSnapshot } from '@/systems/Stingers';
 import { playStinger } from '@/systems/StingerPlayer';
@@ -420,7 +421,7 @@ export class JournalPanel {
       row.dataset.goal = g.id;
       row.dataset.done = String(g.done);
       const box = el('span', 'jr-box');
-      box.textContent = g.done ? '✓' : '';
+      if (g.done) box.appendChild(iconEl('check', 10, undefined, '#08080f'));
       const t = el('span', 'jr-text');
       t.textContent = g.text;
       if (g.done && this.freshIds.has(g.id)) t.appendChild(badge('NEW'));
@@ -435,7 +436,7 @@ export class JournalPanel {
       for (const c of earlier) {
         const row = el('div', 'jr-goal done');
         const box = el('span', 'jr-box');
-        box.textContent = '✓';
+        box.appendChild(iconEl('check', 10, undefined, '#08080f'));
         const t = el('span', 'jr-text');
         t.textContent = `${c.id}. ${c.title}`;
         row.append(box, t);

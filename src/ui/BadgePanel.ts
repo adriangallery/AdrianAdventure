@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { FONT } from '@/config/theme';
 import { setTouchInteractive } from './touchTarget';
+import { iconTexture } from './icons';
 import { ACHIEVEMENTS, type AchievementDef } from '@/config/achievements.config';
 import type { GameState } from '@/types/game.types';
 import { getWalletState } from '@/web3/wallet';
@@ -31,7 +32,8 @@ export class BadgePanel {
     const y = 20;
     const bg = setTouchInteractive(this.scene.add.rectangle(x, y, 30, 24, 0x1a1a2e, 0.85)
       .setStrokeStyle(1, 0x504878, 0.6), 30, 24);
-    const icon = this.scene.add.text(x, y, '\u{1F3C6}', { fontSize: '14px' }).setOrigin(0.5);
+    // A7.3: copa dibujada (el emoji 🏆 salía como cuadradito sin fuente de emoji)
+    const icon = this.scene.add.image(x, y, iconTexture(this.scene, 'trophy', 2)).setOrigin(0.5);
     bg.on('pointerover', () => bg.setStrokeStyle(1, 0xf8e848, 0.9));
     bg.on('pointerout', () => bg.setStrokeStyle(1, 0x504878, 0.6));
     bg.on('pointerdown', () => this.toggle());
@@ -91,7 +93,7 @@ export class BadgePanel {
 
     const statsY = 28 + titleSize + 6;
     const statSize = Math.floor(titleSize * 0.5);
-    const statsText = `\u{1F4D6} ${chCount}/5 ch   \u{1F5FA} ${sceneCount}/12 scenes   \u{1F50D} ${itemCount}/20 found   \u{1F9E9} ${puzzleCount}/5 puzzles   \u{1F3C6} ${earned.length}/${ACHIEVEMENTS.length} badges`;
+    const statsText = `${chCount}/5 ch   ${sceneCount}/12 scenes   ${itemCount}/20 found   ${puzzleCount}/5 puzzles   ${earned.length}/${ACHIEVEMENTS.length} badges`;
     this.container.add(this.scene.add.text(width / 2, statsY, statsText, {
       fontFamily: FONT.FAMILY, fontSize: `${statSize}px`, color: '#b0a0c8',
     }).setOrigin(0.5));
@@ -106,9 +108,9 @@ export class BadgePanel {
     this.container.add(closeBtn);
 
     const categories: Array<{ label: string; key: string }> = [
-      { label: '\u{2694}\u{FE0F}  STORY', key: 'chapter' },
-      { label: '\u{1F451}  HOLDER EXCLUSIVE', key: 'holder' },
-      { label: '\u{1F9ED}  EXPLORER', key: 'explorer' },
+      { label: '\u2605 STORY', key: 'chapter' },
+      { label: '\u2605 HOLDER EXCLUSIVE', key: 'holder' },
+      { label: '\u2605 EXPLORER', key: 'explorer' },
     ];
 
     const cellH = badgeSize + 28 + nameSize;
@@ -232,13 +234,13 @@ export class BadgePanel {
     }
     try {
       const already = await hasLabToken(address as Address, badge.tokenId);
-      if (already) { btn.setText('OWNED \u2713').setColor('#48d848'); return; }
+      if (already) { btn.setText('OWNED!').setColor('#48d848'); return; }
     } catch { /* continue */ }
 
     btn.setText('MINTING...').setColor('#f8e848');
     const result: MintResult = await mintAchievement(badge.tokenId);
     if (result.status === 'success') {
-      btn.setText('MINTED \u2713').setColor('#48d848');
+      btn.setText('MINTED!').setColor('#48d848');
     } else if (result.status === 'not-configured') {
       btn.setText('SOON').setColor('#b0a0c8');
       this.scene.time.delayedCall(2000, () => btn.setText('MINT').setColor('#48d8e8'));

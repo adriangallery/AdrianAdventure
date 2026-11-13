@@ -5,6 +5,7 @@ import { getWalletState } from '@/web3/wallet';
 import { loadRemoteSlots } from '@/web3/wallet-save';
 import type { MusicManager } from '@/systems/MusicManager';
 import { TWP, FONT } from '@/config/theme';
+import { iconSvg, setIconLabel } from '@/ui/icons';
 import { ACHIEVEMENTS } from '@/config/achievements.config';
 import { resolveEnsMany } from '@/web3/ens';
 import { bindShutdown } from './lifecycle';
@@ -198,7 +199,7 @@ export class MenuScene extends Phaser.Scene {
     // Rotate hint in portrait
     if (isPortrait) {
       const hintSize = Math.max(11, Math.min(12, Math.floor(refSize * 0.012)));
-      this.add.text(width / 2, height - 30, '\u{1F504} Rotate for best experience', {
+      this.add.text(width / 2, height - 30, 'Rotate for best experience', {
         fontFamily: FONT.FAMILY,
         fontSize: `${hintSize}px`,
         color: TWP.MENU_SUBTITLE,
@@ -237,8 +238,9 @@ export class MenuScene extends Phaser.Scene {
     `;
 
     const icon = document.createElement('div');
-    icon.textContent = '\u{1F50A}';
-    icon.style.cssText = 'font-size: 36px; margin-bottom: 16px;';
+    // A7.3: altavoz dibujado (el emoji 🔊 salía como cuadradito sin fuente de emoji)
+    icon.innerHTML = iconSvg('speaker', 40);
+    icon.style.cssText = 'line-height: 0; margin-bottom: 16px;';
     modal.appendChild(icon);
 
     const msg = document.createElement('div');
@@ -255,7 +257,7 @@ export class MenuScene extends Phaser.Scene {
 
     // --- "Enable" button — this is the native gesture that unlocks audio ---
     const yesBtn = document.createElement('button');
-    yesBtn.textContent = '\u{1F3B5} Enable Sound';
+    setIconLabel(yesBtn, 'note', 'Enable Sound', 14);
     yesBtn.style.cssText = btnStyle + `
       background: #5b3a8c; color: #f8e848;
       border: 2px solid #f8e848;
@@ -281,7 +283,7 @@ export class MenuScene extends Phaser.Scene {
 
     // --- "No thanks" button ---
     const noBtn = document.createElement('button');
-    noBtn.textContent = '\u{1F910} No thanks, silence is golden';
+    setIconLabel(noBtn, 'mute', 'No thanks, silence is golden', 12);
     noBtn.style.cssText = btnStyle + `
       background: transparent; color: #665577;
       border: 1px solid #333;
@@ -325,7 +327,7 @@ export class MenuScene extends Phaser.Scene {
     `;
 
     const title = document.createElement('div');
-    title.textContent = '\u{1F3C6} LEADERBOARD';
+    setIconLabel(title, 'trophy', 'LEADERBOARD', 18);
     title.style.cssText = 'color: #f8e848; font-size: 16px; margin-bottom: 20px;';
     modal.appendChild(title);
 
@@ -387,11 +389,11 @@ export class MenuScene extends Phaser.Scene {
 
       top.forEach((p, i) => {
         const row = document.createElement('div');
-        const medal = i === 0 ? '\u{1F947}' : i === 1 ? '\u{1F948}' : i === 2 ? '\u{1F949}' : `#${i + 1}`;
+        const medal = i === 0 ? iconSvg('medal_gold', 18) : i === 1 ? iconSvg('medal_silver', 18) : i === 2 ? iconSvg('medal_bronze', 18) : `#${i + 1}`;
         const shortAddr = shorten(p.address.toLowerCase());
         const addr = escapeHtml(p.ens || shortAddr);
         const sceneName = (p.sceneName || 'Unknown').replace(/^(The |AdrianLAB )/, '');
-        const complete = p.gameComplete ? ' \u{2B50}' : '';
+        const complete = p.gameComplete ? ` ${iconSvg('star', 10)}` : '';
         const items = p.items ?? 0;
         const scenes = p.scenesVisited ?? 0;
         const puzzles = p.puzzles ?? 0;
@@ -423,7 +425,7 @@ export class MenuScene extends Phaser.Scene {
         // Game achievements
         if (achNames.length > 0) {
           badgeHtml += `<div style="display:flex; flex-wrap:wrap; gap:4px; margin-top:${badges.length > 0 ? '4' : '6'}px;">${
-            achNames.map((n: string) => `<span style="font-size:7px; padding:2px 5px; background:#f8e84822; border:1px solid #f8e84844; border-radius:3px; color:#f8e848;">\u{1F3C6} ${n}</span>`).join('')
+            achNames.map((n: string) => `<span style="font-size:7px; padding:2px 5px; background:#f8e84822; border:1px solid #f8e84844; border-radius:3px; color:#f8e848;">${iconSvg('trophy', 8)} ${n}</span>`).join('')
           }</div>`;
         }
 
@@ -434,13 +436,13 @@ export class MenuScene extends Phaser.Scene {
             <span style="font-size:14px; color:#f8e848;">${p.score} pts</span>
           </div>
           <div style="display:flex; gap:10px; font-size:9px; color:#999;">
-            <span>\u{1F4D6} ${p.chapters}/5 ch</span>
-            <span>\u{1F5FA} ${scenes}/12 scenes</span>
-            <span>\u{1F50D} ${items}/20 found</span>
-            <span>\u{1F9E9} ${puzzles}/5 puzzles</span>
+            <span>${p.chapters}/5 ch</span>
+            <span>${scenes}/12 scenes</span>
+            <span>${items}/20 found</span>
+            <span>${puzzles}/5 puzzles</span>
           </div>
           <div style="display:flex; justify-content:space-between; font-size:8px; color:#666; margin-top:4px;">
-            <span>\u{1F3AE} ${sceneName}</span>
+            <span>@ ${sceneName}</span>
             <span>${date}</span>
           </div>
           ${badgeHtml}

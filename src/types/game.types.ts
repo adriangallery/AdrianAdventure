@@ -26,19 +26,6 @@ export const PANEL_VERBS: Verb[] = [
   Verb.GIVE,  Verb.TALK,  Verb.USE,
 ];
 
-export const VERB_ICONS: Record<Verb, string> = {
-  [Verb.WALK]: '\u{1F6B6}',   // walking person
-  [Verb.OPEN]: '\u{1F513}',   // unlocked
-  [Verb.PICK]: '\u{2B07}',    // down arrow
-  [Verb.PUSH]: '\u{1F449}',   // pointing right
-  [Verb.CLOSE]: '\u{1F512}',  // locked
-  [Verb.LOOK]: '\u{1F441}',   // eye
-  [Verb.PULL]: '\u{1F448}',   // pointing left
-  [Verb.GIVE]: '\u{1F381}',   // gift
-  [Verb.TALK]: '\u{1F4AC}',   // speech bubble
-  [Verb.USE]: '\u{270B}',     // hand
-};
-
 export const VERB_LABELS: Record<Verb, string> = {
   [Verb.WALK]: 'Walk to',
   [Verb.OPEN]: 'Open',

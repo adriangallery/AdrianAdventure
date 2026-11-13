@@ -102,7 +102,8 @@ export class ChoicePanel {
     visible.forEach((choice, i) => {
       const index = first + i;
       const color = !choice.enabled ? TWP.CHOICE_DISABLED : choice.used ? TWP.CHOICE_USED : TWP.CHOICE_ENABLED;
-      const prefix = choice.enabled ? '• ' : '\u{1F512} ';
+      // A7.3: «×» (está en Press Start 2P) en vez del candado emoji
+      const prefix = choice.enabled ? '• ' : '\u00D7 ';
       addLine(i, `${prefix}${choice.text}`, color, choice.enabled ? () => this.selectChoice(index) : null);
     });
 
