@@ -2237,7 +2237,7 @@ export class GameScene extends Phaser.Scene {
   private describeHit(hit: TapHit): string {
     if (hit.kind === 'none') return hit.reason;
     if (hit.kind === 'npc') return `el NPC ${hit.npc.npcId}`;
-    if (!hit.rawHotspot) return 'fondo sin hotspot';
+    return hit.hotspot ? `el hotspot ${hit.hotspot.id}` : `el hotspot oculto ${hit.rawHotspot.id}`;
     return hit.hotspot ? `el hotspot ${hit.rawHotspot.id}` : `el hotspot oculto ${hit.rawHotspot.id}`;
   }
 
