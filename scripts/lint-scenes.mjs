@@ -3,7 +3,7 @@
 //
 //   node scripts/lint-scenes.mjs [--strict] [--json] [--scene <id>] [--root <dir>] [--no-write]
 //
-// Recorre assets/scenes/<id>/scene.json y aplica doce reglas:
+// Recorre assets/scenes/<id>/scene.json y aplica estas reglas:
 //   a  flags que se leen y nunca se ponen, o que se ponen y nunca se leen
 //   b  objetos que se consiguen (addItem) y no sirven para nada
 //   c  salidas (fadeToScene/gotoScene) en hotspots y triggers sin gate, para revisar a mano
