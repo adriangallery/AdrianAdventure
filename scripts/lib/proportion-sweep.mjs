@@ -155,6 +155,8 @@ export function evaluatePosition(m, refsDoc, npcRefs = []) {
     if (!ov) continue;
     const frac = ov / (m.box.w * m.box.h);
     if (frac < 0.03) continue;
+    // A2.17 fase 3: null = sin medir (--reeval de una medida guardada antes de existir esta referencia): no se juzga
+    if (m.cover?.[r.id] === null) continue;
     const covered = m.cover?.[r.id] ?? 0;
     const behind = m.feetY < r.baseY;
     if (r.foreground && behind && occludes(covered, m.coverMax?.[r.id]) === false) {

@@ -51,7 +51,7 @@ if (page) {
 function reevaluate(scene, refsDoc) {
   const old = JSON.parse(readFileSync(join(JSON_DIR, `${scene}.json`), 'utf8'));
   return old.positions.map((p) => {
-    const m = { x: p.x, y: p.y, feetX: p.feet.x, feetY: p.feet.y, box: p.dexBox, heightPct: p.heightPct, walkable: p.walkable, maskOk: p.maskOk, cover: p.cover || {}, coverMax: p.coverMax };
+    const m = { x: p.x, y: p.y, feetX: p.feet.x, feetY: p.feet.y, box: p.dexBox, heightPct: p.heightPct, walkable: p.walkable, maskOk: p.maskOk, cover: { ...Object.fromEntries((refsDoc.refs || []).map((r) => [r.id, null])), ...(p.cover || {}) }, coverMax: p.coverMax };
     const npcRefs = (refsDoc.refs || []).filter((r) => r.npc && p.scale?.ref === r.id).map((r) => ({ ...r, heightPct: (p.scale.expected * r.realHeightM) / (refsDoc.dexHeightM || 1.75) }));
     const ev = evaluatePosition(m, refsDoc, npcRefs);
     return { ...p, scale: ev.scale, failures: ev.failures, info: ev.info, score: ev.score };
@@ -90,7 +90,8 @@ async function openScene(scene) {
     window.__sweepMasks = {
       fg: sd?.assets?.foreground ? await load(sd.assets.foreground) : null,
       walk: sd?.assets?.walkmask ? await load(sd.assets.walkmask) : null,
-      layers: sd?.foregroundLayers ?? [],
+      // A2.17 fase 3: los trozos con `mask` llevan su máscara (alfa) para saber qué píxeles son suyos
+      layers: await Promise.all((sd?.foregroundLayers ?? []).map(async (l) => ({ ...l, maskImg: l.mask ? await load(l.mask) : null }))),
     };
   }, scene);
 }
@@ -119,18 +120,39 @@ async function measureAt(x, y, refs) {
     const M = window.__sweepMasks || {};
     // A2.17 fase 2: trozos del primer plano con walk-behind (foregroundLayers) que quedan DETRÁS de Dex (sus pies por
     // debajo de la base del trozo, como ordena GameScene por actorDepth): esos píxeles no le tapan
-    const behindDex = (M.layers || []).filter((l) => p.pctY >= l.baseY).map((l) => l.bounds);
-    const inBehind = (px, py) => behindDex.some((b) => px >= b.x && px < b.x + b.w && py >= b.y && py < b.y + b.h);
+    // Fase 3: un píxel puede ser de varios trozos (la maleza con máscara dentro del rectángulo de las rocas: GameScene
+    // lo dibuja en los dos); queda detrás de Dex solo si TODOS los trozos que lo dibujan están detrás.
+    const owns = (l, px, py) => {
+      const b = l.bounds;
+      if (!(px >= b.x && px < b.x + b.w && py >= b.y && py < b.y + b.h)) return false;
+      const mk = l.maskImg;
+      if (!l.mask) return true;
+      if (!mk) return false;
+      const mx = Math.min(mk.w - 1, Math.floor(((px - b.x) / b.w) * mk.w)); const my = Math.min(mk.h - 1, Math.floor(((py - b.y) / b.h) * mk.h));
+      return mk.data[(my * mk.w + mx) * 4 + 3] > 128;
+    };
+    const inBehind = (px, py) => {
+      const owners = (M.layers || []).filter((l) => l.bounds && owns(l, px, py));
+      return owners.length > 0 && owners.every((l) => p.pctY >= l.baseY);
+    };
     // Fracción de un rectángulo (en %) donde el primer plano es opaco (y se dibuja por encima de Dex)
     // A2.17 fase 3: con all = true cuenta también los trozos que quedan detrás (lo que el primer plano PUEDE tapar)
-    const alphaFrac = (r, all = false) => {
+    // Fase 3: trozo «dueño» de un píxel: el de máscara si lo hay (es el más concreto), si no el de rectángulo; null = resto
+    const topOwner = (px, py) => {
+      const owners = (M.layers || []).filter((l) => l.bounds && owns(l, px, py));
+      return (owners.find((l) => l.mask) || owners[0])?.id ?? null;
+    };
+    // Con `layer` (scale-refs: la referencia ES ese trozo) solo cuentan los píxeles de ese trozo: así la maleza que tapa
+    // a Dex delante de las rocas no cuenta como «las rocas le tapan», ni el seto de outside como «el arbusto le tapa».
+    const alphaFrac = (r, all = false, layer = null) => {
       const fg = M.fg;
       if (!fg || r.w <= 0 || r.h <= 0) return 0;
       const x0 = Math.max(0, Math.floor((r.x / 100) * fg.w)); const x1 = Math.min(fg.w, Math.ceil(((r.x + r.w) / 100) * fg.w));
       const y0 = Math.max(0, Math.floor((r.y / 100) * fg.h)); const y1 = Math.min(fg.h, Math.ceil(((r.y + r.h) / 100) * fg.h));
       const sx = Math.max(1, Math.floor((x1 - x0) / 40)); const sy = Math.max(1, Math.floor((y1 - y0) / 60));
       let n = 0; let on = 0;
-      for (let yy = y0; yy < y1; yy += sy) for (let xx = x0; xx < x1; xx += sx) { n++; if (fg.data[(yy * fg.w + xx) * 4 + 3] > 128 && (all || !inBehind((xx / fg.w) * 100, (yy / fg.h) * 100))) on++; }
+      for (let yy = y0; yy < y1; yy += sy) for (let xx = x0; xx < x1; xx += sx) { n++; const qx = (xx / fg.w) * 100; const qy = (yy / fg.h) * 100;
+        if (fg.data[(yy * fg.w + xx) * 4 + 3] > 128 && (!layer || topOwner(qx, qy) === layer) && (all || !inBehind(qx, qy))) on++; }
       return n ? on / n : 0;
     };
     const cover = {};
@@ -140,8 +162,8 @@ async function measureAt(x, y, refs) {
       const ix = Math.max(box.x, r.box.x); const iy = Math.max(box.y, r.box.y);
       const iw = Math.min(box.x + box.w, r.box.x + r.box.w) - ix; const ih = Math.min(box.y + box.h, r.box.y + r.box.h) - iy;
       if (iw > 0 && ih > 0) {
-        cover[r.id] = Math.round(alphaFrac({ x: ix, y: iy, w: iw, h: ih }) * 100) / 100;
-        coverMax[r.id] = Math.round(alphaFrac({ x: ix, y: iy, w: iw, h: ih }, true) * 100) / 100;
+        cover[r.id] = Math.round(alphaFrac({ x: ix, y: iy, w: iw, h: ih }, false, r.layer) * 100) / 100;
+        coverMax[r.id] = Math.round(alphaFrac({ x: ix, y: iy, w: iw, h: ih }, true, r.layer) * 100) / 100;
       }
     }
     let maskOk = null;

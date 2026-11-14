@@ -31,8 +31,26 @@
       },
       "baseY": 89.5,
       "source": "A2.17 fase 2: caja = foregroundLayers.rocks_right de scene.json",
-      "note": "Las rocas llegan al borde de abajo del cuadro; son un trozo de foreground con walk-behind (base 89,5): pies por debajo = Dex delante, por encima = las rocas le tapan. No sirven de referencia de escala (alto real incierto): measured false.",
-      "measured": false
+      "note": "Las rocas llegan al borde de abajo del cuadro; son un trozo de foreground con walk-behind (base 89,5): pies por debajo = Dex delante, por encima = las rocas le tapan. No sirven de referencia de escala (alto real incierto): measured false. Fase 3: «layer» = solo cuentan los píxeles del trozo rocks_right (no los de la maleza, que es su propio trozo).",
+      "measured": false,
+      "layer": "rocks_right"
+    },
+    {
+      "id": "maleza",
+      "label": "maleza del pie de las rocas",
+      "realHeightM": 1.2,
+      "foreground": true,
+      "layer": "maleza",
+      "box": {
+        "x": 82,
+        "y": 70,
+        "w": 18,
+        "h": 30
+      },
+      "baseY": 97,
+      "source": "A2.17 fase 3: caja = foregroundLayers.maleza de scene.json (máscara de scripts/make-fg-layers.py)",
+      "measured": false,
+      "note": "La maleza está delante de las rocas: con los pies entre 89,5 y 97 Dex queda delante de las rocas y detrás de la maleza (le tapa las piernas). No sirve de referencia de escala: measured false."
     }
   ]
 }

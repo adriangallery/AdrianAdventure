@@ -36,6 +36,7 @@ export interface PrefetchScene {
   transitions?: { goto?: Array<{ targetScene?: string }> };
   conditionalOverlays?: Array<{ id: string; sprite: string; format?: 'png' | 'webp'; bounds?: unknown }>;
   web3Visuals?: Array<{ defaultSprite: string; variants?: Array<{ sprite: string }> }>;
+  foregroundLayers?: Array<{ id: string; mask?: string }>;
   audio?: { music?: string | null; ambience?: string | null };
 }
 
@@ -98,7 +99,11 @@ export function sceneImageAssets(sceneId: string, scene: PrefetchScene | null | 
   const full = (name: string) => `${base}/${variantFile(name, variant)}${v}`;
   const out: SceneAsset[] = [{ key: `bg_${sceneId}`, url: full('background') }];
   if (!scene) return out;
-  if (scene.assets?.foreground) out.push({ key: `fg_${sceneId}`, url: full('foreground') });
+  if (scene.assets?.foreground) {
+    out.push({ key: `fg_${sceneId}`, url: full('foreground') });
+    // A2.17 fase 3: máscaras de los trozos del primer plano con walk-behind (≈ 1 KB cada una)
+    for (const l of scene.foregroundLayers ?? []) if (l.mask) out.push({ key: `fgmask_${sceneId}_${l.id}`, url: `${base}/${l.mask}${v}` });
+  }
   for (const co of scene.conditionalOverlays ?? []) {
     const ext = co.format === 'webp' ? 'webp' : 'png';
     out.push({ key: `overlay_${sceneId}_${co.id}`, url: isFullFrame(co.bounds) ? full(co.sprite) : `${base}/${co.sprite}.${ext}${v}` });

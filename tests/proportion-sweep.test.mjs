@@ -97,6 +97,8 @@ test('fase 3: umbral de occlusion relativo a lo que la referencia puede tapar (g
   assert.equal(occ({ ...behind, cover: { hs_bush: 0.25 }, coverMax: { hs_bush: 0.3 } }), 0);
   // El trozo podría taparle (60 %) y no le tapa (está ordenado delante por error): sigue fallando
   assert.equal(occ({ ...behind, cover: { hs_bush: 0.05 }, coverMax: { hs_bush: 0.6 } }), 1);
+  // Sin medir (null: --reeval de una medida anterior a la referencia): no se juzga
+  assert.equal(occ({ ...behind, cover: { hs_bush: null } }), 0);
   // La referencia casi no tiene píxeles en la caja común: nada que juzgar
   assert.equal(occ({ ...behind, cover: { hs_bush: 0 }, coverMax: { hs_bush: 0.01 } }), 0);
 });

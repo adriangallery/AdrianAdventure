@@ -36,19 +36,37 @@
     },
     {
       "id": "hs_bushes",
-      "label": "arbustos",
+      "label": "arbusto grande",
       "realHeightM": 1,
-      "foreground": false,
+      "foreground": true,
+      "layer": "bush_left",
       "box": {
-        "x": 9,
+        "x": 5.5,
         "y": 73,
-        "w": 16,
-        "h": 21.5
+        "w": 15.1,
+        "h": 20
       },
-      "baseY": 94.5,
-      "source": "A2.17 fase 2: medido a ojo sobre background.png (rejilla del 10 %)",
+      "baseY": 93,
+      "source": "A2.17 fase 3: caja = foregroundLayers.bush_left de scene.json (máscara de scripts/make-fg-layers.py)",
       "measured": false,
-      "note": "A2.17 fase 2: el arbusto está pintado en el FONDO (no en foreground.png), así que no puede tapar a Dex: se quita el «dentro del arbusto» con un blockedAreas (x 9–25, y 90,5–94,5) en scene.json; Dex pasa por delante (pies ≥ 94,5). Base medida a ojo ≈ 93–95."
+      "note": "A2.17 fase 3: el arbusto, pintado en el fondo, se copia tal cual a foreground.png y es un trozo con máscara y walk-behind (base 93, borde de abajo medido a ojo 92,5–93,4): pies por encima = le tapa las piernas. Sustituye al blockedAreas de la fase 2 (x 9–25, y 90,5–94,5)."
+    },
+    {
+      "id": "bush_right",
+      "label": "arbusto pequeño (junto al porche)",
+      "realHeightM": 0.9,
+      "foreground": true,
+      "layer": "bush_right",
+      "box": {
+        "x": 19.4,
+        "y": 80.5,
+        "w": 6.5,
+        "h": 16.8
+      },
+      "baseY": 97.3,
+      "source": "A2.17 fase 3: caja = foregroundLayers.bush_right de scene.json; base medida a ojo (borde de abajo 94,3–97,3)",
+      "measured": false,
+      "note": "Trozo con máscara y walk-behind (base 97,3). Su pie (x 20,2–23,6, y 95,6–97,4) es un blockedAreas: Dex no se mete dentro del tronco."
     },
     {
       "id": "hs_carport",
