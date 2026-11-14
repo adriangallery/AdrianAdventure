@@ -1,8 +1,8 @@
 {
  "_doc": "A6.1: guion congelado de las voces (scripts/voices/script-lock.mjs). Una entrada por mp3 de assets/audio/voice; hash = sha256(rol + texto TTS). No editar a mano.",
  "total": {
-  "lines": 2575,
-  "chars": 198939
+  "lines": 2585,
+  "chars": 199664
  },
  "lines": [
   {
@@ -4096,6 +4096,16 @@
    "hash": "6d62967110a1a61f"
   },
   {
+   "key": "player_a_yellow_wedge_with_wheels_the_b87d4e3b",
+   "speaker": "player",
+   "role": "player",
+   "category": "escena",
+   "text": "A yellow wedge with wheels. The delivery note says: 'PZ-BOT ORDER #1. PAID IN $GERALD. DELIVER TO OWNER, 0xDE…'",
+   "tts": "A yellow wedge with wheels. The delivery note says: 'PZ-BOT ORDER #1. PAID IN $GERALD. DELIVER TO OWNER, 0xDE…'",
+   "chars": 111,
+   "hash": "4e168b9d11af1d23"
+  },
+  {
    "key": "player_access_denied_at_0347_0348_9761136a",
    "speaker": "player",
    "role": "player",
@@ -5724,6 +5734,16 @@
    "tts": "Cool night air rushes in.",
    "chars": 25,
    "hash": "4b091efb26a78b4e"
+  },
+  {
+   "key": "player_could_be_anyones_literally_millions_of_1223b1c0",
+   "speaker": "player",
+   "role": "player",
+   "category": "escena",
+   "text": "Could be anyone's. Literally millions of people own a duck-funded supercar.",
+   "tts": "Could be anyone's. Literally millions of people own a duck-funded supercar.",
+   "chars": 75,
+   "hash": "960d4b3a2ac1f8ea"
   },
   {
    "key": "player_crack_the_reinforced_polymer_shatters_glass_edc5ed73",
@@ -12046,6 +12066,16 @@
    "hash": "3e6d6940d82ca4bf"
   },
   {
+   "key": "player_i_pull_the_door_upwards_scissor_d737872c",
+   "speaker": "player",
+   "role": "player",
+   "category": "escena",
+   "text": "I pull the door upwards. Scissor doors. It opens three inches and judges me.",
+   "tts": "I pull the door upwards. Scissor doors. It opens three inches and judges me.",
+   "chars": 76,
+   "hash": "62e0fad4d33166fa"
+  },
+  {
    "key": "player_i_pull_the_door_warm_air_9a402508",
    "speaker": "player",
    "role": "player",
@@ -12614,6 +12644,16 @@
    "tts": "I push it. It doesn't move. I feel pushed back, emotionally.",
    "chars": 60,
    "hash": "b8f86235997500b9"
+  },
+  {
+   "key": "player_i_push_it_its_low_enough_d4ac6138",
+   "speaker": "player",
+   "role": "player",
+   "category": "escena",
+   "text": "I push it. It's low enough to push with my shin. It doesn't move. My shin does.",
+   "tts": "I push it. It's low enough to push with my shin. It doesn't move. My shin does.",
+   "chars": 79,
+   "hash": "3f510f7d488df095"
   },
   {
    "key": "player_i_push_it_opens_upward_ive_816bee1f",
@@ -16996,6 +17036,16 @@
    "hash": "75a76eaebbad17d4"
   },
   {
+   "key": "player_im_not_giving_anything_to_a_e7bec582",
+   "speaker": "player",
+   "role": "player",
+   "category": "fallo",
+   "text": "I'm not giving anything to a car. Last time I did that it was gas money and a whole paycheck.",
+   "tts": "I'm not giving anything to a car. Last time I did that it was gas money and a whole paycheck.",
+   "chars": 93,
+   "hash": "9534d43515417e7c"
+  },
+  {
    "key": "player_im_not_giving_away_gpus_do_298b6631",
    "speaker": "player",
    "role": "player",
@@ -17716,6 +17766,16 @@
    "hash": "01e536c42fa7f58c"
   },
   {
+   "key": "player_its_a_car_not_an_inventory_d5ff2878",
+   "speaker": "player",
+   "role": "player",
+   "category": "escena",
+   "text": "It's a car, not an inventory item. Although in this game I wouldn't rule it out.",
+   "tts": "It's a car, not an inventory item. Although in this game I wouldn't rule it out.",
+   "chars": 80,
+   "hash": "32801c626b759145"
+  },
+  {
    "key": "player_its_a_door_it_wants_a_10296748",
    "speaker": "player",
    "role": "player",
@@ -17924,6 +17984,16 @@
    "tts": "It's already open. That's what a peel is. A banana's closing argument.",
    "chars": 70,
    "hash": "e8817212fb45613e"
+  },
+  {
+   "key": "player_its_already_shut_everything_about_this_77f819d6",
+   "speaker": "player",
+   "role": "player",
+   "category": "escena",
+   "text": "It's already shut. Everything about this car is shut. Especially to me.",
+   "tts": "It's already shut. Everything about this car is shut. Especially to me.",
+   "chars": 71,
+   "hash": "8b8aeec9f53a987f"
   },
   {
    "key": "player_its_already_shut_extremely_shut_shut_37cf6efb",
@@ -18764,6 +18834,16 @@
    "tts": "No hidden passage. Not in this wall. ...The rack, though. That rack looks shifty.",
    "chars": 81,
    "hash": "0c5f2a16b650c767"
+  },
+  {
+   "key": "player_no_key_the_bot_bought_the_675f72f9",
+   "speaker": "player",
+   "role": "player",
+   "category": "escena",
+   "text": "No key. The bot bought the car and forgot the key. That's the most me thing that's ever happened to me.",
+   "tts": "No key. The bot bought the car and forgot the key. That's the most me thing that's ever happened to me.",
+   "chars": 103,
+   "hash": "2e0726c6276cd5ed"
   },
   {
    "key": "player_no_keypad_on_this_hatch_7314_6c2ef176",
@@ -21036,16 +21116,6 @@
    "hash": "f9a5dfd264f9211e"
   },
   {
-   "key": "player_the_admin_dashboard_lights_up_floorengine_be1471a1",
-   "speaker": "player",
-   "role": "player",
-   "category": "escena",
-   "text": "The admin dashboard lights up. FloorEngine: 847 sweeps. TraitLab: 12,459 traits minted. SweepBot: running 24/7 for 403 days.",
-   "tts": "The admin dashboard lights up. FloorEngine: 847 sweeps. TraitLab: 12,459 traits minted. SweepBot: running 24/7 for 403 days.",
-   "chars": 124,
-   "hash": "69a3e23ff32ae4c6"
-  },
-  {
    "key": "player_the_ai_trading_bot_interrupts_these_2e0c165f",
    "speaker": "player",
    "role": "player",
@@ -21304,6 +21374,16 @@
    "tts": "The card reader turns green — I'm authorized. But there's also a physical keyhole underneath. The door has a dual-lock system. I need a key.",
    "chars": 140,
    "hash": "034e8c60cb068e1d"
+  },
+  {
+   "key": "player_the_carport_finally_has_a_car_4ea8e386",
+   "speaker": "player",
+   "role": "player",
+   "category": "escena",
+   "text": "The carport finally has a car in it. Not Adrian's. Technically not anyone's.",
+   "tts": "The carport finally has a car in it. Not Adrian's. Technically not anyone's.",
+   "chars": 76,
+   "hash": "19714e0da32c532c"
   },
   {
    "key": "player_the_case_is_screwed_shut_a_f3e48e32",
@@ -24614,6 +24694,26 @@
    "tts": "'Welcome?' The mat says HODL. That's all it ever says.",
    "chars": 54,
    "hash": "c434a69703df02d3"
+  },
+  {
+   "key": "player_wen_lambo_apparently_now_4d5f7b95",
+   "speaker": "player",
+   "role": "player",
+   "category": "escena",
+   "text": "...wen lambo? Apparently: now.",
+   "tts": "...wen lambo? Apparently: now.",
+   "chars": 30,
+   "hash": "e490f8a3ff57e65a"
+  },
+  {
+   "key": "player_wen_lambo_now_apparently_i_expected_ac89211d",
+   "speaker": "player",
+   "role": "player",
+   "category": "escena",
+   "text": "Wen lambo? ...Now, apparently. I expected to feel more.",
+   "tts": "Wen lambo? ...Now, apparently. I expected to feel more.",
+   "chars": 55,
+   "hash": "6f598a26fe00fbac"
   },
   {
    "key": "player_wet_apes_id_lose_a_grip_f525cf66",

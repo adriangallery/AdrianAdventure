@@ -3271,6 +3271,14 @@
   "cost": 19,
   "lufs_in": -23.6
  },
+ "player_a_yellow_wedge_with_wheels_the_b87d4e3b": {
+  "sig": "30669d6c94eae25c",
+  "role": "player",
+  "voice": "Chris",
+  "model": "eleven_v4_turbo",
+  "cost": 24,
+  "lufs_in": -23.6
+ },
  "player_access_denied_at_0347_0348_9761136a": {
   "sig": "ba7081bb84722749",
   "role": "player",
@@ -4574,6 +4582,14 @@
   "model": "eleven_v4_turbo",
   "cost": 6,
   "lufs_in": -24.6
+ },
+ "player_could_be_anyones_literally_millions_of_1223b1c0": {
+  "sig": "ef7640ae41601817",
+  "role": "player",
+  "voice": "Chris",
+  "model": "eleven_v4_turbo",
+  "cost": 16,
+  "lufs_in": -22.9
  },
  "player_crack_the_reinforced_polymer_shatters_glass_edc5ed73": {
   "sig": "8237830951b2b7bc",
@@ -9631,6 +9647,14 @@
   "cost": 23,
   "lufs_in": -24.6
  },
+ "player_i_pull_the_door_upwards_scissor_d737872c": {
+  "sig": "8f2a7536c2f65aa5",
+  "role": "player",
+  "voice": "Chris",
+  "model": "eleven_v4_turbo",
+  "cost": 17,
+  "lufs_in": -23.6
+ },
  "player_i_pull_the_door_warm_air_9a402508": {
   "sig": "a47bb623a6d7543e",
   "role": "player",
@@ -10086,6 +10110,14 @@
   "model": "eleven_v4_turbo",
   "cost": 13,
   "lufs_in": -24
+ },
+ "player_i_push_it_its_low_enough_d4ac6138": {
+  "sig": "f41838fd194afa5d",
+  "role": "player",
+  "voice": "Chris",
+  "model": "eleven_v4_turbo",
+  "cost": 17,
+  "lufs_in": -23.7
  },
  "player_i_push_it_opens_upward_ive_816bee1f": {
   "sig": "a6906dd37a225733",
@@ -13591,6 +13623,14 @@
   "cost": 16,
   "lufs_in": -23.4
  },
+ "player_im_not_giving_anything_to_a_e7bec582": {
+  "sig": "9d637d285f518856",
+  "role": "player",
+  "voice": "Chris",
+  "model": "eleven_v4_turbo",
+  "cost": 20,
+  "lufs_in": -23.4
+ },
  "player_im_not_giving_away_gpus_do_298b6631": {
   "sig": "1edc6d33ddad23ac",
   "role": "player",
@@ -14167,6 +14207,14 @@
   "cost": 18,
   "lufs_in": -23.8
  },
+ "player_its_a_car_not_an_inventory_d5ff2878": {
+  "sig": "57d140052f8643ad",
+  "role": "player",
+  "voice": "Chris",
+  "model": "eleven_v4_turbo",
+  "cost": 18,
+  "lufs_in": -24.2
+ },
  "player_its_a_door_it_wants_a_10296748": {
   "sig": "04bc87d6f219cf36",
   "role": "player",
@@ -14334,6 +14382,14 @@
   "model": "eleven_v4_turbo",
   "cost": 15,
   "lufs_in": -22.5
+ },
+ "player_its_already_shut_everything_about_this_77f819d6": {
+  "sig": "ec6caa812b14ba4e",
+  "role": "player",
+  "voice": "Chris",
+  "model": "eleven_v4_turbo",
+  "cost": 16,
+  "lufs_in": -24.5
  },
  "player_its_already_shut_extremely_shut_shut_37cf6efb": {
   "sig": "7c6593a65820fea6",
@@ -15006,6 +15062,14 @@
   "model": "eleven_v4_turbo",
   "cost": 18,
   "lufs_in": -24.6
+ },
+ "player_no_key_the_bot_bought_the_675f72f9": {
+  "sig": "3623ce7e899ed112",
+  "role": "player",
+  "voice": "Chris",
+  "model": "eleven_v4_turbo",
+  "cost": 23,
+  "lufs_in": -23.5
  },
  "player_no_keypad_on_this_hatch_7314_6c2ef176": {
   "sig": "c11ec10739822db7",
@@ -17038,6 +17102,14 @@
   "model": "eleven_v4_turbo",
   "cost": 31,
   "lufs_in": -24.1
+ },
+ "player_the_carport_finally_has_a_car_4ea8e386": {
+  "sig": "c84673cb5c5b59f5",
+  "role": "player",
+  "voice": "Chris",
+  "model": "eleven_v4_turbo",
+  "cost": 17,
+  "lufs_in": -23
  },
  "player_the_case_is_screwed_shut_a_f3e48e32": {
   "sig": "202d29dbc8dae9ca",
@@ -19686,6 +19758,22 @@
   "model": "eleven_v4_turbo",
   "cost": 12,
   "lufs_in": -23.2
+ },
+ "player_wen_lambo_apparently_now_4d5f7b95": {
+  "sig": "7990f69c1257a91b",
+  "role": "player",
+  "voice": "Chris",
+  "model": "eleven_v4_turbo",
+  "cost": 7,
+  "lufs_in": -22.1
+ },
+ "player_wen_lambo_now_apparently_i_expected_ac89211d": {
+  "sig": "02d6f76eff4f3c8d",
+  "role": "player",
+  "voice": "Chris",
+  "model": "eleven_v4_turbo",
+  "cost": 12,
+  "lufs_in": -24.2
  },
  "player_wet_apes_id_lose_a_grip_f525cf66": {
   "sig": "e0aaef7c6578ac7b",
