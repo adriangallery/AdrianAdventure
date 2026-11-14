@@ -16,6 +16,8 @@ import type { GameState } from '@/types/game.types';
  *      la partida carga en el spawn por defecto de la escena (ver `savedSpawn`).
  *      A9.4: campos aditivos `playTimeMs` (tiempo jugado) y `completedAt` (partida terminada), opcionales y sin subir
  *      versión: si no son números finitos ≥ 0 (> 0 en `completedAt`) se descartan; nada más se toca.
+ *      A9.14: campo aditivo `chapterTimes` (marcas de duración por capítulo, opcional, sin subir versión): corrupto =
+ *      se descarta (la partida vuelve a empezar a medir; lo ya cerrado queda sin medir).
  *
  * Toda partida que entra en el juego pasa por aquí: los slots locales (`SaveLoadSystem.getAllSlots`), la
  * partida de la wallet en localStorage y la de la nube (`wallet-save`: `loadLocal`, `loadRemoteSlots`,
@@ -98,8 +100,28 @@ export function migrateGameState<T extends Partial<GameState> | null | undefined
     const c = state.completedAt as unknown;
     if (!(typeof c === 'number' && Number.isFinite(c) && c > 0)) delete state.completedAt;
   }
+  // A9.14: marcas de duración por capítulo (opcionales; corruptas = se descartan)
+  if (state.chapterTimes !== undefined) {
+    const ct = cleanChapterTimes(state.chapterTimes);
+    if (ct) state.chapterTimes = ct; else delete state.chapterTimes;
+  }
   if (typeof state.saveVersion !== 'number' || state.saveVersion < SAVE_VERSION) state.saveVersion = SAVE_VERSION;
   return state;
+}
+
+/** A9.14: Saneado para SaveMigration: devuelve un `ChapterTimes` válido o null (= se descarta y se vuelve a empezar). */
+export function cleanChapterTimes(raw: unknown): { start: number; marks: Record<string, number> } | null {
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return null;
+  const r = raw as Record<string, unknown>;
+  if (typeof r.start !== 'number' || !Number.isFinite(r.start) || r.start < 0) return null;
+  if (!r.marks || typeof r.marks !== 'object' || Array.isArray(r.marks)) return null;
+  const marks: Record<string, number> = {};
+  for (const [k, v] of Object.entries(r.marks as Record<string, unknown>)) {
+    const n = Number(k);
+    if (!Number.isInteger(n) || n < 1 || n > 5 || String(n) !== k) continue;
+    if (typeof v === 'number' && Number.isFinite(v) && (v === -1 || v >= 0)) marks[k] = Math.floor(v);
+  }
+  return { start: Math.floor(r.start), marks };
 }
 
 function cleanPosition(raw: unknown): { pctX: number; pctY: number } | null {

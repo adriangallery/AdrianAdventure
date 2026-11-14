@@ -81,6 +81,11 @@ export interface GameState {
    * «Continue» sobre una partida terminada vuelve al epílogo (el camino de bajada repite el final) y la portada lo dice.
    */
   completedAt?: number;
+  /**
+   * A9.14: marcas de tiempo jugado al cerrar cada capítulo (telemetría anónima de duración; ver ChapterTiming.ts).
+   * Opcional y aditivo; marca -1 = capítulo cerrado antes de medir.
+   */
+  chapterTimes?: { start: number; marks: Record<string, number> };
 }
 
 export interface InventoryItem {
