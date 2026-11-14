@@ -368,15 +368,18 @@ await step('silencio: sin música ni voces; al activar el sonido en ajustes, sí
     await p.evaluate(() => document.getElementById('save-load-overlay')?.remove());
     if (!/On/.test(label)) throw new Error(`el botón de ajustes no activó el sonido: «${label}»`);
     const music = await p.evaluate(() => window.__game.registry.get('sceneData')?.audio?.music);
+    // A8.3: en una escena con tema de niveles suena un nivel del tema (<tema>-n<k>), no la pista de scene.json
     await wait((key) => {
       const mm = window.__game.registry.get('musicManager');
-      return !mm.isMuted() && mm.currentKey === key;
+      const theme = mm.adaptiveQa().theme;
+      return !mm.isMuted() && (mm.currentKey === key || (!!theme && String(mm.currentKey).startsWith(`${theme}-n`)));
     }, music, 60000);
     await p.evaluate((key) => window.__game.registry.get('voiceSystem')?.play('smoke voice line', key), voiceKey);
     await new Promise((r) => setTimeout(r, 3000));
     const loud = audioReqs.filter((r) => r.phase === 'sonido');
     console.log(`    sonido activado en ajustes: ${loud.map((r) => r.url.split('?')[0]).join(', ') || 'nada'} (${mb(audioBytes.sonido)})`);
-    if (!loud.some((r) => r.kind === 'music' && r.url.includes(`/${music}.mp3`))) throw new Error(`al activar el sonido no se pidió la música de la escena (${music})`);
+    const playing = await p.evaluate(() => window.__game.registry.get('musicManager').currentKey);
+    if (!loud.some((r) => r.kind === 'music' && (r.url.includes(`/${music}.mp3`) || r.url.includes(`/${playing}.mp3`)))) throw new Error(`al activar el sonido no se pidió la música de la escena (${music} / ${playing})`);
     if (voiceKey && !loud.some((r) => r.kind === 'voice')) throw new Error('al activar el sonido la voz no se pidió');
     // A4.4: y el bucle de ambiente de la escena (si lo tiene), que llega a sonar
     const ambience = await p.evaluate(() => window.__game.registry.get('sceneData')?.audio?.ambience ?? null);

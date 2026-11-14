@@ -12,19 +12,37 @@
 // el fondo (`server_room/overlay_lights_out`) se queda entero, solo pasa a WebP.
 // Los sprites de `web3Visuals` ya van colocados con position/size: solo se comprueba que no sean del tamaño del fondo.
 //
-// Uso:  node scripts/crop-overlays.mjs           recorta y actualiza (necesita `npm ci`: sharp)
-//       node scripts/crop-overlays.mjs --check   rc 1 si algún overlay está sin recortar, en PNG o no cuadra con su
-//                                                `bounds` (job `lint`). Sin sharp solo mira las cabeceras.
+// A9.16: además, con sharp, cada overlay se compara píxel a píxel con el fondo de su escena (scripts/lib/
+// overlay-pixels.mjs): falla si lleva una zona grande de píxeles opacos CASI iguales al fondo (0 < Δ ≤ 12 en más de
+// 2500 px y más del 12,5 % de sus opacos): manchas de otro tono, como el cielo del espejo de la veleta de A9.12. Y
+// (con o sin sharp) cada overlay tiene que estar en qa/overlays.lock.json con el sha256 del
+// background.webp de su escena y el suyo propio: si cambia el fondo (o el overlay) sin revalidar, falla. Un overlay
+// con el defecto de manchas que se acepta a sabiendas lleva `"aviso": "<motivo>"` en su entrada y sale como aviso.
+//
+// Uso:  node scripts/crop-overlays.mjs                recorta y actualiza (necesita `npm ci`: sharp)
+//       node scripts/crop-overlays.mjs --check        rc 1 si algún overlay está sin recortar, en PNG, no cuadra con su
+//                                                     `bounds`, tiene manchas casi iguales al fondo o no cuadra con
+//                                                     overlays.lock.json (job `lint`). Sin sharp solo mira las
+//                                                     cabeceras y los hashes.
+//       node scripts/crop-overlays.mjs --update-lock  reescribe overlays.lock.json con los hashes de hoy (conserva los
+//                                                     `aviso`). Solo DESPUÉS de mirar el overlay encima del fondo
+//                                                     nuevo (o de regenerarlo con su script make-*).
 import { readFileSync, writeFileSync, readdirSync, existsSync, statSync, renameSync, unlinkSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { contentBox, boxToPct, pctToBox, isFullBox, imageSize, replaceTopLevelKey } from './lib/overlay-crop.mjs';
+import { overlayVsBackground, isNearPatchDefect, sha256, lockProblems, NEAR_DELTA } from './lib/overlay-pixels.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const SCENES = join(ROOT, 'assets', 'scenes');
 const CHECK = process.argv.includes('--check');
+const UPDATE_LOCK = process.argv.includes('--update-lock');
+const LOCK_FILE = join(ROOT, 'qa', 'overlays.lock.json'); // fuera de assets/scenes: hay pruebas que leen cada entrada como carpeta de escena
+const lock = existsSync(LOCK_FILE) ? JSON.parse(readFileSync(LOCK_FILE, 'utf8')) : { overlays: {} };
+const hashes = {};
+const warnings = [];
 const sharp = (await import('sharp').catch(() => null))?.default ?? null;
-if (!sharp && !CHECK) {
+if (!sharp && !CHECK && !UPDATE_LOCK) {
   console.error('crop-overlays: falta sharp (npm ci). Con --check se pueden revisar solo las cabeceras.');
   process.exit(2);
 }
@@ -54,6 +72,8 @@ for (const id of readdirSync(SCENES).sort()) {
 
   let changed = false;
   const next = [];
+  let bgPixels = null; // fondo decodificado (con sharp), una vez por escena
+  const bgHash = sha256(readFileSync(bgFile));
   for (const co of scene.conditionalOverlays ?? []) {
     const where = `${id}.conditionalOverlays.${co.id}`;
     const ext = co.format === 'webp' ? 'webp' : 'png';
@@ -63,6 +83,7 @@ for (const id of readdirSync(SCENES).sort()) {
       next.push(co);
       continue;
     }
+    hashes[`${id}/${co.id}`] = { background: bgHash, overlay: sha256(readFileSync(file)) };
     const size = sizeOf(file);
     // Marco de la imagen actual dentro del fondo
     let frame;
@@ -100,6 +121,14 @@ for (const id of readdirSync(SCENES).sort()) {
     }
     const full = isFullBox(box, img.width, img.height);
     if (full && ext === 'webp' && co.bounds) {
+      bgPixels ??= await decode(bgFile);
+      const st = overlayVsBackground(img.data, img.width, img.height, bgPixels.data, bgPixels.width, bgPixels.channels, frame.left, frame.top);
+      if (isNearPatchDefect(st)) {
+        const msg = `${where}: ${st.near} px opacos casi iguales al fondo (0 < Δ ≤ ${NEAR_DELTA}; ${(100 * st.near / st.opaque).toFixed(1)} % de ${st.opaque}): manchas de otro tono; deja opaco solo lo que cambia`;
+        const aviso = lock.overlays?.[`${id}/${co.id}`]?.aviso;
+        if (aviso) warnings.push(`${msg} — aviso aceptado: ${aviso}`);
+        else problems.push(msg);
+      }
       rows.push({ where, size: `${size.width}x${size.height}`, bytes: kb(before), note: 'ya recortado' });
       next.push(co);
       continue;
@@ -140,7 +169,21 @@ for (const id of readdirSync(SCENES).sort()) {
   }
 }
 
+if (UPDATE_LOCK) {
+  const overlays = {};
+  for (const key of Object.keys(hashes).sort()) {
+    const aviso = lock.overlays?.[key]?.aviso;
+    overlays[key] = { ...hashes[key], ...(aviso ? { aviso } : {}) };
+  }
+  const doc = lock._doc ?? 'A9.16: sha256 del background.webp de la escena y del overlay con los que se validó cada conditionalOverlay. Si cambia el fondo, crop-overlays --check falla hasta revisar el overlay encima del fondo nuevo (o regenerarlo) y ejecutar node scripts/crop-overlays.mjs --update-lock.';
+  writeFileSync(LOCK_FILE, JSON.stringify({ _doc: doc, overlays }, null, 2) + '\n');
+  console.log(`overlays.lock.json: ${Object.keys(overlays).length} overlays`);
+} else {
+  problems.push(...lockProblems(lock, hashes));
+}
+
 for (const r of rows) console.log(`  ${r.where.padEnd(42)} ${r.size.padEnd(36)} ${r.bytes.padEnd(18)} ${r.note}`);
+for (const w of warnings) console.log(`  ⚠ ${w}`);
 if (problems.length) {
   console.log(`\n${problems.length} problema(s) con los overlays:`);
   for (const p of problems) console.log(`  ✖ ${p}`);

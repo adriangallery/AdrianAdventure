@@ -149,6 +149,8 @@ export interface PrefetchTask {
 }
 
 export interface PlanInput {
+  /** A8.3: pista que suena de verdad al entrar en una escena (nivel 0 de su tema); sin ella, la de scene.json */
+  musicFor?: (sceneId: string, track: string) => string;
   /** Escena en la que está el jugador */
   current: string;
   /** Vecinas de `current`, en orden (sceneExits) */
@@ -192,7 +194,8 @@ export function planPrefetch(input: PlanInput): PrefetchTask[] {
   }
   if (!muted) {
     for (const id of neighbors) {
-      const track = scenes[id]?.audio?.music;
+      const raw = scenes[id]?.audio?.music;
+      const track = raw && input.musicFor ? input.musicFor(id, raw) : raw;
       if (track) add({ scene: id, kind: 'music', url: musicUrl(track, v), key: track });
     }
     // A4.4: y su ambiente (ligero: ~130 KB por bucle), detrás de la música

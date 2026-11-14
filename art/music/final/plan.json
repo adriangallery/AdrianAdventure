@@ -53,6 +53,202 @@
         59294,
         59294
       ]
+    },
+    "completo": {
+      "$comment": "A8.3: niveles de intensidad en UNA sola generación (misma tonalidad y tempo por construcción). Se corta en los límites de bloque (compases enteros) en assets/audio/music/<tema>-n<nivel>.mp3.",
+      "checkpoint": "A8.3",
+      "semilla": 8505,
+      "output_format": "mp3_44100_192",
+      "niveles": [
+        {
+          "nivel": 0,
+          "nombre": "calma",
+          "compases": 22,
+          "bucle": true,
+          "desdeCompas": 2,
+          "$comment": "la generación empieza con 5,7 s de silencio: el nivel 0 salta 2 compases (22 en vez de 24)"
+        },
+        {
+          "nivel": 1,
+          "nombre": "activo",
+          "compases": 16,
+          "bucle": true
+        },
+        {
+          "nivel": 2,
+          "nombre": "tension",
+          "compases": 16,
+          "bucle": true
+        },
+        {
+          "nivel": 3,
+          "nombre": "triunfo",
+          "compases": 4,
+          "bucle": false
+        }
+      ],
+      "compases": [
+        24,
+        16,
+        16,
+        4
+      ],
+      "duraciones_ms": [
+        67765,
+        45176,
+        45176,
+        11294
+      ],
+      "chunks": [
+        {
+          "text": "[Level 0 - calm exploration]\n{calm, curious exploration: the main melody stated softly and sparsely, light percussion or none}",
+          "duration_ms": 67765,
+          "positive_styles": [
+            "1990s point-and-click adventure game music",
+            "high-quality General MIDI orchestral",
+            "instrumental",
+            "85 BPM",
+            "C major",
+            "4/4",
+            "memorable melody",
+            "french horn",
+            "warm strings",
+            "oboe",
+            "harp",
+            "glockenspiel",
+            "timpani rolls",
+            "calm"
+          ],
+          "negative_styles": [
+            "vocals",
+            "singing",
+            "voice",
+            "choir",
+            "lyrics",
+            "spoken word",
+            "rap",
+            "humming",
+            "modern EDM",
+            "dubstep",
+            "trap beat",
+            "heavy distortion",
+            "vinyl crackle",
+            "lo-fi hiss"
+          ],
+          "context_adherence": "high"
+        },
+        {
+          "text": "[Level 1 - active]\n{active: same tempo and key, the melody now over a steady drum groove and moving bass line, more notes, counter-melodies, lively}",
+          "duration_ms": 45176,
+          "positive_styles": [
+            "1990s point-and-click adventure game music",
+            "high-quality General MIDI orchestral",
+            "instrumental",
+            "85 BPM",
+            "C major",
+            "4/4",
+            "memorable melody",
+            "french horn",
+            "warm strings",
+            "oboe",
+            "harp",
+            "glockenspiel",
+            "timpani rolls",
+            "energetic, drum groove"
+          ],
+          "negative_styles": [
+            "vocals",
+            "singing",
+            "voice",
+            "choir",
+            "lyrics",
+            "spoken word",
+            "rap",
+            "humming",
+            "modern EDM",
+            "dubstep",
+            "trap beat",
+            "heavy distortion",
+            "vinyl crackle",
+            "lo-fi hiss"
+          ],
+          "context_adherence": "high"
+        },
+        {
+          "text": "[Level 2 - tension / action]\n{tension and action: same key and BPM, double-time drums, driving 16th-note ostinato, strong toms and timpani hits, staccato strings, urgent}",
+          "duration_ms": 45176,
+          "positive_styles": [
+            "1990s point-and-click adventure game music",
+            "high-quality General MIDI orchestral",
+            "instrumental",
+            "85 BPM",
+            "C major",
+            "4/4",
+            "memorable melody",
+            "french horn",
+            "warm strings",
+            "oboe",
+            "harp",
+            "glockenspiel",
+            "timpani rolls",
+            "intense, double-time drums, action"
+          ],
+          "negative_styles": [
+            "vocals",
+            "singing",
+            "voice",
+            "choir",
+            "lyrics",
+            "spoken word",
+            "rap",
+            "humming",
+            "modern EDM",
+            "dubstep",
+            "trap beat",
+            "heavy distortion",
+            "vinyl crackle",
+            "lo-fi hiss"
+          ],
+          "context_adherence": "high"
+        },
+        {
+          "text": "[Level 3 - triumph]\n{triumph: short joyful fanfare of the main melody, bright brass and glockenspiel, ends on the tonic chord}",
+          "duration_ms": 11294,
+          "positive_styles": [
+            "1990s point-and-click adventure game music",
+            "high-quality General MIDI orchestral",
+            "instrumental",
+            "85 BPM",
+            "C major",
+            "4/4",
+            "memorable melody",
+            "french horn",
+            "warm strings",
+            "oboe",
+            "harp",
+            "glockenspiel",
+            "timpani rolls",
+            "triumphant fanfare"
+          ],
+          "negative_styles": [
+            "vocals",
+            "singing",
+            "voice",
+            "choir",
+            "lyrics",
+            "spoken word",
+            "rap",
+            "humming",
+            "modern EDM",
+            "dubstep",
+            "trap beat",
+            "heavy distortion",
+            "vinyl crackle",
+            "lo-fi hiss"
+          ],
+          "context_adherence": "high"
+        }
+      ]
     }
   },
   "composition_plan": {

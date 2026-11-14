@@ -247,8 +247,10 @@ export class UIScene extends Phaser.Scene {
       const npcs = (gameScene as unknown as { npcs?: import('@/objects/NPC').NPC[] }).npcs;
       npcs?.find((n) => n.npcId === npcId)?.engage();
       this.registry.set('dialogueActive', true);
+      this.registry.set('dialogueTree', treeId); // A8.3: la música sube en los diálogos tensos (music-map.json → rules)
       this.startDialogueFromScene(treeId, startNode).finally(() => {
         this.registry.set('dialogueActive', false);
+        this.registry.set('dialogueTree', null);
       });
     });
 
@@ -275,8 +277,10 @@ export class UIScene extends Phaser.Scene {
     this.events.on('startDialogue', (_npcId: string, treeId: string) => {
       this.journal?.close();
       this.registry.set('dialogueActive', true);
+      this.registry.set('dialogueTree', treeId);
       this.startDialogueFromScene(treeId).finally(() => {
         this.registry.set('dialogueActive', false);
+        this.registry.set('dialogueTree', null);
       });
     });
 

@@ -1,0 +1,85 @@
+{
+  "_doc": "A9.16: sha256 del background.webp de la escena y del overlay con los que se validó cada conditionalOverlay. Si cambia el fondo, crop-overlays --check falla hasta revisar el overlay encima del fondo nuevo (o regenerarlo) y ejecutar node scripts/crop-overlays.mjs --update-lock.",
+  "overlays": {
+    "clinic_interior/no_photo": {
+      "background": "29a91a812dd137f95ef4949f0a4c58a44ab8e758d79a695733a8c5a65962b8ae",
+      "overlay": "d10264b8e44c3ee221ecfc15e35261260fb4070c27d936c36fd35b9f9c4821ef"
+    },
+    "lobby/plant_revived": {
+      "background": "e072eefcd06790358e9a0259dc0602a14494e9a10ace45c31e062909ddc0e6cd",
+      "overlay": "ad60e29dffb26c322d522390f60104c86a2f53bf2e83145ad0abb03ea675c934",
+      "aviso": "A9.16: lleva opaca la pared de detrás de la planta, casi igual al fondo (43231 px con Δ ≤ 12, 27,5 %). En la pared lisa del vestíbulo no se ve mancha; pendiente de dejar opaca solo la planta (y su sombra) si algún día se regenera."
+    },
+    "outside/doormat_lump": {
+      "background": "8b5d9e129e45bf31c8bd123f5ff59ab7b94a3f9858eecc34e323918943774599",
+      "overlay": "f3744d19e5410e061f53799e2f9c0bd1dfa67d9d78ba4e77e92f1ae664d4fb26"
+    },
+    "outside/doormat_peeled": {
+      "background": "8b5d9e129e45bf31c8bd123f5ff59ab7b94a3f9858eecc34e323918943774599",
+      "overlay": "ceb37ffec8e206aec51f00bb9a34cc87ecb657e2242b2964106f65c8861e7699"
+    },
+    "outside/fence_gap": {
+      "background": "8b5d9e129e45bf31c8bd123f5ff59ab7b94a3f9858eecc34e323918943774599",
+      "overlay": "0ecafd8287dea25c8515fcbb4affc0bc47be3f7e7b8616c855931c112002180f"
+    },
+    "outside/lamp_empty": {
+      "background": "8b5d9e129e45bf31c8bd123f5ff59ab7b94a3f9858eecc34e323918943774599",
+      "overlay": "1113cdbc110a5943ea090f244cc5986d08a0bdb80c0c9b32bef0b281c654cb0e"
+    },
+    "outside/mailbox_empty": {
+      "background": "8b5d9e129e45bf31c8bd123f5ff59ab7b94a3f9858eecc34e323918943774599",
+      "overlay": "2da58e402bfa74a9198b91285bafc584e0ac7ee562ae8cad90ac967df352a46c"
+    },
+    "outside/nest": {
+      "background": "8b5d9e129e45bf31c8bd123f5ff59ab7b94a3f9858eecc34e323918943774599",
+      "overlay": "489136cda6a7291cd8f3eb8e473ea392c1b6c271985e19a5e33d85df1a6a32f4"
+    },
+    "outside/plank_loose": {
+      "background": "8b5d9e129e45bf31c8bd123f5ff59ab7b94a3f9858eecc34e323918943774599",
+      "overlay": "cb241c7b76da739025e366287c15ccc76583674cf8c2b93ab77492c08330f766"
+    },
+    "recovery_pool/door_closed": {
+      "background": "f83b24bc43f509956eea1f6b21d64c79426be6d120f2b7beb1f4d18568975e52",
+      "overlay": "169319922b101163a6158141045144db753cac25621c3cc8db78578076298da7"
+    },
+    "recovery_pool/door_open": {
+      "background": "f83b24bc43f509956eea1f6b21d64c79426be6d120f2b7beb1f4d18568975e52",
+      "overlay": "54dd61476a555261dabcd847ce05637ff45f982eafa5e683fa6c519dad68ddc3"
+    },
+    "rooftop/vane_flipped": {
+      "background": "64630124d03a886e47dd554968f5e2a314cea60b6748764df407f5bd30a0a442",
+      "overlay": "b7943ee4593726b1c9de73e938bae740ede99c83fc92bdbe61509de73bf24212"
+    },
+    "server_room/glass_broken": {
+      "background": "0b30ac5aed9d5a0428f387d3589e4083694f384b37434aed1657366f7e6fff76",
+      "overlay": "3a953cb39b3bf699e5940e83b8a9262762876a354aef2963ad18e560b1964134",
+      "aviso": "A9.16: repinta la caja del interruptor entera con el cristal roto; el marco sale casi igual al fondo (Δ ≤ 12). Es la misma pieza vista con otro cristal y en la sala oscura no se ve mancha; pendiente si se regenera."
+    },
+    "server_room/lights_out": {
+      "background": "0b30ac5aed9d5a0428f387d3589e4083694f384b37434aed1657366f7e6fff76",
+      "overlay": "3cf7b0ad4ec0eef3a45b51441fa065ac2d3012f79a1476843ccefbb569f292de",
+      "aviso": "A9.16: oscurece la sala entera a propósito (apagón): los píxeles casi iguales son el oscurecimiento suave de las zonas ya oscuras, no una mancha."
+    },
+    "server_room/tile_lifted": {
+      "background": "0b30ac5aed9d5a0428f387d3589e4083694f384b37434aed1657366f7e6fff76",
+      "overlay": "b1a3e74c0856ca8fbd0b6ef070005a8455d476d5f74b36350f630608d1c7c8da"
+    },
+    "server_room/tiles_open": {
+      "background": "0b30ac5aed9d5a0428f387d3589e4083694f384b37434aed1657366f7e6fff76",
+      "overlay": "bee1b53d1bf57a28c4ea733b97e2e1d022a15c5899b99bb14f7bf9b967787662",
+      "aviso": "A9.16: repinta el suelo entero con las baldosas abiertas; el resto del suelo sale casi igual (Δ ≤ 12) por venir de otra generación. En la sala oscura no se distingue; pendiente de recortar a las baldosas si se regenera."
+    },
+    "treatment_room/adrian_silhouette": {
+      "background": "de558bc2c109c3dd939f3873492516bccd38c62f72d8c7e085fa8e1e996c8446",
+      "overlay": "55d43fba5a21e4283d568fa327545e4cf275c43655b8723049f1ad8145a23f30"
+    },
+    "treatment_room/note_folded": {
+      "background": "de558bc2c109c3dd939f3873492516bccd38c62f72d8c7e085fa8e1e996c8446",
+      "overlay": "2757e7d072b6ec1cb92024d238d3d51ec15149ea4d2010d2d9bb5001b55da7dc"
+    },
+    "upstairs/no_energy_drink": {
+      "background": "f6e9f3443f9bd425a3b83e8a7e7a1d342b7bed18a0e259cfa59fc3c39e3bdeed",
+      "overlay": "ac1701a2614200e21c82d02e1b3e94f072f4ffb347cc8880e07f990b11d0c9f6"
+    }
+  }
+}
