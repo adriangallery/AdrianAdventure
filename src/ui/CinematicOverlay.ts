@@ -2,7 +2,7 @@ import Phaser from 'phaser';
 import { achievementRect, achievementStripHeight, type Rect } from './achievementLayout';
 import { FONT } from '@/config/theme';
 import { BRANDING } from '@/config/branding';
-import { CREDITS_HOLD_MS, CREDITS_LOCK_MS, creditsSkipAllowed, endingTapAllowed, type CreditsInput } from '@/systems/Ending';
+import { CREDITS_HOLD_MS, CREDITS_LOCK_MS, ENDING_TAP_GUARD_MS, creditsSkipAllowed, endingTapAllowed, type CreditsInput } from '@/systems/Ending';
 
 /** A9.4: lo que la API de QA y las demos ven de los créditos */
 export interface CreditsQaInfo {
