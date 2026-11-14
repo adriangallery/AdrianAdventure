@@ -205,7 +205,7 @@
       "goal": {"has": ["ledger"]},
       "steps": [
         {"do": "newGame", "expect": {"scene": "outside", "lacks": ["ledger", "fence_plank"]}},
-        {"do": "act", "verb": "OPEN", "target": "hs_doormat", "rejects": "It means it", "expect": {"lacks": ["ledger"], "unsetFlags": ["found_ledger"]}},
+        {"do": "act", "verb": "OPEN", "target": "hs_doormat", "rejects": "Glued down", "expect": {"lacks": ["ledger"], "unsetFlags": ["found_ledger"]}},
         {"do": "act", "verb": "PULL", "target": "hs_doormat", "rejects": "leverage", "expect": {"lacks": ["ledger"], "unsetFlags": ["found_ledger"]}},
         {"do": "act", "verb": "PUSH", "target": "hs_doormat", "rejects": "bonded to the porch", "expect": {"lacks": ["ledger"], "unsetFlags": ["found_ledger"]}},
         {"do": "act", "verb": "PICK", "target": "hs_doormat", "attempt": true, "rejects": "It means it", "expect": {"lacks": ["ledger"], "unsetFlags": ["found_ledger"]}}
