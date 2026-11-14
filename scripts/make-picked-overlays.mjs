@@ -31,7 +31,12 @@ const RING = 5;
 const NEAR = 12;
 
 /**
- * Parches. `shapes` en píxeles del fondo (3712×1152): { rect: [x, y, w, h] } o { ellipse: [cx, cy, rx, ry] }.
+ * Parches. `shapes` en píxeles del fondo (3712×1152): { rect: [x, y, w, h] }, { ellipse: [cx, cy, rx, ry] } o
+ * { key: [x, y, w, h], minLuma, grow }: dentro del rect, los píxeles claros (luma ≥ minLuma: un papel) y `grow` px
+ * alrededor (su contorno). `fill` (opcional): reglas para un objeto delante de superficies conocidas, cada una
+ * { x: [x0, x1], y: [y0, y1], from: 'row' | 'col', src }: 'row' copia el píxel de la fila `src` en la misma columna
+ * (lo vertical sigue hacia abajo: un marco, una pared), 'col' el de la columna `src` en la misma fila (lo horizontal
+ * sigue: una repisa). Lo que no cubre ninguna regla se rellena del borde hacia dentro.
  * `flag` = la flag «ya cogido» (la misma de `hideWhenFlag` del hotspot); `insertBefore` = clave de primer nivel delante
  * de la que va `conditionalOverlays` si la escena aún no tiene (cambio acotado: no se reordena nada).
  */
@@ -48,6 +53,24 @@ export const PATCHES = [
     shapes: [{ ellipse: [2328, 686, 36, 26] }, { ellipse: [2347, 700, 19, 15] }, { ellipse: [2338, 707, 20, 8] }],
     ignoreDark: 100,
   },
+  {
+    scene: 'memelab',
+    id: 'pepe_taken',
+    hotspot: 'hs_pepememe',
+    flag: 'found_pepememe',
+    depth: 5,
+    // la hoja impresa (el Rare Pepe) que asoma por encima de la impresora; el trozo que entra en la ranura se queda
+    shapes: [{ key: [2925, 598, 145, 58], minLuma: 150, grow: 7 }, { rect: [2958, 600, 95, 9] }],
+    ignoreDark: 60,
+    // detrás: el encerado y su marco siguen hacia abajo hasta la repisa, la repisa sigue hacia la derecha hasta el
+    // marco, y la pared lisa sigue hacia abajo desde encima de la hoja
+    fill: [
+      { x: [2900, 2931], y: [598, 640], from: 'col', src: 2918 },
+      { x: [2932, 2976], y: [598, 640], from: 'row', src: 594 },
+      { x: [2900, 2976], y: [641, 660], from: 'col', src: 2912 },
+      { x: [2977, 3075], y: [598, 660], from: 'row', src: 594 },
+    ],
+  },
 ];
 
 async function loadBg(scene) {
@@ -55,10 +78,19 @@ async function loadBg(scene) {
   return { data, w: info.width, h: info.height };
 }
 
-function buildMask(shapes, w, h) {
+function buildMask(shapes, w, h, bg) {
   const m = new Uint8Array(w * h);
+  const luma = (i) => 0.299 * bg[i * 4] + 0.587 * bg[i * 4 + 1] + 0.114 * bg[i * 4 + 2];
   for (const s of shapes) {
-    if (s.rect) {
+    if (s.key) {
+      const [x0, y0, rw, rh] = s.key;
+      const g = s.grow ?? 0;
+      const inRect = (x, y) => x >= x0 && y >= y0 && x < x0 + rw && y < y0 + rh;
+      for (let y = y0; y < y0 + rh; y++) for (let x = x0; x < x0 + rw; x++) {
+        if (luma(y * w + x) < s.minLuma) continue;
+        for (let dy = -g; dy <= g; dy++) for (let dx = -g; dx <= g; dx++) if (inRect(x + dx, y + dy)) m[(y + dy) * w + x + dx] = 1;
+      }
+    } else if (s.rect) {
       const [x0, y0, rw, rh] = s.rect;
       for (let y = y0; y < y0 + rh; y++) for (let x = x0; x < x0 + rw; x++) if (x >= 0 && y >= 0 && x < w && y < h) m[y * w + x] = 1;
     } else if (s.ellipse) {
@@ -75,7 +107,7 @@ function buildMask(shapes, w, h) {
 }
 
 /** Rellena la máscara desde el borde con los colores del fondo; devuelve RGBA del tamaño del fondo (alfa solo en la máscara) */
-export function inpaint(bg, w, h, mask, { ignoreDark = 0 } = {}) {
+export function inpaint(bg, w, h, mask, { ignoreDark = 0, fill = null } = {}) {
   const luma = (i) => 0.299 * bg[i * 4] + 0.587 * bg[i * 4 + 1] + 0.114 * bg[i * 4 + 2];
   const col = new Float32Array(w * h * 3);
   const known = new Uint8Array(w * h);
@@ -86,6 +118,16 @@ export function inpaint(bg, w, h, mask, { ignoreDark = 0 } = {}) {
   let x0 = w, y0 = h, x1 = -1, y1 = -1;
   for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) if (mask[y * w + x]) { if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; }
   const N = [[-1, 0], [1, 0], [0, -1], [0, 1], [-1, -1], [1, -1], [-1, 1], [1, 1]];
+  // 0. reglas de `fill` (copias de filas/columnas del fondo); esos píxeles no se suavizan después
+  for (const r of fill ?? []) {
+    for (let y = Math.max(y0, r.y[0]); y <= Math.min(y1, r.y[1]); y++) for (let x = Math.max(x0, r.x[0]); x <= Math.min(x1, r.x[1]); x++) {
+      const i = y * w + x;
+      if (!mask[i]) continue;
+      const j = r.from === 'row' ? r.src * w + x : y * w + r.src;
+      col[i * 3] = bg[j * 4]; col[i * 3 + 1] = bg[j * 4 + 1]; col[i * 3 + 2] = bg[j * 4 + 2];
+      known[i] = 2;
+    }
+  }
   // 1. piel de cebolla
   for (;;) {
     const layer = [];
@@ -108,7 +150,7 @@ export function inpaint(bg, w, h, mask, { ignoreDark = 0 } = {}) {
   for (let it = 0; it < 40; it++) {
     for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) {
       const i = y * w + x;
-      if (!mask[i]) continue;
+      if (!mask[i] || known[i] === 2) continue;
       let r = 0, g = 0, b = 0, n = 0;
       for (const [dx, dy] of N.slice(0, 4)) {
         const j = (y + dy) * w + (x + dx);
@@ -140,7 +182,8 @@ export function inpaint(bg, w, h, mask, { ignoreDark = 0 } = {}) {
     if (!mask[i]) continue;
     const r = col[i * 3], g = col[i * 3 + 1], b = col[i * 3 + 2];
     let best = palette[0], bd = Infinity;
-    for (const p of palette) { const d = (p[0] - r) ** 2 + (p[1] - g) ** 2 + (p[2] - b) ** 2; if (d < bd) { bd = d; best = p; } }
+    if (known[i] === 2) best = [r, g, b]; // copia de una regla: ya es un color del fondo
+    else for (const p of palette) { const d = (p[0] - r) ** 2 + (p[1] - g) ** 2 + (p[2] - b) ** 2; if (d < bd) { bd = d; best = p; } }
     const delta = Math.max(Math.abs(best[0] - bg[i * 4]), Math.abs(best[1] - bg[i * 4 + 1]), Math.abs(best[2] - bg[i * 4 + 2]));
     if (delta <= NEAR) continue; // casi igual al fondo: no hace falta (y contaría como mancha)
     out[i * 4] = best[0]; out[i * 4 + 1] = best[1]; out[i * 4 + 2] = best[2]; out[i * 4 + 3] = 255;
@@ -188,8 +231,8 @@ async function main() {
     if (ONLY && p.id !== ONLY) continue;
     if (!bgs.has(p.scene)) bgs.set(p.scene, await loadBg(p.scene));
     const { data: bg, w, h } = bgs.get(p.scene);
-    const mask = buildMask(p.shapes, w, h);
-    const { rgba, opaque, palette } = inpaint(bg, w, h, mask, { ignoreDark: p.ignoreDark ?? 0 });
+    const mask = buildMask(p.shapes, w, h, bg);
+    const { rgba, opaque, palette } = inpaint(bg, w, h, mask, { ignoreDark: p.ignoreDark ?? 0, fill: p.fill });
     const box = contentBox(rgba, w, h, 4);
     if (!box) throw new Error(`${p.scene}/${p.id}: el parche ha quedado vacío`);
     const dir = join(ROOT, 'assets', 'scenes', p.scene);

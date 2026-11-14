@@ -14,6 +14,10 @@
       "overlay": "ad60e29dffb26c322d522390f60104c86a2f53bf2e83145ad0abb03ea675c934",
       "aviso": "A9.16: lleva opaca la pared de detrás de la planta, casi igual al fondo (43231 px con Δ ≤ 12, 27,5 %). En la pared lisa del vestíbulo no se ve mancha; pendiente de dejar opaca solo la planta (y su sombra) si algún día se regenera."
     },
+    "memelab/pepe_taken": {
+      "background": "331117e4b3e75dea21523adfe9e3b3a6a281c8c560e5274a487d90e4b9cd2e39",
+      "overlay": "fb8e26e4fe69408979c4dfa3115b4fd955d26d52961b5ed14cc79c693e15259d"
+    },
     "outside/doormat_lump": {
       "background": "8b5d9e129e45bf31c8bd123f5ff59ab7b94a3f9858eecc34e323918943774599",
       "overlay": "f3744d19e5410e061f53799e2f9c0bd1dfa67d9d78ba4e77e92f1ae664d4fb26"
