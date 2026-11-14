@@ -184,7 +184,8 @@ async function finalState() {
   await page.waitForFunction(() => window.__qa.state().ready, { timeout: 20000, polling: 100 }).catch(() => {});
   await new Promise((r) => setTimeout(r, 1200));
   // Tras la cinemática puede quedar una frase suelta de Dex (A9.10: «I leave behind…» al cerrar capítulo): se espera a que acabe
-  await page.waitForFunction(() => !(window.__qa.state().busy?.length), { timeout: 20000, polling: 200 }).catch(() => {});
+  // (los textos fuera de cinemática esperan un toque: se pasa con toques, como al entrar)
+  await demo.settle({ tap: [Math.round(page.viewport().width / 2), 40] });
   return page.evaluate(() => {
     const st = window.__qa.state();
     return { scene: st.scene, flags: st.flags, player: st.player, facing: st.facing, cinematic: st.cinematic, busy: st.busy };
