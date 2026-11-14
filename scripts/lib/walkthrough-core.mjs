@@ -689,3 +689,39 @@ export function selftestMismatch(route, result) {
   }
   return null;
 }
+
+// ── A9.5: cortar una ruta (`--until`) — el CI de WebKit juega solo el capítulo 1 de la ruta crítica ─────────────────
+/** `"chapter:1"` / `"cap1"` → `{ chapter: 1 }`; `"31"` / `"step:31"` → `{ step: 31 }` (paso desde 1). Lanza si no vale. */
+export function parseUntil(s) {
+  const t = String(s ?? '').trim().toLowerCase();
+  let m = /^(?:chapter|cap(?:itulo)?)[:\s]?(\d+)$/.exec(t);
+  if (m && Number(m[1]) >= 1) return { chapter: Number(m[1]) };
+  m = /^(?:step:)?(\d+)$/.exec(t);
+  if (m && Number(m[1]) >= 1) return { step: Number(m[1]) };
+  throw new Error(`--until «${s}» no vale: chapter:<n> (o cap<n>) o el número de paso (desde 1)`);
+}
+/**
+ * La ruta hasta `until`, inclusive, sin copiar pasos a mano. Con `{ chapter: n }` corta en el primer paso cuyo `expect`
+ * pide `chapter_<n>_complete: true` (y ese paso es el nuevo objetivo); con `{ step: k }` en el paso k (el objetivo
+ * pasa a ser su `expect`, si lo tiene). Solo para rutas `walkthrough`: en un atajo cortar cambiaría su veredicto.
+ * Lanza si la ruta no llega a ese punto.
+ */
+export function cutRoute(route, until) {
+  if ((route.kind ?? 'walkthrough') !== 'walkthrough') throw new Error(`--until solo vale con rutas walkthrough («${route.id}» es ${route.kind})`);
+  let idx;
+  let goal;
+  if (until.chapter !== undefined) {
+    const flag = `chapter_${until.chapter}_complete`;
+    idx = route.steps.findIndex((s) => s.expect?.flags?.[flag] === true);
+    if (idx < 0) throw new Error(`la ruta «${route.id}» no tiene ningún paso que compruebe ${flag}: no se puede cortar en el capítulo ${until.chapter}`);
+    goal = { flags: { [flag]: true } };
+  } else {
+    idx = until.step - 1;
+    if (idx >= route.steps.length) throw new Error(`la ruta «${route.id}» tiene ${route.steps.length} pasos: no llega al ${until.step}`);
+    const e = route.steps[idx].expect;
+    goal = e && (e.scene || e.flags || e.has) ? { ...(e.scene ? { scene: e.scene } : {}), ...(e.flags ? { flags: e.flags } : {}), ...(e.has ? { has: e.has } : {}) } : null;
+  }
+  const label = until.chapter !== undefined ? `hasta el final del capítulo ${until.chapter}` : `hasta el paso ${until.step}`;
+  return { ...route, title: `${route.title ?? route.id} (${label}, paso ${idx + 1} de ${route.steps.length})`, goal, steps: route.steps.slice(0, idx + 1) };
+}
+// ── fin A9.5 ──────────────────────────────────────────────────────────────────────────────────────────────────

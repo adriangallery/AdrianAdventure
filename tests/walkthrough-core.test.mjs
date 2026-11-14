@@ -6,7 +6,7 @@ import { readFileSync } from 'node:fs';
 import {
   attemptIndex, check, checkAttemptRan, checkCinematic, checkFailResponse, checkHighlighted, checkJournal, checkLastChoices, checkListenerGrowth, checkRejects, checkWalkTarget, classify,
   describe, kindOf, newLogLines, routeDefects, runScriptDefects, selftestDefects, selftestMismatch, tapsScene,
-  checkPixel, notePixel, checkAnim, checkNpc, checkAudio, checkAmbient, checkSentence,
+  checkPixel, notePixel, checkAnim, checkNpc, checkAudio, checkAmbient, checkSentence, parseUntil, cutRoute,
 } from '../scripts/lib/walkthrough-core.mjs';
 
 const readJson = (p) => JSON.parse(readFileSync(new URL(`../${p}`, import.meta.url), 'utf8'));
@@ -677,4 +677,30 @@ test('A2.18: expect.sentence, pasos give y pick (describe, defectos y tapsScene)
   assert.equal(tapsScene({ do: 'pick', verb: 'GIVE', item: 'a' }, { inventory: ['a'] }), false);
   const defects = routeDefects({ steps: [{ do: 'give', item: 'a' }, { do: 'pick', item: 'a' }] });
   assert.equal(defects.length, 2);
+});
+
+// A9.5: --until corta la ruta crítica en el final de un capítulo sin copiar pasos
+test('parseUntil: capítulo y paso', () => {
+  assert.deepEqual(parseUntil('chapter:1'), { chapter: 1 });
+  assert.deepEqual(parseUntil('cap1'), { chapter: 1 });
+  assert.deepEqual(parseUntil('31'), { step: 31 });
+  assert.deepEqual(parseUntil('step:5'), { step: 5 });
+  assert.throws(() => parseUntil('chapter:0'));
+  assert.throws(() => parseUntil('fin'));
+});
+test('cutRoute: la ruta crítica hasta el capítulo 1 acaba al entrar en el lobby con chapter_1_complete', () => {
+  const critica = readJson('qa/walkthrough.json').routes.find((r) => r.id === 'ruta-critica');
+  const cap1 = cutRoute(critica, { chapter: 1 });
+  const last = cap1.steps.at(-1);
+  assert.equal(last.expect.flags.chapter_1_complete, true);
+  assert.equal(last.expect.scene, 'lobby');
+  assert.ok(cap1.steps.length < critica.steps.length);
+  assert.deepEqual(cap1.goal, { flags: { chapter_1_complete: true } });
+  assert.deepEqual(cap1.steps, critica.steps.slice(0, cap1.steps.length));
+  assert.equal(routeDefects(cap1).length, 0);
+  // Ningún paso anterior cierra ya el capítulo
+  assert.ok(cap1.steps.slice(0, -1).every((s) => s.expect?.flags?.chapter_1_complete !== true));
+  assert.throws(() => cutRoute(critica, { chapter: 9 }), /chapter_9_complete/);
+  assert.throws(() => cutRoute(sb([NEW, KEYPAD]), { step: 1 }), /walkthrough/);
+  assert.equal(cutRoute(critica, { step: 1 }).steps.length, 1);
 });
