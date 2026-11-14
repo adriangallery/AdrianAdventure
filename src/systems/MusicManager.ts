@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import { getMusicLevel, musicVolumeFor } from '@/systems/Settings';
 import { SFX_GAIN, masterLimiter } from '@/systems/AudioMix';
-import { MUTED_STORAGE_KEY, mutedFromStored, shouldFetchAudio } from '@/systems/AudioPolicy';
+import { MUTED_STORAGE_KEY, mutedFromStored, phaserStillLocked, shouldFetchAudio, shouldResumeOnGesture, shouldShowSoundNotice } from '@/systems/AudioPolicy';
 import { DUCK_FADE_MS, duckGainFor } from '@/systems/Cinematics';
 import {
   AMBIENCE_CROSSFADE_MS, ambienceCacheKey, ambienceLoopPoints, ambienceTransition, ambienceUrl, resolveAmbience,
@@ -196,26 +196,166 @@ export class MusicManager {
    */
   unlockFromGesture(): void {
     this.unlockedThisSession = true;
+    // A4.9: TODO lo que sigue es síncrono dentro del touchend/click nativo: ni await ni setTimeout antes de resume() y
+    // de start() (iOS solo acepta el desbloqueo en la pila del gesto).
+
+    // A4.9 (iOS 17+, Safari y Chrome/WKWebView): sesión de audio «playback». Con la de serie (ambient) iOS calla el
+    // Web Audio con el interruptor de silencio activado.
+    MusicManager.setPlaybackAudioSession();
 
     // Always attempt — don't gate on state, some iOS versions report
     // incorrect state until audio actually flows.
-    this.context.resume();
+    const resumed = this.context.resume();
 
     // Play a tiny silent buffer — "warm up" the audio pipeline.
     // iOS requires a buffer source to start() within the user gesture
     // call-stack before it considers Web Audio unlocked.
+    // A4.9: por la misma cadena que el juego (limitador → destino), no solo directo al destino.
     try {
       const buf = this.context.createBuffer(1, 1, 22050);
       const src = this.context.createBufferSource();
       src.buffer = buf;
-      src.connect(this.context.destination);
+      src.connect(this.limiter ?? this.context.destination);
       src.start(0);
     } catch { /* silent */ }
 
+    // A4.9 (iOS < 17): un <audio> HTML mudo en bucle arrancado en el gesto pasa la sesión de audio de la página a
+    // «reproducción» y el Web Audio suena aunque el interruptor de silencio esté activado.
+    this.startSilentHtmlAudio();
+
     // Also unlock Phaser's sound system (it may be locked independently).
+    // A4.9: el unlock() de Phaser solo engancha escuchadores para el SIGUIENTE gesto, y si su intento en touchstart
+    // falló (iOS lo rechaza) no vuelve a probar: la música esperaba UNLOCKED para siempre. En cuanto el contexto corre,
+    // se da Phaser por desbloqueado aquí mismo.
     if (this.game.sound.locked) {
       (this.game.sound as Phaser.Sound.WebAudioSoundManager).unlock();
     }
+    const markUnlocked = () => this.forcePhaserUnlocked();
+    if (this.context.state === 'running') markUnlocked();
+    if (resumed && typeof resumed.then === 'function') {
+      resumed.then(markUnlocked, () => { /* el siguiente toque lo reintenta */ });
+    }
+
+    this.installResumeOnGesture();
+  }
+
+  /** A4.9: Phaser sigue «locked» con el contexto ya corriendo: se le quita el cerrojo y se emite UNLOCKED. */
+  private forcePhaserUnlocked(): void {
+    const sm = this.game.sound as unknown as { locked: boolean; emit: (ev: string) => void };
+    if (sm.locked && this.context.state === 'running') {
+      sm.locked = false;
+      sm.emit(Phaser.Sound.Events.UNLOCKED);
+    }
+    this.updateSoundNotice();
+  }
+
+  private static setPlaybackAudioSession(): void {
+    try {
+      const nav = navigator as Navigator & { audioSession?: { type: string } };
+      if (nav.audioSession && nav.audioSession.type !== 'playback') nav.audioSession.type = 'playback';
+    } catch { /* navegador sin audioSession */ }
+  }
+
+  /** A4.9: 0,1 s de silencio (WAV 8 kHz, 8 bits) para el <audio> que mantiene la sesión de reproducción en iOS < 17 */
+  private static silentWavUri(): string {
+    const n = 800;
+    const bytes = new Uint8Array(44 + n);
+    const dv = new DataView(bytes.buffer);
+    const str = (o: number, t: string) => { for (let i = 0; i < t.length; i++) bytes[o + i] = t.charCodeAt(i); };
+    str(0, 'RIFF'); dv.setUint32(4, 36 + n, true); str(8, 'WAVE'); str(12, 'fmt ');
+    dv.setUint32(16, 16, true); dv.setUint16(20, 1, true); dv.setUint16(22, 1, true);
+    dv.setUint32(24, 8000, true); dv.setUint32(28, 8000, true); dv.setUint16(32, 1, true); dv.setUint16(34, 8, true);
+    str(36, 'data'); dv.setUint32(40, n, true);
+    bytes.fill(128, 44);
+    let bin = '';
+    for (let i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
+    return `data:audio/wav;base64,${btoa(bin)}`;
+  }
+
+  private silentEl: HTMLAudioElement | null = null;
+  private startSilentHtmlAudio(): void {
+    try {
+      const nav = navigator as Navigator & { audioSession?: { type: string } };
+      if (nav.audioSession) return; // iOS 17+: basta la sesión «playback»
+      if (!this.silentEl) {
+        const el = document.createElement('audio');
+        el.setAttribute('x-webkit-airplay', 'deny');
+        el.preload = 'auto';
+        el.loop = true;
+        el.src = MusicManager.silentWavUri();
+        this.silentEl = el;
+      }
+      const p = this.silentEl.play();
+      if (p && typeof p.catch === 'function') p.catch(() => { /* sin gesto válido: el siguiente toque */ });
+    } catch { /* sin <audio> */ }
+  }
+
+  private resumeInstalled = false;
+  /**
+   * A4.9: en iPhone (Safari y Chrome) el AudioContext puede seguir «suspended» tras el primer toque, o pasar a
+   * «interrupted» al bloquear la pantalla o cambiar de app. Cada toque posterior (gesto válido) lo reanuda; al volver
+   * a la pestaña y en cada cambio de estado se intenta también, y si no hay manera, aviso «Tap to enable sound».
+   */
+  private installResumeOnGesture(): void {
+    if (this.resumeInstalled) return;
+    this.resumeInstalled = true;
+    const tryResume = () => {
+      if (!shouldResumeOnGesture(this.context.state as string, this.unlockedThisSession, this.muted)) return;
+      MusicManager.setPlaybackAudioSession();
+      const p = this.context.resume();
+      if (p && typeof p.then === 'function') p.then(() => this.forcePhaserUnlocked(), () => this.updateSoundNotice());
+    };
+    const onGesture = () => {
+      tryResume();
+      if (this.unlockedThisSession && !this.muted && this.silentEl?.paused) this.startSilentHtmlAudio();
+    };
+    for (const ev of ['touchend', 'click', 'keydown'] as const) {
+      window.addEventListener(ev, onGesture, { capture: true, passive: true });
+    }
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') tryResume();
+    });
+    window.addEventListener('pageshow', tryResume);
+    try {
+      this.context.addEventListener('statechange', () => {
+        tryResume();
+        // si no vuelve solo en un momento, el aviso tocable
+        setTimeout(() => this.updateSoundNotice(), 1200);
+        this.updateSoundNotice(true);
+      });
+    } catch { /* sin statechange */ }
+    // tras el gesto inicial: si a los 1,5 s el contexto sigue parado, aviso
+    setTimeout(() => this.updateSoundNotice(), 1500);
+  }
+
+  private soundNotice: HTMLButtonElement | null = null;
+  /** A4.9: aviso visible y tocable «Tap to enable sound» (el toque es el gesto que vuelve a desbloquear). */
+  private updateSoundNotice(onlyHide = false): void {
+    const show = shouldShowSoundNotice(this.context.state as string, this.unlockedThisSession, this.muted);
+    if (!show) {
+      this.soundNotice?.remove();
+      this.soundNotice = null;
+      return;
+    }
+    if (onlyHide || this.soundNotice || typeof document === 'undefined') return;
+    const btn = document.createElement('button');
+    btn.id = 'tap-enable-sound';
+    btn.textContent = 'Tap to enable sound';
+    btn.style.cssText = `
+      position: fixed; left: 50%; top: max(10px, env(safe-area-inset-top)); transform: translateX(-50%);
+      z-index: 10001; padding: 10px 14px; border-radius: 6px; border: 2px solid #f8e848;
+      background: rgba(26,26,46,0.92); color: #f8e848; font-family: 'Press Start 2P', monospace; font-size: 10px;
+      -webkit-tap-highlight-color: transparent; cursor: pointer;
+    `;
+    const act = () => {
+      this.unlockFromGesture();
+      btn.remove();
+      if (this.soundNotice === btn) this.soundNotice = null;
+    };
+    btn.addEventListener('touchend', act);
+    btn.addEventListener('click', act);
+    document.body.appendChild(btn);
+    this.soundNotice = btn;
   }
 
   /**
@@ -279,7 +419,8 @@ export class MusicManager {
 
     // If Phaser's sound system is still locked (no user gesture yet),
     // defer playback until the UNLOCKED event fires.
-    if (this.game.sound.locked) {
+    // A4.9: manda el estado real del contexto (Phaser puede quedarse «locked» con el contexto ya corriendo)
+    if (phaserStillLocked(this.game.sound.locked, this.context.state as string)) {
       this.game.sound.once(Phaser.Sound.Events.UNLOCKED, () => {
         this.transitionToScene(audio);
       });
@@ -497,6 +638,8 @@ export class MusicManager {
     if (this.muted) {
       this.masterGain.gain.value = 0;
       this.game.sound.mute = true;
+      this.silentEl?.pause();
+      this.updateSoundNotice();
     } else {
       this.masterGain.gain.value = this.musicVolume;
       this.game.sound.mute = false;
