@@ -25,7 +25,7 @@ import { checkGatingRule, checkGatingRuleCached, gateAddress, type GatingRule } 
 import { mintItem, mintAchievement, type MintResult } from '@/web3/contracts';
 import { TransactionToast } from '@/ui/TransactionToast';
 import { DashboardPanel, type DashboardQaState } from '@/ui/DashboardPanel';
-import { loadDashboard } from '@/web3/dashboard';
+import { loadDashboard, loadFounderStats } from '@/web3/dashboard';
 import { getAchievementByText } from '@/config/achievements.config';
 import { bindShutdown } from './lifecycle';
 import { gameUrlParams } from '@/config/debugParams';
@@ -1992,12 +1992,14 @@ export class GameScene extends Phaser.Scene {
         this.returnToTitle();
       },
       // A3.10: op showDashboard (Mining Rig). Solo lecturas; se resuelve al cerrar el panel
-      showDashboard: async () => {
+      // A9.13: mode 'founder' = Founder Mode (cifras globales reales del Diamond, sin cartera)
+      showDashboard: async (mode) => {
         if (run !== this.sceneRun) return;
         this.dashboardPanel ??= new DashboardPanel();
         this.registry.set('dashboardOpen', true);
         try {
-          await this.dashboardPanel.open(loadDashboard());
+          if (mode === 'founder') await this.dashboardPanel.openFounder(loadFounderStats());
+          else await this.dashboardPanel.open(loadDashboard());
         } finally {
           this.registry.set('dashboardOpen', false);
         }

@@ -114,7 +114,7 @@
         { "do": "act", "verb": "USE", "target": "hs_stairs", "expect": { "scene": "lobby" } },
         { "do": "use", "item": "rainwater_can", "target": "hs_plant", "rejects": "only tips people he likes", "note": "A3.4d (2.7): Fernando bebe lluvia y suelta el Golden Token", "expect": { "scene": "lobby", "has": ["golden_token"], "lacks": ["rainwater_can"], "flags": { "plant_watered": true, "plant_revived": true } } },
         { "do": "act", "verb": "USE", "target": "hs_stairs_up", "expect": { "scene": "upstairs" } },
-        { "do": "use", "item": "golden_token", "target": "hs_computer", "rejects": "FOUNDER MODE", "note": "A3.4d (2.7): el token en el mining rig: Founder Mode", "expect": { "lacks": ["golden_token"], "flags": { "founder_mode": true } } },
+        { "do": "use", "item": "golden_token", "target": "hs_computer", "rejects": "FOUNDER MODE", "note": "A3.4d (2.7): el token en el mining rig: Founder Mode. A9.13: abre el panel founder (cifras reales de Base o «—» sin red) y se cierra", "expect": { "dashboard": { "mode": "founder" }, "lacks": ["golden_token"], "flags": { "founder_mode": true } } },
         { "do": "walk", "x": 2, "y": 97.5, "trigger": "tr_to_lobby", "untilScene": "lobby", "note": "A3.4d: vuelta a pie al lobby por tr_to_lobby", "expect": { "scene": "lobby" } },
         { "do": "act", "verb": "USE", "target": "hs_frontdoor", "expect": { "scene": "outside" } },
 
