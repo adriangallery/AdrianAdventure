@@ -897,7 +897,10 @@ test('A9.13: Founder Mode abre el panel founder y ya no dice cifras inventadas',
   const modes = [];
   ctx.showDashboard = (mode) => { modes.push(mode); return Promise.resolve(); };
   const done = new ScriptEngine(ctx).execute(combo.script);
-  for (let i = 0; i < 40; i++) { await flush(); while (ctx.says.length) ctx.says.shift().resolve(); }
+  // El combo lleva un `wait` de 500 ms (temporizador real): se van contestando las frases hasta que acaba
+  let fin = false;
+  void done.then(() => { fin = true; });
+  for (let t = 0; !fin && t < 200; t++) { await new Promise((r) => setTimeout(r, 20)); while (ctx.says.length) ctx.says.shift().resolve(); }
   await done;
   assert.deepEqual(modes, ['founder']);
   assert.equal(ctx.getState().flags.founder_mode, true);
