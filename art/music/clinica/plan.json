@@ -248,7 +248,9 @@
           ],
           "context_adherence": "high"
         }
-      ]
+      ],
+      "key": "E major",
+      "$comment_key": "pedida en Mi menor; la generación salió en Mi MAYOR (medida en los 4 niveles, corr. 0,82-0,95): el motor usa la medida"
     }
   },
   "composition_plan": {

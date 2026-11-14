@@ -412,6 +412,13 @@ export function levelEntryBar(exitAbsBar: number, toBars: number, toLevel: numbe
   return b < toBars ? b : 0;
 }
 
+/** Pista con la que entra una escena (nivel 0 de su tema, o la de scene.json): la que conviene precargar */
+export function sceneEntryTrack(map: Pick<MusicMap, 'themes' | 'tracks'>, scene: string | null, fallback: string | null): string | null {
+  const id = themeForScene(map.themes, scene);
+  if (!id || !map.themes) return fallback;
+  return levelTrack(map.themes[id], 0, (k) => !!map.tracks[k])?.track ?? fallback;
+}
+
 /** Tempos compatibles para cambiar en compás sin corte: el mismo o el doble/la mitad (±1 %) */
 export function tempoCompatible(a: number, b: number, tol = 0.01): boolean {
   const r = a > b ? a / b : b / a;

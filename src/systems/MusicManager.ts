@@ -704,7 +704,7 @@ export class MusicManager {
     const sm = MUSIC_MAP.states[resolveState(MUSIC_MAP.rules, this.musicContext()).state] ?? this.stateMusic();
     const toLevel = levelOfTrack(MUSIC_MAP.themes, newKey);
     // A8.3: un nivel de tema entra por su principio (o, desde otro nivel del mismo tema, en la misma posición de la frase)
-    let sec = toLevel ? (toGrid.sections[0] ?? null) : ((forceSection ? toGrid.sections.find((s) => s.id === forceSection) : null) ?? sectionFor(toGrid, sm.section) ?? toGrid.sections[0] ?? null);
+    let sec: ReturnType<typeof sectionAtBar> = toLevel ? (toGrid.sections[0] ?? null) : ((forceSection ? toGrid.sections.find((s) => s.id === forceSection) : null) ?? sectionFor(toGrid, sm.section) ?? toGrid.sections[0] ?? null);
     let toBar = toLevel ? 0 : (sec?.startBar ?? 0);
     let offset = barStartSec(toGrid, toBar);
     const old = this.currentTrack;

@@ -57,7 +57,7 @@
     "completo": {
       "$comment": "A8.3: niveles de intensidad en UNA sola generación (misma tonalidad y tempo por construcción). Se corta en los límites de bloque (compases enteros) en assets/audio/music/<tema>-n<nivel>.mp3.",
       "checkpoint": "A8.3",
-      "semilla": 8502,
+      "semilla": 8611,
       "output_format": "mp3_44100_192",
       "niveles": [
         {
@@ -245,6 +245,12 @@
             "lo-fi hiss"
           ],
           "context_adherence": "high"
+        }
+      ],
+      "reintentos": [
+        {
+          "semilla": 8502,
+          "motivo": "primera toma (semilla 8502): 2,7 s de silencio al empezar el nivel 0 y salió en Re mayor, no en Sol; se repitió con 8611 (Sol mayor, 90 BPM, sin silencio)"
         }
       ]
     }

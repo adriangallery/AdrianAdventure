@@ -63,8 +63,10 @@
         {
           "nivel": 0,
           "nombre": "calma",
-          "compases": 24,
-          "bucle": true
+          "compases": 22,
+          "bucle": true,
+          "desdeCompas": 2,
+          "$comment": "la generación empieza con 5,7 s de silencio: el nivel 0 salta 2 compases (22 en vez de 24)"
         },
         {
           "nivel": 1,

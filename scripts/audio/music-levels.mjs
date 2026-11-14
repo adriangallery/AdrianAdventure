@@ -26,10 +26,13 @@ export function declaredLevels(artDir = ART) {
     const p = join(artDir, tema, 'plan.json');
     if (!existsSync(p)) continue;
     const plan = JSON.parse(readFileSync(p, 'utf8'));
-    const niveles = plan.partes?.completo?.niveles;
+    const part = plan.partes?.completo;
+    const niveles = part?.niveles;
     if (!niveles) continue;
+    // `partes.completo.key`: la tonalidad en la que salió de verdad la generación si no es la pedida (medida en los 4 niveles)
+    const key = parseKey(part.key ?? plan.key);
     for (const n of niveles) {
-      out[`${plan.tema}-n${n.nivel}`] = { tema: plan.tema, nivel: n.nivel, bpm: plan.bpm, bars: n.compases, key: parseKey(plan.key), loop: n.bucle !== false };
+      out[`${plan.tema}-n${n.nivel}`] = { tema: plan.tema, nivel: n.nivel, bpm: plan.bpm, bars: n.compases, key, loop: n.bucle !== false };
     }
   }
   return out;

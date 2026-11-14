@@ -168,6 +168,8 @@ test('A8.3 music-map: cada tema con sus niveles medidos, misma tonalidad y tempo
       assert.equal(g.firstDownbeatSec, 0, `${k}: cortado en compás`);
       assert.ok(g.confidence.declared, `${k}: rejilla declarada en art/music`);
       assert.ok(P.tempoCompatible(g.confidence.measuredBpm, g.bpm, 0.03), `${k}: BPM medido ${g.confidence.measuredBpm} ≈ pedido ${g.bpm} (o doble/mitad)`);
+      // el triunfo (4-6 compases) acaba a menudo en la dominante: la tonalidad se comprueba en los niveles con bucle
+      if (t.levels.indexOf(k) < P.TRIUMPH_LEVEL) assert.ok(P.sameKeySet(g.confidence.measuredKey, g.key), `${k}: la tonalidad medida (${JSON.stringify(g.confidence.measuredKey)}) es la declarada`);
     }
     for (const s of t.scenes) {
       assert.ok(!scenes.has(s), `${s} solo en un tema`);
@@ -229,7 +231,7 @@ test('A8.3 estados → intensidad: duelo y peligro suben, conversación y explor
   assert.equal(lv({ scene: 'treatment_room', dialogue: true, dialogueTree: 'pzbot_final' }), 2, 'PZ-BOT = tensión');
   assert.equal(lv({ scene: 'server_room' }), 2, 'peligro: el bot activo');
   assert.equal(lv({ scene: 'basement' }), 1, 'sótano = activo');
-  assert.equal(lv({ goalsLeft: 1 }), 2, 'último paso del capítulo');
+  assert.equal(lv({ goalsLeft: 1 }), 1, 'último paso del capítulo = activo');
   assert.equal(lv({ goalsLeft: 1, dialogue: true }), 0, 'leer/hablar baja');
   assert.equal(lv({ transient: 'solved', scene: 'server_room' }), 3, 'puzle resuelto = triunfo');
   assert.equal(P.ruleMatches({ dialogueTree: 'chad_fud' }, ctx({ dialogue: false, dialogueTree: 'chad_fud' })), false, 'solo con el diálogo abierto');

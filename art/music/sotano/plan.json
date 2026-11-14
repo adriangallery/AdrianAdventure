@@ -64,8 +64,10 @@
         {
           "nivel": 0,
           "nombre": "calma",
-          "compases": 32,
-          "bucle": true
+          "compases": 28,
+          "bucle": true,
+          "desdeCompas": 4,
+          "$comment": "la generación (semilla 8503) empieza con 7,8 s de silencio: el nivel 0 salta 4 compases (28 en vez de 32). Un reintento con 8613 se paró por presupuesto (16:50)."
         },
         {
           "nivel": 1,

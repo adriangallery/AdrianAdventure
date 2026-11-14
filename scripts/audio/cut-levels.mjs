@@ -5,7 +5,8 @@
 // - Lee `art/music/<tema>/plan.json` (`partes.completo`: BPM, compases y duración de cada bloque).
 // - Volumen: loudnorm de ffmpeg sobre la generación ENTERA (un solo ajuste por tema, así los niveles conservan su
 //   diferencia de energía), a -15 LUFS integrados / -1,5 dBTP: las pistas de A4 están en -14,1 a -14,8 LUFS.
-// - Corte: cada nivel empieza justo en el límite de su bloque y dura sus compases enteros (bpm del plan).
+// - Corte: cada nivel empieza justo en el límite de su bloque (más `desdeCompas` compases, si el bloque empieza en silencio)
+//   y dura sus compases enteros (bpm del plan).
 // - Bucle sin clic: los primeros 150 ms del nivel se mezclan (potencia constante) con lo que sigue a su final en la
 //   generación, de modo que al dar la vuelta el final enlaza con el principio; el último nivel (triunfo, sin bucle) solo
 //   lleva un fundido de 30 ms al final.
@@ -20,6 +21,7 @@ import { fileURLToPath } from 'node:url';
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const SR = 44100;
 const XF_SEC = 0.15;
+const PAD_SEC = 0.05;
 
 const args = process.argv.slice(2);
 const [tema, src] = args;
@@ -39,12 +41,17 @@ const frames = pcm.length / 2;
 
 let startBar = 0;
 const report = [];
-for (const n of part.niveles) {
-  const S = Math.round(startBar * barSec * SR);
+for (let i = 0; i < part.niveles.length; i++) {
+  const n = part.niveles[i];
+  // `desdeCompas`: compases del principio del bloque que se saltan (p. ej. silencio inicial); `compases` = lo que queda
+  const S = Math.round((startBar + (n.desdeCompas ?? 0)) * barSec * SR);
   const L = Math.round(n.compases * barSec * SR);
-  startBar += n.compases;
-  const out = new Float32Array(L * 2);
-  for (let i = 0; i < L * 2; i++) out[i] = S * 2 + i < pcm.length ? pcm[S * 2 + i] : 0;
+  startBar += part.compases[i];
+  // + PAD: unos ms de lo que sigue tras el último compás, para que el fichero dure algo más que el bucle (loopEnd del
+  // motor = compases × compás redondeado a 0,1 ms; no se oye: el bucle vuelve antes)
+  const pad = Math.round(PAD_SEC * SR);
+  const out = new Float32Array((L + pad) * 2);
+  for (let i = 0; i < (L + pad) * 2; i++) out[i] = S * 2 + i < pcm.length ? pcm[S * 2 + i] : 0;
   const xf = Math.round(XF_SEC * SR);
   const hasTail = n.bucle !== false && S + L + xf <= frames;
   if (hasTail) {
@@ -55,6 +62,7 @@ for (const n of part.niveles) {
   } else {
     const fo = Math.round(0.03 * SR);
     for (let f = 0; f < fo; f++) for (let c = 0; c < 2; c++) out[(L - 1 - f) * 2 + c] *= f / fo;
+    out.fill(0, L * 2);
   }
   const dest = join(ROOT, 'assets', 'audio', 'music', `${tema}-n${n.nivel}.mp3`);
   execFileSync('ffmpeg', ['-v', 'error', '-y', '-f', 'f32le', '-ar', String(SR), '-ac', '2', '-i', '-', '-c:a', 'libmp3lame', '-b:a', '192k', '-map_metadata', '-1', '-id3v2_version', '0', '-write_xing', '1', dest], { input: Buffer.from(out.buffer) });
