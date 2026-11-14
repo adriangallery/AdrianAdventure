@@ -1,0 +1,138 @@
+{
+  "$comment": "A8.2 parte 2. Lo lee scripts/audio/eleven-music.mjs. `muestra` = 1 min (A+B); `minimo` = bucle de 2 min con los MISMOS bloques y estilos, solo cambian las duraciones (compases enteros). Mismo modelo y semilla.",
+  "tema": "adrianlab",
+  "titulo": "AdrianLAB por dentro (lobby / piso de arriba)",
+  "escenas": [
+    "lobby",
+    "upstairs"
+  ],
+  "pistaEquivalente": "retro-adventure",
+  "bpm": 90,
+  "tonalidad": "Sol mayor",
+  "key": "G major",
+  "compas": "4/4",
+  "instrumentacion": [
+    "muted trumpet (lead)",
+    "vibraphone",
+    "bassoon",
+    "walking upright bass",
+    "harpsichord comping",
+    "soft brushed drums with rimshots"
+  ],
+  "prompt": "Playful, slightly sneaky indoor theme for a 1990s point-and-click adventure game set inside an eccentric tech lab office. Memorable muted trumpet melody, vibraphone and harpsichord comping, comic bassoon counter-line, walking upright bass, brushed drums with rimshots. High-quality General MIDI light orchestral jazz feel. 90 BPM, G major, 4/4. Instrumental only, seamless loop.",
+  "modelo": "music_v2_5",
+  "semilla": 8202,
+  "output_format": "mp3_44100_128",
+  "secciones": {
+    "A": {
+      "energia": "calm",
+      "descripcion": "calm: vibraphone and harpsichord comp softly, muted trumpet plays the main melody quietly, walking bass, very light drums, good for background while characters talk"
+    },
+    "B": {
+      "energia": "intense",
+      "descripcion": "more energy: trumpet and bassoon play the melody in octaves, busier walking bass, rimshot groove, vibraphone flourishes, cadence back to G major so it loops"
+    }
+  },
+  "partes": {
+    "muestra": {
+      "compases": [
+        11,
+        11
+      ],
+      "duraciones_ms": [
+        29333,
+        29333
+      ]
+    },
+    "minimo": {
+      "compases": [
+        23,
+        23
+      ],
+      "duraciones_ms": [
+        61333,
+        61333
+      ]
+    }
+  },
+  "composition_plan": {
+    "chunks": [
+      {
+        "text": "[A - calm]\n{calm: vibraphone and harpsichord comp softly, muted trumpet plays the main melody quietly, walking bass, very light drums, good for background while characters talk}",
+        "duration_ms": 29333,
+        "positive_styles": [
+          "1990s point-and-click adventure game music",
+          "high-quality General MIDI orchestral",
+          "instrumental",
+          "90 BPM",
+          "G major",
+          "4/4",
+          "memorable melody",
+          "loopable",
+          "muted trumpet",
+          "vibraphone",
+          "bassoon",
+          "walking upright bass",
+          "harpsichord comping",
+          "soft brushed drums with rimshots",
+          "calm"
+        ],
+        "negative_styles": [
+          "vocals",
+          "singing",
+          "voice",
+          "choir",
+          "lyrics",
+          "spoken word",
+          "rap",
+          "humming",
+          "modern EDM",
+          "dubstep",
+          "trap beat",
+          "heavy distortion",
+          "vinyl crackle",
+          "lo-fi hiss"
+        ],
+        "context_adherence": "high"
+      },
+      {
+        "text": "[B - more energy]\n{more energy: trumpet and bassoon play the melody in octaves, busier walking bass, rimshot groove, vibraphone flourishes, cadence back to G major so it loops}",
+        "duration_ms": 29333,
+        "positive_styles": [
+          "1990s point-and-click adventure game music",
+          "high-quality General MIDI orchestral",
+          "instrumental",
+          "90 BPM",
+          "G major",
+          "4/4",
+          "memorable melody",
+          "loopable",
+          "muted trumpet",
+          "vibraphone",
+          "bassoon",
+          "walking upright bass",
+          "harpsichord comping",
+          "soft brushed drums with rimshots",
+          "more energy"
+        ],
+        "negative_styles": [
+          "vocals",
+          "singing",
+          "voice",
+          "choir",
+          "lyrics",
+          "spoken word",
+          "rap",
+          "humming",
+          "modern EDM",
+          "dubstep",
+          "trap beat",
+          "heavy distortion",
+          "vinyl crackle",
+          "lo-fi hiss"
+        ],
+        "context_adherence": "high"
+      }
+    ]
+  }
+}

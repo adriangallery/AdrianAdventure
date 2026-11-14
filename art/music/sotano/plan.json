@@ -1,0 +1,139 @@
+{
+  "$comment": "A8.2 parte 2. Lo lee scripts/audio/eleven-music.mjs. `muestra` = 1 min (A+B); `minimo` = bucle de 2 min con los MISMOS bloques y estilos, solo cambian las duraciones (compases enteros). Mismo modelo y semilla.",
+  "tema": "sotano",
+  "titulo": "Sótano / sala de servidores (tensión)",
+  "escenas": [
+    "basement",
+    "server_room",
+    "memelab"
+  ],
+  "pistaEquivalente": "tension",
+  "bpm": 132,
+  "tonalidad": "Mi menor",
+  "key": "E minor",
+  "compas": "4/4",
+  "instrumentacion": [
+    "low string ostinato (cellos, basses)",
+    "pizzicato violins",
+    "bass clarinet (lead)",
+    "tubular bells",
+    "timpani",
+    "soft analog synth pulse"
+  ],
+  "prompt": "Tense, mysterious underground theme for a 1990s point-and-click adventure game: a dark basement full of humming servers. Driving low string ostinato, pizzicato violins, a sly recognizable bass clarinet melody, tubular bells, timpani hits, a soft analog synth pulse. High-quality General MIDI orchestral sound, suspenseful but with a hint of humour. 132 BPM, E minor, 4/4. Instrumental only, seamless loop.",
+  "modelo": "music_v2_5",
+  "semilla": 8203,
+  "output_format": "mp3_44100_128",
+  "secciones": {
+    "A": {
+      "energia": "calm",
+      "descripcion": "calm suspense: quiet low string ostinato and synth pulse, bass clarinet plays the melody softly, sparse bell tones, sneaking"
+    },
+    "B": {
+      "energia": "intense",
+      "descripcion": "more energy and danger: full string ostinato, pizzicato violins doubling the melody, timpani accents, tubular bells, rising tension, cadence back to E minor so it loops"
+    }
+  },
+  "partes": {
+    "muestra": {
+      "compases": [
+        17,
+        17
+      ],
+      "duraciones_ms": [
+        30909,
+        30909
+      ]
+    },
+    "minimo": {
+      "compases": [
+        33,
+        33
+      ],
+      "duraciones_ms": [
+        60000,
+        60000
+      ]
+    }
+  },
+  "composition_plan": {
+    "chunks": [
+      {
+        "text": "[A - calm]\n{calm suspense: quiet low string ostinato and synth pulse, bass clarinet plays the melody softly, sparse bell tones, sneaking}",
+        "duration_ms": 30909,
+        "positive_styles": [
+          "1990s point-and-click adventure game music",
+          "high-quality General MIDI orchestral",
+          "instrumental",
+          "132 BPM",
+          "E minor",
+          "4/4",
+          "memorable melody",
+          "loopable",
+          "low string ostinato",
+          "pizzicato violins",
+          "bass clarinet",
+          "tubular bells",
+          "timpani",
+          "soft analog synth pulse",
+          "calm suspense"
+        ],
+        "negative_styles": [
+          "vocals",
+          "singing",
+          "voice",
+          "choir",
+          "lyrics",
+          "spoken word",
+          "rap",
+          "humming",
+          "modern EDM",
+          "dubstep",
+          "trap beat",
+          "heavy distortion",
+          "vinyl crackle",
+          "lo-fi hiss"
+        ],
+        "context_adherence": "high"
+      },
+      {
+        "text": "[B - more energy]\n{more energy and danger: full string ostinato, pizzicato violins doubling the melody, timpani accents, tubular bells, rising tension, cadence back to E minor so it loops}",
+        "duration_ms": 30909,
+        "positive_styles": [
+          "1990s point-and-click adventure game music",
+          "high-quality General MIDI orchestral",
+          "instrumental",
+          "132 BPM",
+          "E minor",
+          "4/4",
+          "memorable melody",
+          "loopable",
+          "low string ostinato",
+          "pizzicato violins",
+          "bass clarinet",
+          "tubular bells",
+          "timpani",
+          "soft analog synth pulse",
+          "more energy and danger"
+        ],
+        "negative_styles": [
+          "vocals",
+          "singing",
+          "voice",
+          "choir",
+          "lyrics",
+          "spoken word",
+          "rap",
+          "humming",
+          "modern EDM",
+          "dubstep",
+          "trap beat",
+          "heavy distortion",
+          "vinyl crackle",
+          "lo-fi hiss"
+        ],
+        "context_adherence": "high"
+      }
+    ]
+  }
+}
