@@ -1006,3 +1006,22 @@ tiene que tener sus dos `step_*` en disco y en `sfxKeys`.
 `verb`, `item` (null = sin objeto) y `pending`, y `text` como expresión regular sin mayúsculas. GIVE + objeto ya no responde al
 pulsarlo: espera destino («Give X to...»). Con frase pendiente, Esc, otro verbo o el clic derecho la cancelan; el suelo vacío la
 mantiene. Ruta `dar-y-usar-a-medias` de `walkthrough.json`; tabla verbo × destino en `docs/progreso/A2.18.md`.
+
+# Música adaptativa a lo iMUSE (A8.1)
+
+- **Mapa**: `assets/config/music-map.json`. `tracks` lo mide `scripts/audio/analyze-tempo.mjs` (BPM, primer tiempo fuerte,
+  compases, bucle cerrado en compás, secciones por novedad, tonalidad de A4.5 y confianza de cada medida; `npm run lint:audio`
+  comprueba que está al día). El resto es a mano: `planner` (espera máxima `maxWaitBars`, frase `phraseBars`, `solvedBars`),
+  `rules` (estado del juego → estado musical, gana la prioridad mayor), `states` (capas, sección `calm`/`intense`/`any` y volumen
+  por estado) y `places` (arreglo del motivo por escena: octava, timbre, notas por compás, eco, filtro).
+- **Lógica pura**: `src/systems/MusicPlanner.ts` (tests: `tests/music-planner.test.mjs`, en `test:engine`). **Reproductor**:
+  `MusicManager` programa todo en `AudioContext.currentTime`: la pista nueva arranca en el instante exacto del punto de salida de
+  la vieja (`source.start(at, offset)`), las capas se sintetizan nota a nota con 0,35 s de margen y entran/salen en el siguiente
+  pulso con un fundido de un pulso. Sin rejilla (pista sin medir) vuelve al fundido de 4 s de siempre.
+- **QA**: `__qa.music()` (y `state().audio.adaptive`): `state`, `rule`, `transient`, `place`, `arrangement`, `track`, `bpm`, `key`,
+  `bar`, `beat`, `section`, `nextExit` ({ bar, kind: section | phrase | bar, inSec }), `scheduled` (cambio esperando su salida),
+  `layers` (ganancia de cada capa) y `transitions` (últimas 30: `requestedAt`, `exitAt`, `waitBars`, `fromBar`, `barError`,
+  `exitKind`, `toSection`, `bridgeClip`, `detune`, `key`, `cancelled`). Demo: `scripts/demo-a8-1-imuse.mjs` (falla si una
+  transición no sale en compás o su puente no va en la tonalidad de destino; graba el audio → `audio.webm` + `a8-1-imuse.mp4`).
+- **Silencio** (A1.5): nada nuevo que descargar. Las capas son osciladores de WebAudio (0 bytes) y el puente usa el stinger que
+  ya está en caché; en silencio no hay pista sonando y el planificador no hace nada.
