@@ -139,19 +139,32 @@ await go('lobby', '2) → lobby: misma pista, sin transición; cambia el arreglo
 await filmFor('2) lobby: el mismo motivo, otro arreglo', 3500);
 // 3) conversación
 {
-  let sawDialogue = false;
-  await page.evaluate(() => window.__demoRun(window.__qa.talk('npc_receptionist')));
+  // Penny abre un hub de opciones: `__qa.talk`/`dismissAll` sin respuestas pasan los textos y paran con
+  // «el diálogo pide elegir» dejando el panel abierto (es lo que queremos: la conversación sigue abierta y suena
+  // `dialogue`). Se elige con el ChoicePanel (como demo-a4-2) y se sale con «I'll come back later.» antes de
+  // cambiar de escena; si no, todos los `goto` siguientes fallan con el diálogo pendiente.
+  const LABEL = '3) conversación: estado dialogue (pad, sección tranquila)';
+  const step = (start, label) => during(label, start, 30000);
+  const awaiting = () => page.evaluate(() => !!window.__game.scene.getScene('UIScene').getChoicePanel().isAwaitingChoice());
+  const pick = (want) => page.evaluate((want) => {
+    const cp = window.__game.scene.getScene('UIScene').getChoicePanel();
+    const idx = cp.getOptions().findIndex((o) => o.enabled && o.text.toLowerCase().includes(want.toLowerCase()));
+    return idx >= 0 && cp.choose(idx);
+  }, want);
+  let err = await step(() => window.__demoRun(window.__qa.talk('npc_receptionist')), LABEL);
+  if (err && !/pide elegir/.test(err)) notes.push(`talk npc_receptionist: ${err}`);
+  // con el hub abierto: unos segundos de `dialogue`
   const t0 = Date.now();
-  while (Date.now() - t0 < 30000) {
-    const m = await capture('3) conversación: estado dialogue (pad, sección tranquila)');
-    if (m?.state === 'dialogue') sawDialogue = true;
-    if (await page.evaluate(() => window.__demoDone)) break;
+  while (Date.now() - t0 < 4000) await capture(`${LABEL} · hub abierto`);
+  for (const want of ['Who are you, exactly?', "I'll come back later."]) {
+    if (!(await awaiting())) break;
+    if (!(await pick(want))) { problems.push(`conversación: no se pudo elegir «${want}»`); break; }
+    err = await step(() => window.__demoRun(window.__qa.dismissAll()), `${LABEL} · > ${want}`);
+    if (err && !/pide elegir/.test(err)) notes.push(`conversación tras «${want}»: ${err}`);
   }
-  const err = await page.evaluate(() => window.__demoErr);
-  if (err) notes.push(`talk npc_receptionist: ${err}`);
-  await page.evaluate(() => window.__demoRun(window.__qa.dismissAll())).catch(() => {});
+  if (await awaiting()) await demo.fail('la conversación con Penny sigue abierta pidiendo elegir; los cambios de escena fallarían');
   await filmFor('3) fin de la conversación', 1500);
-  if (!sawDialogue) problems.push('durante la conversación el estado musical no pasó a dialogue');
+  if (![...seenStates].some((k) => k.endsWith(':dialogue'))) problems.push('durante la conversación el estado musical no pasó a dialogue');
 }
 // 4) basement
 await go('basement', '4) → basement: espera al punto de salida y entra por el puente en Mi menor');
