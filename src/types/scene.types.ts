@@ -84,6 +84,13 @@ export interface SceneData {
      * (p. ej. la maleza delante de las rocas, o un arbusto junto a un seto que debe seguir delante).
      */
     mask?: string;
+    /**
+     * A2.17 fase 4: tapado relativo a los pies (maleza alta por la que se anda). El trozo se parte en franjas
+     * horizontales de `bandStep` % de alto; la franja k (que empieza en bounds.y + k·bandStep) se dibuja a la base
+     * baseY + k·bandStep. Así la base baja con la franja y el trozo tapa a Dex siempre lo mismo: desde
+     * (baseY − bounds.y) por encima de sus pies hacia abajo, esté donde esté. Sin bandStep, una sola base para todo.
+     */
+    bandStep?: number;
   }>;
   npcs?: NPCData[];
   dialogues?: Record<string, DialogueTreeData>;

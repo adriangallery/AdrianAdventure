@@ -51,7 +51,7 @@ if (page) {
 function reevaluate(scene, refsDoc) {
   const old = JSON.parse(readFileSync(join(JSON_DIR, `${scene}.json`), 'utf8'));
   return old.positions.map((p) => {
-    const m = { x: p.x, y: p.y, feetX: p.feet.x, feetY: p.feet.y, box: p.dexBox, heightPct: p.heightPct, walkable: p.walkable, maskOk: p.maskOk, cover: { ...Object.fromEntries((refsDoc.refs || []).map((r) => [r.id, null])), ...(p.cover || {}) }, coverMax: p.coverMax };
+    const m = { x: p.x, y: p.y, feetX: p.feet.x, feetY: p.feet.y, box: p.dexBox, heightPct: p.heightPct, walkable: p.walkable, maskOk: p.maskOk, cover: { ...Object.fromEntries((refsDoc.refs || []).map((r) => [r.id, null])), ...(p.cover || {}) }, coverMax: p.coverMax, dexCover: p.dexCover };
     const npcRefs = (refsDoc.refs || []).filter((r) => r.npc && p.scale?.ref === r.id).map((r) => ({ ...r, heightPct: (p.scale.expected * r.realHeightM) / (refsDoc.dexHeightM || 1.75) }));
     const ev = evaluatePosition(m, refsDoc, npcRefs);
     return { ...p, scale: ev.scale, failures: ev.failures, info: ev.info, score: ev.score };
@@ -131,9 +131,17 @@ async function measureAt(x, y, refs) {
       const mx = Math.min(mk.w - 1, Math.floor(((px - b.x) / b.w) * mk.w)); const my = Math.min(mk.h - 1, Math.floor(((py - b.y) / b.h) * mk.h));
       return mk.data[(my * mk.w + mx) * 4 + 3] > 128;
     };
+    // Fase 4: con `bandStep` la base es la de la franja de la fila (como foregroundBaseAt de src/systems/WalkMotion.ts)
+    const baseAt = (l, py) => {
+      const st = l.bandStep;
+      if (!(st > 0)) return l.baseY;
+      const n = Math.ceil(l.bounds.h / st - 1e-6);
+      const k = Math.min(n - 1, Math.max(0, Math.floor((py - l.bounds.y) / st)));
+      return l.baseY + k * st;
+    };
     const inBehind = (px, py) => {
       const owners = (M.layers || []).filter((l) => l.bounds && owns(l, px, py));
-      return owners.length > 0 && owners.every((l) => p.pctY >= l.baseY);
+      return owners.length > 0 && owners.every((l) => p.pctY >= baseAt(l, py));
     };
     // Fracción de un rectángulo (en %) donde el primer plano es opaco (y se dibuja por encima de Dex)
     // A2.17 fase 3: con all = true cuenta también los trozos que quedan detrás (lo que el primer plano PUEDE tapar)
@@ -157,8 +165,11 @@ async function measureAt(x, y, refs) {
     };
     const cover = {};
     const coverMax = {};
+    // Fase 4: `dexCover` = fracción de la caja ENTERA de Dex tapada por la referencia (para `maxCover` en scale-refs)
+    const dexCover = {};
     for (const r of refs) {
       if (!r.box) continue;
+      if (r.maxCover != null) dexCover[r.id] = Math.round(alphaFrac(box, false, r.layer) * 100) / 100;
       const ix = Math.max(box.x, r.box.x); const iy = Math.max(box.y, r.box.y);
       const iw = Math.min(box.x + box.w, r.box.x + r.box.w) - ix; const ih = Math.min(box.y + box.h, r.box.y + r.box.h) - iy;
       if (iw > 0 && ih > 0) {
@@ -181,7 +192,7 @@ async function measureAt(x, y, refs) {
     });
     return {
       feetX: p.pctX, feetY: p.pctY, box, heightPct: pix?.worldHeightPct ?? (p.displayHeight / bgH) * 100,
-      screenHeightPct: pix?.playerHeightPct, walkable: window.__qa.isWalkable(p.pctX, p.pctY), maskOk, cover, coverMax,
+      screenHeightPct: pix?.playerHeightPct, walkable: window.__qa.isWalkable(p.pctX, p.pctY), maskOk, cover, coverMax, dexCover,
       screen: { x: s0.x, y: s0.y, w: s1.x - s0.x, h: s1.y - s0.y }, npcs,
       toScreenRef: Object.fromEntries(refs.filter((r) => r.box).map((r) => {
         const a = cs.pctToScreen(r.box.x, r.box.y); const c = cs.pctToScreen(r.box.x + r.box.w, r.box.y + r.box.h);
@@ -230,7 +241,7 @@ for (const scene of scenes) {
     const pos = {
       id: pt.id, kind: pt.kind, x: pt.x, y: pt.y, feet: { x: r2(m.feetX), y: r2(m.feetY) },
       dexBox: { x: r2(m.box.x), y: r2(m.box.y), w: r2(m.box.w), h: r2(m.box.h) }, heightPct: r2(m.heightPct),
-      walkable: m.walkable, maskOk: m.maskOk, cover: m.cover, coverMax: m.coverMax, scale: ev.scale, failures: ev.failures, info: ev.info, score: ev.score,
+      walkable: m.walkable, maskOk: m.maskOk, cover: m.cover, coverMax: m.coverMax, ...(Object.keys(m.dexCover || {}).length ? { dexCover: m.dexCover } : {}), scale: ev.scale, failures: ev.failures, info: ev.info, score: ev.score,
     };
     if (ev.failures.length || ev.info.some((x) => x.type === 'scale')) {
       const refId = ev.failures.find((f) => f.ref)?.ref || ev.scale?.ref;
