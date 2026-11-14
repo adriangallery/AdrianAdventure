@@ -35,7 +35,7 @@ export function describe(s) {
 
 /**
  * Comprobaciones de estado: scene, has, lacks, (A9.7) inventoryMax, flags, unsetFlags, visited, achievements, (A2.6) lastChoices, (A2.2) facing,
- * (A2.4) verb, walkTarget y highlighted, (A2.10) cinematic y playerNear, (A2.8) pixel, (A4.1) anim, (A4.2) npc, (A4.3) ambient, (A4.4) audio
+ * (A3.11) hiddenHotspots/visibleHotspots, (A2.4) verb, walkTarget y highlighted, (A2.10) cinematic y playerNear, (A2.8) pixel, (A4.1) anim, (A4.2) npc, (A4.3) ambient, (A4.4) audio
  * (compara con `ctx.before`, el estado de antes del paso) y (A1.10) noListenerGrowth, que
  * compara `st.resizeListeners` con `ctx.listenersBaseline` (lo que había tras el primer paso de la ruta). `flags` trata
  * una flag ausente como false; (A1.4) `unsetFlags` exige que la flag no esté en la partida, ni a false: nadie la ha
@@ -59,6 +59,14 @@ export function check(expect, st, ctx = {}) {
     if (Object.prototype.hasOwnProperty.call(st.flags, flag)) f.push(`flag ${flag} = ${st.flags[flag]} escrita en la partida, se esperaba sin escribir`);
   }
   for (const id of expect.visited ?? []) if (!st.visited.includes(id)) f.push(`no se visitó «${id}»`);
+  // A3.11: hotspots que existen ahora mismo en la escena (`st.hotspots`, los visibles): lo ya cogido desaparece
+  if (expect.hiddenHotspots || expect.visibleHotspots) {
+    if (!Array.isArray(st.hotspots)) f.push('el juego no expone `hotspots` en state()');
+    else {
+      for (const id of expect.hiddenHotspots ?? []) if (st.hotspots.includes(id)) f.push(`el hotspot «${id}» sigue en la escena, se esperaba oculto`);
+      for (const id of expect.visibleHotspots ?? []) if (!st.hotspots.includes(id)) f.push(`el hotspot «${id}» no está en la escena, se esperaba visible`);
+    }
+  }
   for (const id of expect.achievements ?? []) if (!st.achievements.includes(id)) f.push(`falta el logro «${id}»`);
   // A2.2: orientación del personaje al terminar el paso (left | right | front | back)
   if (expect.facing !== undefined) {
