@@ -3,7 +3,7 @@
 //
 //   node scripts/lint-scenes.mjs [--strict] [--json] [--scene <id>] [--root <dir>] [--no-write]
 //
-// Recorre assets/scenes/<id>/scene.json y aplica doce reglas:
+// Recorre assets/scenes/<id>/scene.json y aplica las reglas de la a a la n:
 //   a  flags que se leen y nunca se ponen, o que se ponen y nunca se leen
 //   b  objetos que se consiguen (addItem) y no sirven para nada
 //   c  salidas (fadeToScene/gotoScene) en hotspots y triggers sin gate, para revisar a mano
@@ -37,6 +37,9 @@
 //      lista coincide con los `scale: fixed` de qa/proportion-refs.json que llevan depthScale prohibido explícito)
 //   m  props de puzle dibujados (A3.3f, aviso): un `conditionalOverlays[]` cuya flag no pone ningún script (nunca cambia)
 //      o cuya caja (`bounds`) no toca ningún hotspot de la escena (se ve pero no se puede tocar) (overlayPropDefects)
+//   n  cajas de luz (A9.6, aviso): un `ambient[]` de tipo `glow` con `shape: rect` cuya `area` ocupa más del
+//      GLOW_RECT_MAX_FRACTION (5 %) del fondo. El glow rect es el brillo de una pantalla o ventana: el área tiene que
+//      ser esa fuente, no media pared (glowRectDefects)
 //
 // Por defecto (f), los spawns fuera de zona de (e), el diario mal formado de (h), los errores de (j) y (k) y (l) son error; el resto, aviso. --strict lo convierte todo en error. Código de salida 1
 // solo si hay errores. Escribe lint-scenes-report.json y lint-scenes-report.md en la raíz del repo.
@@ -107,7 +110,28 @@ export const RULES = {
   k: 'ambiente',
   l: 'cambio de escala',
   m: 'props de puzle dibujados',
+  n: 'cajas de luz',
 };
+
+/** A9.6: fracción máxima del fondo que puede ocupar el `area` de un glow rect (regla n) */
+export const GLOW_RECT_MAX_FRACTION = 0.05;
+
+/**
+ * A9.6 (regla n): defectos de los glow `rect` de `ambient[]`: lista de { id, fraction, message } para los que ocupan más
+ * del GLOW_RECT_MAX_FRACTION del fondo. Los elementos mal definidos los marca ya la regla k.
+ */
+export function glowRectDefects(raw) {
+  const out = [];
+  if (!Array.isArray(raw)) return out;
+  for (const o of raw) {
+    if (!o || typeof o !== 'object' || o.kind !== 'glow' || o.shape !== 'rect' || !ambientRect(o.area)) continue;
+    const fraction = (o.area.w / 100) * (o.area.h / 100);
+    if (fraction > GLOW_RECT_MAX_FRACTION) {
+      out.push({ id: String(o.id), fraction, message: `glow rect «${o.id}» ocupa el ${(fraction * 100).toFixed(1)} % del fondo (${o.area.w} × ${o.area.h} %), más del ${GLOW_RECT_MAX_FRACTION * 100} %: ajusta \`area\` a la pantalla o ventana que emite (o pártelo en varios)` });
+    }
+  }
+  return out;
+}
 
 // A2.5: mismos mínimos que src/systems/FailResponses.ts (tests/lint-scenes.test.mjs comprueba que coinciden)
 export const FAIL_MIN = { item: 3, verb: 3, itemItem: 5 };
@@ -1049,6 +1073,11 @@ export function lintProject(project) {
       if (!AMBIENT_ACTIONS.includes(op.action)) push('k', 'error', c.scene, String(op.id), p, `ambient: action «${String(op.action)}» no válida (${AMBIENT_ACTIONS.join(', ')})`);
       if (typeof op.id !== 'string' || !ids.has(op.id)) push('k', 'error', c.scene, String(op.id), p, `ambient: el elemento «${op.id}» no está en ambient[] de ${c.scene}`);
     });
+  }
+
+  // ── (n) cajas de luz (A9.6) ──
+  for (const [id, s] of Object.entries(scenes)) {
+    for (const d of glowRectDefects(s.ambient)) push('n', 'warning', id, d.id, `${id}.ambient.${d.id}`, d.message);
   }
 
   return findings;

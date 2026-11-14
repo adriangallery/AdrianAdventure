@@ -1,7 +1,8 @@
 // A4.3 (plan SCUMM): capa Phaser de la animación ambiental (src/systems/Ambient.ts decide; esto dibuja).
 //
 // Un Graphics por elemento (puntos, formas, líneas) y, para lo suave (niebla, nubes, vapor), un pequeño pool de Images
-// con una textura radial generada una vez por juego (`ambient_soft`, filtro LINEAR: el resto del juego va en nearest).
+// con una textura radial generada una vez por juego (`ambient_soft`, filtro LINEAR: el resto del juego va en nearest);
+// los glow `rect` usan otra rectangular con los bordes difuminados (`ambient_softrect`, A9.6).
 // Todo se coloca en coordenadas del mundo a partir de la transformación del fondo (CoordSystem.getBgTransform), así
 // sigue a la cámara y al zoom de las cinemáticas, y `layout()` basta al cambiar el tamaño de la ventana. Sin tweens ni
 // temporizadores: GameScene.update llama a `update` cada frame y en SHUTDOWN `destroy` solo suelta referencias (los
@@ -10,7 +11,7 @@ import Phaser from 'phaser';
 import type { CoordSystem } from './CoordSystem';
 import {
   AmbientElementState, ambientSeed, createAmbientSim, parseAmbient,
-  type AmbientBlend, type AmbientFrame, type AmbientQa, type AmbientSpec,
+  softRectAlpha, type AmbientBlend, type AmbientFrame, type AmbientQa, type AmbientSpec,
 } from './Ambient';
 
 const SOFT_SIZE = 64;
@@ -59,6 +60,34 @@ export function ensureSoftTexture(scene: Phaser.Scene, color: number): string {
   grad.addColorStop(1, `rgba(${rgb},0)`);
   ctx.fillStyle = grad;
   ctx.fillRect(0, 0, SOFT_SIZE, SOFT_SIZE);
+  tex.refresh();
+  tex.setFilter(Phaser.Textures.FilterMode.LINEAR);
+  return key;
+}
+
+/** A9.6: clave de la textura rectangular difuminada de un color (`ambient_softrect_rrggbb`) */
+export const softRectKey = (color: number) => `ambient_softrect_${color.toString(16).padStart(6, '0')}`;
+
+/**
+ * A9.6: textura rectangular de un color con los cuatro bordes cayendo a transparente (softRectAlpha de Ambient.ts), para
+ * los glow `rect`. 64×64, una por color y por juego, como la radial: se estira al tamaño del brillo con filtro LINEAR.
+ */
+export function ensureSoftRectTexture(scene: Phaser.Scene, color: number): string {
+  const key = softRectKey(color);
+  if (scene.textures.exists(key)) return key;
+  const tex = scene.textures.createCanvas(key, SOFT_SIZE, SOFT_SIZE);
+  if (!tex) return key;
+  const ctx = tex.getContext();
+  const img = ctx.createImageData(SOFT_SIZE, SOFT_SIZE);
+  const r = (color >> 16) & 0xff, gg = (color >> 8) & 0xff, b = color & 0xff;
+  for (let j = 0; j < SOFT_SIZE; j++) {
+    for (let i = 0; i < SOFT_SIZE; i++) {
+      const o = (j * SOFT_SIZE + i) * 4;
+      img.data[o] = r; img.data[o + 1] = gg; img.data[o + 2] = b;
+      img.data[o + 3] = Math.round(255 * softRectAlpha((i + 0.5) / SOFT_SIZE, (j + 0.5) / SOFT_SIZE));
+    }
+  }
+  ctx.putImageData(img, 0, 0);
   tex.refresh();
   tex.setFilter(Phaser.Textures.FilterMode.LINEAR);
   return key;
@@ -152,7 +181,9 @@ export class AmbientLayer {
     }
     // Manchas suaves: pool de Images con la textura radial del color del elemento
     while (el.images.length < f.blobs.length) {
-      const im = this.scene.add.image(0, 0, ensureSoftTexture(this.scene, el.state.spec.color)).setDepth(el.state.spec.depth).setBlendMode(BLENDS[el.state.spec.blend]);
+      const c = el.state.spec.color;
+      const key = f.blobs[el.images.length].rect ? ensureSoftRectTexture(this.scene, c) : ensureSoftTexture(this.scene, c);
+      const im = this.scene.add.image(0, 0, key).setDepth(el.state.spec.depth).setBlendMode(BLENDS[el.state.spec.blend]);
       el.images.push(im);
     }
     el.images.forEach((im, i) => {

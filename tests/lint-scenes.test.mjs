@@ -4,7 +4,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import {
-  lintProject, applyPolicy, parseStringArray, parseWhen, depthScaleDefects, depthScaleWalkDefects, depthChangeDefects, MAX_DEPTH_CHANGE, FIXED_SCALE_SCENES, PIXEL_RANGES, FAIL_MIN, FAIL_VERBS, bagDefects, itemDescIds, loadProject,
+  lintProject, applyPolicy, glowRectDefects, GLOW_RECT_MAX_FRACTION, parseStringArray, parseWhen, depthScaleDefects, depthScaleWalkDefects, depthChangeDefects, MAX_DEPTH_CHANGE, FIXED_SCALE_SCENES, PIXEL_RANGES, FAIL_MIN, FAIL_VERBS, bagDefects, itemDescIds, loadProject,
   ambientDefects, overlayPropDefects, AMBIENT_KINDS, AMBIENT_MAX_COUNT, AMBIENT_MAX_PER_SCENE, AMBIENT_ACTIONS,
 } from '../scripts/lint-scenes.mjs';
 
@@ -713,4 +713,31 @@ test('regla (m) en lintProject: aviso por overlay sin hotspot debajo', () => {
   const m = only(lintProject(project([s])), 'm');
   assert.deepEqual(m.map((f) => f.id), ['lejos']);
   assert.equal(m[0].severity, 'warning');
+});
+
+test('A9.6 regla (n): aviso por glow rect mayor del 5 % del fondo; ellipse, otros tipos y rect pequeños no', () => {
+  assert.equal(GLOW_RECT_MAX_FRACTION, 0.05);
+  const glow = (id, area, shape = 'rect', kind = 'glow') => ({ id, kind, shape, area, color: '#40ff80', alpha: 0.2 });
+  const amb = [
+    glow('caja', { x: 10, y: 19, w: 27, h: 36 }), // el del lobby antes de A9.6: 9,7 %
+    glow('pantalla', { x: 17, y: 20, w: 5.3, h: 12.8 }),
+    glow('justo', { x: 0, y: 0, w: 10, h: 50 }), // 5 % exacto: no pasa del tope
+    glow('halo', { x: 0, y: 0, w: 40, h: 40 }, 'ellipse'),
+    glow('tubo', { x: 0, y: 0, w: 50, h: 20 }, 'rect', 'flicker'),
+  ];
+  const d = glowRectDefects(amb);
+  assert.deepEqual(d.map((x) => x.id), ['caja']);
+  assert.ok(Math.abs(d[0].fraction - 0.0972) < 1e-9);
+  assert.match(d[0].message, /9,7|9\.7/);
+  assert.deepEqual(glowRectDefects(undefined), []);
+  assert.deepEqual(glowRectDefects([{ id: 'x', kind: 'glow', shape: 'rect' }]), []); // sin area: lo marca la regla k
+  const s = scene('room', { ambient: [...amb, { id: 'motas', kind: 'dust', area: { x: 0, y: 0, w: 10, h: 10 } }] });
+  const n = only(lintProject(project([s])), 'n');
+  assert.deepEqual(n.map((f) => f.id), ['caja']);
+  assert.equal(n[0].severity, 'warning');
+});
+
+test('A9.6: ninguna escena del juego tiene un glow rect mayor del 5 %', () => {
+  const p = loadProject(new URL('..', import.meta.url).pathname);
+  assert.deepEqual(only(lintProject(p), 'n').map((f) => f.message), []);
 });

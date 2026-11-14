@@ -1978,10 +1978,10 @@
       "id": "monitor_glow",
       "kind": "glow",
       "area": {
-        "x": 63.5,
+        "x": 63.6,
         "y": 26.5,
-        "w": 10,
-        "h": 22
+        "w": 8.2,
+        "h": 27
       },
       "shape": "rect",
       "color": "#40ff80",
