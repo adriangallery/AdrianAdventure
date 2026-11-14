@@ -885,3 +885,77 @@ test('A3.10: mock web3 de QA — gates sin red y filas del dashboard', async () 
   assert.equal(prow.find((r) => r.label === 'AdrianZERO').value, '3');
   assert.match(dashboardStatus(partial), /PARTIAL READ/);
 });
+
+// ─── A9.13: Founder Mode con datos reales del Diamond (nunca cifras inventadas) ───────────────────────────────────────
+test('A9.13: Founder Mode abre el panel founder y ya no dice cifras inventadas', async () => {
+  const { readFileSync } = await import('node:fs');
+  const upstairs = JSON.parse(readFileSync(new URL('../assets/scenes/upstairs/scene.json', import.meta.url), 'utf8'));
+  const combo = upstairs.combos.find((c) => c.result === 'founder_mode');
+  const raw = JSON.stringify(combo);
+  assert.ok(!/847|12,459|403 days/.test(raw), 'sin las cifras inventadas de antes');
+  const ctx = makeCtx();
+  const modes = [];
+  ctx.showDashboard = (mode) => { modes.push(mode); return Promise.resolve(); };
+  const done = new ScriptEngine(ctx).execute(combo.script);
+  // El combo lleva un `wait` de 500 ms (temporizador real): se van contestando las frases hasta que acaba
+  let fin = false;
+  void done.then(() => { fin = true; });
+  for (let t = 0; !fin && t < 200; t++) { await new Promise((r) => setTimeout(r, 20)); while (ctx.says.length) ctx.says.shift().resolve(); }
+  await done;
+  assert.deepEqual(modes, ['founder']);
+  assert.equal(ctx.getState().flags.founder_mode, true);
+  // Sin `mode` sigue siendo el panel del holder (A3.10)
+  const ctx2 = makeCtx();
+  const m2 = [];
+  ctx2.showDashboard = (mode) => { m2.push(mode); return Promise.resolve(); };
+  await new ScriptEngine(ctx2).execute([{ op: 'showDashboard' }]);
+  assert.deepEqual(m2, ['holder']);
+});
+
+test('A9.13: cifras de Founder Mode — formato, fallo de red, corte de tiempo, caché y sin cartera', async () => {
+  const d = await import('../src/web3/dashboardData.ts');
+  const e = 10n ** 18n;
+  // Valores reales leídos el 14-nov-2026 (eth_call contra Base), redondeados a unidades
+  const ok = { supply: async () => 53_456_172n * e, max: async () => 100_000_000n * e, burned: async () => 18_530_728n * e, staked: async () => 8_031_578n * e, adrianZeroSupply: async () => 1338n };
+  // Sin cartera: las lecturas no necesitan dirección; todo sale
+  let cache = d.newFounderCache();
+  const s = await d.readFounderStats(ok, cache, { now: 1000 });
+  assert.equal(d.founderMissing(s), 0);
+  const text = d.founderRows(s).map((r) => `${r.label}: ${r.value}`).join('\n');
+  assert.match(text, /\$ZERO supply: 53,456,172/);
+  assert.match(text, /\$ZERO max: 100,000,000/);
+  assert.match(text, /\$ZERO burned: 18,530,728 \(18\.5 % of max\)/);
+  assert.match(text, /\$ZERO staked: 8,031,578 \(15\.0 % of supply\)/);
+  assert.match(text, /AdrianZERO minted: 1,338/);
+  assert.ok(!/simulated/.test(text));
+  assert.match(d.founderStatus(s), /LIVE FROM BASE/);
+  // Caché: dentro de 5 min no se vuelve a leer; pasado, sí
+  let calls = 0;
+  const counting = Object.fromEntries(Object.entries(ok).map(([k, f]) => [k, () => { calls++; return f(); }]));
+  assert.equal(await d.readFounderStats(counting, cache, { now: 1000 + 60_000 }), s);
+  assert.equal(calls, 0);
+  await d.readFounderStats(counting, cache, { now: 1000 + d.FOUNDER_CACHE_MS + 1 });
+  assert.equal(calls, 5);
+  // Red caída: todo «—», nada con aspecto de cifra, estado honesto, y no se guarda en caché
+  cache = d.newFounderCache();
+  const boom = async () => { throw new Error('fetch failed'); };
+  const down = await d.readFounderStats({ supply: boom, max: boom, burned: boom, staked: boom, adrianZeroSupply: boom }, cache, { now: 5 });
+  assert.equal(d.founderMissing(down), 5);
+  for (const r of d.founderRows(down)) { assert.equal(r.value, d.UNAVAILABLE); assert.ok(r.warn); }
+  assert.match(d.founderStatus(down), /BASE UNREACHABLE/);
+  assert.equal(cache.stats, null);
+  // Parcial + corte de tiempo: la lectura que no contesta cae a «—» y el resto se enseña; sin porcentaje inventado
+  const hang = () => new Promise(() => {});
+  const part = await d.readFounderStats({ ...ok, max: hang, adrianZeroSupply: async () => 'basura' }, d.newFounderCache(), { timeoutMs: 30 });
+  assert.equal(part.zeroMaxSupplyWei, null);
+  assert.equal(part.adrianZeroSupply, null, 'un valor que no es entero no se enseña');
+  const prow = d.founderRows(part);
+  assert.equal(prow.find((r) => r.label === '$ZERO burned').value, '18,530,728', 'sin máximo no hay % del máximo');
+  assert.equal(prow.find((r) => r.label === '$ZERO max').value, '—');
+  assert.match(d.founderStatus(part), /PARTIAL READ \(2 of 5/);
+  // QA: simuladas, marcadas como tales; fail = todo «—»
+  assert.match(d.founderRows(d.simulatedFounderStats(false)).map((r) => r.value).join(' '), /simulated/);
+  assert.equal(d.founderMissing(d.simulatedFounderStats(true)), 5);
+  assert.equal(d.formatZeroWhole(999n * 10n ** 17n), '99');
+  assert.equal(d.percentOf(1n, 0n), null);
+});

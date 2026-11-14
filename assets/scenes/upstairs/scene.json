@@ -1289,6 +1289,10 @@
             {
               "op": "say",
               "text": "Founder mode is already active. The mining rig hums contentedly."
+            },
+            {
+              "op": "showDashboard",
+              "mode": "founder"
             }
           ],
           "else": [
@@ -1314,8 +1318,8 @@
               "text": "An admin panel appears. Adrian's full ecosystem dashboard."
             },
             {
-              "op": "say",
-              "text": "The admin dashboard lights up. FloorEngine: 847 sweeps. TraitLab: 12,459 traits minted. SweepBot: running 24/7 for 403 days."
+              "op": "showDashboard",
+              "mode": "founder"
             },
             {
               "op": "say",
