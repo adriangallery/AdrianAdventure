@@ -1,12 +1,12 @@
 // A3.10 (plan SCUMM): carga los datos del dashboard del Mining Rig. SOLO lecturas (publicClient.readContract y la API
 // de NFT de Alchemy); nada de escrituras ni firmas. Con `__qa.mockWeb3` (solo ?qa=1) lee del mock y no toca la red.
 import type { Address } from 'viem';
-import { CONTRACTS, ERC20_ABI, ERC721_ABI } from '@/config/blockchain.config';
+import { CONTRACTS, DIAMOND_STATS_ABI, ERC20_ABI, ERC721_ABI, ERC721_SUPPLY_ABI } from '@/config/blockchain.config';
 import { publicClient } from './wallet';
 import { loadNFTs } from './nft-loader';
 import { getWeb3Mock, MOCK_CONTRACTS } from './web3Mock';
 import { gateAddress } from './gating';
-import type { DashboardData } from './dashboardData';
+import { newFounderCache, readFounderStats, simulatedFounderStats, type DashboardData, type FounderStats } from './dashboardData';
 
 /** Cada lectura se corta a los 8 s: el panel no se queda cargando para siempre */
 const READ_TIMEOUT_MS = 8000;
@@ -77,4 +77,28 @@ export async function loadDashboard(): Promise<DashboardData | null> {
     errors,
     simulated: false,
   };
+}
+
+// ─── A9.13: Founder Mode — cifras globales reales (sin cartera) ───────────────────────────────────────────────────────
+
+const founderCache = newFounderCache();
+
+/**
+ * Cifras globales del ecosistema para Founder Mode. SOLO lecturas (`readContract` de vistas públicas del Diamond y de
+ * AdrianZERO): no pide cartera, no firma, no escribe. Corte de 8 s por lectura y caché de 5 min (dashboardData.ts
+ * `readFounderStats`). Con `__qa.mockWeb3` devuelve cifras simuladas marcadas como tales. Nunca lanza.
+ */
+export function loadFounderStats(): Promise<FounderStats> {
+  const mock = getWeb3Mock();
+  if (mock !== undefined) return Promise.resolve(simulatedFounderStats(!!mock && mock.fail));
+  const diamond = CONTRACTS.ZERO_DIAMOND as Address;
+  const view = (functionName: 'totalSupply' | 'maxSupply' | 'totalBurned' | 'totalStaked') =>
+    () => publicClient.readContract({ address: diamond, abi: DIAMOND_STATS_ABI, functionName });
+  return readFounderStats({
+    supply: view('totalSupply'),
+    max: view('maxSupply'),
+    burned: view('totalBurned'),
+    staked: view('totalStaked'),
+    adrianZeroSupply: () => publicClient.readContract({ address: CONTRACTS.ADRIAN_ZERO as Address, abi: ERC721_SUPPLY_ABI, functionName: 'totalSupply' }),
+  }, founderCache);
 }

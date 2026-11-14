@@ -623,7 +623,7 @@
             "I offer the bartender my energy drink. 'I do not drink. I am the drinks.'"
           ]
         },
-        "name": "Robot Bartender",
+        "name": "Robot Bartender (B.O.T.)",
         "bounds": {
           "x": 82,
           "y": 30,
@@ -768,6 +768,7 @@
       },
       {
         "id": "hs_trash_pile",
+        "keepAfterPick": "El montón de basura se queda: el pato estaba enterrado dentro; el PICK de después lo dice",
         "name": "Pile of Junk",
         "bounds": {
           "x": 0.7,

@@ -145,24 +145,6 @@
               ]
             }
           ],
-          "CLOSE": [
-            {
-              "op": "ifFlag",
-              "flag": "found_terminal_key",
-              "then": [
-                {
-                  "op": "say",
-                  "text": "I close the drawer. It doesn't ask me to accept anything this time. Growth."
-                }
-              ],
-              "else": [
-                {
-                  "op": "say",
-                  "text": "Already closed. Closed and legally binding."
-                }
-              ]
-            }
-          ],
           "PUSH": [
             {
               "op": "say",
@@ -179,6 +161,121 @@
             {
               "op": "say",
               "text": "The desk doesn't need anything from me. It already got thirty-eight pages of my consent."
+            }
+          ]
+        }
+      },
+      {
+        "id": "hs_desk_drawer",
+        "keepAfterPick": "A3.3i: el cajón se queda en el escritorio; con found_terminal_key su overlay pasa de cerrado (desk_drawer_locked) a abierto (desk_drawer_open)",
+        "name": "Desk Drawer",
+        "useResponses": {
+          "terminal_key": [
+            "I put the key back on the desk. The desk doesn't want it back. Nobody wants anything back."
+          ]
+        },
+        "bounds": {
+          "x": 58.9,
+          "y": 68.3,
+          "w": 5,
+          "h": 17.7
+        },
+        "walkTo": {
+          "x": 61.4,
+          "y": 97
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "ifFlag",
+              "flag": "found_terminal_key",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "The drawer's empty. Thirty-eight pages of Terms for one key. Worth it. Barely."
+                }
+              ],
+              "else": [
+                {
+                  "op": "say",
+                  "text": "Locked. The lock is a tiny screen: 'Accept the Terms to open'."
+                }
+              ]
+            }
+          ],
+          "USE": [
+            {
+              "op": "ifFlag",
+              "flag": "found_terminal_key",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "The drawer is empty. I already took the trading terminal key."
+                }
+              ],
+              "else": [
+                {
+                  "op": "dialogue",
+                  "npcId": "tos_drawer",
+                  "treeId": "tos_drawer"
+                }
+              ]
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "ifFlag",
+              "flag": "found_terminal_key",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "The drawer is empty. I already took the trading terminal key."
+                }
+              ],
+              "else": [
+                {
+                  "op": "dialogue",
+                  "npcId": "tos_drawer",
+                  "treeId": "tos_drawer"
+                }
+              ]
+            }
+          ],
+          "PULL": [
+            {
+              "op": "ifFlag",
+              "flag": "found_terminal_key",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "The drawer is empty. I already took the trading terminal key."
+                }
+              ],
+              "else": [
+                {
+                  "op": "dialogue",
+                  "npcId": "tos_drawer",
+                  "treeId": "tos_drawer"
+                }
+              ]
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "ifFlag",
+              "flag": "found_terminal_key",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "I close the drawer. It doesn't ask me to accept anything this time. Growth."
+                }
+              ],
+              "else": [
+                {
+                  "op": "say",
+                  "text": "Already closed. Closed and legally binding."
+                }
+              ]
             }
           ]
         }
@@ -641,6 +738,7 @@
       },
       {
         "id": "hs_pizza_box",
+        "keepAfterPick": "La caja se queda con el resto de la pizza: solo te llevas una porción",
         "name": "Pizza Box",
         "bounds": {
           "x": 34.8,
@@ -757,6 +855,7 @@
       },
       {
         "id": "hs_energy_drink",
+        "hideWhen": ["has_energy_drink", "item:energy_drink"],
         "name": "Energy Drink",
         "bounds": {
           "x": 44.3,
@@ -874,6 +973,7 @@
       },
       {
         "id": "hs_paper_tray",
+        "keepAfterPick": "La bandeja se queda: el recibo iba entre los papeles (no dibujado aparte); el PICK de después lo dice («The tray is just sad printouts now»)",
         "name": "Paper Tray",
         "bounds": {
           "x": 44,
@@ -962,6 +1062,7 @@
       },
       {
         "id": "hs_alphapack",
+        "keepAfterPick": "La caja ALPHA PACKS se queda y su LOOK lo dice («Empty now — I already took the ape costume»); el disfraz iba dentro",
         "name": "Alpha Pack",
         "bounds": {
           "x": 66.9,
@@ -1289,6 +1390,10 @@
             {
               "op": "say",
               "text": "Founder mode is already active. The mining rig hums contentedly."
+            },
+            {
+              "op": "showDashboard",
+              "mode": "founder"
             }
           ],
           "else": [
@@ -1314,8 +1419,8 @@
               "text": "An admin panel appears. Adrian's full ecosystem dashboard."
             },
             {
-              "op": "say",
-              "text": "The admin dashboard lights up. FloorEngine: 847 sweeps. TraitLab: 12,459 traits minted. SweepBot: running 24/7 for 403 days."
+              "op": "showDashboard",
+              "mode": "founder"
             },
             {
               "op": "say",
@@ -1529,6 +1634,33 @@
       "flag": "has_energy_drink",
       "depth": 16,
       "invert": true
+    },
+    {
+      "id": "desk_drawer_locked",
+      "sprite": "overlay_drawer_locked",
+      "format": "webp",
+      "bounds": {
+        "x": 59.375,
+        "y": 69.4444,
+        "w": 4.2295,
+        "h": 4.9479
+      },
+      "flag": "found_terminal_key",
+      "invert": true,
+      "depth": 5
+    },
+    {
+      "id": "desk_drawer_open",
+      "sprite": "overlay_drawer_open",
+      "format": "webp",
+      "bounds": {
+        "x": 58.8901,
+        "y": 68.316,
+        "w": 5.0377,
+        "h": 8.8542
+      },
+      "flag": "found_terminal_key",
+      "depth": 5
     }
   ],
   "ambient": [

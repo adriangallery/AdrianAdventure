@@ -140,6 +140,7 @@
       },
       {
         "id": "hs_antenna_array",
+        "keepAfterPick": "El conjunto de antenas se queda: solo sale la suelta; el PICK de después lo dice («The array leans a little now»)",
         "useResponses": {
           "antenna": [
             "I try to put the antenna back. It won't stay. It's tasted freedom."
@@ -836,7 +837,7 @@
             "No keypad on this hatch. 7314 stays in my pocket. The hatch wants a card and a key."
           ]
         },
-        "name": "Service Shaft Hatch",
+        "name": "Roof Service Hatch",
         "bounds": {
           "x": 56.8,
           "y": 63,

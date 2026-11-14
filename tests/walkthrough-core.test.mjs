@@ -714,3 +714,11 @@ test('cutRoute: la ruta crítica hasta el capítulo 1 acaba al entrar en el lobb
   assert.throws(() => cutRoute(sb([NEW, KEYPAD]), { step: 1 }), /walkthrough/);
   assert.equal(cutRoute(critica, { step: 1 }).steps.length, 1);
 });
+
+test('A3.11: expect.hiddenHotspots / visibleHotspots contra st.hotspots', () => {
+  const st = { scene: 'basement', inventory: [], flags: {}, visited: [], achievements: [], hotspots: ['hs_left_desk'] };
+  assert.deepEqual(check({ hiddenHotspots: ['hs_dead_mouse'], visibleHotspots: ['hs_left_desk'] }, st), []);
+  assert.match(check({ hiddenHotspots: ['hs_left_desk'] }, st)[0], /sigue en la escena/);
+  assert.match(check({ visibleHotspots: ['hs_dead_mouse'] }, st)[0], /no está en la escena/);
+  assert.match(check({ hiddenHotspots: ['x'] }, { ...st, hotspots: undefined })[0], /no expone `hotspots`/);
+});
