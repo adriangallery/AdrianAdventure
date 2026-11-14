@@ -34,3 +34,12 @@ export function musicToPreload(tracks: readonly string[], muted: boolean, isCach
 export function loadingTipsFor(tips: readonly string[], muted: boolean): string[] {
   return muted ? tips.filter((t) => !/\bvoice/i.test(t)) : [...tips];
 }
+
+/**
+ * A9.5 (iPhone, Chrome): en Chrome de iOS (WKWebView) el AudioContext puede quedarse «suspended» o pasar a
+ * «interrupted» (bloqueo de pantalla, llamada, cambio de app) aunque el jugador ya activara el sonido. Hay que
+ * reanudarlo en el siguiente toque. Solo si el jugador activó el sonido en esta carga y no lo ha silenciado.
+ */
+export function shouldResumeOnGesture(state: string, unlockedThisSession: boolean, muted: boolean): boolean {
+  return unlockedThisSession && !muted && state !== 'running' && state !== 'closed';
+}

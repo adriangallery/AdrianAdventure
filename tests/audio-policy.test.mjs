@@ -35,3 +35,13 @@ test('en silencio la pantalla de carga no promete voces', () => {
   assert.deepEqual(loadingTipsFor(tips, false), tips);
   assert.notEqual(loadingTipsFor(tips, false), tips, 'devuelve una copia (PreloadScene la baraja)');
 });
+
+test('A9.5: tras activar el sonido, un toque reanuda el AudioContext parado o interrumpido (Chrome de iOS)', async () => {
+  const { shouldResumeOnGesture } = await import(process.env.AUDIO_POLICY_PATH ?? '../src/systems/AudioPolicy.ts');
+  assert.equal(shouldResumeOnGesture('suspended', true, false), true);
+  assert.equal(shouldResumeOnGesture('interrupted', true, false), true);
+  assert.equal(shouldResumeOnGesture('running', true, false), false);
+  assert.equal(shouldResumeOnGesture('closed', true, false), false);
+  assert.equal(shouldResumeOnGesture('suspended', false, false), false, 'sin «Enable Sound» no se toca');
+  assert.equal(shouldResumeOnGesture('suspended', true, true), false, 'en silencio no se toca');
+});

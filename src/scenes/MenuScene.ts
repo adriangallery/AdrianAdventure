@@ -53,6 +53,7 @@ export class MenuScene extends Phaser.Scene {
 
   create(): void {
     bindShutdown(this); // A1.10: Phaser no llama a shutdown() solo
+    this.syncCanvasToWindow();
     this.buildMenu();
     this.resizeHandler = () => {
       if (!this.scene.isActive('MenuScene')) return;
@@ -62,12 +63,50 @@ export class MenuScene extends Phaser.Scene {
       this.buildMenu();
     };
     this.scale.on('resize', this.resizeHandler);
+
+    // A9.5 (iPhone): al girar, iOS (Safari y Chrome) da medidas viejas durante el giro y el ScaleManager no
+    // siempre se entera del tamaño final: la portada quedaba montada para la orientación anterior. Igual que
+    // GameScene: se escucha también visualViewport y orientationchange y se vuelve a medir la ventana tras
+    // dejar asentar el giro (100 ms y 400 ms).
+    this.boundSchedule = () => this.scheduleViewportSync();
+    window.visualViewport?.addEventListener('resize', this.boundSchedule);
+    window.addEventListener('orientationchange', this.boundSchedule);
+    window.addEventListener('resize', this.boundSchedule);
+  }
+
+  private boundSchedule: (() => void) | null = null;
+  private syncTimers: ReturnType<typeof setTimeout>[] = [];
+
+  private scheduleViewportSync(): void {
+    this.syncTimers.forEach(clearTimeout);
+    this.syncTimers = [
+      setTimeout(() => this.syncCanvasToWindow(), 100),
+      setTimeout(() => this.syncCanvasToWindow(), 400),
+    ];
+  }
+
+  /** Lleva el lienzo al tamaño real de la ventana; si cambia, el ScaleManager emite 'resize' y se rehace el menú. */
+  private syncCanvasToWindow(): void {
+    if (!this.scene.isActive('MenuScene')) return;
+    const w = window.innerWidth;
+    const h = window.innerHeight;
+    if (Math.abs(this.scale.width - w) > 1 || Math.abs(this.scale.height - h) > 1) {
+      this.scale.resize(w, h);
+    }
   }
 
   shutdown(): void {
     if (this.resizeHandler) {
       this.scale.off('resize', this.resizeHandler);
       this.resizeHandler = null;
+    }
+    this.syncTimers.forEach(clearTimeout);
+    this.syncTimers = [];
+    if (this.boundSchedule) {
+      window.visualViewport?.removeEventListener('resize', this.boundSchedule);
+      window.removeEventListener('orientationchange', this.boundSchedule);
+      window.removeEventListener('resize', this.boundSchedule);
+      this.boundSchedule = null;
     }
   }
 

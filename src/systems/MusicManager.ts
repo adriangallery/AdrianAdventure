@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import { getMusicLevel, musicVolumeFor } from '@/systems/Settings';
-import { MUTED_STORAGE_KEY, mutedFromStored, shouldFetchAudio } from '@/systems/AudioPolicy';
+import { MUTED_STORAGE_KEY, mutedFromStored, shouldFetchAudio, shouldResumeOnGesture } from '@/systems/AudioPolicy';
 import { DUCK_FADE_MS, duckGainFor } from '@/systems/Cinematics';
 import {
   AMBIENCE_CROSSFADE_MS, ambienceCacheKey, ambienceLoopPoints, ambienceTransition, ambienceUrl, resolveAmbience,
@@ -182,9 +182,14 @@ export class MusicManager {
   unlockFromGesture(): void {
     this.unlockedThisSession = true;
 
+    // A9.5 (iPhone): sesión de audio «playback» (iOS 17+, Safari y Chrome/WKWebView). Con la de serie («auto» →
+    // ambient) iOS calla el Web Audio con el interruptor de silencio, y en Chrome de iOS no sonaba nada.
+    MusicManager.setPlaybackAudioSession();
+    this.installResumeOnGesture();
+
     // Always attempt — don't gate on state, some iOS versions report
     // incorrect state until audio actually flows.
-    this.context.resume();
+    void this.context.resume().catch(() => {});
 
     // Play a tiny silent buffer — "warm up" the audio pipeline.
     // iOS requires a buffer source to start() within the user gesture
@@ -201,6 +206,36 @@ export class MusicManager {
     if (this.game.sound.locked) {
       (this.game.sound as Phaser.Sound.WebAudioSoundManager).unlock();
     }
+  }
+
+  private static setPlaybackAudioSession(): void {
+    try {
+      const nav = navigator as Navigator & { audioSession?: { type: string } };
+      if (nav.audioSession && nav.audioSession.type !== 'playback') nav.audioSession.type = 'playback';
+    } catch { /* navegador sin audioSession */ }
+  }
+
+  private resumeInstalled = false;
+  /**
+   * A9.5: en Chrome de iOS el AudioContext puede seguir «suspended» tras el primer toque, o pasar a «interrupted»
+   * al bloquear la pantalla o cambiar de app. Cada toque posterior (gesto válido) lo reanuda; al volver a la
+   * pestaña se intenta también (si iOS no lo deja, lo hace el siguiente toque).
+   */
+  private installResumeOnGesture(): void {
+    if (this.resumeInstalled) return;
+    this.resumeInstalled = true;
+    const tryResume = () => {
+      if (!shouldResumeOnGesture(this.context.state as string, this.unlockedThisSession, this.muted)) return;
+      MusicManager.setPlaybackAudioSession();
+      void this.context.resume().catch(() => {});
+      if (this.game.sound.locked) (this.game.sound as Phaser.Sound.WebAudioSoundManager).unlock();
+    };
+    for (const ev of ['touchend', 'click', 'keydown'] as const) {
+      window.addEventListener(ev, tryResume, { capture: true, passive: true });
+    }
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') tryResume();
+    });
   }
 
   /**
