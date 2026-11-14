@@ -1,6 +1,6 @@
 // A8.4 (plan SCUMM): efectos de sonido con ElevenLabs (Sound Effects API) a partir de `art/sfx/sfx.json`.
 //
-//   node scripts/audio/eleven-sfx.mjs [ids…] [--grupo pasos] [--dry] [--solo-cache] [--min-libres 38000] [--tope N]
+//   node scripts/audio/eleven-sfx.mjs [ids…] [--grupo pasos] [--dry] [--solo-cache] [--min-libres 15000] [--tope 6000]
 //
 // - Clave: ~/.secrets/elevenlabs.key (o ELEVENLABS_KEY_FILE). No se imprime nunca: ni en logs ni en errores.
 // - Cuerpo: { text, duration_seconds, prompt_influence, model_id } (duración SIEMPRE explícita: controla el coste).
@@ -29,7 +29,7 @@ const CACHE = process.env.ADV_SFX_CACHE || '/var/tmp/adv-sfx/cache';
 const OUT = join(ROOT, 'assets', 'audio', 'sfx');
 const USD_POR_CREDITO = 0.0002;
 /** Créditos por segundo pedidos (medido en el primer lote, ver docs/progreso/A8.4.md); solo para la estimación previa */
-export const TARIFA_ESTIMADA = 40;
+export const TARIFA_ESTIMADA = 18; // medida el 14-nov: 122 créditos por 7 s (17,4/s)
 const SR = 44100;
 
 export const MANIFEST = JSON.parse(readFileSync(join(ROOT, 'art', 'sfx', 'sfx.json'), 'utf8'));
@@ -125,12 +125,35 @@ export function splitHits(x, n, maxMs = 420) {
   const best = [...segs].sort((u, v) => v.p - u.p).slice(0, n).sort((u, v) => u.a - v.a);
   return best.map((g) => trim(g.s, -40, -42, 30));
 }
-function level(x, refRms) {
+/** Limitador con anticipación (ffmpeg alimiter) a −1 dBFS: deja subir el cuerpo de golpes muy picudos (pasos) */
+function limit(x) {
+  const pcm = Buffer.from(x.buffer, x.byteOffset, x.byteLength);
+  const r = spawnSync('ffmpeg', ['-loglevel', 'error', '-f', 'f32le', '-ar', String(SR), '-ac', '1', '-i', '-',
+    '-af', 'alimiter=limit=0.89:attack=1:release=40:asc=1:level=0', '-f', 'f32le', '-'], { input: pcm, maxBuffer: 1 << 28 });
+  if (r.status !== 0) throw new Error('ffmpeg alimiter');
+  const y = new Float32Array(r.stdout.buffer.slice(r.stdout.byteOffset, r.stdout.byteOffset + r.stdout.length));
+  return y.length >= x.length ? y.slice(0, x.length) : y;
+}
+/**
+ * Iguala el RMS (parte con sonido) al de referencia. Sin `maxLimitDb`, el pico manda (≤ −1 dBFS) aunque quede más
+ * flojo; con `maxLimitDb`, hasta esos dB de los picos se los come el limitador para llegar al nivel del sintetizado.
+ */
+export function level(x, refRms, maxLimitDb = 0) {
   const r = activeRms(x);
   let g = r ? refRms / r : 1;
   const p = peak(x) * g;
-  if (p > 0.89) g *= 0.89 / p; // ≤ −1 dBFS
-  return fades(x.map((v) => v * g));
+  if (p <= 0.89) return fades(x.map((v) => v * g));
+  const over = 20 * Math.log10(p / 0.89);
+  if (over > maxLimitDb) g *= 10 ** (-(over - maxLimitDb) / 20);
+  if (!maxLimitDb) return fades(x.map((v) => v * g));
+  let y = limit(x.map((v) => v * g));
+  // el limitador baja algo el RMS: una pasada de corrección (acotada al mismo margen)
+  const r2 = activeRms(y);
+  const g2 = Math.min(r2 ? refRms / r2 : 1, 10 ** (maxLimitDb / 40));
+  if (g2 > 1.01) y = limit(x.map((v) => v * g * g2));
+  const p2 = peak(y);
+  if (p2 > 0.891) y = y.map((v) => (v * 0.89) / p2);
+  return fades(y);
 }
 
 const refCache = new Map();
@@ -147,12 +170,12 @@ export function processEntry(e, cached) {
   const x = decode(cached);
   const out = [];
   if (e.split) {
-    const hits = splitHits(x, e.split);
+    const hits = splitHits(x, e.split, e.maxMs ?? 420);
     if (hits.length < e.split) throw new Error(`${e.id}: solo ${hits.length} golpes de ${e.split}`);
     const ref = refRmsOf(e.ref ?? `${e.id}_1`);
-    hits.forEach((h, i) => out.push({ key: `${e.id}_${i + 1}`, x: level(h, ref) }));
+    hits.forEach((h, i) => out.push({ key: `${e.id}_${i + 1}`, x: level(h, ref, e.limitDb ?? 0) }));
   } else {
-    out.push({ key: e.id, x: level(trim(x, -40, -48, e.tailMs ?? 60), refRmsOf(e.ref ?? e.id)) });
+    out.push({ key: e.id, x: level(trim(x, -40, -48, e.tailMs ?? 60), refRmsOf(e.ref ?? e.id), e.limitDb ?? 0) });
   }
   for (const o of out) encode(o.x, join(OUT, `${o.key}.mp3`));
   // Registro versionado de lo que hay en assets (make-sfx.mjs no pisa estas claves)
@@ -192,8 +215,8 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
   const args = process.argv.slice(2);
   const opt = (n, d) => { const i = args.indexOf(n); if (i < 0) return d; const v = args[i + 1]; args.splice(i, 2); return v; };
   const grupo = opt('--grupo', null);
-  const minLibres = Number(opt('--min-libres', 38000));
-  const tope = Number(opt('--tope', 20000));
+  const minLibres = Number(opt('--min-libres', 15000));
+  const tope = Number(opt('--tope', 6000));
   const dry = args.includes('--dry');
   const soloCache = args.includes('--solo-cache');
   const ids = args.filter((a) => !a.startsWith('--'));
@@ -211,6 +234,8 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
       console.error(`NO genero: libres ${antes.libres}, lote ≈ ${estim}, mínimo ${minLibres}, tope ${tope}`);
       process.exit(3);
     }
+    // Se apunta ANTES lo previsto; al acabar, una línea de ajuste (real − previsto) para que la suma cuadre.
+    apunta(`A8.4 efectos PREVISTO: ${pend.length} clips (${segs.toFixed(1)} s; ${pend.map((e) => e.id).join(',')}; libres ${antes.libres}; se ajusta en la línea siguiente)`, estim);
     let fallos = 0;
     for (const e of pend) {
       try {
@@ -227,7 +252,7 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
     for (let i = 0; i < 12 && despues.usados === antes.usados; i++) { await pausa(10000); despues = await saldo(); }
     const cred = despues.usados - antes.usados;
     const ok = pend.length - fallos;
-    apunta(`A8.4 efectos: ${ok} clips (sound-generation ${MANIFEST.model_id}, ${segs.toFixed(1)} s pedidos${fallos ? `, ${fallos} errores` : ''}; ${pend.map((e) => e.id).join(',')}; saldo ${antes.libres}→${despues.libres} libres)`, cred);
+    apunta(`A8.4 efectos AJUSTE (real ${cred} − previsto ${estim}): ${ok} clips (sound-generation ${MANIFEST.model_id}, ${segs.toFixed(1)} s pedidos${fallos ? `, ${fallos} errores` : ''}; ${pend.map((e) => e.id).join(',')}; saldo ${antes.libres}→${despues.libres} libres)`, cred - estim);
     console.log(JSON.stringify({ saldoAntes: antes.libres, saldoDespues: despues.libres, creditos: cred, segundos: segs, porSegundo: +(cred / segs).toFixed(1) }));
   }
   for (const e of sel) {

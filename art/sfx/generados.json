@@ -1,0 +1,312 @@
+{
+  "coin_ping": {
+    "de": "coin_ping",
+    "hash": "bf15b9c44cac",
+    "segundos": 0.743
+  },
+  "crt_on": {
+    "de": "crt_on",
+    "hash": "2d3ffcdafb04",
+    "segundos": 0.322
+  },
+  "door_close": {
+    "de": "door_close",
+    "hash": "33d69ea5453f",
+    "segundos": 1
+  },
+  "door_creak": {
+    "de": "door_creak",
+    "hash": "9463e6f974f0",
+    "segundos": 1.132
+  },
+  "door_knock": {
+    "de": "door_knock",
+    "hash": "f6c71f72f7b3",
+    "segundos": 0.921
+  },
+  "door_locked": {
+    "de": "door_locked",
+    "hash": "b18f1004d07d",
+    "segundos": 0.947
+  },
+  "door_open": {
+    "de": "door_open",
+    "hash": "bbb9a7cb78e1",
+    "segundos": 1.331
+  },
+  "door_slide": {
+    "de": "door_slide",
+    "hash": "51b6e0763d0b",
+    "segundos": 1.48
+  },
+  "drawer_close": {
+    "de": "drawer_close",
+    "hash": "579a859848c6",
+    "segundos": 0.8
+  },
+  "drawer_open": {
+    "de": "drawer_open",
+    "hash": "582d5f1bf6b9",
+    "segundos": 0.845
+  },
+  "duck_squeak": {
+    "de": "duck_squeak",
+    "hash": "391001951f3a",
+    "segundos": 0.714
+  },
+  "floppy_insert": {
+    "de": "floppy_insert",
+    "hash": "a6b4747d270f",
+    "segundos": 1.09
+  },
+  "glass_break": {
+    "de": "glass_break",
+    "hash": "61564a03dfc7",
+    "segundos": 0.742
+  },
+  "hatch_metal": {
+    "de": "hatch_metal",
+    "hash": "88564e7ee26b",
+    "segundos": 1.269
+  },
+  "intercom_buzz": {
+    "de": "intercom_buzz",
+    "hash": "843e69b038c0",
+    "segundos": 0.8
+  },
+  "inv_close": {
+    "de": "inv_close",
+    "hash": "d090bdd8c237",
+    "segundos": 0.22
+  },
+  "inv_open": {
+    "de": "inv_open",
+    "hash": "6d6ef087225a",
+    "segundos": 0.479
+  },
+  "item_combo": {
+    "de": "item_combo",
+    "hash": "0da81aa63eda",
+    "segundos": 0.283
+  },
+  "item_pickup": {
+    "de": "item_pickup",
+    "hash": "da61495bb121",
+    "segundos": 0.8
+  },
+  "item_unlock": {
+    "de": "item_unlock",
+    "hash": "4c2f1f401db6",
+    "segundos": 0.8
+  },
+  "item_use": {
+    "de": "item_use",
+    "hash": "6832e9b63979",
+    "segundos": 0.453
+  },
+  "journal_close": {
+    "de": "journal_close",
+    "hash": "63bb41bfd061",
+    "segundos": 0.48
+  },
+  "journal_note": {
+    "de": "journal_note",
+    "hash": "e8098092b128",
+    "segundos": 0.8
+  },
+  "journal_open": {
+    "de": "journal_open",
+    "hash": "624e78499dc5",
+    "segundos": 0.524
+  },
+  "keypad_beep": {
+    "de": "keypad_beep",
+    "hash": "245bb7c26ba4",
+    "segundos": 0.48
+  },
+  "keypad_fail": {
+    "de": "keypad_fail",
+    "hash": "a23c3107e7b7",
+    "segundos": 0.6
+  },
+  "keypad_success": {
+    "de": "keypad_success",
+    "hash": "9219b7c0708f",
+    "segundos": 0.722
+  },
+  "magpie_chatter": {
+    "de": "magpie_chatter",
+    "hash": "33619a58dac7",
+    "segundos": 1.402
+  },
+  "nest_fall": {
+    "de": "nest_fall",
+    "hash": "6d8e15d443d2",
+    "segundos": 0.999
+  },
+  "paper_rustle": {
+    "de": "paper_rustle",
+    "hash": "dd37856bd274",
+    "segundos": 1
+  },
+  "phone_hangup": {
+    "de": "phone_hangup",
+    "hash": "8758069177c2",
+    "segundos": 0.48
+  },
+  "phone_pickup": {
+    "de": "phone_pickup",
+    "hash": "af9486555db7",
+    "segundos": 0.282
+  },
+  "phone_ring": {
+    "de": "phone_ring",
+    "hash": "bfabdcd4b236",
+    "segundos": 1.074
+  },
+  "plank_pull": {
+    "de": "plank_pull",
+    "hash": "1afd55a7fc2e",
+    "segundos": 1.144
+  },
+  "save_game": {
+    "de": "save_game",
+    "hash": "fdb517c0d3cd",
+    "segundos": 0.585
+  },
+  "splash": {
+    "de": "splash",
+    "hash": "a9e62e7b2003",
+    "segundos": 1
+  },
+  "step_carpet_1": {
+    "de": "step_carpet",
+    "hash": "8491c0149bc2",
+    "segundos": 0.24
+  },
+  "step_carpet_2": {
+    "de": "step_carpet",
+    "hash": "8491c0149bc2",
+    "segundos": 0.286
+  },
+  "step_carpet_3": {
+    "de": "step_carpet",
+    "hash": "8491c0149bc2",
+    "segundos": 0.3
+  },
+  "step_carpet_4": {
+    "de": "step_carpet",
+    "hash": "8491c0149bc2",
+    "segundos": 0.24
+  },
+  "step_concrete_1": {
+    "de": "step_concrete",
+    "hash": "078ca5362990",
+    "segundos": 0.3
+  },
+  "step_concrete_2": {
+    "de": "step_concrete",
+    "hash": "078ca5362990",
+    "segundos": 0.3
+  },
+  "step_concrete_3": {
+    "de": "step_concrete",
+    "hash": "078ca5362990",
+    "segundos": 0.3
+  },
+  "step_concrete_4": {
+    "de": "step_concrete",
+    "hash": "078ca5362990",
+    "segundos": 0.296
+  },
+  "step_grass_1": {
+    "de": "step_grass",
+    "hash": "8c010eb5ae61",
+    "segundos": 0.3
+  },
+  "step_grass_2": {
+    "de": "step_grass",
+    "hash": "8c010eb5ae61",
+    "segundos": 0.3
+  },
+  "step_grass_3": {
+    "de": "step_grass",
+    "hash": "8c010eb5ae61",
+    "segundos": 0.3
+  },
+  "step_grass_4": {
+    "de": "step_grass",
+    "hash": "8c010eb5ae61",
+    "segundos": 0.3
+  },
+  "step_gravel_1": {
+    "de": "step_gravel",
+    "hash": "9eca3c14b3b1",
+    "segundos": 0.3
+  },
+  "step_gravel_2": {
+    "de": "step_gravel",
+    "hash": "9eca3c14b3b1",
+    "segundos": 0.3
+  },
+  "step_gravel_3": {
+    "de": "step_gravel",
+    "hash": "9eca3c14b3b1",
+    "segundos": 0.3
+  },
+  "step_gravel_4": {
+    "de": "step_gravel",
+    "hash": "9eca3c14b3b1",
+    "segundos": 0.224
+  },
+  "step_metal_1": {
+    "de": "step_metal",
+    "hash": "a9745fbb78d8",
+    "segundos": 0.3
+  },
+  "step_metal_2": {
+    "de": "step_metal",
+    "hash": "a9745fbb78d8",
+    "segundos": 0.3
+  },
+  "step_metal_3": {
+    "de": "step_metal",
+    "hash": "a9745fbb78d8",
+    "segundos": 0.3
+  },
+  "step_metal_4": {
+    "de": "step_metal",
+    "hash": "a9745fbb78d8",
+    "segundos": 0.3
+  },
+  "step_wood_1": {
+    "de": "step_wood",
+    "hash": "8cd39d1835f6",
+    "segundos": 0.3
+  },
+  "step_wood_2": {
+    "de": "step_wood",
+    "hash": "8cd39d1835f6",
+    "segundos": 0.3
+  },
+  "step_wood_3": {
+    "de": "step_wood",
+    "hash": "8cd39d1835f6",
+    "segundos": 0.3
+  },
+  "step_wood_4": {
+    "de": "step_wood",
+    "hash": "8cd39d1835f6",
+    "segundos": 0.3
+  },
+  "switch_flip": {
+    "de": "switch_flip",
+    "hash": "788120aa33d7",
+    "segundos": 0.48
+  },
+  "thud": {
+    "de": "thud",
+    "hash": "eeb555bc94fe",
+    "segundos": 0.321
+  }
+}
