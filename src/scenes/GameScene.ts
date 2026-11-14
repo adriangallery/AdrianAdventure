@@ -118,6 +118,8 @@ export class GameScene extends Phaser.Scene {
    * presentación: no se guarda. Se vacía al crear la escena y en SHUTDOWN.
    */
   private overlayOverrides = new Map<string, boolean>();
+  /** P1: Dex sentado (scene.player.seated), solo en escenas con hidePlayer */
+  private seatedDex: { img: Phaser.GameObjects.Image; flag: string; x: number; y: number } | null = null;
   /**
    * A1.4: Phaser reutiliza la instancia de la escena; cada create() sube este contador y el contexto de scripts
    * guarda el suyo, así un flicker de la escena anterior que siga esperando no toca los overlays de la nueva.
@@ -341,6 +343,15 @@ export class GameScene extends Phaser.Scene {
         overlay.setVisible(show);
         this.conditionalOverlays.push({ id: co.id, sprite: overlay, flag: co.flag, invert: co.invert, bounds: co.bounds });
       }
+    }
+
+    // P1: Dex sentado (treatment_room, flag patient_seated). La escena sigue con hidePlayer: es solo una imagen del rig
+    this.seatedDex = null;
+    const seat = sceneData.player.seated;
+    if (seat && this.textures.exists('dex2d_sit_0')) {
+      const img = this.add.image(0, 0, 'dex2d_sit_0').setOrigin(0.5, 1).setDepth(seat.depth ?? 12).setVisible(false);
+      this.seatedDex = { img, flag: seat.flag, x: seat.x, y: seat.y };
+      this.placeSeatedDex();
     }
 
     // A4.3: animación ambiental declarada en scene.json (`ambient[]`): polillas, polvo, LEDs, niebla, nubes, luces… Sin
@@ -598,6 +609,15 @@ export class GameScene extends Phaser.Scene {
       const flagVal = this.gameState.flags[co.flag] ?? false;
       const show = this.overlayOverrides.get(co.id) ?? (co.invert ? !flagVal : flagVal);
       if (co.sprite.visible !== show) co.sprite.setVisible(show);
+    }
+    if (this.seatedDex) {
+      const sd = this.seatedDex;
+      const show = (this.gameState.flags[sd.flag] ?? false) && this.player.getCostume() === 'player';
+      if (sd.img.visible !== show) sd.img.setVisible(show);
+      // habla: boca y mano arriba en fotogramas alternos de 140 ms (como talk_r del rig)
+      const talking = show && this.playerAnimContext().talking && Math.floor(this.time.now / 140) % 2 === 1;
+      const key = talking && this.textures.exists('dex2d_sit_talk_0') ? 'dex2d_sit_talk_0' : 'dex2d_sit_0';
+      if (sd.img.texture.key !== key) sd.img.setTexture(key);
     }
 
     // Check if camera effect should be disabled (e.g., glasses used in MemeLAB)
@@ -1221,6 +1241,7 @@ export class GameScene extends Phaser.Scene {
     for (const co of this.conditionalOverlays) {
       this.placeOverlay(co.sprite, co.bounds);
     }
+    this.placeSeatedDex();
     // A4.3: el ambiente se recoloca solo con la transformación del fondo; el vaivén del primer plano parte de la x nueva
     this.ambient?.layout();
 
@@ -2392,6 +2413,17 @@ export class GameScene extends Phaser.Scene {
     for (const key of keys) {
       if (this.textures.exists(key)) this.textures.get(key).setFilter(Phaser.Textures.FilterMode.LINEAR);
     }
+  }
+
+  /** P1: coloca y escala a Dex sentado como al jugador (unidad de píxel × escala del fondo × profundidad) */
+  private placeSeatedDex(): void {
+    const sd = this.seatedDex;
+    if (!sd) return;
+    const p = this.coordSystem.pctToScreen(sd.x, sd.y);
+    sd.img.setPosition(p.x, p.y);
+    sd.img.setScale(spriteScale({
+      pixelScale: this.player.getPixelScale(), coordScale: this.coordSystem.getScale(), depth: this.player.getDepthScale(), yPct: sd.y,
+    }).scale);
   }
 
   /**

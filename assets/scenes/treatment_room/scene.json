@@ -33,7 +33,8 @@
       "idle": null,
       "walk": null
     },
-    "hidePlayer": true
+    "hidePlayer": true,
+    "seated": { "flag": "patient_seated", "x": 44.32, "y": 81.47 }
   },
   "ui": {
     "verbs": [

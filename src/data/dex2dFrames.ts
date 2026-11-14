@@ -17,6 +17,8 @@ export const DEX2D_ANIMS: Record<string, Dex2dAnim> = {
   pick_r_mid: { frames: 4, ms: 90, loop: false, w: 48, h: 103 },
   pick_r_low: { frames: 4, ms: 90, loop: false, w: 48, h: 103 },
   shrug: { frames: 5, ms: 130, loop: false, w: 37, h: 103 },
+  sit: { frames: 1, ms: 140, loop: false, w: 48, h: 103 },
+  sit_talk: { frames: 1, ms: 140, loop: false, w: 48, h: 103 },
   walk_l: { frames: 8, ms: 100, loop: true, w: 48, h: 103 },
   talk_l: { frames: 4, ms: 140, loop: true, w: 48, h: 103 },
   pick_l_high: { frames: 4, ms: 90, loop: false, w: 48, h: 103 },

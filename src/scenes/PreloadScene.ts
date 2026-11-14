@@ -202,7 +202,7 @@ export class PreloadScene extends Phaser.Scene {
 
     // NPC sprites (load once)
     // A4.2: con su boca abierta (`_talk`) para hablar al ritmo de la voz
-    const npcIds = ['receptionist', 'receptionist_talk', 'dr_satoshi', 'dr_satoshi_talk'];
+    const npcIds = ['receptionist', 'receptionist_talk', 'receptionist_blink', 'dr_satoshi', 'dr_satoshi_talk', 'chad', 'chad_talk'];
     for (const id of npcIds) {
       const key = `npc_${id}`;
       if (!this.textures.exists(key)) {

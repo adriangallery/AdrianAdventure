@@ -27,6 +27,12 @@ export interface SceneData {
     playerScale?: number;
     /** Hide player sprite (for closeup/cinematic scenes) */
     hidePlayer?: boolean;
+    /**
+     * P1 (arte pendiente): Dex sentado en una escena con `hidePlayer`. Con la flag a true se ve `dex2d_sit_0` (y
+     * `dex2d_sit_talk_0` alternando mientras habla Dex) con la base del lienzo (48×103, pies abajo en el centro) en
+     * (x, y) %, a la escala del jugador. Solo con el traje normal (no con el disfraz de mono).
+     */
+    seated?: { flag: string; x: number; y: number; depth?: number };
     /** Per-scene player depth override (default 10, foreground is 15) */
     playerDepth?: number;
     sprite: { sheet: string | null; idle: string | null; walk: string | null };
