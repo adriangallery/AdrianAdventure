@@ -1,7 +1,6 @@
 {
  "_doc": "A2.17: fallos conocidos del revisor de proporción (escena|tipo|ref|punto). Con --strict el barrido falla si aparece uno que no esté aquí. Regenerar: node scripts/proportion-sweep.mjs --write-baseline (solo para todas las escenas).",
  "known": [
-  "mountain|occlusion|hs_boulders|grid:grid-80.6-88",
   "mountain|scale|hs_sign|arrival:hs_sign",
   "mountain|scale|hs_sign|arrival:hs_warning_signs",
   "mountain|scale|hs_sign|grid:grid-19.1-63.4",

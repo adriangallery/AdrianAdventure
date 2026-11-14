@@ -26,6 +26,7 @@
    "walkable": true,
    "maskOk": false,
    "cover": {},
+   "coverMax": {},
    "scale": {
     "ref": "hs_left_desk",
     "expected": 52.5,
@@ -61,6 +62,7 @@
    "walkable": true,
    "maskOk": false,
    "cover": {},
+   "coverMax": {},
    "scale": {
     "ref": "hs_left_desk",
     "expected": 52.5,
@@ -96,6 +98,7 @@
    "walkable": true,
    "maskOk": false,
    "cover": {},
+   "coverMax": {},
    "scale": {
     "ref": "hs_left_desk",
     "expected": 52.5,
@@ -131,6 +134,7 @@
    "walkable": true,
    "maskOk": false,
    "cover": {},
+   "coverMax": {},
    "scale": {
     "ref": "hs_left_desk",
     "expected": 52.5,
@@ -166,6 +170,7 @@
    "walkable": true,
    "maskOk": false,
    "cover": {},
+   "coverMax": {},
    "scale": {
     "ref": "hs_left_desk",
     "expected": 52.5,
@@ -201,6 +206,7 @@
    "walkable": true,
    "maskOk": false,
    "cover": {},
+   "coverMax": {},
    "scale": {
     "ref": "hs_left_desk",
     "expected": 52.5,
@@ -236,6 +242,7 @@
    "walkable": true,
    "maskOk": false,
    "cover": {},
+   "coverMax": {},
    "scale": {
     "ref": "hs_left_desk",
     "expected": 52.5,
@@ -271,6 +278,7 @@
    "walkable": true,
    "maskOk": false,
    "cover": {},
+   "coverMax": {},
    "scale": {
     "ref": "hs_left_desk",
     "expected": 52.5,
@@ -306,6 +314,9 @@
    "walkable": true,
    "maskOk": false,
    "cover": {
+    "hs_armchair": 0
+   },
+   "coverMax": {
     "hs_armchair": 0
    },
    "scale": {
@@ -345,6 +356,9 @@
    "cover": {
     "hs_armchair": 0
    },
+   "coverMax": {
+    "hs_armchair": 0
+   },
    "scale": {
     "ref": "hs_left_desk",
     "expected": 52.5,
@@ -380,6 +394,10 @@
    "walkable": true,
    "maskOk": false,
    "cover": {
+    "hs_left_desk": 0,
+    "hs_armchair": 0
+   },
+   "coverMax": {
     "hs_left_desk": 0,
     "hs_armchair": 0
    },
@@ -421,6 +439,10 @@
     "hs_left_desk": 0,
     "hs_armchair": 0
    },
+   "coverMax": {
+    "hs_left_desk": 0,
+    "hs_armchair": 0
+   },
    "scale": {
     "ref": "hs_left_desk",
     "expected": 52.5,
@@ -456,6 +478,9 @@
    "walkable": true,
    "maskOk": false,
    "cover": {
+    "hs_left_desk": 0
+   },
+   "coverMax": {
     "hs_left_desk": 0
    },
    "scale": {
@@ -495,6 +520,9 @@
    "cover": {
     "hs_left_desk": 0
    },
+   "coverMax": {
+    "hs_left_desk": 0
+   },
    "scale": {
     "ref": "hs_left_desk",
     "expected": 52.5,
@@ -530,6 +558,9 @@
    "walkable": true,
    "maskOk": false,
    "cover": {
+    "hs_left_desk": 0
+   },
+   "coverMax": {
     "hs_left_desk": 0
    },
    "scale": {
@@ -569,6 +600,9 @@
    "cover": {
     "hs_left_desk": 0
    },
+   "coverMax": {
+    "hs_left_desk": 0
+   },
    "scale": {
     "ref": "hs_left_desk",
     "expected": 52.5,
@@ -604,6 +638,9 @@
    "walkable": true,
    "maskOk": false,
    "cover": {
+    "hs_left_desk": 0
+   },
+   "coverMax": {
     "hs_left_desk": 0
    },
    "scale": {
@@ -643,6 +680,9 @@
    "cover": {
     "hs_left_desk": 0
    },
+   "coverMax": {
+    "hs_left_desk": 0
+   },
    "scale": {
     "ref": "hs_left_desk",
     "expected": 52.5,
@@ -678,6 +718,9 @@
    "walkable": true,
    "maskOk": false,
    "cover": {
+    "hs_equipment": 0
+   },
+   "coverMax": {
     "hs_equipment": 0
    },
    "scale": {
@@ -717,6 +760,9 @@
    "cover": {
     "hs_equipment": 0
    },
+   "coverMax": {
+    "hs_equipment": 0
+   },
    "scale": {
     "ref": "hs_left_desk",
     "expected": 52.5,
@@ -752,6 +798,9 @@
    "walkable": true,
    "maskOk": false,
    "cover": {
+    "hs_equipment": 0
+   },
+   "coverMax": {
     "hs_equipment": 0
    },
    "scale": {
@@ -791,6 +840,9 @@
    "cover": {
     "hs_equipment": 0
    },
+   "coverMax": {
+    "hs_equipment": 0
+   },
    "scale": {
     "ref": "hs_left_desk",
     "expected": 52.5,
@@ -826,6 +878,7 @@
    "walkable": true,
    "maskOk": false,
    "cover": {},
+   "coverMax": {},
    "scale": {
     "ref": "hs_left_desk",
     "expected": 52.5,
@@ -867,6 +920,7 @@
    "walkable": true,
    "maskOk": false,
    "cover": {},
+   "coverMax": {},
    "scale": {
     "ref": "hs_left_desk",
     "expected": 52.5,
@@ -908,6 +962,7 @@
    "walkable": true,
    "maskOk": false,
    "cover": {},
+   "coverMax": {},
    "scale": {
     "ref": "hs_left_desk",
     "expected": 52.5,
@@ -949,6 +1004,7 @@
    "walkable": true,
    "maskOk": false,
    "cover": {},
+   "coverMax": {},
    "scale": {
     "ref": "hs_left_desk",
     "expected": 52.5,
@@ -984,6 +1040,7 @@
    "walkable": true,
    "maskOk": false,
    "cover": {},
+   "coverMax": {},
    "scale": {
     "ref": "hs_left_desk",
     "expected": 52.5,
@@ -1025,6 +1082,7 @@
    "walkable": true,
    "maskOk": false,
    "cover": {},
+   "coverMax": {},
    "scale": {
     "ref": "hs_left_desk",
     "expected": 52.5,
@@ -1066,6 +1124,7 @@
    "walkable": true,
    "maskOk": false,
    "cover": {},
+   "coverMax": {},
    "scale": {
     "ref": "hs_left_desk",
     "expected": 52.5,
@@ -1107,6 +1166,7 @@
    "walkable": true,
    "maskOk": false,
    "cover": {},
+   "coverMax": {},
    "scale": {
     "ref": "hs_left_desk",
     "expected": 52.5,
@@ -1142,6 +1202,9 @@
    "walkable": true,
    "maskOk": false,
    "cover": {
+    "hs_armchair": 0
+   },
+   "coverMax": {
     "hs_armchair": 0
    },
    "scale": {
@@ -1185,6 +1248,7 @@
    "walkable": true,
    "maskOk": false,
    "cover": {},
+   "coverMax": {},
    "scale": {
     "ref": "hs_left_desk",
     "expected": 52.5,
@@ -1228,6 +1292,9 @@
    "cover": {
     "hs_armchair": 0
    },
+   "coverMax": {
+    "hs_armchair": 0
+   },
    "scale": {
     "ref": "hs_left_desk",
     "expected": 52.5,
@@ -1269,6 +1336,7 @@
    "walkable": true,
    "maskOk": false,
    "cover": {},
+   "coverMax": {},
    "scale": {
     "ref": "hs_left_desk",
     "expected": 52.5,
@@ -1312,6 +1380,9 @@
    "cover": {
     "hs_equipment": 0
    },
+   "coverMax": {
+    "hs_equipment": 0
+   },
    "scale": {
     "ref": "hs_left_desk",
     "expected": 52.5,
@@ -1347,6 +1418,9 @@
    "walkable": true,
    "maskOk": false,
    "cover": {
+    "hs_armchair": 0
+   },
+   "coverMax": {
     "hs_armchair": 0
    },
    "scale": {
@@ -1392,6 +1466,9 @@
    "cover": {
     "hs_equipment": 0
    },
+   "coverMax": {
+    "hs_equipment": 0
+   },
    "scale": {
     "ref": "hs_left_desk",
     "expected": 52.5,
@@ -1427,6 +1504,7 @@
    "walkable": true,
    "maskOk": false,
    "cover": {},
+   "coverMax": {},
    "scale": {
     "ref": "hs_left_desk",
     "expected": 52.5,
@@ -1462,6 +1540,7 @@
    "walkable": true,
    "maskOk": false,
    "cover": {},
+   "coverMax": {},
    "scale": {
     "ref": "hs_left_desk",
     "expected": 52.5,
@@ -1497,6 +1576,9 @@
    "walkable": true,
    "maskOk": false,
    "cover": {
+    "hs_armchair": 0
+   },
+   "coverMax": {
     "hs_armchair": 0
    },
    "scale": {
@@ -1540,6 +1622,7 @@
    "walkable": true,
    "maskOk": false,
    "cover": {},
+   "coverMax": {},
    "scale": {
     "ref": "hs_left_desk",
     "expected": 52.5,
@@ -1575,6 +1658,9 @@
    "walkable": true,
    "maskOk": false,
    "cover": {
+    "hs_armchair": 0
+   },
+   "coverMax": {
     "hs_armchair": 0
    },
    "scale": {
@@ -1620,6 +1706,9 @@
    "cover": {
     "hs_left_desk": 0
    },
+   "coverMax": {
+    "hs_left_desk": 0
+   },
    "scale": {
     "ref": "hs_left_desk",
     "expected": 52.5,
@@ -1655,6 +1744,9 @@
    "walkable": true,
    "maskOk": false,
    "cover": {
+    "hs_left_desk": 0
+   },
+   "coverMax": {
     "hs_left_desk": 0
    },
    "scale": {
@@ -1694,6 +1786,9 @@
    "cover": {
     "hs_equipment": 0
    },
+   "coverMax": {
+    "hs_equipment": 0
+   },
    "scale": {
     "ref": "hs_left_desk",
     "expected": 52.5,
@@ -1729,6 +1824,9 @@
    "walkable": true,
    "maskOk": false,
    "cover": {
+    "hs_equipment": 0
+   },
+   "coverMax": {
     "hs_equipment": 0
    },
    "scale": {
@@ -1768,6 +1866,9 @@
    "cover": {
     "hs_equipment": 0
    },
+   "coverMax": {
+    "hs_equipment": 0
+   },
    "scale": {
     "ref": "hs_left_desk",
     "expected": 52.5,
@@ -1803,6 +1904,9 @@
    "walkable": true,
    "maskOk": false,
    "cover": {
+    "hs_armchair": 0
+   },
+   "coverMax": {
     "hs_armchair": 0
    },
    "scale": {
@@ -1848,6 +1952,9 @@
    "cover": {
     "hs_armchair": 0
    },
+   "coverMax": {
+    "hs_armchair": 0
+   },
    "scale": {
     "ref": "hs_left_desk",
     "expected": 52.5,
@@ -1889,6 +1996,9 @@
    "walkable": true,
    "maskOk": false,
    "cover": {
+    "hs_armchair": 0
+   },
+   "coverMax": {
     "hs_armchair": 0
    },
    "scale": {
