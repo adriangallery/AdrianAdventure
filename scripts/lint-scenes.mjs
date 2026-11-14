@@ -3,7 +3,7 @@
 //
 //   node scripts/lint-scenes.mjs [--strict] [--json] [--scene <id>] [--root <dir>] [--no-write]
 //
-// Recorre assets/scenes/<id>/scene.json y aplica las reglas de la a a la n:
+// Recorre assets/scenes/<id>/scene.json y aplica estas reglas:
 //   a  flags que se leen y nunca se ponen, o que se ponen y nunca se leen
 //   b  objetos que se consiguen (addItem) y no sirven para nada
 //   c  salidas (fadeToScene/gotoScene) en hotspots y triggers sin gate, para revisar a mano
@@ -40,6 +40,14 @@
 //   n  cajas de luz (A9.6, aviso): un `ambient[]` de tipo `glow` con `shape: rect` cuya `area` ocupa más del
 //      GLOW_RECT_MAX_FRACTION (5 %) del fondo. El glow rect es el brillo de una pantalla o ventana: el área tiene que
 //      ser esa fuente, no media pared (glowRectDefects)
+//   o  objetos que nunca se retiran (A9.7, aviso): un objeto que se consigue (addItem), que ningún removeItem quita y
+//      cuyos usos de solución (combos[].items con un hotspot, ifHasItem, npcs[].itemDialogues y `when` item:x de los
+//      diálogos) están todos en escenas de capítulos anteriores al último (ITEM_CHAPTER_SCENES, el mapa de
+//      src/systems/ChapterManager.ts más recovery_pool y memelab en el 4). Tras ese capítulo no sirve para nada y
+//      ocupa sitio en el inventario del móvil: hay que retirarlo en su último uso o al cerrar el capítulo (removeItem
+//      junto a setFlag chapter_N_complete). No cuentan como uso las respuestas de fallo (useResponses/giveResponses),
+//      las combinaciones objeto + objeto de assets/config/global.json ni las menciones en src/ (descripciones). Un
+//      objeto con un uso en una escena sin capítulo no avisa (no se sabe cuándo deja de servir)
 //
 // Por defecto (f), los spawns fuera de zona de (e), el diario mal formado de (h), los errores de (j) y (k) y (l) son error; el resto, aviso. --strict lo convierte todo en error. Código de salida 1
 // solo si hay errores. Escribe lint-scenes-report.json y lint-scenes-report.md en la raíz del repo.
@@ -111,7 +119,60 @@ export const RULES = {
   l: 'cambio de escala',
   m: 'props de puzle dibujados',
   n: 'cajas de luz',
+  o: 'objetos que nunca se retiran',
 };
+
+// A9.7: capítulo de cada escena para la regla (o). Copia de CHAPTERS[].scenes de src/systems/ChapterManager.ts
+// (tests/lint-scenes.test.mjs comprueba que coinciden) más las escenas del cap. 4 que ChapterManager no lista.
+export const ITEM_CHAPTER_SCENES = {
+  1: ['outside'],
+  2: ['lobby', 'upstairs', 'rooftop'],
+  3: ['basement', 'server_room'],
+  4: ['mountain', 'clinic_exterior', 'clinic_interior', 'recovery_pool', 'memelab'],
+  5: ['treatment_room', 'epilogue_outside'],
+};
+export const LAST_CHAPTER = 5;
+const chapterOfScene = (id) => {
+  for (const [ch, list] of Object.entries(ITEM_CHAPTER_SCENES)) if (list.includes(id)) return Number(ch);
+  return null;
+};
+
+/**
+ * A9.7 (regla o): objetos que se consiguen, no se retiran nunca y ya no tienen uso tras cierto capítulo.
+ * Devuelve [{ item, lastChapter, where }] (where = primer addItem).
+ */
+export function unretiredItems(scenes, containers) {
+  const acquired = new Map();
+  const removed = new Set();
+  const uses = new Map(); // item -> Set(capítulo | null)
+  const use = (item, sceneId) => {
+    if (typeof item !== 'string' || !item.length) return;
+    if (!uses.has(item)) uses.set(item, new Set());
+    uses.get(item).add(chapterOfScene(sceneId));
+  };
+  for (const c of containers) {
+    walkOps(c.ops, `${c.scene}.${c.label}`, (op, p) => {
+      if (op.op === 'addItem' && typeof op.id === 'string' && !acquired.has(op.id)) acquired.set(op.id, p);
+      if (op.op === 'removeItem' && typeof op.id === 'string') removed.add(op.id);
+      if (op.op === 'ifHasItem') use(op.id, c.scene);
+    });
+  }
+  for (const [id, s] of Object.entries(scenes)) {
+    for (const c of s.combos ?? []) for (const it of c.items ?? []) if (!String(it).startsWith('hs_')) use(it, id);
+    for (const n of s.npcs ?? []) for (const k of Object.keys(n.itemDialogues ?? {})) use(k, id);
+    for (const { c } of dialogueChoices(s)) for (const cond of parseWhen(c.when).ok) if (cond.kind === 'item') use(cond.name, id);
+    for (const { node } of dialogueNodes(s)) for (const cond of parseWhen(node?.when).ok) if (cond.kind === 'item') use(cond.name, id);
+  }
+  const out = [];
+  for (const [item, where] of acquired) {
+    if (removed.has(item) || !uses.has(item)) continue; // sin uso: regla (b)
+    const chs = [...uses.get(item)];
+    if (chs.includes(null)) continue;
+    const lastChapter = Math.max(...chs);
+    if (lastChapter < LAST_CHAPTER) out.push({ item, lastChapter, where });
+  }
+  return out;
+}
 
 /** A9.6: fracción máxima del fondo que puede ocupar el `area` de un glow rect (regla n) */
 export const GLOW_RECT_MAX_FRACTION = 0.05;
@@ -400,9 +461,18 @@ export function loadProject(root) {
     ...qaItemUses(path.join(root, 'qa', 'walkthrough.json')),
     ...qaItemUses(path.join(root, 'qa', 'sequence-breaks.json')),
   ]);
+  // A9.7: scripts de las combinaciones objeto + objeto (assets/config/global.json): dan y retiran objetos (regla o)
+  const globalFile = path.join(root, 'assets', 'config', 'global.json');
+  let globalScripts = [];
+  try {
+    if (fs.existsSync(globalFile)) {
+      globalScripts = (readJson(globalFile).itemCombos ?? []).map((c, i) => ({ scene: 'global', label: `itemCombos[${i}](${c.item1}+${c.item2})`, ops: c.script ?? [] }));
+    }
+  } catch { /* global.json inválido: lo dirán otras comprobaciones */ }
   return {
     scenes,
     loadErrors,
+    globalScripts,
     srcFiles,
     journal,
     failResponses,
@@ -677,6 +747,11 @@ export function lintProject(project) {
   for (const [item, where] of acquired) {
     if (itemUses.has(item) || mentionedIn(srcFiles, item, SRC_SKIP_ITEMS)) continue;
     push('b', 'warning', sceneOf(where[0]), item, where[0], `objeto «${item}» se consigue (${where.join(', ')}) y no sirve para nada: sin combo, ifHasItem, removeItem, respuestas de NPC, ruta de QA ni código`);
+  }
+
+  // ── (o) objetos que nunca se retiran (A9.7) ──
+  for (const { item, lastChapter, where } of unretiredItems(scenes, [...containers, ...(project.globalScripts ?? [])])) {
+    push('o', 'warning', sceneOf(where), item, where, `objeto «${item}» no se retira nunca y su último uso de solución es del cap. ${lastChapter}: removeItem en su último uso o al cerrar el capítulo (junto a setFlag chapter_${lastChapter}_complete)`);
   }
 
   // ── (c) salidas sin gate ──

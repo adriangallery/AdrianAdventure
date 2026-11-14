@@ -112,5 +112,11 @@
     "scene": "lobby",
     "id": "assets/sprites/items/vip_floppy.png",
     "reason": "A1.8: icono de vip_floppy, inalcanzable (ver la excepción (b) de lobby.vip_floppy)."
+  },
+  {
+    "rule": "o",
+    "scene": "upstairs",
+    "id": "terminal_key",
+    "reason": "A9.7: la puerta de tratamiento (clinic_interior.hs_treatment_door) pide ifHasItem terminal_key cada vez que se entra, también en el cap. 5 al volver de la clínica; retirarla dejaría a Dex fuera de treatment_room."
   }
 ]

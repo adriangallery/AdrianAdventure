@@ -34,7 +34,7 @@ export function describe(s) {
 }
 
 /**
- * Comprobaciones de estado: scene, has, lacks, flags, unsetFlags, visited, achievements, (A2.6) lastChoices, (A2.2) facing,
+ * Comprobaciones de estado: scene, has, lacks, (A9.7) inventoryMax, flags, unsetFlags, visited, achievements, (A2.6) lastChoices, (A2.2) facing,
  * (A2.4) verb, walkTarget y highlighted, (A2.10) cinematic y playerNear, (A2.8) pixel, (A4.1) anim, (A4.2) npc, (A4.3) ambient, (A4.4) audio
  * (compara con `ctx.before`, el estado de antes del paso) y (A1.10) noListenerGrowth, que
  * compara `st.resizeListeners` con `ctx.listenersBaseline` (lo que había tras el primer paso de la ruta). `flags` trata
@@ -48,6 +48,10 @@ export function check(expect, st, ctx = {}) {
   if (expect.scene && st.scene !== expect.scene) f.push(`escena «${st.scene}», se esperaba «${expect.scene}»`);
   for (const id of expect.has ?? []) if (!st.inventory.includes(id)) f.push(`falta «${id}» en el inventario`);
   for (const id of expect.lacks ?? []) if (st.inventory.includes(id)) f.push(`«${id}» no debería estar en el inventario`);
+  // A9.7: tope de objetos en el inventario (lo gastado se retira; en el móvil cada página de más estorba)
+  if (expect.inventoryMax !== undefined && st.inventory.length > expect.inventoryMax) {
+    f.push(`${st.inventory.length} objetos en el inventario (${st.inventory.join(', ')}), máximo ${expect.inventoryMax}`);
+  }
   for (const [flag, want] of Object.entries(expect.flags ?? {})) {
     if (Boolean(st.flags[flag]) !== want) f.push(`flag ${flag} = ${Boolean(st.flags[flag])}, se esperaba ${want}`);
   }

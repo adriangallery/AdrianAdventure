@@ -1312,6 +1312,38 @@
           "op": "setFlag",
           "flag": "chapter_4_complete",
           "value": true
+        },
+        {
+          "op": "removeItem",
+          "id": "keycard"
+        },
+        {
+          "op": "removeItem",
+          "id": "patient_wristband"
+        },
+        {
+          "op": "removeItem",
+          "id": "clinic_note"
+        },
+        {
+          "op": "removeItem",
+          "id": "energy_drink"
+        },
+        {
+          "op": "removeItem",
+          "id": "rubber_duck"
+        },
+        {
+          "op": "removeItem",
+          "id": "pepememe"
+        },
+        {
+          "op": "removeItem",
+          "id": "glasses_3d"
+        },
+        {
+          "op": "removeItem",
+          "id": "marked_map"
         }
       ],
       "onComplete_DISABLED": [
@@ -1393,6 +1425,38 @@
           "op": "setFlag",
           "flag": "chapter_4_complete",
           "value": true
+        },
+        {
+          "op": "removeItem",
+          "id": "keycard"
+        },
+        {
+          "op": "removeItem",
+          "id": "patient_wristband"
+        },
+        {
+          "op": "removeItem",
+          "id": "clinic_note"
+        },
+        {
+          "op": "removeItem",
+          "id": "energy_drink"
+        },
+        {
+          "op": "removeItem",
+          "id": "rubber_duck"
+        },
+        {
+          "op": "removeItem",
+          "id": "pepememe"
+        },
+        {
+          "op": "removeItem",
+          "id": "glasses_3d"
+        },
+        {
+          "op": "removeItem",
+          "id": "marked_map"
         },
         {
           "op": "removeItem",
