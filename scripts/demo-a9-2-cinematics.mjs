@@ -157,12 +157,18 @@ async function film(label, { esc = false, stills = {} } = {}) {
   const t0 = Date.now();
   let escSent = false;
   const taken = new Set();
+  // Las capturas, con el texto ya escrito: cada texto (y la tarjeta) lleva `held` ms en pantalla
+  let lastKey = null;
+  let since = Date.now();
   while (Date.now() - t0 < 60000) {
     if (esc && !escSent) { escSent = true; await page.keyboard.press('Escape'); }
     const r = await page.evaluate(() => {
       const st = window.__qa.state();
       return { ready: st.ready, active: st.cinematic?.active, speech: st.speech, card: (window.__game.registry.get('cinematicActive') ?? 0) > 0, ended: window.__probe.end !== null };
     });
+    const key = r.card ? '#card' : (r.speech?.text ?? null);
+    if (key !== lastKey) { lastKey = key; since = Date.now(); }
+    r.held = Date.now() - since;
     for (const [name, when] of Object.entries(stills)) {
       if (!taken.has(name) && when(r)) { taken.add(name); await demo.still(name); }
     }
@@ -245,9 +251,9 @@ for (const vp of VIEWPORTS) {
     await enter(scene);
     await film(`${tag} (entera)`, {
       stills: {
-        [`${vp.id}-${scene.id}-1`]: (r) => r.active && !!r.speech && /narrator/i.test(r.speech.speaker ?? '') && !r.card,
-        [`${vp.id}-${scene.id}-2`]: (r) => r.active && !!r.speech && !r.speech.speaker && !r.card,
-        [`${vp.id}-${scene.id}-3`]: (r) => r.active && r.card,
+        [`${vp.id}-${scene.id}-1`]: (r) => r.active && !!r.speech && /narrator/i.test(r.speech.speaker ?? '') && !r.card && r.held >= 2000,
+        [`${vp.id}-${scene.id}-2`]: (r) => r.active && !!r.speech && !r.speech.speaker && !r.card && r.held >= 2000,
+        [`${vp.id}-${scene.id}-3`]: (r) => r.active && r.card && r.held >= 1200,
       },
     });
     const fullP = await probe();
