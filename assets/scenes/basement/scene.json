@@ -1263,14 +1263,26 @@
                 "title": "Below the Surface"
               },
               {
-                "op": "say",
-                "text": "I leave behind what I've already used up. Lighter pockets. Same heavy bags."
-              },
-              {
                 "op": "cinematicEnd"
               }
             ]
-          }
+          },
+        {
+          "op": "ifFlag",
+          "flag": "pockets_ch2_said",
+          "then": [],
+          "else": [
+            {
+              "op": "setFlag",
+              "flag": "pockets_ch2_said",
+              "value": true
+            },
+            {
+              "op": "say",
+              "text": "I leave behind what I've already used up. Lighter pockets. Same heavy bags."
+            }
+          ]
+        }
         ]
       },
       {
@@ -1766,11 +1778,23 @@
           "title": "Below the Surface"
         },
         {
-          "op": "say",
-          "text": "I leave behind what I've already used up. Lighter pockets. Same heavy bags."
+          "op": "cinematicEnd"
+        }
+      ]
+    },
+    {
+      "op": "ifFlag",
+      "flag": "pockets_ch2_said",
+      "then": [],
+      "else": [
+        {
+          "op": "setFlag",
+          "flag": "pockets_ch2_said",
+          "value": true
         },
         {
-          "op": "cinematicEnd"
+          "op": "say",
+          "text": "I leave behind what I've already used up. Lighter pockets. Same heavy bags."
         }
       ]
     }
