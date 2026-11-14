@@ -273,6 +273,10 @@ jobs:
         env:
           SMOKE_SHOTS: webkit-shots/smoke
 
+      - name: Sonido tras «Enable Sound» en WebKit ${{ matrix.viewport }} (A4.9, toque real)
+        if: ${{ !cancelled() }}
+        run: node scripts/audio-unlock-webkit.mjs
+
       - name: Capítulo 1 de la ruta crítica en WebKit ${{ matrix.viewport }}
         if: ${{ !cancelled() }}
         run: node scripts/walkthrough.mjs qa/walkthrough.json --only ruta-critica --until chapter:1
