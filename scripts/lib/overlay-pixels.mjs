@@ -1,5 +1,5 @@
 // A9.16 (plan SCUMM): comprobaciones de píxel de los overlays condicionales contra el fondo de su escena, y el
-// manifiesto de hashes (assets/scenes/overlays.lock.json). Node puro: lo usa scripts/crop-overlays.mjs --check (que
+// manifiesto de hashes (qa/overlays.lock.json). Node puro: lo usa scripts/crop-overlays.mjs --check (que
 // decodifica con sharp) y lo prueban tests/overlay-crop.test.mjs y tests/vane-overlay.test.mjs.
 import { createHash } from 'node:crypto';
 
@@ -52,7 +52,7 @@ export function lockProblems(lock, current) {
   const entries = lock?.overlays ?? {};
   for (const [key, cur] of Object.entries(current)) {
     const e = entries[key];
-    if (!e) { problems.push(`${key}: no está en assets/scenes/overlays.lock.json (revísalo sobre su fondo y node scripts/crop-overlays.mjs --update-lock)`); continue; }
+    if (!e) { problems.push(`${key}: no está en qa/overlays.lock.json (revísalo sobre su fondo y node scripts/crop-overlays.mjs --update-lock)`); continue; }
     if (e.background !== cur.background) problems.push(`${key}: el fondo de la escena cambió desde que se validó el overlay (hash ${String(e.background).slice(0, 12)}… → ${cur.background.slice(0, 12)}…): regenéralo o revísalo encima del fondo nuevo y node scripts/crop-overlays.mjs --update-lock`);
     if (e.overlay !== cur.overlay) problems.push(`${key}: el overlay cambió sin revalidar (hash ${String(e.overlay).slice(0, 12)}… → ${cur.overlay.slice(0, 12)}…): node scripts/crop-overlays.mjs --update-lock`);
   }

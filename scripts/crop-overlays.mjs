@@ -15,7 +15,7 @@
 // A9.16: además, con sharp, cada overlay se compara píxel a píxel con el fondo de su escena (scripts/lib/
 // overlay-pixels.mjs): falla si lleva una zona grande de píxeles opacos CASI iguales al fondo (0 < Δ ≤ 12 en más de
 // 2500 px y más del 12,5 % de sus opacos): manchas de otro tono, como el cielo del espejo de la veleta de A9.12. Y
-// (con o sin sharp) cada overlay tiene que estar en assets/scenes/overlays.lock.json con el sha256 del
+// (con o sin sharp) cada overlay tiene que estar en qa/overlays.lock.json con el sha256 del
 // background.webp de su escena y el suyo propio: si cambia el fondo (o el overlay) sin revalidar, falla. Un overlay
 // con el defecto de manchas que se acepta a sabiendas lleva `"aviso": "<motivo>"` en su entrada y sale como aviso.
 //
@@ -37,7 +37,7 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const SCENES = join(ROOT, 'assets', 'scenes');
 const CHECK = process.argv.includes('--check');
 const UPDATE_LOCK = process.argv.includes('--update-lock');
-const LOCK_FILE = join(SCENES, 'overlays.lock.json');
+const LOCK_FILE = join(ROOT, 'qa', 'overlays.lock.json'); // fuera de assets/scenes: hay pruebas que leen cada entrada como carpeta de escena
 const lock = existsSync(LOCK_FILE) ? JSON.parse(readFileSync(LOCK_FILE, 'utf8')) : { overlays: {} };
 const hashes = {};
 const warnings = [];
