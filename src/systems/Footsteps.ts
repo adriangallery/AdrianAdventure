@@ -46,7 +46,12 @@ export function surfaceAt(audio: FootstepAudioConfig | null | undefined, x: numb
   return typeof audio.footstep === 'string' && audio.footstep ? audio.footstep : null;
 }
 
-export const stepKey = (surface: string, foot: 0 | 1): string => `step_${surface}_${foot + 1}`;
+/**
+ * A8.4: variantes por superficie (`step_<superficie>_1..STEP_VARIANTS`, ElevenLabs: art/sfx/sfx.json). Pie izquierdo =
+ * impares, derecho = pares; `pick` elige la pareja (0 = _1/_2, 1 = _3/_4…). Con 2 variantes, como en A4.4.
+ */
+export const STEP_VARIANTS = 2;
+export const stepKey = (surface: string, foot: 0 | 1, pick = 0): string => `step_${surface}_${foot + 1 + 2 * pick}`;
 
 /**
  * Cuenta la distancia andada y dice cuándo toca un paso. El primer paso suena al echar a andar (tras media
@@ -80,10 +85,12 @@ export class FootstepTracker {
   }
 }
 
-/** Parámetros del efecto de un paso: clave, desafino (cents) y volumen; `random` en [0, 1) */
-export function stepSound(surface: string, foot: 0 | 1, random: number, depth = 1): { key: string; detune: number; volume: number } {
+/** Parámetros del efecto de un paso: clave, desafino (cents) y volumen; `random` y `randomPick` en [0, 1) */
+export function stepSound(surface: string, foot: 0 | 1, random: number, depth = 1, randomPick = 0): { key: string; detune: number; volume: number } {
+  const pairs = Math.max(1, Math.floor(STEP_VARIANTS / 2));
+  const pick = Math.min(pairs - 1, Math.max(0, Math.floor(randomPick * pairs)));
   const detune = Math.round((random * 2 - 1) * STEP_DETUNE_CENTS);
   // Más lejos (escala por profundidad < 1) suena un poco más bajo
   const volume = Math.round(STEP_VOLUME * (0.6 + 0.4 * Math.min(1, Math.max(0.2, depth))) * 100) / 100;
-  return { key: stepKey(surface, foot), detune, volume };
+  return { key: stepKey(surface, foot, pick), detune, volume };
 }

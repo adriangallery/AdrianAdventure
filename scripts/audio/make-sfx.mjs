@@ -8,9 +8,11 @@
 //   node scripts/audio/make-sfx.mjs --list     claves que generaría
 //   node scripts/audio/make-sfx.mjs --wav <dir>  deja también los WAV en esa carpeta (para escucharlos sin MP3)
 //
+// A8.4: las claves que salen de ElevenLabs (apuntadas en art/sfx/generados.json por scripts/audio/eleven-sfx.mjs) no se pisan salvo con --force.
+//
 // Los 22 efectos anteriores a A4.4 (ui_click, item_pickup, door_open…) no tienen receta y no se tocan.
 import { spawnSync } from 'node:child_process';
-import { mkdirSync, mkdtempSync, rmSync, statSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, rmSync, statSync, readFileSync, existsSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -81,7 +83,14 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
   let wavDir = null;
   const wi = args.indexOf('--wav');
   if (wi >= 0) { wavDir = resolve(args[wi + 1]); args.splice(wi, 2); }
-  const names = args.length ? args : Object.keys(RECIPES);
+  const force = args.includes('--force');
+  if (force) args.splice(args.indexOf('--force'), 1);
+  const gen = join(ROOT, 'art', 'sfx', 'generados.json');
+  const eleven = new Set(existsSync(gen) ? Object.keys(JSON.parse(readFileSync(gen, 'utf8'))) : []);
+  const names = (args.length ? args : Object.keys(RECIPES)).filter((n) => {
+    if (!force && eleven.has(n)) { console.log(`${n}: de ElevenLabs (art/sfx/generados.json), no se pisa (--force)`); return false; }
+    return true;
+  });
   try {
     const made = makeSfx(names, { wavDir });
     console.log(`${made.length} efectos · ${made.reduce((a, m) => a + m.kb, 0).toFixed(0)} KB en total`);

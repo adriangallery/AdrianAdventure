@@ -437,7 +437,7 @@ export class GameScene extends Phaser.Scene {
       const surface = surfaceAt(sceneData.audio, step.x, step.y);
       this.lastFootstep = { surface, key: null, at: Math.round(performance.now()) };
       if (!surface) return;
-      const sound = stepSound(surface, step.foot, Math.random(), step.depth);
+      const sound = stepSound(surface, step.foot, Math.random(), step.depth, Math.random());
       this.lastFootstep.key = sound.key;
       sfxOf(this)?.play(sound.key, { volume: sound.volume, detune: sound.detune });
     });

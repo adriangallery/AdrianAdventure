@@ -4,7 +4,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 
 const {
-  FootstepTracker, surfaceAt, stepSound, stepKey, STRIDE_ART_PX, MAX_STEP_JUMP_ART_PX, STEP_DETUNE_CENTS, STEP_VOLUME, STEP_VOLUME_A44, SURFACES,
+  FootstepTracker, surfaceAt, stepSound, stepKey, STRIDE_ART_PX, MAX_STEP_JUMP_ART_PX, STEP_DETUNE_CENTS, STEP_VOLUME, STEP_VOLUME_A44, SURFACES, STEP_VARIANTS,
 } = await import(process.env.FOOTSTEPS_PATH ?? '../src/systems/Footsteps.ts');
 
 test('surfaceAt: el rectángulo de surfaces manda sobre footstep; sin nada, muda', () => {
@@ -62,6 +62,17 @@ test('stepSound: clave por superficie y pie, desafino dentro del margen y volume
 test('todas las superficies tienen sus dos efectos en assets/audio/sfx', async () => {
   const { existsSync } = await import('node:fs');
   for (const s of SURFACES) {
-    for (const n of [1, 2]) assert.ok(existsSync(new URL(`../assets/audio/sfx/step_${s}_${n}.mp3`, import.meta.url)), `falta step_${s}_${n}.mp3`);
+    for (let n = 1; n <= STEP_VARIANTS; n++) assert.ok(existsSync(new URL(`../assets/audio/sfx/step_${s}_${n}.mp3`, import.meta.url)), `falta step_${s}_${n}.mp3`);
   }
+});
+
+test('A8.4: variantes de paso: el pie manda en la paridad y randomPick elige la pareja dentro de STEP_VARIANTS', () => {
+  assert.equal(stepKey('wood', 0, 1), 'step_wood_3');
+  assert.equal(stepKey('wood', 1, 1), 'step_wood_4');
+  assert.equal(STEP_VARIANTS % 2, 0, 'variantes por parejas (izquierdo/derecho)');
+  for (const r of [0, 0.3, 0.6, 0.999]) {
+    const n = Number(stepSound('tile', 0, 0.5, 1, r).key.split('_').pop());
+    assert.ok(n % 2 === 1 && n <= STEP_VARIANTS, `pie izquierdo → impar ≤ ${STEP_VARIANTS} (${n})`);
+  }
+  assert.equal(stepSound('tile', 1, 0.5).key, 'step_tile_2', 'sin randomPick, la primera pareja (A4.4)');
 });
