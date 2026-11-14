@@ -1,3 +1,4 @@
+import type { ScreenDef } from '@/systems/ScreenText';
 import type { ResponseMap } from '@/systems/FailResponses';
 
 export interface SceneData {
@@ -121,6 +122,11 @@ export interface SceneData {
    * `when` (gramática de A2.6a) y se dibuja sin assets. Un elemento mal definido se salta (aviso en consola y en el linter).
    */
   ambient?: AmbientElementData[];
+  /**
+   * A2.19: pantallas de la escena (CRT, monitores, teclados, carteles luminosos) donde un `say` con `screen: "<id>"` pinta su
+   * texto (src/systems/ScreenText.ts). `bounds` en % del mundo, medidos sobre el cristal del fondo.
+   */
+  screens?: Record<string, ScreenDef>;
 }
 
 /** A4.3: un elemento de `ambient[]` tal como va en el JSON (campos según `kind`; ver la cabecera de src/systems/Ambient.ts) */

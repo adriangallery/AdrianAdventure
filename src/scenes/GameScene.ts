@@ -53,6 +53,20 @@ import { surfaceAt, stepSound } from '@/systems/Footsteps';
 import { sfxOf } from '@/systems/Sfx';
 import { isStingerKind } from '@/systems/Stingers';
 import { playStinger } from '@/systems/StingerPlayer';
+import { closeupReason, screenDisplayText, type CloseupReason } from '@/systems/ScreenText';
+import { ScreenTextLayer, type ScreenLayerQa } from '@/ui/ScreenTextLayer';
+import { ScreenCloseup, type CloseupQaState } from '@/ui/ScreenCloseup';
+import { charDelayMs } from '@/systems/Settings';
+import type { ScreenSayRequest } from '@/systems/ScriptEngine';
+
+/** A2.19 (QA): estado de las pantallas (`__qa.state().screen`) */
+export interface ScreenQaState {
+  seq: number;
+  log: Array<{ seq: number; id: string; mode: 'screen' | 'closeup'; reason: CloseupReason | null; display: string }>;
+  last: { id: string; mode: 'screen' | 'closeup'; reason: CloseupReason | null; display: string } | null;
+  inScene: ScreenLayerQa | null;
+  closeup: CloseupQaState;
+}
 
 /** A2.4 (QA): cómo pulsa la API de QA: botón derecho o clic de ratón (cuenta para el doble clic). */
 type QaClick = { button?: 'left' | 'right'; mouse?: boolean };
@@ -94,6 +108,13 @@ export class GameScene extends Phaser.Scene {
   private cinematicOverlay!: CinematicOverlay;
   /** A3.10: dashboard TraitLab del Mining Rig (op showDashboard); se crea al abrirlo y se destruye en el SHUTDOWN */
   private dashboardPanel: DashboardPanel | null = null;
+  /** A2.19: texto dentro de las pantallas de la escena y su primer plano */
+  private screenLayer: ScreenTextLayer | null = null;
+  private screenCloseup: ScreenCloseup | null = null;
+  private lastScreen: { id: string; mode: 'screen' | 'closeup'; reason: CloseupReason | null; display: string } | null = null;
+  /** A2.19 (QA): últimas líneas de pantalla (seq creciente para saber cuáles salieron en un paso) */
+  private screenLog: Array<{ seq: number; id: string; mode: 'screen' | 'closeup'; reason: CloseupReason | null; display: string }> = [];
+  private screenSeq = 0;
   /** A2.10: cinemáticas (cámara, franjas, actores, transiciones); uno por escena, se destruye en SHUTDOWN */
   private cinema?: CinematicDirector;
   private transactionToast!: TransactionToast;
@@ -1974,6 +1995,8 @@ export class GameScene extends Phaser.Scene {
           this.registry.set('dashboardOpen', false);
         }
       },
+      // A2.19: línea de pantalla (say/sayBrief con `screen`)
+      sayOnScreen: (req) => (run !== this.sceneRun ? Promise.resolve() : this.sayOnScreen(req)),
       showMonitorReveal: () => {
         const ui = this.scene.get('UIScene');
         return new Promise<void>((resolve) => {
@@ -2519,6 +2542,80 @@ export class GameScene extends Phaser.Scene {
    * A1.10: enganchado a SHUTDOWN en create() (`bindShutdown`). Idempotente: llamarlo dos veces no rompe. Cuando
    * llega, los plugins de la escena ya han destruido cámaras, objetos, tweens y relojes (ver lifecycle.ts).
    */
+  /**
+   * A2.19: dice la línea (voz + subtítulo discreto) y la teclea en la pantalla `req.screen` de la escena; si es larga, si
+   * se pide o si a este tamaño de viewport no se lee, además abre el primer plano y la línea acaba al cerrarlo.
+   */
+  private async sayOnScreen(req: ScreenSayRequest): Promise<void> {
+    const ui = this.scene.get('UIScene');
+    const speak = (discreet: boolean) => new Promise<void>((resolve) => {
+      if (req.briefMs !== undefined) ui.events.emit('sayBrief', req.text, req.briefMs, req.speaker, resolve, discreet);
+      else ui.events.emit('say', req.text, req.speaker, resolve, discreet);
+    });
+    const def = this.sceneDataLoader.getSceneData().screens?.[req.screen];
+    if (!def) {
+      console.warn(`GameScene: pantalla «${req.screen}» no existe en ${this.sceneDataLoader.getSceneData().id}`);
+      return speak(false);
+    }
+    const display = screenDisplayText(req.text, req.display);
+    const a = this.coordSystem.pctToScreen(def.bounds.x, def.bounds.y);
+    const b = this.coordSystem.pctToScreen(def.bounds.x + def.bounds.w, def.bounds.y + def.bounds.h);
+    const rect = { x: a.x, y: a.y, w: b.x - a.x, h: b.y - a.y };
+    const zoom = this.cameras.main.zoom || 1;
+    const reason = closeupReason({
+      text: display,
+      screenPx: { w: rect.w * zoom, h: rect.h * zoom },
+      forced: req.closeup,
+      closeupOnly: def.closeupOnly === true,
+    });
+    const instant = charDelayMs() === 0 || (req.briefMs !== undefined && req.briefMs <= 250);
+    this.lastScreen = { id: req.screen, mode: reason ? 'closeup' : 'screen', reason, display };
+    this.screenLog.push({ seq: ++this.screenSeq, ...this.lastScreen });
+    if (this.screenLog.length > 30) this.screenLog.shift();
+    this.screenLayer ??= new ScreenTextLayer(this);
+    if (!def.closeupOnly) {
+      // Con primer plano la pantalla de la escena enseña solo la primera fila (lo demás, en el primer plano)
+      const inScene = reason ? display.split('\n')[0].slice(0, 60) : display;
+      void this.screenLayer.write(req.screen, inScene, rect, { color: def.color, zoom, instant: instant || reason !== null, opaque: def.opaque });
+    }
+    if (!reason) {
+      await speak(true);
+      this.screenLayer.finishTyping();
+      this.screenLayer.linger();
+      return;
+    }
+    this.screenCloseup ??= new ScreenCloseup();
+    this.registry.set('screenCloseupOpen', true);
+    const spoken = speak(true);
+    try {
+      await this.screenCloseup.open({
+        screen: req.screen,
+        label: def.label ?? req.screen.replace(/[_-]+/g, ' ').toUpperCase(),
+        text: display,
+        color: def.color ?? 'green',
+        reason,
+        instant,
+      });
+    } finally {
+      this.registry.set('screenCloseupOpen', false);
+    }
+    // Al cerrar el primer plano se cierra su subtítulo (la misma línea)
+    ui.events.emit('advanceSay', req.text);
+    await spoken;
+    this.screenLayer?.linger();
+  }
+
+  /** A2.19 (QA): pantalla en uso, si se ve en la escena o en primer plano, y qué enseña */
+  getScreenQa(): ScreenQaState {
+    return {
+      seq: this.screenSeq,
+      log: this.screenLog.map((e) => ({ ...e })),
+      last: this.lastScreen,
+      inScene: this.screenLayer?.qaState() ?? null,
+      closeup: this.screenCloseup?.qaState() ?? { open: false, screen: null, text: null, reason: null, typing: false },
+    };
+  }
+
   /** A3.10 (QA): estado del dashboard del Mining Rig */
   getDashboardQa(): DashboardQaState {
     return this.dashboardPanel?.qaState() ?? { open: false, phase: null, rows: [], status: null, tip: null };
@@ -2533,6 +2630,13 @@ export class GameScene extends Phaser.Scene {
     this.dashboardPanel?.destroy();
     this.dashboardPanel = null;
     this.registry.set('dashboardOpen', false);
+    // A2.19: pantallas y primer plano
+    this.screenCloseup?.destroy();
+    this.screenCloseup = null;
+    this.screenLayer?.destroy();
+    this.screenLayer = null;
+    this.lastScreen = null;
+    this.registry.set('screenCloseupOpen', false);
     failResponses.onFail = null;
     this.scriptEngine?.cancelEffects();
     this.dialogueScripts?.cancelEffects();

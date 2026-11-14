@@ -10,6 +10,10 @@ import {
 // Velocidad del texto: ver src/systems/Settings.ts (antes fija a 25 ms por carácter)
 
 /** A2.3: cabeza en pantalla de quien habla ('player' o nombre/id de la NPC); null si no está o no se ve. */
+/** A2.19: subtítulo discreto de una línea que ya sale en su pantalla */
+const DISCREET_SCALE = 0.8;
+const DISCREET_ALPHA = 0.78;
+
 export type SpeakerHeadProvider = (who: string) => (HeadAnchor & { id: string }) | null;
 
 /** A2.3 (QA): texto en pantalla, dónde está y en qué modo. */
@@ -69,6 +73,8 @@ export class DialogueBox {
   private pendingDismissCall: Phaser.Time.TimerEvent | null = null;
   private current: Current | null = null;
   private destroyed = false;
+  /** A2.19: subtítulo discreto (la línea ya sale escrita en la pantalla de la máquina): letra menor y algo transparente */
+  private discreet = false;
 
   constructor(scene: Phaser.Scene, headOf?: SpeakerHeadProvider) {
     this.scene = scene;
@@ -103,10 +109,11 @@ export class DialogueBox {
     scene.events.on(Phaser.Scenes.Events.POST_UPDATE, this.layout, this);
   }
 
-  say(text: string, speaker?: string): Promise<void> {
+  say(text: string, speaker?: string, discreet = false): Promise<void> {
     return new Promise<void>((resolve) => {
       // Clean up any previous dialogue immediately
       this.cleanup();
+      this.discreet = discreet;
 
       this.resolvePromise = resolve;
       this.fullMessage = text;
@@ -182,8 +189,9 @@ export class DialogueBox {
       fallback: TWP.DIALOGUE_TEXT,
     });
 
-    const size = speechFontSize(this.scene.scale);
+    const size = this.fontSize();
     this.text.setFontSize(`${size.body}px`).setStroke(TWP.DIALOGUE_STROKE, speechStroke(size.body)).setColor(color);
+    this.text.setAlpha(this.discreet ? DISCREET_ALPHA : 1);
     this.speakerText.setFontSize(`${size.speaker}px`).setText(kind !== 'player' ? speaker ?? '' : '');
     this.current = { speaker: speaker ?? null, kind, who, color, mode: null, head: null, wrap: 0, narrow: 0, w: 0, h: 0 };
     this.layout();
@@ -320,9 +328,10 @@ export class DialogueBox {
   }
 
   /** Show text briefly (auto-dismiss after delay), then resolve. No click needed. */
-  sayBrief(text: string, durationMs = 1500, speaker?: string): Promise<void> {
+  sayBrief(text: string, durationMs = 1500, speaker?: string, discreet = false): Promise<void> {
     return new Promise<void>((resolve) => {
       this.cleanup();
+      this.discreet = discreet;
 
       this.resolvePromise = resolve;
       this.fullMessage = text;
@@ -340,6 +349,18 @@ export class DialogueBox {
         this.dismiss();
       });
     });
+  }
+
+  /** A2.19: tamaño del subtítulo; el discreto, un 80 % (sin bajar de 9 px) */
+  private fontSize(): { body: number; speaker: number } {
+    const size = speechFontSize(this.scene.scale);
+    if (!this.discreet) return size;
+    return { body: Math.max(9, Math.round(size.body * DISCREET_SCALE)), speaker: Math.max(9, Math.round(size.speaker * DISCREET_SCALE)) };
+  }
+
+  /** A2.19: ¿el subtítulo actual es el discreto de una línea de pantalla? (QA) */
+  isDiscreet(): boolean {
+    return this.visible && this.discreet;
   }
 
   isVisible(): boolean {
@@ -371,7 +392,7 @@ export class DialogueBox {
     const cur = this.current;
     if (!cur) return;
     // Letra y ancho de wrap nuevos: se vuelve a medir y colocar
-    const size = speechFontSize(this.scene.scale);
+    const size = this.fontSize();
     this.text.setFontSize(`${size.body}px`).setStroke(TWP.DIALOGUE_STROKE, speechStroke(size.body));
     this.speakerText.setFontSize(`${size.speaker}px`);
     cur.wrap = 0;
