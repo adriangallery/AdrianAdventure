@@ -40,6 +40,13 @@ export function engineFromArgs(argv, env = process.env) {
   return { engine, viewport };
 }
 
+// WebKit avisa con un error de página («… due to access control checks.») de cada fetch que corta una navegación: la
+// precarga de escenas (ScenePrefetcher, mismo origen, ya captura el aborto) bajando cuando el script hace page.goto.
+// Es de la herramienta (un jugador no navega a media precarga) y no se cuenta como fallo; se dice en el log.
+export const WEBKIT_NAV_ABORT = /due to access control checks\.?$/;
+let navAborts = 0;
+export const webkitNavAborts = () => navAborts;
+
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 // Varios argumentos (puppeteer) → uno solo (Playwright): se pasa el código de la función y se reconstruye en la página
@@ -82,7 +89,15 @@ function wrapPage(page) {
     evaluateOnNewDocument(fn, arg) { return page.addInitScript(fn, arg); },
     on(event, handler) {
       let h = handler;
-      if (event === 'console') h = (msg) => handler(new Proxy(msg, { get: (t, k) => (k === 'type' ? () => (t.type() === 'warning' ? 'warn' : t.type()) : (typeof t[k] === 'function' ? t[k].bind(t) : t[k])) }));
+      if (event === 'pageerror') {
+        h = (err) => {
+          if (WEBKIT_NAV_ABORT.test(String(err?.message ?? ''))) {
+            if (navAborts++ === 0) console.log(`    (WebKit: fetch cortado por la navegación, no cuenta: ${String(err.message).slice(0, 120)})`);
+            return;
+          }
+          handler(err);
+        };
+      } else if (event === 'console') h = (msg) => handler(new Proxy(msg, { get: (t, k) => (k === 'type' ? () => (t.type() === 'warning' ? 'warn' : t.type()) : (typeof t[k] === 'function' ? t[k].bind(t) : t[k])) }));
       else if (event === 'response') h = (res) => handler(wrapResponse(res));
       else if (event === 'request' || event === 'requestfinished') h = (req) => handler(wrapRequest(req));
       handlers.set(handler, h);

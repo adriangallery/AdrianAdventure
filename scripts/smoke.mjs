@@ -12,7 +12,7 @@
 // son de escritorio (transiciones con fromCache, memoria de texturas, teclado y ratón) se saltan y se dicen en el log.
 // Uso: BASE_URL=http://127.0.0.1:4173 node scripts/smoke.mjs [--browser webkit --viewport 844x390]
 import { readdirSync, existsSync, mkdirSync, readFileSync, writeFileSync, appendFileSync } from 'node:fs';
-import { engineFromArgs, launchBrowser } from './lib/browser.mjs';
+import { engineFromArgs, launchBrowser, webkitNavAborts } from './lib/browser.mjs';
 import * as SP from './lib/save-panel.mjs';
 
 const { engine: ENGINE, viewport: ENGINE_VIEWPORT } = engineFromArgs(process.argv.slice(2));
@@ -937,6 +937,7 @@ await step('Continue A1.13: con el autoguardado vacío más nuevo, carga la part
 });
 
 await browser.close();
+if (WEBKIT) console.log(`\nWebKit: ${webkitNavAborts()} fetch(s) de la precarga cortados al navegar (no cuentan; ver docs/progreso/A9.5.md)`);
 if (skipped.length) console.log(`\nSaltados en ${ENGINE} (${skipped.length}): ${skipped.join(' · ')}`);
 if (failures.length) {
   console.log(`\n${failures.length} fallo(s).`);
