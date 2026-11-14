@@ -25,7 +25,7 @@ export interface DialogueTree {
   nodes: Record<string, DialogueNode>;
 }
 
-export interface DialogueNode {
+export interface DialogueNode extends DialogueNodeScreen {
   speaker?: string;
   /** A2.6: sin texto (p. ej. el hub) el nodo no dice nada y enseña sus opciones directamente */
   text?: string;
@@ -211,8 +211,7 @@ export class DialogueSystem {
       if (node.text) {
         silent = 0;
         // A2.19: con `screen` la línea también se teclea en esa pantalla de la escena
-        const scr = node as DialogueNodeScreen;
-        if (scr.screen) await this.callbacks.say(node.text, node.speaker, { screen: scr.screen, display: scr.display, closeup: scr.closeup });
+        if (node.screen) await this.callbacks.say(node.text, node.speaker, { screen: node.screen, display: node.display, closeup: node.closeup });
         else await this.callbacks.say(node.text, node.speaker);
       }
 

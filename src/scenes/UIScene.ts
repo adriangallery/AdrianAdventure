@@ -568,6 +568,10 @@ export class UIScene extends Phaser.Scene {
         end: nodeData.end,
         onEnter: nodeData.onEnter,
         when: nodeData.when,
+        // A2.19: la línea sale en una pantalla de la escena
+        screen: nodeData.screen,
+        display: nodeData.display,
+        closeup: nodeData.closeup,
         choices: nodeData.choices?.map((c) => ({
           id: c.id,
           text: c.text,

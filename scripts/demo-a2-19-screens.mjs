@@ -152,7 +152,19 @@ for (const vp of VIEWPORTS) {
     await demo.film(600);
     check(!(await page.evaluate(() => !!window.__game.registry.get('screenCloseupOpen'))), `${tag}: Esc cierra el primer plano`);
   }
-  await page.evaluate(() => window.__qa.dismissAll()).catch(() => {});
+  // El árbol sigue con sus opciones: «Never mind» (la despedida de Dex se cierra con un toque)
+  for (let i = 0; i < 20; i++) {
+    const picked = await page.evaluate(() => {
+      const panel = window.__game.scene.getScene('UIScene').getChoicePanel();
+      if (!panel.isAwaitingChoice()) return false;
+      const idx = panel.getOptions().findIndex((o) => /never mind/i.test(o.text));
+      return idx >= 0 ? panel.choose(idx) : false;
+    });
+    if (picked) break;
+    if (await page.evaluate(() => !!window.__game.registry.get('screenCloseupOpen'))) await page.keyboard.press('Escape');
+    else await tap();
+    await demo.sleep(400);
+  }
   await free();
 
   // ── 3. server_room: log de PZ-BOT (primer plano forzado) y una línea corta en el terminal ──
