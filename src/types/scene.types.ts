@@ -74,7 +74,11 @@ export interface SceneData {
    * A2.1: obstáculos dentro de las zonas caminables (rectángulos en %, se restan de walkableAreas; su borde tampoco
    * se pisa). El personaje los rodea con el pathfinding (src/systems/Pathfinding.ts). Sin walkableAreas no hacen nada.
    */
-  blockedAreas?: Array<{ x: number; y: number; w: number; h: number }>;
+  blockedAreas?: Array<{
+    x: number; y: number; w: number; h: number;
+    /** A3.12: solo bloquea mientras se cumple (gramática `when`: `flag`, `!flag`, `item:x`; lista = todas). Sin él, siempre */
+    when?: string | string[];
+  }>;
   /**
    * A2.17 fase 2: walk-behind por objeto. Trozos de foreground.png (caja en %, como bounds) que no van siempre por
    * encima de Dex: se dibujan a la profundidad de su línea base (`baseY`, % del alto), ordenados con Dex y las NPC por

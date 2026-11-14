@@ -5,7 +5,7 @@ import { NavGrid, type Point } from '@/systems/Pathfinding';
 import type { Facing } from '@/systems/Facing';
 import { resolvePixelScale, spriteScale, artHeightPct, type DepthScale, type PixelGlobalConfig } from '@/systems/PixelScale';
 import { FootstepTracker } from '@/systems/Footsteps';
-import { actorDepth, sceneObstacles, speedMultiplier, stepToward, walkSpeedWorldPx } from '@/systems/WalkMotion';
+import { activeBlockedAreas, actorDepth, sceneObstacles, speedMultiplier, stepToward, walkSpeedWorldPx } from '@/systems/WalkMotion';
 import {
   GESTURE_MS, IdleTicker, QA_IDLE_SEED, RIG_IDLE_FRAME_MS, RIG_IDLE_FRAMES, facingForDir, facingTexture, gesturePose, hasRig, idleTicPose, isVertical,
   moveDir, rigKey, shrugPose, talkPose, walkPose,
@@ -162,7 +162,8 @@ export class Player extends Phaser.GameObjects.Sprite {
     this.pctX = spawnPctX;
     this.pctY = spawnPctY;
     // A2.12: las NPC que están sobre el suelo también son obstáculo (su huella; ver WalkMotion.sceneObstacles)
-    this.nav = new NavGrid(sceneData.walkableAreas, sceneObstacles(sceneData.walkableAreas, sceneData.blockedAreas, sceneData.npcs));
+    // A3.12: al crear, solo los blockedAreas sin `when`; GameScene llama a refreshObstacles con el estado de la partida
+    this.nav = new NavGrid(sceneData.walkableAreas, sceneObstacles(sceneData.walkableAreas, activeBlockedAreas(sceneData.blockedAreas, () => false), sceneData.npcs));
 
     // A2.8: unidad de píxel de la escena (pixelScale; si no, el playerScale antiguo, el global o el de por defecto)
     const globalConfig = scene.cache.json.get('globalConfig') as PixelGlobalConfig | undefined;
@@ -767,6 +768,14 @@ export class Player extends Phaser.GameObjects.Sprite {
     this.idleTicker.reset();
     this.setTexture(tex);
     return true;
+  }
+
+  /**
+   * A3.12: rehace la rejilla con los blockedAreas activos (los de `when` según el estado). La llama GameScene al entrar
+   * en la escena y cuando cambia el conjunto activo (p. ej. aparece el lambo de outside con `pzbot_crashed`).
+   */
+  refreshObstacles(sceneData: SceneData, holds: (cond: string) => boolean): void {
+    this.nav = new NavGrid(sceneData.walkableAreas, sceneObstacles(sceneData.walkableAreas, activeBlockedAreas(sceneData.blockedAreas, holds), sceneData.npcs));
   }
 
   /** ¿Se puede pisar el punto? (walkableAreas menos blockedAreas; sin áreas, sí) */

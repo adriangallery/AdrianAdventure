@@ -2230,6 +2230,102 @@
         }
       },
       {
+        "id": "hs_lambo",
+        "name": "Lambo",
+        "showWhenFlag": "pzbot_crashed",
+        "useResponses": {
+          "_default": [
+            "I'm not giving anything to a car. Last time I did that it was gas money and a whole paycheck.",
+          "The Lambo doesn't need it. The Lambo doesn't need anything. That's the whole point of a Lambo.",
+          "I'd rather not touch the paint with that. I can't afford the car, and I definitely can't afford the scratch."
+          ]
+        },
+        "bounds": {
+          "x": 65.7,
+          "y": 74,
+          "w": 27,
+          "h": 19
+        },
+        "walkTo": {
+          "x": 74,
+          "y": 96
+        },
+        "face": "back",
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "ifFlag",
+              "flag": "read_lambo_note",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "Could be anyone's. Literally millions of people own a duck-funded supercar."
+                }
+              ],
+              "else": [
+                {
+                  "op": "setFlag",
+                  "flag": "read_lambo_note",
+                  "value": true
+                },
+                {
+                  "op": "say",
+                  "text": "A yellow wedge with wheels. The delivery note says: 'PZ-BOT ORDER #1. PAID IN $GERALD. DELIVER TO OWNER, 0xDE…'"
+                }
+              ]
+            }
+          ],
+          "USE": [
+            {
+              "op": "say",
+              "text": "No key. The bot bought the car and forgot the key. That's the most me thing that's ever happened to me."
+            }
+          ],
+          "PICK": [
+            {
+              "op": "say",
+              "text": "It's a car, not an inventory item. Although in this game I wouldn't rule it out."
+            }
+          ],
+          "TALK": [
+            {
+              "op": "say",
+              "text": "Wen lambo? ...Now, apparently. I expected to feel more."
+            }
+          ],
+          "GIVE": [
+            {
+              "op": "say",
+              "text": "I'm not giving anything to a car. Last time I did that it was gas money and a whole paycheck."
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "say",
+              "text": "I pull the door upwards. Scissor doors. It opens three inches and judges me."
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "say",
+              "text": "It's already shut. Everything about this car is shut. Especially to me."
+            }
+          ],
+          "PUSH": [
+            {
+              "op": "say",
+              "text": "I push it. It's low enough to push with my shin. It doesn't move. My shin does."
+            }
+          ],
+          "PULL": [
+            {
+              "op": "say",
+              "text": "I pull the door upwards. Scissor doors. It opens three inches and judges me."
+            }
+          ]
+        }
+      },
+      {
         "id": "hs_carport",
         "name": "Carport",
         "bounds": {
@@ -2241,8 +2337,20 @@
         "scripts": {
           "LOOK": [
             {
-              "op": "say",
-              "text": "Empty carport. The oil stains are three weeks old. So is the hurry."
+              "op": "ifFlag",
+              "flag": "pzbot_crashed",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "The carport finally has a car in it. Not Adrian's. Technically not anyone's."
+                }
+              ],
+              "else": [
+                {
+                  "op": "say",
+                  "text": "Empty carport. The oil stains are three weeks old. So is the hurry."
+                }
+              ]
             }
           ],
           "USE": [
@@ -3306,6 +3414,13 @@
       "y": 95.6,
       "w": 3.4,
       "h": 1.8
+    },
+    {
+      "x": 65.5,
+      "y": 90,
+      "w": 27.7,
+      "h": 3.6,
+      "when": "pzbot_crashed"
     }
   ],
   "foregroundLayers": [
@@ -3330,6 +3445,17 @@
       },
       "baseY": 97.3,
       "mask": "fgmask_bush_right.webp"
+    },
+    {
+      "id": "carport_post",
+      "bounds": {
+        "x": 84.6983,
+        "y": 47,
+        "w": 1.7241,
+        "h": 48.6632
+      },
+      "baseY": 95.7,
+      "mask": "fgmask_carport_post.webp"
     }
   ],
   "onEnter": [
@@ -3411,6 +3537,86 @@
           "op": "cinematicEnd"
         }
       ]
+    },
+    {
+      "op": "ifFlag",
+      "flag": "pzbot_crashed",
+      "then": [
+        {
+          "op": "ifFlag",
+          "flag": "lambo_seen",
+          "then": [],
+          "else": [
+            {
+              "op": "cinematicStart"
+            },
+            {
+              "op": "setFlag",
+              "flag": "lambo_seen",
+              "value": true
+            },
+            {
+              "op": "cameraPan",
+              "x": 78,
+              "y": 50,
+              "ms": 1200,
+              "wait": false
+            },
+            {
+              "op": "playSound",
+              "key": "lambo_arrive"
+            },
+            {
+              "op": "flicker",
+              "overlay": "lambo",
+              "startVisible": false,
+              "pattern": [
+                1700
+              ]
+            },
+            {
+              "op": "cameraShake",
+              "intensity": 0.006,
+              "ms": 450
+            },
+            {
+              "op": "flicker",
+              "overlay": "lambo_lights",
+              "startVisible": false,
+              "pattern": [
+                250,
+                200,
+                150,
+                200,
+                150,
+                650
+              ]
+            },
+            {
+              "op": "setFlag",
+              "flag": "lambo_lights_on",
+              "value": false
+            },
+            {
+              "op": "actorFace",
+              "actor": "player",
+              "dir": "right"
+            },
+            {
+              "op": "say",
+              "text": "...wen lambo? Apparently: now."
+            },
+            {
+              "op": "cameraFollow",
+              "ms": 600
+            },
+            {
+              "op": "cinematicEnd"
+            }
+          ]
+        }
+      ],
+      "else": []
     }
   ],
   "conditionalOverlays": [
@@ -3506,6 +3712,32 @@
         "h": 5.9028
       },
       "flag": "found_ledger",
+      "depth": 5
+    },
+    {
+      "id": "lambo",
+      "sprite": "overlay_lambo",
+      "format": "webp",
+      "bounds": {
+        "x": 65.194,
+        "y": 72.0486,
+        "w": 28.2328,
+        "h": 21.441
+      },
+      "flag": "pzbot_crashed",
+      "depth": 5
+    },
+    {
+      "id": "lambo_lights",
+      "sprite": "overlay_lambo_lights",
+      "format": "webp",
+      "bounds": {
+        "x": 60.1024,
+        "y": 78.7326,
+        "w": 32.8394,
+        "h": 9.2882
+      },
+      "flag": "lambo_lights_on",
       "depth": 5
     }
   ],

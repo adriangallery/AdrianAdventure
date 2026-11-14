@@ -237,6 +237,8 @@ export class PreloadScene extends Phaser.Scene {
       'inv_open', 'inv_close', 'verb_select', 'journal_open', 'journal_close', 'journal_note', 'phone_ring', 'phone_pickup', 'phone_hangup',
       'duck_squeak', 'intercom_buzz', 'glass_break', 'paper_rustle', 'plank_pull', 'switch_flip', 'crt_on', 'floppy_insert',
       'splash', 'coin_ping', 'thud', 'nest_fall',
+      // A3.12: llegada del lambo de outside (ElevenLabs Sound Effects, recortado y normalizado con ffmpeg)
+      'lambo_arrive',
       'stinger_item', 'stinger_puzzle_major', 'stinger_puzzle_minor', 'stinger_chapter_major', 'stinger_chapter_minor', 'stinger_fail',
       // A8.3b: stingers de evento grabados (src/systems/Stingers.ts → STINGER_GEN)
       'stinger_gen_puzzle_major', 'stinger_gen_chapter_major', 'stinger_gen_fail',
