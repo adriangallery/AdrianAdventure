@@ -1,5 +1,8 @@
 import { FONT } from '@/config/theme';
-import { RIG_PIN_TIP, TRAITLAB_URL, dashboardRows, dashboardStatus, type DashboardData } from '@/web3/dashboardData';
+import {
+  RIG_PIN_TIP, TRAITLAB_URL, dashboardRows, dashboardStatus, founderMissing, founderRows, founderStatus,
+  type DashboardData, type DashboardRow, type FounderStats,
+} from '@/web3/dashboardData';
 
 /**
  * A3.10 (plan SCUMM): dashboard TraitLab del Mining Rig (upstairs, op `showDashboard`). Panel HTML a pantalla completa,
@@ -18,6 +21,8 @@ export interface DashboardQaState {
   open: boolean;
   /** loading | ready | error */
   phase: 'loading' | 'ready' | 'error' | null;
+  /** A9.13: qué panel es (`holder` = A3.10, saldo de la cartera; `founder` = Founder Mode, cifras globales) */
+  mode?: 'holder' | 'founder';
   /** Filas que se ven (etiqueta: valor) */
   rows: string[];
   status: string | null;
@@ -68,6 +73,26 @@ export class DashboardPanel {
 
   /** Abre el panel en «cargando», espera los datos y se resuelve al cerrarse. `tip` = nota del sysadmin (recompensa). */
   open(data: Promise<DashboardData | null>): Promise<void> {
+    const { done, mine } = this.mount('TRAITLAB // RIG-01', 'holder console · read-only', 'holder');
+    void data
+      .catch(() => null)
+      .then((d) => { if (this.overlay === mine) this.render(d); });
+    return done;
+  }
+
+  /**
+   * A9.13: Founder Mode. Mismo terminal, con las cifras GLOBALES leídas del Diamond (src/web3/dashboard.ts
+   * `loadFounderStats`, sin cartera). Lo que no se pudo leer sale como «—»; nunca una cifra de relleno. Sin nota del sysadmin.
+   */
+  openFounder(data: Promise<FounderStats | null>): Promise<void> {
+    const { done, mine } = this.mount('FOUNDER MODE // ADRIAN-ROOT', 'ecosystem console · live from Base · read-only', 'founder');
+    void data
+      .catch(() => null)
+      .then((d) => { if (this.overlay === mine) this.renderFounder(d); });
+    return done;
+  }
+
+  private mount(title: string, subtitle: string, mode: 'holder' | 'founder'): { done: Promise<void>; mine: HTMLDivElement } {
     this.close();
     if (!document.getElementById(STYLE_ID)) {
       const st = document.createElement('style');
@@ -79,7 +104,7 @@ export class DashboardPanel {
     overlay.id = 'rigdash-overlay';
     overlay.setAttribute('role', 'dialog');
     overlay.setAttribute('aria-modal', 'true');
-    overlay.setAttribute('aria-label', 'TraitLab dashboard');
+    overlay.setAttribute('aria-label', mode === 'founder' ? 'Founder mode dashboard' : 'TraitLab dashboard');
     const term = document.createElement('div');
     term.id = 'rigdash-term';
 
@@ -87,10 +112,10 @@ export class DashboardPanel {
     head.className = 'rd-head';
     const titleBox = document.createElement('div');
     titleBox.className = 'rd-title';
-    titleBox.textContent = 'TRAITLAB // RIG-01';
+    titleBox.textContent = title;
     const sub = document.createElement('div');
     sub.className = 'rd-sub';
-    sub.textContent = 'holder console · read-only';
+    sub.textContent = subtitle;
     titleBox.appendChild(sub);
     const close = document.createElement('button');
     close.id = 'rigdash-close';
@@ -134,14 +159,50 @@ export class DashboardPanel {
     this.overlay = overlay;
     this.body = body;
     this.openedAt = performance.now();
-    this.qa = { open: true, phase: 'loading', rows: [], status: null, tip: null };
+    this.qa = { open: true, phase: 'loading', rows: [], status: null, tip: null, mode };
 
     const done = new Promise<void>((resolve) => { this.resolveClose = resolve; });
-    const mine = overlay;
-    void data
-      .catch(() => null)
-      .then((d) => { if (this.overlay === mine) this.render(d); });
-    return done;
+    return { done, mine: overlay };
+  }
+
+  /** Pinta filas «etiqueta valor» (avisos en amarillo) y devuelve su texto para QA */
+  private paintRows(main: HTMLDivElement, list: DashboardRow[]): string[] {
+    const rows: string[] = [];
+    for (const r of list) {
+      const row = document.createElement('div');
+      row.className = r.warn ? 'rd-row warn' : 'rd-row';
+      const k = document.createElement('span');
+      k.className = 'rd-k';
+      k.textContent = r.label;
+      const v = document.createElement('span');
+      v.className = 'rd-v';
+      v.textContent = r.value;
+      row.append(k, v);
+      main.appendChild(row);
+      rows.push(`${r.label}: ${r.value}`);
+    }
+    return rows;
+  }
+
+  /** A9.13: cifras globales de Founder Mode (o «sin red» si la carga entera falló) */
+  private renderFounder(d: FounderStats | null): void {
+    const body = this.body;
+    if (!body) return;
+    body.textContent = '';
+    const main = document.createElement('div');
+    main.className = 'rd-main';
+    body.appendChild(main);
+    const stats: FounderStats = d ?? { zeroSupplyWei: null, zeroMaxSupplyWei: null, zeroBurnedWei: null, zeroStakedWei: null, adrianZeroSupply: null, simulated: false };
+    const rows = this.paintRows(main, founderRows(stats));
+    const status = founderStatus(stats);
+    const st = document.createElement('div');
+    st.className = 'rd-status';
+    st.textContent = `> ${status}`;
+    main.appendChild(st);
+    this.qa.rows = rows;
+    this.qa.status = status;
+    this.qa.tip = null;
+    this.qa.phase = founderMissing(stats) >= 5 ? 'error' : 'ready';
   }
 
   private render(d: DashboardData | null): void {
@@ -158,19 +219,7 @@ export class DashboardPanel {
       status = 'NO WALLET SIGNAL. The rig sees a very confident nobody.';
       this.qa.phase = 'error';
     } else {
-      for (const r of dashboardRows(d)) {
-        const row = document.createElement('div');
-        row.className = r.warn ? 'rd-row warn' : 'rd-row';
-        const k = document.createElement('span');
-        k.className = 'rd-k';
-        k.textContent = r.label;
-        const v = document.createElement('span');
-        v.className = 'rd-v';
-        v.textContent = r.value;
-        row.append(k, v);
-        main.appendChild(row);
-        rows.push(`${r.label}: ${r.value}`);
-      }
+      rows.push(...this.paintRows(main, dashboardRows(d)));
       status = dashboardStatus(d);
       this.qa.phase = d.errors.length >= 3 ? 'error' : 'ready';
     }

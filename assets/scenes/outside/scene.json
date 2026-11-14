@@ -309,6 +309,7 @@
       },
       {
         "id": "hs_porch_light",
+        "keepAfterPick": "La lámpara se queda: la media nota estaba dentro; el overlay lamp_empty (flag porch_light_off) ya la pinta apagada y vacía",
         "useResponses": {
           "fence_plank": [
             "I could knock the note loose with the plank. And the bulb. And my eyebrows. There's a switch, Dex."
@@ -823,6 +824,7 @@
       },
       {
         "id": "hs_mailbox",
+        "keepAfterPick": "El buzón se queda: la factura y el sobre estaban dentro; el overlay mailbox_empty (flag found_envelope) ya lo pinta vacío",
         "useResponses": {
           "mystery_envelope": [
             "I almost put the envelope back in the mailbox. No. Finders keepers. That's the law. Roughly."
@@ -2662,6 +2664,7 @@
       },
       {
         "id": "hs_fence",
+        "keepAfterPick": "La valla se queda: solo sale un tablón; los overlays plank_loose/fence_gap (flag has_plank) pintan el hueco",
         "useResponses": {
           "_default": [
             "I lean it against the fence. The fence doesn't need help. It needs a plank back.",

@@ -558,7 +558,7 @@ paso como máximo por capítulo** y ver contenido extra; nunca saltarse un capí
 | 1–2 | AdrianZERO (rama VIP de Penny) | Penny revela la trampilla del felpudo: atajo al sótano que ahorra la veleta y la pizza | La trampilla tiene el mismo lector y la misma cerradura que la escotilla: pide keycard y terminal_key. No da la antena (el cap. 3 la pide; desde el sótano se sube al lobby) |
 | 2 | AdrianPunks / AdrianZERO | Pósters del lobby (existen; A3.10: y el logro `holder_wall`, también con el graffiti del cap. 1) | — |
 | 2 | ≥ 1000 $ZERO | Panel TraitLab del mining rig (A3.10: dashboard real con saldo, AdrianZERO y traits; logro `holder_rig` y la nota del sysadmin con el PIN del Ledger, que en el cap. 3 ahorra saber el cumpleaños de Gerald) | No abre nada que no se pueda abrir sin él |
-| 2 | Golden Token (en juego) | Founder Mode con stats reales del Diamond (si hay wallet; si no, stats de ejemplo) | — |
+| 2 | Golden Token (en juego) | Founder Mode con stats reales del Diamond (A9.13: vistas públicas leídas de Base, no hace falta wallet: supply, máximo, quemado y staking de $ZERO y AdrianZERO acuñados; sin red, «—») | Nunca cifras de ejemplo con aspecto de reales |
 | 2–5 | Caja de floppies (holder) | Secretos de los CRT (lobby, upstairs, basement, clinic, treatment room; existen) | — |
 | 4 | AdrianZERO (rama VIP de Satoshi) | Hoy da `treatment_room_unlocked` y `chapter_4_complete` y se salta todo el capítulo: **se cambia** a «Chad te respeta: empiezas el duelo en la última ronda» | No autoriza directamente el treatment room |
 | 5 | Wallet conectada | `monitorReveal` con el historial real: «Patient Zero eres TÚ, jugador» | Sin wallet, expediente ficticio de Dex: el giro funciona igual |

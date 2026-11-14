@@ -55,6 +55,7 @@
     "hotspots": [
       {
         "id": "hs_reception_desk",
+        "keepAfterPick": "El mostrador se queda: la hoja de registro no está dibujada aparte en el fondo; el PICK de después lo dice («The desk looks underdressed without it»)",
         "name": "Reception Desk",
         "bounds": {
           "x": 72.4,
@@ -625,6 +626,7 @@
       },
       {
         "id": "hs_clinic_photo",
+        "hideWhenFlag": "found_clinic_photo",
         "name": "Old Photograph",
         "bounds": {
           "x": 46.5,
@@ -713,6 +715,7 @@
       },
       {
         "id": "hs_dr_coat",
+        "keepAfterPick": "La bata se queda (la lleva el Dr. Satoshi): la placa iba en el bolsillo interior",
         "useResponses": {
           "dr_satoshi_badge": [
             "I pin the badge back on the coat. Then unpin it. He lost it. I found it. That's how finding works."

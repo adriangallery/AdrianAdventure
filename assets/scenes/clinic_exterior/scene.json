@@ -566,6 +566,7 @@
       },
       {
         "id": "hs_visitor_box",
+        "keepAfterPick": "El buzón de visitas se queda: la hoja estaba dentro (no dibujada); el PICK de después dice «Empty now.»",
         "useResponses": {
           "_default": [
             "The slot scans it, thinks about it, and spits it back. Not a symptom.",
@@ -972,6 +973,7 @@
       },
       {
         "id": "hs_trash_can",
+        "keepAfterPick": "La papelera se queda: la nota y la lata estaban dentro (no dibujadas); el PICK de después lo dice",
         "useResponses": {
           "clinic_note": [
             "I almost put the note back in the trash. Day 47 deserves better."

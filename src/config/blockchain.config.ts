@@ -46,6 +46,22 @@ export const ERC20_ABI = [
   { inputs: [], name: 'decimals', outputs: [{ type: 'uint8' }], stateMutability: 'view', type: 'function' },
 ] as const;
 
+/**
+ * A9.13: vistas globales del $ZERO Diamond para Founder Mode. SOLO lectura. Cada selector se comprobó con `facets()` del
+ * DiamondLoupe y una `eth_call` contra Base el 14-nov-2026 (docs/progreso/A9.13.md); no se añaden funciones sin verificar.
+ */
+export const DIAMOND_STATS_ABI = [
+  { inputs: [], name: 'totalSupply', outputs: [{ type: 'uint256' }], stateMutability: 'view', type: 'function' },
+  { inputs: [], name: 'maxSupply', outputs: [{ type: 'uint256' }], stateMutability: 'view', type: 'function' },
+  { inputs: [], name: 'totalBurned', outputs: [{ type: 'uint256' }], stateMutability: 'view', type: 'function' },
+  { inputs: [], name: 'totalStaked', outputs: [{ type: 'uint256' }], stateMutability: 'view', type: 'function' },
+] as const;
+
+/** A9.13: `totalSupply()` del ERC721 AdrianZERO (verificado igual que el anterior) */
+export const ERC721_SUPPLY_ABI = [
+  { inputs: [], name: 'totalSupply', outputs: [{ type: 'uint256' }], stateMutability: 'view', type: 'function' },
+] as const;
+
 // ─── Diamond facet ABIs ─────────────────────────────────────
 
 /**
