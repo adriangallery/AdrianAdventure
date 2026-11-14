@@ -8,6 +8,7 @@
 // Tarda unos segundos por pista (son 27 MB de MP3). Determinista.
 import { spawnSync } from 'node:child_process';
 import { readdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { declaredLevels } from './music-levels.mjs';
 import { join, resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -95,11 +96,14 @@ export function detectKey(chromaVec) {
 
 export function analyzeAll(log = console.log) {
   const keys = {};
+  const decl = declaredLevels();
   for (const f of readdirSync(MUSIC_DIR).filter((x) => x.endsWith('.mp3')).sort()) {
     const name = f.replace(/\.mp3$/, '');
     const pcm = decode(join(MUSIC_DIR, f));
     const k = detectKey(chroma(pcm));
-    keys[name] = { tonic: k.tonic, mode: k.mode };
+    // A8.3: los niveles de intensidad llevan la tonalidad pedida (la de su tema), no la medida
+    const d = decl[name]?.key;
+    keys[name] = d ? { tonic: d.tonic, mode: d.mode } : { tonic: k.tonic, mode: k.mode };
     log(`${name}: ${NOTE_NAMES[k.tonic]} ${k.mode} (correlación ${k.score.toFixed(2)}, ${(pcm.length / SR).toFixed(0)} s)`);
   }
   return keys;

@@ -1,5 +1,7 @@
 import type Phaser from 'phaser';
 import type { MusicManager } from '@/systems/MusicManager';
+import { sceneEntryTrack, type MusicMap } from '@/systems/MusicPlanner';
+import musicMapJson from '../../assets/config/music-map.json';
 import {
   planPrefetch, prefetchBudget, sceneExits, sceneImageAssets, shortUrl,
   type ConnectionLike, type PrefetchScene, type PrefetchTask, type SceneAsset,
@@ -127,6 +129,8 @@ export class ScenePrefetcher {
       done: new Set([...this.done, ...this.failed]),
       isLoaded: (key) => this.game.textures.exists(key) || this.game.cache.audio.has(key),
       muted,
+      // A8.3: en las escenas con tema suena su nivel 0, no la pista de scene.json
+      musicFor: (id, track) => sceneEntryTrack(musicMapJson as unknown as MusicMap, id, track) ?? track,
       maxScenes: this.maxScenes,
     });
   }

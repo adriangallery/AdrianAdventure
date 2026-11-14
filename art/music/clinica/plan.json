@@ -6,9 +6,7 @@
     "clinic_exterior",
     "clinic_interior",
     "recovery_pool",
-    "treatment_room",
-    "mountain",
-    "rooftop"
+    "treatment_room"
   ],
   "pistaEquivalente": "clinical",
   "bpm": 123,
@@ -57,6 +55,202 @@
         60488,
         60488
       ]
+    },
+    "completo": {
+      "$comment": "A8.3: niveles de intensidad en UNA sola generación (misma tonalidad y tempo por construcción). Se corta en los límites de bloque (compases enteros) en assets/audio/music/<tema>-n<nivel>.mp3.",
+      "checkpoint": "A8.3",
+      "semilla": 8504,
+      "output_format": "mp3_44100_192",
+      "niveles": [
+        {
+          "nivel": 0,
+          "nombre": "calma",
+          "compases": 32,
+          "bucle": true
+        },
+        {
+          "nivel": 1,
+          "nombre": "activo",
+          "compases": 24,
+          "bucle": true
+        },
+        {
+          "nivel": 2,
+          "nombre": "tension",
+          "compases": 24,
+          "bucle": true
+        },
+        {
+          "nivel": 3,
+          "nombre": "triunfo",
+          "compases": 6,
+          "bucle": false
+        }
+      ],
+      "compases": [
+        32,
+        24,
+        24,
+        6
+      ],
+      "duraciones_ms": [
+        62439,
+        46829,
+        46829,
+        11707
+      ],
+      "chunks": [
+        {
+          "text": "[Level 0 - calm exploration]\n{calm, curious exploration: the main melody stated softly and sparsely, light percussion or none}",
+          "duration_ms": 62439,
+          "positive_styles": [
+            "1990s point-and-click adventure game music",
+            "high-quality General MIDI orchestral",
+            "instrumental",
+            "123 BPM",
+            "E minor",
+            "4/4",
+            "memorable melody",
+            "flute",
+            "celesta",
+            "harp arpeggios",
+            "soft string pad",
+            "light electronic hand percussion",
+            "fretless bass",
+            "calm"
+          ],
+          "negative_styles": [
+            "vocals",
+            "singing",
+            "voice",
+            "choir",
+            "lyrics",
+            "spoken word",
+            "rap",
+            "humming",
+            "modern EDM",
+            "dubstep",
+            "trap beat",
+            "heavy distortion",
+            "vinyl crackle",
+            "lo-fi hiss"
+          ],
+          "context_adherence": "high"
+        },
+        {
+          "text": "[Level 1 - active]\n{active: same tempo and key, the melody now over a steady drum groove and moving bass line, more notes, counter-melodies, lively}",
+          "duration_ms": 46829,
+          "positive_styles": [
+            "1990s point-and-click adventure game music",
+            "high-quality General MIDI orchestral",
+            "instrumental",
+            "123 BPM",
+            "E minor",
+            "4/4",
+            "memorable melody",
+            "flute",
+            "celesta",
+            "harp arpeggios",
+            "soft string pad",
+            "light electronic hand percussion",
+            "fretless bass",
+            "energetic, drum groove"
+          ],
+          "negative_styles": [
+            "vocals",
+            "singing",
+            "voice",
+            "choir",
+            "lyrics",
+            "spoken word",
+            "rap",
+            "humming",
+            "modern EDM",
+            "dubstep",
+            "trap beat",
+            "heavy distortion",
+            "vinyl crackle",
+            "lo-fi hiss"
+          ],
+          "context_adherence": "high"
+        },
+        {
+          "text": "[Level 2 - tension / action]\n{tension and action: same key and BPM, double-time drums, driving 16th-note ostinato, strong toms and timpani hits, staccato strings, urgent}",
+          "duration_ms": 46829,
+          "positive_styles": [
+            "1990s point-and-click adventure game music",
+            "high-quality General MIDI orchestral",
+            "instrumental",
+            "123 BPM",
+            "E minor",
+            "4/4",
+            "memorable melody",
+            "flute",
+            "celesta",
+            "harp arpeggios",
+            "soft string pad",
+            "light electronic hand percussion",
+            "fretless bass",
+            "intense, double-time drums, action"
+          ],
+          "negative_styles": [
+            "vocals",
+            "singing",
+            "voice",
+            "choir",
+            "lyrics",
+            "spoken word",
+            "rap",
+            "humming",
+            "modern EDM",
+            "dubstep",
+            "trap beat",
+            "heavy distortion",
+            "vinyl crackle",
+            "lo-fi hiss"
+          ],
+          "context_adherence": "high"
+        },
+        {
+          "text": "[Level 3 - triumph]\n{triumph: short joyful fanfare of the main melody, bright brass and glockenspiel, ends on the tonic chord}",
+          "duration_ms": 11707,
+          "positive_styles": [
+            "1990s point-and-click adventure game music",
+            "high-quality General MIDI orchestral",
+            "instrumental",
+            "123 BPM",
+            "E minor",
+            "4/4",
+            "memorable melody",
+            "flute",
+            "celesta",
+            "harp arpeggios",
+            "soft string pad",
+            "light electronic hand percussion",
+            "fretless bass",
+            "triumphant fanfare"
+          ],
+          "negative_styles": [
+            "vocals",
+            "singing",
+            "voice",
+            "choir",
+            "lyrics",
+            "spoken word",
+            "rap",
+            "humming",
+            "modern EDM",
+            "dubstep",
+            "trap beat",
+            "heavy distortion",
+            "vinyl crackle",
+            "lo-fi hiss"
+          ],
+          "context_adherence": "high"
+        }
+      ],
+      "key": "E major",
+      "$comment_key": "pedida en Mi menor; la generación salió en Mi MAYOR (medida en los 4 niveles, corr. 0,82-0,95): el motor usa la medida"
     }
   },
   "composition_plan": {
