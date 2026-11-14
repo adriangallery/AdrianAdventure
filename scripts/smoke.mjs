@@ -368,9 +368,11 @@ await step('silencio: sin música ni voces; al activar el sonido en ajustes, sí
     await p.evaluate(() => document.getElementById('save-load-overlay')?.remove());
     if (!/On/.test(label)) throw new Error(`el botón de ajustes no activó el sonido: «${label}»`);
     const music = await p.evaluate(() => window.__game.registry.get('sceneData')?.audio?.music);
+    // A8.3: en una escena con tema de niveles suena un nivel del tema (<tema>-n<k>), no la pista de scene.json
     await wait((key) => {
       const mm = window.__game.registry.get('musicManager');
-      return !mm.isMuted() && mm.currentKey === key;
+      const theme = mm.adaptiveQa().theme;
+      return !mm.isMuted() && (mm.currentKey === key || (!!theme && String(mm.currentKey).startsWith(`${theme}-n`)));
     }, music, 60000);
     await p.evaluate((key) => window.__game.registry.get('voiceSystem')?.play('smoke voice line', key), voiceKey);
     await new Promise((r) => setTimeout(r, 3000));

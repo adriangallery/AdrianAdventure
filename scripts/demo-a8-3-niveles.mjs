@@ -127,7 +127,12 @@ async function go(scene, label) {
 }
 
 const LEVELS = MAP.themes?.dex?.levels ?? [];
-const setReg = (k, v) => page.evaluate(([k, v]) => window.__game.registry.set(k, v), [k, v]);
+// el diario reescribe `musicGoalsLeft` al refrescarse: lo forzado se reafirma cada 100 ms dentro de la página
+await page.evaluate(() => {
+  window.__demoForce = {};
+  setInterval(() => { for (const [k, v] of Object.entries(window.__demoForce)) window.__game.registry.set(k, v); }, 100);
+});
+const setReg = (k, v) => page.evaluate(([k, v]) => { window.__demoForce[k] = v; window.__game.registry.set(k, v); }, [k, v]);
 async function waitLevel(n, label, ms = 30000) {
   const key = LEVELS[n];
   if (!key) { problems.push(`dex no tiene nivel ${n}`); return null; }
