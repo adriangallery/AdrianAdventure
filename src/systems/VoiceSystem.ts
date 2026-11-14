@@ -2,6 +2,8 @@ import Phaser from 'phaser';
 import type { MusicManager } from '@/systems/MusicManager';
 import { voicePath } from '@/config/voice.config';
 import { shouldFetchAudio } from '@/systems/AudioPolicy';
+import { getVoiceLevel, voiceGainFor } from '@/systems/Settings';
+import { voiceClipVolume } from '@/systems/AudioMix';
 
 /**
  * A4.5: la música (y el ambiente, A4.4) bajan con cualquier clip de voz, por corto que sea (antes solo con frases de 60
@@ -43,6 +45,9 @@ export class VoiceSystem {
   private analyser: AnalyserNode | null = null;
   private levelBuf: Float32Array<ArrayBuffer> | null = null;
   private analysed: Phaser.Sound.BaseSound | null = null;
+
+  /** A4.8: volumen del último clip (QA): VOICE_BOOST × nivel de voces / SFX_GAIN; nunca depende de la música */
+  private lastClipVolume: number | null = null;
 
   /** Text→voiceKey lookup. */
   private textMap = new Map<string, string>();
@@ -130,7 +135,7 @@ export class VoiceSystem {
       await new Promise<void>((resolve) => {
         if (this.sequenceGen !== gen) { resolve(); return; }
         try {
-          this.currentSound = this.scene.sound.add(key, { volume: 1.0 });
+          this.currentSound = this.scene.sound.add(key, { volume: this.clipVolume() });
           this.currentSound.once('complete', () => {
             this.currentSound?.destroy();
             this.currentSound = null;
@@ -143,6 +148,23 @@ export class VoiceSystem {
       });
     }
     if (this.sequenceGen === gen) this.unduckMusic();
+  }
+
+  /** A4.8: volumen de cada clip de voz según el ajuste «Voices» (High = ganancia 1,0 × VOICE_BOOST) */
+  private clipVolume(): number {
+    this.lastClipVolume = voiceClipVolume(voiceGainFor(getVoiceLevel()));
+    return this.lastClipVolume;
+  }
+
+  /** A4.8: aplica el ajuste «Voices» al clip que suena (el siguiente ya lo coge solo) */
+  applyVoiceLevel(): void {
+    const vol = this.clipVolume();
+    try { (this.currentSound as unknown as { setVolume?: (v: number) => void } | null)?.setVolume?.(vol); } catch { /* sin clip */ }
+  }
+
+  /** A4.8 (QA): volumen del último clip de voz (null si aún no ha sonado ninguno) */
+  qaClipVolume(): number | null {
+    return this.lastClipVolume;
   }
 
   setEnabled(enabled: boolean): void {
@@ -189,7 +211,9 @@ export class VoiceSystem {
     an.getFloatTimeDomainData(this.levelBuf);
     let sum = 0;
     for (let i = 0; i < this.levelBuf.length; i++) sum += this.levelBuf[i] * this.levelBuf[i];
-    return Math.sqrt(sum / this.levelBuf.length);
+    // A4.8: el analizador va tras el volumen del clip (VOICE_BOOST): se divide para que la boca siga igual que antes
+    const vol = this.lastClipVolume && this.lastClipVolume > 0 ? this.lastClipVolume : 1;
+    return Math.sqrt(sum / this.levelBuf.length) / vol;
   }
 
   private analyserFor(sound: Phaser.Sound.BaseSound): AnalyserNode | null {
@@ -217,7 +241,7 @@ export class VoiceSystem {
     if (shouldDuck) this.duckMusic();
 
     try {
-      this.currentSound = this.scene.sound.add(key, { volume: 1.0 });
+      this.currentSound = this.scene.sound.add(key, { volume: this.clipVolume() });
       const secs = this.currentSound.duration;
       if (this.clip.key === key || this.clip.key === null) {
         this.clip = { key, durationMs: Number.isFinite(secs) && secs > 0 ? secs * 1000 : null, loading: false };
