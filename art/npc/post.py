@@ -96,7 +96,8 @@ def mode_downscale(img, tw, th):
 def palette_of(paths):
     cols = Counter()
     for p in paths:
-        a = rgba(p)
+        # (ruta, caja) = solo ese recorte (p. ej. el mono pintado en el fondo de la escena)
+        a = rgba(p[0])[p[1][1]:p[1][3], p[1][0]:p[1][2]] if isinstance(p, tuple) else rgba(p)
         for c in a.reshape(-1, 4):
             if c[3] > 0:
                 cols[tuple(int(v) for v in c[:3])] += 1
@@ -207,8 +208,9 @@ def side_by_side(frames, ref, path, z=8, bg=(120, 150, 120, 255)):
 CONFIG = {
     'penny': dict(src='penny_a.png', h=103, pal=['assets/sprites/npcs/receptionist.png', 'assets/sprites/npcs/receptionist_talk.png'],
                   colors=None, head=(0, 22), face=(12, 26), cool_from=70, out='assets/sprites/npcs/receptionist', ref='assets/sprites/player/dex2d/idle_0.png'),
-    'chad': dict(src='chad_a.png', h=44, w=48, pal=['assets/sprites/player/Ape-Idle-1.png'],
-                 colors=40, head=(0, 22), out='art/npc/candidatos/chad', ref='assets/sprites/player/dex2d/idle_0.png', breathe=True),
+    'chad': dict(src='chad_a.png', h=44, w=48, pal=['assets/sprites/player/Ape-Idle-1.png',
+                                                    ('assets/scenes/recovery_pool/background.png', (2290, 760, 2600, 1020))],
+                 colors=None, head=(10, 30), face=(14, 34), mouth=(19, 17, 24), out='art/npc/candidatos/chad', ref='assets/sprites/player/dex2d/idle_0.png', breathe=True),
 }
 
 
@@ -250,6 +252,17 @@ def run(name):
         b = blink_from(base, C['head'], darkest)
         if b is not None:
             frames['_blink'] = b
+    if 'mouth' in C:
+        # boca dibujada como raya oscura (Chad): abrir = oscurecer 2 filas por debajo de la raya (y 1 fila, medio abierta)
+        my, mx0, mx1 = C['mouth']
+        t1 = base.copy(); t2 = base.copy()
+        for x in range(mx0, mx1 + 1):
+            t1[my + 1, x, :3] = darkest
+            t2[my + 1, x, :3] = darkest
+            if mx0 < x < mx1:
+                t1[my + 2, x, :3] = darkest
+        frames['_talk'] = t1
+        frames['_talk1'] = t2
     if C.get('breathe'):
         # respirar: el pecho (mitad de arriba) sube 1 px en los fotogramas 1 y 2; 3 = como 1
         br = base.copy(); hh = base.shape[0] // 2

@@ -1280,7 +1280,13 @@
     ],
     "triggers": []
   },
-  "npcs": [],
+  "npcs": [
+    {
+      "id": "npc_chad",
+      "name": "Chad",
+      "position": { "x": 65.87, "y": 87.67 }
+    }
+  ],
   "dialogues": {
     "chad_fud": {
       "id": "chad_fud",
