@@ -60,7 +60,7 @@ function decodeBuf(buf) {
 }
 function encode(x, mp3) {
   const pcm = Buffer.from(x.buffer, x.byteOffset, x.byteLength);
-  const r = spawnSync('ffmpeg', ['-loglevel', 'error', '-y', '-f', 'f32le', '-ar', String(SR), '-ac', '1', '-i', '-', '-codec:a', 'libmp3lame', '-q:a', '2', mp3], { input: pcm });
+  const r = spawnSync('ffmpeg', ['-loglevel', 'error', '-y', '-f', 'f32le', '-ar', String(SR), '-ac', '1', '-i', '-', '-codec:a', 'libmp3lame', '-q:a', '5', mp3], { input: pcm });
   if (r.status !== 0) throw new Error(`ffmpeg no pudo escribir ${mp3}`);
 }
 const peak = (x) => x.reduce((a, v) => Math.max(a, Math.abs(v)), 0);
