@@ -1197,6 +1197,10 @@
         {
           "text": "[Requires AdrianZERO] I have VIP access.",
           "next": "vip_access",
+          "when": [
+            "!treatment_room_unlocked",
+            "!satoshi_vip"
+          ],
           "gate": {
             "type": "ERC721",
             "contract": "0x6e369bf0e4e0c106192d606fb6d85836d684da75",
@@ -1301,63 +1305,22 @@
     },
     "vip_access": {
       "speaker": "Dr. Satoshi",
-      "text": "Ah, a holder. The blockchain doesn't lie. VIP authorization granted. But the treatment room has a dual-lock — you'll still need the physical key. Adrian was paranoid about security. Said smart contracts can be exploited, but a deadbolt can't. Find the key, and the room is yours.",
+      "text": "Ah, a holder. The blockchain doesn't lie. I'll tell Chad you're with me. He respects bags. He'll skip the warm-up, but you still have to beat him.",
       "onEnter": [
         {
           "op": "setFlag",
-          "flag": "treatment_room_unlocked",
+          "flag": "satoshi_vip",
           "value": true
         },
         {
           "op": "setFlag",
-          "flag": "chapter_4_complete",
+          "flag": "satoshi_needs_chad",
           "value": true
         },
         {
-          "op": "removeItem",
-          "id": "keycard"
-        },
-        {
-          "op": "removeItem",
-          "id": "patient_wristband"
-        },
-        {
-          "op": "removeItem",
-          "id": "clinic_note"
-        },
-        {
-          "op": "removeItem",
-          "id": "energy_drink"
-        },
-        {
-          "op": "removeItem",
-          "id": "rubber_duck"
-        },
-        {
-          "op": "removeItem",
-          "id": "pepememe"
-        },
-        {
-          "op": "removeItem",
-          "id": "glasses_3d"
-        },
-        {
-          "op": "removeItem",
-          "id": "marked_map"
-        }
-      ],
-      "onComplete_DISABLED": [
-        {
-          "op": "say",
-          "text": "I hear a click from the treatment room door. The card reader turns green."
-        },
-        {
-          "op": "achievement",
-          "text": "Chapter 4 Complete: The Mountain Path"
-        },
-        {
-          "op": "wait",
-          "ms": 3500
+          "op": "setFlag",
+          "flag": "satoshi_pool_hint",
+          "value": true
         }
       ],
       "next": "hub"
@@ -1472,6 +1435,15 @@
     "chip_auth_2": {
       "speaker": "Dr. Satoshi",
       "text": "Authorization granted. The door has a dual lock, though. You'll still need a physical key. Adrian said smart contracts get exploited. Deadbolts don't.",
+      "next": "chip_auth_wallet"
+    },
+    "chip_auth_wallet": {
+      "speaker": "Dr. Satoshi",
+      "text": "One more thing. The monitor in there reads whatever wallet you bring. Bring yours, if you dare.",
+      "next": "chip_auth_pockets"
+    },
+    "chip_auth_pockets": {
+      "text": "I leave behind what I've already used up. Lighter pockets. Same heavy bags.",
       "next": "hub"
     },
     "evidence_lore": {

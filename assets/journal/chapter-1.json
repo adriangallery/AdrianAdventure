@@ -8,6 +8,7 @@
     { "id": "g1_inside", "text": "Get past the front door.", "doneWhen": "door_unlocked" }
   ],
   "notes": [
+    { "id": "n1_badge", "text": "Badge available — connect a wallet to keep it (optional).", "shownWhen": ["chapter_1_complete", "!wallet_connected"] },
     { "id": "n1_half_a", "text": "Behind the porch light, once it cooled down: half a note. '73..' The other half 'is with the birds. They never sell.'", "shownWhen": "found_note_half_a" },
     { "id": "n1_half_b", "text": "Magpie nest, knocked down with a fence plank: the other half, wrapped in foil. '..14'. Kept the plank. Might need it.", "shownWhen": "found_note_half_b" },
     { "id": "n1_code", "text": "Both halves taped together: 7314. 'If you found both halves, you're patient enough. — A.' He hid the code in two pieces. On purpose.", "shownWhen": "found_code_note" },
