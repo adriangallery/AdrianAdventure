@@ -142,6 +142,8 @@ export class MusicManager {
    */
   private duckGain: GainNode;
   private duckSources = new Set<string>();
+  /** A4.8: limitador maestro (salida de todo el audio del juego; las demos graban de aquí). null sin Web Audio */
+  private limiter: DynamicsCompressorNode | null = null;
   private currentTrack: ManagedTrack | null = null;
   private fadingTrack: ManagedTrack | null = null;
   private currentKey: string | null = null;
@@ -158,6 +160,7 @@ export class MusicManager {
     // A4.8: efectos, stingers y voces (maestro de Phaser) a SFX_GAIN, y todo por el limitador maestro (sin clipping)
     game.sound.volume = SFX_GAIN;
     const limiter = masterLimiter(this.context, (sm as unknown as { masterVolumeNode?: AudioNode }).masterVolumeNode ?? null);
+    this.limiter = limiter;
     // Master gain → duck gain (A2.10) → limitador (A4.8) → destination
     this.duckGain = this.context.createGain();
     this.duckGain.connect(limiter ?? this.context.destination);
@@ -510,6 +513,11 @@ export class MusicManager {
   /** Whether unlockFromGesture() has been called in this page load. */
   isUnlockedThisSession(): boolean {
     return this.unlockedThisSession;
+  }
+
+  /** A4.8 (demos): nodo de salida de todo el audio (limitador maestro; sin él, la salida de la música) */
+  outputNode(): AudioNode {
+    return this.limiter ?? this.duckGain;
   }
 
   /** A4.8 (QA): volumen de la música de los ajustes (sin silencio ni ducking) */
