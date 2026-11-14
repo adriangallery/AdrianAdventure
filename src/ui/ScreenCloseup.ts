@@ -59,7 +59,7 @@ export class ScreenCloseup {
   private readonly onKey = (e: KeyboardEvent) => {
     if (e.key === 'Escape' || e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
-      e.stopPropagation();
+      e.stopImmediatePropagation();
       if (e.key !== 'Escape' && this.typed < this.full.length) this.finishTyping();
       else this.close();
     }

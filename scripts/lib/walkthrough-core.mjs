@@ -101,6 +101,33 @@ export function check(expect, st, ctx = {}) {
   if (expect.audio) f.push(...checkAudio(expect.audio, st, ctx.before));
   // A3.10: dashboard del Mining Rig
   if (expect.dashboard) f.push(...checkDashboard(expect.dashboard, st));
+  // A2.19: líneas que salieron en una pantalla de la escena (o en su primer plano)
+  if (expect.screen) f.push(...checkScreen(expect.screen, st));
+  return f;
+}
+
+/**
+ * A2.19: `expect.screen` contra `st.lastScreens` (las líneas de pantalla del paso: id, mode screen|closeup, reason, display):
+ *  - `shown: false` = ninguna línea salió en una pantalla;
+ *  - `lines`: [{ id, contains?, mode? }] — cada una tiene que coincidir con alguna línea del paso (`contains` sin mayúsculas);
+ *  - además el primer plano tiene que estar cerrado al acabar el paso (`st.screen.closeup.open` false).
+ */
+export function checkScreen(exp, st) {
+  const f = [];
+  if (st.lastScreens === undefined) return ['el juego no expone `lastScreens` en state() (API de QA anterior a A2.19)'];
+  const got = st.lastScreens ?? [];
+  if (st.screen?.closeup?.open) f.push('el primer plano de la pantalla sigue abierto tras el paso');
+  const fmt = () => got.map((g) => `${g.id}/${g.mode}: ${String(g.display).slice(0, 40)}`).join(' | ') || 'ninguna';
+  if (exp.shown === false) {
+    if (got.length) f.push(`salieron líneas en pantalla y no debían (${fmt()})`);
+    return f;
+  }
+  for (const want of exp.lines ?? []) {
+    const hit = got.find((g) => g.id === want.id
+      && (want.mode === undefined || g.mode === want.mode)
+      && (want.contains === undefined || String(g.display).toLowerCase().includes(String(want.contains).toLowerCase())));
+    if (!hit) f.push(`no salió en la pantalla «${want.id}»${want.mode ? ` (${want.mode})` : ''} «${want.contains ?? ''}» (salieron: ${fmt()})`);
+  }
   return f;
 }
 

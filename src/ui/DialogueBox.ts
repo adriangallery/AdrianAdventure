@@ -19,6 +19,8 @@ export type SpeakerHeadProvider = (who: string) => (HeadAnchor & { id: string })
 /** A2.3 (QA): texto en pantalla, dónde está y en qué modo. */
 export interface SpeechState {
   text: string;
+  /** A2.19: subtítulo discreto (la línea sale también escrita en la pantalla de la máquina) */
+  discreet?: boolean;
   speaker: string | null;
   /** Centro horizontal y borde superior del bloque de texto (pantalla) */
   x: number;
@@ -269,6 +271,7 @@ export class DialogueBox {
       mode: cur.mode,
       kind: cur.kind,
       head: cur.head ? { ...cur.head } : null,
+      discreet: this.discreet,
     };
   }
 

@@ -874,6 +874,13 @@ export function installQa(game: Phaser.Game): void {
           continue;
         }
         if (ui().getChoicePanel().isAwaitingChoice()) throw new QaError('error', 'runScript: el script pide elegir en un diálogo (no hay respuestas en este paso)');
+        // A2.19: el primer plano de una pantalla se lee un momento y se cierra con su X
+        if (registry.get('screenCloseupOpen')) {
+          await sleep(dashboardHoldMs);
+          (document.getElementById('scrclose-close') as HTMLButtonElement | null)?.click();
+          await sleep(100);
+          continue;
+        }
         // Fuera de cinemática los textos esperan un toque, como siempre
         if (registry.get('dialogueShowing') && !registry.get('cinematicMode')) gs().qaSyntheticTap();
         await sleep(100);
