@@ -183,6 +183,14 @@ async function film(label, { esc = false, stills = {} } = {}) {
 async function finalState() {
   await page.waitForFunction(() => window.__qa.state().ready, { timeout: 20000, polling: 100 }).catch(() => {});
   await new Promise((r) => setTimeout(r, 1200));
+  // Tras la cinemática puede quedar una frase suelta de Dex (A9.10: «I leave behind…» al cerrar capítulo): se espera a que acabe
+  // (los textos fuera de cinemática esperan al jugador: se pasan con Esc, que no hace andar a Dex como un toque)
+  for (let i = 0; i < 12; i++) {
+    const busy = await page.evaluate(() => window.__qa.state().busy?.length ?? 0);
+    if (!busy) break;
+    await page.keyboard.press('Escape');
+    await new Promise((r) => setTimeout(r, 600));
+  }
   return page.evaluate(() => {
     const st = window.__qa.state();
     return { scene: st.scene, flags: st.flags, player: st.player, facing: st.facing, cinematic: st.cinematic, busy: st.busy };
