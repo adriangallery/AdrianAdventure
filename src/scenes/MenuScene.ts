@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { migrateSave } from '@/systems/SaveMigration';
 import { collectLocalCandidates, pickContinue, cloudBeatsLocal, type ContinueCandidate } from '@/systems/SaveProgress';
+import { trackNewGame, trackContinue, trackSessionStart, setWalletProbe } from '@/systems/PlayStats';
 import { getWalletState } from '@/web3/wallet';
 import { loadRemoteSlots } from '@/web3/wallet-save';
 import type { MusicManager } from '@/systems/MusicManager';
@@ -53,6 +54,9 @@ export class MenuScene extends Phaser.Scene {
 
   create(): void {
     bindShutdown(this); // A1.10: Phaser no llama a shutdown() solo
+    // A9.17: estadísticas anónimas (una vez por carga; cartera = solo «sí/no»)
+    setWalletProbe(() => getWalletState().connected);
+    trackSessionStart();
     this.buildMenu();
     this.resizeHandler = () => {
       if (!this.scene.isActive('MenuScene')) return;
@@ -134,6 +138,7 @@ export class MenuScene extends Phaser.Scene {
     const startGame = (loadSave: boolean) => {
       if (loadSave) {
         if (!chosen) return;
+        trackContinue(); // A9.17
         const state = structuredClone(chosen.state);
         if (!state.firedTriggers) state.firedTriggers = [];
         if (!state.dialogueProgress) state.dialogueProgress = {};
@@ -145,6 +150,7 @@ export class MenuScene extends Phaser.Scene {
           this.registry.set('spawnOverride', { x: state.playerPosition.pctX, y: state.playerPosition.pctY });
         }
       } else {
+        trackNewGame(); // A9.17
         this.registry.remove('gameState');
       }
       this.cameras.main.fadeOut(400, 0, 0, 0);
