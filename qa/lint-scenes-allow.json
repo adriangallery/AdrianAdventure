@@ -118,5 +118,6 @@
     "scene": "upstairs",
     "id": "terminal_key",
     "reason": "A9.7: la puerta de tratamiento (clinic_interior.hs_treatment_door) pide ifHasItem terminal_key cada vez que se entra, también en el cap. 5 al volver de la clínica; retirarla dejaría a Dex fuera de treatment_room."
-  }
+  },
+  {"rule": "p", "scene": "memelab", "id": "hs_pepememe", "reason": "pendiente A3.11: la hoja del Rare Pepe sale de la impresora y delante del marco del encerado; el parche automático desde el fondo dejaba mancha (probado con relleno por difusión y por filas/columnas). Falta repintarla a mano antes de ocultar el hotspot."}
 ]

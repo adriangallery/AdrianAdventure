@@ -56,6 +56,7 @@
     "hotspots": [
       {
         "id": "hs_main_computer",
+        "keepAfterPick": "El CRT se queda: la hoja impresa sale de la impresora (no está dibujada) y el disquete vuelve al bolsillo",
         "useResponses": {
           "_default": [
             "I look for somewhere to put it on the CRT. The CRT has no idea what that is.",
@@ -368,6 +369,7 @@
       },
       {
         "id": "hs_left_desk",
+        "keepAfterPick": "La mesa se queda: el disquete y el papel estaban debajo de los papeles/en el cajón (no dibujados); el PICK de después lo dice («Nothing left but receipts»)",
         "name": "Small Desk",
         "bounds": {
           "x": 47.8,
@@ -729,6 +731,7 @@
       },
       {
         "id": "hs_armchair",
+        "keepAfterPick": "El sillón se queda: la pegatina del mono aparece en el bolsillo al hablarle (secreto), no estaba dibujada",
         "name": "Old Armchair",
         "bounds": {
           "x": 39.7,
