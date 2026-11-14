@@ -1,0 +1,141 @@
+{
+  "$comment": "A8.2 parte 2. Lo lee scripts/audio/eleven-music.mjs. `muestra` = 1 min (A+B); `minimo` = bucle de 2 min con los MISMOS bloques y estilos, solo cambian las duraciones (compases enteros). Mismo modelo y semilla.",
+  "tema": "dex",
+  "titulo": "Tema de Dex / exterior de AdrianLAB",
+  "escenas": [
+    "outside",
+    "(motivo de Dex para todo el juego)"
+  ],
+  "pistaEquivalente": "retro-adventure",
+  "bpm": 90,
+  "tonalidad": "Re mayor",
+  "key": "D major",
+  "compas": "4/4",
+  "instrumentacion": [
+    "clarinet (lead melody)",
+    "pizzicato strings",
+    "marimba",
+    "glockenspiel",
+    "upright bass",
+    "light brushed drum kit",
+    "small brass section (only in B)"
+  ],
+  "prompt": "Whimsical, sunny theme for a 1990s point-and-click adventure game: a curious young hero arrives at a quirky laboratory. Catchy, hummable clarinet melody that is easy to whistle, playful pizzicato strings, marimba and glockenspiel, upright bass, brushed drums. High-quality General MIDI orchestral sound, light and bouncy. 90 BPM, D major, 4/4. Instrumental only, seamless loop.",
+  "modelo": "music_v2_5",
+  "semilla": 8201,
+  "output_format": "mp3_44100_128",
+  "secciones": {
+    "A": {
+      "energia": "calm",
+      "descripcion": "calm: clarinet states the main melody over pizzicato strings and marimba, sparse brushed drums, relaxed and curious"
+    },
+    "B": {
+      "energia": "intense",
+      "descripcion": "more energy: same melody played by the full ensemble with a small brass section answering, bouncier bass and drums, glockenspiel sparkles, cadence back to D major so it loops"
+    }
+  },
+  "partes": {
+    "muestra": {
+      "compases": [
+        11,
+        11
+      ],
+      "duraciones_ms": [
+        29333,
+        29333
+      ]
+    },
+    "minimo": {
+      "compases": [
+        23,
+        23
+      ],
+      "duraciones_ms": [
+        61333,
+        61333
+      ]
+    }
+  },
+  "composition_plan": {
+    "chunks": [
+      {
+        "text": "[A - calm]\n{calm: clarinet states the main melody over pizzicato strings and marimba, sparse brushed drums, relaxed and curious}",
+        "duration_ms": 29333,
+        "positive_styles": [
+          "1990s point-and-click adventure game music",
+          "high-quality General MIDI orchestral",
+          "instrumental",
+          "90 BPM",
+          "D major",
+          "4/4",
+          "memorable melody",
+          "loopable",
+          "clarinet",
+          "pizzicato strings",
+          "marimba",
+          "glockenspiel",
+          "upright bass",
+          "light brushed drum kit",
+          "small brass section",
+          "calm"
+        ],
+        "negative_styles": [
+          "vocals",
+          "singing",
+          "voice",
+          "choir",
+          "lyrics",
+          "spoken word",
+          "rap",
+          "humming",
+          "modern EDM",
+          "dubstep",
+          "trap beat",
+          "heavy distortion",
+          "vinyl crackle",
+          "lo-fi hiss"
+        ],
+        "context_adherence": "high"
+      },
+      {
+        "text": "[B - more energy]\n{more energy: same melody played by the full ensemble with a small brass section answering, bouncier bass and drums, glockenspiel sparkles, cadence back to D major so it loops}",
+        "duration_ms": 29333,
+        "positive_styles": [
+          "1990s point-and-click adventure game music",
+          "high-quality General MIDI orchestral",
+          "instrumental",
+          "90 BPM",
+          "D major",
+          "4/4",
+          "memorable melody",
+          "loopable",
+          "clarinet",
+          "pizzicato strings",
+          "marimba",
+          "glockenspiel",
+          "upright bass",
+          "light brushed drum kit",
+          "small brass section",
+          "more energy"
+        ],
+        "negative_styles": [
+          "vocals",
+          "singing",
+          "voice",
+          "choir",
+          "lyrics",
+          "spoken word",
+          "rap",
+          "humming",
+          "modern EDM",
+          "dubstep",
+          "trap beat",
+          "heavy distortion",
+          "vinyl crackle",
+          "lo-fi hiss"
+        ],
+        "context_adherence": "high"
+      }
+    ]
+  }
+}

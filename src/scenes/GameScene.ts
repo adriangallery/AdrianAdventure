@@ -612,7 +612,9 @@ export class GameScene extends Phaser.Scene {
     }
     if (this.seatedDex) {
       const sd = this.seatedDex;
-      const show = (this.gameState.flags[sd.flag] ?? false) && this.player.getCostume() === 'player';
+      // A9.9: siempre que la flag esté puesta, con o sin disfraz (al sentarse, el sillón quita el disfraz de mono; si
+      // se lo vuelve a poner sentado, se sigue viendo a Dex sentado: no hay pose sentada del mono y no puede desaparecer)
+      const show = this.gameState.flags[sd.flag] ?? false;
       if (sd.img.visible !== show) sd.img.setVisible(show);
       // habla: boca y mano arriba en fotogramas alternos de 140 ms (como talk_r del rig)
       const talking = show && this.playerAnimContext().talking && Math.floor(this.time.now / 140) % 2 === 1;

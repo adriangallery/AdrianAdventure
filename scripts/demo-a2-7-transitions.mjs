@@ -14,7 +14,7 @@ const FOCUS = {
   outside: { mailbox_empty: [60.25, 76.7], lamp_empty: [32.07, 43.72] },
   lobby: { plant_revived: [42.2, 63.8] },
   server_room: { glass_broken: [84.53, 66.0], tiles_open: [48.29, 89.97], lights_out: [50, 50] },
-  rooftop: { vane_flipped: [72.0, 23.44] }, // F1: veleta del fondo nuevo
+  rooftop: { vane_flipped: [72.0, 18.71] }, // F1: veleta del fondo nuevo (A9.12: solo la B y la flecha)
   clinic_interior: { no_photo: [48.68, 76.48] },
   upstairs: { no_energy_drink: [45.5, 89.06] },
 };

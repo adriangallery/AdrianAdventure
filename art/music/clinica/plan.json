@@ -1,0 +1,142 @@
+{
+  "$comment": "A8.2 parte 2. Lo lee scripts/audio/eleven-music.mjs. `muestra` = 1 min (A+B); `minimo` = bucle de 2 min con los MISMOS bloques y estilos, solo cambian las duraciones (compases enteros). Mismo modelo y semilla.",
+  "tema": "clinica",
+  "titulo": "Clínica / montaña",
+  "escenas": [
+    "clinic_exterior",
+    "clinic_interior",
+    "recovery_pool",
+    "treatment_room",
+    "mountain",
+    "rooftop"
+  ],
+  "pistaEquivalente": "clinical",
+  "bpm": 123,
+  "tonalidad": "Mi menor",
+  "key": "E minor",
+  "compas": "4/4",
+  "instrumentacion": [
+    "flute (lead)",
+    "celesta",
+    "harp arpeggios",
+    "soft string pad",
+    "light electronic hand percussion",
+    "fretless bass"
+  ],
+  "prompt": "Cool, airy and slightly uncanny theme for a 1990s point-and-click adventure game: a spotless mountain clinic with fresh alpine air and something odd behind the smiles. Recognizable flute melody, celesta and harp arpeggios, soft string pad, light electronic hand percussion, fretless bass. High-quality General MIDI light orchestral sound. 123 BPM, E minor, 4/4. Instrumental only, seamless loop.",
+  "modelo": "music_v2_5",
+  "semilla": 8204,
+  "output_format": "mp3_44100_128",
+  "secciones": {
+    "A": {
+      "energia": "calm",
+      "descripcion": "calm: harp and celesta arpeggios over a soft string pad, flute plays the melody gently, almost no percussion, clean and sterile"
+    },
+    "B": {
+      "energia": "intense",
+      "descripcion": "more energy: hand percussion groove and fretless bass enter, strings swell, flute and celesta double the melody, a hint of unease, cadence back to E minor so it loops"
+    }
+  },
+  "partes": {
+    "muestra": {
+      "compases": [
+        15,
+        15
+      ],
+      "duraciones_ms": [
+        29268,
+        29268
+      ]
+    },
+    "minimo": {
+      "compases": [
+        31,
+        31
+      ],
+      "duraciones_ms": [
+        60488,
+        60488
+      ]
+    }
+  },
+  "composition_plan": {
+    "chunks": [
+      {
+        "text": "[A - calm]\n{calm: harp and celesta arpeggios over a soft string pad, flute plays the melody gently, almost no percussion, clean and sterile}",
+        "duration_ms": 29268,
+        "positive_styles": [
+          "1990s point-and-click adventure game music",
+          "high-quality General MIDI orchestral",
+          "instrumental",
+          "123 BPM",
+          "E minor",
+          "4/4",
+          "memorable melody",
+          "loopable",
+          "flute",
+          "celesta",
+          "harp arpeggios",
+          "soft string pad",
+          "light electronic hand percussion",
+          "fretless bass",
+          "calm"
+        ],
+        "negative_styles": [
+          "vocals",
+          "singing",
+          "voice",
+          "choir",
+          "lyrics",
+          "spoken word",
+          "rap",
+          "humming",
+          "modern EDM",
+          "dubstep",
+          "trap beat",
+          "heavy distortion",
+          "vinyl crackle",
+          "lo-fi hiss"
+        ],
+        "context_adherence": "high"
+      },
+      {
+        "text": "[B - more energy]\n{more energy: hand percussion groove and fretless bass enter, strings swell, flute and celesta double the melody, a hint of unease, cadence back to E minor so it loops}",
+        "duration_ms": 29268,
+        "positive_styles": [
+          "1990s point-and-click adventure game music",
+          "high-quality General MIDI orchestral",
+          "instrumental",
+          "123 BPM",
+          "E minor",
+          "4/4",
+          "memorable melody",
+          "loopable",
+          "flute",
+          "celesta",
+          "harp arpeggios",
+          "soft string pad",
+          "light electronic hand percussion",
+          "fretless bass",
+          "more energy"
+        ],
+        "negative_styles": [
+          "vocals",
+          "singing",
+          "voice",
+          "choir",
+          "lyrics",
+          "spoken word",
+          "rap",
+          "humming",
+          "modern EDM",
+          "dubstep",
+          "trap beat",
+          "heavy distortion",
+          "vinyl crackle",
+          "lo-fi hiss"
+        ],
+        "context_adherence": "high"
+      }
+    ]
+  }
+}
