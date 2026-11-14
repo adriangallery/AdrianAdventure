@@ -30,6 +30,14 @@
       "background": "8b5d9e129e45bf31c8bd123f5ff59ab7b94a3f9858eecc34e323918943774599",
       "overlay": "0ecafd8287dea25c8515fcbb4affc0bc47be3f7e7b8616c855931c112002180f"
     },
+    "outside/lambo": {
+      "background": "8b5d9e129e45bf31c8bd123f5ff59ab7b94a3f9858eecc34e323918943774599",
+      "overlay": "2807e0fcdfff23ab8e9903338e4a0e64d7356d0827a27ba8fc5bd06d8fdbea27"
+    },
+    "outside/lambo_lights": {
+      "background": "8b5d9e129e45bf31c8bd123f5ff59ab7b94a3f9858eecc34e323918943774599",
+      "overlay": "22ea890fb22937e98cb137eda6d773bb5dbe826b77c675fdf2177ce957abd742"
+    },
     "outside/lamp_empty": {
       "background": "8b5d9e129e45bf31c8bd123f5ff59ab7b94a3f9858eecc34e323918943774599",
       "overlay": "1113cdbc110a5943ea090f244cc5986d08a0bdb80c0c9b32bef0b281c654cb0e"

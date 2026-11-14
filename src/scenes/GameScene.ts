@@ -32,7 +32,7 @@ import { gameUrlParams } from '@/config/debugParams';
 import type { Address } from 'viem';
 import { ScummUI } from '@/ui/ScummUI';
 import type { UIScene } from '@/scenes/UIScene';
-import { actorDepth, foregroundBands } from '@/systems/WalkMotion';
+import { actorDepth, blockedAreasKey, foregroundBands } from '@/systems/WalkMotion';
 import { decideTap, deferredTapVerdict, textTapPolicy, walkPointFor } from '@/systems/TapDecision';
 import { approachHotspot, approachTalk, lookFacing, type Approach, type ApproachTarget, type Facing, type FacingOptions } from '@/systems/Facing';
 import { defaultVerbFor, exitVerbFor, focusOf, isDoubleClick, keyAction, primaryVerb } from '@/systems/DesktopControls';
@@ -48,7 +48,7 @@ import { pickLevel, wantsGesture } from '@/systems/PlayerAnim';
 import { defaultFacing, lifeSeed, type VoiceState } from '@/systems/NpcLife';
 import { AmbientLayer } from '@/systems/AmbientLayer';
 import type { AmbientQa } from '@/systems/Ambient';
-import { hotspotVisible } from '@/systems/HotspotVisibility';
+import { conditionHolds, hotspotVisible } from '@/systems/HotspotVisibility';
 import type { VoiceSystem } from '@/systems/VoiceSystem';
 import { failResponses } from '@/systems/FailResponsesData';
 import { isNpcBag } from '@/systems/FailResponses';
@@ -115,6 +115,8 @@ export class GameScene extends Phaser.Scene {
   private fg?: Phaser.GameObjects.Image;
   /** A2.17 fase 2: trozos del primer plano con walk-behind (foregroundLayers), a la profundidad de su base */
   private fgLayers: Array<{ img: Phaser.GameObjects.Image; bounds?: PctRect; id?: string; band?: number }> = [];
+  /** A3.12: clave del conjunto de blockedAreas activos (null = por calcular) */
+  private blockedKey: string | null = null;
   private conditionalOverlays: Array<{ id: string; sprite: Phaser.GameObjects.Image; flag: string; invert?: boolean; bounds?: PctRect }> = [];
   /**
    * A1.4: visibilidad forzada por el op `flicker` (id del overlay → visible), por encima de la flag. Es solo
@@ -267,6 +269,9 @@ export class GameScene extends Phaser.Scene {
     this.registry.remove('spawnOverride');
     this.player = new Player(this, this.coordSystem, spawn.x, spawn.y, sceneData);
     this.player.onStep = () => this.checkWalkTriggers();
+    // A3.12: obstáculos condicionales (blockedAreas con `when`) según el estado al entrar
+    this.blockedKey = null;
+    this.refreshWalkObstacles();
     // A2.15: «no puedo» = Dex se encoge de hombros con cada respuesta de fallo (el texto sale a la vez, sin esperar)
     failResponses.onFail = () => this.player?.shrug();
 
@@ -581,6 +586,17 @@ export class GameScene extends Phaser.Scene {
     }, 100);
   }
 
+  /** A3.12: rehace la rejilla de Dex si cambia qué blockedAreas condicionales (`when`) están activos */
+  private refreshWalkObstacles(): void {
+    const sceneData = this.registry.get('sceneData') as SceneData | undefined;
+    if (!sceneData?.blockedAreas?.length || !this.player || !this.gameState) return;
+    const holds = (c: string) => conditionHolds(c, (f) => this.gameState.flags[f] ?? false, (i) => this.inventorySystem?.hasItem(i) ?? false) === true;
+    const key = blockedAreasKey(sceneData.blockedAreas, holds);
+    if (key === this.blockedKey) return;
+    this.blockedKey = key;
+    this.player.refreshObstacles(sceneData, holds);
+  }
+
   /** Force Phaser canvas to match actual window dimensions */
   private forceCanvasResize(): void {
     const w = window.innerWidth;
@@ -596,6 +612,7 @@ export class GameScene extends Phaser.Scene {
     if (!this.isTrailer && this.gameState) this.gameState.playTimeMs = addPlayTime(this.gameState.playTimeMs, delta);
     // A9.14: al cerrar un capítulo, su duración (anónima) al save-server
     if (!this.isTrailer && this.gameState) sendChapterSamples(noteChapterMarks(this.gameState));
+    this.refreshWalkObstacles();
     this.player.setAnimContext(this.playerAnimContext());
     this.player.update(time, delta);
     const lifeDt = this.lifeClock ? Math.min(250, Math.max(0, time - this.lifeClock)) : delta;

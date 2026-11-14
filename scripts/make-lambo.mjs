@@ -14,6 +14,9 @@
 //
 // Uso:  node scripts/make-lambo.mjs                  escribe assets/scenes/outside/overlay_lambo.webp e imprime bounds
 //       node scripts/make-lambo.mjs --preview <dir>  además deja composiciones sobre el fondo para mirarlas
+//
+// A3.12 (integración): también escribe overlay_lambo_lights.webp, los faros encendidos (morro y piloto trasero
+// encendidos y el haz delante del morro, alfa en escalones de arte) para el parpadeo de la cinemática de llegada.
 import { mkdirSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -203,6 +206,44 @@ const box = contentBox(buf, BG_W, BG_H, 4);
 const out = join(DIR, 'overlay_lambo.webp');
 await sharp(buf, { raw: { width: BG_W, height: BG_H, channels: 4 } }).extract(box).webp({ lossless: true, effort: 6 }).toFile(out);
 console.log(`overlay_lambo.webp ${box.width}x${box.height} en (${box.left}, ${box.top})  bounds ${JSON.stringify(boxToPct(box, BG_W, BG_H))}`);
+
+// ── Faros encendidos (overlay aparte, para `flicker`) ──────────────────────────────────────────────────────────────
+{
+  const lb = Buffer.alloc(BG_W * BG_H * 4);
+  const put = (ax, ay, rgb, a) => {
+    for (let py = Math.round(ay * PX); py < Math.round((ay + 1) * PX); py++) for (let px = Math.round(ax * PX); px < Math.round((ax + 1) * PX); px++) {
+      const X = ORIGIN_X + px, Y = oy + py;
+      if (X < 0 || X >= BG_W || Y < 0 || Y >= BG_H || (X >= POST.x0 && X < POST.x1)) continue;
+      const i = (Y * BG_W + X) * 4;
+      lb[i] = rgb[0]; lb[i + 1] = rgb[1]; lb[i + 2] = rgb[2]; lb[i + 3] = a;
+    }
+  };
+  const WARM = [255, 236, 190], HOT = [255, 250, 230];
+  // Haz: cono hacia la izquierda desde el morro (art y ≈ 40), se abre y se apaga en dos escalones
+  for (let ax = -46; ax < 0; ax++) {
+    const d = -ax; // distancia al morro
+    const half = 1 + d * 0.16;
+    for (let ay = Math.floor(40 - half); ay <= Math.ceil(40 + half * 0.8); ay++) {
+      if (ay > GROUND) continue;
+      const a = d < 18 ? 110 : d < 34 ? 70 : 38;
+      put(ax, ay, WARM, a);
+    }
+  }
+  // Faro en el morro y piloto trasero encendidos
+  for (let y = 38; y <= 42; y++) for (let x = 1; x <= 7; x++) put(x, y, y >= 39 && y <= 41 && x >= 2 && x <= 6 ? HOT : WARM, y >= 39 && y <= 41 && x >= 2 && x <= 6 ? 255 : 150);
+  for (let y = 25; y <= 33; y++) for (let x = 218; x <= 223; x++) put(x, y, [255, 90, 120], y >= 26 && y <= 32 && x >= 219 && x <= 222 ? 255 : 120);
+  const lbox = contentBox(lb, BG_W, BG_H, 4);
+  await sharp(lb, { raw: { width: BG_W, height: BG_H, channels: 4 } }).extract(lbox).webp({ lossless: true, effort: 6 }).toFile(join(DIR, 'overlay_lambo_lights.webp'));
+  console.log(`overlay_lambo_lights.webp ${lbox.width}x${lbox.height} en (${lbox.left}, ${lbox.top})  bounds ${JSON.stringify(boxToPct(lbox, BG_W, BG_H))}`);
+  if (PREVIEW) {
+    mkdirSync(PREVIEW, { recursive: true });
+    const bg = join(DIR, 'background.png');
+    const ov = await sharp(buf, { raw: { width: BG_W, height: BG_H, channels: 4 } }).png().toBuffer();
+    const lo = await sharp(lb, { raw: { width: BG_W, height: BG_H, channels: 4 } }).png().toBuffer();
+    const both = await sharp(bg).composite([{ input: ov }, { input: lo }]).png().toBuffer();
+    await sharp(both).extract({ left: 2000, top: 560, width: 1712, height: 592 }).png().toFile(join(PREVIEW, 'lambo-lights-zoom.png'));
+  }
+}
 
 if (PREVIEW) {
   mkdirSync(PREVIEW, { recursive: true });
