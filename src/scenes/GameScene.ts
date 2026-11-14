@@ -10,6 +10,8 @@ import { SaveLoadSystem } from '@/systems/SaveLoadSystem';
 import { migrateGameState } from '@/systems/SaveMigration';
 import { isValidRunId, newRunId } from '@/systems/SaveProgress';
 import { addPlayTime } from '@/systems/Ending';
+import { noteChapterMarks } from '@/systems/ChapterTiming';
+import { sendChapterSamples } from '@/systems/ChapterTelemetry';
 import type { MusicManager } from '@/systems/MusicManager';
 import { CinematicOverlay } from '@/ui/CinematicOverlay';
 import { Web3VisualSystem } from '@/systems/Web3VisualSystem';
@@ -591,6 +593,8 @@ export class GameScene extends Phaser.Scene {
   update(time: number, delta: number): void {
     // A9.4: tiempo jugado (con tope por fotograma: una pestaña oculta o una pausa del navegador no suman)
     if (!this.isTrailer && this.gameState) this.gameState.playTimeMs = addPlayTime(this.gameState.playTimeMs, delta);
+    // A9.14: al cerrar un capítulo, su duración (anónima) al save-server
+    if (!this.isTrailer && this.gameState) sendChapterSamples(noteChapterMarks(this.gameState));
     this.player.setAnimContext(this.playerAnimContext());
     this.player.update(time, delta);
     const lifeDt = this.lifeClock ? Math.min(250, Math.max(0, time - this.lifeClock)) : delta;

@@ -5,8 +5,10 @@ import { verifyMessage, createPublicClient, http } from 'viem';
 import { mainnet, base } from 'viem/chains';
 import { readFileSync, writeFileSync, existsSync, mkdirSync, readdirSync, unlinkSync } from 'fs';
 import { join } from 'path';
+import { appendFileSync } from 'fs';
 import { bodyLimit } from 'hono/body-limit';
 import { publicPlayer, createEnsCache } from './privacy.js';
+import { parseSample, sampleLine, createRateLimiter, summarize, MAX_BODY_BYTES as TELEMETRY_MAX_BYTES } from './telemetry.js';
 import { normalizeAddress, parseSlot, checkSessionAuth, validateSaveBody, MAX_SAVE_BYTES } from './validate.js';
 
 /**
@@ -263,6 +265,40 @@ app.delete('/save/:address/:slot', async (c) => {
   const fp = saveFile(address, slot);
   if (existsSync(fp)) unlinkSync(fp);
   return c.json({ ok: true });
+});
+
+// ─── A9.14: telemetría anónima de duración por capítulo ───
+// Fichero aparte (no acaba en .json: /leaderboard no lo lee). Solo { capítulo, segundos, día }.
+const TELEMETRY_DIR = process.env.TELEMETRY_DIR || join(DATA_DIR, 'telemetry');
+if (!existsSync(TELEMETRY_DIR)) mkdirSync(TELEMETRY_DIR, { recursive: true });
+const TELEMETRY_FILE = join(TELEMETRY_DIR, 'chapters.jsonl');
+const telemetryLimit = createRateLimiter();
+
+app.post('/telemetry/chapter', bodyLimit({ maxSize: TELEMETRY_MAX_BYTES, onError: (c) => c.json({ error: 'Too large' }, 413) }), async (c) => {
+  let body;
+  try { body = await c.req.json(); } catch { return c.json({ error: 'Invalid JSON' }, 400); }
+  const sample = parseSample(body);
+  if (!sample) return c.json({ error: 'Invalid sample' }, 400);
+  // La IP solo sirve para el límite en memoria; no se guarda
+  const ip = c.req.header('x-forwarded-for')?.split(',')[0]?.trim() || c.req.header('x-real-ip') || '?';
+  if (!telemetryLimit(ip)) return c.json({ error: 'Too many' }, 429);
+  try {
+    appendFileSync(TELEMETRY_FILE, sampleLine(sample));
+  } catch (err) {
+    console.error('Telemetry error:', err);
+    return c.json({ error: 'Internal server error' }, 500);
+  }
+  return c.json({ ok: true });
+});
+
+app.get('/telemetry/chapters', (c) => {
+  try {
+    const text = existsSync(TELEMETRY_FILE) ? readFileSync(TELEMETRY_FILE, 'utf-8') : '';
+    return c.json(summarize(text));
+  } catch (err) {
+    console.error('Telemetry summary error:', err);
+    return c.json({ error: 'Internal server error' }, 500);
+  }
 });
 
 const port = parseInt(process.env.PORT || '3001');
