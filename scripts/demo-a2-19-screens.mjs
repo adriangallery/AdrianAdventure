@@ -8,6 +8,8 @@
 //   2. upstairs: el cajón de los Términos (árbol tos_drawer): primer plano a pantalla completa (`<vp>-terms-closeup.png`)
 //      que se cierra con Esc.
 //   3. server_room: el log de PZ-BOT con `closeup: true` (primer plano forzado) y una línea corta en el terminal.
+//   4. A2.19b: barrido de TODAS las pantallas de las 7 escenas con Dex debajo: falla si una pantalla con texto queda
+//      cortada por la cámara (o a < 11 px efectivos) sin primer plano (`<vp>-sweep-<escena>-<pantalla>.png`).
 // Uso: BASE_URL=http://127.0.0.1:4173 node scripts/lib/demo.mjs run a2-19-screens
 import { startDemo } from './lib/demo.mjs';
 
@@ -16,6 +18,9 @@ const VIEWPORTS = [
   { id: '844x390', width: 844, height: 390, isMobile: true, hasTouch: true, deviceScaleFactor: 1 },
   { id: '390x844', width: 390, height: 844, isMobile: true, hasTouch: true, deviceScaleFactor: 1 },
 ];
+
+/** A2.19b: escenas con pantallas dibujadas (auditoría de A2.19) */
+const SWEEP_SCENES = ['basement', 'server_room', 'upstairs', 'lobby', 'clinic_interior', 'memelab', 'treatment_room'];
 
 const demo = await startDemo(import.meta.url, { fps: 6, width: 640, viewport: VIEWPORTS[0] });
 const { page } = demo;
@@ -189,6 +194,36 @@ for (const vp of VIEWPORTS) {
   await demo.still(`${tag}-terminal`);
   if (q.closeup.open) await page.keyboard.press('Escape');
   await free();
+
+  // ── 4. A2.19b: TODAS las pantallas de la auditoría. Ninguna se teclea en la escena cortada por la cámara ni a menos de
+  //       11 px efectivos: o cabe entera y se lee, o sale el primer plano. Dex se pone debajo de cada pantalla. ──
+  for (const sceneId of SWEEP_SCENES) {
+    await open(sceneId, vp);
+    const screens = await page.evaluate(() => window.__game.scene.getScene('GameScene').sceneDataLoader.getSceneData().screens ?? {});
+    for (const [id, def] of Object.entries(screens)) {
+      if (def.closeupOnly) continue;
+      const cx = Math.min(95, Math.max(5, def.bounds.x + def.bounds.w / 2));
+      await page.evaluate((x) => window.__game.scene.getScene('GameScene').player.teleportPct(x, 88), cx);
+      await demo.sleep(1500); // la cámara llega
+      await page.evaluate((sid) => { window.__demoRun = window.__game.scene.getScene('GameScene').qaRunScript([{ op: 'say', text: "'SCREEN CHECK 0123'", screen: sid }]); }, id);
+      await demo.sleep(1400);
+      const sq = await screenQa();
+      const last = sq.last;
+      const eff = sq.inScene ? Math.round(sq.inScene.fontPx * (last?.vp?.zoom ?? 1) * 10) / 10 : null;
+      const sp = await speech();
+      const label = `${tag} ${sceneId}.${id}`;
+      if (last?.id !== id) check(false, `${label}: no salió la línea de prueba`);
+      else if (last.mode === 'closeup') check(sq.closeup.open, `${label}: primer plano (${last.reason}; caja ${JSON.stringify(last.vp?.screen)} en vista ${JSON.stringify(last.vp?.view)})`);
+      else {
+        check(last.vp?.fits === true, `${label}: la pantalla cabe entera en la cámara (caja ${JSON.stringify(last.vp?.screen)}, vista ${JSON.stringify(last.vp?.view)})`);
+        check(eff !== null && eff >= 10.5, `${label}: letra en la escena ≥ 11 px efectivos (${eff})`);
+        check(!!sp && sp.discreet === true && sp.mode === 'caption', `${label}: subtítulo discreto en modo caption (${sp?.mode})`);
+      }
+      if (tag !== '1280x720' || id === 'crt') await demo.still(`${tag}-sweep-${sceneId}-${id}`);
+      if (sq.closeup.open) await page.keyboard.press('Escape');
+      await free();
+    }
+  }
 }
 
 await demo.end();
