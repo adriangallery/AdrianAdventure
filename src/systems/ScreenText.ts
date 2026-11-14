@@ -178,7 +178,8 @@ export function screenFitsView(screen: ViewRect, view: ViewRect, tol = 1): boole
  * zoom de la cámara). Devuelve el motivo o null (se lee en la pantalla de la escena).
  * - forced: el script lo pide (`closeup: true`); closeupOnly: la pantalla no está en la escena (un móvil en la mano).
  * - long: más de LONG_TEXT_CHARS, o más filas de las que caben en la caja a la letra mínima legible.
- * - small: a la letra mínima legible no caben MIN_COLS columnas ni 2 filas (390×844 con la pantalla del fondo diminuta).
+ * - small: a la letra mínima legible no cabe ni la palabra más larga (o MIN_COLS columnas) en una fila (390×844 con la
+ *   pantalla del fondo diminuta).
  * - cropped (A2.19b): la cámara corta la pantalla (no cabe entera en el viewport): el texto de dentro no se leería.
  * A2.19b: con la letra mínima a 11 px, si el texto no cabe entero a 11 px (o más filas de las que caben) = `long`: así
  * lo que se teclea en la escena nunca baja de 11 px efectivos (ScreenTextLayer usa la misma mínima).
@@ -198,11 +199,11 @@ export function closeupReason(input: {
   if (input.screenRect && input.view && !screenFitsView(input.screenRect, input.view)) return 'cropped';
   if (input.text.length > LONG_TEXT_CHARS) return 'long';
   const min = input.minReadablePx ?? MIN_READABLE_PX;
-  const pad = Math.min(input.screenPx.w, input.screenPx.h) * SCREEN_PAD;
-  const cols = Math.floor((input.screenPx.w - pad * 2) / (min * CHAR_ASPECT));
-  const rows = Math.floor((input.screenPx.h - pad * 2) / (min * LINE_HEIGHT));
-  if (cols < MIN_COLS || rows < 2) return 'small';
   const l = layoutScreen(input.text, input.screenPx, { minPx: min, maxPx: min });
+  // A2.19b: un texto corto («ALL IN.», «WRONG PIN.») se lee en una pantalla estrecha si sus palabras caben enteras a la
+  // letra mínima; basta con MIN_COLS columnas o con la palabra más larga (+ cursor), lo que sea menos
+  const longest = Math.max(1, ...input.text.split(/\s+/).map((w) => w.length));
+  if (l.cols - 1 < Math.min(MIN_COLS, longest)) return 'small';
   if (l.overflow) return 'long';
   return null;
 }

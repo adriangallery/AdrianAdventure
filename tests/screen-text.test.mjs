@@ -73,6 +73,9 @@ test('closeupReason: se lee en la pantalla del fondo en escritorio; primer plano
   // A2.19b: a 11 px efectivos el mensaje largo de la caja de disquetes ya no cabe entero en el CRT de escritorio
   assert.equal(closeupReason({ text, screenPx: crtDesk }), 'long');
   assert.equal(closeupReason({ text: 'VAULT OPEN. INSERT BACKUP.', screenPx: crtDesk }), null);
+  // Monitor estrecho (≈ 92×63 px vistos): un texto corto cabe a 11 px; uno con palabras largas, no
+  assert.equal(closeupReason({ text: 'ALL IN.', screenPx: { w: 92, h: 63 } }), null);
+  assert.equal(closeupReason({ text: 'EMERGENCY SHUTOFF: LOCKED.', screenPx: { w: 92, h: 63 } }), 'small');
   assert.equal(closeupReason({ text, screenPx: crtPortrait }), 'small');
   assert.equal(closeupReason({ text: 'X'.repeat(LONG_TEXT_CHARS + 1), screenPx: { w: 2000, h: 2000 } }), 'long');
   assert.equal(closeupReason({ text: 'HI', screenPx: crtDesk, forced: true }), 'forced');
