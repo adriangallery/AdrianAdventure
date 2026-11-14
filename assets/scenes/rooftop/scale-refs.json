@@ -5,50 +5,34 @@
   "dexHeightM": 1.75,
   "refs": [
     {
-      "id": "hs_satellite_dish",
-      "label": "antena parabólica (con su mástil)",
-      "realHeightM": 2.5,
-      "foreground": false,
-      "box": {
-        "x": 27.5,
-        "y": 14,
-        "w": 16.5,
-        "h": 65.6
-      },
-      "baseY": 79.6,
-      "source": "A2.17 fase 2: medido a ojo sobre background.png (rejilla del 10 %) (borde de la antena ≈ 14, pie del mástil ≈ 79,6)",
-      "note": "A2.17 fase 2: 3 m era el extremo del rango que aceptaba A2.11 (Dex/antena 0,5–0,85); a escala de Dex la antena con mástil mide ≈ 2,3 m (plato de ≈ 1,8 m inclinado sobre un mástil de ≈ 0,75 m), así que se toma 2,5 m (Dex/antena 0,70, centro del rango)."
-    },
-    {
       "id": "hs_roof_door",
-      "label": "puerta de la azotea (sin dibujar)",
+      "label": "puerta de la azotea",
       "realHeightM": 2,
       "foreground": false,
       "box": {
-        "x": 88,
-        "y": 60,
-        "w": 10,
-        "h": 30
+        "x": 90,
+        "y": 39.5,
+        "w": 6.5,
+        "h": 52.5
       },
-      "baseY": 90,
-      "source": "bounds del hotspot",
-      "note": "A2.11: no se ve en el fondo",
-      "measured": false
+      "baseY": 92,
+      "source": "F1: medido a ojo sobre el fondo nuevo (rejilla del 2 %): dintel ≈ 39,5; el umbral baja en perspectiva de ≈ 88 (jamba izquierda) a ≈ 96 (derecha), se toma 92",
+      "note": "F1: la puerta ya está dibujada; es la referencia buena (Dex/puerta ≈ 0,94 con pixelScale 5,5)"
     },
     {
-      "id": "hs_parapet",
-      "label": "barandilla",
-      "realHeightM": 1,
+      "id": "hs_satellite_dish",
+      "label": "antena parabólica (con su mástil)",
+      "realHeightM": 2.3,
       "foreground": false,
       "box": {
-        "x": 25.6,
-        "y": 67.1,
-        "w": 51.5,
-        "h": 6
+        "x": 27.5,
+        "y": 0.5,
+        "w": 16,
+        "h": 62
       },
-      "baseY": 73.1,
-      "source": "bounds del hotspot",
-      "measured": false
+      "baseY": 62.5,
+      "source": "F1: medido a ojo sobre el fondo nuevo (borde del plato ≈ 0,5, pie del mástil ≈ 62,5)",
+      "note": "base muy por detrás de la zona andable (76-100): no mide la escala de ninguna posición (NEAR_BASE 10), solo siembra puntos"
     },
     {
       "id": "hs_weather_vane",
@@ -56,13 +40,28 @@
       "realHeightM": 2.5,
       "foreground": false,
       "box": {
-        "x": 66.8,
-        "y": 19.9,
-        "w": 10,
-        "h": 45
+        "x": 65.5,
+        "y": 5.5,
+        "w": 13,
+        "h": 55.5
       },
-      "baseY": 64.9,
-      "source": "bounds del hotspot",
+      "baseY": 61,
+      "source": "F1: medido a ojo sobre el fondo nuevo",
+      "measured": false
+    },
+    {
+      "id": "hs_parapet",
+      "label": "pretil del fondo",
+      "realHeightM": 1,
+      "foreground": false,
+      "box": {
+        "x": 32,
+        "y": 50,
+        "w": 33,
+        "h": 8.5
+      },
+      "baseY": 58.5,
+      "source": "F1: medido a ojo sobre el fondo nuevo",
       "measured": false
     }
   ]
