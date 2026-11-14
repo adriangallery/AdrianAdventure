@@ -12,6 +12,7 @@
     "build": "tsc && vite build && cp -r assets dist/",
     "preview": "vite preview",
     "test:smoke": "node scripts/smoke.mjs",
+    "test:audio-webkit": "node scripts/audio-unlock-webkit.mjs",
     "test:walkthrough": "node scripts/walkthrough.mjs",
     "test:walkthrough:selftest": "node scripts/walkthrough.mjs --selftest qa/selftest.json",
     "test:walkthrough:unit": "node --test tests/walkthrough-core.test.mjs",
