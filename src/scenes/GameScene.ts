@@ -2587,14 +2587,14 @@ export class GameScene extends Phaser.Scene {
       this.screenLayer.linger();
       return;
     }
-    this.screenCloseup ??= new ScreenCloseup();
+    const closeup = this.screenCloseup ?? new ScreenCloseup();
+    this.screenCloseup = closeup;
     this.registry.set('screenCloseupOpen', true);
     const spoken = speak(true);
     // Si el subtítulo se cierra solo (cinemática que avanza al ritmo de la voz, salto), el primer plano se cierra con él
-    const closeup = this.screenCloseup;
     void spoken.then(() => { if (closeup.isOpen()) closeup.close(); });
     try {
-      await this.screenCloseup.open({
+      await closeup.open({
         screen: req.screen,
         label: def.label ?? req.screen.replace(/[_-]+/g, ' ').toUpperCase(),
         text: display,
