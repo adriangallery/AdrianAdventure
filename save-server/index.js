@@ -10,6 +10,9 @@ import { bodyLimit } from 'hono/body-limit';
 import { publicPlayer, createEnsCache } from './privacy.js';
 import { parseSample, sampleLine, createRateLimiter, summarize, MAX_BODY_BYTES as TELEMETRY_MAX_BYTES } from './telemetry.js';
 import { normalizeAddress, parseSlot, checkSessionAuth, validateSaveBody, MAX_SAVE_BYTES } from './validate.js';
+import { createStatsStore } from './stats.js';
+import { createStatsAuth, parseAdmins, loadSessionSecret } from './stats-auth.js';
+import { createStatsRoutes } from './stats-routes.js';
 
 /**
  * A1.12: comprobación de la firma de sesión (inyectada en validate.js). Primero EOA en local (sin red); si no cuadra,
@@ -29,7 +32,7 @@ if (!existsSync(DATA_DIR)) mkdirSync(DATA_DIR, { recursive: true });
 app.use('*', cors({
   origin: ['https://adventure.zerothetoken.com', 'https://adventure.adrianzero.com', 'https://zeroadventure.vercel.app', 'https://adrianzero.com', 'http://localhost:3000', 'http://localhost:5173'],
   allowMethods: ['GET', 'POST', 'DELETE', 'OPTIONS'],
-  allowHeaders: ['Content-Type', 'X-Auth-Signature', 'X-Auth-Timestamp'],
+  allowHeaders: ['Content-Type', 'X-Auth-Signature', 'X-Auth-Timestamp', 'Authorization'],
 }));
 
 // A1.6: el ENS se resuelve aquí (el cliente ya no recibe la dirección completa). RPC público y gratuito, sin claves.
@@ -299,6 +302,34 @@ app.get('/telemetry/chapters', (c) => {
     console.error('Telemetry summary error:', err);
     return c.json({ error: 'Internal server error' }, 500);
   }
+});
+
+// ─── A9.17: estadísticas anónimas de jugadores y acceso por firma (ver docs/progreso/A9.17.md) ───
+// Directorio aparte dentro del volumen (no acaba en .json en la raíz: /leaderboard no lo lee). Sin IP en disco ni en logs.
+const STATS_DIR = process.env.STATS_DIR || join(DATA_DIR, 'stats');
+const statsStore = createStatsStore({ dir: STATS_DIR });
+const statsAuth = createStatsAuth({
+  admins: parseAdmins(process.env.STATS_ADMINS),
+  secret: loadSessionSecret(process.env.STATS_SESSION_SECRET, join(STATS_DIR, 'session-secret')),
+  verify: verifySession,
+});
+const statsRoutes = createStatsRoutes({ store: statsStore, auth: statsAuth });
+// Purga de crudos de más de 30 días y cierre de los días pasados: al arrancar y cada 6 h
+try { statsStore.maintain(); } catch (err) { console.error('Stats maintain error:', err?.message); }
+setInterval(() => { try { statsStore.maintain(); } catch (err) { console.error('Stats maintain error:', err?.message); } }, 6 * 60 * 60 * 1000).unref();
+
+app.on(['GET', 'POST'], '/stats/*', async (c) => {
+  const len = Number(c.req.header('content-length') || 0);
+  if (len > 4096) return c.json({ error: 'Too large' }, 413);
+  const bodyText = c.req.method === 'POST' ? (await c.req.text()).slice(0, 4097) : '';
+  const r = await statsRoutes({
+    method: c.req.method, path: c.req.path, bodyText,
+    headers: { origin: c.req.header('origin'), authorization: c.req.header('authorization') },
+    ip: c.req.header('x-forwarded-for')?.split(',')[0]?.trim() || c.req.header('x-real-ip') || '?',
+  });
+  if (!r) return c.json({ error: 'Not found' }, 404);
+  c.header('Cache-Control', 'no-store');
+  return c.json(r.body, r.status);
 });
 
 const port = parseInt(process.env.PORT || '3001');
