@@ -1,6 +1,10 @@
 // A8.2 (plan SCUMM): genera la música de un tema con ElevenLabs Music a partir de `art/music/<tema>/plan.json`.
 //
-//   node scripts/audio/eleven-music.mjs art/music/dex/plan.json [--parte muestra|minimo] [--out DIR] [--dry]
+//   node scripts/audio/eleven-music.mjs art/music/dex/plan.json [--parte muestra|minimo|completo] [--semilla N] [--out DIR] [--dry]
+//
+// A8.3: una parte puede traer sus propios `chunks` (bloques), `semilla`, `output_format` y `checkpoint` (etiqueta del gasto);
+// si no los trae, usa los del plan (así el cuerpo de muestra/minimo no cambia y su caché sigue valiendo). `--semilla N`
+// fuerza otra semilla (reintento: el hash cambia, así que es una petición nueva).
 //
 // - Clave: ~/.secrets/elevenlabs.key (o ELEVENLABS_KEY_FILE). No se imprime nunca: ni en logs ni en errores.
 // - Cuerpo: `composition_plan` del plan (bloques A/B) con las duraciones de la parte pedida (`partes.<parte>.duraciones_ms`),
@@ -38,18 +42,25 @@ const outDir = resolve(opt('--out', parte === 'muestra' ? '/var/tmp/adv-musica/m
 const dry = args.includes('--dry');
 
 const plan = JSON.parse(readFileSync(planPath, 'utf8'));
-const durs = plan.partes?.[parte]?.duraciones_ms;
-if (!durs || durs.length !== plan.composition_plan.chunks.length) throw new Error(`el plan no tiene partes.${parte}.duraciones_ms para cada bloque`);
+const part = plan.partes?.[parte];
+const durs = part?.duraciones_ms;
+const baseChunks = part?.chunks ?? plan.composition_plan.chunks;
+if (!durs || durs.length !== baseChunks.length) throw new Error(`el plan no tiene partes.${parte}.duraciones_ms para cada bloque`);
+const semillaForzada = opt('--semilla', null);
+const outputFormat = part?.output_format || plan.output_format || 'mp3_44100_128';
+const etiqueta = part?.checkpoint || 'A8.2';
 
-export function buildBody(p, duraciones) {
+export function buildBody(p, duraciones, chunks = p.composition_plan.chunks, seed = p.semilla) {
   return {
     model_id: p.modelo,
-    seed: p.semilla,
-    composition_plan: { chunks: p.composition_plan.chunks.map((c, i) => ({ ...c, duration_ms: duraciones[i] })) },
+    seed,
+    composition_plan: { chunks: chunks.map((c, i) => ({ ...c, duration_ms: duraciones[i] })) },
   };
 }
-const body = buildBody(plan, durs);
-const hash = createHash('sha256').update(JSON.stringify(body)).digest('hex').slice(0, 12);
+const body = buildBody(plan, durs, baseChunks, semillaForzada != null ? Number(semillaForzada) : (part?.semilla ?? plan.semilla));
+// El formato va en la URL, no en el cuerpo: entra en el hash solo si no es el de siempre (no invalida la caché vieja).
+const hashSrc = outputFormat === (plan.output_format || 'mp3_44100_128') && !part?.output_format ? JSON.stringify(body) : JSON.stringify({ ...body, outputFormat });
+const hash = createHash('sha256').update(hashSrc).digest('hex').slice(0, 12);
 mkdirSync(outDir, { recursive: true });
 const cached = join(outDir, `${plan.tema}.${parte}.${hash}.mp3`);
 const final = join(outDir, parte === 'muestra' ? `${plan.tema}.mp3` : `${plan.tema}.${parte}.mp3`);
@@ -61,7 +72,7 @@ if (existsSync(cached)) {
   process.exit(0);
 }
 if (dry) {
-  console.log(JSON.stringify({ tema: plan.tema, parte, hash, segundos: totalSec, body }, null, 2));
+  console.log(JSON.stringify({ tema: plan.tema, parte, hash, segundos: totalSec, outputFormat, body }, null, 2));
   process.exit(0);
 }
 
@@ -86,7 +97,7 @@ const antes = await saldo();
 const t0 = Date.now();
 let res;
 try {
-  res = await fetch(`${API}/v1/music?output_format=${plan.output_format || 'mp3_44100_128'}`, {
+  res = await fetch(`${API}/v1/music?output_format=${outputFormat}`, {
     method: 'POST',
     headers: { 'xi-api-key': key, 'Content-Type': 'application/json', Accept: 'audio/mpeg' },
     body: JSON.stringify(body),
@@ -110,10 +121,10 @@ for (let i = 0; i < 18 && despues.usados === antes.usados; i++) {
 }
 const creditos = despues.usados - antes.usados;
 const songId = res.headers.get('song-id') || null;
-apunta(`A8.2 ${parte} ${plan.tema} (music ${plan.modelo}, ${totalSec.toFixed(1)} s${error ? ', ERROR ' + res.status : ''})`, creditos);
+apunta(`${etiqueta} ${parte} ${plan.tema} (music ${plan.modelo}, ${totalSec.toFixed(1)} s, seed ${body.seed}, ${outputFormat}${error ? ', ERROR ' + res.status : ''})`, creditos);
 
 const info = {
-  tema: plan.tema, parte, hash, segundosPedidos: totalSec, segundosLlamada: Number(segs), songId,
+  tema: plan.tema, parte, hash, seed: body.seed, outputFormat, segundosPedidos: totalSec, segundosLlamada: Number(segs), songId,
   saldoAntes: antes, saldoDespues: despues, creditos, creditosPorMinuto: Math.round(creditos / (totalSec / 60)),
 };
 if (error) {

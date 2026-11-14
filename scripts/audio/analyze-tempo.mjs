@@ -14,6 +14,7 @@
 // Determinista. Unos segundos por pista.
 import { spawnSync } from 'node:child_process';
 import { readdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { declaredLevels } from './music-levels.mjs';
 import { join, resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { chroma, detectKey } from './analyze-music.mjs';
@@ -195,26 +196,33 @@ export function sectionBounds(feats, minLen = 8) {
   return secs.map((s, i) => ({ id: `${labels[i].label}${secs.slice(0, i).filter((_, j) => labels[j].label === labels[i].label).length + 1}`, startBar: s.start, bars: s.end - s.start, energyDb: Math.round(labels[i].db * 10) / 10 }));
 }
 
-export function analyzeTrack(file, log = console.log) {
+/**
+ * `declared` (A8.3, scripts/audio/music-levels.mjs): nivel de intensidad cortado en compases enteros de una generación
+ * pedida a un BPM y tonalidad: la rejilla es la declarada (primer tiempo en 0) y lo medido queda en `confidence` para
+ * comprobarla (BPM medido igual, la mitad o el doble).
+ */
+export function analyzeTrack(file, log = console.log, declared = null) {
   const pcm = decode(file);
   const durationSec = pcm.length / SR;
   const { env, bass } = onsetEnvelope(pcm);
   const t = detectTempo(env);
-  const beatSec = 60 / t.bpm;
+  const bpm = declared ? declared.bpm : t.bpm;
+  const beatSec = 60 / bpm;
   const db = detectDownbeat(bass, t.bpm, t.phaseFrames);
-  let firstDownbeatSec = t.phaseFrames / FPS + db.beat * beatSec;
+  let firstDownbeatSec = declared ? 0 : t.phaseFrames / FPS + db.beat * beatSec;
   const barSec = beatSec * BEATS_PER_BAR;
   while (firstDownbeatSec - barSec >= 0) firstDownbeatSec -= barSec;
-  const bars = Math.floor((durationSec - firstDownbeatSec) / barSec);
+  const bars = declared ? Math.min(declared.bars, Math.floor(durationSec / barSec + 0.01)) : Math.floor((durationSec - firstDownbeatSec) / barSec);
   const feats = barFeatures(pcm, firstDownbeatSec, barSec, bars);
   const sections = sectionBounds(feats);
-  const k = detectKey(chroma(pcm));
+  const measuredKey = detectKey(chroma(pcm));
+  const k = declared ? { ...declared.key, score: measuredKey.score } : measuredKey;
   const r = (x, n = 3) => Math.round(x * 10 ** n) / 10 ** n;
   // el final del bucle sale de los valores ya redondeados: así cae exactamente en compás para el motor
   const fd = r(firstDownbeatSec);
   const bs = r(barSec, 4);
   const out = {
-    bpm: t.bpm,
+    bpm,
     beatsPerBar: BEATS_PER_BAR,
     firstDownbeatSec: fd,
     barSec: bs,
@@ -229,6 +237,7 @@ export function analyzeTrack(file, log = console.log) {
       /** ataque en graves del tiempo elegido sobre la segunda fase: < 1,15 = el tiempo 1 es dudoso */
       downbeat: r(db.contrast, 2),
       key: r(k.score, 2),
+      ...(declared ? { declared: true, measuredBpm: t.bpm, measuredKey: { tonic: measuredKey.tonic, mode: measuredKey.mode } } : {}),
     },
     sections,
   };
@@ -238,7 +247,11 @@ export function analyzeTrack(file, log = console.log) {
 
 export function analyzeAll(log = console.log) {
   const tracks = {};
-  for (const f of readdirSync(MUSIC_DIR).filter((x) => x.endsWith('.mp3')).sort()) tracks[f.replace(/\.mp3$/, '')] = analyzeTrack(join(MUSIC_DIR, f), log);
+  const decl = declaredLevels();
+  for (const f of readdirSync(MUSIC_DIR).filter((x) => x.endsWith('.mp3')).sort()) {
+    const name = f.replace(/\.mp3$/, '');
+    tracks[name] = analyzeTrack(join(MUSIC_DIR, f), log, decl[name] ?? null);
+  }
   return tracks;
 }
 

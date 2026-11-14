@@ -148,3 +148,95 @@ test('nextBeatSec: la siguiente línea de pulso', () => {
   const d = P.nextBeatSec(g, g.firstDownbeatSec + 0.25 * beat);
   assert.ok(Math.abs(d - 0.75 * beat) < 1e-9);
 });
+
+// ─── A8.3: niveles de intensidad (temas de ElevenLabs) ─────────────────────────────
+
+const THEMES = Object.entries(MAP.themes ?? {});
+
+test('A8.3 music-map: cada tema con sus niveles medidos, misma tonalidad y tempo compatible, escenas que existen', () => {
+  const scenes = new Set();
+  for (const [id, t] of THEMES) {
+    assert.ok(t.levels.length === 4, `${id}: 4 niveles (calma, activo, tensión, triunfo)`);
+    const present = t.levels.filter((k) => k != null);
+    assert.ok(present.length >= 1, `${id}: al menos un nivel`);
+    for (const k of present) assert.ok(MAP.tracks[k], `${id}: ${k} está en tracks (no apunta a un mp3 que no existe)`);
+    const g0 = MAP.tracks[present[0]];
+    for (const k of present) {
+      const g = MAP.tracks[k];
+      assert.ok(P.sameKeySet(g.key, g0.key), `${id}: ${k} en la misma tonalidad`);
+      assert.ok(P.tempoCompatible(g.bpm, g0.bpm), `${id}: ${k} a ${g.bpm} BPM, compatible con ${g0.bpm}`);
+      assert.equal(g.firstDownbeatSec, 0, `${k}: cortado en compás`);
+      assert.ok(g.confidence.declared, `${k}: rejilla declarada en art/music`);
+      assert.ok(P.tempoCompatible(g.confidence.measuredBpm, g.bpm, 0.03), `${k}: BPM medido ${g.confidence.measuredBpm} ≈ pedido ${g.bpm} (o doble/mitad)`);
+    }
+    for (const s of t.scenes) {
+      assert.ok(!scenes.has(s), `${s} solo en un tema`);
+      scenes.add(s);
+      assert.ok(readFileSync(new URL(`../assets/scenes/${s}/scene.json`, import.meta.url)), `${s} existe`);
+    }
+  }
+  for (const st of Object.values(MAP.states)) assert.ok(P.intensityOf(st) >= 0 && P.intensityOf(st) <= 3);
+});
+
+test('A8.3 levelTrack: el nivel pedido o el más cercano por debajo; themeForScene / levelOfTrack', () => {
+  const t = { levels: ['x-n0', 'x-n1', null, 'x-n3'], scenes: ['outside'] };
+  assert.deepEqual(P.levelTrack(t, 1), { track: 'x-n1', level: 1 });
+  assert.deepEqual(P.levelTrack(t, 2), { track: 'x-n1', level: 1 }, 'falta el 2: el 1');
+  assert.deepEqual(P.levelTrack(t, 3, (k) => k !== 'x-n3'), { track: 'x-n1', level: 1 }, 'triunfo sin descargar en tracks: el de debajo');
+  assert.deepEqual(P.levelTrack({ levels: [null, 'y-n1'], scenes: [] }, 0), { track: 'y-n1', level: 1 }, 'sin nada por debajo: el primero por encima');
+  assert.equal(P.levelTrack({ levels: [null, null], scenes: [] }, 0), null);
+  const themes = { x: t };
+  assert.equal(P.themeForScene(themes, 'outside'), 'x');
+  assert.equal(P.themeForScene(themes, 'lobby'), null);
+  assert.equal(P.themeForScene(undefined, 'outside'), null);
+  assert.deepEqual(P.levelOfTrack(themes, 'x-n3'), { theme: 'x', level: 3 });
+  assert.equal(P.levelOfTrack(themes, 'retro-adventure'), null);
+  assert.equal(P.intensityOf(undefined), 0);
+  assert.equal(P.intensityOf({ intensity: 7 }), 3);
+});
+
+test('A8.3 cambio de nivel: sale en compás (≤ maxWaitBars), entra en compás entero conservando la frase, sin puente', () => {
+  for (const [id, t] of THEMES) {
+    const present = t.levels.map((k, i) => (k ? { k, i } : null)).filter(Boolean);
+    for (const a of present) {
+      const ga = MAP.tracks[a.k];
+      for (const b of present) {
+        if (a === b) continue;
+        const gb = MAP.tracks[b.k];
+        for (let pos = ga.loopStartSec; pos < ga.loopEndSec; pos += ga.barSec / 7.3) {
+          const ex = P.nextExit(ga, pos, OPTS);
+          assert.ok(onBar(ga, pos + ex.waitSec), `${id} ${a.k}→${b.k}: salida en compás`);
+          assert.ok(ex.waitSec <= OPTS.maxWaitBars * ga.barSec + OPTS.minLeadSec + 1e-6, `${id}: espera ≤ ${OPTS.maxWaitBars} compases`);
+          const entry = P.levelEntryBar(ex.absBar, gb.bars, b.i, 4);
+          assert.ok(Number.isInteger(entry) && entry >= 0 && entry < gb.bars, `${id}: entra en un compás entero de ${b.k}`);
+          if (b.i === P.TRIUMPH_LEVEL) assert.equal(entry, 0, 'el triunfo entra por el principio');
+          else if (4 <= gb.bars) assert.equal(entry, ((ex.absBar % 4) + 4) % 4, 'misma posición en la frase de 4');
+          assert.ok(onBar(gb, P.barStartSec(gb, entry)));
+        }
+        const br = P.chooseBridge(gb.key, gb.key, 'state');
+        assert.equal(br.type, 'none', `${id}: mismo tema = sin puente`);
+      }
+    }
+  }
+});
+
+test('A8.3 estados → intensidad: duelo y peligro suben, conversación y explorar bajan, puzle = triunfo', () => {
+  const ctx = (o) => ({ scene: 'outside', dialogue: false, dialogueTree: null, flags: {}, inventory: [], goalsLeft: null, transient: null, ...o });
+  const lv = (o) => P.intensityOf(MAP.states[P.resolveState(MAP.rules, ctx(o)).state]);
+  assert.equal(lv({}), 0, 'explorar = calma');
+  assert.equal(lv({ dialogue: true, dialogueTree: 'bartender_intro' }), 0, 'conversación normal = calma');
+  assert.equal(lv({ scene: 'recovery_pool', dialogue: true, dialogueTree: 'chad_fud' }), 2, 'duelo de FUD con Chad = tensión');
+  assert.equal(lv({ scene: 'treatment_room', dialogue: true, dialogueTree: 'pzbot_final' }), 2, 'PZ-BOT = tensión');
+  assert.equal(lv({ scene: 'server_room' }), 2, 'peligro: el bot activo');
+  assert.equal(lv({ scene: 'basement' }), 1, 'sótano = activo');
+  assert.equal(lv({ goalsLeft: 1 }), 2, 'último paso del capítulo');
+  assert.equal(lv({ goalsLeft: 1, dialogue: true }), 0, 'leer/hablar baja');
+  assert.equal(lv({ transient: 'solved', scene: 'server_room' }), 3, 'puzle resuelto = triunfo');
+  assert.equal(P.ruleMatches({ dialogueTree: 'chad_fud' }, ctx({ dialogue: false, dialogueTree: 'chad_fud' })), false, 'solo con el diálogo abierto');
+});
+
+test('A8.3 tempoCompatible', () => {
+  assert.ok(P.tempoCompatible(90, 90.5));
+  assert.ok(P.tempoCompatible(132, 66));
+  assert.ok(!P.tempoCompatible(90, 100));
+});
