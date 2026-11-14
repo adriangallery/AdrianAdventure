@@ -1,6 +1,7 @@
 import { defineConfig, type Plugin } from 'vite';
 import path from 'path';
 import fs from 'fs';
+import { brandHtml } from './src/config/branding';
 
 /** Dev-only plugin: saves scene JSON and global config from the hotspot editor */
 function editorSavePlugin(): Plugin {
@@ -71,6 +72,14 @@ function previewCacheHeadersPlugin(): Plugin {
   };
 }
 
+/** A9.4: nombre y web del juego en index.html, desde src/config/branding.ts (un solo sitio) */
+function brandingPlugin(): Plugin {
+  return {
+    name: 'branding',
+    transformIndexHtml: { order: 'pre', handler: (html) => brandHtml(html) },
+  };
+}
+
 const BUILD_HASH = Date.now().toString(36);
 
 /** Replace __BUILD__ in index.html, expose as define constant, and write version.txt */
@@ -89,7 +98,7 @@ function buildHashPlugin(): Plugin {
 }
 
 export default defineConfig({
-  plugins: [editorSavePlugin(), buildHashPlugin(), previewCacheHeadersPlugin()],
+  plugins: [brandingPlugin(), editorSavePlugin(), buildHashPlugin(), previewCacheHeadersPlugin()],
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),

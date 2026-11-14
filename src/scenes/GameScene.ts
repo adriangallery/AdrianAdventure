@@ -9,6 +9,7 @@ import { InventorySystem } from '@/systems/InventorySystem';
 import { SaveLoadSystem } from '@/systems/SaveLoadSystem';
 import { migrateGameState } from '@/systems/SaveMigration';
 import { isValidRunId, newRunId } from '@/systems/SaveProgress';
+import { addPlayTime } from '@/systems/Ending';
 import type { MusicManager } from '@/systems/MusicManager';
 import { CinematicOverlay } from '@/ui/CinematicOverlay';
 import { Web3VisualSystem } from '@/systems/Web3VisualSystem';
@@ -577,6 +578,8 @@ export class GameScene extends Phaser.Scene {
   }
 
   update(time: number, delta: number): void {
+    // A9.4: tiempo jugado (con tope por fotograma: una pestaña oculta o una pausa del navegador no suman)
+    if (!this.isTrailer && this.gameState) this.gameState.playTimeMs = addPlayTime(this.gameState.playTimeMs, delta);
     this.player.setAnimContext(this.playerAnimContext());
     this.player.update(time, delta);
     const lifeDt = this.lifeClock ? Math.min(250, Math.max(0, time - this.lifeClock)) : delta;
@@ -1920,11 +1923,22 @@ export class GameScene extends Phaser.Scene {
         if (action === 'burst') return this.ambient.burst(id);
         return this.ambient.setOverride(id, action === 'auto' ? null : action);
       },
-      showCredits: () => {
+      // A9.4: créditos (un toque no los salta) → partida terminada y guardada → «THE END» y resumen → portada
+      showCredits: async () => {
+        if (run !== this.sceneRun) return;
         const ui = this.scene.get('UIScene');
-        return new Promise<void>((resolve) => {
-          ui.events.emit('showCredits', resolve);
-        });
+        await new Promise<void>((resolve) => { ui.events.emit('showCredits', () => resolve()); });
+        if (run !== this.sceneRun || this.isTrailer) return;
+        // el avance rápido (mantener o Esc) no sigue repartiendo toques sobre el resumen
+        this.endFastForward();
+        this.gameState.completedAt = Date.now();
+        this.gameState.savedAt = Date.now();
+        const title = this.sceneDataLoader?.getSceneData()?.title ?? this.gameState.currentScene;
+        this.saveSystem.autoSave(this.gameState, title);
+        this.registry.set('gameState', this.gameState);
+        await new Promise<void>((resolve) => { ui.events.emit('showEnding', resolve); });
+        if (run !== this.sceneRun) return;
+        this.returnToTitle();
       },
       // A3.10: op showDashboard (Mining Rig). Solo lecturas; se resuelve al cerrar el panel
       showDashboard: async () => {
@@ -2171,6 +2185,19 @@ export class GameScene extends Phaser.Scene {
   }
 
   /** Toque sintético del avance rápido: cierra el texto o la cinemática en pantalla sin mandar andar. */
+  /**
+   * A9.4: tras «THE END», de vuelta a la portada. Se paran el script en marcha (el de los créditos ya terminó) y la
+   * interfaz; MenuScene vuelve a montar sus botones y «Continue» ve la partida terminada.
+   */
+  private returnToTitle(): void {
+    this.registry.set('endingQa', { ...((this.registry.get('endingQa') as Record<string, unknown> | undefined) ?? {}), phase: 'menu', returnedToMenu: true });
+    this.cameras.main.fadeOut(600, 0, 0, 0);
+    this.cameras.main.once('camerafadeoutcomplete', () => {
+      if (this.scene.isActive('UIScene')) this.scene.stop('UIScene');
+      this.scene.start('MenuScene');
+    });
+  }
+
   qaSyntheticTap(): void {
     this.emitSyntheticTap(this.input.activePointer);
   }

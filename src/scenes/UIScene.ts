@@ -17,7 +17,8 @@ import type { SceneData, HotspotData, ScriptOp } from '@/types/scene.types';
 import type { Verb, GameState } from '@/types/game.types';
 import type { GameScene } from './GameScene';
 import { WEB3_ENABLED } from '@/config/platform';
-import { getAchievementByText } from '@/config/achievements.config';
+import { ACHIEVEMENTS, getAchievementByText } from '@/config/achievements.config';
+import { achievementNames, endingSummary } from '@/systems/Ending';
 import { VOICE_TEXT_MAP, NARRATOR_SEQUENCES } from '@/config/voice.config';
 import { getWalletState } from '@/web3/wallet';
 import { loadPatientFile } from '@/web3/tx-history';
@@ -59,7 +60,7 @@ export class UIScene extends Phaser.Scene {
   private static readonly GAME_SCENE_EVENTS = ['hotspot:tapped', 'hotspot:focus', 'hotspot:hover', 'npc:tapped'];
   /** Eventos propios que escucha UIScene (se re-registran en cada create) */
   private static readonly OWN_EVENTS = [
-    'say', 'sayBrief', 'startDialogue', 'showTitleCard', 'showMonitorReveal', 'showNarrative', 'showAchievement', 'showCredits', 'scene:changed',
+    'say', 'sayBrief', 'startDialogue', 'showTitleCard', 'showMonitorReveal', 'showNarrative', 'showAchievement', 'showCredits', 'showEnding', 'scene:changed',
   ];
 
   constructor() {
@@ -329,17 +330,40 @@ export class UIScene extends Phaser.Scene {
     // A9.3: logros que quedaron en cola al cambiar de escena salen en la nueva
     if (this.achievementQueue.length > 0) this.pumpAchievements();
 
-    // Rolling end credits
-    this.events.on('showCredits', (resolve?: () => void) => {
+    // Rolling end credits. A9.4: los logros con su nombre legible; lo que pasa queda en el registry (`endingQa`)
+    this.events.on('showCredits', (resolve?: (skipped: boolean) => void) => {
       const state = this.registry.get('gameState') as GameState | undefined;
-      const earned = state?.achievements ?? [];
-      this.duringCinematic(this.cinematicOverlay.showCredits(earned)).then(() => resolve?.());
+      const names = achievementNames(state?.achievements ?? [], ACHIEVEMENTS);
+      this.registry.set('endingQa', { phase: 'credits', credits: null, ending: null, returnedToMenu: false });
+      let skipped = false;
+      const shown = this.cinematicOverlay.showCredits(names, (credits) => {
+        this.patchEndingQa({ credits });
+      }).then((s) => { skipped = s; });
+      this.duringCinematic(shown).then(() => resolve?.(skipped));
+    });
+    // A9.4: «THE END» y el resumen; se resuelve al cerrarlo (GameScene vuelve entonces a la portada)
+    this.events.on('showEnding', (resolve?: () => void) => {
+      const state = this.registry.get('gameState') as GameState | undefined;
+      const sum = endingSummary(state ?? {}, ACHIEVEMENTS);
+      const stats = sum.lines.slice(0, 3);
+      this.patchEndingQa({ phase: 'theEnd', summary: sum.lines });
+      const shown = this.cinematicOverlay.showEnding({ stats, achievements: sum.achievements }, (ending) => {
+        const prev = (this.registry.get('endingQa') as Record<string, unknown> | undefined) ?? {};
+        this.patchEndingQa({ ending, layout: this.cinematicOverlay.lastEndingLayout ?? prev.layout ?? null });
+      });
+      this.duringCinematic(shown).then(() => resolve?.());
     });
 
     // Scene change refresh
     this.events.on('scene:changed', () => {
       // Nothing to refresh — panel persists
     });
+  }
+
+  /** A9.4: estado del final para la API de QA y las demos (registry `endingQa`, sobrevive a la vuelta a la portada) */
+  private patchEndingQa(patch: Record<string, unknown>): void {
+    const prev = (this.registry.get('endingQa') as Record<string, unknown> | undefined) ?? {};
+    this.registry.set('endingQa', { ...prev, ...patch });
   }
 
   /**

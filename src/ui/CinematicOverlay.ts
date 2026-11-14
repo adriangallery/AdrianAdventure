@@ -1,6 +1,34 @@
 import Phaser from 'phaser';
 import { achievementRect, achievementStripHeight, type Rect } from './achievementLayout';
 import { FONT } from '@/config/theme';
+import { BRANDING } from '@/config/branding';
+import { CREDITS_HOLD_MS, CREDITS_LOCK_MS, ENDING_TAP_GUARD_MS, creditsSkipAllowed, endingTapAllowed, type CreditsInput } from '@/systems/Ending';
+
+/** A9.4: lo que la API de QA y las demos ven de los créditos */
+export interface CreditsQaInfo {
+  startedAt: number;
+  durationMs: number;
+  /** Toques que no saltaron los créditos */
+  tapsIgnored: number;
+  /** Esc pulsados en los primeros 3 s (no saltan) */
+  escIgnored: number;
+  skipped: boolean;
+  skipInput: CreditsInput | null;
+  skippedAtMs: number | null;
+  done: boolean;
+  smallestFontPx: number;
+}
+
+/** A9.4: lo que la API de QA y las demos ven de «THE END» y el resumen */
+export interface EndingQaInfo {
+  theEnd: boolean;
+  stats: string[];
+  achievements: string[];
+  /** Cuántos logros caben en pantalla (el resto sale como «+N more») */
+  achievementsShown: number;
+  tapsIgnored: number;
+  done: boolean;
+}
 
 const DEPTH = 1000;
 const BG_COLOR = 0x06060c;
@@ -292,17 +320,20 @@ export class CinematicOverlay {
 
   /**
    * Rolling credits — classic vertical scroll (Star Wars / Monkey Island style).
-   * Shows roles, fun lines, and earned achievements. Click to skip.
+   * A9.4: un toque NO los salta (el toque que cerró la última frase los quitaba al momento); en los primeros
+   * CREDITS_LOCK_MS no los salta nada y después, mantener pulsado CREDITS_HOLD_MS o Esc. Nombre y web de
+   * src/config/branding.ts; los logros llegan ya con su nombre legible. Resuelve `true` si se saltaron.
    */
-  showCredits(earnedAchievements: string[] = []): Promise<void> {
-    return new Promise<void>((resolve) => {
+  showCredits(achievementNames: string[] = [], qa?: (info: CreditsQaInfo) => void): Promise<boolean> {
+    return new Promise<boolean>((resolve) => {
       const { width, height } = this.scene.scale;
       const refDim = Math.max(width, height * 0.6);
 
       const titleSize = Math.max(18, Math.min(28, Math.floor(refDim * 0.024)));
-      const headingSize = Math.max(12, Math.min(18, Math.floor(refDim * 0.016)));
-      const bodySize = Math.max(10, Math.min(14, Math.floor(refDim * 0.012)));
-      const smallSize = Math.max(8, Math.min(11, Math.floor(refDim * 0.009)));
+      const headingSize = Math.max(13, Math.min(18, Math.floor(refDim * 0.016)));
+      // A9.4: mínimo 11 px (A5.2) también en los créditos
+      const bodySize = Math.max(12, Math.min(14, Math.floor(refDim * 0.012)));
+      const smallSize = Math.max(11, Math.min(12, Math.floor(refDim * 0.009)));
 
       const container = this.scene.add.container(0, 0).setDepth(DEPTH).setAlpha(1).setScrollFactor(0);
 
@@ -314,8 +345,8 @@ export class CinematicOverlay {
       // Build credits content as a vertical stack
       // Each entry: { text, color, size, gap (extra spacing after) }
       const lines: Array<{ text: string; color: string; size: number; gap?: number }> = [
-        { text: 'Z E R O a d v e n t u r e   I I', color: TITLE_COLOR, size: titleSize, gap: 20 },
-        { text: 'A Point & Click Web3 Adventure on Base', color: SUBTLE_COLOR, size: smallSize, gap: 50 },
+        { text: BRANDING.name, color: TITLE_COLOR, size: titleSize, gap: 20 },
+        { text: BRANDING.tagline, color: SUBTLE_COLOR, size: smallSize, gap: 50 },
 
         // ── Story ──
         { text: 'You found Patient Zero.', color: BODY_COLOR, size: bodySize },
@@ -377,13 +408,10 @@ export class CinematicOverlay {
       ];
 
       // ── Achievement summary ──
-      if (earnedAchievements.length > 0) {
+      if (achievementNames.length > 0) {
         lines.push({ text: '— YOUR ACHIEVEMENTS —', color: SUBTLE_COLOR, size: smallSize, gap: 10 });
-        for (const id of earnedAchievements) {
-          // A7.3: ★ (U+2605, está en Press Start 2P) en vez de ⭐
-          const name = id.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
-          lines.push({ text: `\u2605 ${name}`, color: TITLE_COLOR, size: smallSize });
-        }
+        // A7.3: ★ (U+2605, está en Press Start 2P) en vez de ⭐. A9.4: el nombre legible del logro, no su id
+        for (const name of achievementNames) lines.push({ text: `\u2605 ${name}`, color: TITLE_COLOR, size: smallSize });
         lines.push({ text: '', color: BODY_COLOR, size: smallSize, gap: 30 });
       }
 
@@ -394,7 +422,7 @@ export class CinematicOverlay {
         { text: 'The community builds.', color: BODY_COLOR, size: bodySize, gap: 40 },
         { text: 'Thank you for playing.', color: TITLE_COLOR, size: headingSize, gap: 50 },
         { text: 'BE REAL | BE $ZERO', color: TITLE_COLOR, size: titleSize, gap: 30 },
-        { text: 'zeroadventures.com', color: SUBTLE_COLOR, size: smallSize, gap: 80 },
+        { text: BRANDING.web, color: SUBTLE_COLOR, size: smallSize, gap: 80 },
       );
 
       // Create text objects stacked vertically, starting BELOW the screen
@@ -413,7 +441,8 @@ export class CinematicOverlay {
         }).setOrigin(0.5, 0).setScrollFactor(0);
         container.add(txt);
         textObjects.push(txt);
-        curY += line.size + lineGap + (line.gap ?? 0);
+        // A9.4: con letra de 11 px una línea larga puede partirse en vertical: se cuenta su alto real
+        curY += Math.max(line.size, txt.height) + lineGap + (line.gap ?? 0);
       }
 
       // Total content height
@@ -430,38 +459,195 @@ export class CinematicOverlay {
       }
       container.add(scrollContainer);
 
+      const info: CreditsQaInfo = {
+        startedAt: this.scene.time.now, durationMs: scrollDuration, tapsIgnored: 0, escIgnored: 0,
+        skipped: false, skipInput: null, skippedAtMs: null, done: false, smallestFontPx: Math.min(...lines.map((l) => l.size)),
+      };
+      const report = () => qa?.({ ...info });
+      report();
+
+      let finished = false;
+      const finish = (skipInput: CreditsInput | null) => {
+        if (finished) return;
+        finished = true;
+        this.scene.input.off('pointerdown', onDown);
+        this.scene.input.off('pointerup', onUp);
+        window.removeEventListener('keydown', onKey);
+        holdCheck.remove();
+        this.scene.tweens.killTweensOf(scrollContainer);
+        if (skipInput) {
+          info.skipped = true;
+          info.skipInput = skipInput;
+          info.skippedAtMs = Math.round(this.scene.time.now - info.startedAt);
+        }
+        this.fadeOutAndDestroy(container, () => {
+          info.done = true;
+          report();
+          resolve(info.skipped);
+        });
+        report();
+      };
+
       // Scroll upward
       this.scene.tweens.add({
         targets: scrollContainer,
         y: -contentH,
         duration: scrollDuration,
         ease: 'Linear',
-        onComplete: () => {
-          this.fadeOutAndDestroy(container, resolve);
-        },
+        onComplete: () => finish(null),
       });
 
-      // "Click to skip" hint at bottom
-      const skipHint = this.scene.add.text(width / 2, height - 20, '[ click to skip ]', {
+      // A9.4: aviso de cómo saltarlos, solo cuando ya se puede (pasados CREDITS_LOCK_MS)
+      const touch = this.scene.sys.game.device.input.touch;
+      const skipHint = this.scene.add.text(width / 2, height - 20, touch ? '[ hold to skip ]' : '[ hold or Esc to skip ]', {
         fontFamily: FONT.FAMILY, fontSize: `${smallSize}px`,
         color: CONTINUE_COLOR, align: 'center',
-      }).setOrigin(0.5).setScrollFactor(0).setAlpha(0);
+      }).setOrigin(0.5).setScrollFactor(0).setAlpha(0).setName('credits-skip-hint');
       container.add(skipHint);
-
-      // Show skip hint after 3 seconds
-      this.scene.time.delayedCall(3000, () => {
-        this.pulseAlpha(skipHint);
+      this.scene.time.delayedCall(CREDITS_LOCK_MS, () => {
+        if (!finished) this.pulseAlpha(skipHint);
       });
 
-      // Click to skip
-      const clickHandler = () => {
-        this.scene.input.off('pointerdown', clickHandler);
-        this.scene.tweens.killTweensOf(scrollContainer);
-        this.fadeOutAndDestroy(container, resolve);
+      const elapsed = () => this.scene.time.now - info.startedAt;
+      // Mantener pulsado: se mide desde que baja el dedo (los toques sintéticos del avance rápido de GameScene, con el
+      // dedo aún abajo, no reinician la cuenta); un toque suelto no hace nada.
+      let holdFrom: number | null = null;
+      let holdPointer: Phaser.Input.Pointer | null = null;
+      const onDown = (pointer: Phaser.Input.Pointer) => {
+        if (finished) return;
+        if (pointer?.isDown && holdFrom === null) {
+          holdFrom = this.scene.time.now;
+          holdPointer = pointer;
+        }
+        info.tapsIgnored++;
+        report();
       };
-      this.scene.input.on('pointerdown', clickHandler);
+      const onUp = () => { holdFrom = null; holdPointer = null; };
+      const holdCheck = this.scene.time.addEvent({
+        delay: 100, loop: true,
+        callback: () => {
+          if (finished || holdFrom === null) return;
+          if (!holdPointer?.isDown) { holdFrom = null; holdPointer = null; return; }
+          if (this.scene.time.now - holdFrom >= CREDITS_HOLD_MS && creditsSkipAllowed('hold', elapsed())) {
+            info.tapsIgnored = Math.max(0, info.tapsIgnored - 1); // el toque que empezó a mantener no era un toque
+            finish('hold');
+          }
+        },
+      });
+      const onKey = (e: KeyboardEvent) => {
+        if (finished || (e.key !== 'Escape' && e.key !== 'Esc')) return;
+        if (creditsSkipAllowed('esc', elapsed())) finish('esc');
+        else { info.escIgnored++; report(); }
+      };
+      this.scene.input.on('pointerdown', onDown);
+      this.scene.input.on('pointerup', onUp);
+      window.addEventListener('keydown', onKey);
     });
   }
+
+  /**
+   * A9.4: «THE END» y el resumen de la partida (tiempo jugado, llamadas a Anon, logros), sobre negro. Se cierra con un
+   * toque, Esc, Intro o espacio pasados ENDING_TAP_GUARD_MS (antes no, para que dé tiempo a leerlo). La letra no baja de
+   * 11 px; si la lista de logros no cabe, se acorta con «+N more». Deja en `lastEndingLayout` las cajas de cada texto.
+   */
+  showEnding(summary: { stats: string[]; achievements: string[] }, qa?: (info: EndingQaInfo) => void): Promise<void> {
+    return new Promise<void>((resolve) => {
+      const { width, height } = this.scene.scale;
+      const isLandscape = width > height;
+      const refDim = isLandscape ? Math.max(width, height * 1.5) : Math.max(width, height * 0.6);
+      const theEndSize = Math.max(22, Math.min(40, Math.floor(refDim * 0.034)));
+      let bodySize = Math.max(11, Math.min(14, Math.floor(refDim * 0.012)));
+      const hintSize = Math.max(11, Math.min(13, Math.floor(refDim * 0.011)));
+      const margin = Math.max(12, Math.round(height * 0.05));
+      const wrapW = Math.min(width * 0.88, 720);
+
+      const container = this.scene.add.container(0, 0).setDepth(DEPTH).setAlpha(0).setScrollFactor(0);
+      container.add(this.scene.add.rectangle(width / 2, height / 2, width, height, BG_COLOR, 1).setOrigin(0.5).setScrollFactor(0));
+
+      const theEnd = this.scene.add.text(width / 2, 0, 'THE END', {
+        fontFamily: FONT.FAMILY, fontSize: `${theEndSize}px`, color: TITLE_COLOR, align: 'center',
+      }).setOrigin(0.5, 0).setScrollFactor(0).setName('ending-the-end');
+      const name = this.scene.add.text(width / 2, 0, BRANDING.name, {
+        fontFamily: FONT.FAMILY, fontSize: `${hintSize}px`, color: SUBTLE_COLOR, align: 'center',
+        wordWrap: { width: wrapW, useAdvancedWrap: true },
+      }).setOrigin(0.5, 0).setScrollFactor(0).setName('ending-name');
+      const stats = this.scene.add.text(width / 2, 0, summary.stats.join('\n'), {
+        fontFamily: FONT.FAMILY, fontSize: `${bodySize}px`, color: BODY_COLOR, align: 'center',
+        wordWrap: { width: wrapW, useAdvancedWrap: true }, lineSpacing: Math.round(bodySize * 0.6),
+      }).setOrigin(0.5, 0).setScrollFactor(0).setName('ending-stats');
+      const ach = this.scene.add.text(width / 2, 0, '', {
+        fontFamily: FONT.FAMILY, fontSize: `${bodySize}px`, color: TITLE_COLOR, align: 'center',
+        wordWrap: { width: wrapW, useAdvancedWrap: true }, lineSpacing: Math.round(bodySize * 0.5),
+      }).setOrigin(0.5, 0).setScrollFactor(0).setName('ending-achievements');
+      const hint = this.scene.add.text(width / 2, height - margin, '[ tap to return to the title ]', {
+        fontFamily: FONT.FAMILY, fontSize: `${hintSize}px`, color: CONTINUE_COLOR, align: 'center',
+      }).setOrigin(0.5, 1).setScrollFactor(0).setAlpha(0).setName('ending-hint');
+      container.add([theEnd, name, stats, ach, hint]);
+
+      // Coloca todo de arriba abajo; si no cabe, primero baja la letra (hasta 11 px) y luego acorta la lista de logros
+      const gap = () => Math.max(6, Math.round(bodySize * 0.9));
+      const layout = (shown: number): number => {
+        const list = summary.achievements.slice(0, shown).map((n) => `\u2605 ${n}`);
+        const more = summary.achievements.length - shown;
+        if (more > 0) list.push(`+${more} more`);
+        ach.setFontSize(bodySize).setLineSpacing(Math.round(bodySize * 0.5)).setText(list.join('   '));
+        stats.setFontSize(bodySize).setLineSpacing(Math.round(bodySize * 0.6));
+        let y = margin;
+        theEnd.setY(y); y += theEnd.height + Math.round(gap() * 0.5);
+        name.setY(y); y += name.height + gap() * 1.5;
+        stats.setY(y); y += stats.height + gap();
+        ach.setY(y); y += ach.height;
+        return y;
+      };
+      const limit = height - margin - hint.height - gap();
+      let shown = summary.achievements.length;
+      let bottom = layout(shown);
+      while (bottom > limit && bodySize > 11) { bodySize--; bottom = layout(shown); }
+      while (bottom > limit && shown > 0) { shown--; bottom = layout(shown); }
+
+      const rect = (t: Phaser.GameObjects.Text) => ({
+        name: t.name, x: Math.round(t.x - t.width / 2), y: Math.round(t.y - (t.originY === 1 ? t.height : 0)),
+        w: Math.round(t.width), h: Math.round(t.height), fontPx: parseInt(String(t.style.fontSize), 10),
+      });
+      this.lastEndingLayout = { width, height, texts: [theEnd, name, stats, ach, hint].filter((t) => t.text).map(rect) };
+
+      const shownAt = this.scene.time.now;
+      const info: EndingQaInfo = {
+        theEnd: true, stats: [...summary.stats], achievements: [...summary.achievements], achievementsShown: shown,
+        tapsIgnored: 0, done: false,
+      };
+      qa?.({ ...info });
+      this.scene.tweens.add({ targets: container, alpha: 1, duration: 600 });
+      this.scene.time.delayedCall(ENDING_TAP_GUARD_MS, () => { if (!closed) this.pulseAlpha(hint); });
+
+      let closed = false;
+      const close = () => {
+        if (closed) return;
+        closed = true;
+        this.scene.input.off('pointerdown', onDown);
+        window.removeEventListener('keydown', onKey);
+        this.fadeOutAndDestroy(container, () => {
+          this.lastEndingLayout = null;
+          info.done = true;
+          qa?.({ ...info });
+          resolve();
+        });
+      };
+      const onDown = () => {
+        if (endingTapAllowed(this.scene.time.now - shownAt)) close();
+        else { info.tapsIgnored++; qa?.({ ...info }); }
+      };
+      const onKey = (e: KeyboardEvent) => {
+        if (!['Escape', 'Esc', 'Enter', ' '].includes(e.key)) return;
+        if (endingTapAllowed(this.scene.time.now - shownAt)) close();
+      };
+      this.scene.input.on('pointerdown', onDown);
+      window.addEventListener('keydown', onKey);
+    });
+  }
+
+  /** A9.4: cajas (px de pantalla) y tamaño de letra de cada texto del resumen en pantalla; null si no está. */
+  lastEndingLayout: { width: number; height: number; texts: Array<{ name: string; x: number; y: number; w: number; h: number; fontPx: number }> } | null = null;
 
   // ─── Private helpers ───────────────────────
 

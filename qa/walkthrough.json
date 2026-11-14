@@ -5,7 +5,7 @@
       "id": "ruta-critica",
       "kind": "walkthrough",
       "title": "Los 5 capítulos y el epílogo sin wallet conectada",
-      "goal": { "scene": "epilogue_outside", "flags": { "game_complete": true } },
+      "goal": { "menu": true, "flags": { "game_complete": true }, "ending": { "finished": true, "returnedToMenu": true } },
       "steps": [
         { "do": "newGame", "note": "A2.8: el jugador en la acera (franja sin profundidad) a escala entera; su alto es la referencia de lobby y clinic_interior. A3.2: la apertura es una cinemática del motor (franjas, Dex entra andando desde el coche, subtítulos y tarjeta del capítulo) que corre entera y termina (no saltada: newGame solo adelanta los textos con toques) y deja a Dex junto a la puerta mirando a la izquierda, con la cámara de siempre", "expect": { "scene": "outside", "flags": { "premise_shown": true, "chapter_1_intro_shown": true }, "cinematic": { "active": false, "endedMin": 1, "skipped": false, "letterbox": false, "chromeHidden": false, "following": true, "zoom": 1 }, "playerNear": { "x": 39, "y": 93, "tol": 1.5 }, "facing": "left", "pixel": { "integer": true }, "ambient": [{ "id": "lamp_moths", "kind": "moths", "active": true, "minCount": 5, "minFrames": 1 }, { "id": "window_moths", "active": false, "count": 0 }, { "id": "sky_clouds", "active": true, "minCount": 3 }] } },
 
@@ -170,7 +170,7 @@
         { "do": "act", "verb": "LOOK", "target": "hs_now_hiring_sign", "rejects": "Bring your own pen", "expect": { "flags": { "signed_up": false } } },
         { "do": "callAnon", "note": "A3.7e: en el epílogo, p5_sign", "expect": { "journal": { "anon": { "puzzle": "p5_sign", "level": 1 } } } },
         { "do": "use", "item": "leaky_pen", "target": "hs_now_hiring_sign", "rejects": "Still leaking", "note": "A3.7d (E.1): el boli de Mt. Gox firma el NOW HIRING: game_complete", "expect": { "flags": { "signed_up": true, "game_complete": true }, "achievements": ["game_complete"] } },
-        { "do": "act", "verb": "USE", "target": "hs_path_forward", "note": "créditos", "expect": { "scene": "epilogue_outside", "flags": { "game_complete": true } } }
+        { "do": "act", "verb": "USE", "target": "hs_path_forward", "rejects": "Gerald would be proud", "note": "A9.4: créditos enteros (los toques de QA no los saltan: solo mantener o Esc pasados 3 s), «THE END» con el resumen (tiempo jugado, llamadas a Anon, logros con su nombre) y vuelta a la portada con la partida terminada", "expect": { "menu": true, "flags": { "game_complete": true }, "ending": { "creditsSkipped": false, "tapsIgnoredMin": 1, "theEnd": true, "summary": ["^Time played: \\d+(h|m|s)", "^Called Anon: \\d+ times$", "^Achievements: \\d+ of \\d+$", "Game Complete$", "Patient Zero$"], "returnedToMenu": true, "finished": true, "playTimeMin": 60000 } } }
       ]
     },
     {

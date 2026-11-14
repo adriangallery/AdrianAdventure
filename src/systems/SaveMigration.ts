@@ -14,6 +14,8 @@ import type { GameState } from '@/types/game.types';
  *      A1.13: campo aditivo `runId` (id de partida, opcional, sin subir versión): si no es un id válido se descarta.
  *      A7.2: `playerPosition` (ya existía, opcional) se sanea: si no son dos números finitos en 0..100 se descarta y
  *      la partida carga en el spawn por defecto de la escena (ver `savedSpawn`).
+ *      A9.4: campos aditivos `playTimeMs` (tiempo jugado) y `completedAt` (partida terminada), opcionales y sin subir
+ *      versión: si no son números finitos ≥ 0 (> 0 en `completedAt`) se descartan; nada más se toca.
  *
  * Toda partida que entra en el juego pasa por aquí: los slots locales (`SaveLoadSystem.getAllSlots`), la
  * partida de la wallet en localStorage y la de la nube (`wallet-save`: `loadLocal`, `loadRemoteSlots`,
@@ -86,6 +88,15 @@ export function migrateGameState<T extends Partial<GameState> | null | undefined
   if (state.playerPosition !== undefined) {
     const pos = cleanPosition(state.playerPosition);
     if (pos) state.playerPosition = pos; else delete state.playerPosition;
+  }
+  // A9.4: tiempo jugado y partida terminada (opcionales; corruptos = se descartan, la partida carga igual)
+  if (state.playTimeMs !== undefined) {
+    const t = state.playTimeMs as unknown;
+    if (typeof t === 'number' && Number.isFinite(t) && t >= 0) state.playTimeMs = Math.floor(t); else delete state.playTimeMs;
+  }
+  if (state.completedAt !== undefined) {
+    const c = state.completedAt as unknown;
+    if (!(typeof c === 'number' && Number.isFinite(c) && c > 0)) delete state.completedAt;
   }
   if (typeof state.saveVersion !== 'number' || state.saveVersion < SAVE_VERSION) state.saveVersion = SAVE_VERSION;
   return state;

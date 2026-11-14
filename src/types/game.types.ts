@@ -71,6 +71,16 @@ export interface GameState {
    * no pisa sin copia el autoguardado de OTRA partida con progreso (SaveProgress.autosavePlan).
    */
   runId?: string;
+  /**
+   * A9.4: tiempo jugado en ms (suma los fotogramas de GameScene, con tope por fotograma). Opcional y aditivo: las
+   * partidas de antes no lo traen y empiezan a contar desde 0 al cargarlas.
+   */
+  playTimeMs?: number;
+  /**
+   * A9.4: cuándo terminó la partida (al acabar los créditos y el resumen). Opcional: sin él la partida no está terminada.
+   * «Continue» sobre una partida terminada vuelve al epílogo (el camino de bajada repite el final) y la portada lo dice.
+   */
+  completedAt?: number;
 }
 
 export interface InventoryItem {

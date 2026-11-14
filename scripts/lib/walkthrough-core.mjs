@@ -75,6 +75,9 @@ export function check(expect, st, ctx = {}) {
   if (expect.noListenerGrowth) f.push(...checkListenerGrowth(st, ctx.listenersBaseline, ctx.inputListenersBaseline));
   if (expect.lastChoices) f.push(...checkLastChoices(expect.lastChoices, st));
   if (expect.cinematic) f.push(...checkCinematic(expect.cinematic, st));
+  // A9.4: de vuelta en la portada (MenuScene) y el final (créditos, THE END, resumen, partida terminada)
+  if (expect.menu !== undefined && Boolean(st.menu) !== expect.menu) f.push(`en la portada = ${Boolean(st.menu)}, se esperaba ${expect.menu}`);
+  if (expect.ending) f.push(...checkEnding(expect.ending, st));
   if (expect.journal) f.push(...checkJournal(expect.journal, st));
   // A2.10: el personaje acabó cerca de un punto (en %), p. ej. tras un actorMove andado o saltado
   if (expect.playerNear) {
@@ -317,6 +320,36 @@ export function notePixel(refs, st) {
 }
 
 const round3 = (n) => Math.round(n * 1000) / 1000;
+
+/**
+ * A9.4: `expect.ending` contra `st.ending` (registry `endingQa`) y la partida en memoria: `creditsSkipped` (bool),
+ * `tapsIgnoredMin` (toques que NO saltaron los créditos), `theEnd` (se vio «THE END»), `summary` (patrones que tiene que
+ * casar alguna línea del resumen, sin mayúsculas), `returnedToMenu` (bool), `finished` (la partida lleva `completedAt`) y
+ * `playTimeMin` (ms jugados como mínimo).
+ */
+export function checkEnding(want, st) {
+  const e = st.ending;
+  if (e === undefined) return ['el juego no expone `ending` en state() (API de QA anterior a A9.4)'];
+  if (e === null) return ['no se llegó al final (sin créditos en esta sesión)'];
+  const f = [];
+  const credits = e.credits ?? null;
+  if (want.creditsSkipped !== undefined) {
+    if (!credits) f.push('no hubo créditos');
+    else if (Boolean(credits.skipped) !== want.creditsSkipped) f.push(`créditos saltados = ${Boolean(credits.skipped)}${credits.skipInput ? ` (${credits.skipInput} a los ${credits.skippedAtMs} ms)` : ''}, se esperaba ${want.creditsSkipped}`);
+  }
+  if (want.tapsIgnoredMin !== undefined && !((credits?.tapsIgnored ?? 0) >= want.tapsIgnoredMin)) {
+    f.push(`toques ignorados en los créditos: ${credits?.tapsIgnored ?? 0}, se esperaban al menos ${want.tapsIgnoredMin}`);
+  }
+  if (want.theEnd !== undefined && Boolean(e.ending?.theEnd) !== want.theEnd) f.push(`«THE END» = ${Boolean(e.ending?.theEnd)}, se esperaba ${want.theEnd}`);
+  const lines = Array.isArray(e.summary) ? e.summary : [];
+  for (const pat of want.summary ?? []) {
+    if (!lines.some((l) => new RegExp(pat, 'i').test(l))) f.push(`el resumen no tiene «${pat}»: ${lines.join(' | ') || '(vacío)'}`);
+  }
+  if (want.returnedToMenu !== undefined && Boolean(e.returnedToMenu) !== want.returnedToMenu) f.push(`vuelta a la portada = ${Boolean(e.returnedToMenu)}, se esperaba ${want.returnedToMenu}`);
+  if (want.finished !== undefined && (typeof st.completedAt === 'number') !== want.finished) f.push(`partida terminada (completedAt) = ${typeof st.completedAt === 'number'}, se esperaba ${want.finished}`);
+  if (want.playTimeMin !== undefined && !((st.playTimeMs ?? 0) >= want.playTimeMin)) f.push(`tiempo jugado ${st.playTimeMs ?? 0} ms, se esperaban al menos ${want.playTimeMin}`);
+  return f;
+}
 
 /**
  * A2.10: `expect.cinematic` contra `st.cinematic`: booleanos `active`, `letterbox`, `chromeHidden`, `following`

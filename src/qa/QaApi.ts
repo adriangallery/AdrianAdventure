@@ -189,6 +189,17 @@ export interface QaState {
    * completo), `world` (tamaño lógico de la escena, render.world) y `bgTexture` (tamaño real de la textura del fondo).
    */
   textures: TexturesQaState;
+  /** A9.4: en la portada (MenuScene) sin partida en marcha */
+  menu: boolean;
+  /**
+   * A9.4: el final (registry `endingQa`): `phase` ('credits' | 'theEnd' | 'menu'), `credits` (toques ignorados, si se
+   * saltaron y cómo), `ending` (THE END, estadísticas, logros), `summary` (las líneas), `layout` (cajas de los textos del
+   * resumen) y `returnedToMenu`. null si no se ha llegado al final en esta sesión.
+   */
+  ending: Record<string, unknown> | null;
+  /** A9.4: tiempo jugado (ms) y partida terminada de la partida en memoria */
+  playTimeMs: number | null;
+  completedAt: number | null;
 }
 
 /** A4.4: ver QaState.audio */
@@ -343,8 +354,16 @@ export function installQa(game: Phaser.Game): void {
     }
   };
 
+  const endingQa = () => {
+    const e = registry.get('endingQa') as Record<string, unknown> | undefined;
+    return e ? JSON.parse(JSON.stringify(e)) as Record<string, unknown> : null;
+  };
+  /** A9.4: tras «THE END» el juego vuelve a la portada: ahí la partida ha terminado y no hay nada que esperar */
+  const backAtTitleAfterEnding = () => active('MenuScene') && !inGame() && !active('PreloadScene')
+    && (registry.get('endingQa') as { returnedToMenu?: boolean } | undefined)?.returnedToMenu === true;
+
   const busyReasons = (): string[] => {
-    if (!inGame()) return ['loading'];
+    if (!inGame()) return backAtTitleAfterEnding() ? [] : ['loading'];
     const out: string[] = [];
     if (registry.get('sceneTransition')) out.push('transition');
     const createdAt = registry.get('sceneCreatedAt') as number | undefined;
@@ -388,8 +407,12 @@ export function installQa(game: Phaser.Game): void {
     while (calm < CALM_POLLS) {
       hookLog();
       const reasons = busyReasons();
-      if (Date.now() - t0 > timeoutMs) {
-        throw new QaError('error', `tiempo agotado (${timeoutMs} ms) esperando a que el juego quede libre; ocupado: ${reasons.join(', ')}`);
+      // A9.4: los créditos (un toque no los salta) duran lo suyo: se les da su duración (dos veces, por el reloj de
+      // Phaser en el CI) más medio minuto para «THE END»
+      const credits = (registry.get('endingQa') as { credits?: { durationMs?: number } | null } | undefined)?.credits;
+      const allowance = timeoutMs + (credits?.durationMs ? credits.durationMs * 2 + 30_000 : 0);
+      if (Date.now() - t0 > allowance) {
+        throw new QaError('error', `tiempo agotado (${allowance} ms) esperando a que el juego quede libre; ocupado: ${reasons.join(', ')}`);
       }
       if (reasons.includes('choice')) {
         calm = 0;
@@ -556,6 +579,10 @@ export function installQa(game: Phaser.Game): void {
       audio: qaAudio(scene),
       ambient: scene ? scene.qaAmbient() : [],
       textures: texturesState(scene, data ?? null),
+      menu: active('MenuScene') && !playing,
+      ending: endingQa(),
+      playTimeMs: typeof st?.playTimeMs === 'number' ? st.playTimeMs : null,
+      completedAt: typeof st?.completedAt === 'number' ? st.completedAt : null,
     };
   };
 
@@ -910,6 +937,7 @@ export function installQa(game: Phaser.Game): void {
       const button = menu.children.list.find((o) => (o as unknown as { text?: string }).text === '[ New Game ]');
       if (!button) throw new QaError('error', 'no encuentro el botón «New Game» en el menú');
       note('NEW GAME');
+      registry.remove('endingQa');
       button.emit('pointerdown');
       // Aviso de sonido (DOM): se entra sin sonido, pulsando «No thanks» como haría el jugador
       const deadline = Date.now() + 5000;

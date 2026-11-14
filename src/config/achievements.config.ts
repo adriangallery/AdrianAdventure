@@ -54,7 +54,8 @@ export const ACHIEVEMENTS: AchievementDef[] = [
   },
   {
     id: 'game_complete',
-    name: 'ZEROadventure II',
+    // A9.4: nombre del logro sin el nombre del juego (que vive en src/config/branding.ts y aún puede cambiar)
+    name: 'Game Complete',
     description: 'Completed the entire game — the ecosystem is saved',
     tokenId: 20006,
     category: 'chapter',
