@@ -1367,6 +1367,18 @@
                                   "value": true
                                 },
                                 {
+                                  "op": "removeItem",
+                                  "id": "vet_bill"
+                                },
+                                {
+                                  "op": "removeItem",
+                                  "id": "mystery_envelope"
+                                },
+                                {
+                                  "op": "removeItem",
+                                  "id": "mystery_envelope_opened"
+                                },
+                                {
                                   "op": "achievement",
                                   "text": "Chapter 2 Complete: The Receptionist"
                                 }
@@ -1523,6 +1535,18 @@
                                   "value": true
                                 },
                                 {
+                                  "op": "removeItem",
+                                  "id": "vet_bill"
+                                },
+                                {
+                                  "op": "removeItem",
+                                  "id": "mystery_envelope"
+                                },
+                                {
+                                  "op": "removeItem",
+                                  "id": "mystery_envelope_opened"
+                                },
+                                {
                                   "op": "achievement",
                                   "text": "Chapter 2 Complete: The Receptionist"
                                 }
@@ -1673,6 +1697,18 @@
                                   "value": true
                                 },
                                 {
+                                  "op": "removeItem",
+                                  "id": "vet_bill"
+                                },
+                                {
+                                  "op": "removeItem",
+                                  "id": "mystery_envelope"
+                                },
+                                {
+                                  "op": "removeItem",
+                                  "id": "mystery_envelope_opened"
+                                },
+                                {
                                   "op": "achievement",
                                   "text": "Chapter 2 Complete: The Receptionist"
                                 }
@@ -1803,6 +1839,18 @@
                                   "op": "setFlag",
                                   "flag": "chapter_2_complete",
                                   "value": true
+                                },
+                                {
+                                  "op": "removeItem",
+                                  "id": "vet_bill"
+                                },
+                                {
+                                  "op": "removeItem",
+                                  "id": "mystery_envelope"
+                                },
+                                {
+                                  "op": "removeItem",
+                                  "id": "mystery_envelope_opened"
                                 },
                                 {
                                   "op": "achievement",
@@ -3531,6 +3579,22 @@
               "op": "setFlag",
               "flag": "chapter_1_complete",
               "value": true
+            },
+            {
+              "op": "removeItem",
+              "id": "note_half_a"
+            },
+            {
+              "op": "removeItem",
+              "id": "note_half_b"
+            },
+            {
+              "op": "removeItem",
+              "id": "code_note"
+            },
+            {
+              "op": "removeItem",
+              "id": "fence_plank"
             },
             {
               "op": "playSound",
