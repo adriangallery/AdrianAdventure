@@ -6,7 +6,7 @@ import { join, resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
   isWalkableRects, gridPoints, nearestWalkable, sweepPoints, expectedDexPct, nearestRef, overlap,
-  evaluatePosition, newFailures, failureKey, summarize, loadScaleRefs, loadSceneJson,
+  evaluatePosition, occludes, newFailures, failureKey, summarize, loadScaleRefs, loadSceneJson,
 } from '../scripts/lib/proportion-sweep.mjs';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
@@ -81,6 +81,24 @@ test('profundidad: primer plano que no tapa, y primer plano que tapa estando del
   assert.equal(evaluatePosition({ ...behind, cover: { hs_bush: 0.9 } }, doc).failures.filter((f) => f.type === 'occlusion').length, 0);
   const front = at({ x: 85, feetX: 85, y: 99, feetY: 99, box: { x: 83, y: 64, w: 4, h: 35 }, cover: { hs_bush: 0.8 } });
   assert.equal(evaluatePosition(front, doc).failures.find((f) => f.type === 'overdraw')?.ref, 'hs_bush');
+});
+
+test('fase 3: umbral de occlusion relativo a lo que la referencia puede tapar (grid-80.6-88 de mountain)', () => {
+  // Sin coverMax (medidas antiguas): absoluto, 50 % de la caja común
+  assert.equal(occludes(0.25, undefined), false);
+  assert.equal(occludes(0.6, undefined), true);
+  // Con coverMax: tapa 25 % de una caja donde la roca solo ocupa 30 % = tapa todo lo que puede
+  assert.equal(occludes(0.25, 0.3), true);
+  assert.equal(occludes(0.1, 0.3), false);
+  assert.equal(occludes(0, 0.02), null);
+  const behind = at({ x: 85, feetX: 85, y: 92, feetY: 92, box: { x: 83, y: 57, w: 4, h: 35 } });
+  const occ = (m) => evaluatePosition(m, doc).failures.filter((f) => f.type === 'occlusion').length;
+  assert.equal(occ({ ...behind, cover: { hs_bush: 0.25 } }), 1);
+  assert.equal(occ({ ...behind, cover: { hs_bush: 0.25 }, coverMax: { hs_bush: 0.3 } }), 0);
+  // El trozo podría taparle (60 %) y no le tapa (está ordenado delante por error): sigue fallando
+  assert.equal(occ({ ...behind, cover: { hs_bush: 0.05 }, coverMax: { hs_bush: 0.6 } }), 1);
+  // La referencia casi no tiene píxeles en la caja común: nada que juzgar
+  assert.equal(occ({ ...behind, cover: { hs_bush: 0 }, coverMax: { hs_bush: 0.01 } }), 0);
 });
 
 test('base de fallos conocidos: solo cuentan los nuevos', () => {

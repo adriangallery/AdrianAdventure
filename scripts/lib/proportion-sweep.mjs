@@ -157,8 +157,8 @@ export function evaluatePosition(m, refsDoc, npcRefs = []) {
     if (frac < 0.03) continue;
     const covered = m.cover?.[r.id] ?? 0;
     const behind = m.feetY < r.baseY;
-    if (r.foreground && behind && covered < 0.5) {
-      failures.push({ type: 'occlusion', ref: r.id, dev: r2(frac), msg: `pies por detrás de la base de ${r.label} (${r2(m.feetY)} < ${r.baseY}) y no le tapa (tapado ${pc(covered)})` });
+    if (r.foreground && behind && occludes(covered, m.coverMax?.[r.id]) === false) {
+      failures.push({ type: 'occlusion', ref: r.id, dev: r2(frac), msg: `pies por detrás de la base de ${r.label} (${r2(m.feetY)} < ${r.baseY}) y no le tapa (tapado ${pc(covered)}${m.coverMax?.[r.id] != null ? ` de ${pc(m.coverMax[r.id])} posible` : ''})` });
     } else if (!behind && covered >= 0.5) {
       failures.push({ type: 'overdraw', ref: r.id, dev: r2(covered), msg: `Dex está delante de ${r.label} (pies ${r2(m.feetY)} ≥ ${r.baseY}) y el primer plano le tapa (${pc(covered)})` });
     } else if (!r.foreground && behind && frac > 0.15) {
@@ -167,6 +167,21 @@ export function evaluatePosition(m, refsDoc, npcRefs = []) {
   }
   const score = failures.reduce((s, f) => s + (f.type === 'scale' ? Math.abs(f.dev) * 2 : f.type === 'feet' ? 1.5 : 1 + (f.dev || 0)), 0);
   return { scale, failures, info, score: r2(score) };
+}
+
+/**
+ * A2.17 fase 3: ¿le tapa lo bastante? `covered` = fracción de la caja común Dex ∩ referencia tapada por el primer plano
+ * (lo que se dibuja por encima de Dex); `possible` = fracción de esa misma caja con píxeles opacos del primer plano,
+ * estén delante o detrás de Dex (lo que la referencia PUEDE tapar: una roca con hueco o un arbusto ralo no cubre la caja
+ * entera). Con `possible` el umbral es relativo: falla si tapa menos de la mitad de lo que podría. Sin él (medidas
+ * antiguas) se usa el absoluto de la fase 1 (50 % de la caja). Si la referencia apenas tiene píxeles en la caja común
+ * (< OCCLUSION_MIN_POSSIBLE) no hay nada que juzgar: null.
+ */
+export const OCCLUSION_MIN_POSSIBLE = 0.05;
+export function occludes(covered, possible) {
+  if (possible == null) return covered >= 0.5;
+  if (possible < OCCLUSION_MIN_POSSIBLE) return null;
+  return covered >= 0.5 * possible;
 }
 
 const r2 = (v) => Math.round(v * 100) / 100;
