@@ -289,6 +289,28 @@ def profile_pick(P, level):
     return out
 
 
+def profile_sit(P, talk=False):
+    """P1: sentado en el sillón de treatment_room, de perfil mirando al monitor (a la derecha). Muslo casi horizontal
+    sobre el asiento, pierna hacia el reposapiés inclinado, mano cercana en el reposabrazos (hablando: la levanta y abre
+    la boca). Mismo lienzo 48×103 con lo más bajo (el zapato) en la última fila, como el resto del rig."""
+    hip_y = 81                      # el zapato acaba en la fila 102
+    hx = P.hipX
+    img = blank(P.W, P.H)
+    oy = hip_y - 61
+    P.arm(img, (P.ox + 4.5, 31 + oy), 0, hand=(hx + 10, hip_y - 9))           # brazo lejano en su reposabrazos
+    P.leg(img, (hx - 1, hip_y + .5), (hx + 24, hip_y + 14), 15)              # pierna lejana, 3 px por detrás
+    P.leg(img, (hx, hip_y + .5), (hx + 27, hip_y + 13), 15)
+    paste(img, P.body, P.ox, oy)
+    h = P.head.copy()
+    if talk:
+        for x in range(12, 15):
+            h[19, x] = P.src[18, 13]
+    paste(img, h, P.ox, oy)
+    hand = (hx + 15, hip_y - 16) if talk else (hx + 12, hip_y - 8)
+    P.arm(img, (P.ox + 3.5, 31 + oy), 0, hand=hand)
+    return clean_orphans(img)
+
+
 # ════════════════════════════════════════ FRENTE / ESPALDA ════════════════════════════════════════════════════════
 class Front:
     def __init__(self, src='Idle-1.png', canvas=37, ox=6):
@@ -563,6 +585,9 @@ def build():
     for lv in ('high', 'mid', 'low'):
         anims['pick_r_' + lv] = (profile_pick(P, lv), 90, False)
     anims['shrug'] = (front_shrug(F), 130, False)
+    # P1 (arte pendiente): sentado en el sillón (treatment_room, flag patient_seated) y sentado hablando
+    anims['sit'] = ([profile_sit(P)], 140, False)
+    anims['sit_talk'] = ([profile_sit(P, talk=True)], 140, False)
     for k in list(anims):
         if k.endswith('_r') or '_r_' in k:
             fr, ms, lp = anims[k]
