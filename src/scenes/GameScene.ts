@@ -48,6 +48,7 @@ import { pickLevel, wantsGesture } from '@/systems/PlayerAnim';
 import { defaultFacing, lifeSeed, type VoiceState } from '@/systems/NpcLife';
 import { AmbientLayer } from '@/systems/AmbientLayer';
 import type { AmbientQa } from '@/systems/Ambient';
+import { hotspotVisible } from '@/systems/HotspotVisibility';
 import type { VoiceSystem } from '@/systems/VoiceSystem';
 import { failResponses } from '@/systems/FailResponsesData';
 import { isNpcBag } from '@/systems/FailResponses';
@@ -886,8 +887,9 @@ export class GameScene extends Phaser.Scene {
     }
 
     const pct = this.coordSystem.screenToPct(wx, wy);
+    // A3.11: un hotspot oculto (lo ya cogido) no tapa al de debajo; rawHotspot es solo para el diagnóstico de QA
     const rawHotspot = this.sceneDataLoader.getHotspotAtPct(pct.x, pct.y);
-    let hotspot = rawHotspot && this.isHotspotVisible(rawHotspot) ? rawHotspot : null;
+    let hotspot = this.sceneDataLoader.getHotspotAtPct(pct.x, pct.y, (hs) => this.isHotspotVisible(hs));
     if (!hotspot && wasTouch) {
       const pad = this.touchPadPct();
       hotspot = this.sceneDataLoader.getHotspotNearPct(pct.x, pct.y, pad.x, pad.y, (hs) => this.isHotspotVisible(hs));
@@ -1205,9 +1207,10 @@ export class GameScene extends Phaser.Scene {
     }
 
     const pct = this.coordSystem.screenToPct(wx, wy);
-    const hs = this.sceneDataLoader.getHotspotAtPct(pct.x, pct.y);
+    // A3.11: lo ya cogido no da nombre al pasar (antes salía «Walk to Old Mouse» con el ratón en el inventario)
+    const hs = this.sceneDataLoader.getHotspotAtPct(pct.x, pct.y, (h) => this.isHotspotVisible(h));
     this.events.emit('hotspot:hover', hs ? hs.name : null);
-    if (hs && this.isHotspotVisible(hs)) this.events.emit('hotspot:focus', hs);
+    if (hs) this.events.emit('hotspot:focus', hs);
   }
 
   // ─── Resize ───────────────────────────────
@@ -1736,11 +1739,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   private isHotspotVisible(hs: HotspotData): boolean {
-    const hideFlag = hs.hideWhenFlag;
-    if (hideFlag && (this.gameState.flags[hideFlag] ?? false)) return false;
-    const showFlag = hs.showWhenFlag;
-    if (showFlag && !(this.gameState.flags[showFlag] ?? false)) return false;
-    return true;
+    return hotspotVisible(hs, (f) => this.gameState.flags[f] ?? false, (i) => this.inventorySystem.hasItem(i));
   }
 
   private getEffectivePanelHeight(): number {
@@ -2241,7 +2240,7 @@ export class GameScene extends Phaser.Scene {
     if (hit.kind === 'none') return hit.reason;
     if (hit.kind === 'npc') return `el NPC ${hit.npc.npcId}`;
     if (!hit.rawHotspot) return 'fondo sin hotspot';
-    return hit.hotspot ? `el hotspot ${hit.rawHotspot.id}` : `el hotspot oculto ${hit.rawHotspot.id}`;
+    return hit.hotspot ? `el hotspot ${hit.hotspot.id}` : `el hotspot oculto ${hit.rawHotspot.id}`;
   }
 
   /**
