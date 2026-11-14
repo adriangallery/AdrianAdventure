@@ -88,3 +88,32 @@ test('los scene.json del repo siguen siendo JSON y los overlays con bounds cuadr
     }
   }
 });
+
+// --- A9.16: píxeles del overlay contra el fondo y manifiesto de hashes (scripts/lib/overlay-pixels.mjs) ---
+import { overlayVsBackground, isNearPatchDefect, lockProblems, NEAR_MAX_PX, NEAR_DELTA } from '../scripts/lib/overlay-pixels.mjs';
+
+test('overlayVsBackground cuenta iguales, casi iguales y distintos (solo opacos) en su sitio del fondo', () => {
+  const bw = 4, bh = 2, bg = new Uint8Array(bw * bh * 3).fill(100);
+  // overlay 2x2 en (1, 0): igual, casi (Δ 5), distinto (Δ 60), semitransparente
+  const ov = new Uint8Array([100, 100, 100, 255, 105, 100, 100, 255, 160, 100, 100, 255, 0, 0, 0, 128]);
+  assert.deepEqual(overlayVsBackground(ov, 2, 2, bg, bw, 3, 1, 0), { opaque: 3, equal: 1, near: 1, far: 1, semi: 1 });
+  const edge = new Uint8Array([100 + NEAR_DELTA, 100, 100, 255]);
+  assert.equal(overlayVsBackground(edge, 1, 1, bg, bw, 3, 0, 0).near, 1, `Δ ${NEAR_DELTA} aún es «casi»`);
+});
+
+test('isNearPatchDefect: falla con muchos casi iguales y en proporción alta (la veleta de A9.12), no con pocos', () => {
+  assert.equal(isNearPatchDefect({ opaque: 50230, near: 6556 }), true, 'veleta vieja: 6556 px, 13,1 %');
+  assert.equal(isNearPatchDefect({ opaque: 65316, near: 7828 }), false, 'puerta de recovery_pool: 12,0 %');
+  assert.equal(isNearPatchDefect({ opaque: 3000, near: NEAR_MAX_PX }), false, 'por debajo del tope de px');
+});
+
+test('lockProblems: fondo cambiado, overlay cambiado, que falta y que sobra', () => {
+  const lock = { overlays: { 'a/x': { background: 'b1', overlay: 'o1' }, 'a/gone': { background: 'b1', overlay: 'o9' } } };
+  assert.deepEqual(lockProblems(lock, { 'a/x': { background: 'b1', overlay: 'o1' }, 'a/gone': { background: 'b1', overlay: 'o9' } }), []);
+  const p = lockProblems(lock, { 'a/x': { background: 'b2', overlay: 'o2' }, 'a/new': { background: 'b1', overlay: 'o3' } });
+  assert.equal(p.length, 4);
+  assert.match(p.join('\n'), /a\/x: el fondo de la escena cambió/);
+  assert.match(p.join('\n'), /a\/x: el overlay cambió/);
+  assert.match(p.join('\n'), /a\/new: no está/);
+  assert.match(p.join('\n'), /a\/gone: está en overlays.lock.json y ya no existe/);
+});
