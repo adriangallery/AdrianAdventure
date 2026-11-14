@@ -19,6 +19,7 @@
   "mountain|scale|hs_sign|grid:grid-26-80.5",
   "mountain|scale|hs_sign|ref:hs_sign:der",
   "mountain|scale|hs_sign|ref:hs_sign:detrás",
-  "mountain|scale|hs_sign|ref:hs_sign:izq"
+  "mountain|scale|hs_sign|ref:hs_sign:izq",
+  "outside|overdraw|hs_lambo|ref:carport_post:detrás"
  ]
 }

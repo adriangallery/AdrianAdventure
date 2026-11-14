@@ -74,6 +74,9 @@
       "depth": 5
     }
   ],
+  "screens": {
+    "virus_screen": {"bounds": {"x": 23.8, "y": 46.4, "w": 4.6, "h": 12.0}, "color": "green", "label": "MEMELAB // VIRUS MONITOR"}
+  },
   "regions": {
     "hotspots": [
       {
@@ -164,10 +167,12 @@
               "then": [
                 {
                   "op": "say",
+                  "screen": "virus_screen",
                   "text": "'MEME VIRUS 99%. DEPLOYMENT: PENDING.' Somebody built a weapon out of jokes. And left it at ninety-nine."
                 },
                 {
                   "op": "say",
+                  "screen": "virus_screen",
                   "text": "The log: 'PROPAGATION: EXPONENTIAL. TARGET: ALL TIMELINES.' Somebody here had very big plans and very small fonts."
                 }
               ],
@@ -186,6 +191,7 @@
               "then": [
                 {
                   "op": "say",
+                  "screen": "virus_screen",
                   "text": "I try the keyboard. Dead. But the screen flickers: 'LAST OPERATOR: Dr. S. — EXPERIMENT STATUS: CONTAINED'. Dr. Satoshi was running this lab."
                 }
               ],
@@ -349,6 +355,7 @@
                 },
                 {
                   "op": "say",
+                  "screen": "virus_screen",
                   "text": "I push the button. The containment tube surges with light. Every screen in the room flashes 'FEELS GOOD MAN' for exactly 4.20 seconds."
                 },
                 {
@@ -380,6 +387,7 @@
                 },
                 {
                   "op": "say",
+                  "screen": "virus_screen",
                   "text": "I push the button. The containment tube surges with light. Every screen in the room flashes 'FEELS GOOD MAN' for exactly 4.20 seconds."
                 },
                 {

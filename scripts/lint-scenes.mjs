@@ -54,6 +54,9 @@
 //      objeto es el overlay) o `pickedNotDrawn: "<motivo>"` si el objeto no está dibujado aparte; o bien
 //      (2) `keepAfterPick: "<motivo>"`: el hotspot se queda a propósito (contenedor, mueble, fuente). `hideWhen` mal
 //      escrito también es error (pickedDefects)
+//   q  pantallas (A2.19, src/systems/ScreenText.ts, ERROR): `screens.<id>` mal definida (bounds {x,y,w,h} en 0-100 con
+//      ancho y alto > 0, color de SCREEN_COLORS) y `say`/`sayBrief` con `screen` a una pantalla que no está en la escena
+//      del script; `display`/`closeup` sin `screen` = aviso (no hacen nada)
 //
 // Por defecto (f), los spawns fuera de zona de (e), el diario mal formado de (h), los errores de (j) y (k) y (l) son error; el resto, aviso. --strict lo convierte todo en error. Código de salida 1
 // solo si hay errores. Escribe lint-scenes-report.json y lint-scenes-report.md en la raíz del repo.
@@ -127,6 +130,7 @@ export const RULES = {
   n: 'cajas de luz',
   o: 'objetos que nunca se retiran',
   p: 'lo cogido desaparece',
+  q: 'pantallas',
 };
 
 // A9.7: capítulo de cada escena para la regla (o). Copia de CHAPTERS[].scenes de src/systems/ChapterManager.ts
@@ -703,6 +707,24 @@ export function analyzeJournal(files = []) {
  * Aplica las reglas a un proyecto ({ scenes, srcFiles, qaUses, preload, exists }). Devuelve los hallazgos sin
  * filtrar: { rule, severity, scene, id, where, message, strong? }.
  */
+/** A2.19: colores de pantalla (copia de SCREEN_COLORS de src/systems/ScreenText.ts; el test comprueba que coinciden) */
+export const SCREEN_COLORS = ['green', 'amber', 'red', 'white', 'gold'];
+
+/** A2.19: errores de `screens.<id>` (misma regla que screenDefErrors de src/systems/ScreenText.ts) */
+export function screenDefErrors(id, def) {
+  const errs = [];
+  if (!def || typeof def !== 'object') return [`screens.${id}: no es un objeto`];
+  const b = def.bounds;
+  if (!b || !['x', 'y', 'w', 'h'].every((k) => typeof b[k] === 'number' && Number.isFinite(b[k]))) {
+    errs.push(`screens.${id}: bounds {x,y,w,h} numéricos`);
+  } else {
+    if (b.w <= 0 || b.h <= 0) errs.push(`screens.${id}: bounds con ancho y alto > 0`);
+    if (b.x < 0 || b.y < 0 || b.x + b.w > 100.01 || b.y + b.h > 100.01) errs.push(`screens.${id}: bounds fuera de 0-100 %`);
+  }
+  if (def.color !== undefined && !SCREEN_COLORS.includes(String(def.color))) errs.push(`screens.${id}: color «${String(def.color)}» (${SCREEN_COLORS.join('|')})`);
+  return errs;
+}
+
 export function lintProject(project) {
   const scenes = project.scenes ?? {};
   const srcFiles = project.srcFiles ?? [];
@@ -1202,6 +1224,36 @@ export function lintProject(project) {
       if (op.op !== 'ambient') return;
       if (!AMBIENT_ACTIONS.includes(op.action)) push('k', 'error', c.scene, String(op.id), p, `ambient: action «${String(op.action)}» no válida (${AMBIENT_ACTIONS.join(', ')})`);
       if (typeof op.id !== 'string' || !ids.has(op.id)) push('k', 'error', c.scene, String(op.id), p, `ambient: el elemento «${op.id}» no está en ambient[] de ${c.scene}`);
+    });
+  }
+
+  // ── (p) pantallas (A2.19) ──
+  for (const [id, s] of Object.entries(scenes)) {
+    for (const [sid, def] of Object.entries(s.screens ?? {})) {
+      for (const m of screenDefErrors(sid, def)) push('q', 'error', id, sid, `${id}.screens.${sid}`, `pantalla: ${m}`);
+    }
+  }
+  for (const [id, s] of Object.entries(scenes)) {
+    for (const [treeId, tree] of Object.entries(s.dialogues ?? {})) {
+      for (const [nodeId, node] of Object.entries(tree?.nodes ?? {})) {
+        if (node?.screen === undefined) continue;
+        if (typeof node.screen !== 'string' || !Object.hasOwn(s.screens ?? {}, node.screen)) {
+          push('q', 'error', id, String(node.screen), `${id}.dialogues.${treeId}.${nodeId}`, `pantalla: «${String(node.screen)}» no está en screens de ${id}`);
+        }
+      }
+    }
+  }
+  for (const c of containers) {
+    const screens = scenes[c.scene]?.screens ?? {};
+    walkOps(c.ops, `${c.scene}.${c.label}`, (op, p) => {
+      if (op.op !== 'say' && op.op !== 'sayBrief') return;
+      if (op.screen === undefined) {
+        if (op.display !== undefined || op.closeup !== undefined) push('q', 'warning', c.scene, 'screen', p, 'pantalla: `display`/`closeup` sin `screen` (no hacen nada)');
+        return;
+      }
+      if (typeof op.screen !== 'string' || !Object.hasOwn(screens, op.screen)) {
+        push('q', 'error', c.scene, String(op.screen), p, `pantalla: «${String(op.screen)}» no está en screens de ${c.scene}`);
+      }
     });
   }
 

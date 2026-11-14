@@ -156,3 +156,29 @@ export function sceneObstacles(
   }
   return out;
 }
+
+// ── Obstáculos condicionales (A3.12) ──────────────────────
+
+/**
+ * A3.12: un `blockedArea` puede llevar `when` (gramática de A2.6a/A3.11: `flag`, `!flag`, `item:x`…; lista = todas):
+ * solo es obstáculo mientras se cumple (p. ej. la huella del lambo de `outside`, que solo está con `pzbot_crashed`).
+ * Sin `when`, siempre. `holds` evalúa UNA condición (GameScene le pasa HotspotVisibility.conditionHolds sobre el estado).
+ */
+export function activeBlockedAreas<R extends WalkRect & { when?: string | string[] }>(
+  blocked: R[] | undefined, holds: (cond: string) => boolean,
+): WalkRect[] {
+  const out: WalkRect[] = [];
+  for (const b of blocked ?? []) {
+    const conds = b.when === undefined || b.when === null ? [] : Array.isArray(b.when) ? b.when : [b.when];
+    if (conds.every((c) => holds(c))) out.push({ x: b.x, y: b.y, w: b.w, h: b.h });
+  }
+  return out;
+}
+
+/** Clave estable del conjunto activo (para rehacer la rejilla solo cuando cambia) */
+export function blockedAreasKey<R extends { when?: string | string[] }>(blocked: R[] | undefined, holds: (cond: string) => boolean): string {
+  return (blocked ?? []).map((b) => {
+    const conds = b.when === undefined || b.when === null ? [] : Array.isArray(b.when) ? b.when : [b.when];
+    return conds.every((c) => holds(c)) ? '1' : '0';
+  }).join('');
+}

@@ -52,6 +52,10 @@
     "triggerColor": "#FF00FF",
     "regionIdStrategy": "manual"
   },
+  "screens": {
+    "terminal": {"bounds": {"x": 50.1, "y": 42.3, "w": 5.4, "h": 10.6}, "color": "green", "label": "PZ-BOT v0.9 // TERMINAL"},
+    "hidden_screen": {"bounds": {"x": 81.3, "y": 50, "w": 6.6, "h": 10}, "color": "amber", "label": "HIDDEN SCREEN", "closeupOnly": true}
+  },
   "regions": {
     "hotspots": [
       {
@@ -257,12 +261,14 @@
               "then": [
                 {
                   "op": "say",
+                  "screen": "terminal",
                   "text": "A frozen chart and one line on the terminal: 'ALL IN.' PZ-BOT is thinking very hard about Gerald."
                 }
               ],
               "else": [
                 {
                   "op": "say",
+                  "screen": "terminal",
                   "text": "Green text scrolls: 'PZ-BOT v0.9 — AUTONOMOUS TRADING AGENT. EMERGENCY SHUTOFF: LOCKED.' A webcam stares at me."
                 }
               ]
@@ -295,6 +301,7 @@
                     },
                     {
                       "op": "say",
+                      "screen": "terminal",
                       "text": "Downloaded. The last entry reads: 'PZ discharge protocol initiated. All records moved to treatment room.'"
                     }
                   ]
@@ -308,6 +315,7 @@
                 },
                 {
                   "op": "say",
+                  "screen": "terminal",
                   "text": "ACCESS DENIED. OWNER ONLY. OR ALPHA. DO YOU HAVE ALPHA?",
                   "speaker": "PZ-BOT"
                 }
@@ -321,6 +329,7 @@
               "then": [
                 {
                   "op": "say",
+                  "screen": "terminal",
                   "text": "GERALD... GERALD... STILL LOADING...",
                   "speaker": "PZ-BOT"
                 },
@@ -337,11 +346,13 @@
                 },
                 {
                   "op": "say",
+                  "screen": "terminal",
                   "text": "I ONLY TALK TO MY OWNER. OR TO ALPHA. DO YOU HAVE ALPHA?",
                   "speaker": "PZ-BOT"
                 },
                 {
                   "op": "say",
+                  "screen": "terminal",
                   "text": "EMERGENCY SHUTOFF: LOCKED. SHUTDOWN = MISSED OPPORTUNITIES.",
                   "speaker": "PZ-BOT"
                 },
@@ -379,6 +390,7 @@
                     },
                     {
                       "op": "say",
+                      "screen": "terminal",
                       "text": "Downloaded. The last entry reads: 'PZ discharge protocol initiated. All records moved to treatment room.'"
                     }
                   ]
@@ -392,6 +404,7 @@
                 },
                 {
                   "op": "say",
+                  "screen": "terminal",
                   "text": "ACCESS DENIED. OWNER ONLY. OR ALPHA. DO YOU HAVE ALPHA?",
                   "speaker": "PZ-BOT"
                 }
@@ -401,12 +414,16 @@
           "OPEN": [
             {
               "op": "say",
+              "screen": "terminal",
+              "display": "> open sesame\nTry sudo.",
               "text": "I type 'open sesame'. The terminal replies: 'Try sudo.' I don't have sudo. I barely have a plan."
             }
           ],
           "CLOSE": [
             {
               "op": "say",
+              "screen": "terminal",
+              "display": "> exit\nno",
               "text": "I type 'exit'. The terminal types 'no'. We stare at each other."
             }
           ],
@@ -419,6 +436,8 @@
           "PULL": [
             {
               "op": "say",
+              "screen": "terminal",
+              "display": "$ history\n 03:00  git push --force",
               "text": "I pull up the command history. Someone typed 'git push --force' at 3 AM. That explains a lot."
             }
           ],
@@ -528,6 +547,8 @@
               "then": [
                 {
                   "op": "say",
+                  "screen": "hidden_screen",
+                  "display": "47.6062N, 122.3321W\nPatient Zero Rehabilitation Clinic",
                   "text": "The switch is flipped. The hidden screen still glows with coordinates: 47.6062N, 122.3321W. Patient Zero Rehabilitation Clinic."
                 }
               ],
@@ -590,11 +611,14 @@
                         },
                         {
                           "op": "say",
+                          "screen": "terminal",
                           "text": "PZ-BOT: RUNNING ON BATTERY. 4 %. STILL BULLISH.",
                           "speaker": "PZ-BOT"
                         },
                         {
                           "op": "say",
+                          "screen": "hidden_screen",
+                          "display": "47.6062N, 122.3321W\nPatient Zero Rehabilitation Clinic",
                           "text": "A hidden screen flickers on. Coordinates: 47.6062N, 122.3321W. A name: 'Patient Zero Rehabilitation Clinic'."
                         },
                         {
@@ -1220,11 +1244,13 @@
             },
             {
               "op": "say",
+              "screen": "terminal",
               "text": "ALPHA DETECTED. SOURCE: TRUST ME. CONFIDENCE: MAXIMUM.",
               "speaker": "PZ-BOT"
             },
             {
               "op": "say",
+              "screen": "terminal",
               "text": "GERALD. GERALD. ALL IN.",
               "speaker": "PZ-BOT"
             },
@@ -1238,6 +1264,8 @@
             },
             {
               "op": "say",
+              "screen": "terminal",
+              "closeup": true,
               "text": "'Owner wallet: 0xDE... Last entry: PZ discharge protocol initiated. All records moved to treatment room.'"
             },
             {
@@ -1246,6 +1274,7 @@
             },
             {
               "op": "say",
+              "screen": "terminal",
               "text": "EMERGENCY SHUTOFF: UNLOCKED. REBOOTING. PLEASE HOLD.",
               "speaker": "PZ-BOT"
             }

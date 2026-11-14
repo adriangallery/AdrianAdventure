@@ -60,7 +60,7 @@ export class UIScene extends Phaser.Scene {
   private static readonly GAME_SCENE_EVENTS = ['hotspot:tapped', 'hotspot:focus', 'hotspot:hover', 'npc:tapped'];
   /** Eventos propios que escucha UIScene (se re-registran en cada create) */
   private static readonly OWN_EVENTS = [
-    'say', 'sayBrief', 'startDialogue', 'showTitleCard', 'showMonitorReveal', 'showNarrative', 'showAchievement', 'showCredits', 'showEnding', 'scene:changed',
+    'say', 'sayBrief', 'advanceSay', 'startDialogue', 'showTitleCard', 'showMonitorReveal', 'showNarrative', 'showAchievement', 'showCredits', 'showEnding', 'scene:changed',
   ];
 
   constructor() {
@@ -106,10 +106,15 @@ export class UIScene extends Phaser.Scene {
 
     // Dialogue system
     this.dialogueSystem = new DialogueSystem({
-      say: (text, speaker) => {
-        this.voiceSystem.play(text);
+      say: (text, speaker, node) => {
         // A3.3e: la QA (`window.__qa`, `rejects` de las rutas) apunta también las frases de los nodos de diálogo
         this.events.emit('dialogueLine', text, speaker);
+        // A2.19: nodo de pantalla (el cajón de los Términos, DOORIS, PZ-BOT): GameScene la teclea en la pantalla y la dice
+        const gs = this.scene.get('GameScene') as GameScene | undefined;
+        if (node?.screen && gs?.sayOnScreen) {
+          return gs.sayOnScreen({ screen: node.screen, text, speaker, display: node.display, closeup: node.closeup === true });
+        }
+        this.voiceSystem.play(text);
         return this.dialogueBox.say(text, speaker);
       },
       showChoices: (choices) => this.choicePanel.show(choices),
@@ -255,11 +260,12 @@ export class UIScene extends Phaser.Scene {
     });
 
     // Say requests from ScriptEngine
-    this.events.on('say', (text: string, speaker?: string, resolve?: () => void) => {
+    this.events.on('say', (text: string, speaker?: string, resolve?: () => void, discreet?: boolean) => {
       // A2.9: un texto hablado (p. ej. un trigger con temporizador) cierra el diario: el móvil no tapa a quien habla
       this.journal?.close();
       this.voiceSystem.play(text);
-      const shown = this.dialogueBox.say(text, speaker);
+      // A2.19: `discreet` = la línea también sale escrita en la pantalla de la máquina (subtítulo menor)
+      const shown = this.dialogueBox.say(text, speaker, discreet === true);
       // A2.10: en cinemática el texto avanza solo al ritmo de su voz (o por caracteres); un toque lo adelanta
       if (this.registry.get('cinematicMode')) this.autoAdvance(text, shown);
       shown.then(() => {
@@ -269,8 +275,13 @@ export class UIScene extends Phaser.Scene {
     });
 
     // Brief say (auto-dismiss, no click)
-    this.events.on('sayBrief', (text: string, durationMs?: number, speaker?: string, resolve?: () => void) => {
-      this.dialogueBox.sayBrief(text, durationMs, speaker).then(() => resolve?.());
+    this.events.on('sayBrief', (text: string, durationMs?: number, speaker?: string, resolve?: () => void, discreet?: boolean) => {
+      this.dialogueBox.sayBrief(text, durationMs, speaker, discreet === true).then(() => resolve?.());
+    });
+
+    // A2.19: el primer plano de una pantalla se cerró: su subtítulo (la misma línea) se cierra con él
+    this.events.on('advanceSay', (text: string) => {
+      this.dialogueBox.advanceIfShowing(text);
     });
 
     // Dialogue requests (from ScriptEngine opcode)
@@ -557,6 +568,10 @@ export class UIScene extends Phaser.Scene {
         end: nodeData.end,
         onEnter: nodeData.onEnter,
         when: nodeData.when,
+        // A2.19: la línea sale en una pantalla de la escena
+        screen: nodeData.screen,
+        display: nodeData.display,
+        closeup: nodeData.closeup,
         choices: nodeData.choices?.map((c) => ({
           id: c.id,
           text: c.text,

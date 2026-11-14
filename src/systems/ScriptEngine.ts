@@ -29,6 +29,32 @@ export interface CinemaHooks {
   finishAll: () => void;
 }
 
+/** A2.19: una línea de pantalla (op `say`/`sayBrief` con `screen`) */
+export interface ScreenSayRequest {
+  screen: string;
+  /** Texto hablado (subtítulo y clave de voz, sin cambios) */
+  text: string;
+  speaker?: string;
+  /** Texto de la pantalla si no es lo citado de `text` (no se habla) */
+  display?: string;
+  closeup: boolean;
+  /** sayBrief: se cierra solo a los `briefMs` */
+  briefMs?: number;
+}
+
+/** A2.19: la petición de pantalla de un op `say`/`sayBrief`, o null si no lleva `screen` */
+export function screenRequestOf(op: ScriptOp, briefMs?: number): ScreenSayRequest | null {
+  if (typeof op.screen !== 'string' || !op.screen) return null;
+  return {
+    screen: op.screen,
+    text: String(op.text ?? ''),
+    speaker: op.speaker as string | undefined,
+    display: typeof op.display === 'string' ? op.display : undefined,
+    closeup: op.closeup === true,
+    briefMs,
+  };
+}
+
 export interface ScriptContext {
   /**
    * A1.1: estado VIVO de la partida. Es una función y no un valor porque `setState` e `InventorySystem`
@@ -66,6 +92,12 @@ export interface ScriptContext {
    * toca la partida (la recompensa la ponen los ops de estado que vengan detrás en el `then`).
    */
   showDashboard?: (mode?: 'holder' | 'founder') => Promise<void>;
+  /**
+   * A2.19: `say`/`sayBrief` con `screen` — la línea se dice como siempre (voz y subtítulo, más discreto) y además se teclea
+   * DENTRO de la pantalla `screen` de la escena (o en primer plano a pantalla completa si es larga, si lo pide `closeup` o
+   * si en este viewport no se lee). Se resuelve cuando se cerraría el `say` (y el primer plano, si lo hay). Sin él, `say`.
+   */
+  sayOnScreen?: (req: ScreenSayRequest) => Promise<void>;
   // Transaction toast
   showToast?: (status: 'pending' | 'success' | 'failed', message: string) => void;
   // Costume change
@@ -564,18 +596,25 @@ export class ScriptEngine {
     }
 
     switch (op.op) {
-      case 'say':
-        await this.ctx.say(op.text as string, op.speaker as string | undefined);
+      case 'say': {
+        const scr = screenRequestOf(op);
+        if (scr && this.ctx.sayOnScreen) await this.ctx.sayOnScreen(scr);
+        else await this.ctx.say(op.text as string, op.speaker as string | undefined);
         break;
+      }
 
-      case 'sayBrief':
+      case 'sayBrief': {
         // Show text briefly (auto-dismiss), no click needed. Optional duration in ms.
-        if (this.ctx.sayBrief) {
+        const scr = screenRequestOf(op, this.fastForward ? 250 : (op.duration as number) ?? 1500);
+        if (scr && this.ctx.sayOnScreen) {
+          await this.ctx.sayOnScreen(scr);
+        } else if (this.ctx.sayBrief) {
           await this.ctx.sayBrief(op.text as string, this.fastForward ? 250 : (op.duration as number) ?? 1500, op.speaker as string | undefined);
         } else {
           await this.ctx.say(op.text as string, op.speaker as string | undefined);
         }
         break;
+      }
 
       case 'wait':
         await this.sleep((op.ms as number) ?? 1000);

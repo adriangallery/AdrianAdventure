@@ -53,6 +53,12 @@
     "triggerColor": "#FF00FF",
     "regionIdStrategy": "manual"
   },
+  "screens": {
+    "monitor_left": {"bounds": {"x": 43.1, "y": 44.5, "w": 5.3, "h": 11.7}, "color": "green", "label": "TRADING DESK // LEFT"},
+    "monitor_center": {"bounds": {"x": 49.85, "y": 43.1, "w": 6.0, "h": 13.1}, "color": "green", "label": "TRADING DESK // RIG-01"},
+    "monitor_right": {"bounds": {"x": 57.15, "y": 44.5, "w": 5.3, "h": 11.7}, "color": "green", "label": "TRADING DESK // RIGHT"},
+    "drawer_lock": {"bounds": {"x": 59.9, "y": 70, "w": 3, "h": 3}, "color": "amber", "label": "DRAWER LOCK // TERMS OF SERVICE", "closeupOnly": true}
+  },
   "regions": {
     "hotspots": [
       {
@@ -90,6 +96,7 @@
               "else": [
                 {
                   "op": "say",
+                  "screen": "drawer_lock",
                   "text": "Locked. The lock is a tiny screen: 'Accept the Terms to open'."
                 }
               ]
@@ -117,6 +124,7 @@
           "TALK": [
             {
               "op": "say",
+              "screen": "monitor_right",
               "text": "The trading bot on screen: 'Outperforming humans since 2024.' It's saying it to an empty room."
             }
           ],
@@ -198,6 +206,7 @@
               "else": [
                 {
                   "op": "say",
+                  "screen": "drawer_lock",
                   "text": "Locked. The lock is a tiny screen: 'Accept the Terms to open'."
                 }
               ]
@@ -1246,12 +1255,14 @@
       "nodes": {
         "screen": {
           "speaker": "Drawer",
+          "screen": "drawer_lock",
           "text": "TERMS AND CONDITIONS. Thirty-eight pages. Accept the Terms to open.",
           "when": "!tos_read_1",
           "next": "screen_again"
         },
         "screen_again": {
           "speaker": "Drawer",
+          "screen": "drawer_lock",
           "text": "Welcome back. You have unread Terms.",
           "when": "tos_read_1",
           "next": "hub"
@@ -1292,6 +1303,7 @@
         },
         "accept": {
           "speaker": "Drawer",
+          "screen": "drawer_lock",
           "text": "By accepting you agree to give Adrian your left kidney.",
           "next": "accept_no"
         },
@@ -1301,6 +1313,7 @@
         },
         "read_1": {
           "speaker": "Drawer",
+          "screen": "drawer_lock",
           "text": "Page two. Adrian may change these Terms at any time. Including retroactively. Including now.",
           "onEnter": [
             {
@@ -1317,6 +1330,7 @@
         },
         "read_2": {
           "speaker": "Drawer",
+          "screen": "drawer_lock",
           "text": "Page seventeen. Section nine: Gerald is not a duck. Section ten: Gerald is a duck.",
           "onEnter": [
             {
@@ -1333,6 +1347,7 @@
         },
         "read_3": {
           "speaker": "Drawer",
+          "screen": "drawer_lock",
           "text": "Page 38. Congratulations: you are the first person ever to read this. Drawer unlocked.",
           "onEnter": [
             {
@@ -1408,6 +1423,7 @@
             },
             {
               "op": "say",
+              "screen": "monitor_center",
               "text": "I insert the Golden ZERO Token into a slot on the mining rig. The screens flash: 'GOLDEN KEY ACCEPTED — FOUNDER MODE UNLOCKED.'"
             },
             {
@@ -1443,18 +1459,23 @@
         },
         {
           "op": "say",
+          "screen": "monitor_center",
           "text": "The screens display: 'BACKUP TRADING STRATEGIES FOUND — FLOPPY ARCHIVE v1.0. Last modified: 3 AM, obviously.'"
         },
         {
           "op": "say",
+          "screen": "monitor_left",
+          "display": "STRATEGY #1: Buy when mass is fearful.\nSTRATEGY #2: Sell when mass is greedy.\nSTRATEGY #3: Ignore strategies 1 and 2. Ape in. YOLO. NFA.",
           "text": "Strategy #1: 'Buy when mass is fearful.' Strategy #2: 'Sell when mass is greedy.' Strategy #3: 'Ignore strategies 1 and 2. Ape in. YOLO. NFA.'"
         },
         {
           "op": "say",
+          "screen": "monitor_right",
           "text": "The AI trading bot interrupts: 'These strategies predate me by two years and outperformed me by 340%. I am humbled. And slightly offended.'"
         },
         {
           "op": "say",
+          "screen": "monitor_left",
           "text": "At the bottom of the file: 'NOTE: If you own these floppies, you already understood the best strategy — collect the art, ignore the noise.' Smart."
         },
         {
@@ -1524,6 +1545,7 @@
         },
         {
           "op": "say",
+          "screen": "monitor_center",
           "text": "The GPUs whir louder. The screen displays: 'ADRIANLAB FLOPPY — GENESIS CONFIG DETECTED. Loading original mining parameters from 2024...'"
         },
         {
@@ -1536,6 +1558,7 @@
         },
         {
           "op": "say",
+          "screen": "monitor_center",
           "text": "The screen settles on a message: 'This rig mined the first block that powered AdrianLAB. Your floppies carry its DNA. Digital archaeology at its finest.'"
         },
         {

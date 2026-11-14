@@ -13,6 +13,8 @@ resto del primer plano. La máscara es un WebP sin pérdida del tamaño de `boun
   Se separa de la roca por color (hojas naranjas frente a roca morada; los oscuros y el tramado, por mayoría de vecinos
   en 15×15) dentro de una zona a mano (x ≥ 88 con y ≥ 70, o x ≥ 82 con y ≥ 84); por debajo de y 84 y a la derecha de
   x 86 es todo maleza (la roca grande queda tapada).
+- outside / carport_post (A3.12): el poste delantero derecho del carport, rectángulo del fondo copiado igual que los
+  arbustos (con el lambo, Dex pasa entre el coche y la base del poste).
 - outside / bush_left y bush_right: los dos arbustos están pintados en el FONDO. Se copian TAL CUAL (mismos píxeles,
   alfa 0/255: sin halo) del fondo a foreground.png donde dice la máscara, y se rehacen foreground.webp (sin pérdida) y
   las variantes @1280/@2048 (Lanczos + WebP calidad 90 con el alfa sin pérdida, como scripts/make-bg-variants.mjs).
@@ -136,6 +138,15 @@ def outside():
         sizes = nd.sum(m, lb, range(1, n + 1))
         m &= np.isin(lb, [i + 1 for i, s in enumerate(sizes) if s > 400])
         save_mask('outside', L[lid], m, w, h)
+        union |= m
+    # A3.12: poste delantero derecho del carport (pintado en el fondo). Con el lambo aparcado Dex anda entre el coche
+    # (huella hasta y 93,6) y la base del poste (y 95,7): tiene que quedar DETRÁS del poste. Rectángulo de la columna
+    # del poste (x 3144–3208 px, medido a ojo sobre el fondo), copiado tal cual.
+    if 'carport_post' in L:
+        x0, y0, x1, y1 = px_rect(L['carport_post']['bounds'], w, h)
+        m = np.zeros((h, w), bool); m[y0:y1, x0:x1] = True
+        m &= ~hedge & ~union
+        save_mask('outside', L['carport_post'], m, w, h)
         union |= m
     # los píxeles del arbusto, tal cual, al primer plano (alfa 255)
     fg[union, :3] = bg[union].astype(np.uint8)

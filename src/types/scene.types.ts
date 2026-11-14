@@ -1,3 +1,4 @@
+import type { ScreenDef } from '@/systems/ScreenText';
 import type { ResponseMap } from '@/systems/FailResponses';
 
 export interface SceneData {
@@ -73,7 +74,11 @@ export interface SceneData {
    * A2.1: obstáculos dentro de las zonas caminables (rectángulos en %, se restan de walkableAreas; su borde tampoco
    * se pisa). El personaje los rodea con el pathfinding (src/systems/Pathfinding.ts). Sin walkableAreas no hacen nada.
    */
-  blockedAreas?: Array<{ x: number; y: number; w: number; h: number }>;
+  blockedAreas?: Array<{
+    x: number; y: number; w: number; h: number;
+    /** A3.12: solo bloquea mientras se cumple (gramática `when`: `flag`, `!flag`, `item:x`; lista = todas). Sin él, siempre */
+    when?: string | string[];
+  }>;
   /**
    * A2.17 fase 2: walk-behind por objeto. Trozos de foreground.png (caja en %, como bounds) que no van siempre por
    * encima de Dex: se dibujan a la profundidad de su línea base (`baseY`, % del alto), ordenados con Dex y las NPC por
@@ -121,6 +126,11 @@ export interface SceneData {
    * `when` (gramática de A2.6a) y se dibuja sin assets. Un elemento mal definido se salta (aviso en consola y en el linter).
    */
   ambient?: AmbientElementData[];
+  /**
+   * A2.19: pantallas de la escena (CRT, monitores, teclados, carteles luminosos) donde un `say` con `screen: "<id>"` pinta su
+   * texto (src/systems/ScreenText.ts). `bounds` en % del mundo, medidos sobre el cristal del fondo.
+   */
+  screens?: Record<string, ScreenDef>;
 }
 
 /** A4.3: un elemento de `ambient[]` tal como va en el JSON (campos según `kind`; ver la cabecera de src/systems/Ambient.ts) */
@@ -267,6 +277,10 @@ export interface DialogueNodeData {
   end?: boolean;
   /** A2.6a: condiciones (`flag`, `!flag`, `item:id`, `!item:id`); si falla alguna, el nodo se salta */
   when?: string | string[];
+  /** A2.19: la línea sale en la pantalla `screen` de la escena (como el campo `screen` del op `say`) */
+  screen?: string;
+  display?: string;
+  closeup?: boolean;
 }
 
 /** A2.6: ver src/systems/DialogueSystem.ts (DialogueChoice) para la semántica de cada campo */
