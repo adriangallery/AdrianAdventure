@@ -44,12 +44,15 @@
   <h3>Session Authentication</h3>
   <p>When you connect a wallet, you sign a one-time message to authenticate your session. This signature is used only to authorize save operations and is not stored permanently.</p>
 
+  <h3>Anonymous Play Stats (Optional)</h3>
+  <p>To improve the game, the web version sends anonymous play events to our own server: session start, new game or continue, chapter started/completed (with how long it took), game completed and the last scene when you leave. Each event carries a random game ID stored in your browser (hashed on the server), whether you are on mobile or desktop, a generic browser family (Chrome, Safari, Firefox, Edge or other) and whether a wallet is connected (yes/no only). We never store your IP address or your wallet address with these stats, use no cookies or fingerprinting, and delete raw events after 30 days (only daily totals are kept). You can turn this off in the in-game settings ("Anonymous play stats: Off").</p>
+
   <h2>Data We Do NOT Collect</h2>
   <ul>
     <li>Personal information (name, email, phone number)</li>
     <li>Device identifiers or advertising IDs</li>
     <li>Location data</li>
-    <li>Usage analytics or tracking data</li>
+    <li>Cross-site tracking, cookies or fingerprinting (play stats are anonymous, see above)</li>
     <li>Private keys or seed phrases (we never have access to these)</li>
   </ul>
 

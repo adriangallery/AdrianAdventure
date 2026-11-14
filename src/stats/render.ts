@@ -29,7 +29,7 @@ function split(title: string, a: [string, number], b: [string, number]): string 
   const wa = total > 0 ? (a[1] / total) * 100 : 50;
   return `<div class="card"><h2>${esc(title)}</h2>
     <div class="split"><span style="width:${wa}%;background:var(--y)"></span><span style="width:${100 - wa}%;background:var(--c)"></span></div>
-    <p class="legend"><b class="y">■</b> ${esc(a[0])} ${a[1]} (${pct(a[1], total)}) &nbsp; <b class="c">■</b> ${esc(b[0])} ${b[1]} (${pct(b[1], total)})</p></div>`;
+    <p class="legend"><i class="sw y"></i> ${esc(a[0])} ${a[1]} (${pct(a[1], total)}) &nbsp; <i class="sw c"></i> ${esc(b[0])} ${b[1]} (${pct(b[1], total)})</p></div>`;
 }
 
 export function renderSummary(s: StatsSummary): string {
@@ -43,7 +43,7 @@ export function renderSummary(s: StatsSummary): string {
   parts.push(`<div class="kpis">${kpi(String(s.uniques.today), 'players today')}${kpi(String(s.uniques.week), 'players 7 days')}${kpi(s.finish.rate === null ? '—' : `${s.finish.rate}%`, 'reach the end')}</div>`);
   parts.push(`<div class="card"><h2>Unique players / day</h2>${daily.length ? daily.map((d) => bar(d.day.slice(5), d.uniques, dMax, String(d.uniques))).join('') : '<p class="empty">No data yet</p>'}</div>`);
   parts.push(split('New vs continued games', ['New', s.games.new], ['Continue', s.games.continue]));
-  parts.push(`<div class="card"><h2>Chapter funnel</h2><p class="legend"><b class="y">■</b> start <b class="c">■</b> complete</p>${s.funnel.map((f) =>
+  parts.push(`<div class="card"><h2>Chapter funnel</h2><p class="legend"><i class="sw y"></i> start <i class="sw c"></i> complete</p>${s.funnel.map((f) =>
     bar(`Ch${f.chapter} in`, f.start, fMax, String(f.start)) + bar(`Ch${f.chapter} out`, f.complete, fMax, `${f.complete} ${pct(f.complete, f.start)}`, 'var(--c)')).join('')}</div>`);
   parts.push(`<div class="card"><h2>Time per chapter</h2><p class="legend">median · p25–p75 (minutes)</p>${s.chapterTime.map((t) => {
     if (t.median === null) return `<div class="row"><span class="lbl">Ch${t.chapter}</span><span class="track"></span><span class="val">—</span></div>`;
@@ -92,7 +92,7 @@ button:disabled{opacity:.6}
 .split{display:flex;height:16px;border:1px solid var(--line);margin:0 0 10px}
 .split span{display:block;height:100%}
 .legend{font-size:8px!important;color:var(--p)}
-.legend .y{color:var(--y)}.legend .c{color:var(--c)}
+.sw{display:inline-block;width:8px;height:8px;vertical-align:middle;margin-right:2px}.sw.y{background:var(--y)}.sw.c{background:var(--c)}
 .empty{color:var(--p)}
 .foot{font-size:8px;color:var(--p);line-height:1.7;text-align:center}
 @media (min-width:700px){#dash{display:grid;grid-template-columns:1fr 1fr;gap:0 12px}#dash .kpis,#dash .foot{grid-column:1/-1}.row{grid-template-columns:90px 1fr auto}}
