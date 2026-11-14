@@ -271,6 +271,21 @@ if (UNTIL) {
     for (const r of SELECTED) r.route = cutRoute(r.route, UNTIL);
   } catch (err) { console.error(err.message); process.exit(2); }
 }
+// A9.5: `expect.pixel.integer` y `pixelScale` están medidos a 1280x720 (A2.8). En 844x390 la escala de pantalla no se
+// redondea a propósito (A2.11), así que en WebKit (viewports de iPhone) esas dos comprobaciones no aplican y se quitan.
+if (WEBKIT) {
+  let dropped = 0;
+  for (const r of SELECTED) {
+    r.route = { ...r.route, steps: r.route.steps.map((st) => {
+      const px = st.expect?.pixel;
+      if (!px || (px.integer === undefined && px.pixelScale === undefined)) return st;
+      dropped++;
+      const { integer, pixelScale, ...rest } = px;
+      return { ...st, expect: { ...st.expect, pixel: rest } };
+    }) };
+  }
+  if (dropped) console.log(`(WebKit ${ENGINE_VIEWPORT.width}x${ENGINE_VIEWPORT.height}: sin pixel.integer/pixelScale de 1280x720 en ${dropped} paso(s), ver A2.11)`);
+}
 const SHARD_LABEL = SHARD ? `trozo ${SHARD.index}/${SHARD.total}: ${SELECTED.length} de ${ALL.length} rutas` : '';
 if (SHARD && !SELECTED.length) {
   console.log(`Trozo ${SHARD.index}/${SHARD.total} vacío (${ALL.length} rutas para ${SHARD.total} trozos): nada que ejecutar`);
