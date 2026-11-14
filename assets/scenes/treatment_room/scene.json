@@ -89,6 +89,11 @@
               "else": [
                 {
                   "op": "setFlag",
+                  "flag": "ape_costume_worn",
+                  "value": false
+                },
+                {
+                  "op": "setFlag",
                   "flag": "patient_seated",
                   "value": true
                 },

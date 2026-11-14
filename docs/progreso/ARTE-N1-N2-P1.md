@@ -14,7 +14,7 @@ sentado hablando) salen por código del fotograma base, sin más llamadas.
   sentado a la escala de Dex no cabe en 60 de alto. 0 colores fuera de la paleta de Dex. Integración: `player.seated`
   en `scene.json` (`{ flag, x, y }`). GameScene pinta `dex2d_sit_0` a la escala del jugador cuando la flag está a true
   y, mientras habla Dex, alterna con `sit_talk_0` cada 140 ms. No se toca `hidePlayer`. Con el disfraz de mono no se
-  pinta (no hay pose sentada del mono). La posición (44,32 %, 81,47 %) se ajustó sobre el fondo para que la cadera
+  pinta (no hay pose sentada del mono; desde A9.9 el sillón quita el disfraz y Dex sentado se ve siempre). La posición (44,32 %, 81,47 %) se ajustó sobre el fondo para que la cadera
   apoye en el cojín.
 - ~~**N1 · Penny de cuerpo entero**~~ (lobby, `npc_receptionist`). **Gemini, 1 llamada** (`art/npc/originales/penny_a.png`)
   y posproceso. Mide 26×103, el mismo alto que Dex, con la misma escala y sin `depthScale` en el lobby. Lleva `_talk` (boca
