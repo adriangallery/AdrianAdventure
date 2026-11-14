@@ -8,7 +8,8 @@
 //      medido, cambiando el tiempo de cada texto por su clip + 300 ms, como A3.2). Falla si alguna pasa de 20 s.
 //      Capturas `<vp>-<escena>-1.png` (narrador), `-2.png` (Dex) y `-3.png` (tarjeta del capítulo).
 //      Al acabar: `state().cinematic` inactiva, sin franjas, interfaz de vuelta, cámara siguiendo con zoom 1, la flag
-//      del capítulo puesta y Dex donde entró.
+//      del capítulo puesta y Dex donde entró (o, si la escena lo declara con `endAt`, donde lo deja la cinemática:
+//      A9.11, en mountain Dex sale de la maleza de primer plano hasta 70/93 para hablar con el cuerpo entero a la vista).
 //   2) la misma entrada saltada con Esc (tecla real) en cuanto se abre: mismas flags y misma posición que la entera.
 //   Durante la cinemática: ningún subtítulo se sale de la pantalla ni se ve con la tarjeta del capítulo (que es de
 //   pantalla completa) y, cuando Dex habla sobre su cabeza, Dex está dentro del encuadre.
@@ -25,7 +26,7 @@ const VIEWPORTS = [
 ];
 const SCENES = [
   { id: 'basement', flag: 'chapter_3_intro_shown', before: ['chapter_1_complete', 'chapter_2_complete', 'chapter_2_intro_shown'] },
-  { id: 'mountain', flag: 'chapter_4_intro_shown', before: ['chapter_1_complete', 'chapter_2_complete', 'chapter_3_complete', 'chapter_3_intro_shown'] },
+  { id: 'mountain', flag: 'chapter_4_intro_shown', before: ['chapter_1_complete', 'chapter_2_complete', 'chapter_3_complete', 'chapter_3_intro_shown'], endAt: { x: 70, y: 93 } },
   { id: 'treatment_room', flag: 'chapter_5_intro_shown', before: ['chapter_1_complete', 'chapter_2_complete', 'chapter_3_complete', 'chapter_4_complete', 'treatment_room_unlocked', 'chapter_4_intro_shown'], hiddenPlayer: true },
 ];
 const LIMIT_MS = 20000;
@@ -196,8 +197,8 @@ function checkFinal(label, scene, st, P) {
     problems.push(`${label}: la cinemática no dejó todo como estaba (interfaz/cámara): ${JSON.stringify(c)}`);
   }
   if (st.busy?.length) problems.push(`${label}: el juego no quedó libre (${st.busy.join(', ')})`);
-  const a = P?.startPlayer;
-  if (!a || !st.player || Math.hypot(a.x - st.player.x, a.y - st.player.y) > 0.5) problems.push(`${label}: Dex entró en ${fmt(a)} y acabó en ${fmt(st.player)}`);
+  const a = scene.endAt ?? P?.startPlayer;
+  if (!a || !st.player || Math.hypot(a.x - st.player.x, a.y - st.player.y) > 0.5) problems.push(`${label}: Dex ${scene.endAt ? 'debía acabar' : 'entró'} en ${fmt(a)} y acabó en ${fmt(st.player)}`);
 }
 
 function sameEnd(label, a, b) {

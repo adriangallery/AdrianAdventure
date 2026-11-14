@@ -11,10 +11,13 @@
 #      de la luz del sótano y el amarillo de las luces. Se probó una mediana 3x3 antes: se comía las luces de la ciudad
 #      y las estrellas (2 px en el JPEG), así que no se usa.
 #   4. Escala a 3712x1152 por vecino más cercano: x ×2,698, y ×2,351 (anisotropía 14,8 %, dentro del 15 % pedido).
-#   5. vane_flipped: la cabeza de la veleta (B, flecha y rosa de los vientos) en espejo sobre el eje del mástil, recortada
-#      a su caja; escribe bounds en scene.json (conditionalOverlays[id=vane_flipped]).
+#   5. vane_flipped: la B y la flecha de la veleta en espejo sobre el eje del mástil, recortadas a su caja; escribe
+#      bounds en scene.json (conditionalOverlays[id=vane_flipped]). A9.12: la rosa de los vientos (N/S/E/W) NO gira
+#      (sus letras saldrían en espejo) y el cielo se queda como estaba (la estrella no cambia de lado): solo se toman
+#      del espejo los píxeles que son veleta, y lo que coincide con el fondo queda transparente (sin borde de caja).
 #
 # Uso:  python3 scripts/make-rooftop-bg.py                 escribe background.png/.webp, @2048, @1280 y vane_flipped.webp
+#       python3 scripts/make-rooftop-bg.py --vane-only     solo vane_flipped.webp, a partir del background.png que hay
 #       python3 scripts/make-rooftop-bg.py --compare OUT   además una hoja comparando los recortes posibles
 # Las variantes @2048/@1280 se hacen como scripts/make-bg-variants.mjs (Lanczos, WebP con pérdida q90) pero con Pillow,
 # para no depender de sharp; `node scripts/make-bg-variants.mjs --check` las da por buenas (solo mira tamaños).
@@ -22,7 +25,7 @@ import json
 import os
 import sys
 
-from PIL import Image
+from PIL import Image, ImageFilter
 
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
 SRC = os.path.join(ROOT, 'art', 'rooftop', 'rooftop-gem-v1.jpeg')
@@ -82,6 +85,40 @@ def mast_axis(bg, y0, y1, x0, x1):
     return bx
 
 
+DILATE = 4  # px del maestro
+ROSE_TOP = 289  # y del JPEG entre la flecha (acaba en ≈ 282) y la rosa de los vientos (empieza en ≈ 294): solo mástil
+
+
+def is_vane(p):
+    """Veleta = cobre (más rojo que azul) o contorno oscuro; el cielo es azul lavanda (y las estrellas, claras)."""
+    r, g, b = p[:3]
+    return r > b + 8 or (r + g + b) < 150
+
+
+def vane_overlay(crop, flip, split):
+    """A9.12: de `split` hacia arriba (B y flecha), el espejo, pero solo donde hay veleta en el original o en el espejo
+    (donde el original era veleta y el espejo es cielo, sale el cielo del espejo: misma fila, mismo degradado). De
+    `split` hacia abajo (rosa de los vientos y mástil), el original. Los píxeles iguales al fondo quedan transparentes."""
+    w, h = crop.size
+    out = Image.new('RGBA', (w, h), (0, 0, 0, 0))
+    po, pf, pd = crop.load(), flip.load(), out.load()
+    # máscara de veleta (original o espejo), engordada DILATE px: el halo de contorno del JPEG (azul oscuro, que
+    # is_vane no ve) también se cambia, para que no quede un fantasma de la veleta vieja alrededor de la nueva
+    mask = Image.new('L', (w, h), 0)
+    pm = mask.load()
+    for y in range(min(split, h)):
+        for x in range(w):
+            if is_vane(po[x, y]) or is_vane(pf[x, y]):
+                pm[x, y] = 255
+    mask = mask.filter(ImageFilter.MaxFilter(2 * DILATE + 1))
+    pm = mask.load()
+    for y in range(min(split, h)):
+        for x in range(w):
+            if pm[x, y] and pf[x, y] != po[x, y]:
+                pd[x, y] = pf[x, y] + (255,)
+    return out
+
+
 def make_vane(bg):
     sx, sy = W / (CROP[2] - CROP[0]), H / (CROP[3] - CROP[1])
     # el mástil, en el JPEG, va de x≈990 a 996 entre y≈345 y 380 (debajo de la rosa de los vientos, encima del pretil)
@@ -103,10 +140,15 @@ def make_vane(bg):
     x0 = (axis2 + 1) // 2 - half
     x1 = x0 + 2 * half + (axis2 % 2)
     box = (x0, top, x1, bottom)
-    crop = bg.crop(box)
+    crop = bg.crop(box).convert('RGB')
     flip = crop.transpose(Image.FLIP_LEFT_RIGHT)
-    # si el ancho y el eje no casan al píxel, se corrige desplazando (el mástil tiene que quedar donde estaba)
-    flip.convert('RGBA').save(os.path.join(SCENE_DIR, 'vane_flipped.webp'), lossless=True, quality=100, method=6)
+    ov = vane_overlay(crop, flip, int((ROSE_TOP - CROP[1]) * sy) - top)
+    # recortado a lo que tiene contenido + 2 px, como scripts/crop-overlays.mjs (MARGIN_PX), que lo comprueba en el CI
+    l, t, r, btm = ov.split()[3].point(lambda v: 255 if v > 4 else 0).getbbox()
+    l, t, r, btm = max(0, l - 2), max(0, t - 2), min(ov.width, r + 2), min(ov.height, btm + 2)
+    ov.crop((l, t, r, btm)).save(os.path.join(SCENE_DIR, 'vane_flipped.webp'), lossless=True, quality=100, method=6)
+    x0, x1, bottom, top = x0 + l, x0 + r, top + btm, top + t
+    box = (x0, top, x1, bottom)
     b = {'x': round(x0 / W * 100, 4), 'y': round(top / H * 100, 4), 'w': round((x1 - x0) / W * 100, 4),
          'h': round((bottom - top) / H * 100, 4)}
     path = os.path.join(SCENE_DIR, 'scene.json')
@@ -148,7 +190,10 @@ def compare(out):
 if __name__ == '__main__':
     if '--compare' in sys.argv:
         compare(sys.argv[sys.argv.index('--compare') + 1])
-    bg = make_background()
-    write_variants(bg)
+    if '--vane-only' in sys.argv:
+        bg = Image.open(os.path.join(SCENE_DIR, 'background.png')).convert('RGB')
+    else:
+        bg = make_background()
+        write_variants(bg)
     box, b, mast = make_vane(bg)
     print('fondo', bg.size, 'colores', len(bg.getcolors(1 << 16) or []), 'veleta', box, b, 'mástil', mast)
