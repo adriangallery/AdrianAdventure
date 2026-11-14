@@ -443,33 +443,6 @@
                       "op": "playSound",
                       "key": "door_open"
                     },
-                    {
-                      "op": "ifFlag",
-                      "flag": "chapter_5_intro_shown",
-                      "then": [],
-                      "else": [
-                        {
-                          "op": "narrative",
-                          "lines": [
-                            "The treatment room. One chair. One monitor.",
-                            "Dr. Satoshi said not everyone is ready for what's inside.",
-                            "The truth about Patient Zero...",
-                            "...has been in your wallet all along."
-                          ]
-                        },
-                        {
-                          "op": "titleCard",
-                          "chapter": "CHAPTER 5",
-                          "title": "Patient Zero",
-                          "subtitle": "The blockchain doesn't lie."
-                        },
-                        {
-                          "op": "setFlag",
-                          "flag": "chapter_5_intro_shown",
-                          "value": true
-                        }
-                      ]
-                    },
                     { "op": "playSound", "key": "door_creak" },
                     {
                       "op": "fadeToScene",
@@ -525,33 +498,6 @@
                     {
                       "op": "wait",
                       "ms": 400
-                    },
-                    {
-                      "op": "ifFlag",
-                      "flag": "chapter_5_intro_shown",
-                      "then": [],
-                      "else": [
-                        {
-                          "op": "narrative",
-                          "lines": [
-                            "The treatment room. One chair. One monitor.",
-                            "Dr. Satoshi said not everyone is ready for what's inside.",
-                            "The truth about Patient Zero...",
-                            "...has been in your wallet all along."
-                          ]
-                        },
-                        {
-                          "op": "titleCard",
-                          "chapter": "CHAPTER 5",
-                          "title": "Patient Zero",
-                          "subtitle": "The blockchain doesn't lie."
-                        },
-                        {
-                          "op": "setFlag",
-                          "flag": "chapter_5_intro_shown",
-                          "value": true
-                        }
-                      ]
                     },
                     { "op": "playSound", "key": "door_creak" },
                     {
@@ -1712,9 +1658,9 @@
       "id": "pc_glow",
       "kind": "glow",
       "area": {
-        "x": 82,
-        "y": 54,
-        "w": 8,
+        "x": 82.2,
+        "y": 53.3,
+        "w": 4,
         "h": 11
       },
       "shape": "rect",

@@ -8,7 +8,7 @@ import { readdirSync, readFileSync, existsSync } from 'node:fs';
 const A = await import(process.env.AMBIENT_PATH ?? '../src/systems/Ambient.ts');
 const {
   AMBIENT_KINDS, AMBIENT_MAX_COUNT, AMBIENT_MAX_PER_SCENE, DEFAULT_DEPTH, KIND_DEFAULTS, parseAmbient, parseColor, parseConditions, conditionsHold,
-  createAmbientSim, ambientSeed, frameCount, frameSignature, AmbientElementState,
+  createAmbientSim, ambientSeed, frameCount, frameSignature, AmbientElementState, GLOW_RECT_SPREAD, softRectAlpha,
 } = A;
 
 const G = { w: 3712, h: 1152 };
@@ -207,7 +207,7 @@ test('leds: tantas celdas como cells o cols × rows, cada una con un color de la
 
 test('glow respira entre alphaMin y alpha con el periodo pedido; flicker baja a ráfagas y vuelve al máximo', () => {
   const g = sim({ ...SAMPLE.glow, shape: 'rect', alpha: 0.5, alphaMin: 0.1, period: 1000 });
-  const alphas = run(g, 2000).map((f) => f.shapes[0].alpha);
+  const alphas = run(g, 2000).map((f) => f.blobs[0].alpha);
   assert.ok(Math.min(...alphas) <= 0.12 && Math.max(...alphas) >= 0.48, `rango ${Math.min(...alphas)}-${Math.max(...alphas)}`);
   assert.ok(alphas.every((a) => a >= 0.1 - 1e-9 && a <= 0.5 + 1e-9));
   // Con shape ellipse (por defecto en glow) es una mancha radial suave centrada en el área, no un disco de borde duro
@@ -215,10 +215,42 @@ test('glow respira entre alphaMin y alpha con el periodo pedido; flicker baja a 
   assert.equal(soft.shapes.length, 0);
   assert.equal(soft.blobs.length, 1);
   assert.ok(Math.abs(soft.blobs[0].x - (areaPx.x + areaPx.w / 2)) < 1e-6 && Math.abs(soft.blobs[0].y - (areaPx.y + areaPx.h / 2)) < 1e-6);
+  // A9.6: el glow rect tampoco es un rectángulo de borde duro: mancha rectangular difuminada, centrada y GLOW_RECT_SPREAD
+  // veces el área; la flicker rect (tubos) sigue siendo un rectángulo
+  const box = g.last();
+  assert.equal(box.shapes.length, 0);
+  assert.equal(box.blobs.length, 1);
+  assert.equal(box.blobs[0].rect, true);
+  assert.ok(Math.abs(box.blobs[0].w - areaPx.w * GLOW_RECT_SPREAD) < 1e-6 && Math.abs(box.blobs[0].h - areaPx.h * GLOW_RECT_SPREAD) < 1e-6);
+  assert.ok(Math.abs(box.blobs[0].x - (areaPx.x + areaPx.w / 2)) < 1e-6);
   const fl = sim({ ...SAMPLE.flicker, alpha: 0.3, alphaMin: 0 });
   const fa = run(fl, 8000).map((f) => f.shapes[0].alpha);
   assert.ok(fa.some((a) => a < 0.15), 'alguna bajada');
   assert.ok(fa.filter((a) => a === 0.3).length > fa.length / 2, 'casi siempre al máximo');
+});
+
+test('A9.6: la textura rectangular difuminada cae a cero en los cuatro bordes, sin escalón, y es plena en el centro', () => {
+  const N = 64;
+  for (const t of [0.5 / N, 1 - 0.5 / N]) {
+    for (let k = 0; k < N; k++) {
+      const s = (k + 0.5) / N;
+      assert.ok(softRectAlpha(t, s) < 0.01 && softRectAlpha(s, t) < 0.01, `borde en ${t},${s}`);
+    }
+  }
+  assert.equal(softRectAlpha(0.5, 0.5), 1);
+  // Paso máximo entre texeles vecinos (en 0-255): sin escalón
+  let step = 0;
+  for (let j = 0; j < N; j++) {
+    for (let i = 0; i < N - 1; i++) {
+      const a = (x, y) => Math.round(255 * softRectAlpha((x + 0.5) / N, (y + 0.5) / N));
+      step = Math.max(step, Math.abs(a(i + 1, j) - a(i, j)), Math.abs(a(j, i + 1) - a(j, i)));
+    }
+  }
+  assert.ok(step <= 25, `paso máximo ${step}`);
+  // Media intensidad cerca del borde del área: (1 - 1/SPREAD)/2 de la textura
+  const edge = (1 - 1 / GLOW_RECT_SPREAD) / 2;
+  const mid = softRectAlpha(edge, 0.5);
+  assert.ok(mid > 0.35 && mid < 0.75, `en el borde del área ${mid}`);
 });
 
 test('scan recorre el área de arriba abajo en un periodo', () => {

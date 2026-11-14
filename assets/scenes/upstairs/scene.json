@@ -1587,16 +1587,46 @@
       "id": "monitor_glow",
       "kind": "glow",
       "area": {
-        "x": 42,
-        "y": 42,
-        "w": 20,
-        "h": 15
+        "x": 49.7,
+        "y": 42.6,
+        "w": 6.4,
+        "h": 14.6
       },
       "shape": "rect",
       "color": "#a0ffc0",
       "alpha": 0.1,
       "alphaMin": 0.04,
       "period": 2200
+    },
+    {
+      "id": "monitor_glow_l",
+      "kind": "glow",
+      "area": {
+        "x": 43.3,
+        "y": 44.8,
+        "w": 5.2,
+        "h": 11.6
+      },
+      "shape": "rect",
+      "color": "#a0ffc0",
+      "alpha": 0.1,
+      "alphaMin": 0.04,
+      "period": 2500
+    },
+    {
+      "id": "monitor_glow_r",
+      "kind": "glow",
+      "area": {
+        "x": 57.1,
+        "y": 44.3,
+        "w": 4.6,
+        "h": 12.1
+      },
+      "shape": "rect",
+      "color": "#a0ffc0",
+      "alpha": 0.1,
+      "alphaMin": 0.04,
+      "period": 1900
     },
     {
       "id": "lamp_dust",

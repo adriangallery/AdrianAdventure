@@ -1926,24 +1926,49 @@
       "then": [],
       "else": [
         {
-          "op": "narrative",
-          "lines": [
-            "The treatment room. One chair. One monitor.",
-            "Dr. Satoshi said not everyone is ready for what's inside.",
-            "The truth about Patient Zero...",
-            "...has been in your wallet all along."
-          ]
-        },
-        {
-          "op": "titleCard",
-          "chapter": "CHAPTER 5",
-          "title": "Patient Zero",
-          "subtitle": "The blockchain doesn't lie."
+          "op": "cinematicStart"
         },
         {
           "op": "setFlag",
           "flag": "chapter_5_intro_shown",
           "value": true
+        },
+        {
+          "op": "cameraPan",
+          "x": 46,
+          "y": 62,
+          "ms": 0
+        },
+        {
+          "op": "cameraZoom",
+          "zoom": 1.25,
+          "x": 46,
+          "y": 62,
+          "ms": 600
+        },
+        {
+          "op": "say",
+          "speaker": "Narrator",
+          "text": "One chair. One monitor. One patient, missing."
+        },
+        {
+          "op": "cameraZoom",
+          "zoom": 1.25,
+          "x": 66,
+          "y": 42,
+          "ms": 1400
+        },
+        {
+          "op": "say",
+          "text": "Nice chair. I'm not sitting in it. Probably."
+        },
+        {
+          "op": "titleCard",
+          "chapter": "CHAPTER 5",
+          "title": "Patient Zero"
+        },
+        {
+          "op": "cinematicEnd"
         }
       ]
     }
@@ -1953,10 +1978,10 @@
       "id": "monitor_glow",
       "kind": "glow",
       "area": {
-        "x": 63.5,
+        "x": 63.6,
         "y": 26.5,
-        "w": 10,
-        "h": 22
+        "w": 8.2,
+        "h": 27
       },
       "shape": "rect",
       "color": "#40ff80",
