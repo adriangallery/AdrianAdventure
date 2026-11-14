@@ -1939,6 +1939,10 @@
           "title": "The Receptionist"
         },
         {
+          "op": "say",
+          "text": "I leave behind what I've already used up. Lighter pockets. Same heavy bags."
+        },
+        {
           "op": "cinematicEnd"
         }
       ]

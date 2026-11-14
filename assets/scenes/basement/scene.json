@@ -1263,6 +1263,10 @@
                 "title": "Below the Surface"
               },
               {
+                "op": "say",
+                "text": "I leave behind what I've already used up. Lighter pockets. Same heavy bags."
+              },
+              {
                 "op": "cinematicEnd"
               }
             ]
@@ -1760,6 +1764,10 @@
           "op": "titleCard",
           "chapter": "CHAPTER 3",
           "title": "Below the Surface"
+        },
+        {
+          "op": "say",
+          "text": "I leave behind what I've already used up. Lighter pockets. Same heavy bags."
         },
         {
           "op": "cinematicEnd"
