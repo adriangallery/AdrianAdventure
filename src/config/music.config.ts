@@ -26,10 +26,10 @@ export const MUSIC_KEYS: Record<string, MusicKey> = {
   'dex-n2': { tonic: 2, mode: 'major' }, // D major
   'dex-n3': { tonic: 2, mode: 'major' }, // D major
   'epilogue': { tonic: 0, mode: 'major' }, // C major
-  'final-n0': { tonic: 0, mode: 'major' }, // C major
-  'final-n1': { tonic: 0, mode: 'major' }, // C major
-  'final-n2': { tonic: 0, mode: 'major' }, // C major
-  'final-n3': { tonic: 0, mode: 'major' }, // C major
+  'final-n0': { tonic: 7, mode: 'major' }, // G major
+  'final-n1': { tonic: 7, mode: 'major' }, // G major
+  'final-n2': { tonic: 7, mode: 'major' }, // G major
+  'final-n3': { tonic: 7, mode: 'major' }, // G major
   'retro-adventure': { tonic: 2, mode: 'major' }, // D major
   'retroadrian': { tonic: 9, mode: 'minor' }, // A minor
   'sotano-n0': { tonic: 4, mode: 'minor' }, // E minor

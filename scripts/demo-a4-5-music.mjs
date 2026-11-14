@@ -3,14 +3,14 @@
 // la tonalidad estimada, las fuentes de ducking y la ganancia del ducking, el último stinger (clip, desafino) y un
 // medidor de nivel de música + ambiente. Con el sonido activado (localStorage adrian_adventure_muted = false), ?qa=1,
 // 1280x720:
-//   1) outside (retro-adventure, Re mayor): USE y PICK de la lámpara del porche: objeto encontrado → stinger_item
+//   1) outside (tema dex, Re mayor; A8.3b: antes retro-adventure): USE y PICK de la lámpara del porche: objeto encontrado → stinger_item
 //      transportado +200 cents (a Re), con la música bajando mientras suena (fuente `stinger`);
 //   2) outside: PULL valla, tablón en la chimenea, combinar las mitades: objetivo «Find Adrian's door code» cumplido →
 //      stinger_puzzle_major en Re;
 //   3) outside: USE de la puerta (cerrada): Dex habla con voz → la música baja a DUCK_LEVEL (fuente `voice`) y vuelve;
-//   4) lobby (misma pista, variación con filtro) → USE escaleras → upstairs → USE escotilla → rooftop (vista, Sol menor):
-//      fundido cruzado de 4 s: las dos ganancias se cruzan en el HUD; al entrar en el lobby, capítulo 1 cerrado →
-//      stinger_chapter_major;
+//   4) lobby (tema adrianlab, Sol mayor) → USE escaleras → upstairs (mismo tema) → USE escotilla → rooftop (tema
+//      aventura, Re mayor; antes vista en Sol menor): fundido o transición planificada entre temas; al entrar en el lobby,
+//      capítulo 1 cerrado → stinger de capítulo (sintetizado: el grabado en Do quedaría a −5 de Sol);
 //   5) 390x844 (captura fija): rooftop con el HUD.
 // Comprueba por la API de QA (`state().audio`) cada stinger (clip, desafino según la tonalidad), el ducking bajo la voz
 // (duck incluye `voice` mientras suena el clip y vuelve a 1 después), y que durante el fundido hubo fotogramas con las dos
@@ -98,11 +98,13 @@ async function during(label, start, args = [], maxMs = 60000, onFrame = null) {
 const lastStinger = (a) => a?.stingers.at(-1) ?? null;
 const stingersSince = (before, after) => (after?.stingers ?? []).filter((s) => !(before?.stingers ?? []).some((b) => b.at === s.at));
 
+// A8.3b: en las escenas con tema suena un nivel (`dex-n0`, `aventura-n1`…): se compara el tema, no la pista
+const themeOf = (k) => (k ?? '').replace(/-n\d+$/, '');
 async function waitMusic(key, ms = 25000) {
   const t0 = Date.now();
   while (Date.now() - t0 < ms) {
     const { a } = await capture(`esperando la música ${key}`, { shot: false });
-    if (a?.music.key === key && (a.music.gain ?? 0) > 0.05) return a;
+    if (themeOf(a?.music.key) === key && (a.music.gain ?? 0) > 0.05) return a;
     await sleep(200);
   }
   return null;
@@ -111,8 +113,8 @@ async function waitMusic(key, ms = 25000) {
 // ── 1) y 2) outside: stingers de objeto y de puzle en Re mayor ────────────────────────────────────────────────
 await open('outside');
 {
-  const a0 = await waitMusic('retro-adventure');
-  if (!a0) problems.push('outside: retro-adventure no llegó a sonar');
+  const a0 = await waitMusic('dex');
+  if (!a0) problems.push('outside: el tema dex no llegó a sonar');
   else notes.push(`outside: ${a0.music.key} en ${NOTE[a0.music.musicKey?.tonic]} ${a0.music.musicKey?.mode}`);
   await demo.film(800, { clip: CLIP });
   let before = (await capture('1) outside', { shot: false })).a;
@@ -166,21 +168,21 @@ await open('outside');
 // ── 4) lobby → upstairs → rooftop: capítulo cerrado y fundido cruzado ────────────────────────────────────────
 await open('lobby');
 {
-  const a0 = await waitMusic('retro-adventure');
-  if (!a0) problems.push('lobby: retro-adventure no llegó a sonar');
+  const a0 = await waitMusic('adrianlab');
+  if (!a0) problems.push('lobby: el tema adrianlab no llegó a sonar');
   await demo.film(600, { clip: CLIP });
   let err = await during('4) USE escaleras → upstairs (misma pista)', () => window.__demoRun(window.__qa.act('USE', 'hs_stairs_up')));
   if (err) problems.push(`USE hs_stairs_up: ${err}`);
   await page.waitForFunction(() => window.__qa.state().scene === 'upstairs' && window.__qa.state().ready, { timeout: 30000, polling: 250 }).catch(() => problems.push('no llegó a upstairs'));
   const up = (await capture('4) upstairs', { shot: false })).a;
-  if (up?.music.key !== 'retro-adventure') problems.push(`upstairs: música ${up?.music.key}, se esperaba retro-adventure (sin corte)`);
+  if (themeOf(up?.music.key) !== 'adrianlab') problems.push(`upstairs: música ${up?.music.key}, se esperaba el tema adrianlab (sin corte)`);
   const cross = { frames: 0, maxFadingGain: 0, minNewGain: 1 };
-  err = await during('4) USE escotilla → rooftop: fundido cruzado retro-adventure → vista (Sol menor)', () => window.__demoRun(window.__qa.act('USE', 'hs_roof_hatch')));
+  err = await during('4) USE escotilla → rooftop: cambio de tema adrianlab (Sol) → aventura (Re mayor)', () => window.__demoRun(window.__qa.act('USE', 'hs_roof_hatch')));
   if (err) problems.push(`USE hs_roof_hatch: ${err}`);
   const t0 = Date.now();
   while (Date.now() - t0 < 9000) {
     const { a } = await capture('4) rooftop: las dos pistas se cruzan (A8.1: en el punto de salida)');
-    if (a?.music.fading && a.music.fading.gain > 0.002 && a.music.key === 'vista') {
+    if (a?.music.fading && a.music.fading.gain > 0.002 && themeOf(a.music.key) === 'aventura') {
       cross.frames++;
       cross.maxFadingGain = Math.max(cross.maxFadingGain, a.music.fading.gain);
       cross.minNewGain = Math.min(cross.minNewGain, a.music.gain ?? 1);
@@ -190,10 +192,10 @@ await open('lobby');
   console.log(`fundido: ${cross.frames} fotogramas con las dos pistas · la vieja hasta ${cross.maxFadingGain} · la nueva desde ${cross.minNewGain} · ahora ${JSON.stringify(roof?.music)}`);
   // A8.1: con las dos pistas medidas ya no hay fundido de 4 s: el cambio espera a su punto de salida (en compás) y entra por
   // un puente en la tonalidad de destino; vale cualquiera de los dos (demo a8-1-imuse para el detalle)
-  const planned = roof?.adaptive?.transitions.some((t) => t.from === 'retro-adventure' && t.to === 'vista' && !t.cancelled);
-  if (!cross.frames && !planned) problems.push('no se vio el fundido cruzado ni la transición planificada a vista');
-  if (roof?.music.key !== 'vista') problems.push(`rooftop: música ${roof?.music.key}, se esperaba vista`);
-  if (roof?.music.musicKey?.mode !== 'minor') problems.push(`vista debería ser menor (${JSON.stringify(roof?.music.musicKey)})`);
+  const planned = roof?.adaptive?.transitions.some((t) => themeOf(t.from) === 'adrianlab' && themeOf(t.to) === 'aventura' && !t.cancelled);
+  if (!cross.frames && !planned) problems.push('no se vio el fundido cruzado ni la transición planificada a aventura');
+  if (themeOf(roof?.music.key) !== 'aventura') problems.push(`rooftop: música ${roof?.music.key}, se esperaba el tema aventura`);
+  if (roof?.music.musicKey?.tonic !== 2 || roof?.music.musicKey?.mode !== 'major') problems.push(`aventura debería ir en Re mayor (${JSON.stringify(roof?.music.musicKey)})`);
   await demo.still('4-crossfade', { clip: CLIP });
 }
 
@@ -202,9 +204,9 @@ filming = false;
 await page.setViewport({ width: 390, height: 844, deviceScaleFactor: 1, isMobile: true, hasTouch: true });
 await open('rooftop', 390);
 {
-  const a = await waitMusic('vista');
-  if (!a) problems.push('rooftop 390x844: vista no llegó a sonar');
-  await capture('5) rooftop 390x844: vista (Sol menor) + viento', { shot: false });
+  const a = await waitMusic('aventura');
+  if (!a) problems.push('rooftop 390x844: el tema aventura no llegó a sonar');
+  await capture('5) rooftop 390x844: aventura (Re mayor) + viento', { shot: false });
   await demo.still('390x844');
 }
 await demo.end();

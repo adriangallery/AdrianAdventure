@@ -1017,22 +1017,22 @@
       "beatsPerBar": 4,
       "firstDownbeatSec": 0,
       "barSec": 2.8235,
-      "bars": 22,
-      "durationSec": 62.17,
+      "bars": 24,
+      "durationSec": 67.81,
       "loopStartSec": 0,
-      "loopEndSec": 62.117,
+      "loopEndSec": 67.764,
       "key": {
-        "tonic": 0,
+        "tonic": 7,
         "mode": "major"
       },
       "confidence": {
-        "tempo": 6.99,
-        "downbeat": 1.21,
-        "key": 0.92,
+        "tempo": 7.57,
+        "downbeat": 1.15,
+        "key": 0.91,
         "declared": true,
-        "measuredBpm": 84.98,
+        "measuredBpm": 85,
         "measuredKey": {
-          "tonic": 0,
+          "tonic": 7,
           "mode": "major"
         }
       },
@@ -1040,14 +1040,8 @@
         {
           "id": "A1",
           "startBar": 0,
-          "bars": 8,
-          "energyDb": -24.7
-        },
-        {
-          "id": "B1",
-          "startBar": 8,
-          "bars": 14,
-          "energyDb": -16
+          "bars": 24,
+          "energyDb": -17.4
         }
       ]
     },
@@ -1061,17 +1055,17 @@
       "loopStartSec": 0,
       "loopEndSec": 45.176,
       "key": {
-        "tonic": 0,
+        "tonic": 7,
         "mode": "major"
       },
       "confidence": {
-        "tempo": 3.48,
-        "downbeat": 1.31,
-        "key": 0.91,
+        "tempo": 7.03,
+        "downbeat": 1.09,
+        "key": 0.93,
         "declared": true,
-        "measuredBpm": 84.96,
+        "measuredBpm": 84.98,
         "measuredKey": {
-          "tonic": 0,
+          "tonic": 7,
           "mode": "major"
         }
       },
@@ -1080,13 +1074,13 @@
           "id": "A1",
           "startBar": 0,
           "bars": 8,
-          "energyDb": -18.8
+          "energyDb": -17.6
         },
         {
           "id": "B1",
           "startBar": 8,
           "bars": 8,
-          "energyDb": -18.6
+          "energyDb": -16.3
         }
       ]
     },
@@ -1100,17 +1094,17 @@
       "loopStartSec": 0,
       "loopEndSec": 45.176,
       "key": {
-        "tonic": 0,
+        "tonic": 7,
         "mode": "major"
       },
       "confidence": {
-        "tempo": 2.95,
-        "downbeat": 1.11,
-        "key": 0.92,
+        "tempo": 4.96,
+        "downbeat": 1.17,
+        "key": 0.93,
         "declared": true,
-        "measuredBpm": 85,
+        "measuredBpm": 84.98,
         "measuredKey": {
-          "tonic": 0,
+          "tonic": 7,
           "mode": "major"
         }
       },
@@ -1118,8 +1112,14 @@
         {
           "id": "A1",
           "startBar": 0,
-          "bars": 16,
-          "energyDb": -16.7
+          "bars": 8,
+          "energyDb": -15
+        },
+        {
+          "id": "A2",
+          "startBar": 8,
+          "bars": 8,
+          "energyDb": -15.4
         }
       ]
     },
@@ -1133,17 +1133,17 @@
       "loopStartSec": 0,
       "loopEndSec": 11.294,
       "key": {
-        "tonic": 0,
+        "tonic": 7,
         "mode": "major"
       },
       "confidence": {
-        "tempo": 2.23,
-        "downbeat": 1.04,
-        "key": 0.84,
+        "tempo": 3.05,
+        "downbeat": 1.31,
+        "key": 0.89,
         "declared": true,
-        "measuredBpm": 84.88,
+        "measuredBpm": 85.12,
         "measuredKey": {
-          "tonic": 0,
+          "tonic": 7,
           "mode": "major"
         }
       },
@@ -1152,7 +1152,7 @@
           "id": "A1",
           "startBar": 0,
           "bars": 4,
-          "energyDb": -27.3
+          "energyDb": -29.1
         }
       ]
     },

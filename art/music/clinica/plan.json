@@ -250,7 +250,8 @@
         }
       ],
       "key": "E major",
-      "$comment_key": "pedida en Mi menor; la generación salió en Mi MAYOR (medida en los 4 niveles, corr. 0,82-0,95): el motor usa la medida"
+      "$comment_key": "pedida en Mi menor; la generación salió en Mi MAYOR (medida en los 4 niveles, corr. 0,82-0,95): el motor usa la medida",
+      "$comment_A8_3b": "A8.3b (14-nov 19:20-19:32): 3 reintentos para sacarla en Mi menor, ninguno usable; se queda 8504 (Mi mayor, coherente en los 4 niveles). 8623 (texto con «in E minor», positivos «minor key», negativos «major key, E major»): n1-n2 Mi menor pero n0 ambiguo (La mayor, corr. 0,32), a −22 LUFS y con un tiempo de silencio al empezar. 8633 (además «starts on beat one, no silence»): n0 son 62 s de silencio. 8643: n0 Si menor a −31 LUFS con 5,7 s de silencio y n3 en Sol mayor. Con ese prompt el nivel calma de la clínica sale casi vacío: para otro intento, quitar «little percussion»/«sparse» del bloque 0."
     }
   },
   "composition_plan": {

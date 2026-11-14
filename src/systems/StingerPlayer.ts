@@ -5,7 +5,7 @@
 import type Phaser from 'phaser';
 import type { MusicManager } from '@/systems/MusicManager';
 import { sfxOf } from '@/systems/Sfx';
-import { STINGER_VOLUME, stingerFor, type StingerKind } from '@/systems/Stingers';
+import { STINGER_VOLUME, eventStingerFor, type StingerKind } from '@/systems/Stingers';
 
 export interface StingerEvent {
   kind: StingerKind;
@@ -24,7 +24,9 @@ export function playStinger(scene: Phaser.Scene, kind: StingerKind): StingerEven
   if (!sfx) return null;
   const mm = scene.game.registry.get('musicManager') as MusicManager | undefined;
   const musicKey = mm?.currentMusicKey() ?? null;
-  const { key, detune, ms } = stingerFor(kind, musicKey);
+  // A8.3b: el grabado si encaja con la tonalidad y no hay voz; si no, el sintetizado (Stingers.eventStingerFor)
+  const voice = mm?.getDuckSources().includes('voice') ?? false;
+  const { key, detune, ms } = eventStingerFor(kind, musicKey, { voice });
   const ok = sfx.play(key, { volume: STINGER_VOLUME, detune });
   // A8.1: puzle resuelto → la música adaptativa pasa unos compases al estado `solved`
   if (kind === 'puzzle') mm?.markSolved();

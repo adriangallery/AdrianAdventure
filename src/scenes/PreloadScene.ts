@@ -238,6 +238,8 @@ export class PreloadScene extends Phaser.Scene {
       'duck_squeak', 'intercom_buzz', 'glass_break', 'paper_rustle', 'plank_pull', 'switch_flip', 'crt_on', 'floppy_insert',
       'splash', 'coin_ping', 'thud', 'nest_fall',
       'stinger_item', 'stinger_puzzle_major', 'stinger_puzzle_minor', 'stinger_chapter_major', 'stinger_chapter_minor', 'stinger_fail',
+      // A8.3b: stingers de evento grabados (src/systems/Stingers.ts → STINGER_GEN)
+      'stinger_gen_puzzle_major', 'stinger_gen_chapter_major', 'stinger_gen_fail',
     ];
     for (const key of sfxKeys) {
       if (!this.cache.audio.has(key)) {

@@ -1,13 +1,15 @@
 // Demo de A8.1 (regla visual del plan SCUMM): música adaptativa a lo iMUSE. Con el sonido activado
 // (localStorage adrian_adventure_muted = false), ?qa=1, 1280x720, una sola carga de página y cambios de escena reales
 // (`__qa.goto`, el mismo gotoScene de los scripts):
-//   1) outside (retro-adventure, Re mayor): explorar; el motivo sintetizado con el arreglo del porche (agudo, denso, eco);
-//   2) → lobby: misma pista, no hay transición: cambia el arreglo del motivo (registro medio, cuadrada, seco);
+// A8.3b: desde A8.3 esas escenas tienen tema por niveles (music-map.json → themes): suena `<tema>-n<k>`, se comparan temas y
+// sobre un nivel no hay capas sintetizadas (las capas de 1) y 4) quedan como nota, no como fallo).
+//   1) outside (tema dex, Re mayor; antes retro-adventure): explorar;
+//   2) → lobby (tema adrianlab, Sol mayor): cambio de tema en un punto de salida;
 //   3) conversación con la recepcionista: estado `dialogue` (capa pad; salta a la sección tranquila en un punto de salida);
-//   4) → basement (tension, Mi menor): el cambio espera al siguiente punto de salida y entra por el puente en Mi
+//   4) → basement (tema sotano, Mi menor; antes tension): el cambio espera al siguiente punto de salida y entra por el puente en Mi
 //      (stinger_item +400 cents); estado `tension` (pulso + contratiempos, sección intensa); arreglo del sótano (grave, filtrado);
-//   5) → lobby (retro-adventure, Re mayor: puente +200) → rooftop (vista, Sol menor: puente -500);
-//   6) → outside y enseguida → lobby: el segundo cambio llega antes de la salida y la anula (misma pista: no hay corte).
+//   5) → lobby (adrianlab, Sol mayor) → rooftop (tema aventura, Re mayor; antes vista);
+//   6) → outside y enseguida → rooftop: el segundo cambio llega antes de la salida y la anula (misma pista: no hay corte).
 // En cada fotograma, un HUD (DOM) con `__qa.music()`: estado, pista, BPM, tonalidad, compás:pulso, sección, próxima salida,
 // cambio programado y capas. Cada transición se apunta en log.txt y en transitions.json (hora pedida, hora de salida, espera en
 // compases, compás de salida, tipo de salida, sección de entrada, puente, desafino, tonalidad) y la demo FALLA si alguna no
@@ -116,11 +118,13 @@ async function during(label, start, maxMs = 60000) {
   return page.evaluate(() => window.__demoErr);
 }
 
+// A8.3b: `dex-n1` → `dex` (las pistas sin tema se quedan igual)
+const themeOf = (k) => (k ?? '').replace(/-n\d+$/, '');
 async function waitTrack(key, ms = 30000) {
   const t0 = Date.now();
   while (Date.now() - t0 < ms) {
     const m = await capture(`esperando ${key}`);
-    if (m?.track === key && !m.scheduled) return m;
+    if (themeOf(m?.track) === key && !m.scheduled) return m;
   }
   problems.push(`la pista ${key} no llegó a sonar en ${ms / 1000} s`);
   return null;
@@ -132,11 +136,12 @@ async function go(scene, label) {
 }
 
 // 1) outside
-await waitTrack('retro-adventure');
-await filmFor('1) outside: explorar · motivo con el arreglo del porche', 4000);
-// 2) lobby (misma pista)
-await go('lobby', '2) → lobby: misma pista, sin transición; cambia el arreglo del motivo');
-await filmFor('2) lobby: el mismo motivo, otro arreglo', 3500);
+await waitTrack('dex');
+await filmFor('1) outside: explorar · tema dex', 4000);
+// 2) lobby (tema adrianlab)
+await go('lobby', '2) → lobby: cambio de tema dex → adrianlab en un punto de salida');
+await waitTrack('adrianlab');
+await filmFor('2) lobby: tema adrianlab', 3500);
 // 3) conversación
 {
   // Penny abre un hub de opciones: `__qa.talk`/`dismissAll` sin respuestas pasan los textos y paran con
@@ -167,20 +172,20 @@ await filmFor('2) lobby: el mismo motivo, otro arreglo', 3500);
   if (![...seenStates].some((k) => k.endsWith(':dialogue'))) problems.push('durante la conversación el estado musical no pasó a dialogue');
 }
 // 4) basement
-await go('basement', '4) → basement: espera al punto de salida y entra por el puente en Mi menor');
-await waitTrack('tension');
-await filmFor('4) basement: tension, estado tensión (pulso + contratiempos), arreglo del sótano', 6000);
+await go('basement', '4) → basement: espera al punto de salida y entra en el tema sotano (Mi menor)');
+await waitTrack('sotano');
+await filmFor('4) basement: tema sotano, estado tensión (nivel 1)', 6000);
 // 5) lobby → rooftop
-await go('lobby', '5) → lobby: vuelta a retro-adventure (Re mayor)');
-await waitTrack('retro-adventure');
+await go('lobby', '5) → lobby: vuelta a adrianlab (Sol mayor)');
+await waitTrack('adrianlab');
 await filmFor('5) lobby', 2000);
-await go('rooftop', '5) → rooftop: vista (Sol menor)');
-await waitTrack('vista');
-await filmFor('5) rooftop: vista, arreglo abierto', 4000);
+await go('rooftop', '5) → rooftop: tema aventura (Re mayor)');
+await waitTrack('aventura');
+await filmFor('5) rooftop: tema aventura', 4000);
 // 6) cambio anulado
 await go('outside', '6) → outside…');
 await go('rooftop', '6) …y de vuelta antes de la salida: se anula, sin corte');
-await filmFor('6) rooftop: sigue vista', 3000);
+await filmFor('6) rooftop: sigue aventura', 3000);
 
 const final = await page.evaluate(() => window.__qa.music());
 // audio
@@ -222,13 +227,13 @@ for (const t of trs) {
   }
 }
 const done = trs.filter((t) => !t.cancelled && t.exitKind !== 'start');
-for (const [from, to] of [['retro-adventure', 'tension'], ['tension', 'retro-adventure'], ['retro-adventure', 'vista']]) {
-  if (!done.some((t) => t.from === from && t.to === to)) problems.push(`no hubo transición ${from} → ${to}`);
+for (const [from, to] of [['dex', 'adrianlab'], ['adrianlab', 'sotano'], ['sotano', 'adrianlab'], ['adrianlab', 'aventura']]) {
+  if (!done.some((t) => themeOf(t.from) === from && themeOf(t.to) === to)) problems.push(`no hubo transición ${from} → ${to}`);
 }
 if (!trs.some((t) => t.cancelled)) notes.push('aviso: el cambio rápido de 6) no llegó a anularse (pudo caer justo en la salida)');
 if (!seenStates.has('basement:tension')) problems.push('en el sótano el estado musical no fue tension');
-if ((layerPeaks['basement:pulse'] ?? 0) < 0.01) problems.push('en el sótano no entró la capa pulse');
-if ((layerPeaks['outside:motif'] ?? 0) < 0.01) problems.push('fuera no sonó la capa motif');
+// A8.3: sobre un nivel de tema no hay capas sintetizadas (la intensidad va en la pista): solo se apuntan
+if ((layerPeaks['basement:pulse'] ?? 0) >= 0.01 || (layerPeaks['outside:motif'] ?? 0) >= 0.01) notes.push('aviso: sonaron capas sintetizadas sobre un nivel de tema');
 console.log(`estados vistos: ${[...seenStates].join(', ')}`);
 console.log(`capas (pico por lugar): ${JSON.stringify(layerPeaks)}`);
 
