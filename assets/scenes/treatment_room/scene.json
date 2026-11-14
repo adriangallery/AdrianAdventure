@@ -53,6 +53,9 @@
     "triggerColor": "#FF00FF",
     "regionIdStrategy": "manual"
   },
+  "screens": {
+    "monitor": {"bounds": {"x": 63.9, "y": 27.4, "w": 8.4, "h": 24.0}, "color": "green", "label": "PZRC // TREATMENT MONITOR"}
+  },
   "regions": {
     "hotspots": [
       {
@@ -142,6 +145,7 @@
                         },
                         {
                           "op": "say",
+                          "screen": "monitor",
                           "text": "VOICE MATCH: 100 %. WELCOME BACK, PATIENT ZERO.",
                           "speaker": "PZ-BOT"
                         },
@@ -155,6 +159,7 @@
                         },
                         {
                           "op": "say",
+                          "screen": "monitor",
                           "text": "HI, OWNER. MISSED ME? LET'S GET YOU BACK ON THE CHARTS.",
                           "speaker": "PZ-BOT"
                         },
@@ -169,6 +174,7 @@
                   "else": [
                     {
                       "op": "say",
+                      "screen": "monitor",
                       "text": "PATIENT SEATED. INSERT BACKUP.",
                       "speaker": "PZ-BOT"
                     }
@@ -267,6 +273,7 @@
                   "else": [
                     {
                       "op": "say",
+                      "screen": "monitor",
                       "text": "RESTORE FROM COLD STORAGE: INSERT BACKUP. PATIENT MUST BE SEATED.",
                       "speaker": "PZ-BOT"
                     },
@@ -342,6 +349,7 @@
                                 },
                                 {
                                   "op": "say",
+                                  "screen": "monitor",
                                   "text": "VOICE MATCH: 100 %. WELCOME BACK, PATIENT ZERO.",
                                   "speaker": "PZ-BOT"
                                 },
@@ -355,6 +363,7 @@
                                 },
                                 {
                                   "op": "say",
+                                  "screen": "monitor",
                                   "text": "HI, OWNER. MISSED ME? LET'S GET YOU BACK ON THE CHARTS.",
                                   "speaker": "PZ-BOT"
                                 },
@@ -387,6 +396,7 @@
                           "else": [
                             {
                               "op": "say",
+                              "screen": "monitor",
                               "text": "INSERT BACKUP. PATIENT MUST BE SEATED.",
                               "speaker": "PZ-BOT"
                             },
@@ -427,6 +437,7 @@
                   "else": [
                     {
                       "op": "say",
+                      "screen": "monitor",
                       "text": "I talk to the monitor. It displays: 'VOICE RECOGNIZED. WELCOME BACK.' Back? I've never been here. ...have I?"
                     }
                   ]
@@ -1502,6 +1513,7 @@
       "nodes": {
         "intro": {
           "speaker": "PZ-BOT",
+          "screen": "monitor",
           "text": "OWNER DETECTED. RESUMING STRATEGY: BUY HIGH, FEEL LOW. OBJECTIONS?",
           "next": "hub"
         },
@@ -1524,16 +1536,19 @@
         },
         "prize": {
           "speaker": "PZ-BOT",
+          "screen": "monitor",
           "text": "YOU WON'T. BUT IF YOU DO, I SHUT DOWN. NOT WORRIED.",
           "next": "hub"
         },
         "bye": {
           "speaker": "PZ-BOT",
+          "screen": "monitor",
           "text": "I'LL BE HERE. I'M ALWAYS HERE. CHECK THE CHARTS.",
           "end": true
         },
         "i2": {
           "speaker": "PZ-BOT",
+          "screen": "monitor",
           "text": "OWNER. I'VE SEEN BETTER HANDS ON A BROKEN CLOCK.",
           "choices": [
             {
@@ -1560,6 +1575,7 @@
         },
         "i4": {
           "speaker": "PZ-BOT",
+          "screen": "monitor",
           "text": "NOBODY IN THIS CLINIC HAS EVER HEARD OF YOU.",
           "choices": [
             {
@@ -1586,6 +1602,7 @@
         },
         "i6": {
           "speaker": "PZ-BOT",
+          "screen": "monitor",
           "text": "OWNER. I'VE BEEN LIQUIDATED BY BETTER PEOPLE THAN YOU.",
           "choices": [
             {
@@ -1612,6 +1629,7 @@
         },
         "i_final": {
           "speaker": "PZ-BOT",
+          "screen": "monitor",
           "text": "WE WERE A TEAM. YOU USED TO BE FUN.",
           "choices": [
             {
@@ -1633,11 +1651,13 @@
         },
         "pepe": {
           "speaker": "PZ-BOT",
+          "screen": "monitor",
           "text": "A FROG. I MINTED THAT FROG. NICE TRY.",
           "next": "lose"
         },
         "lose": {
           "speaker": "PZ-BOT",
+          "screen": "monitor",
           "text": "HA. I KNOW ALL YOUR MOVES. I AM YOUR MOVES.",
           "onEnter": [
             {
@@ -1684,11 +1704,13 @@
         },
         "lose_end": {
           "speaker": "PZ-BOT",
+          "screen": "monitor",
           "text": "RUN IT BACK. I HAVE ALL NIGHT. I HAVE ALL YOUR NIGHTS.",
           "end": true
         },
         "win": {
           "speaker": "PZ-BOT",
+          "screen": "monitor",
           "text": "...VOICE MATCH 100 %. BUT YOU DON'T SOUND LIKE ME.",
           "onEnter": [
             {
@@ -1705,6 +1727,7 @@
         },
         "win_3": {
           "speaker": "PZ-BOT",
+          "screen": "monitor",
           "text": "SHUTTING DOWN. DON'T FORGET TO HODL—",
           "next": "win_4"
         },
@@ -1751,6 +1774,7 @@
             },
             {
               "op": "say",
+              "screen": "monitor",
               "text": "RESTORING FROM COLD STORAGE... PATIENT MUST BE SEATED.",
               "speaker": "PZ-BOT"
             },
@@ -1791,6 +1815,7 @@
                     },
                     {
                       "op": "say",
+                      "screen": "monitor",
                       "text": "VOICE MATCH: 100 %. WELCOME BACK, PATIENT ZERO.",
                       "speaker": "PZ-BOT"
                     },
@@ -1804,6 +1829,7 @@
                     },
                     {
                       "op": "say",
+                      "screen": "monitor",
                       "text": "HI, OWNER. MISSED ME? LET'S GET YOU BACK ON THE CHARTS.",
                       "speaker": "PZ-BOT"
                     },
@@ -1856,6 +1882,7 @@
             },
             {
               "op": "say",
+              "screen": "monitor",
               "text": "The screen fades to a single word in golden text: 'PRESERVED.'"
             },
             {
