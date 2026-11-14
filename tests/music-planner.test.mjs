@@ -48,6 +48,7 @@ test('nextExit: siempre en compás y nunca más tarde de maxWaitBars (barrido de
 });
 
 test('nextExit: prefiere inicio de sección > final de frase > compás', () => {
+  const OPTS = { maxWaitBars: 4, phraseBars: 4, minLeadSec: 0.12 };
   const g = { bpm: 120, beatsPerBar: 4, firstDownbeatSec: 0, barSec: 2, bars: 32, durationSec: 64, loopStartSec: 0, loopEndSec: 64, key: { tonic: 0, mode: 'major' }, sections: [{ id: 'A1', startBar: 0, bars: 10, energyDb: -20 }, { id: 'B1', startBar: 10, bars: 22, energyDb: -12 }] };
   // en el compás 6,5: frase en 8, sección en 10 (dentro de 4 compases) → sección
   assert.deepEqual([P.nextExit(g, 13, OPTS).kind, P.nextExit(g, 13, OPTS).bar], ['section', 10]);

@@ -1,8 +1,8 @@
 {
   "$comment": "A8.1 música adaptativa (iMUSE). `tracks` lo mide scripts/audio/analyze-tempo.mjs (no editar a mano); el resto es a mano: planner (espera máxima), rules (estado del juego → estado musical, gana la prioridad mayor), states (capas y sección por estado), places (arreglo del motivo por escena). Ver docs/progreso/A8.1.md.",
   "planner": {
-    "maxWaitBars": 4,
-    "phraseBars": 4,
+    "maxWaitBars": 2,
+    "phraseBars": 2,
     "minLeadSec": 0.12,
     "solvedBars": 4
   },

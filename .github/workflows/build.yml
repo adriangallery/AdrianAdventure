@@ -366,6 +366,9 @@ jobs:
             demo-out/*/*.gif
             demo-out/*/*.png
             demo-out/*/log.txt
+            demo-out/*/transitions.json
+            demo-out/*/*.mp4
+            demo-out/*/audio.webm
 
       - name: Fotogramas (artefacto demo-frames)
         if: ${{ always() && steps.pick.outputs.list != '' }}
