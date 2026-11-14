@@ -252,6 +252,22 @@
                 },
                 {
                   "op": "removeItem",
+                  "id": "broken_mouse"
+                },
+                {
+                  "op": "removeItem",
+                  "id": "server_log"
+                },
+                {
+                  "op": "removeItem",
+                  "id": "ledger"
+                },
+                {
+                  "op": "removeItem",
+                  "id": "antenna"
+                },
+                {
+                  "op": "removeItem",
                   "id": "server_log"
                 },
                 {
@@ -305,6 +321,22 @@
                       "op": "setFlag",
                       "flag": "chapter_3_complete",
                       "value": true
+                    },
+                    {
+                      "op": "removeItem",
+                      "id": "ledger"
+                    },
+                    {
+                      "op": "removeItem",
+                      "id": "antenna"
+                    },
+                    {
+                      "op": "removeItem",
+                      "id": "broken_mouse"
+                    },
+                    {
+                      "op": "removeItem",
+                      "id": "server_log"
                     },
                     {
                       "op": "removeItem",
