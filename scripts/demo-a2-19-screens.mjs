@@ -139,6 +139,14 @@ for (const vp of VIEWPORTS) {
     opened = await page.evaluate(() => !!window.__game.registry.get('screenCloseupOpen'));
   }
   check(opened, `${tag}: los Términos del cajón abren el primer plano`);
+  if (!opened) {
+    const dbg = await page.evaluate(() => {
+      const gs = window.__game.scene.getScene('GameScene');
+      const ui = window.__game.scene.getScene('UIScene');
+      return { screen: gs.getScreenQa(), speech: ui.getSpeech(), dialogueActive: window.__game.registry.get('dialogueActive'), screens: Object.keys(gs.sceneDataLoader.getSceneData().screens ?? {}), node: gs.sceneDataLoader.getSceneData().dialogues?.tos_drawer?.nodes?.screen };
+    });
+    console.log(`  depuración: ${JSON.stringify(dbg).slice(0, 900)}`);
+  }
   if (opened) {
     await demo.film(1800);
     q = await screenQa();
