@@ -51,6 +51,9 @@
     "triggerColor": "#FF00FF",
     "regionIdStrategy": "manual"
   },
+  "screens": {
+    "reception_crt": {"bounds": {"x": 82.4, "y": 53.4, "w": 4.1, "h": 10.0}, "color": "green", "label": "PZRC // RECEPTION"}
+  },
   "regions": {
     "hotspots": [
       {
@@ -1022,12 +1025,16 @@
           "USE": [
             {
               "op": "say",
+              "screen": "reception_crt",
+              "display": "PATIENT MANAGEMENT SYSTEM\nNAME: ENCRYPTED\nDIAGNOSIS: ENCRYPTED\nSTATUS: ENCRYPTED",
               "text": "I jiggle the mouse. The screen shows a patient management system. All fields say 'ENCRYPTED'. Even their software has trust issues."
             }
           ],
           "TALK": [
             {
               "op": "say",
+              "screen": "reception_crt",
+              "display": "INSUFFICIENT PERMISSIONS. Try being a doctor.",
               "text": "'Show me the patient records.' The screen: 'INSUFFICIENT PERMISSIONS. Try being a doctor.' Rude."
             }
           ],
@@ -1478,18 +1485,24 @@
         },
         {
           "op": "say",
+          "screen": "reception_crt",
           "text": "'ADRIANLAB FLOPPY RECOGNIZED. PATIENT DATABASE DECRYPTION: AUTHORIZED.' Wait \u2014 my floppy collection is a decryption key?"
         },
         {
           "op": "say",
+          "screen": "reception_crt",
+          "closeup": true,
           "text": "Patient records scroll by. 'Patient #0042: Chronic Airdrop Dependency. Treatment: forced HODL for 90 days. Status: Relapsed after 6 hours.'"
         },
         {
           "op": "say",
+          "screen": "reception_crt",
+          "closeup": true,
           "text": "'Patient #0069: Acute Governance Proposal Addiction. Voted on 847 proposals in one week. Treatment: touch grass. Status: Grass has been tokenized. Treatment failed.'"
         },
         {
           "op": "say",
+          "screen": "reception_crt",
           "text": "At the end of the list: 'Patient #0000 \u2014 REDACTED. See Treatment Room.' The cursor blinks. The computer knows more than it's showing."
         },
         {

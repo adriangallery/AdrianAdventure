@@ -25,7 +25,7 @@ export interface DialogueTree {
   nodes: Record<string, DialogueNode>;
 }
 
-export interface DialogueNode {
+export interface DialogueNode extends DialogueNodeScreen {
   speaker?: string;
   /** A2.6: sin texto (p. ej. el hub) el nodo no dice nada y enseña sus opciones directamente */
   text?: string;
@@ -66,9 +66,16 @@ export interface ChoiceView {
 
 // ─── Callbacks ───────────────────────────────────────────────
 
+/** A2.19: el nodo dice algo que sale en una pantalla de la escena (`screen`, `display`, `closeup` como en el op `say`) */
+export interface DialogueNodeScreen {
+  screen?: string;
+  display?: string;
+  closeup?: boolean;
+}
+
 export interface DialogueCallbacks {
   /** Show a line of dialogue. Must return a Promise that resolves when player dismisses. */
-  say: (text: string, speaker?: string) => Promise<void>;
+  say: (text: string, speaker?: string, node?: DialogueNodeScreen) => Promise<void>;
   /** Show choices and return the index the player picked. */
   showChoices: (choices: ChoiceView[]) => Promise<number>;
   /** Check a gating rule. */
@@ -203,7 +210,9 @@ export class DialogueSystem {
       // Show text (un hub sin texto no dice nada)
       if (node.text) {
         silent = 0;
-        await this.callbacks.say(node.text, node.speaker);
+        // A2.19: con `screen` la línea también se teclea en esa pantalla de la escena
+        if (node.screen) await this.callbacks.say(node.text, node.speaker, { screen: node.screen, display: node.display, closeup: node.closeup });
+        else await this.callbacks.say(node.text, node.speaker);
       }
 
       // End node, o el nodo de despedida de una salida

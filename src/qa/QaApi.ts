@@ -12,7 +12,7 @@
  *  - `[qa:error] …`   fallo de la prueba o del juego (id inexistente, tiempo agotado, escena que no carga).
  */
 import type Phaser from 'phaser';
-import type { GameScene } from '@/scenes/GameScene';
+import type { GameScene, ScreenQaState } from '@/scenes/GameScene';
 import type { UIScene } from '@/scenes/UIScene';
 import type { SpeechState } from '@/ui/DialogueBox';
 import type { HotspotData, SceneData, ScriptOp } from '@/types/scene.types';
@@ -85,6 +85,12 @@ export interface QaState {
    */
   dashboard: DashboardQaState;
   lastDashboard: DashboardQaState | null;
+  /**
+   * A2.19: pantallas de la escena (`last`, lo que hay escrito en la de la escena `inScene`, el primer plano `closeup`) y
+   * `lastScreens`: las líneas de pantalla que salieron durante el último paso (id, screen|closeup, motivo, texto).
+   */
+  screen: ScreenQaState | null;
+  lastScreens: ScreenQaState['log'];
   /** A3.10: web3 simulado con `mockWeb3`: 'off' (red real), 'none' (sin cartera) o la dirección simulada */
   web3Mock: string;
   /** Últimas acciones y textos mostrados, para diagnosticar */
@@ -350,6 +356,8 @@ export function installQa(game: Phaser.Game): void {
   /** A3.10: ver QaState.lastDashboard */
   let lastDashboard: DashboardQaState | null = null;
   let dashboardHoldMs = 400;
+  /** A2.19: seq de pantalla al empezar el último paso (lastScreens = las de después) */
+  let screenSeqBase = 0;
   const note = (line: string) => {
     logTotal++;
     log.push(line);
@@ -407,6 +415,8 @@ export function installQa(game: Phaser.Game): void {
     if (ui().getJournal?.()?.isCalling()) out.push('call');
     // A3.10: dashboard del Mining Rig abierto (settle lo lee y lo cierra con su X)
     if (registry.get('dashboardOpen')) out.push('dashboard');
+    // A2.19: primer plano de una pantalla abierto (settle lo lee y lo cierra con su X)
+    if (registry.get('screenCloseupOpen')) out.push('closeup');
     return out;
   };
 
@@ -426,6 +436,7 @@ export function installQa(game: Phaser.Game): void {
     const queue = [...choices];
     lastChoices = null;
     lastDashboard = null;
+    screenSeqBase = inGame() ? gs().getScreenQa().seq : 0;
     const t0 = Date.now();
     let calm = 0;
     while (calm < CALM_POLLS) {
@@ -462,6 +473,16 @@ export function installQa(game: Phaser.Game): void {
           note(`DASHBOARD ${lastDashboard.phase}: ${lastDashboard.rows.join(' | ')}`);
           (document.getElementById('rigdash-close') as HTMLButtonElement | null)?.click();
         }
+        await sleep(200);
+        continue;
+      }
+      if (reasons.includes('closeup')) {
+        calm = 0;
+        // A2.19: como un jugador: lo lee un momento y lo cierra con la X (la línea y el script siguen)
+        await sleep(dashboardHoldMs);
+        const cq = gs().getScreenQa().closeup;
+        if (cq.open) note(`CLOSEUP ${cq.screen} (${cq.reason}): ${(cq.text ?? '').slice(0, 80)}`);
+        (document.getElementById('scrclose-close') as HTMLButtonElement | null)?.click();
         await sleep(200);
         continue;
       }
@@ -581,6 +602,8 @@ export function installQa(game: Phaser.Game): void {
       lastChoices: lastChoices ? lastChoices.map((o) => ({ ...o })) : null,
       dashboard: playing ? gs().getDashboardQa() : { open: false, phase: null, rows: [], status: null, tip: null },
       lastDashboard: lastDashboard ? { ...lastDashboard, rows: [...lastDashboard.rows] } : null,
+      screen: playing ? gs().getScreenQa() : null,
+      lastScreens: playing ? gs().getScreenQa().log.filter((e) => e.seq > screenSeqBase) : [],
       web3Mock: (() => { const m = getWeb3Mock(); return m === undefined ? 'off' : m === null ? 'none' : m.address; })(),
       log: [...log],
       logTotal,
@@ -889,6 +912,13 @@ export function installQa(game: Phaser.Game): void {
           continue;
         }
         if (ui().getChoicePanel().isAwaitingChoice()) throw new QaError('error', 'runScript: el script pide elegir en un diálogo (no hay respuestas en este paso)');
+        // A2.19: el primer plano de una pantalla se lee un momento y se cierra con su X
+        if (registry.get('screenCloseupOpen')) {
+          await sleep(dashboardHoldMs);
+          (document.getElementById('scrclose-close') as HTMLButtonElement | null)?.click();
+          await sleep(100);
+          continue;
+        }
         // Fuera de cinemática los textos esperan un toque, como siempre
         if (registry.get('dialogueShowing') && !registry.get('cinematicMode')) gs().qaSyntheticTap();
         await sleep(100);
