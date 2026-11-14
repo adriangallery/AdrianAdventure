@@ -39,6 +39,8 @@ export class UIScene extends Phaser.Scene {
   /** A9.3: logros esperando a que la pantalla quede libre */
   private achievementQueue: string[] = [];
   private achievementPumping = false;
+  /** A9.3: sube en cada shutdown; un bucle de la cola de una vida anterior de la escena ya no sigue. */
+  private achievementGen = 0;
   private walletButton!: WalletButton;
   private saveButton!: SaveButton;
   private dialogueSystem!: DialogueSystem;
@@ -324,6 +326,8 @@ export class UIScene extends Phaser.Scene {
       this.achievementQueue.push(text);
       this.pumpAchievements();
     });
+    // A9.3: logros que quedaron en cola al cambiar de escena salen en la nueva
+    if (this.achievementQueue.length > 0) this.pumpAchievements();
 
     // Rolling end credits
     this.events.on('showCredits', (resolve?: () => void) => {
@@ -462,19 +466,21 @@ export class UIScene extends Phaser.Scene {
   private async pumpAchievements(): Promise<void> {
     if (this.achievementPumping) return;
     this.achievementPumping = true;
+    const gen = this.achievementGen;
     try {
       while (this.achievementQueue.length > 0) {
         const t0 = this.time.now;
         while (achievementDecision(this.screenBusy(), this.time.now - t0) === 'wait') {
           await new Promise<void>((r) => this.time.delayedCall(ACH_POLL_MS, r));
-          if (!this.sys.isActive()) return;
+          if (gen !== this.achievementGen || !this.sys.isActive()) return;
         }
         const text = this.achievementQueue.shift()!;
         const panelH = (this.registry.get('scummPanelHeight') as number | undefined) ?? 0;
         await this.cinematicOverlay.showAchievement(text, panelH);
+        if (gen !== this.achievementGen) return;
       }
     } finally {
-      this.achievementPumping = false;
+      if (gen === this.achievementGen) this.achievementPumping = false;
     }
   }
 
@@ -555,6 +561,10 @@ export class UIScene extends Phaser.Scene {
    * curso, y los listeners que esta escena puso en los eventos de GameScene y en los suyos.
    */
   shutdown(): void {
+    // A9.3: el reloj y los tweens de esta vida se borran: el bucle de la cola que esperaba en ellos no vuelve nunca.
+    // Sin esto `achievementPumping` se quedaba en true y no salía ningún logro más en toda la partida
+    this.achievementGen++;
+    this.achievementPumping = false;
     this.subtitleTimer?.remove();
     this.subtitleTimer = null;
     this.hiddenChrome = null;

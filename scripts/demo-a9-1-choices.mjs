@@ -5,8 +5,9 @@
 //      mide con ChoicePanel.getOptionBoxes(): FALLA si alguna opción queda fuera de pantalla o del panel, mide menos de
 //      40 px de alto, la letra baja de 11 px, el número de cajas no es el de opciones o aparece «More...»;
 //   2) un panel sintético de 7 réplicas largas (el peor caso) con las mismas comprobaciones;
-//   3) A9.3: lanza un logro mientras Dex habla: FALLA si sale antes de que acabe la frase o si su caja pisa la franja de
-//      botones de arriba (32 px) o el panel de verbos; y si el título de escena se sale de la pantalla.
+//   3) A9.3: lanza un logro cuando la frase de Dex YA está en pantalla: FALLA si la franja aparece con una frase en
+//      pantalla (lo mira un vigía cada 50 ms desde el instante en que se lanza), si su caja pisa la de una frase que
+//      coincida después, la franja de botones de arriba (32 px) o el panel de verbos; y si el título de escena se sale.
 // Capturas: `<vista>-<diálogo>.png`, `<vista>-sintetico.png`, `<vista>-logro.png`. Informe en `choices.json`.
 // Uso: BASE_URL=http://127.0.0.1:4173 node scripts/lib/demo.mjs run a9-1-choices
 import { join } from 'node:path';
@@ -133,8 +134,35 @@ for (const view of [{ id: '844x390', width: 844, height: 390, tap: [422, 40] }, 
   await page.evaluate(() => {
     window.__qa.runScript([{ op: 'say', text: 'This line is long enough to still be on screen when the achievement arrives. Patience, Gerald.' }]).catch(() => {});
   });
-  await demo.sleep(500);
-  await page.evaluate(() => window.__game.scene.getScene('UIScene').events.emit('showAchievement', 'Demo achievement'));
+  // runScript espera a que el juego quede libre (≥ 600 ms) antes de lanzar la frase: el logro se lanza cuando la frase
+  // YA está en pantalla (antes se lanzaba a los 500 ms, salía con la pantalla libre y la frase llegaba después)
+  let spoke = false;
+  for (let i = 0; i < 50 && !spoke; i++) {
+    spoke = await page.evaluate(() => !!window.__qa.state().speech);
+    if (!spoke) await demo.sleep(100);
+  }
+  if (!spoke) bad(`${view.id}: la frase de Dex no salió`);
+  // Vigía en la página (cada 50 ms): instante en que aparece la franja, si en ESE instante había frase, y si alguna vez
+  // la caja de la franja pisa la de una frase (una frase posterior puede coincidir, pero en otra zona)
+  await page.evaluate(() => {
+    const ui = window.__game.scene.getScene('UIScene');
+    const w = { emittedAt: performance.now(), appearedAt: null, speechAtAppear: null, overlaps: [] };
+    window.__achWatch = w;
+    let prev = null;
+    w.timer = setInterval(() => {
+      const rect = ui.getAchievementStatus().rect;
+      const sp = window.__qa.state().speech;
+      if (rect && !prev && w.appearedAt === null) { w.appearedAt = performance.now() - w.emittedAt; w.speechAtAppear = sp?.text ?? null; }
+      if (rect && sp) {
+        const box = { x: sp.x - sp.w / 2, y: sp.y, w: sp.w, h: sp.h };
+        if (box.x < rect.x + rect.w && rect.x < box.x + box.w && box.y < rect.y + rect.h && rect.y < box.y + box.h) {
+          if (w.overlaps.length < 3) w.overlaps.push({ rect, speech: box, text: sp.text });
+        }
+      }
+      prev = rect;
+    }, 50);
+    ui.events.emit('showAchievement', 'Demo achievement');
+  });
   await demo.sleep(600);
   const during = await page.evaluate(() => ({ speech: window.__qa.state().speech?.text ?? null, ...window.__game.scene.getScene('UIScene').getAchievementStatus() }));
   if (during.speech && during.rect) bad(`${view.id}: el logro salió con una frase en pantalla`);
@@ -157,11 +185,18 @@ for (const view of [{ id: '844x390', width: 844, height: 390, tap: [422, 40] }, 
   else {
     if (ach.y < 32) bad(`${view.id}: el logro pisa los botones de arriba (y=${ach.y})`);
     if (ach.y + ach.h > ach.vh - ach.panelH) bad(`${view.id}: el logro pisa el panel de verbos`);
-    if (ach.speech) bad(`${view.id}: el logro comparte pantalla con una frase`);
     await demo.sleep(300);
     await demo.still(`${view.id}-logro`);
   }
-  v.achievement = { during, shown: ach, title };
+  const watch = await page.evaluate(() => {
+    const w = window.__achWatch;
+    clearInterval(w.timer);
+    return { appearedAt: w.appearedAt, speechAtAppear: w.speechAtAppear, overlaps: w.overlaps };
+  });
+  // Lo que importa: la franja no APARECE con una frase en pantalla, y si después coincide con una, no la pisa
+  if (watch.speechAtAppear) bad(`${view.id}: el logro apareció con una frase en pantalla («${watch.speechAtAppear}»)`);
+  if (watch.overlaps.length) bad(`${view.id}: la franja de logro pisa una frase (${JSON.stringify(watch.overlaps[0])})`);
+  v.achievement = { during, shown: ach, title, watch };
   console.log(`${view.id} · logro: en cola durante la frase (${during.queued}), luego en ${JSON.stringify(ach)}; título ${JSON.stringify(title)}`);
   await demo.film(1500);
 }
