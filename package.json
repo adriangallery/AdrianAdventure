@@ -21,7 +21,7 @@
     "lint:scenes": "node scripts/lint-scenes.mjs",
     "test:voices": "node --test tests/voice-coverage.test.mjs tests/eleven-voices.test.mjs",
     "lint:voices": "node scripts/voice-coverage.mjs",
-    "test:overlays": "node --test tests/overlay-crop.test.mjs",
+    "test:overlays": "node --test tests/overlay-crop.test.mjs tests/vane-overlay.test.mjs",
     "lint:overlays": "node scripts/crop-overlays.mjs --check",
     "lint:audio": "node scripts/audio/make-ambience.mjs --check && node scripts/audio/analyze-music.mjs --check && node scripts/audio/analyze-tempo.mjs --check",
     "make:audio": "node scripts/audio/make-sfx.mjs && node scripts/audio/make-ambience.mjs && node scripts/audio/analyze-music.mjs && node scripts/audio/analyze-tempo.mjs",

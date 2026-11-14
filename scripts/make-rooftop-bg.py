@@ -25,7 +25,7 @@ import json
 import os
 import sys
 
-from PIL import Image, ImageFilter
+from PIL import Image
 
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
 SRC = os.path.join(ROOT, 'art', 'rooftop', 'rooftop-gem-v1.jpeg')
@@ -59,13 +59,6 @@ def build_palette():
     return pal
 
 
-def make_background():
-    src = Image.open(SRC).convert('RGB')
-    band = src.crop(CROP)
-    q = band.quantize(palette=build_palette(), dither=Image.Dither.NONE).convert('RGB')
-    return q.resize((W, H), Image.NEAREST)
-
-
 def write_variants(bg):
     bg.save(os.path.join(SCENE_DIR, 'background.png'), optimize=True)
     bg.save(os.path.join(SCENE_DIR, 'background.webp'), lossless=True, quality=100, method=4)
@@ -74,83 +67,201 @@ def write_variants(bg):
         bg.resize((w, h), Image.LANCZOS).save(os.path.join(SCENE_DIR, f'background@{w}.webp'), quality=WEBP_Q, method=6)
 
 
-def mast_axis(bg, y0, y1, x0, x1):
-    """Columna del mástil: la más oscura de media en una franja donde solo hay mástil y cielo."""
-    px = bg.load()
-    best, bx = None, x0
-    for x in range(x0, x1):
-        s = sum(sum(px[x, y]) for y in range(y0, y1, 4))
-        if best is None or s < best:
-            best, bx = s, x
-    return bx
+# ---------------------------------------------------------------------------------------------------------------
+# A9.16: la veleta se trabaja en el espacio del JPEG (franja cuantizada de 1376x490), donde el mástil tiene 8 px
+# (x 989..996) y su eje cae EXACTO entre dos columnas (992,5): el espejo es x -> 1985 - x, sin medio píxel suelto.
+# El estado volteado se compone ahí entero y el overlay es la DIFERENCIA con el fondo, ya escalada: opacos solo los
+# píxeles que cambian, con su color exacto, y el resto alfa 0. Fondo + overlay = estado volteado, bit a bit.
+MAST = (989, 996)          # columnas del mástil en la franja
+FLIP_SUM = 2 * 992 + 1     # x' = FLIP_SUM - x
+HEAD = (900, 15, 1086, 155)  # caja de la cabeza (B y flecha) en la franja: x0, y0, x1, y1 (excl.)
+ROSE = (936, 155, 1050, 201)  # caja de la rosa de los vientos en la franja (se redibuja, ver draw_rose)
+HALO_RING, HALO_DELTA = 2, 6
+OUTLINE, CU, CU_HI, CU_LO = (13, 4, 4), (127, 92, 71), (175, 154, 136), (99, 68, 49)
 
 
-DILATE = 4  # px del maestro
-ROSE_TOP = 289  # y del JPEG entre la flecha (acaba en ≈ 282) y la rosa de los vientos (empieza en ≈ 294): solo mástil
-
-
-def is_vane(p):
-    """Veleta = cobre (más rojo que azul) o contorno oscuro; el cielo es azul lavanda (y las estrellas, claras)."""
+def is_sky(p):
+    """Cielo = azul lavanda (b claramente por encima de r) de luminancia media. El contorno oscuro, el cobre, el
+    halo azul oscuro del JPEG, el mástil gris claro y las estrellas NO son cielo."""
     r, g, b = p[:3]
-    return r > b + 8 or (r + g + b) < 150
+    return b - r >= 50 and 250 <= r + g + b <= 480
 
 
-def vane_overlay(crop, flip, split):
-    """A9.12: de `split` hacia arriba (B y flecha), el espejo, pero solo donde hay veleta en el original o en el espejo
-    (donde el original era veleta y el espejo es cielo, sale el cielo del espejo: misma fila, mismo degradado). De
-    `split` hacia abajo (rosa de los vientos y mástil), el original. Los píxeles iguales al fondo quedan transparentes."""
-    w, h = crop.size
-    out = Image.new('RGBA', (w, h), (0, 0, 0, 0))
-    po, pf, pd = crop.load(), flip.load(), out.load()
-    # máscara de veleta (original o espejo), engordada DILATE px: el halo de contorno del JPEG (azul oscuro, que
-    # is_vane no ve) también se cambia, para que no quede un fantasma de la veleta vieja alrededor de la nueva
-    mask = Image.new('L', (w, h), 0)
-    pm = mask.load()
-    for y in range(min(split, h)):
-        for x in range(w):
-            if is_vane(po[x, y]) or is_vane(pf[x, y]):
-                pm[x, y] = 255
-    mask = mask.filter(ImageFilter.MaxFilter(2 * DILATE + 1))
-    pm = mask.load()
-    for y in range(min(split, h)):
-        for x in range(w):
-            if pm[x, y] and pf[x, y] != po[x, y]:
-                pd[x, y] = pf[x, y] + (255,)
-    return out
+def sky_fill(px, keep, x, y, x0, x1):
+    """Cielo REAL del propio fondo para (x, y): el píxel de la misma fila que queda fuera de la máscara, buscando
+    hacia el lado más cercano de la caja en saltos del ancho del hueco (así se copia la textura y el tramado de esa
+    fila, sin rayas de una sola columna repetida)."""
+    run_l = x
+    while run_l - 1 >= x0 and not keep(run_l - 1, y):
+        run_l -= 1
+    run_r = x
+    while run_r + 1 < x1 and not keep(run_r + 1, y):
+        run_r += 1
+    width = run_r - run_l + 1
+    step = -width if (x - run_l) <= (run_r - x) else width
+    sx = x + step
+    while 0 <= sx < x1 + 400 and not keep(sx, y):
+        sx += step
+    return px[sx, y]
 
 
-def make_vane(bg):
-    sx, sy = W / (CROP[2] - CROP[0]), H / (CROP[3] - CROP[1])
-    # el mástil, en el JPEG, va de x≈990 a 996 entre y≈345 y 380 (debajo de la rosa de los vientos, encima del pretil)
-    ax0 = mast_axis(bg, int((345 - CROP[1]) * sy), int((380 - CROP[1]) * sy), int(985 * sx), int(1001 * sx))
-    # ancho del mástil: columnas oscuras contiguas
-    px = bg.load()
-    yy = int((360 - CROP[1]) * sy)
-    lum = lambda x: sum(px[x, yy])
-    ref = lum(ax0)
-    left, right = ax0, ax0
-    while lum(left - 1) <= ref + 60:
-        left -= 1
-    while lum(right + 1) <= ref + 60:
-        right += 1
-    axis2 = left + right  # eje × 2 (el mástil puede tener ancho par)
-    # cabeza de la veleta: del JPEG x 900..1085, y 160..340 => caja simétrica sobre el eje
-    top, bottom = int((158 - CROP[1]) * sy), int((342 - CROP[1]) * sy)
-    half = int(max(axis2 / 2 - 900 * sx, 1085 * sx - axis2 / 2)) + 4
-    x0 = (axis2 + 1) // 2 - half
-    x1 = x0 + 2 * half + (axis2 % 2)
-    box = (x0, top, x1, bottom)
-    crop = bg.crop(box).convert('RGB')
-    flip = crop.transpose(Image.FLIP_LEFT_RIGHT)
-    ov = vane_overlay(crop, flip, int((ROSE_TOP - CROP[1]) * sy) - top)
-    # recortado a lo que tiene contenido + 2 px, como scripts/crop-overlays.mjs (MARGIN_PX), que lo comprueba en el CI
-    l, t, r, btm = ov.split()[3].point(lambda v: 255 if v > 4 else 0).getbbox()
-    l, t, r, btm = max(0, l - 2), max(0, t - 2), min(ov.width, r + 2), min(ov.height, btm + 2)
+FONT = {
+    'N': ['10001', '11001', '10101', '10011', '10001', '10001', '10001'],
+    'S': ['01111', '10000', '10000', '01110', '00001', '00001', '11110'],
+    'E': ['11111', '10000', '10000', '11110', '10000', '10000', '11111'],
+    'W': ['10001', '10001', '10001', '10101', '10101', '11011', '10001'],
+}
+
+
+def draw_rose(band):
+    """A9.16: la rosa de los vientos del arte de la Gem tiene los brazos de 1 px con huecos y la W y la N de 3 px:
+    en el juego se ve «partida» (solo se leen trozos de la S y la E). Se borra (con cielo real de su fila) y se
+    redibuja en la misma posición y perspectiva (dos brazos en aspa, W–E y S–N, N y W al fondo), con brazos
+    enteros de 2 px de cobre y contorno, buje sobre el mástil y las cuatro letras derechas (5x7 a 2x, con
+    contorno). Lo mismo en los dos estados: el overlay de la veleta no la toca."""
+    px = band.load()
+    x0, y0, x1, y1 = ROSE
+    old = [(x, y) for y in range(y0, y1) for x in range(x0, x1)
+           if not (MAST[0] <= x <= MAST[1]) and not is_sky(px[x, y])]
+    gone = set(old)
+    keep = lambda x, y: (x, y) not in gone and not (MAST[0] <= x <= MAST[1]) and is_sky(px[x, y])
+    # y el halo del JPEG alrededor (como en flipped_band): lo que difiere del cielo de su fila
+    ring = {(x + dx, y + dy) for (x, y) in old for dx in range(-HALO_RING, HALO_RING + 1)
+            for dy in range(-HALO_RING, HALO_RING + 1)} - gone
+    ring = {(x, y) for (x, y) in ring if x0 <= x < x1 and y0 <= y < y1 and not (MAST[0] <= x <= MAST[1])}
+    keep = lambda x, y: (x, y) not in gone and (x, y) not in ring and not (MAST[0] <= x <= MAST[1]) and is_sky(px[x, y])
+    for p in ring:
+        c = sky_fill(px, keep, p[0], p[1], x0, x1)
+        if max(abs(c[i] - px[p][i]) for i in range(3)) > HALO_DELTA:
+            old.append(p)
+    fill = {p: sky_fill(px, keep, p[0], p[1], x0, x1) for p in old}
+    for p, c in fill.items():
+        px[p] = c
+    cx2, cy = FLIP_SUM, 177  # centro x2 (992,5) y fila del cruce
+
+    def line(xa, ya, xb, yb, thick, color):
+        n = max(abs(xb - xa), abs(yb - ya))
+        for i in range(n + 1):
+            x = round(xa + (xb - xa) * i / n)
+            y = round(ya + (yb - ya) * i / n)
+            for dy in range(thick):
+                px[x, y + dy] = color
+
+    arms = [((952, 168), (1033, 184)), ((952, 184), (1033, 168))]  # W→E y S→N
+    for (xa, ya), (xb, yb) in arms:
+        line(xa, ya - 1, xb, yb - 1, 4, OUTLINE)
+    for (xa, ya), (xb, yb) in arms:
+        line(xa, ya, xb, yb, 1, CU_HI)
+        line(xa, ya + 1, xb, yb + 1, 1, CU)
+    # buje sobre el mástil
+    for y in range(cy - 4, cy + 5):
+        for x in range(MAST[0] - 1, MAST[1] + 2):
+            edge = y in (cy - 4, cy + 4) or x in (MAST[0] - 1, MAST[1] + 1)
+            px[x, y] = OUTLINE if edge else (CU_HI if y < cy - 1 else CU if y < cy + 2 else CU_LO)
+
+    def letter(ch, lx, ly):
+        on = {(lx + 1 + 2 * c + dx, ly + 1 + 2 * r + dy) for r, row in enumerate(FONT[ch]) for c, v in enumerate(row)
+              if v == '1' for dx in (0, 1) for dy in (0, 1)}
+        for (x, y) in on:
+            for ox in (-1, 0, 1):
+                for oy in (-1, 0, 1):
+                    if (x + ox, y + oy) not in on:
+                        px[x + ox, y + oy] = OUTLINE
+        for (x, y) in on:
+            px[x, y] = CU_HI if (x, y - 1) not in on else (CU_LO if (x, y + 1) not in on else CU)
+
+    letter('W', 940, 158)
+    letter('N', 1034, 158)
+    letter('S', 940, 182)
+    letter('E', 1034, 182)
+    return band
+
+
+def make_band():
+    """Franja cuantizada del JPEG con la rosa redibujada (A9.16): la base de background.png."""
+    src = Image.open(SRC).convert('RGB')
+    band = src.crop(CROP)
+    q = band.quantize(palette=build_palette(), dither=Image.Dither.NONE).convert('RGB')
+    return draw_rose(q)
+
+
+def flipped_band(band):
+    """Estado volteado (vane_pushed) en la franja: la B y la flecha en espejo sobre el eje del mástil (regla de
+    A9.12: la rosa y el mástil no giran, el cielo y sus estrellas se quedan donde están).
+      - O = lo que no es cielo en la caja de la cabeza (B, flecha, contorno y el halo oscuro del JPEG).
+      - Donde estaba O, cielo REAL de la misma fila (sky_fill), no el del espejo (A9.12 lo tomaba del espejo y,
+        con la máscara engordada 4 px, dejaba manchas de un azul algo distinto alrededor de la B y la flecha).
+      - Donde cae el espejo de O, el píxel del espejo.
+      - El tramo de mástil entre la flecha y la rosa, el original (con el brillo a su lado)."""
+    px = band.load()
+    x0, y0, x1, y1 = HEAD
+    cand = {(x, y) for y in range(y0, y1) for x in range(x0, x1) if not is_sky(px[x, y])}
+    # solo la pieza conexa de la veleta (8-vecinos desde el mástil bajo la flecha): las estrellas no se mueven
+    seed = next((MAST[0], y) for y in range(y1 - 1, y0, -1) if (MAST[0], y) in cand)
+    O, todo = {seed}, [seed]
+    while todo:
+        x, y = todo.pop()
+        for dx in (-1, 0, 1):
+            for dy in (-1, 0, 1):
+                n = (x + dx, y + dy)
+                if n in cand and n not in O:
+                    O.add(n)
+                    todo.append(n)
+    shaft_rows = [y for y in range(y0, y1) if sum((x, y) in O for x in range(x0, x1)) > 60]
+    stem_from = max(shaft_rows) + 1  # primera fila bajo el asta de la flecha
+    for y in range(stem_from, y1):
+        for x in range(MAST[0] - 1, MAST[1] + 2):
+            O.discard((x, y))
+    M = {(FLIP_SUM - x, y) for (x, y) in O}
+    # anillo de HALO_RING px alrededor de la veleta: el halo claro/oscuro del JPEG pasa por cielo en is_sky, pero
+    # sin la veleta delante deja su fantasma (un contorno de la flecha vieja); se borra lo que difiere del cielo de
+    # su fila en más de HALO_DELTA
+    ring = set()
+    for (x, y) in O:
+        for dx in range(-HALO_RING, HALO_RING + 1):
+            for dy in range(-HALO_RING, HALO_RING + 1):
+                n = (x + dx, y + dy)
+                if n not in O and y0 <= n[1] < y1 and not (MAST[0] - 1 <= n[0] <= MAST[1] + 1 and n[1] >= stem_from):
+                    ring.add(n)
+    out = band.copy()
+    po = out.load()
+    keep = lambda x, y: (x, y) not in O and (x, y) not in M and (x, y) not in ring and is_sky(px[x, y])
+    E = set(O)
+    for (x, y) in ring:
+        c = sky_fill(px, keep, x, y, x0, x1)
+        if max(abs(c[i] - px[x, y][i]) for i in range(3)) > HALO_DELTA:
+            E.add((x, y))
+    for (x, y) in E - M:
+        po[x, y] = sky_fill(px, keep, x, y, x0, x1)
+    for (x, y) in M:
+        po[x, y] = px[FLIP_SUM - x, y]
+    return out, (E | M)
+
+
+def up(im):
+    return im.resize((W, H), Image.NEAREST)
+
+
+def make_vane(band, bg):
+    """vane_flipped.webp = diferencia entre el estado volteado y el fondo (ya escalados), recortada a lo que tiene
+    contenido + 2 px como scripts/crop-overlays.mjs (MARGIN_PX). Escribe bounds en scene.json."""
+    fl, _ = flipped_band(band)
+    flm = up(fl)
+    a, b_ = bg.load(), flm.load()
+    ov = Image.new('RGBA', (W, H), (0, 0, 0, 0))
+    po = ov.load()
+    sx, sy = W / band.width, H / band.height
+    bx0, by0 = int(HEAD[0] * sx) - 2, int(HEAD[1] * sy) - 2
+    bx1, by1 = int(HEAD[2] * sx) + 3, int(HEAD[3] * sy) + 3
+    for y in range(by0, by1):
+        for x in range(bx0, bx1):
+            if a[x, y] != b_[x, y]:
+                po[x, y] = b_[x, y] + (255,)
+    l, t, r, btm = ov.split()[3].getbbox()
+    l, t, r, btm = l - 2, t - 2, r + 2, btm + 2
     ov.crop((l, t, r, btm)).save(os.path.join(SCENE_DIR, 'vane_flipped.webp'), lossless=True, quality=100, method=6)
-    x0, x1, bottom, top = x0 + l, x0 + r, top + btm, top + t
-    box = (x0, top, x1, bottom)
-    b = {'x': round(x0 / W * 100, 4), 'y': round(top / H * 100, 4), 'w': round((x1 - x0) / W * 100, 4),
-         'h': round((bottom - top) / H * 100, 4)}
+    b = {'x': round(l / W * 100, 4), 'y': round(t / H * 100, 4), 'w': round((r - l) / W * 100, 4),
+         'h': round((btm - t) / H * 100, 4)}
     path = os.path.join(SCENE_DIR, 'scene.json')
     txt = open(path, encoding='utf-8').read()
     data = json.loads(txt)
@@ -159,7 +270,7 @@ def make_vane(bg):
             co['bounds'] = b
     with open(path, 'w', encoding='utf-8') as f:
         f.write(json.dumps(data, ensure_ascii=False, indent=2) + '\n')
-    return box, b, (left, right)
+    return (l, t, r, btm), b, flm
 
 
 def compare(out):
@@ -190,10 +301,11 @@ def compare(out):
 if __name__ == '__main__':
     if '--compare' in sys.argv:
         compare(sys.argv[sys.argv.index('--compare') + 1])
-    if '--vane-only' in sys.argv:
-        bg = Image.open(os.path.join(SCENE_DIR, 'background.png')).convert('RGB')
-    else:
-        bg = make_background()
+    band = make_band()
+    bg = up(band)
+    if '--vane-only' not in sys.argv:
         write_variants(bg)
-    box, b, mast = make_vane(bg)
-    print('fondo', bg.size, 'colores', len(bg.getcolors(1 << 16) or []), 'veleta', box, b, 'mástil', mast)
+    box, b, flm = make_vane(band, bg)
+    if '--flipped' in sys.argv:  # estado volteado completo, para revisarlo a mano
+        flm.save(sys.argv[sys.argv.index('--flipped') + 1])
+    print('fondo', bg.size, 'colores', len(bg.getcolors(1 << 16) or []), 'veleta', box, b)
