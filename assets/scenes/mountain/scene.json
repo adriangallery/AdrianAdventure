@@ -936,10 +936,16 @@
   ],
   "blockedAreas": [
     {
-      "x": 84,
+      "x": 85.5,
       "y": 86,
-      "w": 13.6,
+      "w": 12.1,
       "h": 3.6
+    },
+    {
+      "x": 78.5,
+      "y": 89.6,
+      "w": 6,
+      "h": 9
     }
   ],
   "foregroundLayers": [
@@ -957,11 +963,12 @@
       "id": "maleza",
       "bounds": {
         "x": 82,
-        "y": 70,
+        "y": 83,
         "w": 18,
-        "h": 30
+        "h": 17
       },
-      "baseY": 97,
+      "baseY": 90,
+      "bandStep": 1.5,
       "mask": "fgmask_maleza.webp"
     }
   ],

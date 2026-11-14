@@ -2,7 +2,7 @@
  "scene": "treatment_room",
  "scalePolicy": "measure",
  "summary": {
-  "positions": 39,
+  "positions": 36,
   "failing": 0,
   "byType": {}
  },
@@ -26,6 +26,7 @@
    "walkable": true,
    "maskOk": null,
    "cover": {},
+   "coverMax": {},
    "scale": {
     "ref": "hs_side_table",
     "expected": 49.82,
@@ -56,6 +57,7 @@
    "walkable": true,
    "maskOk": null,
    "cover": {},
+   "coverMax": {},
    "scale": {
     "ref": "hs_side_table",
     "expected": 49.82,
@@ -86,6 +88,7 @@
    "walkable": true,
    "maskOk": null,
    "cover": {},
+   "coverMax": {},
    "scale": {
     "ref": "hs_side_table",
     "expected": 49.82,
@@ -116,6 +119,7 @@
    "walkable": true,
    "maskOk": null,
    "cover": {},
+   "coverMax": {},
    "scale": {
     "ref": "hs_side_table",
     "expected": 49.82,
@@ -146,6 +150,9 @@
    "walkable": true,
    "maskOk": null,
    "cover": {
+    "hs_chair": 0
+   },
+   "coverMax": {
     "hs_chair": 0
    },
    "scale": {
@@ -180,6 +187,9 @@
    "cover": {
     "hs_chair": 0
    },
+   "coverMax": {
+    "hs_chair": 0
+   },
    "scale": {
     "ref": "hs_side_table",
     "expected": 49.82,
@@ -210,6 +220,9 @@
    "walkable": true,
    "maskOk": null,
    "cover": {
+    "hs_chair": 0
+   },
+   "coverMax": {
     "hs_chair": 0
    },
    "scale": {
@@ -251,6 +264,9 @@
    "cover": {
     "hs_chair": 0
    },
+   "coverMax": {
+    "hs_chair": 0
+   },
    "scale": {
     "ref": "hs_side_table",
     "expected": 49.82,
@@ -288,6 +304,9 @@
    "walkable": true,
    "maskOk": null,
    "cover": {
+    "hs_chair": 0
+   },
+   "coverMax": {
     "hs_chair": 0
    },
    "scale": {
@@ -329,6 +348,9 @@
    "cover": {
     "hs_chair": 0
    },
+   "coverMax": {
+    "hs_chair": 0
+   },
    "scale": {
     "ref": "hs_side_table",
     "expected": 49.82,
@@ -366,6 +388,9 @@
    "walkable": true,
    "maskOk": null,
    "cover": {
+    "hs_side_table": 0
+   },
+   "coverMax": {
     "hs_side_table": 0
    },
    "scale": {
@@ -407,6 +432,9 @@
    "cover": {
     "hs_side_table": 0
    },
+   "coverMax": {
+    "hs_side_table": 0
+   },
    "scale": {
     "ref": "hs_side_table",
     "expected": 49.82,
@@ -444,6 +472,9 @@
    "walkable": true,
    "maskOk": null,
    "cover": {
+    "hs_side_table": 0
+   },
+   "coverMax": {
     "hs_side_table": 0
    },
    "scale": {
@@ -485,6 +516,9 @@
    "cover": {
     "hs_side_table": 0
    },
+   "coverMax": {
+    "hs_side_table": 0
+   },
    "scale": {
     "ref": "hs_side_table",
     "expected": 49.82,
@@ -522,6 +556,7 @@
    "walkable": true,
    "maskOk": null,
    "cover": {},
+   "coverMax": {},
    "scale": {
     "ref": "hs_side_table",
     "expected": 49.82,
@@ -559,6 +594,7 @@
    "walkable": true,
    "maskOk": null,
    "cover": {},
+   "coverMax": {},
    "scale": {
     "ref": "hs_side_table",
     "expected": 49.82,
@@ -596,6 +632,7 @@
    "walkable": true,
    "maskOk": null,
    "cover": {},
+   "coverMax": {},
    "scale": {
     "ref": "hs_side_table",
     "expected": 49.82,
@@ -633,6 +670,7 @@
    "walkable": true,
    "maskOk": null,
    "cover": {},
+   "coverMax": {},
    "scale": {
     "ref": "hs_side_table",
     "expected": 49.82,
@@ -670,6 +708,9 @@
    "walkable": true,
    "maskOk": null,
    "cover": {
+    "hs_chair": 0
+   },
+   "coverMax": {
     "hs_chair": 0
    },
    "scale": {
@@ -711,6 +752,9 @@
    "cover": {
     "hs_side_table": 0
    },
+   "coverMax": {
+    "hs_side_table": 0
+   },
    "scale": {
     "ref": "hs_side_table",
     "expected": 49.82,
@@ -748,6 +792,9 @@
    "walkable": true,
    "maskOk": null,
    "cover": {
+    "hs_chair": 0
+   },
+   "coverMax": {
     "hs_chair": 0
    },
    "scale": {
@@ -789,6 +836,9 @@
    "cover": {
     "hs_exit_door": 0
    },
+   "coverMax": {
+    "hs_exit_door": 0
+   },
    "scale": {
     "ref": "hs_side_table",
     "expected": 49.82,
@@ -826,6 +876,9 @@
    "walkable": true,
    "maskOk": null,
    "cover": {
+    "hs_side_table": 0
+   },
+   "coverMax": {
     "hs_side_table": 0
    },
    "scale": {
@@ -867,6 +920,9 @@
    "cover": {
     "hs_side_table": 0
    },
+   "coverMax": {
+    "hs_side_table": 0
+   },
    "scale": {
     "ref": "hs_side_table",
     "expected": 49.82,
@@ -897,6 +953,7 @@
    "walkable": true,
    "maskOk": null,
    "cover": {},
+   "coverMax": {},
    "scale": {
     "ref": "hs_side_table",
     "expected": 49.82,
@@ -927,6 +984,9 @@
    "walkable": true,
    "maskOk": null,
    "cover": {
+    "hs_chair": 0
+   },
+   "coverMax": {
     "hs_chair": 0
    },
    "scale": {
@@ -968,6 +1028,9 @@
    "cover": {
     "hs_side_table": 0
    },
+   "coverMax": {
+    "hs_side_table": 0
+   },
    "scale": {
     "ref": "hs_side_table",
     "expected": 49.82,
@@ -1005,6 +1068,7 @@
    "walkable": true,
    "maskOk": null,
    "cover": {},
+   "coverMax": {},
    "scale": {
     "ref": "hs_side_table",
     "expected": 49.82,
@@ -1035,6 +1099,7 @@
    "walkable": true,
    "maskOk": null,
    "cover": {},
+   "coverMax": {},
    "scale": {
     "ref": "hs_side_table",
     "expected": 49.82,
@@ -1065,123 +1130,7 @@
    "walkable": true,
    "maskOk": null,
    "cover": {},
-   "scale": {
-    "ref": "hs_side_table",
-    "expected": 49.82,
-    "got": 49.18,
-    "dev": -0.01,
-    "baseDy": 4.1
-   },
-   "failures": [],
-   "info": [
-    {
-     "type": "scale-rough",
-     "ref": "hs_exit_door",
-     "dev": -0.2,
-     "msg": "Dex -20 % frente a puerta de salida (caja sin medir: bounds del hotspot)"
-    }
-   ],
-   "score": 0
-  },
-  {
-   "id": "hs_exit_door:izq",
-   "kind": "ref",
-   "x": 85.6,
-   "y": 93.8,
-   "feet": {
-    "x": 85.6,
-    "y": 93.8
-   },
-   "dexBox": {
-    "x": 82.86,
-    "y": 44.62,
-    "w": 5.48,
-    "h": 49.18
-   },
-   "heightPct": 49.18,
-   "walkable": true,
-   "maskOk": null,
-   "cover": {
-    "hs_exit_door": 0
-   },
-   "scale": {
-    "ref": "hs_side_table",
-    "expected": 49.82,
-    "got": 49.18,
-    "dev": -0.01,
-    "baseDy": 4.1
-   },
-   "failures": [],
-   "info": [
-    {
-     "type": "scale-rough",
-     "ref": "hs_exit_door",
-     "dev": -0.2,
-     "msg": "Dex -20 % frente a puerta de salida (caja sin medir: bounds del hotspot)"
-    }
-   ],
-   "score": 0
-  },
-  {
-   "id": "hs_exit_door:der",
-   "kind": "ref",
-   "x": 86.2,
-   "y": 93.8,
-   "feet": {
-    "x": 86.2,
-    "y": 93.8
-   },
-   "dexBox": {
-    "x": 83.46,
-    "y": 44.62,
-    "w": 5.48,
-    "h": 49.18
-   },
-   "heightPct": 49.18,
-   "walkable": true,
-   "maskOk": null,
-   "cover": {
-    "hs_exit_door": 0
-   },
-   "scale": {
-    "ref": "hs_side_table",
-    "expected": 49.82,
-    "got": 49.18,
-    "dev": -0.01,
-    "baseDy": 4.1
-   },
-   "failures": [],
-   "info": [
-    {
-     "type": "scale-rough",
-     "ref": "hs_exit_door",
-     "dev": -0.2,
-     "msg": "Dex -20 % frente a puerta de salida (caja sin medir: bounds del hotspot)"
-    }
-   ],
-   "score": 0
-  },
-  {
-   "id": "hs_exit_door:detrás",
-   "kind": "ref",
-   "x": 86.2,
-   "y": 93.8,
-   "feet": {
-    "x": 86.2,
-    "y": 93.8
-   },
-   "dexBox": {
-    "x": 83.46,
-    "y": 44.62,
-    "w": 5.48,
-    "h": 49.18
-   },
-   "heightPct": 49.18,
-   "walkable": true,
-   "maskOk": null,
-   "cover": {
-    "hs_exit_door": 0
-   },
+   "coverMax": {},
    "scale": {
     "ref": "hs_side_table",
     "expected": 49.82,
@@ -1221,6 +1170,9 @@
    "cover": {
     "hs_chair": 0
    },
+   "coverMax": {
+    "hs_chair": 0
+   },
    "scale": {
     "ref": "hs_side_table",
     "expected": 49.82,
@@ -1251,6 +1203,9 @@
    "walkable": true,
    "maskOk": null,
    "cover": {
+    "hs_chair": 0
+   },
+   "coverMax": {
     "hs_chair": 0
    },
    "scale": {
@@ -1292,6 +1247,9 @@
    "cover": {
     "hs_chair": 0
    },
+   "coverMax": {
+    "hs_chair": 0
+   },
    "scale": {
     "ref": "hs_side_table",
     "expected": 49.82,
@@ -1329,6 +1287,9 @@
    "walkable": true,
    "maskOk": null,
    "cover": {
+    "hs_side_table": 0
+   },
+   "coverMax": {
     "hs_side_table": 0
    },
    "scale": {
@@ -1370,6 +1331,9 @@
    "cover": {
     "hs_side_table": 0
    },
+   "coverMax": {
+    "hs_side_table": 0
+   },
    "scale": {
     "ref": "hs_side_table",
     "expected": 49.82,
@@ -1407,6 +1371,9 @@
    "walkable": true,
    "maskOk": null,
    "cover": {
+    "hs_side_table": 0
+   },
+   "coverMax": {
     "hs_side_table": 0
    },
    "scale": {

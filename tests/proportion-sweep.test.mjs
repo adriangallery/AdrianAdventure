@@ -111,6 +111,15 @@ test('fase 3: las referencias declaradas excepción no siembran posiciones', () 
   assert.deepEqual(ids([{ id: 'a', box, baseY: 85, exception: 'dibujo sobredimensionado' }]), []);
 });
 
+test('fase 4: maxCover — una referencia en franjas solo falla si tapa más de esa fracción de Dex', () => {
+  const weeds = { id: 'maleza', label: 'maleza', realHeightM: 1.2, box: { x: 10, y: 80, w: 20, h: 20 }, baseY: 87, foreground: true, maxCover: 0.4, measured: false };
+  const d = { scalePolicy: 'measure', refs: [weeds] };
+  const types = (o) => evaluatePosition(at({ x: 20, y: 93, feetX: 20, feetY: 93, box: { x: 18, y: 63, w: 4, h: 30 }, ...o }), d).failures.map((f) => f.type);
+  assert.deepEqual(types({ dexCover: { maleza: 0.25 }, cover: { maleza: 0.9 } }), []); // ni occlusion ni overdraw
+  assert.deepEqual(types({ dexCover: { maleza: 0.55 } }), ['hidden']);
+  assert.deepEqual(types({ dexCover: {} }), []); // sin medir (--reeval de medidas antiguas): no se juzga
+});
+
 test('base de fallos conocidos: solo cuentan los nuevos', () => {
   const pos = { kind: 'grid', id: 'g1', failures: [{ type: 'feet' }, { type: 'scale', ref: 'hs_door' }] };
   const results = [{ scene: 's', positions: [pos] }];

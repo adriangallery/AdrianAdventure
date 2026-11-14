@@ -29,7 +29,7 @@ import { gameUrlParams } from '@/config/debugParams';
 import type { Address } from 'viem';
 import { ScummUI } from '@/ui/ScummUI';
 import type { UIScene } from '@/scenes/UIScene';
-import { actorDepth } from '@/systems/WalkMotion';
+import { actorDepth, foregroundBands } from '@/systems/WalkMotion';
 import { decideTap, deferredTapVerdict, textTapPolicy, walkPointFor } from '@/systems/TapDecision';
 import { approachHotspot, approachTalk, lookFacing, type Approach, type ApproachTarget, type Facing, type FacingOptions } from '@/systems/Facing';
 import { defaultVerbFor, exitVerbFor, focusOf, isDoubleClick, keyAction, primaryVerb } from '@/systems/DesktopControls';
@@ -110,7 +110,7 @@ export class GameScene extends Phaser.Scene {
   private bg!: Phaser.GameObjects.Image;
   private fg?: Phaser.GameObjects.Image;
   /** A2.17 fase 2: trozos del primer plano con walk-behind (foregroundLayers), a la profundidad de su base */
-  private fgLayers: Array<{ img: Phaser.GameObjects.Image; bounds?: PctRect }> = [];
+  private fgLayers: Array<{ img: Phaser.GameObjects.Image; bounds?: PctRect; id?: string; band?: number }> = [];
   private conditionalOverlays: Array<{ id: string; sprite: Phaser.GameObjects.Image; flag: string; invert?: boolean; bounds?: PctRect }> = [];
   /**
    * A1.4: visibilidad forzada por el op `flicker` (id del overlay → visible), por encima de la flag. Es solo
@@ -300,18 +300,28 @@ export class GameScene extends Phaser.Scene {
       for (const k of this.textures.getTextureKeys()) if (k.startsWith('fglayer_')) this.textures.remove(k);
       for (const l of layers) {
         const r = pctRectToPx(l.bounds, src.width, src.height);
-        let img: Phaser.GameObjects.Image;
-        let bounds: PctRect | undefined;
         const piece = l.mask ? this.maskedForegroundPiece(src, r, `fglayer_${sceneId}_${l.id}`, fgMaskKey(sceneId, l.id)) : null;
-        if (piece) {
-          img = this.add.image(0, 0, piece).setOrigin(0, 0);
-          bounds = l.bounds;
-        } else {
-          img = this.add.image(0, 0, fgKey).setOrigin(0, 0).setCrop(r.x, r.y, r.w, r.h);
-        }
-        this.placeOverlay(img, bounds);
-        img.setDepth(actorDepth(l.baseY));
-        this.fgLayers.push({ img, bounds });
+        // A2.17 fase 4: con `bandStep`, una imagen por franja (la misma textura recortada a sus filas), cada una a la
+        // profundidad de su base: el trozo tapa a Dex siempre lo mismo por encima de sus pies (maleza alta)
+        const bands = foregroundBands(l);
+        bands.forEach((band, k) => {
+          const f0 = (band.top - l.bounds.y) / l.bounds.h;
+          const f1 = (band.bottom - l.bounds.y) / l.bounds.h;
+          const rows = { y: Math.round(f0 * r.h), h: Math.round(f1 * r.h) - Math.round(f0 * r.h) };
+          if (rows.h <= 0) return;
+          let img: Phaser.GameObjects.Image;
+          let bounds: PctRect | undefined;
+          if (piece) {
+            img = this.add.image(0, 0, piece).setOrigin(0, 0).setCrop(0, rows.y, r.w, rows.h);
+            bounds = l.bounds;
+          } else {
+            img = this.add.image(0, 0, fgKey).setOrigin(0, 0).setCrop(r.x, r.y + rows.y, r.w, rows.h);
+            bounds = undefined;
+          }
+          this.placeOverlay(img, bounds);
+          img.setDepth(actorDepth(band.baseY));
+          this.fgLayers.push({ img, bounds, id: l.id, band: bands.length > 1 ? k : undefined });
+        });
       }
     }
 

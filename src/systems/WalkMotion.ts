@@ -93,6 +93,41 @@ export function actorDepth(yPct: number, isPlayer = false): number {
   return ACTOR_DEPTH_MIN + (y / 100) * 0.99 + (isPlayer ? PLAYER_TIE : 0);
 }
 
+// ── Trozos del primer plano en franjas (A2.17 fase 4) ──────
+
+export interface ForegroundBand {
+  /** Borde de arriba y de abajo de la franja, en % del alto del fondo */
+  top: number;
+  bottom: number;
+  /** Línea base de la franja: pies de Dex por debajo (y mayor o igual) = Dex delante */
+  baseY: number;
+}
+
+/**
+ * Franjas de un trozo de `foregroundLayers`. Sin `bandStep` (o ≤ 0): una sola franja con todo el trozo y su `baseY`.
+ * Con `bandStep`: franjas de ese alto desde bounds.y; la franja k tiene base baseY + k·bandStep, así que el trozo tapa a
+ * Dex desde (baseY − bounds.y) por encima de sus pies hacia abajo, esté donde esté (maleza alta por la que se anda).
+ */
+export function foregroundBands(layer: { bounds: WalkRect; baseY: number; bandStep?: number }): ForegroundBand[] {
+  const { y, h } = layer.bounds;
+  const step = layer.bandStep;
+  if (!(Number.isFinite(step) && (step as number) > 0) || !(h > 0)) return [{ top: y, bottom: y + h, baseY: layer.baseY }];
+  const out: ForegroundBand[] = [];
+  const n = Math.ceil(h / (step as number) - 1e-6);
+  for (let k = 0; k < n; k++) {
+    const top = y + k * (step as number);
+    out.push({ top, bottom: Math.min(y + h, top + (step as number)), baseY: layer.baseY + k * (step as number) });
+  }
+  return out;
+}
+
+/** Línea base del trozo en la fila `yPct` (la de su franja); fuera de bounds, la de la franja más cercana */
+export function foregroundBaseAt(layer: { bounds: WalkRect; baseY: number; bandStep?: number }, yPct: number): number {
+  const bands = foregroundBands(layer);
+  const b = bands.find((x) => yPct >= x.top && yPct < x.bottom) ?? (yPct < bands[0].top ? bands[0] : bands[bands.length - 1]);
+  return b.baseY;
+}
+
 // ── Huella de las NPC ─────────────────────────────────────
 
 /** Medio ancho (en % del ancho del fondo) y alto hacia el fondo / hacia delante (en % del alto) de la huella */

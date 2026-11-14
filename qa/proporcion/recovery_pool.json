@@ -28,6 +28,9 @@
    "cover": {
     "hs_trash_pile": 0
    },
+   "coverMax": {
+    "hs_trash_pile": 0
+   },
    "scale": null,
    "failures": [],
    "info": [
@@ -62,6 +65,7 @@
    "walkable": true,
    "maskOk": null,
    "cover": {},
+   "coverMax": {},
    "scale": null,
    "failures": [],
    "info": [
@@ -91,6 +95,7 @@
    "walkable": true,
    "maskOk": null,
    "cover": {},
+   "coverMax": {},
    "scale": null,
    "failures": [],
    "info": [
@@ -120,6 +125,7 @@
    "walkable": true,
    "maskOk": null,
    "cover": {},
+   "coverMax": {},
    "scale": null,
    "failures": [],
    "info": [
@@ -149,6 +155,7 @@
    "walkable": true,
    "maskOk": null,
    "cover": {},
+   "coverMax": {},
    "scale": null,
    "failures": [],
    "info": [
@@ -178,6 +185,7 @@
    "walkable": true,
    "maskOk": null,
    "cover": {},
+   "coverMax": {},
    "scale": null,
    "failures": [],
    "info": [
@@ -207,6 +215,9 @@
    "walkable": true,
    "maskOk": null,
    "cover": {
+    "hs_chad": 0
+   },
+   "coverMax": {
     "hs_chad": 0
    },
    "scale": null,
@@ -240,6 +251,9 @@
    "cover": {
     "hs_chad": 0
    },
+   "coverMax": {
+    "hs_chad": 0
+   },
    "scale": null,
    "failures": [],
    "info": [
@@ -269,6 +283,7 @@
    "walkable": true,
    "maskOk": null,
    "cover": {},
+   "coverMax": {},
    "scale": null,
    "failures": [],
    "info": [
@@ -298,6 +313,7 @@
    "walkable": true,
    "maskOk": null,
    "cover": {},
+   "coverMax": {},
    "scale": null,
    "failures": [],
    "info": [
@@ -329,6 +345,9 @@
    "cover": {
     "hs_chad": 0
    },
+   "coverMax": {
+    "hs_chad": 0
+   },
    "scale": null,
    "failures": [],
    "info": [
@@ -358,6 +377,7 @@
    "walkable": true,
    "maskOk": null,
    "cover": {},
+   "coverMax": {},
    "scale": null,
    "failures": [],
    "info": [
@@ -387,6 +407,7 @@
    "walkable": true,
    "maskOk": null,
    "cover": {},
+   "coverMax": {},
    "scale": null,
    "failures": [],
    "info": [
@@ -416,6 +437,7 @@
    "walkable": true,
    "maskOk": null,
    "cover": {},
+   "coverMax": {},
    "scale": null,
    "failures": [],
    "info": [
@@ -445,6 +467,9 @@
    "walkable": true,
    "maskOk": null,
    "cover": {
+    "hs_robot_bartender": 0
+   },
+   "coverMax": {
     "hs_robot_bartender": 0
    },
    "scale": null,
@@ -478,6 +503,9 @@
    "cover": {
     "hs_robot_bartender": 0
    },
+   "coverMax": {
+    "hs_robot_bartender": 0
+   },
    "scale": null,
    "failures": [],
    "info": [
@@ -507,6 +535,7 @@
    "walkable": true,
    "maskOk": null,
    "cover": {},
+   "coverMax": {},
    "scale": null,
    "failures": [],
    "info": [
@@ -536,6 +565,9 @@
    "walkable": true,
    "maskOk": null,
    "cover": {
+    "hs_trash_pile": 0
+   },
+   "coverMax": {
     "hs_trash_pile": 0
    },
    "scale": null,
@@ -574,6 +606,9 @@
    "cover": {
     "hs_trash_pile": 0
    },
+   "coverMax": {
+    "hs_trash_pile": 0
+   },
    "scale": null,
    "failures": [],
    "info": [
@@ -610,6 +645,9 @@
    "cover": {
     "hs_trash_pile": 0
    },
+   "coverMax": {
+    "hs_trash_pile": 0
+   },
    "scale": null,
    "failures": [],
    "info": [
@@ -639,6 +677,9 @@
    "walkable": true,
    "maskOk": null,
    "cover": {
+    "hs_chad": 0
+   },
+   "coverMax": {
     "hs_chad": 0
    },
    "scale": null,
@@ -672,6 +713,9 @@
    "cover": {
     "hs_chad": 0
    },
+   "coverMax": {
+    "hs_chad": 0
+   },
    "scale": null,
    "failures": [],
    "info": [
@@ -701,6 +745,9 @@
    "walkable": true,
    "maskOk": null,
    "cover": {
+    "hs_trash_pile": 0
+   },
+   "coverMax": {
     "hs_trash_pile": 0
    },
    "scale": null,
@@ -739,6 +786,9 @@
    "cover": {
     "hs_trash_pile": 0
    },
+   "coverMax": {
+    "hs_trash_pile": 0
+   },
    "scale": null,
    "failures": [],
    "info": [
@@ -773,6 +823,9 @@
    "walkable": true,
    "maskOk": null,
    "cover": {
+    "hs_trash_pile": 0
+   },
+   "coverMax": {
     "hs_trash_pile": 0
    },
    "scale": null,
@@ -811,6 +864,9 @@
    "cover": {
     "hs_chad": 0
    },
+   "coverMax": {
+    "hs_chad": 0
+   },
    "scale": null,
    "failures": [],
    "info": [
@@ -840,6 +896,9 @@
    "walkable": true,
    "maskOk": null,
    "cover": {
+    "hs_chad": 0
+   },
+   "coverMax": {
     "hs_chad": 0
    },
    "scale": null,
@@ -873,6 +932,9 @@
    "cover": {
     "hs_chad": 0
    },
+   "coverMax": {
+    "hs_chad": 0
+   },
    "scale": null,
    "failures": [],
    "info": [
@@ -902,6 +964,9 @@
    "walkable": true,
    "maskOk": null,
    "cover": {
+    "hs_robot_bartender": 0
+   },
+   "coverMax": {
     "hs_robot_bartender": 0
    },
    "scale": null,
@@ -935,6 +1000,9 @@
    "cover": {
     "hs_robot_bartender": 0
    },
+   "coverMax": {
+    "hs_robot_bartender": 0
+   },
    "scale": null,
    "failures": [],
    "info": [
@@ -966,6 +1034,9 @@
    "cover": {
     "hs_robot_bartender": 0
    },
+   "coverMax": {
+    "hs_robot_bartender": 0
+   },
    "scale": null,
    "failures": [],
    "info": [
@@ -995,6 +1066,9 @@
    "walkable": true,
    "maskOk": null,
    "cover": {
+    "hs_trash_pile": 0
+   },
+   "coverMax": {
     "hs_trash_pile": 0
    },
    "scale": null,
@@ -1033,6 +1107,9 @@
    "cover": {
     "hs_trash_pile": 0
    },
+   "coverMax": {
+    "hs_trash_pile": 0
+   },
    "scale": null,
    "failures": [],
    "info": [
@@ -1062,6 +1139,9 @@
    "walkable": true,
    "maskOk": null,
    "cover": {
+    "hs_trash_pile": 0
+   },
+   "coverMax": {
     "hs_trash_pile": 0
    },
    "scale": null,

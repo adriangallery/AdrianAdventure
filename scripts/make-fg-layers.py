@@ -8,7 +8,8 @@ resto del primer plano. La máscara es un WebP sin pérdida del tamaño de `boun
   python3 scripts/make-fg-layers.py            genera las máscaras y, en outside, el arbusto del fondo en el primer plano
   python3 scripts/make-fg-layers.py --check    rc 1 si falta una máscara declarada en scene.json o no mide lo que toca
 
-- mountain / maleza: la maleza del pie de las rocas (x 82–100, y 70–100) que está en foreground.png junto con las rocas.
+- mountain / maleza: la maleza del pie de las rocas que está en foreground.png junto con las rocas. Fase 4: el trozo es
+  solo la parte de abajo (y 83–100, en franjas con `bandStep`); la de arriba (y 70–83) se queda en el trozo de las rocas.
   Se separa de la roca por color (hojas naranjas frente a roca morada; los oscuros y el tramado, por mayoría de vecinos
   en 15×15) dentro de una zona a mano (x ≥ 88 con y ≥ 70, o x ≥ 82 con y ≥ 84); por debajo de y 84 y a la derecha de
   x 86 es todo maleza (la roca grande queda tapada).
@@ -170,5 +171,9 @@ def check():
 if __name__ == '__main__':
     if '--check' in sys.argv:
         sys.exit(1 if check() else 0)
-    mountain()
-    outside()
+    # A2.17 fase 4: `python3 scripts/make-fg-layers.py mountain` rehace solo esa escena (outside reescribe su primer plano)
+    only = [a for a in sys.argv[1:] if not a.startswith('-')]
+    if not only or 'mountain' in only:
+        mountain()
+    if not only or 'outside' in only:
+        outside()

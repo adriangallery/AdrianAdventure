@@ -26,6 +26,7 @@
    "walkable": true,
    "maskOk": false,
    "cover": {},
+   "coverMax": {},
    "scale": {
     "ref": "hs_desk",
     "expected": 63,
@@ -67,6 +68,7 @@
    "walkable": true,
    "maskOk": false,
    "cover": {},
+   "coverMax": {},
    "scale": null,
    "failures": [],
    "info": [
@@ -108,6 +110,9 @@
    "cover": {
     "hs_computer": 0
    },
+   "coverMax": {
+    "hs_computer": 0
+   },
    "scale": {
     "ref": "hs_desk",
     "expected": 63,
@@ -147,6 +152,9 @@
    "cover": {
     "hs_computer": 0
    },
+   "coverMax": {
+    "hs_computer": 0
+   },
    "scale": null,
    "failures": [],
    "info": [
@@ -182,6 +190,9 @@
    "walkable": true,
    "maskOk": true,
    "cover": {
+    "hs_computer": 0
+   },
+   "coverMax": {
     "hs_computer": 0
    },
    "scale": {
@@ -223,6 +234,9 @@
    "cover": {
     "hs_computer": 0
    },
+   "coverMax": {
+    "hs_computer": 0
+   },
    "scale": null,
    "failures": [],
    "info": [
@@ -258,6 +272,7 @@
    "walkable": true,
    "maskOk": true,
    "cover": {},
+   "coverMax": {},
    "scale": {
     "ref": "hs_desk",
     "expected": 63,
@@ -295,6 +310,7 @@
    "walkable": true,
    "maskOk": true,
    "cover": {},
+   "coverMax": {},
    "scale": null,
    "failures": [],
    "info": [
@@ -330,6 +346,7 @@
    "walkable": true,
    "maskOk": false,
    "cover": {},
+   "coverMax": {},
    "scale": {
     "ref": "hs_desk",
     "expected": 63,
@@ -371,6 +388,7 @@
    "walkable": true,
    "maskOk": false,
    "cover": {},
+   "coverMax": {},
    "scale": null,
    "failures": [],
    "info": [
@@ -410,6 +428,9 @@
    "walkable": true,
    "maskOk": false,
    "cover": {
+    "hs_desk": 0
+   },
+   "coverMax": {
     "hs_desk": 0
    },
    "scale": {
@@ -455,6 +476,9 @@
    "cover": {
     "hs_desk": 0
    },
+   "coverMax": {
+    "hs_desk": 0
+   },
    "scale": null,
    "failures": [],
    "info": [
@@ -494,6 +518,9 @@
    "walkable": true,
    "maskOk": false,
    "cover": {
+    "hs_desk": 0.03
+   },
+   "coverMax": {
     "hs_desk": 0.03
    },
    "scale": {
@@ -539,6 +566,9 @@
    "cover": {
     "hs_desk": 0.03
    },
+   "coverMax": {
+    "hs_desk": 0.03
+   },
    "scale": null,
    "failures": [],
    "info": [
@@ -580,6 +610,9 @@
    "cover": {
     "hs_desk": 0
    },
+   "coverMax": {
+    "hs_desk": 0
+   },
    "scale": {
     "ref": "hs_desk",
     "expected": 63,
@@ -619,6 +652,9 @@
    "cover": {
     "hs_desk": 0
    },
+   "coverMax": {
+    "hs_desk": 0
+   },
    "scale": null,
    "failures": [],
    "info": [
@@ -654,6 +690,7 @@
    "walkable": true,
    "maskOk": true,
    "cover": {},
+   "coverMax": {},
    "scale": {
     "ref": "hs_desk",
     "expected": 63,
@@ -691,6 +728,7 @@
    "walkable": true,
    "maskOk": true,
    "cover": {},
+   "coverMax": {},
    "scale": null,
    "failures": [],
    "info": [
@@ -726,6 +764,9 @@
    "walkable": true,
    "maskOk": false,
    "cover": {
+    "hs_armchair": 0
+   },
+   "coverMax": {
     "hs_armchair": 0
    },
    "scale": {
@@ -771,6 +812,9 @@
    "cover": {
     "hs_armchair": 0
    },
+   "coverMax": {
+    "hs_armchair": 0
+   },
    "scale": null,
    "failures": [],
    "info": [
@@ -810,6 +854,9 @@
    "walkable": true,
    "maskOk": false,
    "cover": {
+    "hs_desk": 0.03
+   },
+   "coverMax": {
     "hs_desk": 0.03
    },
    "scale": {
@@ -855,6 +902,9 @@
    "cover": {
     "hs_armchair": 0
    },
+   "coverMax": {
+    "hs_armchair": 0
+   },
    "scale": {
     "ref": "hs_desk",
     "expected": 63,
@@ -898,6 +948,9 @@
    "cover": {
     "hs_computer": 0
    },
+   "coverMax": {
+    "hs_computer": 0
+   },
    "scale": {
     "ref": "hs_desk",
     "expected": 63,
@@ -937,6 +990,9 @@
    "cover": {
     "hs_armchair": 0
    },
+   "coverMax": {
+    "hs_armchair": 0
+   },
    "scale": {
     "ref": "hs_desk",
     "expected": 63,
@@ -962,14 +1018,14 @@
   {
    "id": "hs_roof_hatch",
    "kind": "arrival",
-   "x": 31.5,
+   "x": 31,
    "y": 95.9,
    "feet": {
-    "x": 31.5,
+    "x": 31,
     "y": 95.9
    },
    "dexBox": {
-    "x": 28.01,
+    "x": 27.51,
     "y": 33.31,
     "w": 6.98,
     "h": 62.59
@@ -978,6 +1034,7 @@
    "walkable": true,
    "maskOk": true,
    "cover": {},
+   "coverMax": {},
    "scale": {
     "ref": "hs_desk",
     "expected": 63,
@@ -1015,6 +1072,9 @@
    "walkable": true,
    "maskOk": false,
    "cover": {
+    "hs_desk": 0
+   },
+   "coverMax": {
     "hs_desk": 0
    },
    "scale": {
@@ -1060,6 +1120,9 @@
    "cover": {
     "hs_desk": 0
    },
+   "coverMax": {
+    "hs_desk": 0
+   },
    "scale": {
     "ref": "hs_desk",
     "expected": 63,
@@ -1101,6 +1164,9 @@
    "walkable": true,
    "maskOk": false,
    "cover": {
+    "hs_desk": 0
+   },
+   "coverMax": {
     "hs_desk": 0
    },
    "scale": {
@@ -1146,6 +1212,9 @@
    "cover": {
     "hs_desk": 0.01
    },
+   "coverMax": {
+    "hs_desk": 0.01
+   },
    "scale": {
     "ref": "hs_desk",
     "expected": 63,
@@ -1187,6 +1256,7 @@
    "walkable": true,
    "maskOk": true,
    "cover": {},
+   "coverMax": {},
    "scale": {
     "ref": "hs_desk",
     "expected": 63,
@@ -1224,6 +1294,9 @@
    "walkable": true,
    "maskOk": false,
    "cover": {
+    "hs_desk": 0
+   },
+   "coverMax": {
     "hs_desk": 0
    },
    "scale": {
@@ -1269,6 +1342,9 @@
    "cover": {
     "hs_desk": 0
    },
+   "coverMax": {
+    "hs_desk": 0
+   },
    "scale": {
     "ref": "hs_desk",
     "expected": 63,
@@ -1306,6 +1382,9 @@
    "walkable": true,
    "maskOk": false,
    "cover": {
+    "hs_desk": 0.03
+   },
+   "coverMax": {
     "hs_desk": 0.03
    },
    "scale": {
@@ -1351,6 +1430,9 @@
    "cover": {
     "hs_armchair": 0
    },
+   "coverMax": {
+    "hs_armchair": 0
+   },
    "scale": {
     "ref": "hs_desk",
     "expected": 63,
@@ -1392,6 +1474,9 @@
    "walkable": true,
    "maskOk": false,
    "cover": {
+    "hs_armchair": 0
+   },
+   "coverMax": {
     "hs_armchair": 0
    },
    "scale": {
@@ -1437,6 +1522,9 @@
    "cover": {
     "hs_armchair": 0
    },
+   "coverMax": {
+    "hs_armchair": 0
+   },
    "scale": {
     "ref": "hs_desk",
     "expected": 63,
@@ -1478,6 +1566,9 @@
    "walkable": true,
    "maskOk": false,
    "cover": {
+    "hs_armchair": 0
+   },
+   "coverMax": {
     "hs_armchair": 0
    },
    "scale": {
@@ -1523,6 +1614,9 @@
    "cover": {
     "hs_armchair": 0
    },
+   "coverMax": {
+    "hs_armchair": 0
+   },
    "scale": {
     "ref": "hs_desk",
     "expected": 63,
@@ -1564,6 +1658,9 @@
    "walkable": true,
    "maskOk": false,
    "cover": {
+    "hs_armchair": 0
+   },
+   "coverMax": {
     "hs_armchair": 0
    },
    "scale": {
@@ -1609,6 +1706,9 @@
    "cover": {
     "hs_computer": 0
    },
+   "coverMax": {
+    "hs_computer": 0
+   },
    "scale": {
     "ref": "hs_desk",
     "expected": 63,
@@ -1648,6 +1748,9 @@
    "cover": {
     "hs_computer": 0
    },
+   "coverMax": {
+    "hs_computer": 0
+   },
    "scale": {
     "ref": "hs_desk",
     "expected": 63,
@@ -1685,6 +1788,9 @@
    "walkable": true,
    "maskOk": true,
    "cover": {
+    "hs_computer": 0
+   },
+   "coverMax": {
     "hs_computer": 0
    },
    "scale": {

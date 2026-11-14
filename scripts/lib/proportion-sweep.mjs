@@ -120,6 +120,7 @@ export const overlap = (a, b) => {
  *   feet      — los pies no quedan en suelo andable (qa.isWalkable); fuera de la walkmask = info (el juego no la usa)
  *   occlusion — objeto de primer plano que debería tapar a Dex (pies por encima de su base y solape) y no le tapa
  *   overdraw  — algo del foreground le tapa estando Dex delante (pies por debajo de la base)
+ *   hidden    — (fase 4) una referencia con `maxCover` le tapa más de esa fracción de su caja (`m.dexCover`)
  */
 export function evaluatePosition(m, refsDoc, npcRefs = []) {
   const failures = [];
@@ -152,6 +153,13 @@ export function evaluatePosition(m, refsDoc, npcRefs = []) {
   }
   for (const r of refsDoc?.refs || []) {
     if (!r.box || r.npc) continue;
+    // A2.17 fase 4: `maxCover` (maleza alta en franjas, que tapa a Dex por igual esté donde esté): no hay «delante» ni
+    // «detrás» de una sola base; se juzga solo que no le tape más de esa fracción de su caja entera
+    if (r.maxCover != null) {
+      const dc = m.dexCover?.[r.id];
+      if (dc != null && dc > r.maxCover) failures.push({ type: 'hidden', ref: r.id, dev: r2(dc), msg: `${r.label} tapa ${pc(dc)} de Dex (máximo ${pc(r.maxCover)})` });
+      continue;
+    }
     const ov = overlap(m.box, r.box);
     if (!ov) continue;
     const frac = ov / (m.box.w * m.box.h);

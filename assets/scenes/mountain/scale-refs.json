@@ -60,14 +60,15 @@
       "layer": "maleza",
       "box": {
         "x": 82,
-        "y": 70,
+        "y": 83,
         "w": 18,
-        "h": 30
+        "h": 17
       },
-      "baseY": 97,
-      "source": "A2.17 fase 3: caja = foregroundLayers.maleza de scene.json (máscara de scripts/make-fg-layers.py)",
+      "baseY": 90,
+      "source": "A2.17 fase 4: caja = foregroundLayers.maleza de scene.json (y 83–100, en franjas de 1,5 % con bandStep; máscara de scripts/make-fg-layers.py)",
       "measured": false,
-      "note": "La maleza está delante de las rocas: con los pies entre 89,5 y 97 Dex queda delante de las rocas y detrás de la maleza (le tapa las piernas). No sirve de referencia de escala: measured false."
+      "note": "Fase 4: la maleza va en franjas (bandStep 1,5, base de la primera 90): tapa a Dex desde ≈ 7–8,5 % por encima de los pies hacia abajo, esté donde esté en la franja de la derecha (las piernas metidas en la maleza, nunca «de pie encima» ni tapado hasta la cabeza). La parte de arriba (y 70–83) va con las rocas. maxCover 0,4: el barrido falla (hidden) si le tapa más del 40 % de su caja. No sirve de referencia de escala: measured false.",
+      "maxCover": 0.4
     }
   ]
 }

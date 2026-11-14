@@ -1,8 +1,8 @@
 // Demo de A2.17 fase 3 (plan SCUMM): trozos del primer plano con máscara y walk-behind, en 844x390 (móvil apaisado).
 //   1. outside: Dex anda por DETRÁS del arbusto grande (pies en y 91,5 < base 93: le tapa las piernas), sale por
 //      delante (y 96) y pasa por detrás del arbusto pequeño del porche (pies en y 93 < base 97,3).
-//   2. mountain: Dex delante de las rocas pero DETRÁS de la maleza (pies en y 93: base de las rocas 89,5, de la maleza
-//      97), delante de todo (y 98) y detrás de las rocas (x 81, y 88).
+//   2. mountain: Dex delante de las rocas con las piernas en la maleza (pies en y 93 y en y 98: la maleza va en franjas
+//      desde la fase 4 y le tapa solo las piernas) y detrás de las rocas (x 81, y 88).
 // En cada parada comprueba, con la profundidad real de los objetos de Phaser, que Dex queda por encima o por debajo de
 // cada trozo según la y de sus pies, y que los trozos con máscara existen (textura `fglayer_*`). Capturas fijas de cada
 // parada; el GIF es el paseo. «problemas: ninguno» si todo sale.
@@ -24,7 +24,8 @@ const layersState = () => page.evaluate(() => {
   const gs = window.__game.scene.getScene('GameScene');
   const sd = window.__game.registry.get('sceneData');
   const defs = sd?.foregroundLayers ?? [];
-  const layers = (gs.fgLayers || []).map((l, i) => ({ id: defs[i]?.id, depth: l.img.depth, masked: !!l.bounds, texture: l.img.texture.key }));
+  // Fase 4: un trozo con bandStep da varias imágenes (una por franja): cada una lleva su id y su n.º de franja
+  const layers = (gs.fgLayers || []).map((l, i) => ({ id: l.id ?? defs[i]?.id, band: l.band, depth: l.img.depth, masked: !!l.bounds, texture: l.img.texture.key }));
   return { layers, dex: { depth: gs.player.depth, x: Math.round(gs.player.pctX * 10) / 10, y: Math.round(gs.player.pctY * 10) / 10 } };
 });
 
@@ -74,13 +75,15 @@ async function expectAt(scene, label, expect) {
   await demo.still(`${scene}-${label}`);
   for (let i = 0; i < 4; i++) await demo.shot();
   for (const [id, want] of Object.entries(expect)) {
-    const l = st.layers.find((x) => x.id === id);
-    if (!l) { problems.push(`${scene} ${label}: no está el trozo ${id}`); continue; }
-    const got = st.dex.depth < l.depth ? 'behind' : 'front';
+    // Fase 4: con franjas, «partial» = Dex delante de las de arriba y detrás de las de abajo (piernas en la maleza)
+    const ls = st.layers.filter((x) => x.id === id);
+    if (!ls.length) { problems.push(`${scene} ${label}: no está el trozo ${id}`); continue; }
+    const sides = new Set(ls.map((l) => (st.dex.depth < l.depth ? 'behind' : 'front')));
+    const got = sides.size > 1 ? 'partial' : [...sides][0];
     if (got !== want) problems.push(`${scene} ${label}: Dex (pies ${st.dex.x}, ${st.dex.y}) queda ${got} de ${id} y debía quedar ${want}`);
   }
   report.push({ scene, label, dex: st.dex, layers: st.layers });
-  console.log(`${scene} ${label}: Dex ${JSON.stringify(st.dex)} · ${st.layers.map((l) => `${l.id}@${l.depth.toFixed(3)}${l.masked ? ' (máscara)' : ''}`).join(', ')}`);
+  console.log(`${scene} ${label}: Dex ${JSON.stringify(st.dex)} · ${st.layers.map((l) => `${l.id}${l.band != null ? `#${l.band}` : ''}@${l.depth.toFixed(3)}${l.masked ? ' (máscara)' : ''}`).join(', ')}`);
 }
 
 // 1) outside: por detrás del arbusto grande, por delante, y por detrás del pequeño
@@ -108,10 +111,11 @@ await open('mountain');
   const l = (await layersState()).layers.find((x) => x.id === 'maleza');
   if (!l?.masked) problems.push(`mountain: la maleza no tiene su textura con máscara (${JSON.stringify(l)})`);
 }
+// Fase 4: la maleza va en franjas (bandStep): en toda la franja de la derecha le tapa solo las piernas («partial»)
 await walk(91, 93);
-await expectAt('mountain', 'entre-rocas-y-maleza', { rocks_right: 'front', maleza: 'behind' });
+await expectAt('mountain', 'entre-rocas-y-maleza', { rocks_right: 'front', maleza: 'partial' });
 await walkBelow('mountain', 91, 98, 'maleza');
-await expectAt('mountain', 'delante-de-todo', { rocks_right: 'front', maleza: 'front' });
+await expectAt('mountain', 'borde-de-abajo', { rocks_right: 'front', maleza: 'partial' });
 await walk(81, 88);
 await expectAt('mountain', 'detras-de-las-rocas', { rocks_right: 'behind', maleza: 'behind' });
 

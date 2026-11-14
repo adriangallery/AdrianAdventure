@@ -28,6 +28,9 @@
    "cover": {
     "hs_server_rack_a": 0
    },
+   "coverMax": {
+    "hs_server_rack_a": 0
+   },
    "scale": {
     "ref": "tr_to_basement",
     "expected": 62.56,
@@ -58,6 +61,9 @@
    "walkable": true,
    "maskOk": null,
    "cover": {
+    "hs_server_rack_a": 0
+   },
+   "coverMax": {
     "hs_server_rack_a": 0
    },
    "scale": {
@@ -92,6 +98,9 @@
    "cover": {
     "hs_server_rack_a": 0
    },
+   "coverMax": {
+    "hs_server_rack_a": 0
+   },
    "scale": null,
    "failures": [],
    "info": [
@@ -121,6 +130,9 @@
    "walkable": true,
    "maskOk": null,
    "cover": {
+    "hs_server_rack_a": 0
+   },
+   "coverMax": {
     "hs_server_rack_a": 0
    },
    "scale": {
@@ -155,6 +167,9 @@
    "cover": {
     "hs_server_rack_a": 0
    },
+   "coverMax": {
+    "hs_server_rack_a": 0
+   },
    "scale": {
     "ref": "tr_to_basement",
     "expected": 62.56,
@@ -187,6 +202,9 @@
    "cover": {
     "hs_server_rack_a": 0
    },
+   "coverMax": {
+    "hs_server_rack_a": 0
+   },
    "scale": null,
    "failures": [],
    "info": [
@@ -216,6 +234,9 @@
    "walkable": true,
    "maskOk": null,
    "cover": {
+    "hs_server_rack_a": 0
+   },
+   "coverMax": {
     "hs_server_rack_a": 0
    },
    "scale": {
@@ -250,6 +271,9 @@
    "cover": {
     "hs_server_rack_a": 0
    },
+   "coverMax": {
+    "hs_server_rack_a": 0
+   },
    "scale": {
     "ref": "tr_to_basement",
     "expected": 62.56,
@@ -282,6 +306,9 @@
    "cover": {
     "hs_server_rack_a": 0
    },
+   "coverMax": {
+    "hs_server_rack_a": 0
+   },
    "scale": null,
    "failures": [],
    "info": [
@@ -311,6 +338,9 @@
    "walkable": true,
    "maskOk": null,
    "cover": {
+    "hs_server_rack_b": 0
+   },
+   "coverMax": {
     "hs_server_rack_b": 0
    },
    "scale": {
@@ -345,6 +375,9 @@
    "cover": {
     "hs_server_rack_b": 0
    },
+   "coverMax": {
+    "hs_server_rack_b": 0
+   },
    "scale": {
     "ref": "tr_to_basement",
     "expected": 62.56,
@@ -377,6 +410,9 @@
    "cover": {
     "hs_server_rack_b": 0
    },
+   "coverMax": {
+    "hs_server_rack_b": 0
+   },
    "scale": null,
    "failures": [],
    "info": [
@@ -406,6 +442,7 @@
    "walkable": true,
    "maskOk": null,
    "cover": {},
+   "coverMax": {},
    "scale": {
     "ref": "tr_to_basement",
     "expected": 62.56,
@@ -436,6 +473,7 @@
    "walkable": true,
    "maskOk": null,
    "cover": {},
+   "coverMax": {},
    "scale": {
     "ref": "tr_to_basement",
     "expected": 62.56,
@@ -466,6 +504,7 @@
    "walkable": true,
    "maskOk": null,
    "cover": {},
+   "coverMax": {},
    "scale": null,
    "failures": [],
    "info": [
@@ -495,6 +534,7 @@
    "walkable": true,
    "maskOk": null,
    "cover": {},
+   "coverMax": {},
    "scale": {
     "ref": "tr_to_basement",
     "expected": 62.56,
@@ -525,6 +565,7 @@
    "walkable": true,
    "maskOk": null,
    "cover": {},
+   "coverMax": {},
    "scale": {
     "ref": "tr_to_basement",
     "expected": 62.56,
@@ -555,6 +596,7 @@
    "walkable": true,
    "maskOk": null,
    "cover": {},
+   "coverMax": {},
    "scale": null,
    "failures": [],
    "info": [
@@ -584,6 +626,9 @@
    "walkable": true,
    "maskOk": null,
    "cover": {
+    "hs_cooling_system": 0
+   },
+   "coverMax": {
     "hs_cooling_system": 0
    },
    "scale": {
@@ -618,6 +663,9 @@
    "cover": {
     "hs_cooling_system": 0
    },
+   "coverMax": {
+    "hs_cooling_system": 0
+   },
    "scale": {
     "ref": "tr_to_basement",
     "expected": 62.56,
@@ -650,6 +698,9 @@
    "cover": {
     "hs_cooling_system": 0
    },
+   "coverMax": {
+    "hs_cooling_system": 0
+   },
    "scale": null,
    "failures": [],
    "info": [
@@ -679,6 +730,9 @@
    "walkable": true,
    "maskOk": null,
    "cover": {
+    "hs_cooling_system": 0
+   },
+   "coverMax": {
     "hs_cooling_system": 0
    },
    "scale": {
@@ -713,6 +767,9 @@
    "cover": {
     "hs_cooling_system": 0
    },
+   "coverMax": {
+    "hs_cooling_system": 0
+   },
    "scale": {
     "ref": "tr_to_basement",
     "expected": 62.56,
@@ -745,6 +802,9 @@
    "cover": {
     "hs_cooling_system": 0
    },
+   "coverMax": {
+    "hs_cooling_system": 0
+   },
    "scale": null,
    "failures": [],
    "info": [
@@ -774,6 +834,7 @@
    "walkable": true,
    "maskOk": null,
    "cover": {},
+   "coverMax": {},
    "scale": {
     "ref": "tr_to_basement",
     "expected": 62.56,
@@ -804,6 +865,7 @@
    "walkable": true,
    "maskOk": null,
    "cover": {},
+   "coverMax": {},
    "scale": {
     "ref": "tr_to_basement",
     "expected": 62.56,
@@ -834,6 +896,7 @@
    "walkable": true,
    "maskOk": null,
    "cover": {},
+   "coverMax": {},
    "scale": null,
    "failures": [],
    "info": [
@@ -863,6 +926,9 @@
    "walkable": true,
    "maskOk": null,
    "cover": {
+    "hs_server_rack_a": 0
+   },
+   "coverMax": {
     "hs_server_rack_a": 0
    },
    "scale": {
@@ -897,6 +963,9 @@
    "cover": {
     "hs_server_rack_b": 0
    },
+   "coverMax": {
+    "hs_server_rack_b": 0
+   },
    "scale": {
     "ref": "tr_to_basement",
     "expected": 62.56,
@@ -927,6 +996,7 @@
    "walkable": true,
    "maskOk": null,
    "cover": {},
+   "coverMax": {},
    "scale": {
     "ref": "tr_to_basement",
     "expected": 62.56,
@@ -957,6 +1027,9 @@
    "walkable": true,
    "maskOk": null,
    "cover": {
+    "hs_cooling_system": 0
+   },
+   "coverMax": {
     "hs_cooling_system": 0
    },
    "scale": {
@@ -991,6 +1064,9 @@
    "cover": {
     "hs_emergency_switch": 0
    },
+   "coverMax": {
+    "hs_emergency_switch": 0
+   },
    "scale": {
     "ref": "tr_to_basement",
     "expected": 62.56,
@@ -1021,6 +1097,7 @@
    "walkable": true,
    "maskOk": null,
    "cover": {},
+   "coverMax": {},
    "scale": {
     "ref": "tr_to_basement",
     "expected": 62.56,
@@ -1035,14 +1112,14 @@
   {
    "id": "hs_raised_floor",
    "kind": "arrival",
-   "x": 50.7,
+   "x": 34,
    "y": 99.5,
    "feet": {
-    "x": 50.7,
+    "x": 34,
     "y": 99.5
    },
    "dexBox": {
-    "x": 47.31,
+    "x": 30.61,
     "y": 38.7,
     "w": 6.78,
     "h": 60.8
@@ -1050,7 +1127,12 @@
    "heightPct": 60.8,
    "walkable": true,
    "maskOk": null,
-   "cover": {},
+   "cover": {
+    "hs_server_rack_b": 0
+   },
+   "coverMax": {
+    "hs_server_rack_b": 0
+   },
    "scale": null,
    "failures": [],
    "info": [
@@ -1080,6 +1162,9 @@
    "walkable": true,
    "maskOk": null,
    "cover": {
+    "hs_server_rack_b": 0
+   },
+   "coverMax": {
     "hs_server_rack_b": 0
    },
    "scale": {
@@ -1114,6 +1199,9 @@
    "cover": {
     "hs_emergency_switch": 0
    },
+   "coverMax": {
+    "hs_emergency_switch": 0
+   },
    "scale": {
     "ref": "tr_to_basement",
     "expected": 62.56,
@@ -1144,6 +1232,7 @@
    "walkable": true,
    "maskOk": null,
    "cover": {},
+   "coverMax": {},
    "scale": {
     "ref": "tr_to_basement",
     "expected": 62.56,
@@ -1174,6 +1263,7 @@
    "walkable": true,
    "maskOk": null,
    "cover": {},
+   "coverMax": {},
    "scale": {
     "ref": "tr_to_basement",
     "expected": 62.56,
@@ -1204,6 +1294,7 @@
    "walkable": true,
    "maskOk": null,
    "cover": {},
+   "coverMax": {},
    "scale": {
     "ref": "tr_to_basement",
     "expected": 62.56,
@@ -1234,6 +1325,9 @@
    "walkable": true,
    "maskOk": null,
    "cover": {
+    "hs_server_rack_a": 0
+   },
+   "coverMax": {
     "hs_server_rack_a": 0
    },
    "scale": {
@@ -1269,6 +1363,10 @@
     "hs_server_rack_a": 0,
     "hs_server_rack_b": 0
    },
+   "coverMax": {
+    "hs_server_rack_a": 0,
+    "hs_server_rack_b": 0
+   },
    "scale": {
     "ref": "tr_to_basement",
     "expected": 62.56,
@@ -1299,6 +1397,9 @@
    "walkable": true,
    "maskOk": null,
    "cover": {
+    "hs_server_rack_a": 0
+   },
+   "coverMax": {
     "hs_server_rack_a": 0
    },
    "scale": {
@@ -1334,6 +1435,10 @@
     "hs_server_rack_a": 0,
     "hs_server_rack_b": 0
    },
+   "coverMax": {
+    "hs_server_rack_a": 0,
+    "hs_server_rack_b": 0
+   },
    "scale": {
     "ref": "tr_to_basement",
     "expected": 62.56,
@@ -1364,6 +1469,9 @@
    "walkable": true,
    "maskOk": null,
    "cover": {
+    "hs_server_rack_b": 0
+   },
+   "coverMax": {
     "hs_server_rack_b": 0
    },
    "scale": {
@@ -1398,6 +1506,9 @@
    "cover": {
     "hs_server_rack_b": 0
    },
+   "coverMax": {
+    "hs_server_rack_b": 0
+   },
    "scale": {
     "ref": "tr_to_basement",
     "expected": 62.56,
@@ -1428,6 +1539,9 @@
    "walkable": true,
    "maskOk": null,
    "cover": {
+    "hs_cooling_system": 0
+   },
+   "coverMax": {
     "hs_cooling_system": 0
    },
    "scale": {
@@ -1462,6 +1576,9 @@
    "cover": {
     "hs_cooling_system": 0
    },
+   "coverMax": {
+    "hs_cooling_system": 0
+   },
    "scale": {
     "ref": "tr_to_basement",
     "expected": 62.56,
@@ -1492,6 +1609,9 @@
    "walkable": true,
    "maskOk": null,
    "cover": {
+    "hs_cooling_system": 0
+   },
+   "coverMax": {
     "hs_cooling_system": 0
    },
    "scale": {
@@ -1526,6 +1646,9 @@
    "cover": {
     "hs_emergency_switch": 0
    },
+   "coverMax": {
+    "hs_emergency_switch": 0
+   },
    "scale": {
     "ref": "tr_to_basement",
     "expected": 62.56,
@@ -1558,6 +1681,9 @@
    "cover": {
     "hs_emergency_switch": 0
    },
+   "coverMax": {
+    "hs_emergency_switch": 0
+   },
    "scale": {
     "ref": "tr_to_basement",
     "expected": 62.56,
@@ -1588,6 +1714,9 @@
    "walkable": true,
    "maskOk": null,
    "cover": {
+    "hs_emergency_switch": 0
+   },
+   "coverMax": {
     "hs_emergency_switch": 0
    },
    "scale": {

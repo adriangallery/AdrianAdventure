@@ -26,6 +26,7 @@
    "walkable": true,
    "maskOk": null,
    "cover": {},
+   "coverMax": {},
    "scale": {
     "ref": "hs_satellite_dish",
     "expected": 45.92,
@@ -63,6 +64,7 @@
    "walkable": true,
    "maskOk": null,
    "cover": {},
+   "coverMax": {},
    "scale": null,
    "failures": [],
    "info": [
@@ -98,6 +100,7 @@
    "walkable": true,
    "maskOk": null,
    "cover": {},
+   "coverMax": {},
    "scale": null,
    "failures": [],
    "info": [
@@ -133,6 +136,7 @@
    "walkable": true,
    "maskOk": null,
    "cover": {},
+   "coverMax": {},
    "scale": null,
    "failures": [],
    "info": [
@@ -168,6 +172,10 @@
    "walkable": true,
    "maskOk": null,
    "cover": {
+    "hs_satellite_dish": 0,
+    "hs_parapet": 0
+   },
+   "coverMax": {
     "hs_satellite_dish": 0,
     "hs_parapet": 0
    },
@@ -211,6 +219,10 @@
     "hs_satellite_dish": 0,
     "hs_parapet": 0
    },
+   "coverMax": {
+    "hs_satellite_dish": 0,
+    "hs_parapet": 0
+   },
    "scale": null,
    "failures": [],
    "info": [
@@ -246,6 +258,10 @@
    "walkable": true,
    "maskOk": null,
    "cover": {
+    "hs_satellite_dish": 0,
+    "hs_parapet": 0
+   },
+   "coverMax": {
     "hs_satellite_dish": 0,
     "hs_parapet": 0
    },
@@ -287,6 +303,10 @@
     "hs_satellite_dish": 0,
     "hs_parapet": 0
    },
+   "coverMax": {
+    "hs_satellite_dish": 0,
+    "hs_parapet": 0
+   },
    "scale": null,
    "failures": [],
    "info": [
@@ -322,6 +342,10 @@
    "walkable": true,
    "maskOk": null,
    "cover": {
+    "hs_satellite_dish": 0,
+    "hs_parapet": 0
+   },
+   "coverMax": {
     "hs_satellite_dish": 0,
     "hs_parapet": 0
    },
@@ -365,6 +389,10 @@
     "hs_satellite_dish": 0,
     "hs_parapet": 0
    },
+   "coverMax": {
+    "hs_satellite_dish": 0,
+    "hs_parapet": 0
+   },
    "scale": null,
    "failures": [],
    "info": [
@@ -400,6 +428,10 @@
    "walkable": true,
    "maskOk": null,
    "cover": {
+    "hs_satellite_dish": 0,
+    "hs_parapet": 0
+   },
+   "coverMax": {
     "hs_satellite_dish": 0,
     "hs_parapet": 0
    },
@@ -441,6 +473,10 @@
     "hs_satellite_dish": 0,
     "hs_parapet": 0
    },
+   "coverMax": {
+    "hs_satellite_dish": 0,
+    "hs_parapet": 0
+   },
    "scale": null,
    "failures": [],
    "info": [
@@ -476,6 +512,10 @@
    "walkable": true,
    "maskOk": null,
    "cover": {
+    "hs_satellite_dish": 0,
+    "hs_parapet": 0
+   },
+   "coverMax": {
     "hs_satellite_dish": 0,
     "hs_parapet": 0
    },
@@ -519,6 +559,10 @@
     "hs_satellite_dish": 0,
     "hs_parapet": 0
    },
+   "coverMax": {
+    "hs_satellite_dish": 0,
+    "hs_parapet": 0
+   },
    "scale": null,
    "failures": [],
    "info": [
@@ -554,6 +598,10 @@
    "walkable": true,
    "maskOk": null,
    "cover": {
+    "hs_satellite_dish": 0,
+    "hs_parapet": 0
+   },
+   "coverMax": {
     "hs_satellite_dish": 0,
     "hs_parapet": 0
    },
@@ -595,6 +643,10 @@
     "hs_satellite_dish": 0,
     "hs_parapet": 0
    },
+   "coverMax": {
+    "hs_satellite_dish": 0,
+    "hs_parapet": 0
+   },
    "scale": null,
    "failures": [],
    "info": [
@@ -630,6 +682,9 @@
    "walkable": true,
    "maskOk": null,
    "cover": {
+    "hs_parapet": 0
+   },
+   "coverMax": {
     "hs_parapet": 0
    },
    "scale": {
@@ -671,6 +726,9 @@
    "cover": {
     "hs_parapet": 0
    },
+   "coverMax": {
+    "hs_parapet": 0
+   },
    "scale": null,
    "failures": [],
    "info": [
@@ -706,6 +764,9 @@
    "walkable": true,
    "maskOk": null,
    "cover": {
+    "hs_parapet": 0
+   },
+   "coverMax": {
     "hs_parapet": 0
    },
    "scale": null,
@@ -745,6 +806,9 @@
    "cover": {
     "hs_parapet": 0
    },
+   "coverMax": {
+    "hs_parapet": 0
+   },
    "scale": null,
    "failures": [],
    "info": [
@@ -780,6 +844,9 @@
    "walkable": true,
    "maskOk": null,
    "cover": {
+    "hs_parapet": 0
+   },
+   "coverMax": {
     "hs_parapet": 0
    },
    "scale": {
@@ -821,6 +888,9 @@
    "cover": {
     "hs_parapet": 0
    },
+   "coverMax": {
+    "hs_parapet": 0
+   },
    "scale": null,
    "failures": [],
    "info": [
@@ -856,6 +926,9 @@
    "walkable": true,
    "maskOk": null,
    "cover": {
+    "hs_parapet": 0
+   },
+   "coverMax": {
     "hs_parapet": 0
    },
    "scale": null,
@@ -895,6 +968,9 @@
    "cover": {
     "hs_parapet": 0
    },
+   "coverMax": {
+    "hs_parapet": 0
+   },
    "scale": null,
    "failures": [],
    "info": [
@@ -930,6 +1006,10 @@
    "walkable": true,
    "maskOk": null,
    "cover": {
+    "hs_parapet": 0,
+    "hs_weather_vane": 0
+   },
+   "coverMax": {
     "hs_parapet": 0,
     "hs_weather_vane": 0
    },
@@ -973,6 +1053,10 @@
     "hs_parapet": 0,
     "hs_weather_vane": 0
    },
+   "coverMax": {
+    "hs_parapet": 0,
+    "hs_weather_vane": 0
+   },
    "scale": null,
    "failures": [],
    "info": [
@@ -1008,6 +1092,10 @@
    "walkable": true,
    "maskOk": null,
    "cover": {
+    "hs_parapet": 0,
+    "hs_weather_vane": 0
+   },
+   "coverMax": {
     "hs_parapet": 0,
     "hs_weather_vane": 0
    },
@@ -1049,6 +1137,10 @@
     "hs_parapet": 0,
     "hs_weather_vane": 0
    },
+   "coverMax": {
+    "hs_parapet": 0,
+    "hs_weather_vane": 0
+   },
    "scale": null,
    "failures": [],
    "info": [
@@ -1084,6 +1176,10 @@
    "walkable": true,
    "maskOk": null,
    "cover": {
+    "hs_parapet": 0,
+    "hs_weather_vane": 0
+   },
+   "coverMax": {
     "hs_parapet": 0,
     "hs_weather_vane": 0
    },
@@ -1127,6 +1223,10 @@
     "hs_parapet": 0,
     "hs_weather_vane": 0
    },
+   "coverMax": {
+    "hs_parapet": 0,
+    "hs_weather_vane": 0
+   },
    "scale": null,
    "failures": [],
    "info": [
@@ -1162,6 +1262,10 @@
    "walkable": true,
    "maskOk": null,
    "cover": {
+    "hs_parapet": 0,
+    "hs_weather_vane": 0
+   },
+   "coverMax": {
     "hs_parapet": 0,
     "hs_weather_vane": 0
    },
@@ -1203,6 +1307,10 @@
     "hs_parapet": 0,
     "hs_weather_vane": 0
    },
+   "coverMax": {
+    "hs_parapet": 0,
+    "hs_weather_vane": 0
+   },
    "scale": null,
    "failures": [],
    "info": [
@@ -1238,6 +1346,7 @@
    "walkable": true,
    "maskOk": null,
    "cover": {},
+   "coverMax": {},
    "scale": {
     "ref": "hs_satellite_dish",
     "expected": 45.92,
@@ -1275,6 +1384,7 @@
    "walkable": true,
    "maskOk": null,
    "cover": {},
+   "coverMax": {},
    "scale": null,
    "failures": [],
    "info": [
@@ -1310,6 +1420,7 @@
    "walkable": true,
    "maskOk": null,
    "cover": {},
+   "coverMax": {},
    "scale": null,
    "failures": [],
    "info": [
@@ -1345,6 +1456,7 @@
    "walkable": true,
    "maskOk": null,
    "cover": {},
+   "coverMax": {},
    "scale": null,
    "failures": [],
    "info": [
@@ -1380,6 +1492,9 @@
    "walkable": true,
    "maskOk": null,
    "cover": {
+    "hs_roof_door": 0
+   },
+   "coverMax": {
     "hs_roof_door": 0
    },
    "scale": {
@@ -1426,6 +1541,9 @@
    "cover": {
     "hs_roof_door": 0
    },
+   "coverMax": {
+    "hs_roof_door": 0
+   },
    "scale": null,
    "failures": [],
    "info": [
@@ -1461,6 +1579,9 @@
    "walkable": true,
    "maskOk": null,
    "cover": {
+    "hs_roof_door": 0
+   },
+   "coverMax": {
     "hs_roof_door": 0
    },
    "scale": null,
@@ -1500,6 +1621,9 @@
    "cover": {
     "hs_roof_door": 0
    },
+   "coverMax": {
+    "hs_roof_door": 0
+   },
    "scale": null,
    "failures": [],
    "info": [
@@ -1535,6 +1659,9 @@
    "walkable": true,
    "maskOk": null,
    "cover": {
+    "hs_roof_door": 0
+   },
+   "coverMax": {
     "hs_roof_door": 0
    },
    "scale": {
@@ -1581,6 +1708,9 @@
    "cover": {
     "hs_roof_door": 0
    },
+   "coverMax": {
+    "hs_roof_door": 0
+   },
    "scale": null,
    "failures": [],
    "info": [
@@ -1616,6 +1746,9 @@
    "walkable": true,
    "maskOk": null,
    "cover": {
+    "hs_roof_door": 0
+   },
+   "coverMax": {
     "hs_roof_door": 0
    },
    "scale": null,
@@ -1655,6 +1788,9 @@
    "cover": {
     "hs_roof_door": 0
    },
+   "coverMax": {
+    "hs_roof_door": 0
+   },
    "scale": null,
    "failures": [],
    "info": [
@@ -1690,6 +1826,10 @@
    "walkable": true,
    "maskOk": null,
    "cover": {
+    "hs_satellite_dish": 0,
+    "hs_parapet": 0
+   },
+   "coverMax": {
     "hs_satellite_dish": 0,
     "hs_parapet": 0
    },
@@ -1733,6 +1873,10 @@
     "hs_satellite_dish": 0,
     "hs_parapet": 0
    },
+   "coverMax": {
+    "hs_satellite_dish": 0,
+    "hs_parapet": 0
+   },
    "scale": {
     "ref": "hs_satellite_dish",
     "expected": 45.92,
@@ -1770,6 +1914,10 @@
    "walkable": true,
    "maskOk": null,
    "cover": {
+    "hs_satellite_dish": 0,
+    "hs_parapet": 0
+   },
+   "coverMax": {
     "hs_satellite_dish": 0,
     "hs_parapet": 0
    },
@@ -1813,6 +1961,10 @@
     "hs_satellite_dish": 0,
     "hs_parapet": 0
    },
+   "coverMax": {
+    "hs_satellite_dish": 0,
+    "hs_parapet": 0
+   },
    "scale": {
     "ref": "hs_satellite_dish",
     "expected": 45.92,
@@ -1853,6 +2005,10 @@
     "hs_satellite_dish": 0,
     "hs_parapet": 0
    },
+   "coverMax": {
+    "hs_satellite_dish": 0,
+    "hs_parapet": 0
+   },
    "scale": null,
    "failures": [],
    "info": [
@@ -1888,6 +2044,9 @@
    "walkable": true,
    "maskOk": null,
    "cover": {
+    "hs_parapet": 0
+   },
+   "coverMax": {
     "hs_parapet": 0
    },
    "scale": {
@@ -1929,6 +2088,9 @@
    "cover": {
     "hs_parapet": 0
    },
+   "coverMax": {
+    "hs_parapet": 0
+   },
    "scale": {
     "ref": "hs_satellite_dish",
     "expected": 45.92,
@@ -1966,6 +2128,9 @@
    "walkable": true,
    "maskOk": null,
    "cover": {
+    "hs_parapet": 0
+   },
+   "coverMax": {
     "hs_parapet": 0
    },
    "scale": {
@@ -2007,6 +2172,9 @@
    "cover": {
     "hs_parapet": 0
    },
+   "coverMax": {
+    "hs_parapet": 0
+   },
    "scale": {
     "ref": "hs_satellite_dish",
     "expected": 45.92,
@@ -2046,6 +2214,9 @@
    "cover": {
     "hs_parapet": 0
    },
+   "coverMax": {
+    "hs_parapet": 0
+   },
    "scale": null,
    "failures": [],
    "info": [
@@ -2081,6 +2252,9 @@
    "walkable": true,
    "maskOk": null,
    "cover": {
+    "hs_parapet": 0
+   },
+   "coverMax": {
     "hs_parapet": 0
    },
    "scale": {
@@ -2122,6 +2296,9 @@
    "cover": {
     "hs_parapet": 0
    },
+   "coverMax": {
+    "hs_parapet": 0
+   },
    "scale": {
     "ref": "hs_satellite_dish",
     "expected": 45.92,
@@ -2159,6 +2336,9 @@
    "walkable": true,
    "maskOk": null,
    "cover": {
+    "hs_parapet": 0
+   },
+   "coverMax": {
     "hs_parapet": 0
    },
    "scale": {
@@ -2200,6 +2380,9 @@
    "cover": {
     "hs_parapet": 0
    },
+   "coverMax": {
+    "hs_parapet": 0
+   },
    "scale": {
     "ref": "hs_satellite_dish",
     "expected": 45.92,
@@ -2239,6 +2422,9 @@
    "cover": {
     "hs_parapet": 0
    },
+   "coverMax": {
+    "hs_parapet": 0
+   },
    "scale": null,
    "failures": [],
    "info": [
@@ -2274,6 +2460,10 @@
    "walkable": true,
    "maskOk": null,
    "cover": {
+    "hs_satellite_dish": 0,
+    "hs_parapet": 0
+   },
+   "coverMax": {
     "hs_satellite_dish": 0,
     "hs_parapet": 0
    },
@@ -2322,6 +2512,10 @@
     "hs_satellite_dish": 0,
     "hs_parapet": 0
    },
+   "coverMax": {
+    "hs_satellite_dish": 0,
+    "hs_parapet": 0
+   },
    "scale": {
     "ref": "hs_satellite_dish",
     "expected": 45.92,
@@ -2366,6 +2560,9 @@
    "cover": {
     "hs_parapet": 0
    },
+   "coverMax": {
+    "hs_parapet": 0
+   },
    "scale": {
     "ref": "hs_satellite_dish",
     "expected": 45.92,
@@ -2403,6 +2600,10 @@
    "walkable": true,
    "maskOk": null,
    "cover": {
+    "hs_parapet": 0,
+    "hs_weather_vane": 0
+   },
+   "coverMax": {
     "hs_parapet": 0,
     "hs_weather_vane": 0
    },
@@ -2446,6 +2647,10 @@
     "hs_parapet": 0,
     "hs_weather_vane": 0
    },
+   "coverMax": {
+    "hs_parapet": 0,
+    "hs_weather_vane": 0
+   },
    "scale": {
     "ref": "hs_satellite_dish",
     "expected": 45.92,
@@ -2483,6 +2688,7 @@
    "walkable": true,
    "maskOk": null,
    "cover": {},
+   "coverMax": {},
    "scale": {
     "ref": "hs_satellite_dish",
     "expected": 45.92,
@@ -2504,15 +2710,15 @@
   {
    "id": "hs_roof_access_panel",
    "kind": "arrival",
-   "x": 65.4,
-   "y": 94.1,
+   "x": 66.1,
+   "y": 95,
    "feet": {
-    "x": 65.4,
-    "y": 94.1
+    "x": 66.1,
+    "y": 95
    },
    "dexBox": {
-    "x": 62.66,
-    "y": 44.92,
+    "x": 63.36,
+    "y": 45.82,
     "w": 5.48,
     "h": 49.18
    },
@@ -2520,6 +2726,10 @@
    "walkable": true,
    "maskOk": null,
    "cover": {
+    "hs_parapet": 0,
+    "hs_weather_vane": 0
+   },
+   "coverMax": {
     "hs_parapet": 0,
     "hs_weather_vane": 0
    },
@@ -2558,6 +2768,9 @@
    "walkable": true,
    "maskOk": null,
    "cover": {
+    "hs_parapet": 0
+   },
+   "coverMax": {
     "hs_parapet": 0
    },
    "scale": {
@@ -2599,6 +2812,9 @@
    "cover": {
     "hs_roof_door": 0
    },
+   "coverMax": {
+    "hs_roof_door": 0
+   },
    "scale": null,
    "failures": [],
    "info": [
@@ -2637,6 +2853,10 @@
     "hs_satellite_dish": 0,
     "hs_parapet": 0
    },
+   "coverMax": {
+    "hs_satellite_dish": 0,
+    "hs_parapet": 0
+   },
    "scale": null,
    "failures": [],
    "info": [
@@ -2672,6 +2892,10 @@
    "walkable": true,
    "maskOk": null,
    "cover": {
+    "hs_satellite_dish": 0,
+    "hs_parapet": 0
+   },
+   "coverMax": {
     "hs_satellite_dish": 0,
     "hs_parapet": 0
    },
@@ -2715,6 +2939,10 @@
     "hs_satellite_dish": 0,
     "hs_parapet": 0
    },
+   "coverMax": {
+    "hs_satellite_dish": 0,
+    "hs_parapet": 0
+   },
    "scale": {
     "ref": "hs_satellite_dish",
     "expected": 45.92,
@@ -2752,6 +2980,10 @@
    "walkable": true,
    "maskOk": null,
    "cover": {
+    "hs_satellite_dish": 0,
+    "hs_parapet": 0
+   },
+   "coverMax": {
     "hs_satellite_dish": 0,
     "hs_parapet": 0
    },
@@ -2799,6 +3031,9 @@
    "cover": {
     "hs_roof_door": 0
    },
+   "coverMax": {
+    "hs_roof_door": 0
+   },
    "scale": null,
    "failures": [],
    "info": [
@@ -2836,6 +3071,9 @@
    "cover": {
     "hs_roof_door": 0
    },
+   "coverMax": {
+    "hs_roof_door": 0
+   },
    "scale": null,
    "failures": [],
    "info": [
@@ -2871,6 +3109,9 @@
    "walkable": true,
    "maskOk": null,
    "cover": {
+    "hs_roof_door": 0
+   },
+   "coverMax": {
     "hs_roof_door": 0
    },
    "scale": {
@@ -2915,6 +3156,10 @@
    "walkable": true,
    "maskOk": null,
    "cover": {
+    "hs_satellite_dish": 0,
+    "hs_parapet": 0
+   },
+   "coverMax": {
     "hs_satellite_dish": 0,
     "hs_parapet": 0
    },
@@ -2963,6 +3208,10 @@
     "hs_parapet": 0,
     "hs_weather_vane": 0
    },
+   "coverMax": {
+    "hs_parapet": 0,
+    "hs_weather_vane": 0
+   },
    "scale": {
     "ref": "hs_satellite_dish",
     "expected": 45.92,
@@ -3002,6 +3251,9 @@
    "cover": {
     "hs_parapet": 0
    },
+   "coverMax": {
+    "hs_parapet": 0
+   },
    "scale": {
     "ref": "hs_satellite_dish",
     "expected": 45.92,
@@ -3039,6 +3291,10 @@
    "walkable": true,
    "maskOk": null,
    "cover": {
+    "hs_parapet": 0,
+    "hs_weather_vane": 0
+   },
+   "coverMax": {
     "hs_parapet": 0,
     "hs_weather_vane": 0
    },
@@ -3082,6 +3338,10 @@
     "hs_parapet": 0,
     "hs_weather_vane": 0
    },
+   "coverMax": {
+    "hs_parapet": 0,
+    "hs_weather_vane": 0
+   },
    "scale": {
     "ref": "hs_satellite_dish",
     "expected": 45.92,
@@ -3119,6 +3379,10 @@
    "walkable": true,
    "maskOk": null,
    "cover": {
+    "hs_parapet": 0,
+    "hs_weather_vane": 0
+   },
+   "coverMax": {
     "hs_parapet": 0,
     "hs_weather_vane": 0
    },

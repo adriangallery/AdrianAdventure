@@ -212,3 +212,22 @@ test('huella de NPC: solo cuenta la de las NPC que están sobre el suelo', () =>
   const pts = [{ x: 40, y: 90 }, ...r.points];
   for (let k = 1; k < pts.length; k++) assert.ok(nav.segmentClear(pts[k - 1], pts[k]));
 });
+
+test('A2.17 fase 4: trozos del primer plano en franjas (bandStep): la base baja con la franja', () => {
+  const plain = { bounds: { x: 0, y: 70, w: 10, h: 30 }, baseY: 97 };
+  assert.deepEqual(W.foregroundBands(plain), [{ top: 70, bottom: 100, baseY: 97 }]);
+  const banded = { bounds: { x: 82, y: 83, w: 18, h: 17 }, baseY: 90, bandStep: 1.5 };
+  const bands = W.foregroundBands(banded);
+  assert.equal(bands.length, 12);
+  assert.equal(bands[0].top, 83);
+  assert.ok(Math.abs(bands.at(-1).bottom - 100) < 1e-9);
+  // cada franja: base = su borde de arriba + (baseY − bounds.y) → tapa siempre 7 % por encima de los pies
+  for (const b of bands) assert.ok(Math.abs(b.baseY - b.top - 7) < 1e-9);
+  assert.ok(Math.abs(W.foregroundBaseAt(banded, 93.2) - 99) < 1e-9);
+  assert.equal(W.foregroundBaseAt(banded, 50), 90);
+  // mountain: la maleza no tapa a Dex más de ~9 % de alto en ningún punto andable de la franja de la derecha
+  const m = SCENES.mountain.foregroundLayers.find((l) => l.id === 'maleza');
+  assert.ok(m.bandStep > 0, 'mountain: la maleza va en franjas');
+  const reach = m.baseY - m.bounds.y + m.bandStep;
+  assert.ok(reach <= 10, `la maleza tapa hasta ${reach} % por encima de los pies`);
+});

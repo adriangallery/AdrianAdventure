@@ -28,6 +28,9 @@
    "cover": {
     "hs_water_dispenser": 0
    },
+   "coverMax": {
+    "hs_water_dispenser": 0
+   },
    "scale": null,
    "failures": [],
    "info": [
@@ -63,6 +66,9 @@
    "walkable": true,
    "maskOk": null,
    "cover": {
+    "hs_water_dispenser": 0
+   },
+   "coverMax": {
     "hs_water_dispenser": 0
    },
    "scale": null,
@@ -102,6 +108,9 @@
    "cover": {
     "hs_treatment_door": 0
    },
+   "coverMax": {
+    "hs_treatment_door": 0
+   },
    "scale": null,
    "failures": [],
    "info": [
@@ -137,6 +146,7 @@
    "walkable": true,
    "maskOk": null,
    "cover": {},
+   "coverMax": {},
    "scale": null,
    "failures": [],
    "info": [
@@ -172,6 +182,7 @@
    "walkable": true,
    "maskOk": null,
    "cover": {},
+   "coverMax": {},
    "scale": null,
    "failures": [],
    "info": [
@@ -209,6 +220,9 @@
    "cover": {
     "hs_waiting_chairs": 0
    },
+   "coverMax": {
+    "hs_waiting_chairs": 0
+   },
    "scale": null,
    "failures": [],
    "info": [
@@ -244,6 +258,9 @@
    "walkable": true,
    "maskOk": null,
    "cover": {
+    "hs_waiting_chairs": 0
+   },
+   "coverMax": {
     "hs_waiting_chairs": 0
    },
    "scale": null,
@@ -284,6 +301,10 @@
     "hs_reception_desk": 0,
     "hs_filing_cabinet": 0
    },
+   "coverMax": {
+    "hs_reception_desk": 0,
+    "hs_filing_cabinet": 0
+   },
    "scale": null,
    "failures": [],
    "info": [
@@ -319,6 +340,9 @@
    "walkable": true,
    "maskOk": null,
    "cover": {
+    "hs_reception_desk": 0
+   },
+   "coverMax": {
     "hs_reception_desk": 0
    },
    "scale": null,
@@ -358,6 +382,9 @@
    "cover": {
     "hs_reception_desk": 0
    },
+   "coverMax": {
+    "hs_reception_desk": 0
+   },
    "scale": null,
    "failures": [],
    "info": [
@@ -393,6 +420,7 @@
    "walkable": true,
    "maskOk": null,
    "cover": {},
+   "coverMax": {},
    "scale": null,
    "failures": [],
    "info": [
@@ -428,6 +456,9 @@
    "walkable": true,
    "maskOk": null,
    "cover": {
+    "hs_treatment_door": 0
+   },
+   "coverMax": {
     "hs_treatment_door": 0
    },
    "scale": {
@@ -469,6 +500,9 @@
    "cover": {
     "hs_treatment_door": 0
    },
+   "coverMax": {
+    "hs_treatment_door": 0
+   },
    "scale": {
     "ref": "hs_treatment_door",
     "expected": 44.63,
@@ -506,6 +540,9 @@
    "walkable": true,
    "maskOk": null,
    "cover": {
+    "hs_treatment_door": 0
+   },
+   "coverMax": {
     "hs_treatment_door": 0
    },
    "scale": {
@@ -547,6 +584,9 @@
    "cover": {
     "hs_treatment_door": 0
    },
+   "coverMax": {
+    "hs_treatment_door": 0
+   },
    "scale": null,
    "failures": [],
    "info": [
@@ -582,6 +622,9 @@
    "walkable": true,
    "maskOk": null,
    "cover": {
+    "hs_treatment_door": 0
+   },
+   "coverMax": {
     "hs_treatment_door": 0
    },
    "scale": {
@@ -623,6 +666,9 @@
    "cover": {
     "hs_treatment_door": 0
    },
+   "coverMax": {
+    "hs_treatment_door": 0
+   },
    "scale": {
     "ref": "hs_treatment_door",
     "expected": 44.63,
@@ -660,6 +706,9 @@
    "walkable": true,
    "maskOk": null,
    "cover": {
+    "hs_treatment_door": 0
+   },
+   "coverMax": {
     "hs_treatment_door": 0
    },
    "scale": {
@@ -701,6 +750,9 @@
    "cover": {
     "hs_treatment_door": 0
    },
+   "coverMax": {
+    "hs_treatment_door": 0
+   },
    "scale": null,
    "failures": [],
    "info": [
@@ -736,6 +788,7 @@
    "walkable": true,
    "maskOk": null,
    "cover": {},
+   "coverMax": {},
    "scale": {
     "ref": "hs_treatment_door",
     "expected": 44.63,
@@ -773,6 +826,7 @@
    "walkable": true,
    "maskOk": null,
    "cover": {},
+   "coverMax": {},
    "scale": {
     "ref": "hs_treatment_door",
     "expected": 44.63,
@@ -810,6 +864,7 @@
    "walkable": true,
    "maskOk": null,
    "cover": {},
+   "coverMax": {},
    "scale": null,
    "failures": [],
    "info": [
@@ -845,6 +900,7 @@
    "walkable": true,
    "maskOk": null,
    "cover": {},
+   "coverMax": {},
    "scale": {
     "ref": "hs_treatment_door",
     "expected": 44.63,
@@ -882,6 +938,7 @@
    "walkable": true,
    "maskOk": null,
    "cover": {},
+   "coverMax": {},
    "scale": {
     "ref": "hs_treatment_door",
     "expected": 44.63,
@@ -919,6 +976,7 @@
    "walkable": true,
    "maskOk": null,
    "cover": {},
+   "coverMax": {},
    "scale": null,
    "failures": [],
    "info": [
@@ -954,6 +1012,9 @@
    "walkable": true,
    "maskOk": null,
    "cover": {
+    "hs_waiting_chairs": 0
+   },
+   "coverMax": {
     "hs_waiting_chairs": 0
    },
    "scale": {
@@ -995,6 +1056,9 @@
    "cover": {
     "hs_waiting_chairs": 0
    },
+   "coverMax": {
+    "hs_waiting_chairs": 0
+   },
    "scale": {
     "ref": "hs_treatment_door",
     "expected": 44.63,
@@ -1034,6 +1098,9 @@
    "cover": {
     "hs_waiting_chairs": 0
    },
+   "coverMax": {
+    "hs_waiting_chairs": 0
+   },
    "scale": null,
    "failures": [],
    "info": [
@@ -1069,6 +1136,9 @@
    "walkable": true,
    "maskOk": null,
    "cover": {
+    "hs_waiting_chairs": 0
+   },
+   "coverMax": {
     "hs_waiting_chairs": 0
    },
    "scale": {
@@ -1110,6 +1180,9 @@
    "cover": {
     "hs_waiting_chairs": 0
    },
+   "coverMax": {
+    "hs_waiting_chairs": 0
+   },
    "scale": {
     "ref": "hs_treatment_door",
     "expected": 44.63,
@@ -1149,6 +1222,9 @@
    "cover": {
     "hs_waiting_chairs": 0
    },
+   "coverMax": {
+    "hs_waiting_chairs": 0
+   },
    "scale": null,
    "failures": [],
    "info": [
@@ -1184,6 +1260,9 @@
    "walkable": true,
    "maskOk": null,
    "cover": {
+    "hs_filing_cabinet": 0
+   },
+   "coverMax": {
     "hs_filing_cabinet": 0
    },
    "scale": {
@@ -1223,6 +1302,7 @@
    "walkable": true,
    "maskOk": null,
    "cover": {},
+   "coverMax": {},
    "scale": {
     "ref": "hs_treatment_door",
     "expected": 44.63,
@@ -1260,6 +1340,9 @@
    "walkable": true,
    "maskOk": null,
    "cover": {
+    "hs_waiting_chairs": 0
+   },
+   "coverMax": {
     "hs_waiting_chairs": 0
    },
    "scale": {
@@ -1301,6 +1384,9 @@
    "cover": {
     "hs_filing_cabinet": 0
    },
+   "coverMax": {
+    "hs_filing_cabinet": 0
+   },
    "scale": {
     "ref": "hs_treatment_door",
     "expected": 44.63,
@@ -1338,6 +1424,9 @@
    "walkable": true,
    "maskOk": null,
    "cover": {
+    "hs_treatment_door": 0
+   },
+   "coverMax": {
     "hs_treatment_door": 0
    },
    "scale": {
@@ -1379,6 +1468,9 @@
    "cover": {
     "hs_treatment_door": 0
    },
+   "coverMax": {
+    "hs_treatment_door": 0
+   },
    "scale": {
     "ref": "hs_treatment_door",
     "expected": 44.63,
@@ -1416,6 +1508,7 @@
    "walkable": true,
    "maskOk": null,
    "cover": {},
+   "coverMax": {},
    "scale": {
     "ref": "hs_treatment_door",
     "expected": 44.63,
@@ -1455,6 +1548,9 @@
    "cover": {
     "hs_filing_cabinet": 0
    },
+   "coverMax": {
+    "hs_filing_cabinet": 0
+   },
    "scale": {
     "ref": "hs_treatment_door",
     "expected": 44.63,
@@ -1492,6 +1588,7 @@
    "walkable": true,
    "maskOk": null,
    "cover": {},
+   "coverMax": {},
    "scale": {
     "ref": "hs_treatment_door",
     "expected": 44.63,
@@ -1529,6 +1626,9 @@
    "walkable": true,
    "maskOk": null,
    "cover": {
+    "hs_treatment_door": 0
+   },
+   "coverMax": {
     "hs_treatment_door": 0
    },
    "scale": {
@@ -1570,6 +1670,9 @@
    "cover": {
     "hs_filing_cabinet": 0
    },
+   "coverMax": {
+    "hs_filing_cabinet": 0
+   },
    "scale": {
     "ref": "hs_treatment_door",
     "expected": 44.63,
@@ -1607,6 +1710,9 @@
    "walkable": true,
    "maskOk": null,
    "cover": {
+    "hs_filing_cabinet": 0
+   },
+   "coverMax": {
     "hs_filing_cabinet": 0
    },
    "scale": {
@@ -1648,6 +1754,9 @@
    "cover": {
     "hs_treatment_door": 0
    },
+   "coverMax": {
+    "hs_treatment_door": 0
+   },
    "scale": {
     "ref": "hs_treatment_door",
     "expected": 44.63,
@@ -1685,6 +1794,9 @@
    "walkable": true,
    "maskOk": null,
    "cover": {
+    "hs_treatment_door": 0
+   },
+   "coverMax": {
     "hs_treatment_door": 0
    },
    "scale": {
@@ -1726,6 +1838,9 @@
    "cover": {
     "hs_treatment_door": 0
    },
+   "coverMax": {
+    "hs_treatment_door": 0
+   },
    "scale": {
     "ref": "hs_treatment_door",
     "expected": 44.63,
@@ -1763,6 +1878,9 @@
    "walkable": true,
    "maskOk": null,
    "cover": {
+    "hs_filing_cabinet": 0
+   },
+   "coverMax": {
     "hs_filing_cabinet": 0
    },
    "scale": {
@@ -1804,6 +1922,9 @@
    "cover": {
     "hs_reception_desk": 0
    },
+   "coverMax": {
+    "hs_reception_desk": 0
+   },
    "scale": {
     "ref": "hs_treatment_door",
     "expected": 44.63,
@@ -1843,6 +1964,9 @@
    "cover": {
     "hs_filing_cabinet": 0
    },
+   "coverMax": {
+    "hs_filing_cabinet": 0
+   },
    "scale": {
     "ref": "hs_treatment_door",
     "expected": 44.63,
@@ -1880,6 +2004,7 @@
    "walkable": true,
    "maskOk": null,
    "cover": {},
+   "coverMax": {},
    "scale": {
     "ref": "hs_treatment_door",
     "expected": 44.63,
@@ -1917,6 +2042,9 @@
    "walkable": true,
    "maskOk": null,
    "cover": {
+    "hs_waiting_chairs": 0
+   },
+   "coverMax": {
     "hs_waiting_chairs": 0
    },
    "scale": {
@@ -1958,6 +2086,9 @@
    "cover": {
     "hs_waiting_chairs": 0
    },
+   "coverMax": {
+    "hs_waiting_chairs": 0
+   },
    "scale": {
     "ref": "hs_treatment_door",
     "expected": 44.63,
@@ -1995,6 +2126,9 @@
    "walkable": true,
    "maskOk": null,
    "cover": {
+    "hs_treatment_door": 0
+   },
+   "coverMax": {
     "hs_treatment_door": 0
    },
    "scale": {
@@ -2036,6 +2170,9 @@
    "cover": {
     "hs_treatment_door": 0
    },
+   "coverMax": {
+    "hs_treatment_door": 0
+   },
    "scale": {
     "ref": "hs_treatment_door",
     "expected": 44.63,
@@ -2073,6 +2210,9 @@
    "walkable": true,
    "maskOk": null,
    "cover": {
+    "hs_treatment_door": 0
+   },
+   "coverMax": {
     "hs_treatment_door": 0
    },
    "scale": {
@@ -2114,6 +2254,9 @@
    "cover": {
     "hs_filing_cabinet": 0
    },
+   "coverMax": {
+    "hs_filing_cabinet": 0
+   },
    "scale": {
     "ref": "hs_treatment_door",
     "expected": 44.63,
@@ -2153,6 +2296,9 @@
    "cover": {
     "hs_filing_cabinet": 0
    },
+   "coverMax": {
+    "hs_filing_cabinet": 0
+   },
    "scale": {
     "ref": "hs_treatment_door",
     "expected": 44.63,
@@ -2190,6 +2336,9 @@
    "walkable": true,
    "maskOk": null,
    "cover": {
+    "hs_filing_cabinet": 0
+   },
+   "coverMax": {
     "hs_filing_cabinet": 0
    },
    "scale": {

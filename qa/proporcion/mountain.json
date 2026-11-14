@@ -3,9 +3,8 @@
  "scalePolicy": "measure",
  "summary": {
   "positions": 78,
-  "failing": 20,
+  "failing": 19,
   "byType": {
-   "occlusion": 1,
    "scale": 19
   }
  },
@@ -29,6 +28,10 @@
    "walkable": true,
    "maskOk": true,
    "cover": {},
+   "coverMax": {},
+   "dexCover": {
+    "maleza": 0
+   },
    "scale": null,
    "failures": [],
    "info": [
@@ -64,14 +67,18 @@
    "walkable": true,
    "maskOk": true,
    "cover": {},
+   "coverMax": {},
+   "dexCover": {
+    "maleza": 0
+   },
    "scale": null,
    "failures": [],
    "info": [
     {
      "type": "scale-rough",
-     "ref": "hs_boulders",
-     "dev": -0.35,
-     "msg": "Dex -35 % frente a rocas (caja sin medir: bounds del hotspot)"
+     "ref": "maleza",
+     "dev": 0.23,
+     "msg": "Dex +23 % frente a maleza del pie de las rocas (caja sin medir: bounds del hotspot)"
     },
     {
      "type": "scale-noref",
@@ -99,14 +106,18 @@
    "walkable": true,
    "maskOk": true,
    "cover": {},
+   "coverMax": {},
+   "dexCover": {
+    "maleza": 0
+   },
    "scale": null,
    "failures": [],
    "info": [
     {
      "type": "scale-rough",
-     "ref": "hs_boulders",
-     "dev": -0.35,
-     "msg": "Dex -35 % frente a rocas (caja sin medir: bounds del hotspot)"
+     "ref": "maleza",
+     "dev": 0.23,
+     "msg": "Dex +23 % frente a maleza del pie de las rocas (caja sin medir: bounds del hotspot)"
     },
     {
      "type": "scale-noref",
@@ -134,14 +145,18 @@
    "walkable": true,
    "maskOk": true,
    "cover": {},
+   "coverMax": {},
+   "dexCover": {
+    "maleza": 0
+   },
    "scale": null,
    "failures": [],
    "info": [
     {
      "type": "scale-rough",
-     "ref": "hs_boulders",
-     "dev": -0.35,
-     "msg": "Dex -35 % frente a rocas (caja sin medir: bounds del hotspot)"
+     "ref": "maleza",
+     "dev": 0.23,
+     "msg": "Dex +23 % frente a maleza del pie de las rocas (caja sin medir: bounds del hotspot)"
     },
     {
      "type": "scale-noref",
@@ -169,6 +184,10 @@
    "walkable": true,
    "maskOk": true,
    "cover": {},
+   "coverMax": {},
+   "dexCover": {
+    "maleza": 0
+   },
    "scale": null,
    "failures": [],
    "info": [
@@ -204,14 +223,18 @@
    "walkable": true,
    "maskOk": true,
    "cover": {},
+   "coverMax": {},
+   "dexCover": {
+    "maleza": 0
+   },
    "scale": null,
    "failures": [],
    "info": [
     {
      "type": "scale-rough",
-     "ref": "hs_boulders",
-     "dev": -0.35,
-     "msg": "Dex -35 % frente a rocas (caja sin medir: bounds del hotspot)"
+     "ref": "maleza",
+     "dev": 0.23,
+     "msg": "Dex +23 % frente a maleza del pie de las rocas (caja sin medir: bounds del hotspot)"
     },
     {
      "type": "scale-noref",
@@ -239,14 +262,18 @@
    "walkable": true,
    "maskOk": true,
    "cover": {},
+   "coverMax": {},
+   "dexCover": {
+    "maleza": 0
+   },
    "scale": null,
    "failures": [],
    "info": [
     {
      "type": "scale-rough",
-     "ref": "hs_boulders",
-     "dev": -0.35,
-     "msg": "Dex -35 % frente a rocas (caja sin medir: bounds del hotspot)"
+     "ref": "maleza",
+     "dev": 0.23,
+     "msg": "Dex +23 % frente a maleza del pie de las rocas (caja sin medir: bounds del hotspot)"
     },
     {
      "type": "scale-noref",
@@ -274,14 +301,18 @@
    "walkable": true,
    "maskOk": true,
    "cover": {},
+   "coverMax": {},
+   "dexCover": {
+    "maleza": 0
+   },
    "scale": null,
    "failures": [],
    "info": [
     {
      "type": "scale-rough",
-     "ref": "hs_boulders",
-     "dev": -0.35,
-     "msg": "Dex -35 % frente a rocas (caja sin medir: bounds del hotspot)"
+     "ref": "maleza",
+     "dev": 0.23,
+     "msg": "Dex +23 % frente a maleza del pie de las rocas (caja sin medir: bounds del hotspot)"
     },
     {
      "type": "scale-noref",
@@ -309,7 +340,15 @@
    "walkable": true,
    "maskOk": true,
    "cover": {
-    "hs_sign": 0
+    "hs_sign": 0,
+    "hs_warning_signs": 0
+   },
+   "coverMax": {
+    "hs_sign": 0,
+    "hs_warning_signs": 0
+   },
+   "dexCover": {
+    "maleza": 0
    },
    "scale": null,
    "failures": [],
@@ -346,16 +385,24 @@
    "walkable": true,
    "maskOk": true,
    "cover": {
-    "hs_sign": 0
+    "hs_sign": 0,
+    "hs_warning_signs": 0
+   },
+   "coverMax": {
+    "hs_sign": 0,
+    "hs_warning_signs": 0
+   },
+   "dexCover": {
+    "maleza": 0
    },
    "scale": null,
    "failures": [],
    "info": [
     {
      "type": "scale-rough",
-     "ref": "hs_boulders",
-     "dev": -0.35,
-     "msg": "Dex -35 % frente a rocas (caja sin medir: bounds del hotspot)"
+     "ref": "maleza",
+     "dev": 0.23,
+     "msg": "Dex +23 % frente a maleza del pie de las rocas (caja sin medir: bounds del hotspot)"
     },
     {
      "type": "scale-noref",
@@ -383,16 +430,24 @@
    "walkable": true,
    "maskOk": true,
    "cover": {
-    "hs_sign": 0
+    "hs_sign": 0,
+    "hs_warning_signs": 0
+   },
+   "coverMax": {
+    "hs_sign": 0,
+    "hs_warning_signs": 0
+   },
+   "dexCover": {
+    "maleza": 0
    },
    "scale": null,
    "failures": [],
    "info": [
     {
      "type": "scale-rough",
-     "ref": "hs_boulders",
-     "dev": -0.35,
-     "msg": "Dex -35 % frente a rocas (caja sin medir: bounds del hotspot)"
+     "ref": "maleza",
+     "dev": 0.23,
+     "msg": "Dex +23 % frente a maleza del pie de las rocas (caja sin medir: bounds del hotspot)"
     },
     {
      "type": "scale-noref",
@@ -420,16 +475,24 @@
    "walkable": true,
    "maskOk": true,
    "cover": {
-    "hs_sign": 0
+    "hs_sign": 0,
+    "hs_warning_signs": 0
+   },
+   "coverMax": {
+    "hs_sign": 0,
+    "hs_warning_signs": 0
+   },
+   "dexCover": {
+    "maleza": 0
    },
    "scale": null,
    "failures": [],
    "info": [
     {
      "type": "scale-rough",
-     "ref": "hs_boulders",
-     "dev": -0.35,
-     "msg": "Dex -35 % frente a rocas (caja sin medir: bounds del hotspot)"
+     "ref": "maleza",
+     "dev": 0.23,
+     "msg": "Dex +23 % frente a maleza del pie de las rocas (caja sin medir: bounds del hotspot)"
     },
     {
      "type": "scale-noref",
@@ -458,6 +521,12 @@
    "maskOk": true,
    "cover": {
     "hs_sign": 0
+   },
+   "coverMax": {
+    "hs_sign": 0
+   },
+   "dexCover": {
+    "maleza": 0
    },
    "scale": null,
    "failures": [],
@@ -496,14 +565,20 @@
    "cover": {
     "hs_sign": 0
    },
+   "coverMax": {
+    "hs_sign": 0
+   },
+   "dexCover": {
+    "maleza": 0
+   },
    "scale": null,
    "failures": [],
    "info": [
     {
      "type": "scale-rough",
-     "ref": "hs_boulders",
-     "dev": -0.35,
-     "msg": "Dex -35 % frente a rocas (caja sin medir: bounds del hotspot)"
+     "ref": "maleza",
+     "dev": 0.23,
+     "msg": "Dex +23 % frente a maleza del pie de las rocas (caja sin medir: bounds del hotspot)"
     },
     {
      "type": "scale-noref",
@@ -533,14 +608,20 @@
    "cover": {
     "hs_sign": 0
    },
+   "coverMax": {
+    "hs_sign": 0
+   },
+   "dexCover": {
+    "maleza": 0
+   },
    "scale": null,
    "failures": [],
    "info": [
     {
      "type": "scale-rough",
-     "ref": "hs_boulders",
-     "dev": -0.35,
-     "msg": "Dex -35 % frente a rocas (caja sin medir: bounds del hotspot)"
+     "ref": "maleza",
+     "dev": 0.23,
+     "msg": "Dex +23 % frente a maleza del pie de las rocas (caja sin medir: bounds del hotspot)"
     },
     {
      "type": "scale-noref",
@@ -570,14 +651,20 @@
    "cover": {
     "hs_sign": 0
    },
+   "coverMax": {
+    "hs_sign": 0
+   },
+   "dexCover": {
+    "maleza": 0
+   },
    "scale": null,
    "failures": [],
    "info": [
     {
      "type": "scale-rough",
-     "ref": "hs_boulders",
-     "dev": -0.35,
-     "msg": "Dex -35 % frente a rocas (caja sin medir: bounds del hotspot)"
+     "ref": "maleza",
+     "dev": 0.23,
+     "msg": "Dex +23 % frente a maleza del pie de las rocas (caja sin medir: bounds del hotspot)"
     },
     {
      "type": "scale-noref",
@@ -605,6 +692,10 @@
    "walkable": true,
    "maskOk": true,
    "cover": {},
+   "coverMax": {},
+   "dexCover": {
+    "maleza": 0
+   },
    "scale": null,
    "failures": [],
    "info": [
@@ -640,14 +731,18 @@
    "walkable": true,
    "maskOk": true,
    "cover": {},
+   "coverMax": {},
+   "dexCover": {
+    "maleza": 0
+   },
    "scale": null,
    "failures": [],
    "info": [
     {
      "type": "scale-rough",
-     "ref": "hs_boulders",
-     "dev": -0.35,
-     "msg": "Dex -35 % frente a rocas (caja sin medir: bounds del hotspot)"
+     "ref": "maleza",
+     "dev": 0.23,
+     "msg": "Dex +23 % frente a maleza del pie de las rocas (caja sin medir: bounds del hotspot)"
     },
     {
      "type": "scale-noref",
@@ -675,14 +770,18 @@
    "walkable": true,
    "maskOk": true,
    "cover": {},
+   "coverMax": {},
+   "dexCover": {
+    "maleza": 0
+   },
    "scale": null,
    "failures": [],
    "info": [
     {
      "type": "scale-rough",
-     "ref": "hs_boulders",
-     "dev": -0.35,
-     "msg": "Dex -35 % frente a rocas (caja sin medir: bounds del hotspot)"
+     "ref": "maleza",
+     "dev": 0.23,
+     "msg": "Dex +23 % frente a maleza del pie de las rocas (caja sin medir: bounds del hotspot)"
     },
     {
      "type": "scale-noref",
@@ -710,14 +809,18 @@
    "walkable": true,
    "maskOk": true,
    "cover": {},
+   "coverMax": {},
+   "dexCover": {
+    "maleza": 0
+   },
    "scale": null,
    "failures": [],
    "info": [
     {
      "type": "scale-rough",
-     "ref": "hs_boulders",
-     "dev": -0.35,
-     "msg": "Dex -35 % frente a rocas (caja sin medir: bounds del hotspot)"
+     "ref": "maleza",
+     "dev": 0.23,
+     "msg": "Dex +23 % frente a maleza del pie de las rocas (caja sin medir: bounds del hotspot)"
     },
     {
      "type": "scale-noref",
@@ -745,6 +848,10 @@
    "walkable": true,
    "maskOk": true,
    "cover": {},
+   "coverMax": {},
+   "dexCover": {
+    "maleza": 0
+   },
    "scale": null,
    "failures": [],
    "info": [
@@ -780,14 +887,18 @@
    "walkable": true,
    "maskOk": true,
    "cover": {},
+   "coverMax": {},
+   "dexCover": {
+    "maleza": 0
+   },
    "scale": null,
    "failures": [],
    "info": [
     {
      "type": "scale-rough",
-     "ref": "hs_boulders",
-     "dev": -0.35,
-     "msg": "Dex -35 % frente a rocas (caja sin medir: bounds del hotspot)"
+     "ref": "maleza",
+     "dev": 0.23,
+     "msg": "Dex +23 % frente a maleza del pie de las rocas (caja sin medir: bounds del hotspot)"
     },
     {
      "type": "scale-noref",
@@ -815,14 +926,18 @@
    "walkable": true,
    "maskOk": true,
    "cover": {},
+   "coverMax": {},
+   "dexCover": {
+    "maleza": 0
+   },
    "scale": null,
    "failures": [],
    "info": [
     {
      "type": "scale-rough",
-     "ref": "hs_boulders",
-     "dev": -0.35,
-     "msg": "Dex -35 % frente a rocas (caja sin medir: bounds del hotspot)"
+     "ref": "maleza",
+     "dev": 0.23,
+     "msg": "Dex +23 % frente a maleza del pie de las rocas (caja sin medir: bounds del hotspot)"
     },
     {
      "type": "scale-noref",
@@ -850,14 +965,18 @@
    "walkable": true,
    "maskOk": true,
    "cover": {},
+   "coverMax": {},
+   "dexCover": {
+    "maleza": 0
+   },
    "scale": null,
    "failures": [],
    "info": [
     {
      "type": "scale-rough",
-     "ref": "hs_boulders",
-     "dev": -0.35,
-     "msg": "Dex -35 % frente a rocas (caja sin medir: bounds del hotspot)"
+     "ref": "maleza",
+     "dev": 0.23,
+     "msg": "Dex +23 % frente a maleza del pie de las rocas (caja sin medir: bounds del hotspot)"
     },
     {
      "type": "scale-noref",
@@ -885,6 +1004,10 @@
    "walkable": true,
    "maskOk": true,
    "cover": {},
+   "coverMax": {},
+   "dexCover": {
+    "maleza": 0
+   },
    "scale": null,
    "failures": [],
    "info": [
@@ -920,14 +1043,18 @@
    "walkable": true,
    "maskOk": true,
    "cover": {},
+   "coverMax": {},
+   "dexCover": {
+    "maleza": 0
+   },
    "scale": null,
    "failures": [],
    "info": [
     {
      "type": "scale-rough",
-     "ref": "hs_boulders",
-     "dev": -0.35,
-     "msg": "Dex -35 % frente a rocas (caja sin medir: bounds del hotspot)"
+     "ref": "maleza",
+     "dev": 0.23,
+     "msg": "Dex +23 % frente a maleza del pie de las rocas (caja sin medir: bounds del hotspot)"
     },
     {
      "type": "scale-noref",
@@ -955,14 +1082,18 @@
    "walkable": true,
    "maskOk": true,
    "cover": {},
+   "coverMax": {},
+   "dexCover": {
+    "maleza": 0
+   },
    "scale": null,
    "failures": [],
    "info": [
     {
      "type": "scale-rough",
-     "ref": "hs_boulders",
-     "dev": -0.35,
-     "msg": "Dex -35 % frente a rocas (caja sin medir: bounds del hotspot)"
+     "ref": "maleza",
+     "dev": 0.23,
+     "msg": "Dex +23 % frente a maleza del pie de las rocas (caja sin medir: bounds del hotspot)"
     },
     {
      "type": "scale-noref",
@@ -990,14 +1121,18 @@
    "walkable": true,
    "maskOk": true,
    "cover": {},
+   "coverMax": {},
+   "dexCover": {
+    "maleza": 0
+   },
    "scale": null,
    "failures": [],
    "info": [
     {
      "type": "scale-rough",
-     "ref": "hs_boulders",
-     "dev": -0.35,
-     "msg": "Dex -35 % frente a rocas (caja sin medir: bounds del hotspot)"
+     "ref": "maleza",
+     "dev": 0.23,
+     "msg": "Dex +23 % frente a maleza del pie de las rocas (caja sin medir: bounds del hotspot)"
     },
     {
      "type": "scale-noref",
@@ -1025,6 +1160,10 @@
    "walkable": true,
    "maskOk": false,
    "cover": {},
+   "coverMax": {},
+   "dexCover": {
+    "maleza": 0
+   },
    "scale": null,
    "failures": [],
    "info": [
@@ -1064,14 +1203,18 @@
    "walkable": true,
    "maskOk": false,
    "cover": {},
+   "coverMax": {},
+   "dexCover": {
+    "maleza": 0
+   },
    "scale": null,
    "failures": [],
    "info": [
     {
      "type": "scale-rough",
-     "ref": "hs_boulders",
-     "dev": -0.35,
-     "msg": "Dex -35 % frente a rocas (caja sin medir: bounds del hotspot)"
+     "ref": "maleza",
+     "dev": 0.23,
+     "msg": "Dex +23 % frente a maleza del pie de las rocas (caja sin medir: bounds del hotspot)"
     },
     {
      "type": "scale-noref",
@@ -1103,14 +1246,18 @@
    "walkable": true,
    "maskOk": false,
    "cover": {},
+   "coverMax": {},
+   "dexCover": {
+    "maleza": 0
+   },
    "scale": null,
    "failures": [],
    "info": [
     {
      "type": "scale-rough",
-     "ref": "hs_boulders",
-     "dev": -0.35,
-     "msg": "Dex -35 % frente a rocas (caja sin medir: bounds del hotspot)"
+     "ref": "maleza",
+     "dev": 0.23,
+     "msg": "Dex +23 % frente a maleza del pie de las rocas (caja sin medir: bounds del hotspot)"
     },
     {
      "type": "scale-noref",
@@ -1142,14 +1289,18 @@
    "walkable": true,
    "maskOk": true,
    "cover": {},
+   "coverMax": {},
+   "dexCover": {
+    "maleza": 0
+   },
    "scale": null,
    "failures": [],
    "info": [
     {
      "type": "scale-rough",
-     "ref": "hs_boulders",
-     "dev": -0.35,
-     "msg": "Dex -35 % frente a rocas (caja sin medir: bounds del hotspot)"
+     "ref": "maleza",
+     "dev": 0.23,
+     "msg": "Dex +23 % frente a maleza del pie de las rocas (caja sin medir: bounds del hotspot)"
     },
     {
      "type": "scale-noref",
@@ -1177,17 +1328,18 @@
    "walkable": true,
    "maskOk": false,
    "cover": {
-    "hs_boulders": 0.25
+    "hs_boulders": 0.25,
+    "maleza": 0
+   },
+   "coverMax": {
+    "hs_boulders": 0.25,
+    "maleza": 0
+   },
+   "dexCover": {
+    "maleza": 0
    },
    "scale": null,
-   "failures": [
-    {
-     "type": "occlusion",
-     "ref": "hs_boulders",
-     "dev": 0.92,
-     "msg": "pies por detrás de la base de rocas (88 < 89.5) y no le tapa (tapado +25 %)"
-    }
-   ],
+   "failures": [],
    "info": [
     {
      "type": "scale-rough",
@@ -1202,126 +1354,6 @@
     {
      "type": "walkmask",
      "msg": "pies fuera del azul de la walkmask (80.6, 88)"
-    }
-   ],
-   "score": 1.92,
-   "shot": "capturas/mountain/032.png"
-  },
-  {
-   "id": "grid-80.6-91",
-   "kind": "grid",
-   "x": 80.6,
-   "y": 91,
-   "feet": {
-    "x": 80.6,
-    "y": 91
-   },
-   "dexBox": {
-    "x": 78.91,
-    "y": 60.6,
-    "w": 3.39,
-    "h": 30.4
-   },
-   "heightPct": 30.4,
-   "walkable": true,
-   "maskOk": false,
-   "cover": {
-    "hs_boulders": 0
-   },
-   "scale": null,
-   "failures": [],
-   "info": [
-    {
-     "type": "scale-rough",
-     "ref": "hs_boulders",
-     "dev": -0.35,
-     "msg": "Dex -35 % frente a rocas (caja sin medir: bounds del hotspot)"
-    },
-    {
-     "type": "scale-noref",
-     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
-    },
-    {
-     "type": "walkmask",
-     "msg": "pies fuera del azul de la walkmask (80.6, 91)"
-    }
-   ],
-   "score": 0
-  },
-  {
-   "id": "grid-80.6-94",
-   "kind": "grid",
-   "x": 80.6,
-   "y": 94,
-   "feet": {
-    "x": 80.6,
-    "y": 94
-   },
-   "dexBox": {
-    "x": 78.91,
-    "y": 63.6,
-    "w": 3.39,
-    "h": 30.4
-   },
-   "heightPct": 30.4,
-   "walkable": true,
-   "maskOk": false,
-   "cover": {
-    "hs_boulders": 0
-   },
-   "scale": null,
-   "failures": [],
-   "info": [
-    {
-     "type": "scale-rough",
-     "ref": "hs_boulders",
-     "dev": -0.35,
-     "msg": "Dex -35 % frente a rocas (caja sin medir: bounds del hotspot)"
-    },
-    {
-     "type": "scale-noref",
-     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
-    },
-    {
-     "type": "walkmask",
-     "msg": "pies fuera del azul de la walkmask (80.6, 94)"
-    }
-   ],
-   "score": 0
-  },
-  {
-   "id": "grid-80.6-97",
-   "kind": "grid",
-   "x": 80.6,
-   "y": 97,
-   "feet": {
-    "x": 80.6,
-    "y": 97
-   },
-   "dexBox": {
-    "x": 78.91,
-    "y": 66.6,
-    "w": 3.39,
-    "h": 30.4
-   },
-   "heightPct": 30.4,
-   "walkable": true,
-   "maskOk": true,
-   "cover": {
-    "hs_boulders": 0
-   },
-   "scale": null,
-   "failures": [],
-   "info": [
-    {
-     "type": "scale-rough",
-     "ref": "hs_boulders",
-     "dev": -0.35,
-     "msg": "Dex -35 % frente a rocas (caja sin medir: bounds del hotspot)"
-    },
-    {
-     "type": "scale-noref",
-     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
     }
    ],
    "score": 0
@@ -1345,16 +1377,24 @@
    "walkable": true,
    "maskOk": true,
    "cover": {
-    "hs_boulders": 0
+    "hs_boulders": 0,
+    "maleza": 0.81
+   },
+   "coverMax": {
+    "hs_boulders": 0.59,
+    "maleza": 0.94
+   },
+   "dexCover": {
+    "maleza": 0.21
    },
    "scale": null,
    "failures": [],
    "info": [
     {
      "type": "scale-rough",
-     "ref": "hs_boulders",
-     "dev": -0.35,
-     "msg": "Dex -35 % frente a rocas (caja sin medir: bounds del hotspot)"
+     "ref": "maleza",
+     "dev": 0.23,
+     "msg": "Dex +23 % frente a maleza del pie de las rocas (caja sin medir: bounds del hotspot)"
     },
     {
      "type": "scale-noref",
@@ -1382,16 +1422,24 @@
    "walkable": true,
    "maskOk": true,
    "cover": {
-    "hs_boulders": 0
+    "hs_boulders": 0,
+    "maleza": 0.59
+   },
+   "coverMax": {
+    "hs_boulders": 0.58,
+    "maleza": 0.95
+   },
+   "dexCover": {
+    "maleza": 0.21
    },
    "scale": null,
    "failures": [],
    "info": [
     {
      "type": "scale-rough",
-     "ref": "hs_boulders",
-     "dev": -0.35,
-     "msg": "Dex -35 % frente a rocas (caja sin medir: bounds del hotspot)"
+     "ref": "maleza",
+     "dev": 0.23,
+     "msg": "Dex +23 % frente a maleza del pie de las rocas (caja sin medir: bounds del hotspot)"
     },
     {
      "type": "scale-noref",
@@ -1419,16 +1467,24 @@
    "walkable": true,
    "maskOk": true,
    "cover": {
-    "hs_boulders": 0
+    "hs_boulders": 0,
+    "maleza": 0.46
+   },
+   "coverMax": {
+    "hs_boulders": 0.55,
+    "maleza": 0.96
+   },
+   "dexCover": {
+    "maleza": 0.21
    },
    "scale": null,
    "failures": [],
    "info": [
     {
      "type": "scale-rough",
-     "ref": "hs_boulders",
-     "dev": -0.35,
-     "msg": "Dex -35 % frente a rocas (caja sin medir: bounds del hotspot)"
+     "ref": "maleza",
+     "dev": 0.23,
+     "msg": "Dex +23 % frente a maleza del pie de las rocas (caja sin medir: bounds del hotspot)"
     },
     {
      "type": "scale-noref",
@@ -1456,16 +1512,24 @@
    "walkable": true,
    "maskOk": true,
    "cover": {
-    "hs_boulders": 0
+    "hs_boulders": 0,
+    "maleza": 0.81
+   },
+   "coverMax": {
+    "hs_boulders": 0.51,
+    "maleza": 0.99
+   },
+   "dexCover": {
+    "maleza": 0.21
    },
    "scale": null,
    "failures": [],
    "info": [
     {
      "type": "scale-rough",
-     "ref": "hs_boulders",
-     "dev": -0.35,
-     "msg": "Dex -35 % frente a rocas (caja sin medir: bounds del hotspot)"
+     "ref": "maleza",
+     "dev": 0.23,
+     "msg": "Dex +23 % frente a maleza del pie de las rocas (caja sin medir: bounds del hotspot)"
     },
     {
      "type": "scale-noref",
@@ -1493,16 +1557,24 @@
    "walkable": true,
    "maskOk": true,
    "cover": {
-    "hs_boulders": 0
+    "hs_boulders": 0,
+    "maleza": 0.59
+   },
+   "coverMax": {
+    "hs_boulders": 0.51,
+    "maleza": 0.98
+   },
+   "dexCover": {
+    "maleza": 0.21
    },
    "scale": null,
    "failures": [],
    "info": [
     {
      "type": "scale-rough",
-     "ref": "hs_boulders",
-     "dev": -0.35,
-     "msg": "Dex -35 % frente a rocas (caja sin medir: bounds del hotspot)"
+     "ref": "maleza",
+     "dev": 0.23,
+     "msg": "Dex +23 % frente a maleza del pie de las rocas (caja sin medir: bounds del hotspot)"
     },
     {
      "type": "scale-noref",
@@ -1530,16 +1602,24 @@
    "walkable": true,
    "maskOk": true,
    "cover": {
-    "hs_boulders": 0
+    "hs_boulders": 0,
+    "maleza": 0.46
+   },
+   "coverMax": {
+    "hs_boulders": 0.48,
+    "maleza": 0.99
+   },
+   "dexCover": {
+    "maleza": 0.21
    },
    "scale": null,
    "failures": [],
    "info": [
     {
      "type": "scale-rough",
-     "ref": "hs_boulders",
-     "dev": -0.35,
-     "msg": "Dex -35 % frente a rocas (caja sin medir: bounds del hotspot)"
+     "ref": "maleza",
+     "dev": 0.23,
+     "msg": "Dex +23 % frente a maleza del pie de las rocas (caja sin medir: bounds del hotspot)"
     },
     {
      "type": "scale-noref",
@@ -1567,6 +1647,10 @@
    "walkable": true,
    "maskOk": false,
    "cover": {},
+   "coverMax": {},
+   "dexCover": {
+    "maleza": 0
+   },
    "scale": null,
    "failures": [],
    "info": [
@@ -1600,6 +1684,10 @@
    "walkable": true,
    "maskOk": false,
    "cover": {},
+   "coverMax": {},
+   "dexCover": {
+    "maleza": 0
+   },
    "scale": {
     "ref": "hs_sign",
     "expected": 18.81,
@@ -1617,12 +1705,18 @@
    ],
    "info": [
     {
+     "type": "scale-rough",
+     "ref": "hs_warning_signs",
+     "dev": 0.22,
+     "msg": "Dex +22 % frente a señal de aviso de la calavera (con poste) (caja sin medir: bounds del hotspot)"
+    },
+    {
      "type": "walkmask",
      "msg": "pies fuera del azul de la walkmask (19.1, 63.4)"
     }
    ],
    "score": 0.56,
-   "shot": "capturas/mountain/043.png"
+   "shot": "capturas/mountain/040.png"
   },
   {
    "id": "grid-19.1-66.2",
@@ -1643,6 +1737,10 @@
    "walkable": true,
    "maskOk": true,
    "cover": {},
+   "coverMax": {},
+   "dexCover": {
+    "maleza": 0
+   },
    "scale": {
     "ref": "hs_sign",
     "expected": 18.81,
@@ -1658,9 +1756,16 @@
      "msg": "Dex +32 % frente a cartel de la clínica (con postes) (24.79 % y se esperaba 18.81 %)"
     }
    ],
-   "info": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_warning_signs",
+     "dev": 0.26,
+     "msg": "Dex +26 % frente a señal de aviso de la calavera (con poste) (caja sin medir: bounds del hotspot)"
+    }
+   ],
    "score": 0.64,
-   "shot": "capturas/mountain/044.png"
+   "shot": "capturas/mountain/041.png"
   },
   {
    "id": "grid-19.1-69.1",
@@ -1681,6 +1786,10 @@
    "walkable": true,
    "maskOk": true,
    "cover": {},
+   "coverMax": {},
+   "dexCover": {
+    "maleza": 0
+   },
    "scale": {
     "ref": "hs_sign",
     "expected": 18.81,
@@ -1696,9 +1805,16 @@
      "msg": "Dex +36 % frente a cartel de la clínica (con postes) (25.59 % y se esperaba 18.81 %)"
     }
    ],
-   "info": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_warning_signs",
+     "dev": 0.3,
+     "msg": "Dex +30 % frente a señal de aviso de la calavera (con poste) (caja sin medir: bounds del hotspot)"
+    }
+   ],
    "score": 0.72,
-   "shot": "capturas/mountain/045.png"
+   "shot": "capturas/mountain/042.png"
   },
   {
    "id": "grid-19.1-71.9",
@@ -1719,6 +1835,10 @@
    "walkable": true,
    "maskOk": true,
    "cover": {},
+   "coverMax": {},
+   "dexCover": {
+    "maleza": 0
+   },
    "scale": {
     "ref": "hs_sign",
     "expected": 18.81,
@@ -1734,9 +1854,16 @@
      "msg": "Dex +40 % frente a cartel de la clínica (con postes) (26.36 % y se esperaba 18.81 %)"
     }
    ],
-   "info": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_warning_signs",
+     "dev": 0.34,
+     "msg": "Dex +34 % frente a señal de aviso de la calavera (con poste) (caja sin medir: bounds del hotspot)"
+    }
+   ],
    "score": 0.8,
-   "shot": "capturas/mountain/046.png"
+   "shot": "capturas/mountain/043.png"
   },
   {
    "id": "grid-19.1-74.8",
@@ -1757,6 +1884,10 @@
    "walkable": true,
    "maskOk": true,
    "cover": {},
+   "coverMax": {},
+   "dexCover": {
+    "maleza": 0
+   },
    "scale": {
     "ref": "hs_sign",
     "expected": 18.81,
@@ -1772,9 +1903,16 @@
      "msg": "Dex +44 % frente a cartel de la clínica (con postes) (27.17 % y se esperaba 18.81 %)"
     }
    ],
-   "info": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_warning_signs",
+     "dev": 0.38,
+     "msg": "Dex +38 % frente a señal de aviso de la calavera (con poste) (caja sin medir: bounds del hotspot)"
+    }
+   ],
    "score": 0.88,
-   "shot": "capturas/mountain/047.png"
+   "shot": "capturas/mountain/044.png"
   },
   {
    "id": "grid-19.1-77.6",
@@ -1795,6 +1933,10 @@
    "walkable": true,
    "maskOk": false,
    "cover": {},
+   "coverMax": {},
+   "dexCover": {
+    "maleza": 0
+   },
    "scale": {
     "ref": "hs_sign",
     "expected": 18.81,
@@ -1812,12 +1954,18 @@
    ],
    "info": [
     {
+     "type": "scale-rough",
+     "ref": "hs_warning_signs",
+     "dev": 0.42,
+     "msg": "Dex +42 % frente a señal de aviso de la calavera (con poste) (caja sin medir: bounds del hotspot)"
+    },
+    {
      "type": "walkmask",
      "msg": "pies fuera del azul de la walkmask (19.1, 77.6)"
     }
    ],
    "score": 0.98,
-   "shot": "capturas/mountain/048.png"
+   "shot": "capturas/mountain/045.png"
   },
   {
    "id": "grid-19.1-80.5",
@@ -1838,6 +1986,10 @@
    "walkable": true,
    "maskOk": true,
    "cover": {},
+   "coverMax": {},
+   "dexCover": {
+    "maleza": 0
+   },
    "scale": {
     "ref": "hs_sign",
     "expected": 18.81,
@@ -1856,13 +2008,13 @@
    "info": [
     {
      "type": "scale-rough",
-     "ref": "hs_boulders",
-     "dev": -0.38,
-     "msg": "Dex -38 % frente a rocas (caja sin medir: bounds del hotspot)"
+     "ref": "hs_warning_signs",
+     "dev": 0.46,
+     "msg": "Dex +46 % frente a señal de aviso de la calavera (con poste) (caja sin medir: bounds del hotspot)"
     }
    ],
    "score": 1.06,
-   "shot": "capturas/mountain/049.png"
+   "shot": "capturas/mountain/046.png"
   },
   {
    "id": "grid-19.1-83.3",
@@ -1883,6 +2035,10 @@
    "walkable": true,
    "maskOk": true,
    "cover": {},
+   "coverMax": {},
+   "dexCover": {
+    "maleza": 0
+   },
    "scale": null,
    "failures": [],
    "info": [
@@ -1918,6 +2074,10 @@
    "walkable": true,
    "maskOk": true,
    "cover": {},
+   "coverMax": {},
+   "dexCover": {
+    "maleza": 0
+   },
    "scale": null,
    "failures": [],
    "info": [
@@ -1953,6 +2113,10 @@
    "walkable": true,
    "maskOk": false,
    "cover": {},
+   "coverMax": {},
+   "dexCover": {
+    "maleza": 0
+   },
    "scale": null,
    "failures": [],
    "info": [
@@ -1986,6 +2150,10 @@
    "walkable": true,
    "maskOk": false,
    "cover": {},
+   "coverMax": {},
+   "dexCover": {
+    "maleza": 0
+   },
    "scale": {
     "ref": "hs_sign",
     "expected": 18.81,
@@ -2003,12 +2171,18 @@
    ],
    "info": [
     {
+     "type": "scale-rough",
+     "ref": "hs_warning_signs",
+     "dev": 0.22,
+     "msg": "Dex +22 % frente a señal de aviso de la calavera (con poste) (caja sin medir: bounds del hotspot)"
+    },
+    {
      "type": "walkmask",
      "msg": "pies fuera del azul de la walkmask (26, 63.4)"
     }
    ],
    "score": 0.56,
-   "shot": "capturas/mountain/053.png"
+   "shot": "capturas/mountain/050.png"
   },
   {
    "id": "grid-26-66.2",
@@ -2029,6 +2203,10 @@
    "walkable": true,
    "maskOk": true,
    "cover": {},
+   "coverMax": {},
+   "dexCover": {
+    "maleza": 0
+   },
    "scale": {
     "ref": "hs_sign",
     "expected": 18.81,
@@ -2044,9 +2222,16 @@
      "msg": "Dex +32 % frente a cartel de la clínica (con postes) (24.79 % y se esperaba 18.81 %)"
     }
    ],
-   "info": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_warning_signs",
+     "dev": 0.26,
+     "msg": "Dex +26 % frente a señal de aviso de la calavera (con poste) (caja sin medir: bounds del hotspot)"
+    }
+   ],
    "score": 0.64,
-   "shot": "capturas/mountain/054.png"
+   "shot": "capturas/mountain/051.png"
   },
   {
    "id": "grid-26-69.1",
@@ -2067,6 +2252,10 @@
    "walkable": true,
    "maskOk": true,
    "cover": {},
+   "coverMax": {},
+   "dexCover": {
+    "maleza": 0
+   },
    "scale": {
     "ref": "hs_sign",
     "expected": 18.81,
@@ -2082,9 +2271,16 @@
      "msg": "Dex +36 % frente a cartel de la clínica (con postes) (25.59 % y se esperaba 18.81 %)"
     }
    ],
-   "info": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_warning_signs",
+     "dev": 0.3,
+     "msg": "Dex +30 % frente a señal de aviso de la calavera (con poste) (caja sin medir: bounds del hotspot)"
+    }
+   ],
    "score": 0.72,
-   "shot": "capturas/mountain/055.png"
+   "shot": "capturas/mountain/052.png"
   },
   {
    "id": "grid-26-71.9",
@@ -2105,6 +2301,10 @@
    "walkable": true,
    "maskOk": true,
    "cover": {},
+   "coverMax": {},
+   "dexCover": {
+    "maleza": 0
+   },
    "scale": {
     "ref": "hs_sign",
     "expected": 18.81,
@@ -2120,9 +2320,16 @@
      "msg": "Dex +40 % frente a cartel de la clínica (con postes) (26.36 % y se esperaba 18.81 %)"
     }
    ],
-   "info": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_warning_signs",
+     "dev": 0.34,
+     "msg": "Dex +34 % frente a señal de aviso de la calavera (con poste) (caja sin medir: bounds del hotspot)"
+    }
+   ],
    "score": 0.8,
-   "shot": "capturas/mountain/056.png"
+   "shot": "capturas/mountain/053.png"
   },
   {
    "id": "grid-26-74.8",
@@ -2143,6 +2350,10 @@
    "walkable": true,
    "maskOk": true,
    "cover": {},
+   "coverMax": {},
+   "dexCover": {
+    "maleza": 0
+   },
    "scale": {
     "ref": "hs_sign",
     "expected": 18.81,
@@ -2158,9 +2369,16 @@
      "msg": "Dex +44 % frente a cartel de la clínica (con postes) (27.17 % y se esperaba 18.81 %)"
     }
    ],
-   "info": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_warning_signs",
+     "dev": 0.38,
+     "msg": "Dex +38 % frente a señal de aviso de la calavera (con poste) (caja sin medir: bounds del hotspot)"
+    }
+   ],
    "score": 0.88,
-   "shot": "capturas/mountain/057.png"
+   "shot": "capturas/mountain/054.png"
   },
   {
    "id": "grid-26-77.6",
@@ -2181,6 +2399,10 @@
    "walkable": true,
    "maskOk": false,
    "cover": {},
+   "coverMax": {},
+   "dexCover": {
+    "maleza": 0
+   },
    "scale": {
     "ref": "hs_sign",
     "expected": 18.81,
@@ -2198,12 +2420,18 @@
    ],
    "info": [
     {
+     "type": "scale-rough",
+     "ref": "hs_warning_signs",
+     "dev": 0.42,
+     "msg": "Dex +42 % frente a señal de aviso de la calavera (con poste) (caja sin medir: bounds del hotspot)"
+    },
+    {
      "type": "walkmask",
      "msg": "pies fuera del azul de la walkmask (26, 77.6)"
     }
    ],
    "score": 0.98,
-   "shot": "capturas/mountain/058.png"
+   "shot": "capturas/mountain/055.png"
   },
   {
    "id": "grid-26-80.5",
@@ -2224,6 +2452,10 @@
    "walkable": true,
    "maskOk": true,
    "cover": {},
+   "coverMax": {},
+   "dexCover": {
+    "maleza": 0
+   },
    "scale": {
     "ref": "hs_sign",
     "expected": 18.81,
@@ -2242,13 +2474,13 @@
    "info": [
     {
      "type": "scale-rough",
-     "ref": "hs_boulders",
-     "dev": -0.38,
-     "msg": "Dex -38 % frente a rocas (caja sin medir: bounds del hotspot)"
+     "ref": "hs_warning_signs",
+     "dev": 0.46,
+     "msg": "Dex +46 % frente a señal de aviso de la calavera (con poste) (caja sin medir: bounds del hotspot)"
     }
    ],
    "score": 1.06,
-   "shot": "capturas/mountain/059.png"
+   "shot": "capturas/mountain/056.png"
   },
   {
    "id": "grid-26-83.3",
@@ -2269,6 +2501,10 @@
    "walkable": true,
    "maskOk": true,
    "cover": {},
+   "coverMax": {},
+   "dexCover": {
+    "maleza": 0
+   },
    "scale": null,
    "failures": [],
    "info": [
@@ -2304,6 +2540,10 @@
    "walkable": true,
    "maskOk": true,
    "cover": {},
+   "coverMax": {},
+   "dexCover": {
+    "maleza": 0
+   },
    "scale": null,
    "failures": [],
    "info": [
@@ -2339,6 +2579,10 @@
    "walkable": true,
    "maskOk": true,
    "cover": {},
+   "coverMax": {},
+   "dexCover": {
+    "maleza": 0
+   },
    "scale": {
     "ref": "hs_sign",
     "expected": 18.81,
@@ -2354,9 +2598,16 @@
      "msg": "Dex +29 % frente a cartel de la clínica (con postes) (24.35 % y se esperaba 18.81 %)"
     }
    ],
-   "info": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_warning_signs",
+     "dev": 0.24,
+     "msg": "Dex +24 % frente a señal de aviso de la calavera (con poste) (caja sin medir: bounds del hotspot)"
+    }
+   ],
    "score": 0.58,
-   "shot": "capturas/mountain/062.png"
+   "shot": "capturas/mountain/059.png"
   },
   {
    "id": "hs_winding_path",
@@ -2377,6 +2628,10 @@
    "walkable": true,
    "maskOk": false,
    "cover": {},
+   "coverMax": {},
+   "dexCover": {
+    "maleza": 0
+   },
    "scale": null,
    "failures": [],
    "info": [
@@ -2416,6 +2671,10 @@
    "walkable": true,
    "maskOk": false,
    "cover": {},
+   "coverMax": {},
+   "dexCover": {
+    "maleza": 0
+   },
    "scale": null,
    "failures": [],
    "info": [
@@ -2449,6 +2708,10 @@
    "walkable": true,
    "maskOk": false,
    "cover": {},
+   "coverMax": {},
+   "dexCover": {
+    "maleza": 0
+   },
    "scale": null,
    "failures": [],
    "info": [
@@ -2482,6 +2745,10 @@
    "walkable": true,
    "maskOk": false,
    "cover": {},
+   "coverMax": {},
+   "dexCover": {
+    "maleza": 0
+   },
    "scale": null,
    "failures": [],
    "info": [
@@ -2515,6 +2782,10 @@
    "walkable": true,
    "maskOk": false,
    "cover": {},
+   "coverMax": {},
+   "dexCover": {
+    "maleza": 0
+   },
    "scale": null,
    "failures": [],
    "info": [
@@ -2548,6 +2819,10 @@
    "walkable": true,
    "maskOk": true,
    "cover": {},
+   "coverMax": {},
+   "dexCover": {
+    "maleza": 0
+   },
    "scale": {
     "ref": "hs_sign",
     "expected": 18.81,
@@ -2563,9 +2838,16 @@
      "msg": "Dex +31 % frente a cartel de la clínica (con postes) (24.62 % y se esperaba 18.81 %)"
     }
    ],
-   "info": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_warning_signs",
+     "dev": 0.25,
+     "msg": "Dex +25 % frente a señal de aviso de la calavera (con poste) (caja sin medir: bounds del hotspot)"
+    }
+   ],
    "score": 0.62,
-   "shot": "capturas/mountain/068.png"
+   "shot": "capturas/mountain/065.png"
   },
   {
    "id": "hs_boulders",
@@ -2586,16 +2868,24 @@
    "walkable": true,
    "maskOk": true,
    "cover": {
-    "hs_boulders": 0
+    "hs_boulders": 0,
+    "maleza": 0.81
+   },
+   "coverMax": {
+    "hs_boulders": 0.58,
+    "maleza": 0.92
+   },
+   "dexCover": {
+    "maleza": 0.21
    },
    "scale": null,
    "failures": [],
    "info": [
     {
      "type": "scale-rough",
-     "ref": "hs_boulders",
-     "dev": -0.35,
-     "msg": "Dex -35 % frente a rocas (caja sin medir: bounds del hotspot)"
+     "ref": "maleza",
+     "dev": 0.23,
+     "msg": "Dex +23 % frente a maleza del pie de las rocas (caja sin medir: bounds del hotspot)"
     },
     {
      "type": "scale-noref",
@@ -2623,6 +2913,10 @@
    "walkable": true,
    "maskOk": false,
    "cover": {},
+   "coverMax": {},
+   "dexCover": {
+    "maleza": 0
+   },
    "scale": null,
    "failures": [],
    "info": [
@@ -2656,14 +2950,18 @@
    "walkable": true,
    "maskOk": true,
    "cover": {},
+   "coverMax": {},
+   "dexCover": {
+    "maleza": 0
+   },
    "scale": null,
    "failures": [],
    "info": [
     {
      "type": "scale-rough",
-     "ref": "hs_boulders",
-     "dev": -0.35,
-     "msg": "Dex -35 % frente a rocas (caja sin medir: bounds del hotspot)"
+     "ref": "maleza",
+     "dev": 0.23,
+     "msg": "Dex +23 % frente a maleza del pie de las rocas (caja sin medir: bounds del hotspot)"
     },
     {
      "type": "scale-noref",
@@ -2691,6 +2989,10 @@
    "walkable": true,
    "maskOk": true,
    "cover": {},
+   "coverMax": {},
+   "dexCover": {
+    "maleza": 0
+   },
    "scale": {
     "ref": "hs_sign",
     "expected": 18.81,
@@ -2706,9 +3008,16 @@
      "msg": "Dex +39 % frente a cartel de la clínica (con postes) (26.12 % y se esperaba 18.81 %)"
     }
    ],
-   "info": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_warning_signs",
+     "dev": 0.33,
+     "msg": "Dex +33 % frente a señal de aviso de la calavera (con poste) (caja sin medir: bounds del hotspot)"
+    }
+   ],
    "score": 0.78,
-   "shot": "capturas/mountain/072.png"
+   "shot": "capturas/mountain/069.png"
   },
   {
    "id": "hs_sign:der",
@@ -2729,6 +3038,10 @@
    "walkable": true,
    "maskOk": true,
    "cover": {},
+   "coverMax": {},
+   "dexCover": {
+    "maleza": 0
+   },
    "scale": {
     "ref": "hs_sign",
     "expected": 18.81,
@@ -2744,9 +3057,16 @@
      "msg": "Dex +39 % frente a cartel de la clínica (con postes) (26.12 % y se esperaba 18.81 %)"
     }
    ],
-   "info": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_warning_signs",
+     "dev": 0.33,
+     "msg": "Dex +33 % frente a señal de aviso de la calavera (con poste) (caja sin medir: bounds del hotspot)"
+    }
+   ],
    "score": 0.78,
-   "shot": "capturas/mountain/073.png"
+   "shot": "capturas/mountain/070.png"
   },
   {
    "id": "hs_sign:detrás",
@@ -2767,6 +3087,10 @@
    "walkable": true,
    "maskOk": true,
    "cover": {},
+   "coverMax": {},
+   "dexCover": {
+    "maleza": 0
+   },
    "scale": {
     "ref": "hs_sign",
     "expected": 18.81,
@@ -2782,9 +3106,16 @@
      "msg": "Dex +37 % frente a cartel de la clínica (con postes) (25.84 % y se esperaba 18.81 %)"
     }
    ],
-   "info": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_warning_signs",
+     "dev": 0.31,
+     "msg": "Dex +31 % frente a señal de aviso de la calavera (con poste) (caja sin medir: bounds del hotspot)"
+    }
+   ],
    "score": 0.74,
-   "shot": "capturas/mountain/074.png"
+   "shot": "capturas/mountain/071.png"
   },
   {
    "id": "hs_boulders:izq",
@@ -2805,6 +3136,10 @@
    "walkable": true,
    "maskOk": false,
    "cover": {},
+   "coverMax": {},
+   "dexCover": {
+    "maleza": 0
+   },
    "scale": null,
    "failures": [],
    "info": [
@@ -2844,7 +3179,15 @@
    "walkable": true,
    "maskOk": false,
    "cover": {
-    "hs_boulders": 0
+    "hs_boulders": 0,
+    "maleza": 0.96
+   },
+   "coverMax": {
+    "hs_boulders": 0.64,
+    "maleza": 0.96
+   },
+   "dexCover": {
+    "maleza": 0.21
    },
    "scale": null,
    "failures": [],
@@ -2885,6 +3228,137 @@
    "walkable": true,
    "maskOk": true,
    "cover": {},
+   "coverMax": {},
+   "dexCover": {
+    "maleza": 0
+   },
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_boulders",
+     "dev": -0.35,
+     "msg": "Dex -35 % frente a rocas (caja sin medir: bounds del hotspot)"
+    },
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "maleza:izq",
+   "kind": "ref",
+   "x": 28.9,
+   "y": 87.1,
+   "feet": {
+    "x": 28.9,
+    "y": 87.1
+   },
+   "dexBox": {
+    "x": 27.21,
+    "y": 56.7,
+    "w": 3.39,
+    "h": 30.4
+   },
+   "heightPct": 30.4,
+   "walkable": true,
+   "maskOk": true,
+   "cover": {},
+   "coverMax": {},
+   "dexCover": {
+    "maleza": 0
+   },
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "hs_boulders",
+     "dev": -0.35,
+     "msg": "Dex -35 % frente a rocas (caja sin medir: bounds del hotspot)"
+    },
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "maleza:der",
+   "kind": "ref",
+   "x": 99.5,
+   "y": 90,
+   "feet": {
+    "x": 99.5,
+    "y": 90
+   },
+   "dexBox": {
+    "x": 97.81,
+    "y": 59.6,
+    "w": 3.39,
+    "h": 30.4
+   },
+   "heightPct": 30.4,
+   "walkable": true,
+   "maskOk": false,
+   "cover": {
+    "hs_boulders": 0,
+    "maleza": 0.76
+   },
+   "coverMax": {
+    "hs_boulders": 0.63,
+    "maleza": 0.96
+   },
+   "dexCover": {
+    "maleza": 0.18
+   },
+   "scale": null,
+   "failures": [],
+   "info": [
+    {
+     "type": "scale-rough",
+     "ref": "maleza",
+     "dev": 0.23,
+     "msg": "Dex +23 % frente a maleza del pie de las rocas (caja sin medir: bounds del hotspot)"
+    },
+    {
+     "type": "scale-noref",
+     "msg": "ninguna referencia con la base a menos de 10 % de los pies"
+    },
+    {
+     "type": "walkmask",
+     "msg": "pies fuera del azul de la walkmask (99.5, 90)"
+    }
+   ],
+   "score": 0
+  },
+  {
+   "id": "maleza:detrás",
+   "kind": "ref",
+   "x": 28.9,
+   "y": 87.1,
+   "feet": {
+    "x": 28.9,
+    "y": 87.1
+   },
+   "dexBox": {
+    "x": 27.21,
+    "y": 56.7,
+    "w": 3.39,
+    "h": 30.4
+   },
+   "heightPct": 30.4,
+   "walkable": true,
+   "maskOk": true,
+   "cover": {},
+   "coverMax": {},
+   "dexCover": {
+    "maleza": 0
+   },
    "scale": null,
    "failures": [],
    "info": [
