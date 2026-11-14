@@ -1,4 +1,5 @@
 import { telemetryAllowed, type ChapterSample } from '@/systems/ChapterTiming';
+import { playStatsEnabled } from '@/systems/PlayStats';
 
 /**
  * A9.14: manda al save-server la duración de un capítulo, sin nada más (ni cartera, ni id de partida, ni escena).
@@ -25,7 +26,8 @@ function isAllowed(): boolean {
 }
 
 export function sendChapterSamples(samples: ChapterSample[]): void {
-  if (samples.length === 0 || !isAllowed()) return;
+  // A9.17: el interruptor de los ajustes también apaga esto
+  if (samples.length === 0 || !isAllowed() || !playStatsEnabled()) return;
   for (const s of samples) {
     try {
       void fetch(TELEMETRY_URL, {

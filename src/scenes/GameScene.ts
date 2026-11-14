@@ -10,7 +10,7 @@ import { SaveLoadSystem } from '@/systems/SaveLoadSystem';
 import { migrateGameState } from '@/systems/SaveMigration';
 import { isValidRunId, newRunId } from '@/systems/SaveProgress';
 import { addPlayTime } from '@/systems/Ending';
-import { noteChapterMarks } from '@/systems/ChapterTiming';
+import { noteChapters, trackScene } from '@/systems/PlayStats';
 import { sendChapterSamples } from '@/systems/ChapterTelemetry';
 import type { MusicManager } from '@/systems/MusicManager';
 import { CinematicOverlay } from '@/ui/CinematicOverlay';
@@ -233,6 +233,7 @@ export class GameScene extends Phaser.Scene {
     // A1.4: red de seguridad; las cargas ya migran, pero cualquier estado que llegue al registry pasa por aquí
     this.gameState = migrateGameState((this.registry.get('gameState') as GameState) ?? createInitialState(sceneId));
     this.gameState.currentScene = sceneId;
+    trackScene(sceneId); // A9.17: última escena por si el jugador cierra aquí
     // A1.13: id de partida; a una partida vieja (sin id) se le pone uno al cargarla
     if (!isValidRunId(this.gameState.runId)) this.gameState.runId = newRunId(Date.now(), Math.random());
     if (!this.gameState.visited.includes(sceneId)) this.gameState.visited.push(sceneId);
@@ -633,7 +634,7 @@ export class GameScene extends Phaser.Scene {
     // A9.4: tiempo jugado (con tope por fotograma: una pestaña oculta o una pausa del navegador no suman)
     if (!this.isTrailer && this.gameState) this.gameState.playTimeMs = addPlayTime(this.gameState.playTimeMs, delta);
     // A9.14: al cerrar un capítulo, su duración (anónima) al save-server
-    if (!this.isTrailer && this.gameState) sendChapterSamples(noteChapterMarks(this.gameState));
+    if (!this.isTrailer && this.gameState) sendChapterSamples(noteChapters(this.gameState));
     this.refreshWalkObstacles();
     this.player.setAnimContext(this.playerAnimContext());
     this.player.update(time, delta);

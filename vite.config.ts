@@ -116,5 +116,12 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     sourcemap: true,
+    // A9.17: /stats es una entrada aparte (su JS no entra en el bundle del juego)
+    rollupOptions: {
+      input: {
+        main: path.resolve(__dirname, 'index.html'),
+        stats: path.resolve(__dirname, 'stats/index.html'),
+      },
+    },
   },
 });
