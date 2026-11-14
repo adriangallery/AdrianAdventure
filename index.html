@@ -63,6 +63,10 @@
     #game-container canvas {
       display: block;
       image-rendering: pixelated;
+      /* A9.5: en iOS, un toque largo en el lienzo saca el menú «Guardar imagen» o la lupa de selección */
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      user-select: none;
       cursor: url('./assets/sprites/ui/cursor_crosshair.png') 16 16, crosshair;
     }
 
