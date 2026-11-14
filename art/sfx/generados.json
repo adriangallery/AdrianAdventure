@@ -12,7 +12,7 @@
   "door_close": {
     "de": "door_close",
     "hash": "33d69ea5453f",
-    "segundos": 1
+    "segundos": 0.267
   },
   "door_creak": {
     "de": "door_creak",
@@ -72,7 +72,7 @@
   "intercom_buzz": {
     "de": "intercom_buzz",
     "hash": "843e69b038c0",
-    "segundos": 0.8
+    "segundos": 0.376
   },
   "inv_close": {
     "de": "inv_close",
@@ -122,7 +122,7 @@
   "keypad_beep": {
     "de": "keypad_beep",
     "hash": "245bb7c26ba4",
-    "segundos": 0.48
+    "segundos": 0.201
   },
   "keypad_fail": {
     "de": "keypad_fail",
@@ -152,7 +152,7 @@
   "phone_hangup": {
     "de": "phone_hangup",
     "hash": "8758069177c2",
-    "segundos": 0.48
+    "segundos": 0.289
   },
   "phone_pickup": {
     "de": "phone_pickup",
@@ -278,6 +278,26 @@
     "de": "step_metal",
     "hash": "a9745fbb78d8",
     "segundos": 0.3
+  },
+  "step_tile_1": {
+    "de": "step_tile",
+    "hash": "8530353ab572",
+    "segundos": 0.223
+  },
+  "step_tile_2": {
+    "de": "step_tile",
+    "hash": "8530353ab572",
+    "segundos": 0.124
+  },
+  "step_tile_3": {
+    "de": "step_tile",
+    "hash": "8530353ab572",
+    "segundos": 0.267
+  },
+  "step_tile_4": {
+    "de": "step_tile",
+    "hash": "8530353ab572",
+    "segundos": 0.208
   },
   "step_wood_1": {
     "de": "step_wood",

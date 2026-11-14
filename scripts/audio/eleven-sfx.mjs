@@ -173,9 +173,9 @@ export function processEntry(e, cached) {
     const hits = splitHits(x, e.split, e.maxMs ?? 420);
     if (hits.length < e.split) throw new Error(`${e.id}: solo ${hits.length} golpes de ${e.split}`);
     const ref = refRmsOf(e.ref ?? `${e.id}_1`);
-    hits.forEach((h, i) => out.push({ key: `${e.id}_${i + 1}`, x: level(h, ref, e.limitDb ?? 0) }));
+    hits.forEach((h, i) => out.push({ key: `${e.id}_${i + 1}`, x: level(h, ref, e.limitDb ?? MANIFEST.limitDb ?? 0) }));
   } else {
-    out.push({ key: e.id, x: level(trim(x, -40, -48, e.tailMs ?? 60), refRmsOf(e.ref ?? e.id), e.limitDb ?? 0) });
+    out.push({ key: e.id, x: level(trim(x, -40, e.endDb ?? -48, e.tailMs ?? 60), refRmsOf(e.ref ?? e.id), e.limitDb ?? MANIFEST.limitDb ?? 0) });
   }
   for (const o of out) encode(o.x, join(OUT, `${o.key}.mp3`));
   // Registro versionado de lo que hay en assets (make-sfx.mjs no pisa estas claves)
