@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { TEXT_SPEEDS, MUSIC_LEVELS, TEXT_SPEED_LABEL, MUSIC_LEVEL_LABEL, getTextSpeed, setTextSpeed, getMusicLevel, setMusicLevel, musicVolumeFor } from '@/systems/Settings';
+import { TEXT_SPEEDS, TEXT_SPEED_LABEL, MUSIC_LEVEL_LABEL, getTextSpeed, setTextSpeed, getMusicLevel, setMusicLevel, musicVolumeFor, getVoiceLevel, setVoiceLevel, nextLevel } from '@/systems/Settings';
 import type { GameState } from '@/types/game.types';
 import { SaveLoadSystem } from '@/systems/SaveLoadSystem';
 import { savedSpawn } from '@/systems/SaveMigration';
@@ -362,16 +362,24 @@ export class SaveButton {
       }, '', muteIcon());
       muteBtn.dataset.setting = 'music';
       modal.appendChild(muteBtn);
-      const volLabel = () => `Volume: ${MUSIC_LEVEL_LABEL[getMusicLevel() ?? 'low']}`;
+      // A4.8: por defecto High (antes Low); la música y las voces tienen cada una su ajuste
+      const volLabel = () => `Music volume: ${MUSIC_LEVEL_LABEL[getMusicLevel()]}`;
       const volBtn: HTMLButtonElement = makeBtn(volLabel(), true, () => {
-        const cur = getMusicLevel() ?? 'low';
-        const next = MUSIC_LEVELS[(MUSIC_LEVELS.indexOf(cur) + 1) % MUSIC_LEVELS.length];
+        const next = nextLevel(getMusicLevel());
         setMusicLevel(next);
-        music.setMusicVolume(musicVolumeFor(next, 0.25));
+        music.setMusicVolume(musicVolumeFor(next));
         setIconLabel(volBtn, 'speaker', volLabel(), 12);
       }, '', 'speaker');
       volBtn.dataset.setting = 'volume';
       modal.appendChild(volBtn);
+      const voiceLabel = () => `Voices: ${MUSIC_LEVEL_LABEL[getVoiceLevel()]}`;
+      const voiceBtn: HTMLButtonElement = makeBtn(voiceLabel(), true, () => {
+        setVoiceLevel(nextLevel(getVoiceLevel()));
+        (this.scene.game.registry.get('voiceSystem') as { applyVoiceLevel?: () => void } | undefined)?.applyVoiceLevel?.();
+        setIconLabel(voiceBtn, 'speaker', voiceLabel(), 12);
+      }, '', 'speaker');
+      voiceBtn.dataset.setting = 'voices';
+      modal.appendChild(voiceBtn);
     }
 
     if (!isWallet || !address) return;

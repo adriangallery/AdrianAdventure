@@ -29,6 +29,9 @@ import { failResponses } from '@/systems/FailResponsesData';
 import type { AdaptiveQaState, MusicManager, MusicQaState } from '@/systems/MusicManager';
 import type { SfxPlayer, SfxQaState } from '@/systems/Sfx';
 import { stingerLog, type StingerEvent } from '@/systems/StingerPlayer';
+import { getMusicLevel, getVoiceLevel, voiceGainFor, type MusicLevel } from '@/systems/Settings';
+import { SFX_GAIN, VOICE_BOOST, voiceClipVolume } from '@/systems/AudioMix';
+import { DUCK_LEVEL } from '@/systems/Cinematics';
 import { qaFakeWallet } from '@/web3/wallet';
 import { normalizeWeb3Mock, setWeb3Mock, getWeb3Mock, type Web3MockInput } from '@/web3/web3Mock';
 import { clearGatingCache } from '@/web3/gating';
@@ -208,6 +211,27 @@ export interface AudioQaState extends MusicQaState {
   footsteps: ReturnType<GameScene['qaFootsteps']> | null;
   /** A4.5: últimos stingers tocados ({ kind, key, detune, music, at }) */
   stingers: StingerEvent[];
+  /** A4.8: mezcla (ajustes y ganancias por categoría) */
+  mix: AudioMixQaState;
+}
+
+/**
+ * A4.8: `musicLevel`/`voiceLevel` (ajustes; sin localStorage, High), `musicVolume` (ganancia de la música en los ajustes),
+ * `voiceGain` (ganancia del nivel de voces: 1 en High, sin depender de la música), `voiceClipVolume` (volumen con el que
+ * se crea cada clip en Phaser), `lastVoiceClipVolume` (el del último que sonó, null si ninguno), `sfxGain` (maestro de
+ * Phaser), `voiceBoost` y `duckLevel`.
+ */
+export interface AudioMixQaState {
+  musicLevel: MusicLevel;
+  musicVolume: number;
+  voiceLevel: MusicLevel;
+  voiceGain: number;
+  voiceClipVolume: number;
+  lastVoiceClipVolume: number | null;
+  sfxGain: number;
+  phaserVolume: number;
+  voiceBoost: number;
+  duckLevel: number;
 }
 
 /** A5.1: ver QaState.textures */
@@ -615,7 +639,21 @@ export function installQa(game: Phaser.Game): void {
     const mm = registry.get('musicManager') as MusicManager | undefined;
     const sfx = registry.get('sfx') as SfxPlayer | undefined;
     if (!mm || !sfx) return null;
-    return { ...mm.qaState(), sfx: sfx.qaState(), footsteps: scene ? scene.qaFootsteps() : null, stingers: stingerLog(game) };
+    const voice = registry.get('voiceSystem') as { qaClipVolume?: () => number | null } | undefined;
+    const voiceLevel = getVoiceLevel();
+    const mix: AudioMixQaState = {
+      musicLevel: getMusicLevel(),
+      musicVolume: mm.getMusicVolume(),
+      voiceLevel,
+      voiceGain: voiceGainFor(voiceLevel),
+      voiceClipVolume: voiceClipVolume(voiceGainFor(voiceLevel)),
+      lastVoiceClipVolume: voice?.qaClipVolume?.() ?? null,
+      sfxGain: SFX_GAIN,
+      phaserVolume: Math.round(game.sound.volume * 1000) / 1000,
+      voiceBoost: VOICE_BOOST,
+      duckLevel: DUCK_LEVEL,
+    };
+    return { ...mm.qaState(), sfx: sfx.qaState(), footsteps: scene ? scene.qaFootsteps() : null, stingers: stingerLog(game), mix };
   };
 
   /** A2.9: el diario de la UIScene viva (error si no hay partida). */

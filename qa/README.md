@@ -999,6 +999,10 @@ tiene que tener sus dos `step_*` en disco y en `sfxKeys`.
   en el lobby; sin sonido no hay pista, así que todo va en Do mayor sin desafino). Demo: `scripts/demo-a4-5-music.mjs` (HUD con las
   dos ganancias del fundido, la tonalidad, las fuentes de ducking y el último stinger: lámpara y nota en Re mayor, voz de Dex con
   la música bajando, lobby → upstairs → rooftop con el cruce retro-adventure → vista).
+- **A4.8 (volumen)**: `state().audio.mix` = `{ musicLevel, musicVolume, voiceLevel, voiceGain, voiceClipVolume,
+  lastVoiceClipVolume, sfxGain, phaserVolume, voiceBoost, duckLevel }`. Sin nada guardado: música High (0,9) y voces High
+  (ganancia 1,0, independiente de la música); el smoke lo comprueba en perfil limpio. Mezcla y migración en
+  `docs/progreso/A4.8.md`; demo con sonido `scripts/demo-a4-8-volumen.mjs`.
 
 # Frase de dos pasos (A2.18)
 

@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { getMusicLevel, musicVolumeFor } from '@/systems/Settings';
+import { SFX_GAIN, masterLimiter } from '@/systems/AudioMix';
 import { MUTED_STORAGE_KEY, mutedFromStored, shouldFetchAudio } from '@/systems/AudioPolicy';
 import { DUCK_FADE_MS, duckGainFor } from '@/systems/Cinematics';
 import {
@@ -127,7 +128,6 @@ export interface MusicQaState {
 }
 
 const DEFAULT_CROSSFADE = 4000;
-const DEFAULT_VOLUME = 0.25;
 const BYPASS_FREQUENCY = 20000;
 const round3 = (n: number) => Math.round(n * 1000) / 1000;
 
@@ -142,10 +142,13 @@ export class MusicManager {
    */
   private duckGain: GainNode;
   private duckSources = new Set<string>();
+  /** A4.8: limitador maestro (salida de todo el audio del juego; las demos graban de aquí). null sin Web Audio */
+  private limiter: DynamicsCompressorNode | null = null;
   private currentTrack: ManagedTrack | null = null;
   private fadingTrack: ManagedTrack | null = null;
   private currentKey: string | null = null;
-  private musicVolume = musicVolumeFor(getMusicLevel(), DEFAULT_VOLUME);
+  /** A4.8: por defecto High (0,9); antes, sin nada guardado, 0,25 */
+  private musicVolume = musicVolumeFor(getMusicLevel());
   private muted = false;
   private unlockedThisSession = false;
 
@@ -154,9 +157,13 @@ export class MusicManager {
     const sm = game.sound as Phaser.Sound.WebAudioSoundManager;
     this.context = sm.context;
 
-    // Master gain → duck gain (A2.10) → destination
+    // A4.8: efectos, stingers y voces (maestro de Phaser) a SFX_GAIN, y todo por el limitador maestro (sin clipping)
+    game.sound.volume = SFX_GAIN;
+    const limiter = masterLimiter(this.context, (sm as unknown as { masterVolumeNode?: AudioNode }).masterVolumeNode ?? null);
+    this.limiter = limiter;
+    // Master gain → duck gain (A2.10) → limitador (A4.8) → destination
     this.duckGain = this.context.createGain();
-    this.duckGain.connect(this.context.destination);
+    this.duckGain.connect(limiter ?? this.context.destination);
     this.masterGain = this.context.createGain();
     this.masterGain.connect(this.duckGain);
     this.masterGain.gain.value = this.musicVolume;
@@ -508,6 +515,16 @@ export class MusicManager {
     return this.unlockedThisSession;
   }
 
+  /** A4.8 (demos): nodo de salida de todo el audio (limitador maestro; sin él, la salida de la música) */
+  outputNode(): AudioNode {
+    return this.limiter ?? this.duckGain;
+  }
+
+  /** A4.8 (QA): volumen de la música de los ajustes (sin silencio ni ducking) */
+  getMusicVolume(): number {
+    return this.musicVolume;
+  }
+
   setMusicVolume(vol: number): void {
     this.musicVolume = vol;
     if (!this.muted) {
@@ -850,7 +867,8 @@ export class MusicManager {
     src.detune.value = bridge.detune;
     const g = this.context.createGain();
     // va por masterGain (volumen de la música, silencio y ducking): se compensa para que suene como un stinger de A4.5
-    g.gain.value = Math.min(4, STINGER_VOLUME / Math.max(this.musicVolume, 0.05));
+    // (A4.8: que van por el maestro de Phaser, a SFX_GAIN)
+    g.gain.value = Math.min(4, (STINGER_VOLUME * SFX_GAIN) / Math.max(this.musicVolume, 0.05));
     src.connect(g);
     g.connect(this.masterGain);
     src.start(at);

@@ -381,6 +381,12 @@ await step('silencio: sin música ni voces; al activar el sonido en ajustes, sí
     const playing = await p.evaluate(() => window.__game.registry.get('musicManager').currentKey);
     if (!loud.some((r) => r.kind === 'music' && (r.url.includes(`/${music}.mp3`) || r.url.includes(`/${playing}.mp3`)))) throw new Error(`al activar el sonido no se pidió la música de la escena (${music} / ${playing})`);
     if (voiceKey && !loud.some((r) => r.kind === 'voice')) throw new Error('al activar el sonido la voz no se pidió');
+    // A4.8: perfil limpio (sin volumen guardado) → música High (0,9), voces High (ganancia 1,0) y el clip con ese volumen
+    const mix = await p.evaluate(() => window.__qa.state().audio?.mix ?? null);
+    console.log(`    mezcla sin nada guardado: ${JSON.stringify(mix)}`);
+    if (!mix || mix.musicLevel !== 'high' || mix.musicVolume !== 0.9) throw new Error(`sin localStorage la música no va a High 0,9: ${JSON.stringify(mix)}`);
+    if (mix.voiceLevel !== 'high' || mix.voiceGain !== 1) throw new Error(`sin localStorage las voces no van a High (1,0): ${JSON.stringify(mix)}`);
+    if (voiceKey && mix.lastVoiceClipVolume !== mix.voiceClipVolume) throw new Error(`la voz sonó a ${mix.lastVoiceClipVolume}, se esperaba ${mix.voiceClipVolume} (VOICE_BOOST × 1,0 / SFX_GAIN)`);
     // A4.4: y el bucle de ambiente de la escena (si lo tiene), que llega a sonar
     const ambience = await p.evaluate(() => window.__game.registry.get('sceneData')?.audio?.ambience ?? null);
     if (ambience) {
