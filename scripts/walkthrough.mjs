@@ -18,6 +18,8 @@
 //      --shard <i>/<n> (A0.6): solo el trozo i de n (ruta k de la lista de todos los ficheros → trozo (k mod n)+1);
 //      el CI reparte así los atajos entre trabajos paralelos. Un trozo vacío termina en verde.
 //      WALKTHROUGH_ARTIFACT=<nombre> solo cambia el nombre del artefacto que cita el resumen de CI.
+//      WALKTHROUGH_INVENTORY=1 (A9.7) añade a cada paso superado el inventario (cuántos objetos y cuáles); el
+//      report.json lo guarda siempre por paso (steps[].inventory).
 //      --until chapter:<n> | <paso> (A9.5): corta cada ruta walkthrough elegida en el paso que cierra el capítulo n
 //      (`chapter_<n>_complete`) o en ese paso; el objetivo pasa a ser ese punto. El CI de WebKit: --only ruta-critica
 //      --until chapter:1.
@@ -224,7 +226,7 @@ async function runRoute(file, route) {
     }
     await page.screenshot({ path: `${dir}/${String(i + 1).padStart(2, '0')}-${slug(label)}.jpg`, type: 'jpeg', quality: 60 }).catch(() => {});
     const secs = Number(((Date.now() - ts) / 1000).toFixed(1));
-    result.steps.push({ index: i + 1, label, secs, scene: state?.scene ?? null, resizeListeners: state?.resizeListeners ?? null, error, fails, note: step.note ?? null });
+    result.steps.push({ index: i + 1, label, secs, scene: state?.scene ?? null, resizeListeners: state?.resizeListeners ?? null, inventory: state?.inventory ?? null, error, fails, note: step.note ?? null });
     if (seqBreak && goalReached) {
       console.log(`    ⚑ ${i + 1}. ${label} (${secs} s) · ${state.scene}: objetivo alcanzado`);
       result.farthest = { index: i + 1, label, scene: state.scene };
@@ -239,7 +241,9 @@ async function runRoute(file, route) {
     const listeners = step.expect?.noListenerGrowth
       ? ` · listeners de resize ${state.resizeListeners} (tras el primer paso ${listenersBaseline}) · de teclado/lienzo ${state.inputListeners ?? '?'} (${inputListenersBaseline ?? '?'})`
       : '';
-    console.log(`    ✓ ${i + 1}. ${label} (${secs} s) · ${state.scene}${listeners}`);
+    // A9.7: WALKTHROUGH_INVENTORY=1 escribe el inventario de cada paso (para medir cuántos objetos se llevan)
+    const inv = process.env.WALKTHROUGH_INVENTORY ? ` · inventario ${state.inventory.length} [${state.inventory.join(', ')}]` : '';
+    console.log(`    ✓ ${i + 1}. ${label} (${secs} s) · ${state.scene}${listeners}${inv}`);
   }
 
   result.secs = Number(((Date.now() - t0) / 1000).toFixed(1));

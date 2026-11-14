@@ -16,6 +16,16 @@ const NEW = { do: 'newGame', expect: { scene: 'outside' } };
 const KEYPAD = { do: 'act', verb: 'USE', target: 'hs_keypad', attempt: true, rejects: 'INVALID' };
 const WALK_TR = { do: 'walk', x: 70, y: 95, trigger: 'tr_x', untilScene: 'lobby' };
 
+test('check: inventoryMax (A9.7) cuenta los objetos del inventario', () => {
+  const s = st({ inventory: ['a', 'b', 'c'] });
+  assert.deepEqual(check({ inventoryMax: 3 }, s), []);
+  assert.deepEqual(check({ inventoryMax: 7 }, s), []);
+  const f = check({ inventoryMax: 2 }, s);
+  assert.equal(f.length, 1);
+  assert.match(f[0], /3 objetos .*a, b, c.*máximo 2/);
+  assert.equal(check({ inventoryMax: 0 }, st({ inventory: ['x'] })).length, 1);
+});
+
 test('check: escena, inventario, flags, visitados y logros', () => {
   const s = st({ inventory: ['a'], flags: { f: true }, visited: ['outside'], achievements: ['x'] });
   assert.deepEqual(check({ scene: 'outside', has: ['a'], lacks: ['b'], flags: { f: true, g: false }, visited: ['outside'], achievements: ['x'] }, s), []);
