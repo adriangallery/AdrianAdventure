@@ -3,16 +3,16 @@
 // marcadores `%GAME_NAME%`, `%GAME_WEB%`, `%GAME_URL%` y `%GAME_TAGLINE%` con `brandHtml`; tests/branding.test.mjs
 // comprueba que index.html no lleva el nombre escrito a mano).
 //
-// PROVISIONAL: el nombre es el que hoy enseña el arte de la portada (assets/ui/intro.png: «ZERO ADVENTURES» + «PATIENT
-// ZERO»); la web, la única que enseñaba el juego (la última línea de los créditos). Falta que Adrián elija: cambiar el
-// nombre o la web es cambiar UNA línea aquí (y, si cambia el nombre, el arte de la portada, que es una imagen).
+// Nombre y web ELEGIDOS por Adrián (Mando, item orq-adventure-nombre-14nov, 14-nov 08:53): «ZEROadventure II: Patient
+// Zero» y adventure.adrianzero.com. El arte de la portada (assets/ui/intro.png) es una imagen y todavía dice «ZERO
+// ADVENTURES» + «PATIENT ZERO»: queda apuntado en «Arte pendiente». Cambiar el nombre o la web es cambiar UNA línea aquí.
 // Lógica pura, sin imports (se prueba con `node --experimental-strip-types`).
 
 export const BRANDING = {
   /** Nombre del juego, tal cual en títulos y créditos */
-  name: 'ZERO Adventures: Patient Zero',
+  name: 'ZEROadventure II: Patient Zero',
   /** Web del juego, sin protocolo (lo que se lee en pantalla) */
-  web: 'zeroadventures.com',
+  web: 'adventure.adrianzero.com',
   /** Subtítulo de la portada y de los créditos */
   tagline: 'A Point & Click Web3 Adventure on Base',
 } as const;
