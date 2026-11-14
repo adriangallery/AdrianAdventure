@@ -73,7 +73,7 @@
       "scene": "rooftop",
       "scale": "fixed", "scaleWhy": "azotea de frente, suelo poco hondo (la zona andable es la franja delante de las trampillas)",
       "reference": { "label": "puerta de la azotea", "hotspot": "hs_roof_door", "kind": "door", "top": 39.5, "bottom": 92 },
-      "positions": { "back": { "x": 55, "y": 77 }, "mid": { "x": 55, "y": 88 }, "front": { "x": 55, "y": 98 }, "frontL": { "x": 20, "y": 98 }, "ref": { "x": 87.5, "y": 97 } },
+      "positions": { "back": { "x": 55, "y": 79.5 }, "mid": { "x": 55, "y": 88 }, "front": { "x": 55, "y": 98 }, "frontL": { "x": 20, "y": 98 }, "ref": { "x": 87.5, "y": 97 } },
       "sameDepth": [["front", "frontL"]]
     },
     {

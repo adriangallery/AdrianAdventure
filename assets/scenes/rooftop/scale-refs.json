@@ -55,9 +55,9 @@
       "realHeightM": 1,
       "foreground": false,
       "box": {
-        "x": 32,
+        "x": 43.5,
         "y": 50,
-        "w": 33,
+        "w": 21.5,
         "h": 8.5
       },
       "baseY": 58.5,
