@@ -1761,10 +1761,10 @@
       "sprite": "vane_flipped",
       "format": "webp",
       "bounds": {
-        "x": 65.0054,
-        "y": 4.6875,
-        "w": 13.9817,
-        "h": 37.5
+        "x": 65.5711,
+        "y": 5.816,
+        "w": 12.8502,
+        "h": 25.7812
       },
       "flag": "vane_pushed",
       "depth": 5

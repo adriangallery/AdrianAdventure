@@ -102,7 +102,8 @@ test('aperturas (A3.2): saltadas desde el principio dejan flags, Dex y la cámar
 });
 
 // A9.2: las entradas de los cap. 3, 4 y 5 son cinemáticas como las de A3.2. Saltadas desde el primer op dejan la flag
-// del capítulo y no mueven a Dex (sin actorMove: queda donde entró, vista entera o saltada). Ninguna op `narrative` en
+// del capítulo y no mueven a Dex (sin actorMove: queda donde entró, vista entera o saltada; A9.11: en mountain, un
+// actorMove a un punto fijo fuera de la maleza, el mismo vista entera o saltada). Ninguna op `narrative` en
 // las cuatro escenas; ≤ 2 frases habladas; tarjeta del capítulo; la copia del trigger (basement, mountain) es idéntica.
 test('entradas de los cap. 3–5 (A9.2): cinemáticas saltables al mismo estado, sin narrative', async () => {
   const fs = await import('node:fs');
@@ -114,7 +115,7 @@ test('entradas de los cap. 3–5 (A9.2): cinemáticas saltables al mismo estado,
   }
   const cases = [
     { id: 'basement', flag: 'chapter_3_intro_shown', chapter: 'CHAPTER 3', trigger: 'tr_chapter3_intro', pick: (ops) => ops },
-    { id: 'mountain', flag: 'chapter_4_intro_shown', chapter: 'CHAPTER 4', trigger: 'tr_chapter4_intro', pick: (ops) => ops[0].then },
+    { id: 'mountain', flag: 'chapter_4_intro_shown', chapter: 'CHAPTER 4', trigger: 'tr_chapter4_intro', pick: (ops) => ops[0].then, endAt: { x: 70, y: 93 } },
     { id: 'treatment_room', flag: 'chapter_5_intro_shown', chapter: 'CHAPTER 5', pick: (ops) => ops },
   ];
   for (const k of cases) {
@@ -129,7 +130,12 @@ test('entradas de los cap. 3–5 (A9.2): cinemáticas saltables al mismo estado,
     const plan = C.planSkip(ops, () => undefined, 1);
     assert.ok(plan.ended && !plan.stopped);
     assert.deepEqual(plan.applied.filter((a) => a.op.op === 'setFlag').map((a) => a.op.flag), [k.flag]);
-    assert.ok(!ops.some((o) => o.op === 'actorMove' || o.op === 'actorTeleport'), `${k.id}: Dex queda donde entró`);
+    const moves = ops.filter((o) => o.op === 'actorMove' || o.op === 'actorTeleport');
+    if (!k.endAt) assert.ok(!moves.length, `${k.id}: Dex queda donde entró`);
+    else {
+      // A9.11: en mountain Dex sale de la maleza de primer plano; vista entera o saltada acaba en el mismo punto
+      assert.ok(moves.length && moves.every((o) => o.op === 'actorMove' && o.actor === 'player' && o.x === k.endAt.x && o.y === k.endAt.y), `${k.id}: Dex acaba en ${k.endAt.x}/${k.endAt.y}`);
+    }
     assert.ok(ops.filter((o) => o.op === 'say').length <= 2, `${k.id}: ≤ 2 frases`);
     assert.equal(ops.filter((o) => o.op === 'titleCard' && o.chapter === k.chapter).length, 1, `${k.id}: tarjeta`);
     if (k.trigger) {

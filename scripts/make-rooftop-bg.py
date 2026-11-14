@@ -142,8 +142,13 @@ def make_vane(bg):
     box = (x0, top, x1, bottom)
     crop = bg.crop(box).convert('RGB')
     flip = crop.transpose(Image.FLIP_LEFT_RIGHT)
-    vane_overlay(crop, flip, int((ROSE_TOP - CROP[1]) * sy) - top).save(
-        os.path.join(SCENE_DIR, 'vane_flipped.webp'), lossless=True, quality=100, method=6)
+    ov = vane_overlay(crop, flip, int((ROSE_TOP - CROP[1]) * sy) - top)
+    # recortado a lo que tiene contenido + 2 px, como scripts/crop-overlays.mjs (MARGIN_PX), que lo comprueba en el CI
+    l, t, r, btm = ov.split()[3].point(lambda v: 255 if v > 4 else 0).getbbox()
+    l, t, r, btm = max(0, l - 2), max(0, t - 2), min(ov.width, r + 2), min(ov.height, btm + 2)
+    ov.crop((l, t, r, btm)).save(os.path.join(SCENE_DIR, 'vane_flipped.webp'), lossless=True, quality=100, method=6)
+    x0, x1, bottom, top = x0 + l, x0 + r, top + btm, top + t
+    box = (x0, top, x1, bottom)
     b = {'x': round(x0 / W * 100, 4), 'y': round(top / H * 100, 4), 'w': round((x1 - x0) / W * 100, 4),
          'h': round((bottom - top) / H * 100, 4)}
     path = os.path.join(SCENE_DIR, 'scene.json')

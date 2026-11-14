@@ -8,8 +8,8 @@
 //      `foregroundLayers` que se pinte delante de él (misma regla de franjas que A2.17: base baseY + k·bandStep).
 //      Captura `<vp>-mountain-dex.png`.
 //   3) rooftop (A9.12): la veleta antes y después de `vane_pushed`; el overlay `vane_flipped` está visible, encaja en sus
-//      bounds (tamaño de la textura = bounds × fondo maestro 3712×1152, ±1 px) y su parte de abajo (la rosa de los
-//      vientos, que no gira) es transparente. Capturas `<vp>-veleta-antes.png` y `<vp>-veleta-despues.png`.
+//      bounds (tamaño de la textura = bounds × fondo maestro 3712×1152, ±1 px) y acaba encima de la rosa de los vientos
+//      (que no gira: y < 31,43 % + 2 px de margen). Capturas `<vp>-veleta-antes.png` y `<vp>-veleta-despues.png`.
 // Uso: BASE_URL=http://127.0.0.1:4173 node scripts/lib/demo.mjs run a9-visual
 import { startDemo } from './lib/demo.mjs';
 
@@ -19,7 +19,7 @@ const VIEWPORTS = [
 ];
 const MOUNTAIN_ENTRY = { x: 96.8, y: 91.5 }; // el spawn de outside.tr_mountain
 const BG_MASTER = { w: 3712, h: 1152 }; // rooftop/background.png
-const ROSE_FROM = 0.72; // de este alto (fracción del overlay) hacia abajo, la rosa de los vientos: transparente
+const ROSE_TOP = 31.43; // % del fondo: y del JPEG 289 (make-rooftop-bg.py ROSE_TOP); de ahí abajo, la rosa sin girar
 
 const demo = await startDemo(import.meta.url, { fps: 4, width: 640, viewport: VIEWPORTS[0] });
 const { page } = demo;
@@ -146,7 +146,7 @@ async function vane(vp) {
   await page.evaluate(() => window.__qa.dismissAll());
   await demo.film(800);
   await demo.still(`${tag}-veleta-despues`);
-  const ov = await page.evaluate((roseFrom) => {
+  const ov = await page.evaluate(() => {
     const gs = window.__game.scene.getScene('GameScene');
     const co = gs.conditionalOverlays.find((o) => o.id === 'vane_flipped');
     if (!co) return null;
@@ -156,23 +156,21 @@ async function vane(vp) {
     const ctx = c.getContext('2d');
     ctx.drawImage(src, 0, 0);
     const data = ctx.getImageData(0, 0, c.width, c.height).data;
-    let opaqueRose = 0, opaqueTop = 0;
-    const from = Math.floor(c.height * roseFrom);
-    for (let y = 0; y < c.height; y++) for (let x = 0; x < c.width; x++) {
-      if (data[(y * c.width + x) * 4 + 3] > 0) { if (y >= from) opaqueRose++; else opaqueTop++; }
-    }
+    let opaque = 0;
+    for (let i = 3; i < data.length; i += 4) if (data[i] > 0) opaque++;
     const v = gs.cameras.main.worldView;
     const b = co.sprite.getBounds();
     const ix = Math.max(0, Math.min(b.right, v.right) - Math.max(b.x, v.x));
     const iy = Math.max(0, Math.min(b.bottom, v.bottom) - Math.max(b.y, v.y));
-    return { visible: co.sprite.visible, w: c.width, h: c.height, bounds: co.bounds, opaqueRose, opaqueTop, inView: (ix * iy) / (b.width * b.height) };
-  }, ROSE_FROM);
+    return { visible: co.sprite.visible, w: c.width, h: c.height, bounds: co.bounds, opaque, inView: (ix * iy) / (b.width * b.height) };
+  });
   check(!!ov && ov.visible, `${tag} veleta: vane_flipped visible con vane_pushed`);
   if (!ov) return;
   const ew = (ov.bounds.w / 100) * BG_MASTER.w, eh = (ov.bounds.h / 100) * BG_MASTER.h;
   check(Math.abs(ov.w - ew) <= 1 && Math.abs(ov.h - eh) <= 1, `${tag} veleta: textura ${ov.w}×${ov.h} = bounds × fondo (${ew.toFixed(1)}×${eh.toFixed(1)})`);
-  check(ov.opaqueRose === 0, `${tag} veleta: la rosa de los vientos no se toca (${ov.opaqueRose} px opacos abajo)`);
-  check(ov.opaqueTop > 1000, `${tag} veleta: la B y la flecha sí (${ov.opaqueTop} px opacos arriba)`);
+  const bottom = ov.bounds.y + ov.bounds.h;
+  check(bottom <= ROSE_TOP + (2 / BG_MASTER.h) * 100 + 0.01, `${tag} veleta: acaba en y ${bottom.toFixed(2)} %, encima de la rosa de los vientos (${ROSE_TOP} %)`);
+  check(ov.opaque > 1000, `${tag} veleta: la B y la flecha (${ov.opaque} px opacos)`);
   console.log(`  ${tag} veleta: ${Math.round(ov.inView * 100)} % dentro de la cámara`);
 }
 
