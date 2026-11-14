@@ -1964,16 +1964,96 @@
       "id": "monitor_glow",
       "kind": "glow",
       "area": {
-        "x": 10,
-        "y": 19,
-        "w": 27,
-        "h": 36
+        "x": 17,
+        "y": 20,
+        "w": 5.3,
+        "h": 12.8
       },
       "shape": "rect",
       "color": "#5cf0a0",
       "alpha": 0.1,
       "alphaMin": 0.04,
       "period": 1900,
+      "depth": 16
+    },
+    {
+      "id": "monitor_glow_tl",
+      "kind": "glow",
+      "area": {
+        "x": 11.8,
+        "y": 22,
+        "w": 3.4,
+        "h": 11.8
+      },
+      "shape": "rect",
+      "color": "#5cf0a0",
+      "alpha": 0.1,
+      "alphaMin": 0.04,
+      "period": 2300,
+      "depth": 16
+    },
+    {
+      "id": "monitor_glow_bl",
+      "kind": "glow",
+      "area": {
+        "x": 12.4,
+        "y": 40.7,
+        "w": 2.8,
+        "h": 12.9
+      },
+      "shape": "rect",
+      "color": "#5cf0a0",
+      "alpha": 0.1,
+      "alphaMin": 0.04,
+      "period": 2100,
+      "depth": 16
+    },
+    {
+      "id": "monitor_glow_bm",
+      "kind": "glow",
+      "area": {
+        "x": 17.7,
+        "y": 38.7,
+        "w": 4.9,
+        "h": 11.9
+      },
+      "shape": "rect",
+      "color": "#5cf0a0",
+      "alpha": 0.1,
+      "alphaMin": 0.04,
+      "period": 1700,
+      "depth": 16
+    },
+    {
+      "id": "monitor_glow_r",
+      "kind": "glow",
+      "area": {
+        "x": 24.4,
+        "y": 33.2,
+        "w": 4.9,
+        "h": 14.4
+      },
+      "shape": "rect",
+      "color": "#5cf0a0",
+      "alpha": 0.1,
+      "alphaMin": 0.04,
+      "period": 2500,
+      "depth": 16
+    },
+    {
+      "id": "monitor_glow_s",
+      "kind": "glow",
+      "area": {
+        "x": 31.8,
+        "y": 40.7,
+        "w": 1.8,
+        "h": 11.7
+      },
+      "shape": "rect",
+      "color": "#5cf0a0",
+      "alpha": 0.1,
+      "alphaMin": 0.04,
+      "period": 2000,
       "depth": 16
     },
     {

@@ -1060,16 +1060,46 @@
       "id": "cabin_glow",
       "kind": "glow",
       "area": {
-        "x": 74,
-        "y": 26,
-        "w": 7,
-        "h": 6
+        "x": 74.9,
+        "y": 28,
+        "w": 1,
+        "h": 3.2
       },
       "shape": "rect",
       "color": "#ffb050",
       "alpha": 0.18,
       "alphaMin": 0.08,
       "period": 2800
+    },
+    {
+      "id": "cabin_glow_l",
+      "kind": "glow",
+      "area": {
+        "x": 72.5,
+        "y": 33.2,
+        "w": 1,
+        "h": 2.8
+      },
+      "shape": "rect",
+      "color": "#ffb050",
+      "alpha": 0.18,
+      "alphaMin": 0.08,
+      "period": 3100
+    },
+    {
+      "id": "cabin_glow_r",
+      "kind": "glow",
+      "area": {
+        "x": 77.7,
+        "y": 33.2,
+        "w": 3.9,
+        "h": 2.8
+      },
+      "shape": "rect",
+      "color": "#ffb050",
+      "alpha": 0.18,
+      "alphaMin": 0.08,
+      "period": 2600
     },
     {
       "id": "bush_sway",

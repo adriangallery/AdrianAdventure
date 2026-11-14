@@ -17,7 +17,8 @@
 //   fog      niebla: bancos suaves que cruzan `area`: `count`, `size` (alto de cada banco), `speed`, `parallax`
 //   clouds   nubes con parallax en `area`: `count`, `size`, `speed`, `parallax` (< 1 = se mueven menos que el fondo)
 //   flicker  luz que titila (fluorescente, bombilla): `area`, `shape`, `alpha` (máx.), `alphaMin`, `period` (ms de cada tic)
-//   glow     brillo que respira (monitor, lámpara): `area`, `shape`, `alpha` (máx.), `alphaMin`, `period` (ciclo)
+//   glow     brillo que respira (monitor, lámpara): `area`, `shape`, `alpha` (máx.), `alphaMin`, `period` (ciclo). Con
+//            `rect`, una mancha rectangular de bordes difuminados (A9.6); `area` = la pantalla o ventana que emite
 //   scan     línea de barrido de un CRT: `area`, `period` (ms de arriba abajo), `size` (grosor)
 //   rise     partículas que suben (burbujas, vapor, chispas): `area` (nacen abajo, mueren arriba), `count`, `size`, `speed`,
 //            `soft` (manchas suaves en vez de puntos), `burst`
@@ -265,7 +266,8 @@ export function parseAmbient(raw: unknown, sceneId = 'scene'): { specs: AmbientS
 
 /** Lo que se dibuja en un frame: todo en píxeles del FONDO (origen arriba a la izquierda de la pintura) */
 export interface Dot { x: number; y: number; r: number; alpha: number; color: number }
-export interface Blob { x: number; y: number; w: number; h: number; alpha: number; color: number }
+/** `rect`: mancha rectangular de bordes difuminados (glow `rect`, A9.6) en vez de la radial */
+export interface Blob { x: number; y: number; w: number; h: number; alpha: number; color: number; rect?: boolean }
 export interface Shape { x: number; y: number; w: number; h: number; alpha: number; color: number; shape: AmbientShape; stroke: number }
 export interface Line { x1: number; y1: number; x2: number; y2: number; alpha: number; color: number; width: number }
 export interface AmbientFrame {
@@ -533,12 +535,32 @@ class FlickerSim extends BaseSim {
 }
 
 /**
- * Una luz sobre `area`: con `shape` rect, un rectángulo (pantallas, tubos); con ellipse, una mancha radial suave que se
- * desvanece hacia el borde (lámparas, halos), un poco mayor que el área para que lo iluminado sea más o menos el área.
+ * A9.6: un glow `rect` se dibuja como una mancha rectangular con los cuatro bordes difuminados (textura
+ * `ambient_softrect_*` de AmbientLayer): ocupa GLOW_RECT_SPREAD veces el área, centrada, y en cada lado cae a cero en la
+ * fracción GLOW_RECT_FADE de la textura (smoothstep, sin escalón). Con 1,4 y 0,25 la meseta a plena luz es el 70 % central
+ * del área y la luz llega a media intensidad más o menos en el borde del área y a cero un 20 % por fuera: el área es la
+ * pantalla o ventana que emite, y el halo se derrama un poco alrededor. scripts/demo-a9-6-glows.mjs repite los dos valores
+ */
+export const GLOW_RECT_SPREAD = 1.4;
+export const GLOW_RECT_FADE = 0.25;
+
+/** A9.6: opacidad de la textura rectangular difuminada en (u, v) ∈ [0, 1]² (producto de dos smoothstep) */
+export function softRectAlpha(u: number, v: number, fade = GLOW_RECT_FADE): number {
+  const ss = (e: number) => { const t = Math.min(1, Math.max(0, e / fade)); return t * t * (3 - 2 * t); };
+  return ss(Math.min(u, 1 - u)) * ss(Math.min(v, 1 - v));
+}
+
+/**
+ * Una luz sobre `area`: con `shape` rect, un rectángulo (tubos que titilan; el glow rect va difuminado, A9.6); con
+ * ellipse, una mancha radial suave que se desvanece hacia el borde (lámparas, halos), un poco mayor que el área para que
+ * lo iluminado sea más o menos el área.
  */
 function lightFrame(area: { x: number; y: number; w: number; h: number }, alpha: number, spec: AmbientSpec): AmbientFrame {
   if (spec.shape === 'ellipse') {
     return { ...emptyFrame(), blobs: [{ x: area.x + area.w / 2, y: area.y + area.h / 2, w: area.w * 1.5, h: area.h * 1.5, alpha: Math.min(1, alpha * 1.4), color: spec.color }] };
+  }
+  if (spec.kind === 'glow') {
+    return { ...emptyFrame(), blobs: [{ x: area.x + area.w / 2, y: area.y + area.h / 2, w: area.w * GLOW_RECT_SPREAD, h: area.h * GLOW_RECT_SPREAD, alpha, color: spec.color, rect: true }] };
   }
   return { ...emptyFrame(), shapes: [{ ...area, alpha, color: spec.color, shape: 'rect', stroke: 0 }] };
 }
@@ -775,7 +797,7 @@ export function frameSignature(f: AmbientFrame): number {
     h = Math.imul(h, 0x01000193) >>> 0;
   };
   for (const d of f.dots) { mix(d.x); mix(d.y); mix(d.r); mix(d.alpha); }
-  for (const b of f.blobs) { mix(b.x); mix(b.y); mix(b.w); mix(b.h); mix(b.alpha); }
+  for (const b of f.blobs) { mix(b.x); mix(b.y); mix(b.w); mix(b.h); mix(b.alpha); if (b.rect) mix(1); }
   for (const s of f.shapes) { mix(s.x); mix(s.y); mix(s.w); mix(s.h); mix(s.alpha); mix(s.stroke); }
   for (const l of f.lines) { mix(l.x1); mix(l.y1); mix(l.x2); mix(l.y2); mix(l.alpha); }
   mix(f.fgOffset);
