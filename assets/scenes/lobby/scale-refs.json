@@ -54,7 +54,7 @@
       "realHeightM": 1.7,
       "foreground": false,
       "npc": true,
-      "baseY": 65.3,
+      "baseY": 86.8,
       "source": "NPC: caja y alto los da el juego (state().pixel.npcs)"
     }
   ]
