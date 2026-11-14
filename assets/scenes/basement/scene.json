@@ -52,6 +52,9 @@
     "triggerColor": "#FF00FF",
     "regionIdStrategy": "manual"
   },
+  "screens": {
+    "crt": {"bounds": {"x": 52.6, "y": 30.8, "w": 8.5, "h": 18.8}, "color": "green", "label": "CRT // ADRIANLAB BASEMENT"}
+  },
   "regions": {
     "hotspots": [
       {
@@ -107,12 +110,14 @@
                       "then": [
                         {
                           "op": "say",
+                          "screen": "crt",
                           "text": "The CRT shows the patient roster. 'PATIENT ZERO — STATUS: ESCAPED' blinks in red at the bottom."
                         }
                       ],
                       "else": [
                         {
                           "op": "say",
+                          "screen": "crt",
                           "text": "A green phosphor glow: 'VAULT OPEN. INSERT BACKUP.' The disk drive blinks, waiting for something to read."
                         }
                       ]
@@ -121,6 +126,7 @@
                   "else": [
                     {
                       "op": "say",
+                      "screen": "crt",
                       "text": "An ancient CRT with a green phosphor glow. A blinking cursor: 'INSERT ADRIAN'S LEDGER. ENTER PIN.'"
                     }
                   ]
@@ -149,6 +155,7 @@
                       "then": [
                         {
                           "op": "say",
+                          "screen": "crt",
                           "text": "The computer shows the patient roster. 'PATIENT ZERO — STATUS: ESCAPED' blinks in red at the bottom."
                         }
                       ],
@@ -178,10 +185,14 @@
                             },
                             {
                               "op": "say",
+                              "screen": "crt",
+                              "display": "PATIENT ROSTER\nChronic Airdrop Dependency\nAcute Rug Pull Trauma\nTerminal FOMO",
                               "text": "A patient roster. Chronic Airdrop Dependency... Acute Rug Pull Trauma... Terminal FOMO..."
                             },
                             {
                               "op": "say",
+                              "screen": "crt",
+                              "display": "PATIENT ZERO — STATUS: ESCAPED",
                               "text": "At the bottom, in red: PATIENT ZERO — STATUS: ESCAPED"
                             },
                             {
@@ -194,12 +205,14 @@
                             },
                             {
                               "op": "say",
+                              "screen": "crt",
                               "text": "The drive spits the floppy back out. 'BACKUP COMPLETE.' Into the pocket it goes."
                             }
                           ],
                           "else": [
                             {
                               "op": "say",
+                              "screen": "crt",
                               "text": "The screen says 'INSERT BACKUP'. I need a disk. Somebody down here was working late."
                             }
                           ]
@@ -221,6 +234,7 @@
                       "else": [
                         {
                           "op": "say",
+                          "screen": "crt",
                           "text": "The screen says 'INSERT ADRIAN'S LEDGER'. I need to find it somewhere."
                         }
                       ]
@@ -263,6 +277,7 @@
           "PUSH": [
             {
               "op": "say",
+              "screen": "crt",
               "text": "I press a key. The screen flickers: 'DO NOT MASH KEYS.' I wasn't mashing. I was pressing. Firmly."
             }
           ],
@@ -1320,6 +1335,7 @@
       "nodes": {
         "prompt": {
           "speaker": "Ledger",
+          "screen": "crt",
           "text": "ENTER PIN. Hint: my best friend's birthday. DDMM.",
           "next": "hub"
         },
@@ -1372,6 +1388,7 @@
         },
         "wrong": {
           "speaker": "Ledger",
+          "screen": "crt",
           "text": "WRONG PIN.",
           "next": "hub"
         },
@@ -1392,10 +1409,12 @@
         },
         "ok": {
           "speaker": "Ledger",
+          "screen": "crt",
           "text": "PIN ACCEPTED. VAULT ACCESS GRANTED.",
           "next": "ok_dex"
         },
         "ok_dex": {
+          "screen": "crt",
           "text": "A vault dashboard. Portfolio, NFTs, and one line blinking: 'INSERT BACKUP'.",
           "end": true
         },
@@ -1449,6 +1468,7 @@
             },
             {
               "op": "say",
+              "screen": "crt",
               "text": "The screen blinks: 'INSERT ADRIAN'S LEDGER. ENTER PIN.'"
             }
           ]
@@ -1495,6 +1515,7 @@
                 },
                 {
                   "op": "say",
+                  "screen": "crt",
                   "text": "*click* A tiny 'B7 OK' appears in the corner. Nothing else changes. Some fixes are just for peace of mind."
                 }
               ]
@@ -1593,10 +1614,14 @@
                 },
                 {
                   "op": "say",
+                  "screen": "crt",
+                  "display": "PATIENT ROSTER\nChronic Airdrop Dependency\nAcute Rug Pull Trauma\nTerminal FOMO",
                   "text": "A patient roster. Chronic Airdrop Dependency... Acute Rug Pull Trauma... Terminal FOMO..."
                 },
                 {
                   "op": "say",
+                  "screen": "crt",
+                  "display": "PATIENT ZERO — STATUS: ESCAPED",
                   "text": "At the bottom, in red: PATIENT ZERO — STATUS: ESCAPED"
                 },
                 {
@@ -1609,6 +1634,7 @@
                 },
                 {
                   "op": "say",
+                  "screen": "crt",
                   "text": "The drive spits the floppy back out. 'BACKUP COMPLETE.' Into the pocket it goes."
                 }
               ]
@@ -1621,6 +1647,7 @@
               "then": [
                 {
                   "op": "say",
+                  "screen": "crt",
                   "text": "'ACCESS DENIED. LEDGER REQUIRED.' The vault first, then the backup."
                 }
               ],
@@ -1648,6 +1675,8 @@
           "then": [
             {
               "op": "say",
+              "screen": "crt",
+              "display": "To whoever holds these discs: you're not just a collector. You backed the lab when nobody believed pixel art on a blockchain was worth anything. You were right. — A.",
               "text": "The CRT still displays Adrian's hidden message. The cursor blinks patiently, like it has all the time in the world. Because it does. It's a computer."
             }
           ],
@@ -1672,6 +1701,7 @@
             },
             {
               "op": "say",
+              "screen": "crt",
               "text": "'ADRIANLAB FLOPPY COLLECTION DETECTED — HOLDER OVERRIDE ACTIVE. Decrypting Sector Zero...'"
             },
             {
@@ -1680,6 +1710,7 @@
             },
             {
               "op": "say",
+              "screen": "crt",
               "text": "'To whoever holds these discs: you're not just a collector. You backed the lab when nobody believed pixel art on a blockchain was worth anything. You were right. — A.'"
             },
             {
@@ -1688,6 +1719,7 @@
             },
             {
               "op": "say",
+              "screen": "crt",
               "text": "The CRT prints a final line: 'COMPRESSION RATIO: infinity. When you believe in the art, size doesn't matter.'"
             },
             {

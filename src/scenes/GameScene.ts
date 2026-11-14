@@ -2546,7 +2546,7 @@ export class GameScene extends Phaser.Scene {
    * A2.19: dice la línea (voz + subtítulo discreto) y la teclea en la pantalla `req.screen` de la escena; si es larga, si
    * se pide o si a este tamaño de viewport no se lee, además abre el primer plano y la línea acaba al cerrarlo.
    */
-  private async sayOnScreen(req: ScreenSayRequest): Promise<void> {
+  async sayOnScreen(req: ScreenSayRequest): Promise<void> {
     const ui = this.scene.get('UIScene');
     const speak = (discreet: boolean) => new Promise<void>((resolve) => {
       if (req.briefMs !== undefined) ui.events.emit('sayBrief', req.text, req.briefMs, req.speaker, resolve, discreet);

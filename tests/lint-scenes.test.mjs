@@ -789,3 +789,37 @@ test('A9.6: ninguna escena del juego tiene un glow rect mayor del 5 %', () => {
   const p = loadProject(new URL('..', import.meta.url).pathname);
   assert.deepEqual(only(lintProject(p), 'n').map((f) => f.message), []);
 });
+
+// ── (p) pantallas (A2.19) ──
+test('A2.19 regla (p): say con screen a una pantalla que no existe = error; screens mal definidas = error', () => {
+  const s = scene('room', {
+    screens: {
+      crt: { bounds: { x: 10, y: 10, w: 5, h: 5 }, color: 'green' },
+      rota: { bounds: { x: 98, y: 10, w: 5, h: 5 }, color: 'pink' },
+    },
+    regions: {
+      hotspots: [hs('hs_pc', {
+        LOOK: [
+          { op: 'say', text: "'OK'", screen: 'crt' },
+          { op: 'say', text: "'NO'", screen: 'monitor' },
+          { op: 'sayBrief', text: 'x', display: 'X' },
+        ],
+      })],
+      triggers: [],
+    },
+  });
+  const p = only(lintProject(project([s])), 'p');
+  const errors = p.filter((f) => f.severity === 'error').map((f) => f.id).sort();
+  assert.deepEqual(errors, ['monitor', 'rota', 'rota']);
+  assert.equal(p.filter((f) => f.severity === 'warning').length, 1);
+});
+
+test('A2.19: SCREEN_COLORS del linter = los de ScreenText.ts; el juego no tiene errores de pantallas', async () => {
+  const { SCREEN_COLORS } = await import('../scripts/lint-scenes.mjs');
+  const src = readFileSync(new URL('../src/systems/ScreenText.ts', import.meta.url), 'utf8');
+  const block = src.slice(src.indexOf('SCREEN_PALETTES: Record'), src.indexOf('};', src.indexOf('SCREEN_PALETTES: Record')));
+  const names = [...block.matchAll(/^\s+(\w+): \{ fg/gm)].map((m) => m[1]);
+  assert.deepEqual(names, SCREEN_COLORS);
+  const proj = loadProject(new URL('..', import.meta.url).pathname);
+  assert.deepEqual(only(lintProject(proj), 'p').filter((f) => f.severity === 'error').map((f) => f.message), []);
+});

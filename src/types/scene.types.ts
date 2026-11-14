@@ -273,6 +273,10 @@ export interface DialogueNodeData {
   end?: boolean;
   /** A2.6a: condiciones (`flag`, `!flag`, `item:id`, `!item:id`); si falla alguna, el nodo se salta */
   when?: string | string[];
+  /** A2.19: la línea sale en la pantalla `screen` de la escena (como el campo `screen` del op `say`) */
+  screen?: string;
+  display?: string;
+  closeup?: boolean;
 }
 
 /** A2.6: ver src/systems/DialogueSystem.ts (DialogueChoice) para la semántica de cada campo */

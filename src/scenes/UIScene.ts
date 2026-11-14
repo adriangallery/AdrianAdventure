@@ -106,10 +106,15 @@ export class UIScene extends Phaser.Scene {
 
     // Dialogue system
     this.dialogueSystem = new DialogueSystem({
-      say: (text, speaker) => {
-        this.voiceSystem.play(text);
+      say: (text, speaker, node) => {
         // A3.3e: la QA (`window.__qa`, `rejects` de las rutas) apunta también las frases de los nodos de diálogo
         this.events.emit('dialogueLine', text, speaker);
+        // A2.19: nodo de pantalla (el cajón de los Términos, DOORIS, PZ-BOT): GameScene la teclea en la pantalla y la dice
+        const gs = this.scene.get('GameScene') as GameScene | undefined;
+        if (node?.screen && gs?.sayOnScreen) {
+          return gs.sayOnScreen({ screen: node.screen, text, speaker, display: node.display, closeup: node.closeup === true });
+        }
+        this.voiceSystem.play(text);
         return this.dialogueBox.say(text, speaker);
       },
       showChoices: (choices) => this.choicePanel.show(choices),
