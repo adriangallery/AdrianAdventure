@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { sceneTitlePlacement } from '@/ui/achievementLayout';
 import { Player, type PlayerAnimQa } from '@/objects/Player';
 import { CoordSystem } from '@/systems/CoordSystem';
 import { SceneDataLoader } from '@/systems/SceneDataLoader';
@@ -1996,14 +1997,23 @@ export class GameScene extends Phaser.Scene {
     };
   }
 
+  /** A9.3: último título de escena (la demo mide su caja) */
+  sceneTitleText: Phaser.GameObjects.Text | null = null;
+
   private showSceneTitle(title: string): void {
     const center = this.coordSystem.pctToScreen(50, 5);
     // A5.2: mínimo 11 px (legible en un iPhone en horizontal; antes 8)
     const fontSize = Math.max(11, Math.min(14, Math.floor(this.coordSystem.bgW * 0.012)));
-    const text = this.add.text(center.x, center.y, title, {
+    // A9.3: centrado en la pantalla (en vertical el fondo es más ancho y la cámara lo recorta) y bajo los botones de
+    // arriba; antes asomaba cortado bajo «Connect» en 390×844
+    const cam = this.cameras.main;
+    const place = sceneTitlePlacement(this.scale.width, center.y - cam.scrollY);
+    const text = this.add.text(place.x, place.y, title, {
       fontFamily: FONT.FAMILY, fontSize: `${fontSize}px`,
-      color: TWP.SCENE_TITLE, stroke: '#000000', strokeThickness: 3,
-    }).setOrigin(0.5, 0).setDepth(100).setAlpha(0);
+      color: TWP.SCENE_TITLE, stroke: '#000000', strokeThickness: 3, align: 'center',
+      wordWrap: { width: place.wrapW },
+    }).setOrigin(0.5, 0).setDepth(100).setAlpha(0).setScrollFactor(0);
+    this.sceneTitleText = text;
     this.tweens.add({ targets: text, alpha: { from: 0, to: 1 }, duration: 500, hold: 2000, yoyo: true, onComplete: () => text.destroy() });
   }
 

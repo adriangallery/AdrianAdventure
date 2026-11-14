@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { achievementRect, achievementStripHeight, type Rect } from './achievementLayout';
 import { FONT } from '@/config/theme';
 
 const DEPTH = 1000;
@@ -228,18 +229,21 @@ export class CinematicOverlay {
   }
 
   /**
-   * Show a brief achievement popup at top of screen.
-   * Non-blocking — slides down, holds 3s, slides up, auto-destroys.
+   * Show a brief achievement popup. Non-blocking — holds 3s and auto-destroys.
+   * A9.3: sale abajo de la escena, apoyada sobre el panel de verbos (`panelH`), no arriba sobre los botones;
+   * UIScene la encola hasta que no hay frase ni diálogo en pantalla (src/ui/achievementLayout.ts).
    */
-  showAchievement(text: string): Promise<void> {
+  showAchievement(text: string, panelH = 0): Promise<void> {
     return new Promise<void>((resolve) => {
-      const { width } = this.scene.scale;
+      const { width, height } = this.scene.scale;
       // A5.2: mínimo 11 px en móvil (antes 8 y 6)
       const fontSize = Math.max(11, Math.min(12, Math.floor(width * 0.01)));
-      const labelSize = Math.max(11, Math.min(11, Math.floor(width * 0.007)));
-      const stripHeight = Math.max(50, Math.floor(fontSize * 5));
+      const labelSize = 11;
+      const stripHeight = achievementStripHeight(fontSize);
+      const rect = achievementRect(width, height, panelH, stripHeight);
+      this.lastAchievementRect = rect;
 
-      const container = this.scene.add.container(0, -stripHeight).setDepth(DEPTH + 1).setScrollFactor(0);
+      const container = this.scene.add.container(0, rect.y + 12).setDepth(DEPTH + 1).setScrollFactor(0).setAlpha(0);
 
       const bg = this.scene.add.rectangle(width / 2, stripHeight / 2, width, stripHeight, ACHIEVEMENT_BG, 0.95)
         .setOrigin(0.5).setScrollFactor(0);
@@ -260,18 +264,20 @@ export class CinematicOverlay {
 
       this.scene.tweens.add({
         targets: container,
-        y: 0,
-        duration: 400,
+        y: rect.y,
+        alpha: 1,
+        duration: 300,
         ease: 'Back.easeOut',
         onComplete: () => {
           this.scene.time.delayedCall(3000, () => {
             this.scene.tweens.add({
               targets: container,
-              y: -stripHeight,
+              alpha: 0,
               duration: 400,
               ease: 'Power2',
               onComplete: () => {
                 container.destroy(true);
+                this.lastAchievementRect = null;
                 resolve();
               },
             });
@@ -280,6 +286,9 @@ export class CinematicOverlay {
       });
     });
   }
+
+  /** A9.3: caja de la franja de logro en pantalla (null si no hay); la demo comprueba que no pisa nada. */
+  lastAchievementRect: Rect | null = null;
 
   /**
    * Rolling credits — classic vertical scroll (Star Wars / Monkey Island style).

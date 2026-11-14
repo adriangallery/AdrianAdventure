@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { achievementDecision, POLL_MS as ACH_POLL_MS, type ScreenBusy, type Rect } from '@/ui/achievementLayout';
 import { ScummUI } from '@/ui/ScummUI';
 import { DialogueBox, type SpeechState } from '@/ui/DialogueBox';
 import { ChoicePanel } from '@/ui/ChoicePanel';
@@ -35,6 +36,9 @@ export class UIScene extends Phaser.Scene {
   private verbWheel!: VerbWheel;
   private dialogueBox!: DialogueBox;
   private choicePanel!: ChoicePanel;
+  /** A9.3: logros esperando a que la pantalla quede libre */
+  private achievementQueue: string[] = [];
+  private achievementPumping = false;
   private walletButton!: WalletButton;
   private saveButton!: SaveButton;
   private dialogueSystem!: DialogueSystem;
@@ -316,7 +320,9 @@ export class UIScene extends Phaser.Scene {
           }
         }
       }
-      this.cinematicOverlay.showAchievement(text);
+      // A9.3: a la cola; sale cuando no hay frase, diálogo ni cinemática en pantalla
+      this.achievementQueue.push(text);
+      this.pumpAchievements();
     });
 
     // Rolling end credits
@@ -439,6 +445,42 @@ export class UIScene extends Phaser.Scene {
     if (this.registry.get('dialogueActive') || this.choicePanel?.isAwaitingChoice()) return false;
     this.dialogueBox.skip();
     return true;
+  }
+
+  /** A9.3: qué ocupa la pantalla ahora (la franja de logro espera a que no haya nada). */
+  private screenBusy(): ScreenBusy {
+    return {
+      speech: !!this.registry.get('dialogueShowing') || !!this.dialogueBox?.isVisible(),
+      dialogue: !!this.registry.get('dialogueActive'),
+      choices: !!this.choicePanel?.isAwaitingChoice(),
+      cinematic: !!this.registry.get('cinematicMode') || ((this.registry.get('cinematicActive') as number | undefined) ?? 0) > 0,
+      transition: !!this.registry.get('sceneTransition'),
+    };
+  }
+
+  /** A9.3: saca los logros de la cola de uno en uno, cada uno cuando la pantalla está libre. */
+  private async pumpAchievements(): Promise<void> {
+    if (this.achievementPumping) return;
+    this.achievementPumping = true;
+    try {
+      while (this.achievementQueue.length > 0) {
+        const t0 = this.time.now;
+        while (achievementDecision(this.screenBusy(), this.time.now - t0) === 'wait') {
+          await new Promise<void>((r) => this.time.delayedCall(ACH_POLL_MS, r));
+          if (!this.sys.isActive()) return;
+        }
+        const text = this.achievementQueue.shift()!;
+        const panelH = (this.registry.get('scummPanelHeight') as number | undefined) ?? 0;
+        await this.cinematicOverlay.showAchievement(text, panelH);
+      }
+    } finally {
+      this.achievementPumping = false;
+    }
+  }
+
+  /** A9.3: caja de la franja de logro visible (null si no hay) y logros en cola, para la demo. */
+  getAchievementStatus(): { rect: Rect | null; queued: number } {
+    return { rect: this.cinematicOverlay?.lastAchievementRect ?? null, queued: this.achievementQueue.length };
   }
 
   /** A2.9: el diario (GameScene lo abre y cierra con J/Esc; la API de QA lo lee). */
