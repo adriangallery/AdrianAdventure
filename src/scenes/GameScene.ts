@@ -292,7 +292,7 @@ export class GameScene extends Phaser.Scene {
     this.player.onStep = () => this.checkWalkTriggers();
     // A3.12: obstáculos condicionales (blockedAreas con `when`) según el estado al entrar
     this.blockedKey = null;
-    this.refreshWalkObstacles();
+    this.refreshWalkObstacles(sceneData);
     // A2.15: «no puedo» = Dex se encoge de hombros con cada respuesta de fallo (el texto sale a la vez, sin esperar)
     failResponses.onFail = () => this.player?.shrug();
 
@@ -608,8 +608,9 @@ export class GameScene extends Phaser.Scene {
   }
 
   /** A3.12: rehace la rejilla de Dex si cambia qué blockedAreas condicionales (`when`) están activos */
-  private refreshWalkObstacles(): void {
-    const sceneData = this.registry.get('sceneData') as SceneData | undefined;
+  private refreshWalkObstacles(current?: SceneData): void {
+    // Al entrar se pasa la escena nueva: el registro aún guarda la ANTERIOR y la rejilla salía con sus obstáculos
+    const sceneData = current ?? (this.registry.get('sceneData') as SceneData | undefined);
     if (!sceneData?.blockedAreas?.length || !this.player || !this.gameState) return;
     const holds = (c: string) => conditionHolds(c, (f) => this.gameState.flags[f] ?? false, (i) => this.inventorySystem?.hasItem(i) ?? false) === true;
     const key = blockedAreasKey(sceneData.blockedAreas, holds);
