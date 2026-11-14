@@ -29,8 +29,18 @@ async function waitDone(label, { film = true, max = 60000 } = {}) {
   while (Date.now() < end && !(await page.evaluate(() => window.__demoDone))) {
     if (film) await demo.shot(); else await demo.sleep(200);
   }
+  const done = await page.evaluate(() => window.__demoDone);
   const err = await page.evaluate(() => window.__demoErr);
-  check(!err, `${label}${err ? `: ${err}` : ''}`);
+  check(done && !err, `${label}${err ? `: ${err}` : done ? '' : `: no terminó en ${max} ms`}`);
+}
+
+/**
+ * `runScript` no cierra el panel (solo lo hace `settle`, como un jugador, en `use`): el script se queda esperando a la
+ * X. Se cierra a mano tras medirlo; si no, el panel de un paso sigue abierto y el siguiente lo mide a él.
+ */
+async function closePanel() {
+  await demo.sleep(800);
+  await page.evaluate(() => document.getElementById('rigdash-close')?.click());
 }
 
 /** Espera al panel cargado (o null si no sale en `ms`) y mide lo que se ve. */
@@ -99,11 +109,13 @@ if (!h) await demo.fail('✖ el panel no apareció en apaisado');
 await demo.still('02-founder-apaisado');
 check(h.fits, 'apaisado: la terminal cabe en pantalla');
 check(h.minFont >= 11, `apaisado: fuentes ≥ 11 px (mínima ${h.minFont})`);
+await closePanel();
 await waitDone('Founder Mode en apaisado', { film: false });
 
 // ─── 3) Red caída ───────────────────────────────────────────────────────────────────────────────────────────────────
 await page.setViewport(PORTRAIT);
 await demo.sleep(1500);
+check(!(await page.evaluate(() => document.getElementById('rigdash-overlay'))), 'el panel del apaisado está cerrado');
 await page.evaluate(() => window.__qa.mockWeb3({ fail: true }));
 await launch(`window.__qa.runScript([{ op: 'showDashboard', mode: 'founder' }])`);
 const f = await panelInfo(40000, true);
@@ -112,6 +124,9 @@ await demo.still('03-founder-sin-red');
 console.log(`founder sin red: ${JSON.stringify(f.rows)}`);
 check(f.rows.filter((r) => !r.startsWith('SOURCE')).every((r) => / —$/.test(r)), 'sin red: todas las cifras son «—»');
 check(/BASE UNREACHABLE/.test(f.text), 'sin red: lo dice');
+check(f.rows.includes('SOURCE: simulated (QA)'), 'sin red: es el panel nuevo (mock), no uno viejo abierto');
+await demo.film(1500);
+await closePanel();
 await waitDone('Founder Mode sin red');
 await page.evaluate(() => window.__qa.mockWeb3('off'));
 await demo.end();
