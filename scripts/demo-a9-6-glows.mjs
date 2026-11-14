@@ -2,11 +2,13 @@
 // como rectángulos translúcidos de borde duro; ahora son una mancha rectangular difuminada (textura `ambient_softrect`
 // de AmbientLayer) ajustada a la pantalla o ventana que emite.
 // Por cada una de las 8 escenas con glow rect y en 1280x720 y 844x390 (?qa=1: semillas fijas):
-//   - congela los glow rect de la escena en su máximo (alphaMin = alpha), apaga el resto del ambiente (para que la
-//     resta sea solo el brillo), esconde a Dex, centra la cámara en los brillos y pausa GameScene (sigue pintando);
+//   - congela los glow rect de la escena en su máximo (alphaMin = alpha), apaga el resto del ambiente, esconde a Dex,
+//     centra la cámara en los brillos y pausa GameScene (sigue pintando);
 //   - captura con el brillo (`<escena>-<vp>.png`), sin él, y con el pintado de antes de A9.6 (`<escena>-<vp>-antes.png`:
 //     un fillRect con el `area` y el alfa que había en main, dibujado por la demo; el juego ya no lo sabe pintar);
-//   - comprueba que no hay borde recto: resta (con brillo − sin brillo) y, en cada lado de la caja de cada brillo, el
+//   - comprueba que no hay borde recto: con cada brillo SOLO en pantalla sobre negro (sin fondo, actores, UI ni los
+//     otros brillos: así no cuentan el recorte del modo add sobre píxeles claros ni el halo de un monitor vecino), resta
+//     (con brillo − nada) y, en cada lado de la caja de cada brillo, el
 //     perfil perpendicular (mediana de muchas posiciones a lo largo del lado, así un objeto delante no cuenta) tiene que
 //     salir de ~0 por fuera y subir sin un escalón mayor que max(4, 50 % del pico) entre dos píxeles vecinos. La misma
 //     medida sobre el pintado de antes sale en el log (allí el escalón es el pico entero: era la caja).
@@ -158,6 +160,26 @@ const edgeCheck = (a, b, boxes) => page.evaluate(async ({ a, b, boxes }) => {
   });
 }, { a, b, boxes });
 
+/**
+ * Para medir: deja en pantalla SOLO un brillo (`id`), el fillRect de antes ('old') o nada ('none'), sobre negro: sin
+ * fondo, actores, UI ni los otros brillos. Así la resta es el brillo puro (sin recorte del modo add sobre píxeles claros ni
+ * el halo de un monitor vecino). Se llama después de las capturas de presentación; la escena se recarga después.
+ */
+const isolate = (which) => page.evaluate((which) => {
+  const game = window.__game;
+  const gs = game.scene.getScene('GameScene');
+  for (const sc of game.scene.getScenes(false)) if (sc !== gs) sc.sys.setVisible(false);
+  gs.cameras.main.setBackgroundColor(0x000000);
+  const keep = new Set();
+  if (which === 'old' && window.__oldGlow) keep.add(window.__oldGlow);
+  for (const e of gs.ambient.els) {
+    if (e.state.spec.id !== which) continue;
+    keep.add(e.g);
+    for (const im of e.images) keep.add(im);
+  }
+  for (const o of gs.children.list) o.setVisible?.(keep.has(o));
+}, which);
+
 const dataUrl = (buf) => `data:image/png;base64,${Buffer.from(buf).toString('base64')}`;
 const okSide = (s) => s.outside <= 2 && s.step <= Math.max(4, 0.5 * s.peak);
 const fmtSide = (s) => (s ? `${s.name} pico ${s.peak} escalón ${s.step} fuera ${s.outside}` : 'sin lados medibles');
@@ -187,8 +209,20 @@ for (const [vw, vh] of VIEWPORTS) {
     writeFileSync(join(demo.dir, `${tag}-antes.png`), before);
     if (vw === 844) { await caption(`${scene}: ANTES (caja de main)`); await demo.shot(); await noCaption(); await show('new', OLD[scene]); await caption(`${scene}: DESPUÉS`); await demo.shot(); await noCaption(); }
 
-    const now = await edgeCheck(dataUrl(withGlow), dataUrl(without), info.boxes);
-    const was = await edgeCheck(dataUrl(before), dataUrl(without), [{ id: 'antes', box: info.old.box }]);
+    // Medida aislada sobre negro: cada brillo solo, el de antes solo y nada
+    await isolate('none');
+    await sleep(120);
+    const black = dataUrl(await page.screenshot());
+    const now = [];
+    for (const b of info.boxes) {
+      await isolate(b.id);
+      await sleep(120);
+      now.push(...(await edgeCheck(dataUrl(await page.screenshot()), black, [b])));
+    }
+    await show('old', OLD[scene]);
+    await isolate('old');
+    await sleep(120);
+    const was = await edgeCheck(dataUrl(await page.screenshot()), black, [{ id: 'antes', box: info.old.box }]);
     for (const r of now) {
       const bad = r.sides.filter((s) => !okSide(s));
       if (!r.sides.length) problems.push(`${tag}.${r.id}: no se pudo medir (fuera de pantalla)`);
