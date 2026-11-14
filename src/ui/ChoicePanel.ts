@@ -33,6 +33,28 @@ export class ChoicePanel {
     this.scene = scene;
     // Depth 510 = above the ScummUI panel (500) so choices overlay verbs/inventory
     this.container = scene.add.container(0, 0).setDepth(510).setVisible(false).setScrollFactor(0);
+    // A9.15: al girar el móvil (o cambiar la ventana) con una elección abierta, se vuelve a colocar con el tamaño nuevo.
+    // ScummUI recalcula el alto del panel en su propio 'resize': se espera un tick para leer el nuevo
+    // `scummPanelHeight`, y además se escucha ese cambio por si llega después.
+    scene.scale.on('resize', this.onResize);
+    scene.registry.events.on('changedata-scummPanelHeight', this.onResize);
+  }
+
+  private relayoutPending = false;
+
+  private onResize = (): void => {
+    if (this.relayoutPending) return;
+    this.relayoutPending = true;
+    this.scene.time.delayedCall(0, () => {
+      this.relayoutPending = false;
+      this.relayout();
+    });
+  };
+
+  /** A9.15: vuelve a colocar la elección abierta con el tamaño de pantalla actual (no hace nada si no hay elección). */
+  relayout(): void {
+    if (!this.resolveChoice || !this.container.visible || !this.layout) return;
+    this.render();
   }
 
   show(choices: ChoiceOption[]): Promise<number> {
@@ -255,6 +277,8 @@ export class ChoicePanel {
   }
 
   destroy(): void {
+    this.scene.scale.off('resize', this.onResize);
+    this.scene.registry.events.off('changedata-scummPanelHeight', this.onResize);
     this.unbindInput();
     this.maskShape?.destroy();
     this.container.destroy();

@@ -289,6 +289,10 @@ export class CinematicOverlay {
         wordWrap: { width: width * 0.85, useAdvancedWrap: true },
       }).setOrigin(0.5).setScrollFactor(0);
       container.add(achText);
+      // A9.15: cajas de los dos textos en pantalla (ya en su sitio final), para medir que no se salen de la franja
+      this.lastAchievementTextRects = [label, achText].map((o) => ({
+        x: width / 2 - o.width / 2, y: rect.y + o.y - o.height / 2, w: o.width, h: o.height,
+      }));
 
       this.scene.tweens.add({
         targets: container,
@@ -306,6 +310,7 @@ export class CinematicOverlay {
               onComplete: () => {
                 container.destroy(true);
                 this.lastAchievementRect = null;
+                this.lastAchievementTextRects = [];
                 resolve();
               },
             });
@@ -317,6 +322,8 @@ export class CinematicOverlay {
 
   /** A9.3: caja de la franja de logro en pantalla (null si no hay); la demo comprueba que no pisa nada. */
   lastAchievementRect: Rect | null = null;
+  /** A9.15: cajas en pantalla de «ACHIEVEMENT UNLOCKED» y del nombre del logro (vacío si no hay franja). */
+  lastAchievementTextRects: Rect[] = [];
 
   /**
    * Rolling credits — classic vertical scroll (Star Wars / Monkey Island style).
