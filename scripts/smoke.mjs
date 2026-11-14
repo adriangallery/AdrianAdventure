@@ -7,31 +7,41 @@
 // A2.9: el diario (móvil de Dex) se abre y se cierra con toques reales en 390x844, y con J/Esc.
 // A2.5: un PUSH sin script dice la frase 0 de la bolsa verbDefaults.PUSH (ronda fija con ?qa=1) y luego la 1.
 // A5.1: memoria de texturas (GPU) y peso por escena en escritorio y móvil; tabla en el resumen y smoke-shots/texture-memory.json.
-// Uso: BASE_URL=http://127.0.0.1:4173 node scripts/smoke.mjs
+// A9.5: `--browser webkit` (o BROWSER=webkit) y `--viewport 390x844` (o BROWSER_VIEWPORT): Playwright WebKit con
+// emulación de iPhone (scripts/lib/browser.mjs). La página principal usa ese viewport y los pasos que dependen de CDP o
+// son de escritorio (transiciones con fromCache, memoria de texturas, teclado y ratón) se saltan y se dicen en el log.
+// Uso: BASE_URL=http://127.0.0.1:4173 node scripts/smoke.mjs [--browser webkit --viewport 844x390]
 import { readdirSync, existsSync, mkdirSync, readFileSync, writeFileSync, appendFileSync } from 'node:fs';
-import puppeteer from 'puppeteer';
+import { engineFromArgs, launchBrowser, webkitNavAborts } from './lib/browser.mjs';
 import * as SP from './lib/save-panel.mjs';
 
+const { engine: ENGINE, viewport: ENGINE_VIEWPORT } = engineFromArgs(process.argv.slice(2));
+const WEBKIT = ENGINE === 'webkit';
+
 const BASE = process.env.BASE_URL || 'http://127.0.0.1:4173';
-const SHOTS = 'smoke-shots';
+const SHOTS = process.env.SMOKE_SHOTS || 'smoke-shots';
 const SCENE_TIMEOUT = Number(process.env.SMOKE_SCENE_TIMEOUT_MS || 90000);
 const scenes = readdirSync('assets/scenes', { withFileTypes: true })
   .filter((d) => d.isDirectory())
   .map((d) => d.name)
   .sort();
-if (!existsSync(SHOTS)) mkdirSync(SHOTS);
+if (!existsSync(SHOTS)) mkdirSync(SHOTS, { recursive: true });
 
 // Ruido conocido que no rompe el juego (audio sin gesto del usuario, wallet sin extensión).
 const IGNORE = [/AudioContext/i, /autoplay/i, /WalletConnect/i, /ethereum/i, /favicon/i];
 const failures = [];
 const fail = (msg) => { failures.push(msg); console.log(`  ✖ ${msg}`); };
 
-const browser = await puppeteer.launch({
-  headless: true,
-  args: ['--no-sandbox', '--use-gl=swiftshader', '--enable-webgl', '--ignore-gpu-blocklist', '--autoplay-policy=no-user-gesture-required'],
+const browser = await launchBrowser({
+  engine: ENGINE,
+  viewport: ENGINE_VIEWPORT,
+  puppeteerOpts: {
+    headless: true,
+    args: ['--no-sandbox', '--use-gl=swiftshader', '--enable-webgl', '--ignore-gpu-blocklist', '--autoplay-policy=no-user-gesture-required'],
+  },
 });
 const page = await browser.newPage();
-await page.setViewport({ width: 1280, height: 720 });
+await page.setViewport(WEBKIT ? ENGINE_VIEWPORT : { width: 1280, height: 720 });
 let context = 'arranque';
 page.on('pageerror', (err) => fail(`[${context}] error de página: ${err.message}`));
 page.on('console', (msg) => {
@@ -47,7 +57,14 @@ page.on('response', (res) => {
 
 const waitGame = (fn, arg, timeout = SCENE_TIMEOUT) => page.waitForFunction(fn, { timeout, polling: 500 }, arg);
 
-async function step(name, fn) {
+// A9.5: `chromiumOnly` = el paso necesita CDP o es de escritorio; en WebKit se salta (y se dice)
+const skipped = [];
+async function step(name, fn, { chromiumOnly = false } = {}) {
+  if (chromiumOnly && WEBKIT) {
+    skipped.push(name);
+    console.log(`  – ${name} (solo Chromium: se salta en WebKit)`);
+    return;
+  }
   context = name;
   const t0 = Date.now();
   try {
@@ -58,7 +75,7 @@ async function step(name, fn) {
   }
 }
 
-console.log(`Smoke de AdrianAdventure contra ${BASE} · ${scenes.length} escenas`);
+console.log(`Smoke de AdrianAdventure contra ${BASE} · ${scenes.length} escenas · ${WEBKIT ? `WebKit ${await browser.version()} (iPhone ${ENGINE_VIEWPORT.width}x${ENGINE_VIEWPORT.height})` : 'Chromium'}`);
 
 await step('menú', async () => {
   await page.goto(`${BASE}/`, { waitUntil: 'domcontentloaded' });
@@ -205,7 +222,7 @@ await step('transiciones: precarga de vecinas, sin pantalla de carga y sin volve
   } finally {
     await ctx.close();
   }
-});
+}, { chromiumOnly: true });
 
 // A5.1: memoria de texturas y peso por escena. Perfil limpio en cada viewport: entra en `outside` y encadena varias
 // escenas (`__qa.goto`); tras cada una apunta `state().textures` (bytes estimados en la GPU: ancho × alto × 4 por fuente,
@@ -286,7 +303,7 @@ await step('texturas: memoria estimada en la GPU y peso por escena (A5.1)', asyn
   writeFileSync(`${SHOTS}/texture-memory.json`, JSON.stringify(textureReport, null, 2));
   if (process.env.GITHUB_STEP_SUMMARY) appendFileSync(process.env.GITHUB_STEP_SUMMARY, `${lines.join('\n')}\n`);
   if (problems.length) throw new Error(problems.join(' | '));
-});
+}, { chromiumOnly: true });
 
 // A1.5: arranque con «No thanks, silence is golden» en un perfil limpio. Se registran todas las peticiones y
 // falla si se pide algún mp3 de música o de voz (ni en la precarga, ni al cambiar de escena, ni al hablar).
@@ -486,7 +503,7 @@ await step('escritorio: Esc, Tab, doble clic en una salida y clic derecho (tecla
   } finally {
     await ctx.close();
   }
-});
+}, { chromiumOnly: true });
 
 // A2.9: el diario (móvil de Dex) con el dedo real de Chrome en móvil vertical 390x844: tocar el botón del móvil lo abre (panel
 // HTML encima del lienzo, `journalOpen`), tocar fuera del móvil lo cierra (y el toque que lo abrió no lo cierra al
@@ -920,8 +937,10 @@ await step('Continue A1.13: con el autoguardado vacío más nuevo, carga la part
 });
 
 await browser.close();
+if (WEBKIT) console.log(`\nWebKit: ${webkitNavAborts()} fetch(s) de la precarga cortados al navegar (no cuentan; ver docs/progreso/A9.5.md)`);
+if (skipped.length) console.log(`\nSaltados en ${ENGINE} (${skipped.length}): ${skipped.join(' · ')}`);
 if (failures.length) {
   console.log(`\n${failures.length} fallo(s).`);
   process.exit(1);
 }
-console.log('\nSmoke OK');
+console.log(`\nSmoke OK (${ENGINE}${WEBKIT ? ` ${ENGINE_VIEWPORT.width}x${ENGINE_VIEWPORT.height}` : ''})`);

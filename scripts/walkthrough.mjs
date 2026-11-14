@@ -18,23 +18,33 @@
 //      --shard <i>/<n> (A0.6): solo el trozo i de n (ruta k de la lista de todos los ficheros → trozo (k mod n)+1);
 //      el CI reparte así los atajos entre trabajos paralelos. Un trozo vacío termina en verde.
 //      WALKTHROUGH_ARTIFACT=<nombre> solo cambia el nombre del artefacto que cita el resumen de CI.
+//      --until chapter:<n> | <paso> (A9.5): corta cada ruta walkthrough elegida en el paso que cierra el capítulo n
+//      (`chapter_<n>_complete`) o en ese paso; el objetivo pasa a ser ese punto. El CI de WebKit: --only ruta-critica
+//      --until chapter:1.
+//      --browser webkit (o BROWSER=webkit) --viewport 390x844 (o BROWSER_VIEWPORT) (A9.5): Playwright WebKit con
+//      emulación de iPhone en ese viewport (scripts/lib/browser.mjs). Por defecto Chromium (puppeteer) a 1280x720.
 //      --selftest [qa/selftest.json] (A0.5): autotest del runner. Cada ruta lleva `expectStatus` (y opcionalmente
 //      `expectDetail`, regex del detalle); falla si alguna clasificación no es la esperada. Solo aquí vale "allowGoto".
 //
 // La lógica pura (definición de rutas, comprobaciones y clasificación) está en scripts/lib/walkthrough-core.mjs.
 import { appendFileSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
-import puppeteer from 'puppeteer';
+import { engineFromArgs, launchBrowser } from './lib/browser.mjs';
 import {
-  attemptIndex, check, checkAttemptRan, checkRejects, classify, describe, fmtPoint, inBounds, kindOf, routeDefects,
-  selftestDefects, selftestMismatch, notePixel, parseOnly, parseShard, selectRoutes,
+  attemptIndex, check, checkAttemptRan, checkRejects, classify, cutRoute, describe, fmtPoint, inBounds, kindOf, routeDefects,
+  selftestDefects, selftestMismatch, notePixel, parseOnly, parseShard, parseUntil, selectRoutes,
 } from './lib/walkthrough-core.mjs';
 
 // A0.6: flags con valor (`--shard 2/4` o `--shard=2/4`, igual `--only`); el resto son ficheros
 const ARGS = process.argv.slice(2);
+// A9.5: motor (--browser/BROWSER) y viewport de WebKit (--viewport/BROWSER_VIEWPORT); los quita de ARGS
+let ENGINE;
+let ENGINE_VIEWPORT;
+try { ({ engine: ENGINE, viewport: ENGINE_VIEWPORT } = engineFromArgs(ARGS)); } catch (err) { console.error(err.message); process.exit(2); }
+const WEBKIT = ENGINE === 'webkit';
 const FLAGS = {};
 const FILE_ARGS = [];
 for (let i = 0; i < ARGS.length; i++) {
-  const m = /^--(shard|only)(?:=(.*))?$/.exec(ARGS[i]);
+  const m = /^--(shard|only|until)(?:=(.*))?$/.exec(ARGS[i]);
   if (m) {
     const v = m[2] ?? ARGS[++i];
     if (v === undefined) { console.error(`Falta el valor de --${m[1]}`); process.exit(2); }
@@ -49,6 +59,8 @@ const ARTIFACT = process.env.WALKTHROUGH_ARTIFACT || (SELFTEST ? 'walkthrough-se
 const ONLY = parseOnly(FLAGS.only ?? process.env.WALKTHROUGH_ONLY);
 let SHARD = null;
 try { SHARD = FLAGS.shard !== undefined ? parseShard(FLAGS.shard) : null; } catch (err) { console.error(err.message); process.exit(2); }
+let UNTIL = null;
+try { UNTIL = FLAGS.until !== undefined ? parseUntil(FLAGS.until) : null; } catch (err) { console.error(err.message); process.exit(2); }
 const FILES = FILE_ARGS.length ? FILE_ARGS : SELFTEST ? ['qa/selftest.json'] : ['qa/walkthrough.json', 'qa/sequence-breaks.json'];
 // Ruido conocido que no rompe el juego (igual que el smoke) y recursos que faltan (se listan aparte)
 const IGNORE = [/AudioContext/i, /autoplay/i, /WalletConnect/i, /ethereum/i, /favicon/i, /Failed to load resource/i];
@@ -148,7 +160,7 @@ async function runRoute(file, route) {
   mkdirSync(dir, { recursive: true });
   const context = await browser.createBrowserContext();
   const page = await context.newPage();
-  await page.setViewport({ width: 1280, height: 720 });
+  await page.setViewport(WEBKIT ? ENGINE_VIEWPORT : { width: 1280, height: 720 });
 
   const problems = result.problems;
   const missing = new Set();
@@ -179,6 +191,13 @@ async function runRoute(file, route) {
   try {
     await page.goto(`${BASE}/?qa=1`, { waitUntil: 'domcontentloaded', timeout: 90_000 });
     await page.waitForFunction(() => !!window.__qa, { timeout: 90_000, polling: 250 });
+    // A9.5: Safari no deja sonar nada sin un gesto (no hay --autoplay-policy). El jugador siempre toca la pantalla antes de
+    // jugar (el botón New Game): aquí, un toque real en una esquina del menú, que desbloquea el audio de Phaser.
+    if (WEBKIT) {
+      await page.waitForFunction(() => window.__game?.scene?.isActive('MenuScene'), { timeout: 90_000, polling: 250 }).catch(() => {});
+      await page.touchscreen.tap(2, 2);
+      await sleep(300);
+    }
   } catch (err) {
     stopped = { kind: 'error', index: 0, message: `la página no expuso window.__qa: ${err.message.split('\n')[0]}` };
   }
@@ -246,19 +265,45 @@ if (UNKNOWN.length) {
   console.error(`--only: no existen en ${FILES.join(', ')}: ${UNKNOWN.join(', ')}`);
   process.exit(2);
 }
+// A9.5: --until corta las rutas elegidas (después de elegir: el reparto por trozos no cambia)
+if (UNTIL) {
+  try {
+    for (const r of SELECTED) r.route = cutRoute(r.route, UNTIL);
+  } catch (err) { console.error(err.message); process.exit(2); }
+}
+// A9.5: `expect.pixel.integer` y `pixelScale` están medidos a 1280x720 (A2.8). En 844x390 la escala de pantalla no se
+// redondea a propósito (A2.11), así que en WebKit (viewports de iPhone) esas dos comprobaciones no aplican y se quitan.
+if (WEBKIT) {
+  let dropped = 0;
+  for (const r of SELECTED) {
+    r.route = { ...r.route, steps: r.route.steps.map((st) => {
+      const px = st.expect?.pixel;
+      if (!px || (px.integer === undefined && px.pixelScale === undefined)) return st;
+      dropped++;
+      const { integer, pixelScale, ...rest } = px;
+      return { ...st, expect: { ...st.expect, pixel: rest } };
+    }) };
+  }
+  if (dropped) console.log(`(WebKit ${ENGINE_VIEWPORT.width}x${ENGINE_VIEWPORT.height}: sin pixel.integer/pixelScale de 1280x720 en ${dropped} paso(s), ver A2.11)`);
+}
 const SHARD_LABEL = SHARD ? `trozo ${SHARD.index}/${SHARD.total}: ${SELECTED.length} de ${ALL.length} rutas` : '';
 if (SHARD && !SELECTED.length) {
   console.log(`Trozo ${SHARD.index}/${SHARD.total} vacío (${ALL.length} rutas para ${SHARD.total} trozos): nada que ejecutar`);
   process.exit(0);
 }
 
-const browser = await puppeteer.launch({
-  headless: true,
-  protocolTimeout: 600_000,
-  args: ['--no-sandbox', '--use-gl=swiftshader', '--enable-webgl', '--ignore-gpu-blocklist', '--autoplay-policy=no-user-gesture-required'],
+const browser = await launchBrowser({
+  engine: ENGINE,
+  viewport: ENGINE_VIEWPORT,
+  puppeteerOpts: {
+    headless: true,
+    protocolTimeout: 600_000,
+    args: ['--no-sandbox', '--use-gl=swiftshader', '--enable-webgl', '--ignore-gpu-blocklist', '--autoplay-policy=no-user-gesture-required'],
+  },
 });
+const ENGINE_LABEL = WEBKIT ? ` · WebKit ${await browser.version()} (iPhone ${ENGINE_VIEWPORT.width}x${ENGINE_VIEWPORT.height})` : '';
 
-console.log(`${SELFTEST ? 'Selftest del runner de walkthrough' : 'Walkthrough de AdrianAdventure'} contra ${BASE}${SHARD_LABEL ? ` (${SHARD_LABEL})` : ''}`);
+console.log(`${SELFTEST ? 'Selftest del runner de walkthrough' : 'Walkthrough de AdrianAdventure'} contra ${BASE}${SHARD_LABEL ? ` (${SHARD_LABEL})` : ''}${ENGINE_LABEL}`);
 const results = [];
 for (const { file, spec } of SPECS) {
   const routes = SELECTED.filter((r) => r.file === file).map((r) => r.route);
@@ -303,7 +348,7 @@ const md = SELFTEST
     ...results.map((r) => `| ${cell(r.id)} | ${r.kind} | ${cell(r.expectStatus)} | ${LABEL[r.status]} | ${r.mismatch ? `✖ ${cell(r.mismatch)}` : '✓'} | ${cell(r.detail)} |`),
   ]
   : [
-    `### Walkthrough y atajos (A0.1)${SHARD_LABEL ? ` · ${SHARD_LABEL}` : ''}`,
+    `### Walkthrough y atajos (A0.1)${SHARD_LABEL ? ` · ${SHARD_LABEL}` : ''}${ENGINE_LABEL}`,
     '',
     `Contra \`${BASE}\` · capturas en el artefacto \`${ARTIFACT}\``,
     '',

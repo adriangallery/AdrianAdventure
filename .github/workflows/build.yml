@@ -6,6 +6,8 @@
 # A0.6: el job `walkthrough` agrega walkthrough-critica, walkthrough-atajos (trozos) y walkthrough-selftest.
 # A0.2 (plan SCUMM): job `demo`, que graba las demos visuales `scripts/demo-*.mjs` y sube sus GIF
 # (sustituye a los jobs `demo-v6` y `demo-a1-3`).
+# A9.5 (plan SCUMM): job `webkit` (Playwright WebKit con emulación de iPhone, 390x844 y 844x390): smoke y capítulo 1 de
+# la ruta crítica. No es obligatorio todavía (ver docs/progreso/A9.5.md).
 name: build
 
 on:
@@ -221,6 +223,68 @@ jobs:
         with:
           name: walkthrough-shots-atajos-${{ matrix.shard }}
           path: walkthrough-shots/
+
+  # A9.5: Safari de iOS se aproxima con WebKit de Playwright (Linux; NO es Safari de iOS: ver docs/progreso/A9.5.md).
+  # Smoke (los pasos de CDP/escritorio se saltan y se dicen en el log) y el capítulo 1 de la ruta crítica
+  # (`--until chapter:1`, cortado de qa/walkthrough.json, sin copiar pasos), en vertical y apaisado con toque de iPhone.
+  # Playwright no es dependencia del proyecto: se instala aquí sin tocar el lockfile.
+  webkit:
+    needs: build
+    if: ${{ !cancelled() && (needs.build.result == 'success' || (needs.build.result == 'skipped' && inputs.BASE_URL)) }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        viewport: ['390x844', '844x390']
+    name: webkit (${{ matrix.viewport }})
+    env:
+      BROWSER: webkit
+      BROWSER_VIEWPORT: ${{ matrix.viewport }}
+      BASE_URL: ${{ inputs.BASE_URL || 'http://127.0.0.1:4173' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Playwright WebKit (sin tocar package.json)
+        run: |
+          npm i --no-save --no-audit --no-fund playwright@1.65.1
+          npx playwright install --with-deps webkit
+
+      - name: Build con assets (igual que el Dockerfile del mini)
+        if: ${{ !inputs.BASE_URL }}
+        run: npm run build
+
+      - name: Servir el build
+        if: ${{ !inputs.BASE_URL }}
+        run: |
+          npx vite preview --host 127.0.0.1 --port 4173 --strictPort > preview.log 2>&1 &
+          for i in $(seq 1 60); do curl -sf http://127.0.0.1:4173/ >/dev/null && exit 0; sleep 1; done
+          cat preview.log; exit 1
+
+      - name: Smoke en WebKit ${{ matrix.viewport }}
+        run: node scripts/smoke.mjs
+        env:
+          SMOKE_SHOTS: webkit-shots/smoke
+
+      - name: Capítulo 1 de la ruta crítica en WebKit ${{ matrix.viewport }}
+        if: ${{ !cancelled() }}
+        run: node scripts/walkthrough.mjs qa/walkthrough.json --only ruta-critica --until chapter:1
+        env:
+          WALKTHROUGH_OUT: webkit-shots/walkthrough
+          WALKTHROUGH_ARTIFACT: webkit-shots-${{ matrix.viewport }}
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: webkit-shots-${{ matrix.viewport }}
+          path: webkit-shots/
 
   walkthrough-selftest:
     # A0.5: comprueba que el runner clasifica bien cada rama (qa/selftest.json), independiente de las rutas reales
