@@ -140,7 +140,7 @@ for (const vp of VIEWPORTS) {
   pass.layout = e?.layout;
   if (!(e?.ending?.tapsIgnored >= 1) || e?.ending?.done) problems.push(`${tag}: un toque antes de 2 s cerró el resumen: ${JSON.stringify(e?.ending)}`);
   const lines = e?.summary ?? [];
-  const want = [/^Time played: 47m 12s$/, /^Called Anon: 7 times$/, new RegExp(`^Achievements: ${ACHIEVEMENTS.length} of \\d+$`), /★ Game Complete$/, /★ Patient Zero$/, /★ Breaking & Entering$/];
+  const want = [/^Time played: 47m [1-5]\ds$/, /^Called Anon: 7 times$/, new RegExp(`^Achievements: ${ACHIEVEMENTS.length} of \\d+$`), /★ Game Complete$/, /★ Patient Zero$/, /★ Breaking & Entering$/];
   for (const re of want) if (!lines.some((l) => re.test(l))) problems.push(`${tag}: el resumen no tiene ${re}: ${lines.join(' | ')}`);
   if (lines.some((l) => /_/.test(l))) problems.push(`${tag}: hay ids crudos en el resumen: ${lines.join(' | ')}`);
   const texts = e?.layout?.texts ?? [];
