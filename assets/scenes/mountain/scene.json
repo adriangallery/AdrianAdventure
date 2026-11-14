@@ -806,24 +806,45 @@
                 "flag": "chapter_3_complete",
                 "then": [
                   {
-                    "op": "narrative",
-                    "lines": [
-                      "The blue X on the map sits on a clinic. Up here, in the mountains.",
-                      "\"Patient Zero Rehabilitation Clinic — Est. Block 0\"",
-                      "Dr. Satoshi runs the operation. Treats on-chain addiction.",
-                      "Patient Zero escaped. And you're getting closer to finding out why."
-                    ]
-                  },
-                  {
-                    "op": "titleCard",
-                    "chapter": "CHAPTER 4",
-                    "title": "The Mountain Path",
-                    "subtitle": "The clinic is always open."
+                    "op": "cinematicStart"
                   },
                   {
                     "op": "setFlag",
                     "flag": "chapter_4_intro_shown",
                     "value": true
+                  },
+                  {
+                    "op": "cameraPan",
+                    "x": 78,
+                    "y": 28,
+                    "ms": 1400
+                  },
+                  {
+                    "op": "say",
+                    "speaker": "Narrator",
+                    "text": "The X on the map led up a mountain. To a clinic."
+                  },
+                  {
+                    "op": "cameraPan",
+                    "actor": "player",
+                    "ms": 1000
+                  },
+                  {
+                    "op": "actorFace",
+                    "actor": "player",
+                    "dir": "left"
+                  },
+                  {
+                    "op": "say",
+                    "text": "That ridge is a perfect cup and hand... It's a mountain, Dex. Just a mountain."
+                  },
+                  {
+                    "op": "titleCard",
+                    "chapter": "CHAPTER 4",
+                    "title": "The Mountain Path"
+                  },
+                  {
+                    "op": "cinematicEnd"
                   }
                 ],
                 "else": []
@@ -976,24 +997,45 @@
           "flag": "chapter_3_complete",
           "then": [
             {
-              "op": "narrative",
-              "lines": [
-                "The blue X on the map sits on a clinic. Up here, in the mountains.",
-                "\"Patient Zero Rehabilitation Clinic — Est. Block 0\"",
-                "Dr. Satoshi runs the operation. Treats on-chain addiction.",
-                "Patient Zero escaped. And you're getting closer to finding out why."
-              ]
-            },
-            {
-              "op": "titleCard",
-              "chapter": "CHAPTER 4",
-              "title": "The Mountain Path",
-              "subtitle": "The clinic is always open."
+              "op": "cinematicStart"
             },
             {
               "op": "setFlag",
               "flag": "chapter_4_intro_shown",
               "value": true
+            },
+            {
+              "op": "cameraPan",
+              "x": 78,
+              "y": 28,
+              "ms": 1400
+            },
+            {
+              "op": "say",
+              "speaker": "Narrator",
+              "text": "The X on the map led up a mountain. To a clinic."
+            },
+            {
+              "op": "cameraPan",
+              "actor": "player",
+              "ms": 1000
+            },
+            {
+              "op": "actorFace",
+              "actor": "player",
+              "dir": "left"
+            },
+            {
+              "op": "say",
+              "text": "That ridge is a perfect cup and hand... It's a mountain, Dex. Just a mountain."
+            },
+            {
+              "op": "titleCard",
+              "chapter": "CHAPTER 4",
+              "title": "The Mountain Path"
+            },
+            {
+              "op": "cinematicEnd"
             }
           ],
           "else": []

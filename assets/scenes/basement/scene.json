@@ -1225,24 +1225,45 @@
             "then": [],
             "else": [
               {
-                "op": "narrative",
-                "lines": [
-                  "Beneath the lab, forgotten machines still process blocks.",
-                  "A CRT monitor flickers with data from another era.",
-                  "The patient roster... the escape... Patient Zero.",
-                  "The answers are down here. Buried in code."
-                ]
-              },
-              {
-                "op": "titleCard",
-                "chapter": "CHAPTER 3",
-                "title": "Below the Surface",
-                "subtitle": "Every server has secrets."
+                "op": "cinematicStart"
               },
               {
                 "op": "setFlag",
                 "flag": "chapter_3_intro_shown",
                 "value": true
+              },
+              {
+                "op": "cameraPan",
+                "x": 57,
+                "y": 40,
+                "ms": 1200
+              },
+              {
+                "op": "say",
+                "speaker": "Narrator",
+                "text": "Under the lab, the machines never got the memo."
+              },
+              {
+                "op": "cameraPan",
+                "actor": "player",
+                "ms": 900
+              },
+              {
+                "op": "actorFace",
+                "actor": "player",
+                "dir": "front"
+              },
+              {
+                "op": "say",
+                "text": "Basements shouldn't hum. This one hums."
+              },
+              {
+                "op": "titleCard",
+                "chapter": "CHAPTER 3",
+                "title": "Below the Surface"
+              },
+              {
+                "op": "cinematicEnd"
               }
             ]
           }
@@ -1703,24 +1724,45 @@
       "then": [],
       "else": [
         {
-          "op": "narrative",
-          "lines": [
-            "Beneath the lab, forgotten machines still process blocks.",
-            "A CRT monitor flickers with data from another era.",
-            "The patient roster... the escape... Patient Zero.",
-            "The answers are down here. Buried in code."
-          ]
-        },
-        {
-          "op": "titleCard",
-          "chapter": "CHAPTER 3",
-          "title": "Below the Surface",
-          "subtitle": "Every server has secrets."
+          "op": "cinematicStart"
         },
         {
           "op": "setFlag",
           "flag": "chapter_3_intro_shown",
           "value": true
+        },
+        {
+          "op": "cameraPan",
+          "x": 57,
+          "y": 40,
+          "ms": 1200
+        },
+        {
+          "op": "say",
+          "speaker": "Narrator",
+          "text": "Under the lab, the machines never got the memo."
+        },
+        {
+          "op": "cameraPan",
+          "actor": "player",
+          "ms": 900
+        },
+        {
+          "op": "actorFace",
+          "actor": "player",
+          "dir": "front"
+        },
+        {
+          "op": "say",
+          "text": "Basements shouldn't hum. This one hums."
+        },
+        {
+          "op": "titleCard",
+          "chapter": "CHAPTER 3",
+          "title": "Below the Surface"
+        },
+        {
+          "op": "cinematicEnd"
         }
       ]
     }
