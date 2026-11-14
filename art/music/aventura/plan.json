@@ -1,0 +1,269 @@
+{
+  "$comment": "A8.3. Tema ANIMADO (aventura alegre con ritmo marcado). Lo lee scripts/audio/eleven-music.mjs --parte completo.",
+  "tema": "aventura",
+  "titulo": "Aventura (tema animado: montaña y azotea)",
+  "escenas": [
+    "mountain",
+    "rooftop"
+  ],
+  "pistaEquivalente": "vista",
+  "bpm": 120,
+  "tonalidad": "Re mayor",
+  "key": "D major",
+  "compas": "4/4",
+  "instrumentacion": [
+    "bright trumpet and clarinet unison (lead)",
+    "bouncy tuba bass",
+    "plucked acoustic guitar offbeats",
+    "xylophone runs",
+    "snappy snare and kick march groove",
+    "pizzicato strings",
+    "glockenspiel"
+  ],
+  "prompt": "Upbeat, jaunty, original adventure theme for a 1990s point-and-click game: a cheeky hero climbs rooftops and mountain paths. Strongly marked bouncy rhythm, catchy trumpet/clarinet melody, tuba bass, plucked offbeats, xylophone runs, march snare. 120 BPM, D major, 4/4. Instrumental only.",
+  "modelo": "music_v2_5",
+  "semilla": 8206,
+  "output_format": "mp3_44100_192",
+  "partes": {
+    "completo": {
+      "$comment": "A8.3: niveles de intensidad en UNA sola generación (misma tonalidad y tempo por construcción). Se corta en los límites de bloque (compases enteros) en assets/audio/music/<tema>-n<nivel>.mp3.",
+      "checkpoint": "A8.3",
+      "semilla": 8206,
+      "output_format": "mp3_44100_192",
+      "niveles": [
+        {
+          "nivel": 0,
+          "nombre": "calma",
+          "compases": 32,
+          "bucle": true
+        },
+        {
+          "nivel": 1,
+          "nombre": "activo",
+          "compases": 24,
+          "bucle": true
+        },
+        {
+          "nivel": 2,
+          "nombre": "tension",
+          "compases": 24,
+          "bucle": true
+        },
+        {
+          "nivel": 3,
+          "nombre": "triunfo",
+          "compases": 6,
+          "bucle": false
+        }
+      ],
+      "compases": [
+        32,
+        24,
+        24,
+        6
+      ],
+      "duraciones_ms": [
+        64000,
+        48000,
+        48000,
+        12000
+      ],
+      "chunks": [
+        {
+          "text": "[Level 0 - calm exploration]\n{calm, curious exploration: the main melody stated softly and sparsely, light percussion or none}",
+          "duration_ms": 64000,
+          "positive_styles": [
+            "1990s point-and-click adventure game music",
+            "high-quality General MIDI orchestral",
+            "instrumental",
+            "120 BPM",
+            "D major",
+            "4/4",
+            "memorable melody",
+            "bright trumpet and clarinet unison",
+            "bouncy tuba bass",
+            "plucked acoustic guitar offbeats",
+            "xylophone runs",
+            "snappy snare and kick march groove",
+            "pizzicato strings",
+            "glockenspiel",
+            "calm"
+          ],
+          "negative_styles": [
+            "vocals",
+            "singing",
+            "voice",
+            "choir",
+            "lyrics",
+            "spoken word",
+            "rap",
+            "humming",
+            "modern EDM",
+            "dubstep",
+            "trap beat",
+            "heavy distortion",
+            "vinyl crackle",
+            "lo-fi hiss"
+          ],
+          "context_adherence": "high"
+        },
+        {
+          "text": "[Level 1 - active]\n{active: same tempo and key, the melody now over a steady drum groove and moving bass line, more notes, counter-melodies, lively}",
+          "duration_ms": 48000,
+          "positive_styles": [
+            "1990s point-and-click adventure game music",
+            "high-quality General MIDI orchestral",
+            "instrumental",
+            "120 BPM",
+            "D major",
+            "4/4",
+            "memorable melody",
+            "bright trumpet and clarinet unison",
+            "bouncy tuba bass",
+            "plucked acoustic guitar offbeats",
+            "xylophone runs",
+            "snappy snare and kick march groove",
+            "pizzicato strings",
+            "glockenspiel",
+            "energetic, drum groove"
+          ],
+          "negative_styles": [
+            "vocals",
+            "singing",
+            "voice",
+            "choir",
+            "lyrics",
+            "spoken word",
+            "rap",
+            "humming",
+            "modern EDM",
+            "dubstep",
+            "trap beat",
+            "heavy distortion",
+            "vinyl crackle",
+            "lo-fi hiss"
+          ],
+          "context_adherence": "high"
+        },
+        {
+          "text": "[Level 2 - tension / action]\n{tension and action: same key and BPM, double-time drums, driving 16th-note ostinato, strong toms and timpani hits, staccato strings, urgent}",
+          "duration_ms": 48000,
+          "positive_styles": [
+            "1990s point-and-click adventure game music",
+            "high-quality General MIDI orchestral",
+            "instrumental",
+            "120 BPM",
+            "D major",
+            "4/4",
+            "memorable melody",
+            "bright trumpet and clarinet unison",
+            "bouncy tuba bass",
+            "plucked acoustic guitar offbeats",
+            "xylophone runs",
+            "snappy snare and kick march groove",
+            "pizzicato strings",
+            "glockenspiel",
+            "intense, double-time drums, action"
+          ],
+          "negative_styles": [
+            "vocals",
+            "singing",
+            "voice",
+            "choir",
+            "lyrics",
+            "spoken word",
+            "rap",
+            "humming",
+            "modern EDM",
+            "dubstep",
+            "trap beat",
+            "heavy distortion",
+            "vinyl crackle",
+            "lo-fi hiss"
+          ],
+          "context_adherence": "high"
+        },
+        {
+          "text": "[Level 3 - triumph]\n{triumph: short joyful fanfare of the main melody, bright brass and glockenspiel, ends on the tonic chord}",
+          "duration_ms": 12000,
+          "positive_styles": [
+            "1990s point-and-click adventure game music",
+            "high-quality General MIDI orchestral",
+            "instrumental",
+            "120 BPM",
+            "D major",
+            "4/4",
+            "memorable melody",
+            "bright trumpet and clarinet unison",
+            "bouncy tuba bass",
+            "plucked acoustic guitar offbeats",
+            "xylophone runs",
+            "snappy snare and kick march groove",
+            "pizzicato strings",
+            "glockenspiel",
+            "triumphant fanfare"
+          ],
+          "negative_styles": [
+            "vocals",
+            "singing",
+            "voice",
+            "choir",
+            "lyrics",
+            "spoken word",
+            "rap",
+            "humming",
+            "modern EDM",
+            "dubstep",
+            "trap beat",
+            "heavy distortion",
+            "vinyl crackle",
+            "lo-fi hiss"
+          ],
+          "context_adherence": "high"
+        }
+      ]
+    }
+  },
+  "composition_plan": {
+    "chunks": [
+      {
+        "text": "[Level 0 - calm exploration]\n{calm, curious exploration: the main melody stated softly and sparsely, light percussion or none}",
+        "duration_ms": 64000,
+        "positive_styles": [
+          "1990s point-and-click adventure game music",
+          "high-quality General MIDI orchestral",
+          "instrumental",
+          "120 BPM",
+          "D major",
+          "4/4",
+          "memorable melody",
+          "bright trumpet and clarinet unison",
+          "bouncy tuba bass",
+          "plucked acoustic guitar offbeats",
+          "xylophone runs",
+          "snappy snare and kick march groove",
+          "pizzicato strings",
+          "glockenspiel",
+          "calm"
+        ],
+        "negative_styles": [
+          "vocals",
+          "singing",
+          "voice",
+          "choir",
+          "lyrics",
+          "spoken word",
+          "rap",
+          "humming",
+          "modern EDM",
+          "dubstep",
+          "trap beat",
+          "heavy distortion",
+          "vinyl crackle",
+          "lo-fi hiss"
+        ],
+        "context_adherence": "high"
+      }
+    ]
+  }
+}

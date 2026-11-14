@@ -3,6 +3,8 @@ import Phaser from 'phaser';
 // Voice audio is lazy-loaded by VoiceSystem on demand
 import { FONT } from '@/config/theme';
 import type { MusicManager } from '@/systems/MusicManager';
+import { sceneEntryTrack, type MusicMap } from '@/systems/MusicPlanner';
+import musicMapJson from '../../assets/config/music-map.json';
 import { loadingTipsFor, musicToPreload } from '@/systems/AudioPolicy';
 import { ScenePrefetcher, ASSET_V as v } from '@/systems/ScenePrefetcher';
 import { FADE_FIRST_MS, FADE_SHORT_MS, sceneImageAssets, transitionMode, type TransitionMode } from '@/systems/ScenePrefetch';
@@ -215,7 +217,8 @@ export class PreloadScene extends Phaser.Scene {
     // V5 (14-sep-2026): solo la pista de la escena inicial. Las otras 5 (~21 MB) las carga
     // MusicManager al entrar en la escena que las usa.
     // A1.5: en silencio, ninguna; MusicManager la pide al activar el sonido.
-    const musicTracks = ['retro-adventure'];
+    // A8.3: en outside suena el nivel 0 del tema de Dex (1,5 MB), no retro-adventure
+    const musicTracks = [sceneEntryTrack(musicMapJson as unknown as MusicMap, 'outside', 'retro-adventure') ?? 'retro-adventure'];
     for (const track of musicToPreload(musicTracks, muted, (k) => this.cache.audio.has(k))) {
       this.load.audio(track, `assets/audio/music/${track}.mp3${v}`);
     }

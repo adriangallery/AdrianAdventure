@@ -1,0 +1,436 @@
+{
+  "$comment": "A8.3: stingers generados (en Do / La menor para transportarlos igual que los sintetizados de A4.5). Una sola generación, un bloque por stinger; se cortan en los límites de bloque.",
+  "tema": "stingers",
+  "titulo": "Stingers y puentes",
+  "escenas": [
+    "(todas)"
+  ],
+  "bpm": 100,
+  "tonalidad": "Do mayor",
+  "key": "C major",
+  "compas": "4/4",
+  "instrumentacion": [
+    "glockenspiel",
+    "trumpet",
+    "xylophone",
+    "clarinet",
+    "brass",
+    "timpani",
+    "trombone"
+  ],
+  "prompt": "Set of short 1990s adventure game jingles in C major / A minor, instrumental.",
+  "modelo": "music_v2_5",
+  "semilla": 8207,
+  "output_format": "mp3_44100_192",
+  "partes": {
+    "stingers": {
+      "checkpoint": "A8.3",
+      "output_format": "mp3_44100_192",
+      "semilla": 8207,
+      "nombres": [
+        "item",
+        "puzzle_major",
+        "puzzle_minor",
+        "chapter_major",
+        "chapter_minor",
+        "fail"
+      ],
+      "duraciones_ms": [
+        3000,
+        5000,
+        5000,
+        8000,
+        8000,
+        4000
+      ],
+      "chunks": [
+        {
+          "text": "[Stinger - item]\n{tiny bright pickup jingle: glockenspiel and pizzicato, C - G - high C, then silence}",
+          "duration_ms": 3000,
+          "positive_styles": [
+            "1990s point-and-click adventure game jingle",
+            "high-quality General MIDI orchestral",
+            "instrumental",
+            "C major",
+            "short stinger",
+            "clean ending",
+            "glockenspiel",
+            "pizzicato strings"
+          ],
+          "negative_styles": [
+            "vocals",
+            "singing",
+            "voice",
+            "choir",
+            "lyrics",
+            "spoken word",
+            "rap",
+            "humming",
+            "modern EDM",
+            "dubstep",
+            "trap beat",
+            "heavy distortion",
+            "vinyl crackle",
+            "lo-fi hiss"
+          ],
+          "context_adherence": "high"
+        },
+        {
+          "text": "[Stinger - puzzle solved]\n{short happy fanfare: trumpet and xylophone, rising C major arpeggio, final C major chord}",
+          "duration_ms": 5000,
+          "positive_styles": [
+            "1990s point-and-click adventure game jingle",
+            "high-quality General MIDI orchestral",
+            "instrumental",
+            "C major",
+            "short stinger",
+            "clean ending",
+            "trumpet",
+            "xylophone",
+            "snare roll"
+          ],
+          "negative_styles": [
+            "vocals",
+            "singing",
+            "voice",
+            "choir",
+            "lyrics",
+            "spoken word",
+            "rap",
+            "humming",
+            "modern EDM",
+            "dubstep",
+            "trap beat",
+            "heavy distortion",
+            "vinyl crackle",
+            "lo-fi hiss"
+          ],
+          "context_adherence": "high"
+        },
+        {
+          "text": "[Stinger - puzzle solved, minor]\n{short sly victory: clarinet and pizzicato, A minor arpeggio rising, final A minor chord}",
+          "duration_ms": 5000,
+          "positive_styles": [
+            "1990s point-and-click adventure game jingle",
+            "high-quality General MIDI orchestral",
+            "instrumental",
+            "C major",
+            "short stinger",
+            "clean ending",
+            "clarinet",
+            "pizzicato strings",
+            "A minor"
+          ],
+          "negative_styles": [
+            "vocals",
+            "singing",
+            "voice",
+            "choir",
+            "lyrics",
+            "spoken word",
+            "rap",
+            "humming",
+            "modern EDM",
+            "dubstep",
+            "trap beat",
+            "heavy distortion",
+            "vinyl crackle",
+            "lo-fi hiss"
+          ],
+          "context_adherence": "high"
+        },
+        {
+          "text": "[Stinger - chapter complete]\n{chapter fanfare: brass and timpani, bold C major melody, big final C major chord, ring out}",
+          "duration_ms": 8000,
+          "positive_styles": [
+            "1990s point-and-click adventure game jingle",
+            "high-quality General MIDI orchestral",
+            "instrumental",
+            "C major",
+            "short stinger",
+            "clean ending",
+            "brass section",
+            "timpani",
+            "cymbal"
+          ],
+          "negative_styles": [
+            "vocals",
+            "singing",
+            "voice",
+            "choir",
+            "lyrics",
+            "spoken word",
+            "rap",
+            "humming",
+            "modern EDM",
+            "dubstep",
+            "trap beat",
+            "heavy distortion",
+            "vinyl crackle",
+            "lo-fi hiss"
+          ],
+          "context_adherence": "high"
+        },
+        {
+          "text": "[Stinger - chapter complete, minor]\n{dramatic chapter close: strings and brass, A minor, bold cadence, final A minor chord}",
+          "duration_ms": 8000,
+          "positive_styles": [
+            "1990s point-and-click adventure game jingle",
+            "high-quality General MIDI orchestral",
+            "instrumental",
+            "C major",
+            "short stinger",
+            "clean ending",
+            "strings",
+            "brass",
+            "timpani",
+            "A minor"
+          ],
+          "negative_styles": [
+            "vocals",
+            "singing",
+            "voice",
+            "choir",
+            "lyrics",
+            "spoken word",
+            "rap",
+            "humming",
+            "modern EDM",
+            "dubstep",
+            "trap beat",
+            "heavy distortion",
+            "vinyl crackle",
+            "lo-fi hiss"
+          ],
+          "context_adherence": "high"
+        },
+        {
+          "text": "[Stinger - fail]\n{comic failure: descending trombone wah-wah, bassoon, two low notes ending on C}",
+          "duration_ms": 4000,
+          "positive_styles": [
+            "1990s point-and-click adventure game jingle",
+            "high-quality General MIDI orchestral",
+            "instrumental",
+            "C major",
+            "short stinger",
+            "clean ending",
+            "muted trombone",
+            "bassoon"
+          ],
+          "negative_styles": [
+            "vocals",
+            "singing",
+            "voice",
+            "choir",
+            "lyrics",
+            "spoken word",
+            "rap",
+            "humming",
+            "modern EDM",
+            "dubstep",
+            "trap beat",
+            "heavy distortion",
+            "vinyl crackle",
+            "lo-fi hiss"
+          ],
+          "context_adherence": "high"
+        }
+      ]
+    }
+  },
+  "composition_plan": {
+    "chunks": [
+      {
+        "text": "[Stinger - item]\n{tiny bright pickup jingle: glockenspiel and pizzicato, C - G - high C, then silence}",
+        "duration_ms": 3000,
+        "positive_styles": [
+          "1990s point-and-click adventure game jingle",
+          "high-quality General MIDI orchestral",
+          "instrumental",
+          "C major",
+          "short stinger",
+          "clean ending",
+          "glockenspiel",
+          "pizzicato strings"
+        ],
+        "negative_styles": [
+          "vocals",
+          "singing",
+          "voice",
+          "choir",
+          "lyrics",
+          "spoken word",
+          "rap",
+          "humming",
+          "modern EDM",
+          "dubstep",
+          "trap beat",
+          "heavy distortion",
+          "vinyl crackle",
+          "lo-fi hiss"
+        ],
+        "context_adherence": "high"
+      },
+      {
+        "text": "[Stinger - puzzle solved]\n{short happy fanfare: trumpet and xylophone, rising C major arpeggio, final C major chord}",
+        "duration_ms": 5000,
+        "positive_styles": [
+          "1990s point-and-click adventure game jingle",
+          "high-quality General MIDI orchestral",
+          "instrumental",
+          "C major",
+          "short stinger",
+          "clean ending",
+          "trumpet",
+          "xylophone",
+          "snare roll"
+        ],
+        "negative_styles": [
+          "vocals",
+          "singing",
+          "voice",
+          "choir",
+          "lyrics",
+          "spoken word",
+          "rap",
+          "humming",
+          "modern EDM",
+          "dubstep",
+          "trap beat",
+          "heavy distortion",
+          "vinyl crackle",
+          "lo-fi hiss"
+        ],
+        "context_adherence": "high"
+      },
+      {
+        "text": "[Stinger - puzzle solved, minor]\n{short sly victory: clarinet and pizzicato, A minor arpeggio rising, final A minor chord}",
+        "duration_ms": 5000,
+        "positive_styles": [
+          "1990s point-and-click adventure game jingle",
+          "high-quality General MIDI orchestral",
+          "instrumental",
+          "C major",
+          "short stinger",
+          "clean ending",
+          "clarinet",
+          "pizzicato strings",
+          "A minor"
+        ],
+        "negative_styles": [
+          "vocals",
+          "singing",
+          "voice",
+          "choir",
+          "lyrics",
+          "spoken word",
+          "rap",
+          "humming",
+          "modern EDM",
+          "dubstep",
+          "trap beat",
+          "heavy distortion",
+          "vinyl crackle",
+          "lo-fi hiss"
+        ],
+        "context_adherence": "high"
+      },
+      {
+        "text": "[Stinger - chapter complete]\n{chapter fanfare: brass and timpani, bold C major melody, big final C major chord, ring out}",
+        "duration_ms": 8000,
+        "positive_styles": [
+          "1990s point-and-click adventure game jingle",
+          "high-quality General MIDI orchestral",
+          "instrumental",
+          "C major",
+          "short stinger",
+          "clean ending",
+          "brass section",
+          "timpani",
+          "cymbal"
+        ],
+        "negative_styles": [
+          "vocals",
+          "singing",
+          "voice",
+          "choir",
+          "lyrics",
+          "spoken word",
+          "rap",
+          "humming",
+          "modern EDM",
+          "dubstep",
+          "trap beat",
+          "heavy distortion",
+          "vinyl crackle",
+          "lo-fi hiss"
+        ],
+        "context_adherence": "high"
+      },
+      {
+        "text": "[Stinger - chapter complete, minor]\n{dramatic chapter close: strings and brass, A minor, bold cadence, final A minor chord}",
+        "duration_ms": 8000,
+        "positive_styles": [
+          "1990s point-and-click adventure game jingle",
+          "high-quality General MIDI orchestral",
+          "instrumental",
+          "C major",
+          "short stinger",
+          "clean ending",
+          "strings",
+          "brass",
+          "timpani",
+          "A minor"
+        ],
+        "negative_styles": [
+          "vocals",
+          "singing",
+          "voice",
+          "choir",
+          "lyrics",
+          "spoken word",
+          "rap",
+          "humming",
+          "modern EDM",
+          "dubstep",
+          "trap beat",
+          "heavy distortion",
+          "vinyl crackle",
+          "lo-fi hiss"
+        ],
+        "context_adherence": "high"
+      },
+      {
+        "text": "[Stinger - fail]\n{comic failure: descending trombone wah-wah, bassoon, two low notes ending on C}",
+        "duration_ms": 4000,
+        "positive_styles": [
+          "1990s point-and-click adventure game jingle",
+          "high-quality General MIDI orchestral",
+          "instrumental",
+          "C major",
+          "short stinger",
+          "clean ending",
+          "muted trombone",
+          "bassoon"
+        ],
+        "negative_styles": [
+          "vocals",
+          "singing",
+          "voice",
+          "choir",
+          "lyrics",
+          "spoken word",
+          "rap",
+          "humming",
+          "modern EDM",
+          "dubstep",
+          "trap beat",
+          "heavy distortion",
+          "vinyl crackle",
+          "lo-fi hiss"
+        ],
+        "context_adherence": "high"
+      }
+    ]
+  }
+}

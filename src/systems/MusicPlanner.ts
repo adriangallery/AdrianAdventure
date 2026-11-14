@@ -158,6 +158,8 @@ export function chooseBridge(from: KeyLike | null, to: KeyLike, cause: 'scene' |
 export interface MusicContext {
   scene: string | null;
   dialogue: boolean;
+  /** A8.3: árbol del diálogo abierto (null = ninguno o no se sabe) */
+  dialogueTree?: string | null;
   flags: Record<string, boolean>;
   inventory: string[];
   /** Objetivos que faltan en el capítulo actual (null = no se sabe) */
@@ -168,6 +170,8 @@ export interface MusicContext {
 
 export interface StateRuleWhen {
   dialogue?: boolean;
+  /** A8.3: diálogo concreto abierto (p. ej. `chad_fud`, `pzbot_final`) */
+  dialogueTree?: string | string[];
   scene?: string | string[];
   flag?: string;
   notFlag?: string;
@@ -183,6 +187,8 @@ export interface StateRule {
 }
 
 export interface StateMusic {
+  /** A8.3: nivel de intensidad que pide el estado en los temas con niveles (0 calma, 1 activo, 2 tensión, 3 triunfo) */
+  intensity?: number;
   /** Capas sintetizadas encima de la pista */
   layers: string[];
   /** Sección preferida: 'calm' (la de menos energía), 'intense' (la de más) o 'any' (no salta) */
@@ -204,8 +210,19 @@ export interface PlaceArrangement {
   cutoff: number;
 }
 
+/**
+ * A8.3: tema con niveles de intensidad (pistas cortadas en compases enteros de UNA generación: misma tonalidad y tempo).
+ * `levels[i]` = pista del nivel i (null = aún no generado: se usa el nivel existente más cercano por debajo).
+ */
+export interface MusicTheme {
+  levels: Array<string | null>;
+  /** Escenas que suenan con este tema (sustituye a la pista de `scene.json` → audio.music) */
+  scenes: string[];
+}
+
 export interface MusicMap {
   tracks: Record<string, TrackGrid>;
+  themes?: Record<string, MusicTheme>;
   planner?: Partial<PlannerOptions>;
   rules: StateRule[];
   states: Record<string, StateMusic>;
@@ -217,6 +234,10 @@ export const DEFAULT_STATE = 'explore';
 
 export function ruleMatches(w: StateRuleWhen, ctx: MusicContext): boolean {
   if (w.dialogue !== undefined && w.dialogue !== ctx.dialogue) return false;
+  if (w.dialogueTree !== undefined) {
+    const list = Array.isArray(w.dialogueTree) ? w.dialogueTree : [w.dialogueTree];
+    if (!ctx.dialogue || !ctx.dialogueTree || !list.includes(ctx.dialogueTree)) return false;
+  }
   if (w.scene !== undefined) {
     const list = Array.isArray(w.scene) ? w.scene : [w.scene];
     if (!ctx.scene || !list.includes(ctx.scene)) return false;
@@ -338,4 +359,68 @@ export function nextBeatSec(grid: TrackGrid, posSec: number): number {
   const beat = grid.barSec / grid.beatsPerBar;
   const k = Math.ceil((posSec - grid.firstDownbeatSec) / beat - 1e-9);
   return grid.firstDownbeatSec + k * beat - posSec;
+}
+
+// ─── A8.3: niveles de intensidad ─────────────────────────────
+
+export const LEVEL_NAMES = ['calma', 'activo', 'tension', 'triunfo'] as const;
+/** Nivel del triunfo: corto, no se queda en bucle (vuelve al nivel de antes al acabar) */
+export const TRIUMPH_LEVEL = 3;
+
+/** Tema que suena en una escena (null = la escena usa su pista de siempre) */
+export function themeForScene(themes: MusicMap['themes'], scene: string | null): string | null {
+  if (!themes || !scene) return null;
+  for (const [id, t] of Object.entries(themes)) if (t.scenes.includes(scene)) return id;
+  return null;
+}
+
+/** ¿De qué tema y nivel es esta pista? */
+export function levelOfTrack(themes: MusicMap['themes'], track: string | null): { theme: string; level: number } | null {
+  if (!themes || !track) return null;
+  for (const [id, t] of Object.entries(themes)) {
+    const i = t.levels.indexOf(track);
+    if (i >= 0) return { theme: id, level: i };
+  }
+  return null;
+}
+
+/** Nivel que pide un estado (sin `intensity` = 0) acotado a 0-3 */
+export function intensityOf(sm: Pick<StateMusic, 'intensity'> | undefined): number {
+  const n = Math.round(sm?.intensity ?? 0);
+  return Math.max(0, Math.min(TRIUMPH_LEVEL, n));
+}
+
+/**
+ * Pista de un nivel: la del nivel pedido o, si falta (aún no generada o no está en `tracks`), la del nivel existente más
+ * cercano por debajo; si no hay ninguna por debajo, la primera por encima. null = el tema no tiene pistas.
+ */
+export function levelTrack(theme: MusicTheme, level: number, has: (track: string) => boolean = () => true): { track: string; level: number } | null {
+  const ok = (i: number) => theme.levels[i] != null && has(theme.levels[i] as string);
+  for (let i = Math.min(level, theme.levels.length - 1); i >= 0; i--) if (ok(i)) return { track: theme.levels[i] as string, level: i };
+  for (let i = level + 1; i < theme.levels.length; i++) if (ok(i)) return { track: theme.levels[i] as string, level: i };
+  return null;
+}
+
+/**
+ * Compás por el que entra el nivel nuevo cuando la pista que suena sale en `exitAbsBar`: conserva la posición dentro de la
+ * frase (`phraseBars`, 4 por defecto) para que la melodía siga en su sitio; el triunfo entra siempre por el principio.
+ * Siempre es un compás entero dentro de la pista de destino.
+ */
+export function levelEntryBar(exitAbsBar: number, toBars: number, toLevel: number, phraseBars = 4): number {
+  if (toLevel >= TRIUMPH_LEVEL || toBars <= 0) return 0;
+  const b = mod(Math.round(exitAbsBar), Math.max(1, phraseBars));
+  return b < toBars ? b : 0;
+}
+
+/** Pista con la que entra una escena (nivel 0 de su tema, o la de scene.json): la que conviene precargar */
+export function sceneEntryTrack(map: Pick<MusicMap, 'themes' | 'tracks'>, scene: string | null, fallback: string | null): string | null {
+  const id = themeForScene(map.themes, scene);
+  if (!id || !map.themes) return fallback;
+  return levelTrack(map.themes[id], 0, (k) => !!map.tracks[k])?.track ?? fallback;
+}
+
+/** Tempos compatibles para cambiar en compás sin corte: el mismo o el doble/la mitad (±1 %) */
+export function tempoCompatible(a: number, b: number, tol = 0.01): boolean {
+  const r = a > b ? a / b : b / a;
+  return Math.abs(r - 1) <= tol || Math.abs(r - 2) <= 2 * tol;
 }

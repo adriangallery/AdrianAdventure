@@ -12,6 +12,7 @@ import { STINGER_VOLUME } from '@/systems/Stingers';
 import {
   DEFAULT_PLANNER, LAYER_GAIN, barAt, barStartSec, chooseBridge, layerNotes, needsSectionJump, nextBeatSec, nextExit,
   placeFor, resolveState, sectionAtBar, sectionFor, trackPosition,
+  LEVEL_NAMES, TRIUMPH_LEVEL, intensityOf, levelEntryBar, levelOfTrack, levelTrack, themeForScene,
   type BridgePlan, type ExitKind, type MusicContext, type MusicMap, type PlaceArrangement, type PlannerOptions, type StateMusic, type TrackGrid,
 } from '@/systems/MusicPlanner';
 import musicMapJson from '../../assets/config/music-map.json';
@@ -43,6 +44,8 @@ const SOLVED_BARS = MUSIC_MAP.planner?.solvedBars ?? 4;
 const LOOKAHEAD_SEC = 0.35;
 const TICK_MS = 50;
 const KEEP_TRANSITIONS = 30;
+/** A8.3: segundos que tiene que durar el nivel pedido antes de programar el cambio (sin vaivenes por parpadeos del estado) */
+const LEVEL_SETTLE_SEC = 0.3;
 const NOTE_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
 const keyName = (k: MusicKey | null | undefined) => (k ? `${NOTE_NAMES[((k.tonic % 12) + 12) % 12]} ${k.mode}` : null);
 
@@ -86,6 +89,11 @@ export interface AdaptiveQaState {
   nextExit: { bar: number; kind: ExitKind; inSec: number; section: string | null } | null;
   scheduled: { to: string; at: number; inSec: number; bridge: string | null; toSection: string | null } | null;
   layers: Record<string, number>;
+  /** A8.3: tema con niveles de la escena (null = pista de siempre), nivel que suena y nivel que pide el estado */
+  theme: string | null;
+  level: number | null;
+  levelName: string | null;
+  wantLevel: number | null;
   transitions: MusicTransitionLog[];
 }
 
@@ -420,7 +428,8 @@ export class MusicManager {
 
   private transitionMusic(audio: SceneAudioConfig): void {
     const duration = (audio.crossfadeDuration ?? DEFAULT_CROSSFADE) / 1000;
-    const newKey = audio.music;
+    // A8.3: en una escena con tema de niveles suena el nivel que pide el estado (no la pista de scene.json)
+    const newKey = this.themedKey(audio.music);
     const variation = audio.variation;
 
     if (newKey === null) {
@@ -601,9 +610,14 @@ export class MusicManager {
     const goals = r.get('musicGoalsLeft');
     const now = this.context.currentTime;
     if (this.transient && now >= this.transient.until) this.transient = null;
+    // A8.3: el triunfo (nivel 3) ya ha sonado casi entero: se suelta `solved` para volver en su último compás
+    const tr = this.currentTrack;
+    const lv = tr ? levelOfTrack(MUSIC_MAP.themes, tr.key) : null;
+    if (this.transient?.name === 'solved' && tr?.grid && lv?.level === TRIUMPH_LEVEL && now >= tr.startCtx + Math.max(1, tr.grid.bars - 2) * tr.grid.barSec) this.transient = null;
     return {
       scene: (r.get('currentSceneId') as string | undefined) ?? null,
       dialogue: !!r.get('dialogueActive'),
+      dialogueTree: (r.get('dialogueTree') as string | null | undefined) ?? null,
       flags: gs?.flags ?? {},
       inventory: (gs?.inventory ?? []).map((i) => i.id),
       goalsLeft: typeof goals === 'number' ? goals : null,
@@ -615,7 +629,76 @@ export class MusicManager {
   markSolved(): void {
     const grid = this.currentTrack?.grid;
     const bar = grid?.barSec ?? 2.5;
-    this.transient = { name: 'solved', until: this.context.currentTime + SOLVED_BARS * bar };
+    // A8.3: con tema de niveles dura hasta que el triunfo ha sonado (lo corta musicContext), como mucho 20 s
+    const lv = levelOfTrack(MUSIC_MAP.themes, this.currentKey);
+    const secs = lv ? 20 : SOLVED_BARS * bar;
+    this.transient = { name: 'solved', until: this.context.currentTime + secs };
+    if (lv) this.prefetchLevel(lv.theme, TRIUMPH_LEVEL);
+  }
+
+  /** A8.3: pista que toca en la escena actual: el nivel que pide el estado si la escena tiene tema; si no, la pedida */
+  private themedKey(requested: string | null): string | null {
+    if (requested === null) return null;
+    const want = this.wantedLevelTrack();
+    return want ?? requested;
+  }
+
+  /** A8.3: pista del nivel que pide el estado ahora en el tema de la escena (null = la escena no tiene tema) */
+  private wantedLevelTrack(): string | null {
+    const scene = (this.game.registry.get('currentSceneId') as string | undefined) ?? null;
+    const theme = themeForScene(MUSIC_MAP.themes, scene);
+    if (!theme || !MUSIC_MAP.themes) return null;
+    const lv = intensityOf(MUSIC_MAP.states[resolveState(MUSIC_MAP.rules, this.musicContext()).state]);
+    this.wantLevel = lv;
+    return levelTrack(MUSIC_MAP.themes[theme], lv, (k) => !!MUSIC_MAP.tracks[k])?.track ?? null;
+  }
+
+  private wantLevel: number | null = null;
+  private wantTrack: string | null = null;
+  private wantSince = 0;
+  private loadingLevel: string | null = null;
+
+  /** A8.3: descarga un nivel del tema sin tocar lo que suena (nunca en silencio: AudioPolicy) */
+  private prefetchLevel(theme: string, level: number): void {
+    const t = MUSIC_MAP.themes?.[theme];
+    const key = t ? levelTrack(t, level, (k) => !!MUSIC_MAP.tracks[k])?.track : null;
+    if (!key || this.muted || !shouldFetchAudio(this.muted) || this.getDecodedBuffer(key) || this.loadingTracks.has(key)) return;
+    this.loadTrack(key, () => { /* queda en caché */ });
+  }
+
+  /**
+   * A8.3: el estado pide otro nivel del mismo tema → cambio planificado en compás (sin puente). Si el nivel aún no está
+   * descargado, se pide y se cambia al llegar (si sigue haciendo falta).
+   */
+  private updateLevel(track: ManagedTrack): void {
+    if (this.pendingKey) return;
+    const cur = levelOfTrack(MUSIC_MAP.themes, track.key);
+    const want = this.wantedLevelTrack();
+    if (!want || !cur) return;
+    // histéresis: el nivel pedido tiene que durar LEVEL_SETTLE_SEC (un parpadeo del estado no programa nada)
+    const now = this.context.currentTime;
+    if (want !== this.wantTrack) {
+      this.wantTrack = want;
+      this.wantSince = now;
+    }
+    if (now - this.wantSince < LEVEL_SETTLE_SEC) return;
+    const sc = this.scheduled;
+    if (sc) {
+      // un cambio de escena pendiente manda; un cambio de nivel pendiente se respeta si va al nivel que toca
+      if (!levelOfTrack(MUSIC_MAP.themes, sc.track.key) || sc.track.key === want) return;
+    }
+    if (want === track.key) {
+      if (sc) this.cancelScheduled();
+      return;
+    }
+    const buffer = this.getDecodedBuffer(want);
+    if (!buffer) {
+      if (this.loadingLevel === want || !shouldFetchAudio(this.muted)) return;
+      this.loadingLevel = want;
+      this.loadTrack(want, () => { this.loadingLevel = null; });
+      return;
+    }
+    this.planSwitch(want, buffer, { volume: track.baseVol }, 'state', null);
   }
 
   /**
@@ -630,9 +713,11 @@ export class MusicManager {
     // el estado que habrá en la escena nueva (la regla se evalúa ya, no en el siguiente tick): así entra directamente en la
     // sección que toca y no salta otra vez dos compases después
     const sm = MUSIC_MAP.states[resolveState(MUSIC_MAP.rules, this.musicContext()).state] ?? this.stateMusic();
-    const sec = (forceSection ? toGrid.sections.find((s) => s.id === forceSection) : null) ?? sectionFor(toGrid, sm.section) ?? toGrid.sections[0] ?? null;
-    const toBar = sec?.startBar ?? 0;
-    const offset = barStartSec(toGrid, toBar);
+    const toLevel = levelOfTrack(MUSIC_MAP.themes, newKey);
+    // A8.3: un nivel de tema entra por su principio (o, desde otro nivel del mismo tema, en la misma posición de la frase)
+    let sec: ReturnType<typeof sectionAtBar> = toLevel ? (toGrid.sections[0] ?? null) : ((forceSection ? toGrid.sections.find((s) => s.id === forceSection) : null) ?? sectionFor(toGrid, sm.section) ?? toGrid.sections[0] ?? null);
+    let toBar = toLevel ? 0 : (sec?.startBar ?? 0);
+    let offset = barStartSec(toGrid, toBar);
     const old = this.currentTrack;
     const target = Math.max((variation?.volume ?? 1) * sm.gain, 0.001);
     const beatTo = toGrid.barSec / toGrid.beatsPerBar;
@@ -655,10 +740,18 @@ export class MusicManager {
     const pos = this.posOf(old, now);
     const exit = nextExit(fromGrid, pos, PLANNER);
     const at = now + exit.waitSec;
-    const bridge = newKey === old.key ? chooseBridge(fromGrid.key, toGrid.key, 'state') : chooseBridge(fromGrid.key, toGrid.key, cause);
+    const fromLevel = levelOfTrack(MUSIC_MAP.themes, old.key);
+    const sameTheme = !!toLevel && !!fromLevel && toLevel.theme === fromLevel.theme;
+    if (sameTheme && toLevel) {
+      toBar = levelEntryBar(exit.absBar, toGrid.bars, toLevel.level, 4);
+      offset = barStartSec(toGrid, toBar);
+      sec = sectionAtBar(toGrid, toBar);
+    }
+    // mismo tema = misma tonalidad y tempo (una sola generación): cambio de nivel en compás, sin puente
+    const bridge = sameTheme ? chooseBridge(toGrid.key, toGrid.key, 'state') : newKey === old.key ? chooseBridge(fromGrid.key, toGrid.key, 'state') : chooseBridge(fromGrid.key, toGrid.key, cause);
     const track = this.createTrack(newKey, buffer, variation, { when: at, offset });
-    if (newKey === old.key) {
-      // salto de sección: mismo filtro de la escena
+    if (newKey === old.key || sameTheme) {
+      // salto de sección o de nivel: mismo filtro de la escena
       track.filterNode.type = old.filterNode.type;
       track.filterNode.frequency.value = old.filterNode.frequency.value;
       track.filterNode.Q.value = old.filterNode.Q.value;
@@ -685,7 +778,7 @@ export class MusicManager {
     const posAtExit = trackPosition(fromGrid, old.startOffset, at - old.startCtx);
     const fb = barAt(fromGrid, posAtExit);
     const log: MusicTransitionLog = {
-      cause: newKey === old.key ? 'state' : cause, from: old.key, to: newKey, requestedAt: round3(now), exitAt: round3(at), waitSec: round3(exit.waitSec),
+      cause: newKey === old.key || sameTheme ? 'state' : cause, from: old.key, to: newKey, requestedAt: round3(now), exitAt: round3(at), waitSec: round3(exit.waitSec),
       waitBars: round3(exit.waitSec / fromGrid.barSec), fromBar: exit.bar, barError: round3(Math.abs(fb - Math.round(fb))), exitKind: exit.kind,
       toSection: sec?.id ?? null, toBar, bridge: bridge.type, bridgeClip: bridge.clip, detune: bridge.detune, key: keyName(toGrid.key),
     };
@@ -787,7 +880,11 @@ export class MusicManager {
       this.musicRule = rule;
       this.layersTrack = track;
       this.applyState(track, changed);
+      // A8.3: al empezar un tema de niveles se descarga ya el triunfo (pequeño) para el próximo puzle
+      const lv = levelOfTrack(MUSIC_MAP.themes, track.key);
+      if (lv) this.prefetchLevel(lv.theme, TRIUMPH_LEVEL);
     }
+    this.updateLevel(track);
     this.scheduleLayers(track);
   }
 
@@ -800,8 +897,9 @@ export class MusicManager {
     const now = this.context.currentTime;
     const beat = grid.barSec / grid.beatsPerBar;
     const start = now + nextBeatSec(grid, this.posOf(track, now));
+    const layers = this.activeLayers(track);
     for (const name of Object.keys(LAYER_GAIN)) {
-      const target = sm.layers.includes(name) ? LAYER_GAIN[name] : 0.0001;
+      const target = layers.includes(name) ? LAYER_GAIN[name] : 0.0001;
       this.layerTargets[name] = target;
       const g = this.layerGains.get(name)?.gain;
       if (!g) continue;
@@ -816,9 +914,15 @@ export class MusicManager {
       tg.setValueAtTime(Math.max(tg.value, 0.001), now);
       tg.setValueAtTime(Math.max(tg.value, 0.001), start);
       tg.linearRampToValueAtTime(Math.max(track.baseVol * sm.gain, 0.001), start + beat);
-      const jump = needsSectionJump(grid, barAt(grid, this.posOf(track, now)), sm.section);
+      // A8.3: en un tema de niveles la intensidad la da el nivel (updateLevel), no el salto de sección
+      const jump = levelOfTrack(MUSIC_MAP.themes, track.key) ? null : needsSectionJump(grid, barAt(grid, this.posOf(track, now)), sm.section);
       if (jump) this.planSwitch(track.key, track.buffer, { volume: track.baseVol }, 'state', jump.id);
     }
+  }
+
+  /** A8.3: capas sintetizadas del estado; ninguna sobre un nivel de tema (la intensidad ya va grabada en la pista) */
+  private activeLayers(track: ManagedTrack): string[] {
+    return levelOfTrack(MUSIC_MAP.themes, track.key) ? [] : this.stateMusic().layers;
   }
 
   private ensureLayers(): void {
@@ -877,7 +981,6 @@ export class MusicManager {
     if (now < track.startCtx) return;
     const pos = this.posOf(track, now);
     const b = barAt(grid, pos);
-    const sm = this.stateMusic();
     const place = this.arrangement ?? MUSIC_MAP.defaultPlace;
     const beat = grid.barSec / grid.beatsPerBar;
     for (let nb = Math.ceil(b - 1e-6); ; nb++) {
@@ -888,7 +991,7 @@ export class MusicManager {
       if (this.scheduled && t >= this.scheduled.at - 0.01) break;
       this.lastScheduledBarAt = t;
       const barIdx = ((nb % grid.bars) + grid.bars) % grid.bars;
-      for (const layer of sm.layers) {
+      for (const layer of this.activeLayers(track)) {
         const out = this.layerGains.get(layer);
         if (!out) continue;
         for (const n of layerNotes(layer, grid.key, place, grid.beatsPerBar, barIdx, this.musicState === 'danger')) {
@@ -965,6 +1068,10 @@ export class MusicManager {
       nextExit: exit,
       scheduled: sc ? { to: sc.track.key, at: round3(sc.at), inSec: round3(sc.at - now), bridge: sc.log.bridgeClip, toSection: sc.log.toSection } : null,
       layers,
+      theme: themeForScene(MUSIC_MAP.themes, this.place) ?? levelOfTrack(MUSIC_MAP.themes, tr?.key ?? null)?.theme ?? null,
+      level: levelOfTrack(MUSIC_MAP.themes, tr?.key ?? null)?.level ?? null,
+      levelName: (() => { const l = levelOfTrack(MUSIC_MAP.themes, tr?.key ?? null)?.level; return l == null ? null : LEVEL_NAMES[l]; })(),
+      wantLevel: this.wantLevel,
       transitions: this.transitions.map((t) => ({ ...t })),
     };
   }
