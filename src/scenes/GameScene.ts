@@ -726,7 +726,7 @@ export class GameScene extends Phaser.Scene {
   private handlePointerDown(pointer: Phaser.Input.Pointer): void {
     if (this.emittingSynthetic) return;
     // A2.9: con el diario abierto el HTML tapa el lienzo; por si acaso, la escena no recibe toques
-    if (this.registry.get('journalOpen') || this.registry.get('dashboardOpen')) return;
+    if (this.registry.get('journalOpen') || this.registry.get('dashboardOpen') || this.registry.get('screenCloseupOpen')) return;
     // A2.10: un toque en cinemática enseña cómo saltarla (mantener pulsado; con ratón, también Esc)
     if (this.cinema?.isActive()) this.cinema.noteTap(pointer.wasTouch);
     const blocked = this.scriptEngine.isRunning() || !!this.registry.get('dialogueActive') || !!this.registry.get('dialogueShowing');
@@ -1652,7 +1652,8 @@ export class GameScene extends Phaser.Scene {
   private autosaveProgressIfIdle(): void {
     if (!this.progressDirty || this.isTrailer) return;
     if (this.scriptEngine.isRunning() || this.registry.get('dialogueShowing') || this.registry.get('dialogueActive')
-      || this.registry.get('journalOpen') || this.registry.get('dashboardOpen') || this.registry.get('sceneTransition')) return;
+      || this.registry.get('journalOpen') || this.registry.get('dashboardOpen') || this.registry.get('screenCloseupOpen')
+      || this.registry.get('sceneTransition')) return;
     this.progressDirty = false;
     this.gameState.savedAt = Date.now();
     const title = this.sceneDataLoader?.getSceneData()?.title ?? this.gameState.currentScene;
@@ -1792,6 +1793,8 @@ export class GameScene extends Phaser.Scene {
     if (this.registry.get('dialogueShowing')) return true;
     // A3.10: el dashboard del rig espera a que el jugador lo cierre
     if (this.registry.get('dashboardOpen')) return true;
+    // A2.19: el primer plano de una pantalla espera a que el jugador lo cierre
+    if (this.registry.get('screenCloseupOpen')) return true;
     if (countDialogueTree && this.registry.get('dialogueActive')) return true;
     if (((this.registry.get('cinematicActive') as number | undefined) ?? 0) > 0) return true;
     if (!this.scene.isActive('UIScene')) return false;
@@ -2587,6 +2590,9 @@ export class GameScene extends Phaser.Scene {
     this.screenCloseup ??= new ScreenCloseup();
     this.registry.set('screenCloseupOpen', true);
     const spoken = speak(true);
+    // Si el subtítulo se cierra solo (cinemática que avanza al ritmo de la voz, salto), el primer plano se cierra con él
+    const closeup = this.screenCloseup;
+    void spoken.then(() => { if (closeup.isOpen()) closeup.close(); });
     try {
       await this.screenCloseup.open({
         screen: req.screen,
