@@ -48,10 +48,23 @@ export function surfaceAt(audio: FootstepAudioConfig | null | undefined, x: numb
 
 /**
  * A8.4: variantes por superficie (`step_<superficie>_1..STEP_VARIANTS`, ElevenLabs: art/sfx/sfx.json). Pie izquierdo =
- * impares, derecho = pares; `pick` elige la pareja (0 = _1/_2, 1 = _3/_4…). Con 2 variantes, como en A4.4.
+ * impares, derecho = pares; `pick` elige la pareja (0 = _1/_2, 1 = _3/_4…).
+ * `?steps=old` vuelve a los sintetizados de A4.4 (`step_<superficie>_old_1/2`, 2 variantes), mismo volumen.
  */
-export const STEP_VARIANTS = 2;
-export const stepKey = (surface: string, foot: 0 | 1, pick = 0): string => `step_${surface}_${foot + 1 + 2 * pick}`;
+export const STEP_VARIANTS = 4;
+export const OLD_STEP_VARIANTS = 2;
+export type StepSet = 'new' | 'old';
+/** Juego de pasos según la URL: `?steps=old` = los sintetizados de A4.4; cualquier otra cosa, los de ElevenLabs */
+export function stepSetFrom(search: string): StepSet {
+  return new URLSearchParams(search).get('steps') === 'old' ? 'old' : 'new';
+}
+export const stepKey = (surface: string, foot: 0 | 1, pick = 0, set: StepSet = 'new'): string =>
+  set === 'old' ? `step_${surface}_old_${foot + 1}` : `step_${surface}_${foot + 1 + 2 * pick}`;
+/** Claves de pasos que hay que precargar para un juego */
+export function stepPreloadKeys(set: StepSet = 'new'): string[] {
+  const n = set === 'old' ? OLD_STEP_VARIANTS : STEP_VARIANTS;
+  return SURFACES.flatMap((s) => Array.from({ length: n }, (_, i) => (set === 'old' ? `step_${s}_old_${i + 1}` : `step_${s}_${i + 1}`)));
+}
 
 /**
  * Cuenta la distancia andada y dice cuándo toca un paso. El primer paso suena al echar a andar (tras media
@@ -86,11 +99,11 @@ export class FootstepTracker {
 }
 
 /** Parámetros del efecto de un paso: clave, desafino (cents) y volumen; `random` y `randomPick` en [0, 1) */
-export function stepSound(surface: string, foot: 0 | 1, random: number, depth = 1, randomPick = 0): { key: string; detune: number; volume: number } {
-  const pairs = Math.max(1, Math.floor(STEP_VARIANTS / 2));
+export function stepSound(surface: string, foot: 0 | 1, random: number, depth = 1, randomPick = 0, set: StepSet = 'new'): { key: string; detune: number; volume: number } {
+  const pairs = set === 'old' ? 1 : Math.max(1, Math.floor(STEP_VARIANTS / 2));
   const pick = Math.min(pairs - 1, Math.max(0, Math.floor(randomPick * pairs)));
   const detune = Math.round((random * 2 - 1) * STEP_DETUNE_CENTS);
   // Más lejos (escala por profundidad < 1) suena un poco más bajo
   const volume = Math.round(STEP_VOLUME * (0.6 + 0.4 * Math.min(1, Math.max(0.2, depth))) * 100) / 100;
-  return { key: stepKey(surface, foot, pick), detune, volume };
+  return { key: stepKey(surface, foot, pick, set), detune, volume };
 }

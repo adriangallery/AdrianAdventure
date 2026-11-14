@@ -52,7 +52,7 @@ import { hotspotVisible } from '@/systems/HotspotVisibility';
 import type { VoiceSystem } from '@/systems/VoiceSystem';
 import { failResponses } from '@/systems/FailResponsesData';
 import { isNpcBag } from '@/systems/FailResponses';
-import { surfaceAt, stepSound } from '@/systems/Footsteps';
+import { surfaceAt, stepSound, stepSetFrom } from '@/systems/Footsteps';
 import { sfxOf } from '@/systems/Sfx';
 import { isStingerKind } from '@/systems/Stingers';
 import { playStinger } from '@/systems/StingerPlayer';
@@ -440,7 +440,7 @@ export class GameScene extends Phaser.Scene {
       const surface = surfaceAt(sceneData.audio, step.x, step.y);
       this.lastFootstep = { surface, key: null, at: Math.round(performance.now()) };
       if (!surface) return;
-      const sound = stepSound(surface, step.foot, Math.random(), step.depth, Math.random());
+      const sound = stepSound(surface, step.foot, Math.random(), step.depth, Math.random(), stepSetFrom(window.location.search));
       this.lastFootstep.key = sound.key;
       sfxOf(this)?.play(sound.key, { volume: sound.volume, detune: sound.detune });
     });
