@@ -74,43 +74,43 @@
           "LOOK": [
             {
               "op": "say",
-              "text": "'Patient Zero Rehabilitation Clinic'. Where they send wallets that went too deep into memecoin season."
+              "text": "'Patient Zero Rehabilitation Clinic'. Up a mountain. Nobody builds a clinic up a mountain unless they don't want visitors."
             }
           ],
           "USE": [
             {
               "op": "say",
-              "text": "The fine print mentions 'No refunds, no regrets, only recovery'."
+              "text": "Fine print: 'No refunds, no regrets, only recovery.' Two out of three isn't bad."
             }
           ],
           "TALK": [
             {
               "op": "say",
-              "text": "The sign doesn't talk. But it judges silently."
+              "text": "The sign doesn't talk. It just points. Smugly."
             }
           ],
           "PICK": [
             {
               "op": "say",
-              "text": "I can't take the sign, but I screenshot it for my portfolio losses."
+              "text": "It's sunk deep in the rock. Somebody really wanted this sign to stay found."
             }
           ],
           "OPEN": [
             {
               "op": "say",
-              "text": "The sign doesn't open, but it opens my eyes to crypto addiction."
+              "text": "It's a sign. It doesn't open. It just knows things."
             }
           ],
           "CLOSE": [
             {
               "op": "say",
-              "text": "I can't close the sign, but I can close my trading app."
+              "text": "Can't close a sign. I can close my eyes. The sign is still there."
             }
           ],
           "PUSH": [
             {
               "op": "say",
-              "text": "I push the sign. It wobbles but holds. Built to last, unlike most DeFi protocols."
+              "text": "I push the sign. It wobbles, then holds. Better posture than me."
             }
           ],
           "PULL": [
@@ -122,7 +122,7 @@
           "GIVE": [
             {
               "op": "say",
-              "text": "The sign doesn't accept patients anymore. Or gifts."
+              "text": "The sign takes nothing. It gives directions. Very old-fashioned."
             }
           ]
         }
@@ -145,7 +145,7 @@
           "LOOK": [
             {
               "op": "say",
-              "text": "A long winding path leads to the clinic. Hope I've got stamina... and a decent gas allowance."
+              "text": "A long winding path up to the clinic. My calves have already filed a complaint."
             }
           ],
           "USE": [
@@ -189,37 +189,37 @@
           "TALK": [
             {
               "op": "say",
-              "text": "The path echoes my footsteps back. Sounds like liquidation alerts."
+              "text": "'Hello?' The path doesn't answer. A pebble rolls away from me. Rude."
             }
           ],
           "PICK": [
             {
               "op": "say",
-              "text": "I can't take the path, but I can follow it to recovery... or more losses."
+              "text": "I can't take the path. I can only take it. ...That's a different 'take'."
             }
           ],
           "OPEN": [
             {
               "op": "say",
-              "text": "The path is always open. A one-way road to financial therapy."
+              "text": "The path is already open. That's what makes it a path and not a wall."
             }
           ],
           "CLOSE": [
             {
               "op": "say",
-              "text": "I can't close the path, but I can close my positions."
+              "text": "I can't close a path. I'd need a very long gate."
             }
           ],
           "PUSH": [
             {
               "op": "say",
-              "text": "I push forward on the path. Each step feels heavier. Like gas fees on a congested chain."
+              "text": "I push on up the path. Each step heavier than the last. I should've stretched."
             }
           ],
           "PULL": [
             {
               "op": "say",
-              "text": "I pull back from the path. Maybe I'm not ready for recovery yet."
+              "text": "I take a step back. The path waits. Paths are patient. Annoyingly."
             }
           ],
           "GIVE": [
@@ -243,7 +243,7 @@
           "LOOK": [
             {
               "op": "say",
-              "text": "Clouds shift like unstable protocols. Reality here is barely forked."
+              "text": "Pink clouds drifting over the peaks. Pretty. Suspiciously pretty. Clinic brochures look like this."
             },
             {
               "op": "setFlag",
@@ -254,43 +254,43 @@
           "USE": [
             {
               "op": "say",
-              "text": "The clouds form patterns that look like candlestick charts."
+              "text": "I squint at the clouds. That one's a duck. That one's... also a duck. Gerald, is that you?"
             }
           ],
           "TALK": [
             {
               "op": "say",
-              "text": "The wind whispers: 'Not your keys, not your clouds...'"
+              "text": "I shout a question at the sky. The sky shrugs a cloud at me."
             }
           ],
           "PICK": [
             {
               "op": "say",
-              "text": "I try to grab a cloud. It turns into vaporware."
+              "text": "I reach for a cloud. I'm short by about two kilometres."
             }
           ],
           "OPEN": [
             {
               "op": "say",
-              "text": "The sky is always open. The ultimate open source."
+              "text": "The sky's already open. Wide open. Showing off, frankly."
             }
           ],
           "CLOSE": [
             {
               "op": "say",
-              "text": "The sky can't be closed. It's censorship-resistant."
+              "text": "I can't close the sky. I can close my eyes. Nap's not on the agenda."
             }
           ],
           "PUSH": [
             {
               "op": "say",
-              "text": "I push against the sky. Surprisingly, nothing happens."
+              "text": "I push the sky. My arm gets tired. The sky doesn't."
             }
           ],
           "PULL": [
             {
               "op": "say",
-              "text": "I try to pull the clouds closer. They're on a different protocol."
+              "text": "I try to pull the clouds closer. They drift off. Even the weather avoids me."
             }
           ],
           "GIVE": [
@@ -314,7 +314,7 @@
           "LOOK": [
             {
               "op": "say",
-              "text": "Something's moving in the shadows... could be a dev debugging or just my paranoia."
+              "text": "Something moves in the pines. A squirrel. Or a spy. Squirrel. ...Probably."
             }
           ],
           "USE": [
@@ -326,31 +326,31 @@
           "TALK": [
             {
               "op": "say",
-              "text": "The trees whisper forgotten secrets about patients who never returned."
+              "text": "I whisper to the pines. They whisper back. It's just wind. I tell myself it's just wind."
             }
           ],
           "PICK": [
             {
               "op": "say",
-              "text": "I can't take the trees. They're rooted. Unlike most crypto projects."
+              "text": "I can't take a tree. I tried with a leaf earlier. It went badly."
             }
           ],
           "OPEN": [
             {
               "op": "say",
-              "text": "The trees provide a natural barrier. No key required."
+              "text": "Trees don't open. They do have doors, if you're a squirrel."
             }
           ],
           "CLOSE": [
             {
               "op": "say",
-              "text": "I close my eyes under the trees. Pretend this is all a bad dream."
+              "text": "I close my eyes under the pines. Still on a mountain. Worth a try."
             }
           ],
           "PUSH": [
             {
               "op": "say",
-              "text": "I push through the tree line. Branches scratch my face. Worth it? No."
+              "text": "I push into the trees. A branch slaps me back. Fair. I started it."
             }
           ],
           "PULL": [
@@ -362,7 +362,7 @@
           "GIVE": [
             {
               "op": "say",
-              "text": "The trees accept only CO2. I'm not qualified."
+              "text": "The trees only accept carbon dioxide. I give them a sigh. They seem grateful."
             }
           ]
         }
@@ -393,19 +393,19 @@
           "LOOK": [
             {
               "op": "say",
-              "text": "Crystal clear water trickling from the rocks. Decentralized hydration."
+              "text": "Crystal-clear water trickling out of the rocks. The cleanest thing I've seen all week. Including me."
             }
           ],
           "USE": [
             {
               "op": "say",
-              "text": "I splash some water on my face. Refreshing. Nature's cooldown function."
+              "text": "I splash my face. Cold! Very cold. I'm awake. I'm extremely awake."
             }
           ],
           "TALK": [
             {
               "op": "say",
-              "text": "The water babbles. It's the original proof-of-flow."
+              "text": "The water babbles. I nod along. Good listener, bad conversationalist."
             }
           ],
           "PICK": [
@@ -431,7 +431,7 @@
                 },
                 {
                   "op": "say",
-                  "text": "I fill an empty bottle with spring water. H2O — the original proof-of-work."
+                  "text": "I fill the bottle. Fresh mountain water. The cleanest thing I own."
                 }
               ]
             }
@@ -439,25 +439,25 @@
           "OPEN": [
             {
               "op": "say",
-              "text": "I can't open a spring. It's already open-source."
+              "text": "It's a spring. It's been open since the Ice Age."
             }
           ],
           "CLOSE": [
             {
               "op": "say",
-              "text": "I can't close a mountain spring. That's censorship."
+              "text": "I put my thumb over it. The water goes round my thumb. Water always wins."
             }
           ],
           "PUSH": [
             {
               "op": "say",
-              "text": "I push against the rock. The water keeps flowing. Nature doesn't pause."
+              "text": "I push the rock. The water keeps flowing. The rock keeps rocking."
             }
           ],
           "PULL": [
             {
               "op": "say",
-              "text": "I can't pull water uphill. Gravity is Layer 0."
+              "text": "I can't pull water uphill. I've tried. Ask my plumber."
             }
           ],
           "GIVE": [
@@ -481,7 +481,7 @@
           "LOOK": [
             {
               "op": "say",
-              "text": "A cabin perched on the hillside, warm light glowing from inside. Smoke curls from the chimney. Someone is home. Or something."
+              "text": "A cabin on the hillside, warm light in the window, smoke from the chimney. Someone's home. Someone's always home in these stories."
             }
           ],
           "USE": [
@@ -493,13 +493,13 @@
           "TALK": [
             {
               "op": "say",
-              "text": "I shout toward the cabin. The mountains echo back: '...NGMI...NGMI...NGMI...'"
+              "text": "'HELLO!' The mountains echo back: '...LO... LO... LO...' Nobody comes out. Classic."
             }
           ],
           "PICK": [
             {
               "op": "say",
-              "text": "I can't pick up a building. That's not how real estate works, even on-chain."
+              "text": "I hold up two fingers and pinch the cabin. Got it. ...I don't have it."
             }
           ],
           "OPEN": [
@@ -511,19 +511,19 @@
           "CLOSE": [
             {
               "op": "say",
-              "text": "I can't close a building from down here. I can barely close browser tabs."
+              "text": "I can't close a building from down here. My arms aren't that long."
             }
           ],
           "PUSH": [
             {
               "op": "say",
-              "text": "I push toward the clinic in my mind. My body stays put. Visualization doesn't work on buildings."
+              "text": "I picture myself at the door. My body stays exactly where it is. Visualisation is a scam."
             }
           ],
           "PULL": [
             {
               "op": "say",
-              "text": "I try to will the cabin closer. Gravity doesn't support pull requests."
+              "text": "I try to will the cabin closer. It stays put. Buildings don't come to you."
             }
           ],
           "GIVE": [
@@ -547,19 +547,19 @@
           "LOOK": [
             {
               "op": "say",
-              "text": "Signs along the path: 'TURN BACK — PORTFOLIO AHEAD'. 'LAST CHANCE TO TAKE PROFIT'. 'NO FINANCIAL ADVICE BEYOND THIS POINT'."
+              "text": "Signs along the path: 'TURN BACK'. 'NO, REALLY'. 'LAST CHANCE TO TAKE PROFIT'. The clinic knows its patients."
             }
           ],
           "USE": [
             {
               "op": "say",
-              "text": "The signs are bolted down. Like a smart contract — immutable."
+              "text": "I try to rotate a sign so it says 'COME IN'. Bolted down. Somebody thought of that."
             }
           ],
           "TALK": [
             {
               "op": "say",
-              "text": "The wind whistles through the signs. It sounds like 'HODL'."
+              "text": "'Is it really that bad up there?' The signs don't say. Well. They do. In capitals."
             }
           ],
           "PICK": [
@@ -571,13 +571,13 @@
           "OPEN": [
             {
               "op": "say",
-              "text": "There's nothing to open on these signs."
+              "text": "They're signs, not doors. They only open minds. Mine stays shut."
             }
           ],
           "CLOSE": [
             {
               "op": "say",
-              "text": "The path is one-way. You can't close a warning."
+              "text": "You can't close a warning. You can only ignore it. That's my specialty."
             }
           ]
         }
@@ -599,55 +599,55 @@
           "LOOK": [
             {
               "op": "say",
-              "text": "Massive boulders covered in lichen. They've been here since before Bitcoin. Since before money, even. The OG store of value."
+              "text": "Huge mossy boulders. They've been here since before money. They look like they're waiting for someone."
             }
           ],
           "USE": [
             {
               "op": "say",
-              "text": "I lean against a boulder. It's warm from the sunset. Like a hardware wallet that's been mining too long."
+              "text": "I lean against a boulder. It's warm from the sunset. Best chair on the mountain."
             }
           ],
           "TALK": [
             {
               "op": "say",
-              "text": "I address the boulder: 'You've been HODLing this spot for millennia. Respect.' The boulder says nothing. Diamond hands."
+              "text": "'Seen a man in a coat go by? About three weeks ago?' The boulder keeps its counsel."
             }
           ],
           "PICK": [
             {
               "op": "say",
-              "text": "These boulders weigh several tons each. My inventory has a strict carry limit. And a gas limit."
+              "text": "Several tons each. My pockets are good, but they're not that good."
             }
           ],
           "OPEN": [
             {
               "op": "say",
-              "text": "I check for cracks. One boulder has a fissure with quartz crystals inside. Nature's own proof-of-work."
+              "text": "One boulder has a crack full of quartz crystals. Pretty. Not a clue. I asked."
             }
           ],
           "CLOSE": [
             {
               "op": "say",
-              "text": "I can't close a boulder. They're permanently open-source. Geologically speaking."
+              "text": "I can't close a boulder. It's a rock. It's already as closed as it gets."
             }
           ],
           "PUSH": [
             {
               "op": "say",
-              "text": "I push the boulder. It doesn't move. Sisyphus had the same problem, but at least his boulder didn't have a market cap."
+              "text": "I push the boulder. It doesn't move. Sisyphus and I should start a support group."
             }
           ],
           "PULL": [
             {
               "op": "say",
-              "text": "I try to pull a small rock free. It tumbles down the slope. Hope nobody was down there. Not my liability."
+              "text": "I pull a small rock loose. It tumbles down the slope. 'SORRY!' Nobody answers. Good. I think."
             }
           ],
           "GIVE": [
             {
               "op": "say",
-              "text": "The boulders accept nothing. They are the original cold storage."
+              "text": "Boulders don't take gifts. They take millennia. I'm in a hurry."
             }
           ]
         }
@@ -665,7 +665,7 @@
           "LOOK": [
             {
               "op": "say",
-              "text": "Jagged purple peaks piercing the sunset sky. Each mountain looks like a different candlestick pattern. That one's a doji. That one's a shooting star."
+              "text": "Purple peaks against the sunset. They look like a chart. ...They look like mountains. I'm working on it."
             }
           ],
           "USE": [
@@ -677,7 +677,7 @@
           "TALK": [
             {
               "op": "say",
-              "text": "I yodel into the void. The mountains echo back something that sounds suspiciously like 'BUY THE DIP.'"
+              "text": "I yodel. The mountains yodel back, slightly better. Show-offs."
             }
           ],
           "PICK": [
@@ -689,31 +689,31 @@
           "OPEN": [
             {
               "op": "say",
-              "text": "If I could open a mountain, I'd probably find a dragon sitting on a pile of ETH."
+              "text": "If I could open a mountain, there'd be a dragon inside. I'm not opening a mountain."
             }
           ],
           "CLOSE": [
             {
               "op": "say",
-              "text": "Mountains don't close. They're the original 24/7 market."
+              "text": "Mountains don't close. They don't even have opening hours."
             }
           ],
           "PUSH": [
             {
               "op": "say",
-              "text": "I push toward the mountains. They get no closer. Like reaching profitability."
+              "text": "I push toward the mountains. They stay exactly that far away. Mountains are like that."
             }
           ],
           "PULL": [
             {
               "op": "say",
-              "text": "I can't pull mountains. Tectonic plates already tried. Takes millions of years. No gas optimization for that."
+              "text": "Tectonic plates already pull mountains. Millions of years. I'll let them handle it."
             }
           ],
           "GIVE": [
             {
               "op": "say",
-              "text": "The mountains demand nothing. They're the only thing in crypto that doesn't ask for your seed phrase."
+              "text": "The mountains want nothing from me. First thing all week that doesn't."
             }
           ]
         }
@@ -731,55 +731,55 @@
           "LOOK": [
             {
               "op": "say",
-              "text": "Wild alpine flowers blooming in golden and white. They thrive without governance, without tokenomics, without a roadmap. True decentralization."
+              "text": "Wildflowers, gold and white. Growing up a mountain with no help from anyone. Fernando would be jealous."
             }
           ],
           "USE": [
             {
               "op": "say",
-              "text": "I smell the flowers. For a moment, I forget about gas fees and impermanent loss. Then the moment passes."
+              "text": "I smell the flowers. For a moment I forget everything. ...Which, apparently, I'm good at."
             }
           ],
           "TALK": [
             {
               "op": "say",
-              "text": "I whisper to the flowers: 'How do you grow without venture capital?' They don't answer. Trade secret."
+              "text": "I tell the flowers they're doing great. Penny says it works on Fernando."
             }
           ],
           "PICK": [
             {
               "op": "say",
-              "text": "I pick a wildflower. It wilts immediately. Off-chain flowers don't survive inventory transfer."
+              "text": "I pick a wildflower. It wilts in my hand. I'm a bad influence. Even on flowers."
             }
           ],
           "OPEN": [
             {
               "op": "say",
-              "text": "I open a flower bud. A tiny bee flies out, annoyed. Decentralized pollination disrupted."
+              "text": "I open a bud. A very small, very angry bee flies out. I apologise to the bee."
             }
           ],
           "CLOSE": [
             {
               "op": "say",
-              "text": "Flowers close at night. It's their version of market hours. I should respect that."
+              "text": "Flowers close at night by themselves. Better bedtime routine than mine."
             }
           ],
           "PUSH": [
             {
               "op": "say",
-              "text": "I push through the flowers. They bounce right back. More resilient than most L2s."
+              "text": "I push through the flowers. They spring right back up. No hard feelings."
             }
           ],
           "PULL": [
             {
               "op": "say",
-              "text": "I pull a flower. Its roots hold firm. It's been staking in this soil for years."
+              "text": "I pull a flower. Its roots hold firm. It's not leaving the mountain. Smart flower."
             }
           ],
           "GIVE": [
             {
               "op": "say",
-              "text": "The flowers give ME oxygen. Best yield I've seen all year."
+              "text": "The flowers give ME oxygen. I'm not sure what I bring to this relationship."
             }
           ]
         }

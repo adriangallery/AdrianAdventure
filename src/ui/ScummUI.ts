@@ -635,7 +635,7 @@ export class ScummUI {
       [Verb.PUSH]: "I push the box lid down. The discs rattle. Each one sounds slightly different. Like they're encoded with different data.",
       [Verb.PULL]: "I pull out disc #10000. The first in the series. The label reads: 'GENESIS — Do not format.'",
       [Verb.CLOSE]: "I close the box carefully. These floppies are worth more than most NFTs I've owned. And they actually store data.",
-      [Verb.GIVE]: "These floppies are soulbound to my wallet. Even if I wanted to give them away, the blockchain wouldn't let me. Probably.",
+      [Verb.GIVE]: "I start to offer the floppies. My hand changes its mind. My hand has better instincts.",
     },
     code_note: {
       [Verb.OPEN]: "I unfold it completely. Still just 7314. No hidden message on the back either.",
@@ -643,7 +643,7 @@ export class ScummUI {
       [Verb.PUSH]: "I flatten the creases. The handwriting doesn't get any less panicked.",
       [Verb.PULL]: "I try to tear it. No. I just put it back together. What am I doing?",
       [Verb.CLOSE]: "I fold it back up. The 7 peeks out accusingly.",
-      [Verb.GIVE]: "I'm not giving away the only code I have. That's Security 101.",
+      [Verb.GIVE]: "I almost hand over the code. Then I remember who I'm talking to: anyone. Back in the pocket.",
     },
     pizza_slice: {
       [Verb.OPEN]: "It's a slice. There's no inside. There's barely an outside.",
@@ -651,7 +651,7 @@ export class ScummUI {
       [Verb.PUSH]: "I press it. Grease wells up like a spring. Like an oil spring.",
       [Verb.PULL]: "I try to tear it in half. It bends. Pizza shouldn't bend like that.",
       [Verb.CLOSE]: "I fold it over. Now it's a calzone of regret.",
-      [Verb.GIVE]: "Nobody wants this. Nobody should. It has a job to do.",
+      [Verb.GIVE]: "I hold out the pizza. They look at it like it owes them money. It stays with me.",
     },
     leaky_pen: {
       [Verb.OPEN]: "I unscrew it. More ink comes out than any pen should hold. I screw it back. Quickly.",
@@ -659,7 +659,7 @@ export class ScummUI {
       [Verb.PUSH]: "I click it. Click. Click. Drip. The click works. The pen doesn't stop.",
       [Verb.PULL]: "I pull the cap off. Blue ink everywhere. I put it back on. Blue ink still everywhere.",
       [Verb.CLOSE]: "I cap it. It keeps leaking through the cap. It's a gift.",
-      [Verb.GIVE]: "Nobody wants this pen. That's how it ended up in a coat for ten years.",
+      [Verb.GIVE]: "I offer the pen. It drips on my shoe first. Nobody wants it. That's how it lasted ten years.",
     },
     vet_bill: {
       [Verb.OPEN]: "I unfold it. There's a second page. 'Treatment: reassurance. Dosage: as needed.' Gerald is in good hands.",
@@ -667,7 +667,7 @@ export class ScummUI {
       [Verb.PUSH]: "I flatten the bill. The paw-print stamp stays smudged. They stamped a duck's file with a paw.",
       [Verb.PULL]: "I'm not tearing up Gerald's records. He's been through enough. Allegedly.",
       [Verb.CLOSE]: "I fold it along the old creases. Adrian folded this a lot. He read it a lot.",
-      [Verb.GIVE]: "Give away Gerald's medical history? That's confidential. It's practically my job to keep it.",
+      [Verb.GIVE]: "Show them Gerald's medical history? He's a private duck. I put it away.",
     },
     mystery_envelope: {
       [Verb.OPEN]: "I tear open the seal... Inside: a single sheet with coordinates and a cryptic note: 'Find Patient Zero before they find you.'",
@@ -675,7 +675,7 @@ export class ScummUI {
       [Verb.PUSH]: "I press on the envelope. Something stiff is inside. A card? A photo?",
       [Verb.PULL]: "I pull at the corners. The wax seal holds firm. Whoever sealed this meant business.",
       [Verb.CLOSE]: "It's an envelope. It was already closed. That's its whole thing.",
-      [Verb.GIVE]: "Give away confidential evidence? I didn't get this far by being careless.",
+      [Verb.GIVE]: "I hold the envelope out, then back. Confidential means confidential. Even from me, apparently.",
     },
     ledger: {
       [Verb.OPEN]: "The Ledger screen flickers. Balance: [REDACTED]. Transaction history: longer than a CVS receipt.",
@@ -683,7 +683,7 @@ export class ScummUI {
       [Verb.PUSH]: "I press the button. It shows a firmware update notification. Not now.",
       [Verb.PULL]: "I yank the USB cable. It protests with an angry LED.",
       [Verb.CLOSE]: "I power it down. The screen fades with a sad little Ledger logo.",
-      [Verb.GIVE]: "My hardware wallet? To whom? This isn't a 'not your keys' situation.",
+      [Verb.GIVE]: "I hand them my hardware wallet... no. Not your keys, not your wallet. Mine, actually.",
     },
     keycard: {
       [Verb.OPEN]: "It's a flat card. There's nothing to open. Unless you count the doors it unlocks.",
@@ -691,7 +691,7 @@ export class ScummUI {
       [Verb.PUSH]: "I bend it slightly. The magnetic strip catches the light. Still works, probably.",
       [Verb.PULL]: "The lanyard stretches. ADMIN ACCESS - ADRIAN. The photo really doesn't do him justice.",
       [Verb.CLOSE]: "I put it back in my pocket. Card stored securely. Unlike most private keys.",
-      [Verb.GIVE]: "This admin keycard is my VIP pass. Not sharing.",
+      [Verb.GIVE]: "I flash the keycard and keep a firm grip. Look, don't touch.",
     },
     water_bottle: {
       [Verb.OPEN]: "I unscrew the cap. Crystal clear water. The only transparent thing in crypto.",
@@ -699,7 +699,7 @@ export class ScummUI {
       [Verb.PUSH]: "Water sloshes. Simple physics. No smart contract needed.",
       [Verb.PULL]: "I pull off the label. 'Spring Water - Not Financial Advice'. Heh.",
       [Verb.CLOSE]: "I screw the cap back on. Hydration secured.",
-      [Verb.GIVE]: "Plants need it more than people do around here.",
+      [Verb.GIVE]: "I offer them the water. Then I think of Fernando. Fernando's thirstier.",
     },
     golden_token: {
       [Verb.OPEN]: "It's a solid token. No hidden compartments. Unlike most crypto projects.",
@@ -707,7 +707,7 @@ export class ScummUI {
       [Verb.PUSH]: "Heavy. Solid. Real. Everything most tokens aren't.",
       [Verb.PULL]: "I polish it with my sleeve. It gleams. I feel wealthier already.",
       [Verb.CLOSE]: "You can't close a token. You can only HODL.",
-      [Verb.GIVE]: "This golden ZERO token is mine. MINE. ...sorry, got a bit possessive there.",
+      [Verb.GIVE]: "I hold out the golden token. My fingers don't let go. MINE. ...Sorry. Working on it.",
     },
     terminal_key: {
       [Verb.OPEN]: "The key fob has a tiny seam. I pry it open — a microchip inside. Interesting.",
@@ -715,7 +715,7 @@ export class ScummUI {
       [Verb.PUSH]: "I press the button. The LED turns red briefly. Did I just lock something?",
       [Verb.PULL]: "The keyring loop is sturdy. Whoever owned this was serious about terminal access.",
       [Verb.CLOSE]: "I snap the fob shut. The LED blinks green again. Crisis averted.",
-      [Verb.GIVE]: "This terminal key could unlock important data. Keeping it.",
+      [Verb.GIVE]: "I offer the terminal key. Then I picture explaining that to Adrian. I keep it.",
     },
     antenna: {
       [Verb.OPEN]: "It's a metal rod. Not much to open here. Unless I'm missing something fundamental.",
@@ -723,7 +723,7 @@ export class ScummUI {
       [Verb.PUSH]: "I extend it fully. Two bars of signal. And faintly... Rick Astley?",
       [Verb.PULL]: "I collapse the antenna. It clicks satisfyingly into its shortest form.",
       [Verb.CLOSE]: "I retract it. *click click click* Oddly therapeutic.",
-      [Verb.GIVE]: "Who would want a loose antenna? Besides another conspiracy theorist.",
+      [Verb.GIVE]: "I hold out the antenna. They step back. Fair. I'd step back too.",
     },
     floppy_disk: {
       [Verb.OPEN]: "I slide the metal cover. The magnetic disk inside looks fragile. 1.44 MB of destiny.",
@@ -731,7 +731,7 @@ export class ScummUI {
       [Verb.PUSH]: "I push the metal slider back and forth. *click click* Pure nostalgia.",
       [Verb.PULL]: "I almost pull the magnetic disk out. BAD IDEA. That would destroy the data.",
       [Verb.CLOSE]: "I slide the metal cover back. Data protected. Old school style.",
-      [Verb.GIVE]: "This backup floppy is evidence. Not giving it away.",
+      [Verb.GIVE]: "I hold up the floppy. 'DO NOT LOSE.' Handing it over counts as losing. I keep it.",
     },
     printout: {
       [Verb.OPEN]: "I unfold the thermal paper. Transaction hashes, timestamps, and... a small map section.",
@@ -739,7 +739,7 @@ export class ScummUI {
       [Verb.PUSH]: "The thermal paper curls back up. It wants to be a scroll. Who am I to argue?",
       [Verb.PULL]: "I stretch it out. The ink is already fading. Like most altcoin roadmaps.",
       [Verb.CLOSE]: "I roll it up carefully. Evidence preservation 101.",
-      [Verb.GIVE]: "This printout maps directly to Adrian's activities. Keeping it close.",
+      [Verb.GIVE]: "I show them the printout and fold it away quickly. My only map. It's fading as it is.",
     },
     monkey_sticker: {
       [Verb.OPEN]: "It's a sticker. Flat by definition. But the three-headed monkey winks at me.",
@@ -747,7 +747,7 @@ export class ScummUI {
       [Verb.PUSH]: "I press it against my arm. It sticks! Then falls off. Quality adhesive.",
       [Verb.PULL]: "I peel the backing. Shiny. Where should I stick it? Decisions, decisions...",
       [Verb.CLOSE]: "You can't close a sticker. You can only appreciate its beauty.",
-      [Verb.GIVE]: "A genuine three-headed monkey sticker? This is priceless. Well, worthless. But priceless to me.",
+      [Verb.GIVE]: "I offer the monkey sticker. All three heads look hurt. I put it back.",
     },
     server_log: {
       [Verb.OPEN]: "I scan the log entries. Timestamps, error codes, and someone's desperate 3 AM debugging session.",
@@ -755,7 +755,7 @@ export class ScummUI {
       [Verb.PUSH]: "I scroll through the data. Page after page of server screams.",
       [Verb.PULL]: "I pull up the last entries. 'CRITICAL: FloorEngine heartbeat lost'. Ominous.",
       [Verb.CLOSE]: "I close the log. Some things are better left unread at night.",
-      [Verb.GIVE]: "Server logs are like diaries. You don't share them.",
+      [Verb.GIVE]: "I wave the server logs at them. They're not readers. Neither am I, honestly.",
     },
     burned_chip: {
       [Verb.OPEN]: "The chip's casing is cracked. Inside: scorched silicon and broken dreams.",
@@ -763,7 +763,7 @@ export class ScummUI {
       [Verb.PUSH]: "I press it. A tiny piece crumbles off. This server died hard.",
       [Verb.PULL]: "I try to straighten the bent pins. Some damage is irreversible. Like rug pulls.",
       [Verb.CLOSE]: "I wrap it carefully. Evidence of AdrianAuctions' final moments.",
-      [Verb.GIVE]: "A burnt chip from a dead server. Not exactly a crowd-pleaser.",
+      [Verb.GIVE]: "I hold out a burnt chip. They hold their nose. Gift declined.",
     },
     sign_in_sheet: {
       [Verb.OPEN]: "Names and diagnoses: 'Chronic Airdrop Dependency', 'Acute Rug Pull Trauma'. These people need help.",
@@ -771,7 +771,7 @@ export class ScummUI {
       [Verb.PUSH]: "I flatten the crinkled paper. Coffee stains obscure some entries. Classic clinic aesthetic.",
       [Verb.PULL]: "I pull out the second page. More patients. The clinic was busy.",
       [Verb.CLOSE]: "I fold the sheet. Patient privacy matters. Even in DeFi.",
-      [Verb.GIVE]: "Medical records? I'll hold onto these for now.",
+      [Verb.GIVE]: "I offer the sign-in sheet. Patient names are private. Even the famous ones.",
     },
     patient_file: {
       [Verb.OPEN]: "The file is encrypted. The cover reads: 'PATIENT ZERO — CLASSIFIED'. I need a way to decrypt it.",
@@ -779,7 +779,7 @@ export class ScummUI {
       [Verb.PUSH]: "I press the folder. Thick. Multiple pages inside. Whatever Patient Zero is, it's well-documented.",
       [Verb.PULL]: "I try to pry it open. The encryption seal holds. Old school security.",
       [Verb.CLOSE]: "I put it away. When the time comes, this file will reveal everything.",
-      [Verb.GIVE]: "A classified patient file? I need to read this myself first.",
+      [Verb.GIVE]: "I nearly hand over the patient file. Doctor-patient confidentiality. I'm neither, but still.",
     },
     dr_satoshi_badge: {
       [Verb.OPEN]: "I flip the badge over. 'If found, please return to the blockchain.' Cute.",
@@ -787,7 +787,7 @@ export class ScummUI {
       [Verb.PUSH]: "I press the clip. It springs open. Sturdy. Like the pseudonym itself.",
       [Verb.PULL]: "The lanyard stretches. 'Chief of Decentralized Medicine'. Is that even a real title?",
       [Verb.CLOSE]: "I clip it shut. Dr. Satoshi's identity remains a mystery. As tradition demands.",
-      [Verb.GIVE]: "A badge belonging to the mysterious Dr. Satoshi? This stays with me.",
+      [Verb.GIVE]: "I hold out Dr. Satoshi's badge. Impersonating a doctor is fine. Lending a doctor isn't.",
     },
     clinic_photo: {
       [Verb.OPEN]: "I turn the photo over. Written on the back: 'Grand Opening — Day 1. We will help them all.'",
@@ -795,7 +795,7 @@ export class ScummUI {
       [Verb.PUSH]: "I press the glossy surface. Old photograph. Before the clinic got... complicated.",
       [Verb.PULL]: "I hold it up to the light. Wait — is that Adrian in the background? Hard to tell.",
       [Verb.CLOSE]: "I put the photo away. History captured in a single frame.",
-      [Verb.GIVE]: "A piece of the clinic's history. Better in my pocket than on the wall.",
+      [Verb.GIVE]: "I show them the old photo. Nobody smiles like that anymore. I put it away.",
     },
     adrian_note: {
       [Verb.OPEN]: "I unfold the note carefully. Adrian's handwriting: 'If you're reading this, you already know the truth.'",
@@ -803,7 +803,7 @@ export class ScummUI {
       [Verb.PUSH]: "I press the wrinkled paper flat. The ink smudges slightly. Be more careful.",
       [Verb.PULL]: "I hold it up. The light reveals faint writing on the back. More clues?",
       [Verb.CLOSE]: "I fold it. Adrian's final message. The weight of it is metaphorical but heavy.",
-      [Verb.GIVE]: "Adrian's personal note? This is between me and the mystery now.",
+      [Verb.GIVE]: "I almost show them Adrian's note. It's addressed to me. Somehow. I keep it.",
     },
     rubber_duck: {
       [Verb.OPEN]: "Solid rubber. No hidden compartment. No secret USB drive. Just duck.",
@@ -811,7 +811,7 @@ export class ScummUI {
       [Verb.PUSH]: "*squeak squeak* Stop it. *squeak* I said stop. *squeeeak*",
       [Verb.PULL]: "I stretch the duck. It bounces back. Resilient. Unlike my portfolio.",
       [Verb.CLOSE]: "It's a duck. It's always closed. And always judging.",
-      [Verb.GIVE]: "Nobody wants my rubber duck. Their loss.",
+      [Verb.GIVE]: "I offer them the duck. They don't take him. Gerald's relieved. So am I.",
     },
     receipt: {
       [Verb.OPEN]: "I unfold it. '1 BTC @ $3.50 — Thank you for your purchase!' Someone. Should. Have. Held.",
@@ -819,7 +819,7 @@ export class ScummUI {
       [Verb.PUSH]: "I crumple it in rage. Then carefully unflatten it. This is a historical artifact.",
       [Verb.PULL]: "I stretch it out. The thermal ink is fading. Like the memory of cheap Bitcoin.",
       [Verb.CLOSE]: "I fold it gently. A monument to missed opportunities everywhere.",
-      [Verb.GIVE]: "This receipt would make anyone cry. I'll spare them the pain.",
+      [Verb.GIVE]: "I hold out the receipt. They read the total and wince. I take it back. Mercy.",
     },
     broken_mouse: {
       [Verb.OPEN]: "I pop the shell open. Inside: a dusty scroll wheel and the ghost of a million right-clicks.",
@@ -827,7 +827,7 @@ export class ScummUI {
       [Verb.PUSH]: "The left button still depresses. *faint click* A ghost click. Spooky.",
       [Verb.PULL]: "The severed cable dangles. What violence happened here? Who severs a mouse cable?",
       [Verb.CLOSE]: "I snap the shell back together. Rest in pixels, little mouse.",
-      [Verb.GIVE]: "A broken mouse with a severed cable? That's not a gift. That's a threat.",
+      [Verb.GIVE]: "I offer the broken mouse by its tail. That's not a gift. That's a threat.",
     },
     glasses_3d: {
       [Verb.OPEN]: "I unfold the arms. The lenses catch the light \u2014 red on one side, cyan on the other. Old school 3D tech.",
@@ -835,7 +835,7 @@ export class ScummUI {
       [Verb.PUSH]: "I press on the lenses. They flex but don't break. Cheap plastic, but surprisingly resilient. Like memecoins.",
       [Verb.PULL]: "I stretch the arms apart. They spring back. These glasses have been through some things.",
       [Verb.CLOSE]: "I fold the glasses carefully. The lenses click together with a satisfying snap.",
-      [Verb.GIVE]: "Give away the only thing that can decode anaglyph rooms? I'll pass.",
+      [Verb.GIVE]: "I offer the 3D glasses. They're prescription. I take them back.",
       [Verb.PICK]: "Already got them. One pair of reality-bending eyewear is enough.",
     },
     pepememe: {
@@ -844,7 +844,7 @@ export class ScummUI {
       [Verb.PUSH]: "I flatten the Pepe against a surface. His expression doesn't change. Pepe is unflappable.",
       [Verb.PULL]: "I pull at the corner. The paper is reinforced \u2014 lab-grade meme material. They built this to last.",
       [Verb.CLOSE]: "I fold Pepe in half. It feels wrong. Like folding a Mona Lisa. I unfold immediately.",
-      [Verb.GIVE]: "Give away the rarest Pepe from the MemeLAB? The meme economy would collapse. I'm holding.",
+      [Verb.GIVE]: "I hold out the rarest Pepe. Pepe stares at them. They look away. I keep him.",
       [Verb.PICK]: "Already in my inventory. One Pepe to rule them all.",
     },
     ape_costume: {
@@ -853,7 +853,7 @@ export class ScummUI {
       [Verb.PUSH]: "I squeeze the ape head. The foam compresses with a wheeze. It sounds like a leveraged position being liquidated.",
       [Verb.PULL]: "I stretch the costume arms. The fur is surprisingly elastic. Designed for aggressive hand gestures, no doubt.",
       [Verb.CLOSE]: "I zip up the costume bag. The ape face pokes out the top, watching me. Waiting.",
-      [Verb.GIVE]: "Give away my disguise? Then how would I infiltrate the Liquidity Pool? Strategic asset. Keeping it.",
+      [Verb.GIVE]: "I offer the ape costume. They'd never fit in the Pool. I keep it.",
       [Verb.PICK]: "It's already mine. Finders keepers, especially in crypto.",
     },
   };

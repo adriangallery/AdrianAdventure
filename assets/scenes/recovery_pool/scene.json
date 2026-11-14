@@ -47,7 +47,7 @@
         "id": "hs_pool_group_left",
         "useResponses": {
           "ape_costume": [
-            "I wave the ape costume at the apes. They're not impressed. I should be wearing it, not waving it."
+            "I wave the ape costume at the apes. Nothing. Fur goes on, Dex. Not up."
           ]
         },
         "name": "Pool Apes (Left Side)",
@@ -61,7 +61,7 @@
           "LOOK": [
             {
               "op": "say",
-              "text": "Three apes in the shallow end, scrolling phones in waterproof cases. Their screens all show the same chart. None of them are looking at each other."
+              "text": "Three apes in the shallow end, scrolling phones in waterproof cases. None of them have looked up since Tuesday."
             }
           ],
           "TALK": [
@@ -116,13 +116,13 @@
               "then": [
                 {
                   "op": "say",
-                  "text": "I try to engage them. One looks up briefly. 'Are you bullish or bearish?' he asks, then goes back to his phone before I can answer."
+                  "text": "I try to chat. One looks up. 'Are you a member, old chap?' He goes back to his phone before I answer."
                 }
               ],
               "else": [
                 {
                   "op": "say",
-                  "text": "I wave at the apes. They don't even look up. I'm invisible to them without the right... look."
+                  "text": "I wave at the apes. Nothing. To them, a man without fur is just weather."
                 }
               ]
             }
@@ -130,7 +130,7 @@
           "PICK": [
             {
               "op": "say",
-              "text": "They're in a pool. I'm not fishing out crypto influencers. That's how you get rugged."
+              "text": "They're in a pool. I'm not fishing for apes. I didn't bring a big enough net."
             }
           ],
           "OPEN": [
@@ -140,13 +140,13 @@
               "then": [
                 {
                   "op": "say",
-                  "text": "One of them holds up his phone. 'Check my portfolio.' I look. It's a picture of a sunset. 'That's not a portfolio.' 'It is now.'"
+                  "text": "One holds up his phone. 'Check this out, old chap.' It's a sunset. 'Lovely.' 'It's my lock screen. And my plan.'"
                 }
               ],
               "else": [
                 {
                   "op": "say",
-                  "text": "I try to start a conversation. They close ranks. Literally. The apes form a wall of wet fur. I'm not getting through without looking the part."
+                  "text": "I try to say hi. The apes close ranks into a wall of wet fur. I won't get through without looking the part."
                 }
               ]
             }
@@ -154,7 +154,7 @@
           "CLOSE": [
             {
               "op": "say",
-              "text": "I try to end the conversation. 'NFA!' one yells as I walk away. They all say it. In unison. Like a support group mantra."
+              "text": "I end the conversation. 'Cheerio!' they chorus. Like a support group. Which it is."
             }
           ]
         }
@@ -164,8 +164,8 @@
         "name": "Chad",
         "useResponses": {
           "_default": [
-            "Chad looks at it. Chad yawns. Chad only respects words, bro.",
-            "I offer it to Chad. 'Is that FUD? Doesn't sound like FUD.'",
+            "Chad looks at it. Chad yawns. 'Words, bro. Bring words.'",
+            "I hold it out. Chad squints. 'Is that a comeback? Doesn't sound like a comeback.'",
             "Chad slides his sunglasses down, looks, slides them back up. Rejected."
           ],
           "pepememe": [
@@ -186,7 +186,7 @@
             },
             {
               "op": "say",
-              "text": "He has also never built anything. You can tell. He's very relaxed."
+              "text": "He has never built anything. You can tell. Look how relaxed he is."
             }
           ],
           "TALK": [
@@ -229,37 +229,37 @@
           "USE": [
             {
               "op": "say",
-              "text": "I poke Chad's ring. He doesn't even look. 'Words are the only currency here, bro.'"
+              "text": "I poke Chad's ring. He doesn't look. 'Hands are for high fives, bro. Duels are words.'"
             }
           ],
           "PICK": [
             {
               "op": "say",
-              "text": "Chad's not for sale. He'd want you to think he is."
+              "text": "I can't lift Chad. 'Bro, I'm carried by my mindset. Not by you.'"
             }
           ],
           "PUSH": [
             {
               "op": "say",
-              "text": "I nudge Chad's ring. He drifts two metres and acts like he meant it. Alpha move."
+              "text": "I nudge Chad's ring. He drifts two metres and acts like he meant it. He's good at that."
             }
           ],
           "PULL": [
             {
               "op": "say",
-              "text": "I pull Chad's ring closer. 'Personal space, bro. It's a pool, not a launchpad.'"
+              "text": "I pull Chad's ring closer. 'Boundaries, bro. I read a book about them. The cover.'"
             }
           ],
           "OPEN": [
             {
               "op": "say",
-              "text": "Chad's mind is closed. Like his positions. Ha. No, wait, his positions are open. All of them."
+              "text": "Chad taps his head. 'Mind's already open, bro. Things fall out.'"
             }
           ],
           "GIVE": [
             {
               "op": "say",
-              "text": "Chad doesn't take gifts. He takes Ls. Eventually."
+              "text": "Chad doesn't take gifts. 'Gifts are for people who haven't manifested yet, bro.'"
             }
           ]
         }
@@ -282,7 +282,7 @@
           "LOOK": [
             {
               "op": "say",
-              "text": "More apes, deeper in the pool. One wears a diamond floatie. Another has a pink donut ring. They all look like they're 'making it' while literally going under."
+              "text": "More apes in the deep end. A diamond floatie, a pink donut ring. Smiling while slowly sinking. Very British."
             }
           ],
           "TALK": [
@@ -333,13 +333,13 @@
               "then": [
                 {
                   "op": "say",
-                  "text": "I try to hand one of them a towel. 'No thanks, I'm HODLing... the water.' He sinks a little lower."
+                  "text": "I offer one a towel. 'Dry? In this economy?' He sinks a little lower."
                 }
               ],
               "else": [
                 {
                   "op": "say",
-                  "text": "I reach toward them. They paddle away in unison. Like synchronized swimmers, but with worse financial decisions."
+                  "text": "I reach toward them. They paddle away in perfect unison. They've practised this."
                 }
               ]
             }
@@ -347,7 +347,7 @@
           "PICK": [
             {
               "op": "say",
-              "text": "They're slippery. In more ways than one."
+              "text": "Wet apes. I'd lose a grip and some dignity."
             }
           ],
           "OPEN": [
@@ -357,13 +357,13 @@
               "then": [
                 {
                   "op": "say",
-                  "text": "'Open your mind,' one says. 'I'll open my wallet when you show me a real roadmap,' I reply. Silence. Then: 'Fair.'"
+                  "text": "'Open your mind, old chap,' one says. 'Open the bar first,' I reply. Silence. Then: 'Fair.'"
                 }
               ],
               "else": [
                 {
                   "op": "say",
-                  "text": "I try to get their attention. They form a huddle and whisper about me. I hear: '...definitely a bear...' Not welcome here."
+                  "text": "I try to get their attention. They huddle and whisper. I catch '...no fur...' and '...shoes...'. Not welcome."
                 }
               ]
             }
@@ -371,7 +371,7 @@
           "CLOSE": [
             {
               "op": "say",
-              "text": "'Close your positions!' I yell. They all laugh nervously. One starts crying. That escalated quickly."
+              "text": "'Party's over!' I yell. They laugh nervously. One starts crying. I take it back."
             }
           ]
         }
@@ -388,7 +388,7 @@
             "I hold my duck up to Gerald. Then I just set it down beside him. Gently."
           ],
           "golden_token": [
-            "I offer Gerald the golden token. Gerald doesn't do money. Gerald is beyond money."
+            "I offer Gerald the golden token. Gerald doesn't do money. Gerald has a vet bill and no regrets."
           ],
           "water_bottle": [
             "I splash Gerald. The apes gasp. He lives in a pool. He's fine. Everyone calm down."
@@ -427,7 +427,7 @@
             },
             {
               "op": "say",
-              "text": "I address the duck directly. 'Gerald, what's the alpha?' The duck says nothing. The apes gasp. 'He only speaks during bull markets,' one explains."
+              "text": "'Gerald. Any advice?' The duck says nothing. The apes gasp. 'He only speaks to other ducks,' one whispers."
             }
           ],
           "USE": [
@@ -490,19 +490,19 @@
             },
             {
               "op": "say",
-              "text": "Gerald is too big to pick up. And the apes would riot. Never come between a degen and their inflatable."
+              "text": "Gerald is too big to pick up. And the apes would riot. I've seen them with a banana."
             }
           ],
           "OPEN": [
             {
               "op": "say",
-              "text": "There's a valve on Gerald's belly. I could deflate him, but that feels like a war crime in this context."
+              "text": "There's a valve on Gerald's belly. I could let him down. Everyone else has."
             }
           ],
           "CLOSE": [
             {
               "op": "say",
-              "text": "Gerald's beak is sealed. Like most crypto NDAs."
+              "text": "Gerald's beak is shut. Gerald does not do interviews."
             }
           ]
         }
@@ -525,7 +525,7 @@
           "LOOK": [
             {
               "op": "say",
-              "text": "A TV mounted on the wall showing live crypto charts. Green candles. The apes in the pool cheer. Red candle. They go underwater. It's a synchronized swimming routine driven by market sentiment."
+              "text": "A TV of live charts. Green: the apes cheer. Red: they all go underwater. I'm watching too. I should stop."
             }
           ],
           "TALK": [
@@ -537,25 +537,25 @@
           "USE": [
             {
               "op": "say",
-              "text": "I try to change the channel. The remote is at the bottom of the pool. Nobody dares dive for it. 'Last guy who tried found a liquidation notice down there,' an ape warns."
+              "text": "The remote is at the bottom of the pool. 'Last chap who dove for it,' an ape warns, 'came up a different person.'"
             }
           ],
           "PICK": [
             {
               "op": "say",
-              "text": "It's bolted to the wall. Like my eyes to these charts. We're all trapped."
+              "text": "Bolted to the wall. Adrian bolts everything. Except himself, apparently."
             }
           ],
           "OPEN": [
             {
               "op": "say",
-              "text": "I open the TV settings. The only option is 'MORE CHARTS'. I close it."
+              "text": "I open the TV menu. Options: 'CHARTS' and 'MORE CHARTS'. I close it before I pick one."
             }
           ],
           "CLOSE": [
             {
               "op": "say",
-              "text": "I try to turn it off. 'NO!' scream all the apes in unison. I step back slowly."
+              "text": "I reach for the off button. 'NO!' scream all the apes at once. I step back slowly."
             }
           ]
         }
@@ -573,7 +573,7 @@
           "LOOK": [
             {
               "op": "say",
-              "text": "A well-stocked bar with bottles of various colors. The labels read: 'Liquid Staking', 'Proof of Drink', 'Gas Fee Gin', 'Rug Pull Rum'. A robot bartender polishes a glass that's already spotless."
+              "text": "A well-stocked bar. A robot bartender polishes a glass that's already spotless. It's been polishing it for a while."
             }
           ],
           "TALK": [
@@ -585,25 +585,25 @@
           "USE": [
             {
               "op": "say",
-              "text": "I sit at the bar. The robot slides me a glass of green liquid. 'On the house. It's our signature drink: The Liquidation.' It tastes like regret and lime."
+              "text": "The robot slides me a green drink. 'On the house. The Liquidation.' It tastes like lime and bad decisions."
             }
           ],
           "PICK": [
             {
               "op": "say",
-              "text": "I grab a bottle labeled 'Yield Farming Whiskey'. The robot snatches it back. 'That's aged 3 epochs. Not for amateurs.'"
+              "text": "I reach for a bottle. The robot takes it back before my hand arrives. Faster than me. Faster than anyone."
             }
           ],
           "OPEN": [
             {
               "op": "say",
-              "text": "I open a bottle. The fizz sounds like a transaction being confirmed. 'That's the impermanent loss IPA,' the robot explains. 'The taste changes depending on when you drink it.'"
+              "text": "I open a bottle. Fizz. 'That is the house IPA,' the robot says. 'It tastes different every time. That is a defect.'"
             }
           ],
           "CLOSE": [
             {
               "op": "say",
-              "text": "I close the bottle cap. 'Smart,' the robot says. 'Most people here can't close a position either.'"
+              "text": "I put the cap back on. 'Thank you,' says the robot. 'Nobody here closes anything.'"
             }
           ]
         }
@@ -617,7 +617,7 @@
             "The robot beeps. 'Tips only.' That isn't a tip."
           ],
           "golden_token": [
-            "I slide the golden token across the bar. The robot slides it back. 'No tokens. Too volatile.'"
+            "I slide the golden token across. The robot slides it back. 'Coins are not tips. Tips are not coins. I checked.'"
           ],
           "energy_drink": [
             "I offer the bartender my energy drink. 'I do not drink. I am the drinks.'"
@@ -634,7 +634,7 @@
           "LOOK": [
             {
               "op": "say",
-              "text": "A chrome robot with LED eyes and a bowtie. It moves with mechanical precision, mixing drinks with algorithmic accuracy. A nametag reads: 'B.O.T. — Beverage Operations Terminal'. Below it, scratched in: 'formerly: Trading Bot v2.3'."
+              "text": "A chrome robot in a bowtie. Nametag: 'B.O.T. — Beverage Operations Terminal'. Scratched below: 'formerly: Trading Bot v2.3'."
             }
           ],
           "TALK": [
@@ -686,7 +686,7 @@
               "then": [
                 {
                   "op": "say",
-                  "text": "I try to access the robot's control panel. 'Buy me a drink first,' it says. Even robots have boundaries."
+                  "text": "I reach for its control panel. 'Buy me a drink first,' it says. I can't. It's the one with the drinks."
                 }
               ],
               "else": [
@@ -701,19 +701,19 @@
           "PICK": [
             {
               "op": "say",
-              "text": "It weighs 200kg and has a taser arm. I'll pass."
+              "text": "It weighs 200 kilos and has a taser arm. I'll pick something smaller. Like a fight with Chad."
             }
           ],
           "OPEN": [
             {
               "op": "say",
-              "text": "I open the robot's chest panel. Inside: a tiny hamster wheel. 'That's my backup generator,' it says, closing the panel. 'Don't judge.'"
+              "text": "I open its chest panel. Inside: a tiny hamster wheel. 'Backup generator,' it says, closing it. 'Do not ask about the hamster.'"
             }
           ],
           "CLOSE": [
             {
               "op": "say",
-              "text": "'Please don't try to shut me down. Last time someone did that, I auto-bought 10,000 DOGE.'"
+              "text": "'Please do not switch me off. Last time, I rebooted and served everyone milk.'"
             }
           ]
         }
@@ -731,37 +731,37 @@
           "LOOK": [
             {
               "op": "say",
-              "text": "Banana peels scattered around the pool edge. The apes are messy guests. Or it's performance art. Hard to tell with this crowd."
+              "text": "Banana peels all around the pool edge. Either messy guests or performance art. With apes, it's both."
             }
           ],
           "TALK": [
             {
               "op": "say",
-              "text": "I talk to a banana peel. This is rock bottom. Or is it the pool bottom? Both, really."
+              "text": "I talk to a banana peel. Of all my witnesses, it's the most forthcoming."
             }
           ],
           "USE": [
             {
               "op": "say",
-              "text": "I slip on a banana peel. Classic. The apes rate my fall: '7/10, nice form, weak landing.'"
+              "text": "I step on a peel on purpose. Classic. The apes score it: '7, mate. Weak landing.'"
             }
           ],
           "PICK": [
             {
               "op": "say",
-              "text": "I pick up a banana peel. An ape looks offended. 'That's... that's organic decentralized compost.' I put it back."
+              "text": "I pick up a peel. An ape glares. 'That's my spot, mate.' I put it back exactly where it was."
             }
           ],
           "OPEN": [
             {
               "op": "say",
-              "text": "You can't open a banana peel. You can unpeel a banana, but that ship has sailed. Or slipped."
+              "text": "It's already open. That's what a peel is. A banana's closing argument."
             }
           ],
           "CLOSE": [
             {
               "op": "say",
-              "text": "I try to reassemble the banana. The apes watch in fascination. 'Is that... reverse yield farming?'"
+              "text": "I try to put the banana back together. The apes watch, fascinated. Nobody helps."
             }
           ]
         }
@@ -779,19 +779,19 @@
           "LOOK": [
             {
               "op": "say",
-              "text": "A pile of discarded items near the stairs: empty energy drink cans, torn whitepapers, a broken phone with 'WAGMI' as the wallpaper. Looks like the apes have been using this corner as a landfill. There might be something worth salvaging in there."
+              "text": "A junk pile by the stairs: empty cans, torn whitepapers, a cracked phone. Something in there might be worth digging for."
             }
           ],
           "TALK": [
             {
               "op": "say",
-              "text": "I address the pile. 'What treasures do you hold?' A can falls off the top. That's either a sign or gravity."
+              "text": "'What are you hiding?' A can falls off the top. It's either a sign or gravity. Gravity, Dex."
             }
           ],
           "USE": [
             {
               "op": "say",
-              "text": "I rummage through the junk. Mostly worthless. Like an altcoin portfolio in January."
+              "text": "I rummage through the junk. My hand comes out sticky and wiser."
             }
           ],
           "PICK": [
@@ -801,7 +801,7 @@
               "then": [
                 {
                   "op": "say",
-                  "text": "Nothing else worth salvaging. Just broken dreams and banana peels."
+                  "text": "Nothing else worth digging for. Unless I want the cracked phone. I don't."
                 }
               ],
               "else": [
@@ -829,13 +829,13 @@
           "OPEN": [
             {
               "op": "say",
-              "text": "I open a crumpled paper from the pile. It reads: 'TO DO: 1. Buy the dip. 2. Buy the dip again. 3. Realize there is no bottom.' Motivational."
+              "text": "A crumpled to-do list: '1. Swim. 2. Bananas. 3. Swim.' Somebody here has life figured out."
             }
           ],
           "CLOSE": [
             {
               "op": "say",
-              "text": "I push the trash back together. An ape nods approvingly. 'Composability,' he says. I don't think he knows what that word means."
+              "text": "I push the trash back into a pile. An ape nods. 'Tidy, old chap.' He throws a peel on it."
             }
           ]
         }
@@ -844,7 +844,7 @@
         "id": "hs_dark_door",
         "useResponses": {
           "keycard": [
-            "No reader on the ominous door. Ominous doors don't do cards."
+            "No card reader. Ominous doors run on vibes."
           ]
         },
         "name": "Ominous Door",
@@ -862,13 +862,13 @@
               "then": [
                 {
                   "op": "say",
-                  "text": "The door to the MemeLAB. Now that I know what's inside, the sign 'DEEP LIQUIDITY' makes a sick kind of sense."
+                  "text": "The door to the MemeLAB. Now I know what's inside, the warning sign looks modest."
                 }
               ],
               "else": [
                 {
                   "op": "say",
-                  "text": "A heavy metal door, pitch black behind the gap. A sign reads: 'DEEP LIQUIDITY — AUTHORIZED WHALES ONLY'. Below it, someone scratched: 'abandon all stablecoins, ye who enter here.'"
+                  "text": "A heavy metal door, pitch black behind the gap. A sign: 'AUTHORIZED WHALES ONLY'. Underneath, scratched: 'and Gerald'."
                 }
               ]
             }
@@ -976,19 +976,19 @@
           "TALK": [
             {
               "op": "say",
-              "text": "I knock on the door. Something knocks back. Three times. Then silence. Then a faint whisper: 'What's your leverage?' I back away slowly."
+              "text": "I knock. Something knocks back. Three times. Like a three-factor door. I back away slowly."
             }
           ],
           "PICK": [
             {
               "op": "say",
-              "text": "I can't pick up a door that leads to the abyss. The abyss picks YOU."
+              "text": "I can't pick up a door. I can barely pick up hints."
             }
           ],
           "CLOSE": [
             {
               "op": "say",
-              "text": "It's already closed. Good. Whatever's behind there has more TVL than sense."
+              "text": "Already closed. Good. Doors with that much attitude should stay closed."
             }
           ],
           "PUSH": [
@@ -1098,7 +1098,7 @@
           "LOOK": [
             {
               "op": "say",
-              "text": "Stairs leading back up to the clinic reception. The sound of splashing and impermanent loss fades behind me."
+              "text": "Stairs back up to the clinic reception. Dry land. Forms. Nurse Gwei."
             }
           ],
           "USE": [
@@ -1134,19 +1134,19 @@
           "TALK": [
             {
               "op": "say",
-              "text": "The stairs creak as if they're disappointed in my life choices. Join the club, stairs."
+              "text": "The stairs creak like they're disappointed in me. Penny does that face too."
             }
           ],
           "PICK": [
             {
               "op": "say",
-              "text": "I can't pick up stairs. That's not a thing. Not even in Web3."
+              "text": "I can't pick up stairs. I checked last time too."
             }
           ],
           "CLOSE": [
             {
               "op": "say",
-              "text": "There's no door to close. The apes' poor financial decisions echo freely up the stairwell."
+              "text": "No door to close. The apes' singing follows me up the stairs."
             }
           ]
         }
@@ -1164,17 +1164,17 @@
           "LOOK": [
             {
               "op": "say",
-              "text": "'The Art of the Rug: 48 Laws of DeFi Power'. Author: Anonymous. The foreword is by 'a whale who wishes to remain unnamed'. The back cover QR code leads to a rickroll."
+              "text": "'The Art of the Rug'. Author: Anonymous. Foreword by 'a whale who wishes to remain unnamed'. Riveting."
             },
             {
               "op": "say",
-              "text": "There's a bookmark at chapter 3. Somebody here studies."
+              "text": "A bookmark at chapter 3. Somebody here does homework. Suspicious."
             }
           ],
           "TALK": [
             {
               "op": "say",
-              "text": "'Has anyone read this?' An ape scoffs. 'Read it? I LIVED it. Chapter 7: How to Lose Friends and Liquidate People. That's my autobiography.'"
+              "text": "'Has anyone read this?' An ape scoffs. 'Read it, mate? I'm chapter seven.'"
             }
           ],
           "USE": [
@@ -1185,7 +1185,7 @@
             },
             {
               "op": "say",
-              "text": "Chapter 1: 'Buy High, Sell Low'. Chapter 2: 'I Did My Own Research (On Twitter)'. Chapter 3: 'How to Win a FUD Duel'."
+              "text": "Chapter 1: 'Buy High'. Chapter 2: 'Sell Low'. Chapter 3: 'How to Win a FUD Duel'. Finally, something useful."
             },
             {
               "op": "say",
@@ -1193,13 +1193,13 @@
             },
             {
               "op": "say",
-              "text": "Three sources. Like a proper oracle. Except these ones are wet."
+              "text": "Three sources. A real detective checks all three. Even the wet one."
             }
           ],
           "PICK": [
             {
               "op": "say",
-              "text": "I pick it up. Heavier than expected. The pages are stiff with dried pool water and what I hope is just highlighter ink. I put it back."
+              "text": "Heavier than it looks. Pages stiff with pool water and what I hope is highlighter. I put it back."
             }
           ],
           "OPEN": [
@@ -1210,7 +1210,7 @@
             },
             {
               "op": "say",
-              "text": "Chapter 1: 'Buy High, Sell Low'. Chapter 2: 'I Did My Own Research (On Twitter)'. Chapter 3: 'How to Win a FUD Duel'."
+              "text": "Chapter 1: 'Buy High'. Chapter 2: 'Sell Low'. Chapter 3: 'How to Win a FUD Duel'. Finally, something useful."
             },
             {
               "op": "say",
@@ -1218,13 +1218,13 @@
             },
             {
               "op": "say",
-              "text": "Three sources. Like a proper oracle. Except these ones are wet."
+              "text": "Three sources. A real detective checks all three. Even the wet one."
             }
           ],
           "CLOSE": [
             {
               "op": "say",
-              "text": "A bookmark falls out. It's a receipt for 3 ETH worth of $SAFU. Current value: $0.00. The bookmark IS the lesson."
+              "text": "I close the book. A bookmark falls out: a receipt for $SAFU. The bookmark taught the class."
             }
           ]
         }
@@ -1242,37 +1242,37 @@
           "LOOK": [
             {
               "op": "say",
-              "text": "A water-damaged blue notebook. Cover reads: 'MY TRADING JOURNAL — Day 1 to Lambo'. Someone crossed out 'Lambo' and wrote 'Ramen'. Then crossed out 'Ramen' and wrote 'Foodbank'. Then circled back to 'Lambo' with a note: 'copium'."
+              "text": "A soggy blue notebook: 'MY TRADING JOURNAL — Day 1 to Lambo'. 'Lambo' is crossed out. Then 'Ramen'. Then 'Toast'."
             }
           ],
           "TALK": [
             {
               "op": "say",
-              "text": "'Whose journal is this?' An ape raises his hand. 'Day 47: Portfolio down 80%. Mood: bullish. Day 48: Down 95%. Mood: this is fine. Day 49: Up 2%. Mood: I'M A GENIUS.'"
+              "text": "'Whose journal is this?' Three apes raise a hand. Then they look at each other. Then they put them down."
             }
           ],
           "USE": [
             {
               "op": "say",
-              "text": "I open to today's entry. It just says 'wen moon' repeated 47 times. The handwriting gets progressively more unhinged. The last one is in crayon."
+              "text": "Today's entry is one word, forty-seven times. The handwriting gets worse each line. The last one is in crayon."
             }
           ],
           "PICK": [
             {
               "op": "say",
-              "text": "Pages fall out like autumn leaves. Each one has a different cope: 'zoom out', 'still early', 'diamond hands', 'generational wealth'. It's a scrapbook of denial."
+              "text": "Pages fall out like leaves. 'Zoom out.' 'Still early.' 'Fine.' I put them back in a different order. Nobody will notice."
             }
           ],
           "OPEN": [
             {
               "op": "say",
-              "text": "Back cover pocket has a folded chart. Every dip annotated: 'bought here', 'bought here too', 'and here', 'why did I buy here', 'I need help', 'THIS IS THE BOTTOM' (it wasn't)."
+              "text": "A folded chart in the back pocket. 'Bought here.' 'And here.' 'Why did I buy here.' 'I need help.' Same handwriting as mine. Spooky."
             }
           ],
           "CLOSE": [
             {
               "op": "say",
-              "text": "The last page: 'If you're reading this, don't feel sorry for me. I'm in a pool now. Providing liquidity. Living my best life.' A single tear stains the ink."
+              "text": "The last page: 'Don't feel sorry for me. I'm in a pool now. Living my best life.' The ink is smudged. Pool water. Probably."
             }
           ]
         }

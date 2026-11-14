@@ -205,7 +205,7 @@
       "goal": {"has": ["ledger"]},
       "steps": [
         {"do": "newGame", "expect": {"scene": "outside", "lacks": ["ledger", "fence_plank"]}},
-        {"do": "act", "verb": "OPEN", "target": "hs_doormat", "rejects": "It means it", "expect": {"lacks": ["ledger"], "unsetFlags": ["found_ledger"]}},
+        {"do": "act", "verb": "OPEN", "target": "hs_doormat", "rejects": "Glued down", "expect": {"lacks": ["ledger"], "unsetFlags": ["found_ledger"]}},
         {"do": "act", "verb": "PULL", "target": "hs_doormat", "rejects": "leverage", "expect": {"lacks": ["ledger"], "unsetFlags": ["found_ledger"]}},
         {"do": "act", "verb": "PUSH", "target": "hs_doormat", "rejects": "bonded to the porch", "expect": {"lacks": ["ledger"], "unsetFlags": ["found_ledger"]}},
         {"do": "act", "verb": "PICK", "target": "hs_doormat", "attempt": true, "rejects": "It means it", "expect": {"lacks": ["ledger"], "unsetFlags": ["found_ledger"]}}
@@ -684,7 +684,7 @@
         {"do": "use", "item": "code_note", "target": "hs_keypad", "choices": ["vet bill"], "note": "A3.3d: PIN aceptado; DOORIS se presenta (primera vez), llama Anon y hace la pregunta de seguridad: la opción «[The name on the vet bill]» solo sale con la factura; aún falta la llave", "expect": {"scene": "outside", "flags": {"dooris_met": true, "anon_call_1": true, "dooris_pin_ok": true, "dooris_question_ok": true, "door_unlocked": false}}},
         {"do": "use", "item": "ledger", "target": "hs_keypad", "note": "A3.3d: tercer factor: DOORIS abre («One factor was a duck») y el árbol cambia de escena al cerrarse", "expect": {"scene": "lobby"}},
         {"do": "mockWeb3", "web3": {"punks": 1}, "note": "A3.10: cartera simulada (sin red) con un AdrianPunk", "expect": {"scene": "lobby"}},
-        {"do": "act", "verb": "LOOK", "target": "hs_poster", "rejects": "You earned this view", "note": "A3.10: el póster de verdad para holders da el logro Wall Reader (una vez)", "expect": {"scene": "lobby", "flags": {"holder_wall": true}, "achievements": ["holder_wall"]}},
+        {"do": "act", "verb": "LOOK", "target": "hs_poster", "rejects": "Holders see the whole poster", "note": "A3.10: el póster de verdad para holders da el logro Wall Reader (una vez)", "expect": {"scene": "lobby", "flags": {"holder_wall": true}, "achievements": ["holder_wall"]}},
         {"do": "mockWeb3", "web3": null, "note": "A3.10: sin cartera otra vez", "expect": {"scene": "lobby"}},
         {"do": "use", "item": "mystery_envelope", "target": "hs_monitor_desk", "note": "A3.4a: el sobre en el escritorio distrae a Penny", "expect": {"flags": {"penny_reading": true}}},
         {"do": "act", "verb": "PICK", "target": "hs_coat", "expect": {"has": ["keycard"]}},

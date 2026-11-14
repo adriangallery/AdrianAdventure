@@ -252,7 +252,7 @@
         {"do": "key", "key": "l", "note": "A2.18: pulsar otro verbo (aquí su tecla) cancela la frase", "expect": {"verb": "LOOK", "sentence": {"verb": "LOOK", "pending": false, "item": null}}},
         {"do": "pick", "verb": "GIVE", "item": "vet_bill", "expect": {"sentence": {"pending": true}}},
         {"do": "rightclick", "target": "npc_receptionist", "note": "A2.18: con una frase a medias el clic derecho solo la cancela (no habla con Penny ni va hacia ella: el último acercamiento sigue siendo el del póster)", "expect": {"verb": "WALK", "sentence": {"pending": false, "item": null}, "walkTarget": {"target": "hs_poster", "verb": "USE"}}},
-        {"do": "give", "item": "ledger", "target": "code_note", "rejects": "nobody takes anything", "note": "A2.18: dar un objeto a otro objeto: bolsa verbDefaults.GIVE (frase 1: la 0 salió con el póster)", "expect": {"has": ["ledger", "code_note"], "failResponse": {"kind": "item-item", "verb": "GIVE", "item": "ledger", "target": "code_note", "bag": "verb:GIVE"}}},
+        {"do": "give", "item": "ledger", "target": "code_note", "rejects": "nothing takes anything", "note": "A2.18: dar un objeto a otro objeto: bolsa verbDefaults.GIVE (frase 1: la 0 salió con el póster)", "expect": {"has": ["ledger", "code_note"], "failResponse": {"kind": "item-item", "verb": "GIVE", "item": "ledger", "target": "code_note", "bag": "verb:GIVE"}}},
         {"do": "pick", "verb": "LOOK", "item": "ledger", "rejects": "fresh from under a doormat", "note": "A2.18: los verbos de un objeto sobre el inventario siguen al momento", "expect": {"verb": "LOOK", "sentence": {"pending": false}}}
       ]
     },

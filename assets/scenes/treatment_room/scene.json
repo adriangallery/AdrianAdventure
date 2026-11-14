@@ -58,7 +58,7 @@
         "id": "hs_chair",
         "useResponses": {
           "ape_costume": [
-            "I sit the ape costume in the chair. Now it looks like a patient. A furry one. I take it back."
+            "I sit the ape costume in the chair. It looks more cured than me. I take it back."
           ]
         },
         "name": "The Chair",
@@ -72,7 +72,7 @@
           "LOOK": [
             {
               "op": "say",
-              "text": "One reclining chair, facing the monitor. Straps on the armrests. Comfy. Restraints optional. Hopefully."
+              "text": "A reclining chair facing the monitor. Straps on the armrests. 'Optional,' says a little sign. Sure."
             }
           ],
           "USE": [
@@ -174,43 +174,43 @@
           "TALK": [
             {
               "op": "say",
-              "text": "I whisper to the empty chair: 'Who sat here before me?' The leather creaks. Not an answer. Just old material settling. Or is it?"
+              "text": "'Who sat here before me?' The leather creaks. In a shape I recognise. ...My shape."
             }
           ],
           "PICK": [
             {
               "op": "say",
-              "text": "I check the crevices of the chair. A single hair. A crumb. And scratched into the armrest: 'You'll understand when you see the screen.'"
+              "text": "In the crevices: one spiky hair, a crumb, and scratched in the armrest: 'You'll understand when you see the screen.'"
             }
           ],
           "OPEN": [
             {
               "op": "say",
-              "text": "I recline the chair to its fully flat position. Staring at the ceiling. Fluorescent lights buzz. This is what therapy looks like in the metaverse."
+              "text": "I recline the chair all the way. The ceiling stares down. It's seen this before. It's seen ME before."
             }
           ],
           "CLOSE": [
             {
               "op": "say",
-              "text": "I return the chair to upright. It faces the monitor. Everything in this room faces the monitor. By design."
+              "text": "I put the chair upright. It swivels back to the monitor by itself. Clingy."
             }
           ],
           "PUSH": [
             {
               "op": "say",
-              "text": "I push the chair. It rolls on its wheels, stopping directly in front of the monitor. As if drawn to it magnetically. Or programmatically."
+              "text": "I push the chair. It rolls straight back in front of the monitor. Like a dog to its bowl."
             }
           ],
           "PULL": [
             {
               "op": "say",
-              "text": "I pull the chair away from the monitor. It feels wrong. Like the room itself resists. The chair belongs in front of that screen."
+              "text": "I drag the chair away from the monitor. The wheels squeak back. The chair has opinions."
             }
           ],
           "GIVE": [
             {
               "op": "say",
-              "text": "The chair has received enough patients. Their weight. Their fears. Their wallet histories. It doesn't need more."
+              "text": "The chair has had enough patients. I'm not leaving it a tip."
             }
           ]
         }
@@ -227,7 +227,7 @@
             "I look at the monitor through the spare 3D glasses. Double the glasses, half the picture."
           ],
           "keycard": [
-            "I swipe the keycard over the monitor. It's a monitor. It monitors. It doesn't swipe."
+            "I swipe Adrian's keycard over the screen. It reads me instead. Awkward for both of us."
           ]
         },
         "name": "The Monitor",
@@ -431,37 +431,37 @@
           "PICK": [
             {
               "op": "say",
-              "text": "The monitor is mounted to the wall with industrial bolts. It's not going anywhere. Neither is the truth it displays."
+              "text": "Bolted to the wall with industrial bolts. Adrian learned from the doormat."
             }
           ],
           "OPEN": [
             {
               "op": "say",
-              "text": "I try to access the system files. The monitor shows: 'ADMIN ACCESS REQUIRED. Nice try, Patient Zero.'"
+              "text": "I poke around the menus. 'ADMIN ACCESS REQUIRED. Nice try, Patient Zero.' It knows my nickname."
             }
           ],
           "CLOSE": [
             {
               "op": "say",
-              "text": "I try to turn off the monitor. It flickers but stays on. It's been on this whole time. Waiting for me to arrive. It won't stop now."
+              "text": "I look for the off switch. There isn't one. This screen was built not to let me leave."
             }
           ],
           "PUSH": [
             {
               "op": "say",
-              "text": "I push the monitor. It doesn't budge. It's part of the wall. Part of the room. Part of the answer."
+              "text": "I push the monitor. It doesn't budge. It's the most stable thing I've met all year."
             }
           ],
           "PULL": [
             {
               "op": "say",
-              "text": "I pull at the monitor's edge. Behind it, wires run into the wall and deep into the building. This room is the heart of the clinic."
+              "text": "I peek behind the monitor. Wires, dust, and one very old moth. It followed me here too."
             }
           ],
           "GIVE": [
             {
               "op": "say",
-              "text": "The monitor has already been given everything. My data. My history. My identity. It doesn't need anything else from me."
+              "text": "The monitor already has my whole file. Giving it more feels like oversharing."
             }
           ]
         }
@@ -479,55 +479,55 @@
           "LOOK": [
             {
               "op": "say",
-              "text": "Charts everywhere. Pinned, taped, nailed to every inch of wall. Every candle, every rug, every pump and dump. A complete history of someone's crypto journey. Annotations in frantic handwriting: 'THIS IS THE BOTTOM' written seven times at different price points. Someone who looks a lot like... me."
+              "text": "Charts nailed to every inch of wall. 'THIS IS THE BOTTOM', seven times, at seven prices. The handwriting is mine."
             }
           ],
           "USE": [
             {
               "op": "say",
-              "text": "I trace the charts with my finger. The timeline starts optimistic. 'FIRST NFT MINT!' Then it gets darker. 'WHY DID I APPROVE THAT CONTRACT.' The last entry just says: 'Again.'"
+              "text": "I trace the timeline with a finger. It starts with 'FIRST MINT!' and a smiley. It ends with 'Again.'"
             }
           ],
           "TALK": [
             {
               "op": "say",
-              "text": "I read the annotations aloud. 'Buy here.' 'Sell here.' 'Why didn't I sell here.' 'LIQUIDATED.' It's like reading my own diary. Because it is."
+              "text": "I read them aloud. 'Buy here.' 'Sell here.' 'Why didn't I sell here.' It's my own diary. Out loud. Ugh."
             }
           ],
           "PICK": [
             {
               "op": "say",
-              "text": "I pull one chart off the wall. Behind it, another chart. Behind that, another. It's charts all the way down. Like layers of regret."
+              "text": "I pull one chart off the wall. There's another chart behind it. Then another. I stop before I find wallpaper."
             }
           ],
           "OPEN": [
             {
               "op": "say",
-              "text": "I unfold a rolled-up chart in the corner. A complete map of DeFi protocols I've interacted with. Red Xs on the ones that rugged. It's mostly red Xs."
+              "text": "A rolled-up chart in the corner, covered in red Xs. Same leaky blue ink as Adrian's pen. Somebody marked my mistakes for me."
             }
           ],
           "CLOSE": [
             {
               "op": "say",
-              "text": "I pin the chart back. The wall stares at me with a thousand data points. All mine."
+              "text": "I pin the chart back up. Crooked. Whoever made these would hate that. ...I hate that."
             }
           ],
           "PUSH": [
             {
               "op": "say",
-              "text": "I push a stack of charts aside. They cascade to the floor like falling dominoes. Like falling prices. Like falling hopes."
+              "text": "I push a stack of charts aside. They slide to the floor. I don't pick them up. Growth."
             }
           ],
           "PULL": [
             {
               "op": "say",
-              "text": "I pull a chart free from the wall. A sticky note falls: 'This is not financial advice. This is a cry for help.'"
+              "text": "A sticky note falls off a chart: 'This is not financial advice. This is a cry for help.' My handwriting again."
             }
           ],
           "GIVE": [
             {
               "op": "say",
-              "text": "The walls have enough charts. Enough data. Enough pain. They don't need more."
+              "text": "The walls have enough charts. One more and the building falls over."
             }
           ]
         }
@@ -550,7 +550,7 @@
           "LOOK": [
             {
               "op": "say",
-              "text": "The door back to the reception. Simple. Unassuming. Do I leave? Or do I stay and face the music? The monitor hums behind me. The charts watch from the walls. The chair waits."
+              "text": "The door back to reception. Plain, quiet, no PIN, no voice. After DOORIS, it feels almost rude."
             }
           ],
           "USE": [
@@ -615,13 +615,13 @@
           "TALK": [
             {
               "op": "say",
-              "text": "I whisper to the door: 'I'll be back.' The door says nothing. Doors are good at that."
+              "text": "'I'll be back,' I tell the door. It doesn't ask for a security question. I miss DOORIS a bit."
             }
           ],
           "PICK": [
             {
               "op": "say",
-              "text": "I can't take the door. But I can take what I've learned. Maybe. Probably not. I'll definitely make the same mistakes."
+              "text": "I can't take the door. I can take the lesson. ...I'll probably leave the lesson too."
             }
           ],
           "OPEN": [
@@ -686,7 +686,7 @@
           "CLOSE": [
             {
               "op": "say",
-              "text": "The door is already closed. Keeping the treatment room's secrets contained. For now."
+              "text": "Already closed. Doors here learned from DOORIS. Polite, firm, shut."
             }
           ],
           "PUSH": [
@@ -751,13 +751,13 @@
           "PULL": [
             {
               "op": "say",
-              "text": "I pull the door toward me. A draft of cold air from the reception. Reality waiting on the other side."
+              "text": "I pull the door. A draft from reception. And faintly, Nurse Gwei filling in a form about it."
             }
           ],
           "GIVE": [
             {
               "op": "say",
-              "text": "The door doesn't need anything. It just needs me to decide: stay or go."
+              "text": "The door doesn't want anything from me. First door all week."
             }
           ]
         }
@@ -779,7 +779,7 @@
               "then": [
                 {
                   "op": "say",
-                  "text": "Adrian's handwriting. Neater than his wallet."
+                  "text": "Adrian's handwriting. Neater than his doormat security."
                 }
               ],
               "else": [
@@ -873,25 +873,25 @@
           "USE": [
             {
               "op": "say",
-              "text": "It's a note. I should try to pick it up or look at it more closely."
+              "text": "It's a note. Notes get read, not used. Even I know that."
             }
           ],
           "TALK": [
             {
               "op": "say",
-              "text": "It's a piece of paper. It's not going to talk back."
+              "text": "I clear my throat at the note. It's paper. It already said its piece."
             }
           ],
           "OPEN": [
             {
               "op": "say",
-              "text": "The note is already unfolded."
+              "text": "Already unfolded. Adrian folds like a man with nothing to hide."
             }
           ],
           "CLOSE": [
             {
               "op": "say",
-              "text": "I could fold it, but why? The words are what matter."
+              "text": "I could fold it. I'd rather keep reading it."
             }
           ]
         }
@@ -909,55 +909,55 @@
           "LOOK": [
             {
               "op": "say",
-              "text": "Dark, sterile flooring. Scuff marks everywhere, like someone paced back and forth for hours. Or days. The marks form a pattern... is that a candlestick chart worn into the floor?"
+              "text": "Scuff marks everywhere, like someone paced for days. From the chair to the door and back. My stride, exactly."
             }
           ],
           "USE": [
             {
               "op": "say",
-              "text": "I kneel and touch the floor. Cold. Clinical. Like the moment you realize your 'diamond hands' are actually just frozen from fear."
+              "text": "I kneel and touch the floor. Cold. Clean. Mopped recently. Someone was expecting company."
             }
           ],
           "TALK": [
             {
               "op": "say",
-              "text": "I whisper to the floor: 'How many patients have you held up?' The silence is deafening. The floor has seen things. Terrible, terrible portfolios."
+              "text": "'How many patients have you held up?' The floor says nothing. Floors keep confidentiality better than Penny."
             }
           ],
           "PICK": [
             {
               "op": "say",
-              "text": "A tiny screw on the floor. From the chair, maybe. Everything in this room is falling apart."
+              "text": "A tiny screw from the chair. I leave it. That chair needs all the help it can get."
             }
           ],
           "OPEN": [
             {
               "op": "say",
-              "text": "There's no trapdoor. This isn't that kind of adventure game. Though a secret exit would explain how Patient Zero escaped."
+              "text": "No trapdoor. Patient Zero left by the front door. Too early. Apparently that's the whole problem."
             }
           ],
           "CLOSE": [
             {
               "op": "say",
-              "text": "You can't close a floor. Trust me, I've tried closing positions that were just as impossible."
+              "text": "You can't close a floor. I checked. I'm thorough now. It's a whole thing."
             }
           ],
           "PUSH": [
             {
               "op": "say",
-              "text": "I push against the floor with my foot. Solid. Unlike the floor price of most NFT collections I've invested in."
+              "text": "I stamp on the floor. Solid. Somewhere below, Chad probably calls it a vibe."
             }
           ],
           "PULL": [
             {
               "op": "say",
-              "text": "I try to pull up a floor tile. Nope. This floor is more firmly committed than any liquidity provider I've ever met."
+              "text": "I try to lift a floor tile. It's glued down. Adrian glues everything down. Doormats. Tiles. Me."
             }
           ],
           "GIVE": [
             {
               "op": "say",
-              "text": "The floor already has my footprints. And my tears. And probably some spilled coffee. It doesn't need more."
+              "text": "The floor already has my footprints. Old ones too, apparently."
             }
           ]
         }
@@ -975,19 +975,19 @@
           "LOOK": [
             {
               "op": "say",
-              "text": "A golden plaque reads: 'To the Founders who believed before anyone else. The clinic remembers.' Below it, your wallet address is engraved. How long has this been here?"
+              "text": "A plaque: 'To the Founders who believed before anyone else.' Below it, my wallet address. I don't remember donating."
             }
           ],
           "USE": [
             {
               "op": "say",
-              "text": "I touch the plaque. It's warm. The engraving shifts — showing my $ZERO balance, my first transaction, my time in the ecosystem. Patient Zero was always a founder."
+              "text": "I run a finger over my engraved address. Warm brass. Patient Zero, founder. Somebody polishes this weekly."
             }
           ],
           "TALK": [
             {
               "op": "say",
-              "text": "I whisper to the plaque: 'Was it worth it?' The golden letters rearrange: 'You're still here, aren't you?'"
+              "text": "'Was it worth it?' I ask the plaque. My reflection in the brass shrugs."
             }
           ]
         }
@@ -1005,25 +1005,25 @@
           "LOOK": [
             {
               "op": "say",
-              "text": "Exposed pipes and cables snake across the ceiling like a messy dependency graph. Some are wrapped in tape. The infrastructure here is held together by hope and duct tape. Just like Layer 2 scaling solutions."
+              "text": "Pipes and cables tangled across the ceiling, patched with duct tape. The whole clinic is one sneeze from a flood."
             }
           ],
           "USE": [
             {
               "op": "say",
-              "text": "I reach for a dangling cable. Probably not a good idea. Last time I touched something I didn't understand, I approved an unlimited token allowance."
+              "text": "I reach for a dangling cable. Then I remember I like my eyebrows. I leave it dangling."
             }
           ],
           "TALK": [
             {
               "op": "say",
-              "text": "I address the tangle of wires: 'You look like my transaction history on Etherscan.' The cables say nothing. They're better organized than my DeFi positions."
+              "text": "'Who wired you?' The cables hang there. Whoever it was, they gave up halfway. Relatable."
             }
           ],
           "PICK": [
             {
               "op": "say",
-              "text": "I tug on a loose cable. The lights flicker. Maybe I should leave the infrastructure alone. I'm a detective, not a plumber."
+              "text": "I tug a loose cable. The lights flicker. I let go and pretend that was somebody else."
             }
           ],
           "OPEN": [
@@ -1035,25 +1035,25 @@
           "CLOSE": [
             {
               "op": "say",
-              "text": "I snap the junction box shut. Some things are better left sealed. Like that Uniswap LP position from 2021."
+              "text": "I snap the junction box shut. Whatever 'PATIENT ZERO MONITORING' does, it can do it without my fingers."
             }
           ],
           "PUSH": [
             {
               "op": "say",
-              "text": "I push a pipe. It groans. The whole ceiling shudders. Infrastructure this old should be migrated to a new protocol."
+              "text": "I push a pipe. It groans. The ceiling shudders. I stop pushing things in this building."
             }
           ],
           "PULL": [
             {
               "op": "say",
-              "text": "I pull a cable gently. Somewhere in the building, something beeps. I let go immediately. Not today, unexpected consequences."
+              "text": "I pull a cable. Somewhere upstairs, something beeps. I let go. Nurse Gwei will blame the ghosts."
             }
           ],
           "GIVE": [
             {
               "op": "say",
-              "text": "The pipes need a plumber, not a crypto detective with a hero complex."
+              "text": "The pipes need a plumber. I'm a detective. We'd just stare at each other."
             }
           ]
         }
@@ -1071,19 +1071,19 @@
           "LOOK": [
             {
               "op": "say",
-              "text": "A cold metal side table. Medical grade. A half-empty glass of water sits on it, still sweating. Whoever was here last didn't finish their drink. They left in a hurry. Or got liquidated mid-sip."
+              "text": "A cold metal side table with a half-empty glass, still sweating. Whoever was here last left mid-sip."
             }
           ],
           "USE": [
             {
               "op": "say",
-              "text": "I take a sip of the water. Stale. Tastes like regret and fluoride. Two things I'm very familiar with."
+              "text": "I sip the water. Stale. Fernando would still drink it. Fernando drinks anything."
             }
           ],
           "TALK": [
             {
               "op": "say",
-              "text": "'Table, tell me your secrets.' It remains silent. Tables are the strong, silent type. Like validators during network congestion."
+              "text": "'Table, tell me your secrets.' It holds its glass and says nothing. Strong, silent, metal."
             }
           ],
           "PICK": [
@@ -1093,7 +1093,7 @@
               "then": [
                 {
                   "op": "say",
-                  "text": "A glass of water with fingerprints on it. Still half full. Or half empty, depending on your portfolio."
+                  "text": "A glass with fingerprints on it. Half full. I'm trying to be a half-full guy now."
                 }
               ],
               "else": [
@@ -1103,7 +1103,7 @@
                   "then": [
                     {
                       "op": "say",
-                      "text": "A glass of water with fingerprints on it. Still half full. Or half empty, depending on your portfolio."
+                      "text": "A glass with fingerprints on it. Half full. I'm trying to be a half-full guy now."
                     }
                   ],
                   "else": [
@@ -1130,25 +1130,25 @@
           "CLOSE": [
             {
               "op": "say",
-              "text": "I close the tiny drawer. Click. The sound of finality. Like closing a leveraged position at a loss."
+              "text": "I close the tiny drawer. Click. Very satisfying. I do it twice."
             }
           ],
           "PUSH": [
             {
               "op": "say",
-              "text": "I push the table. It scrapes across the floor with a screech that could wake dead protocols."
+              "text": "I push the table. It screeches. Somewhere upstairs, the doctor writes 'agitated' on my chart."
             }
           ],
           "PULL": [
             {
               "op": "say",
-              "text": "I pull the table toward the chair. Now it's within arm's reach. Convenience. The one thing DeFi has never offered."
+              "text": "I pull the table up to the chair. Within arm's reach. The chair's arms have straps, though."
             }
           ],
           "GIVE": [
             {
               "op": "say",
-              "text": "The table holds things. That's its entire purpose. It's the cold storage of furniture."
+              "text": "The table holds things. Giving it things is just doing its job for it."
             }
           ]
         }
@@ -1191,7 +1191,7 @@
                   "else": [
                     {
                       "op": "say",
-                      "text": "A massive observation window, completely shattered. Through the spider-web of cracks I can see another room — a recliner, filing cabinets, monitors. Someone was watching from in there. Watching the patients. Watching ME. The glass broke from the inside. Whoever was observing... tried to get out."
+                      "text": "A big observation window, cracked like a spider web. Behind it, a dark room with a desk. Someone watched patients from in there. Someone watched ME."
                     }
                   ]
                 }
@@ -1252,7 +1252,7 @@
               "else": [
                 {
                   "op": "say",
-                  "text": "I peer through a gap in the shattered glass. The observation room is dark now. Dusty. A coffee mug sits on the desk, still half full. Whoever was watching Patient Zero left in a hurry. Or maybe they realized they were watching themselves."
+                  "text": "Through the cracks: a dusty desk and a mug, still half full. Whoever watched Patient Zero left in a hurry."
                 }
               ]
             }
@@ -1309,7 +1309,7 @@
                   "else": [
                     {
                       "op": "say",
-                      "text": "'Hello? Anyone still in there?' My voice echoes through the broken glass and dies in the empty room. The only answer is the hum of a monitor left on standby. Even the observers got liquidated eventually."
+                      "text": "'Hello? Anyone in there?' Only a monitor humming on standby. Even the observers went home."
                     }
                   ]
                 }
@@ -1319,37 +1319,37 @@
           "PICK": [
             {
               "op": "say",
-              "text": "I carefully pull a shard of glass from the frame. It catches the light from the monitor — green text reflected in the fragment. For a second, I see my own face in it. Patient. Observer. Same person."
+              "text": "I pull a shard from the frame. It shows my face in green monitor light. I put it back. I've seen enough of me."
             }
           ],
           "OPEN": [
             {
               "op": "say",
-              "text": "There's no door to the observation room from this side. One-way access. Like a smart contract with no withdraw function. The observers could watch, but they were never meant to intervene."
+              "text": "No door to the observation room from this side. They could watch. They weren't allowed to help."
             }
           ],
           "CLOSE": [
             {
               "op": "say",
-              "text": "Can't close a broken window. Can't undo a broken transaction. Some things just stay shattered and you learn to navigate the edges."
+              "text": "You can't close a broken window. You can only stop leaning on it."
             }
           ],
           "PUSH": [
             {
               "op": "say",
-              "text": "I push against the remaining glass. A section gives way and crashes into the observation room. The sound is obscene in this silence. Like a margin call at 3 AM."
+              "text": "I push the glass. A chunk crashes into the other room. Very loud. Somewhere, Nurse Gwei starts a form."
             }
           ],
           "PULL": [
             {
               "op": "say",
-              "text": "I pull at the window frame. It groans but holds. The frame is stronger than the glass. The system survives even when transparency is destroyed. Sound familiar?"
+              "text": "I tug the frame. It holds. The frame is fine. Only the glass had a breakdown."
             }
           ],
           "GIVE": [
             {
               "op": "say",
-              "text": "The window has already been given enough — someone's fist, apparently. Or maybe their forehead. Depends on how bad the portfolio charts looked that day."
+              "text": "The window has already been given enough. Someone's fist, by the look of it. Possibly mine."
             }
           ]
         }
@@ -1367,55 +1367,55 @@
           "LOOK": [
             {
               "op": "say",
-              "text": "Thick cables and tubes snake out from under the chair and disappear into the floor through crude holes in the tile. Some carry data. Some carry... fluids? The labels are worn off. Whatever the chair was connected to, it ran deep. Deeper than the basement. Deeper than any blockchain explorer could index."
+              "text": "Thick cables run from the chair into holes in the floor. Some carry data. Some carry... I'd rather not know."
             }
           ],
           "USE": [
             {
               "op": "say",
-              "text": "I follow a cable with my hand. It's warm. Pulsing slightly. Still active. Whatever system this chair feeds into, it hasn't been shut down. Patient Zero's session was never terminated. It's been running in the background this whole time."
+              "text": "I follow a cable with my hand. Warm. Pulsing. Whatever this chair feeds, it never shut down. It's been waiting."
             }
           ],
           "TALK": [
             {
               "op": "say",
-              "text": "'Where do you go?' I ask the cables. They hum in response. A low frequency, like a node syncing blocks. They know where they go. They just don't answer to patients."
+              "text": "'Where do you go?' The cables hum. They know. They just don't talk to patients."
             }
           ],
           "PICK": [
             {
               "op": "say",
-              "text": "I try to pull a cable loose. It won't budge. Bolted to the floor. These aren't decorative — they're load-bearing infrastructure. Like the one validator keeping a chain alive."
+              "text": "I tug a cable. It's bolted down. Everything in this room is bolted down except my sanity."
             }
           ],
           "OPEN": [
             {
               "op": "say",
-              "text": "I pry open a floor panel where the cables converge. Beneath: a junction box labeled 'BIOMETRIC FEED — TREATMENT SUITE A.' This chair wasn't just reading wallets. It was reading bodies."
+              "text": "Under a floor panel: a box labeled 'BIOMETRIC FEED — TREATMENT SUITE A.' The chair reads more than wallets."
             }
           ],
           "CLOSE": [
             {
               "op": "say",
-              "text": "I push the floor panel back. Some endpoints shouldn't be exposed. I learned that the hard way with an unsecured API. And with this floor."
+              "text": "I push the floor panel back. 'BIOMETRIC FEED' disappears. My pulse doesn't."
             }
           ],
           "PUSH": [
             {
               "op": "say",
-              "text": "I step on the cables. They resist, thick and industrial. Whoever installed these expected them to last. Built to outlast the patients. Built to outlast the clinic itself."
+              "text": "I step on the cables. They don't even notice. Built to outlast the patients. Rude, but accurate."
             }
           ],
           "PULL": [
             {
               "op": "say",
-              "text": "I yank a thinner cable free. Sparks. The monitor flickers for a second. I plug it back in immediately. Not the time to perform surgery on a system I don't understand. Again."
+              "text": "I yank a thin cable. Sparks. The monitor flickers. I plug it back in and whistle innocently."
             }
           ],
           "GIVE": [
             {
               "op": "say",
-              "text": "The cables are already carrying everything they need. Data, power, maybe secrets. They're the most honest things in this room. They just... transmit."
+              "text": "The cables already carry enough. Mostly me, apparently."
             }
           ]
         }
@@ -1433,19 +1433,19 @@
           "LOOK": [
             {
               "op": "say",
-              "text": "The wall near the door is in rough shape. Paint peeling in sheets, water damage creeping down from the ceiling, dark stains that could be rust or... I'm going to say rust. This clinic has been deteriorating for a long time. Maintained just enough to function. Never enough to look healthy. Like most DeFi protocols in a bear market."
+              "text": "Peeling paint, water damage, dark stains that could be rust or... I'm going to say rust."
             }
           ],
           "USE": [
             {
               "op": "say",
-              "text": "I scrape at the peeling paint with my fingernail. Layer after layer. The wall has been repainted a dozen times. Each layer a different shade of clinical white. Each renovation a fresh coat over the same rot. Remind you of any token rebrands?"
+              "text": "I scrape the paint. A dozen layers, each a slightly different white. Somebody had a lot of meetings about this."
             }
           ],
           "TALK": [
             {
               "op": "say",
-              "text": "'How many treatments have you witnessed?' I ask the wall. It answers by dropping a flake of paint onto my shoe. Passive-aggressive. Walls in crypto clinics have attitude."
+              "text": "'How many treatments have you seen?' The wall drops a paint flake on my shoe. Passive-aggressive. DOORIS would like it."
             }
           ],
           "PICK": [
@@ -1457,31 +1457,31 @@
           "OPEN": [
             {
               "op": "say",
-              "text": "There's a hairline crack in the wall. I widen it with my fingers. Behind the plaster: old wiring and a faded blueprint fragment. The room was originally labeled 'RECONDITIONING BAY 01.' Reconditioning. Not treatment."
+              "text": "Behind a crack in the plaster, an old blueprint: 'RECONDITIONING BAY 01.' Not treatment. Reconditioning. Lovely."
             }
           ],
           "CLOSE": [
             {
               "op": "say",
-              "text": "I press the paint flap back against the wall. It holds for a second, then curls away again. Some things refuse to stay hidden once exposed. Like a rug pull's paper trail."
+              "text": "I press the paint flap back. It curls away again. Some things refuse to stay covered up."
             }
           ],
           "PUSH": [
             {
               "op": "say",
-              "text": "I push against the wall. It's solid beneath the decay. The bones of this building are strong. It's just the surface that's falling apart. Story of every crypto project with good fundamentals and terrible marketing."
+              "text": "I push the wall. Solid under the rot. Good bones, bad skin. Like me, the doctor would say."
             }
           ],
           "PULL": [
             {
               "op": "say",
-              "text": "I pull a loose chunk of plaster free. Dust rains down. Behind it, the raw concrete of the original structure. Before the paint. Before the clinic. Before Patient Zero. This building has always been here, waiting."
+              "text": "I pull a chunk of plaster free. Dust everywhere. Behind it, bare concrete. And a moth, looking annoyed."
             }
           ],
           "GIVE": [
             {
               "op": "say",
-              "text": "The wall has been given enough abuse by time, moisture, and whoever punched that dent near the baseboard. It doesn't need my contribution."
+              "text": "The wall has had enough. Time, damp, and whoever punched that dent. I'm not adding to the list."
             }
           ]
         }

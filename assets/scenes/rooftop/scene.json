@@ -57,10 +57,10 @@
         "id": "hs_satellite_dish",
         "useResponses": {
           "water_bottle": [
-            "I pour a little water into the dish. It's already full of rain. Now it's a slightly fuller birdbath."
+            "I pour water into the dish. It's already full of rain. I've upgraded a birdbath."
           ],
           "energy_drink": [
-            "I'm not pouring BULL RUN into a satellite dish. The pigeons have enough energy."
+            "I'm not pouring BULL RUN into a satellite dish. The pigeons are jumpy enough."
           ],
           "rainwater_can": [
             "The can's already full. So is the dish. We've reached equilibrium."
@@ -81,55 +81,55 @@
             },
             {
               "op": "say",
-              "text": "It also runs a full Base node via satellite. Decentralization taken literally."
+              "text": "It also runs a full Base node via satellite. Adrian's birdbath has better uptime than I do."
             }
           ],
           "USE": [
             {
               "op": "say",
-              "text": "I adjust the dish angle slightly. A burst of static erupts from a nearby speaker, then resolves into... block confirmations? This thing is receiving blockchain data directly from orbit."
+              "text": "I nudge the dish. A speaker crackles, then reads out block numbers. From orbit. Adrian gets his news from space."
             }
           ],
           "TALK": [
             {
               "op": "say",
-              "text": "I speak into the dish. My voice echoes off the concave surface and bounces skyward. Somewhere in orbit, a satellite ignores me completely."
+              "text": "I speak into the dish. My voice goes up to orbit. A satellite leaves me on read."
             }
           ],
           "PICK": [
             {
               "op": "say",
-              "text": "The dish is bolted to concrete. It would take industrial equipment to move this. Or a really motivated degen."
+              "text": "Bolted to concrete. I'd need a crane, a permit and a much bigger pocket."
             }
           ],
           "OPEN": [
             {
               "op": "say",
-              "text": "I open the access panel at the base. Coaxial cables, a signal amplifier, and a label: 'Block height sync: ACTIVE. Uptime: 847 days.' Impressive."
+              "text": "I open the access panel. Cables, an amplifier, and a label: 'Uptime: 847 days.' Longer than any job I've had."
             }
           ],
           "CLOSE": [
             {
               "op": "say",
-              "text": "I close the panel. The dish continues its silent vigil, tracking satellites across the night sky."
+              "text": "I close the panel. The dish goes back to staring at the sky. It's good at it."
             }
           ],
           "PUSH": [
             {
               "op": "say",
-              "text": "I push the dish. It rotates slightly on its mount. For a moment, the block sync drops. I push it back. Don't touch production equipment."
+              "text": "I push the dish. Something beeps unhappily. I push it back. Rule one: never touch production."
             }
           ],
           "PULL": [
             {
               "op": "say",
-              "text": "I pull a loose cable. The dish hums louder. I plug it back in before something important disconnects."
+              "text": "I pull a loose cable. The dish hums angrily. I plug it back in and whistle innocently."
             }
           ],
           "GIVE": [
             {
               "op": "say",
-              "text": "The dish doesn't want anything except a clear view of the sky. And maybe a firmware update."
+              "text": "The dish wants a clear sky and nobody touching it. We have that in common."
             }
           ]
         }
@@ -138,7 +138,7 @@
         "id": "hs_antenna_array",
         "useResponses": {
           "antenna": [
-            "I try to slot the antenna back in. It won't stay. It's had a taste of freedom."
+            "I try to put the antenna back. It won't stay. It's tasted freedom."
           ]
         },
         "name": "Antenna Array",
@@ -152,19 +152,19 @@
           "LOOK": [
             {
               "op": "say",
-              "text": "Telescoping antennas of various heights. Most are firmly mounted, but one looks loose. It wobbles in the wind like a crypto chart on a Monday morning."
+              "text": "A cluster of antennas. Most are bolted tight, but one looks loose. It wobbles like it's had a few."
             }
           ],
           "USE": [
             {
               "op": "say",
-              "text": "I extend one of the antennas to full height. It picks up more signal. And also FM radio. Is that... 'Never Gonna Give You Up'? Even the antennas are rickrolling me."
+              "text": "I extend an antenna. It picks up FM radio. 'Never Gonna Give You Up.' Even the roof is rickrolling me."
             }
           ],
           "TALK": [
             {
               "op": "say",
-              "text": "The antennas crackle with static. Somewhere in the noise, I swear I hear 'buy the dip.' Radio ghosts from bull markets past."
+              "text": "The antennas crackle. Somewhere in the static, a taxi dispatcher asks for car nine. Car nine never answers."
             }
           ],
           "PICK": [
@@ -174,7 +174,7 @@
               "then": [
                 {
                   "op": "say",
-                  "text": "I already grabbed the loose antenna. The array looks a bit lopsided now."
+                  "text": "I already took the loose one. The array leans a little now. Like it's missing a friend."
                 }
               ],
               "else": [
@@ -202,19 +202,19 @@
           "OPEN": [
             {
               "op": "say",
-              "text": "I open the junction box at the base of the array. A rat's nest of cables and splitters. Someone wired this in the dark. Probably literally."
+              "text": "I open the junction box. A nest of cables. Someone wired this in the dark. Or angry. Or both."
             }
           ],
           "CLOSE": [
             {
               "op": "say",
-              "text": "I close the junction box. The antennas keep receiving. Ignorance is bliss."
+              "text": "I close the junction box. Out of sight, out of my problems."
             }
           ],
           "PUSH": [
             {
               "op": "say",
-              "text": "I push one of the tall antennas. It sways, then springs back. Resilient. Like a true believer after the fifth bear market."
+              "text": "I push a tall antenna. It sways and springs back. It's been through worse wind than me."
             }
           ],
           "PULL": [
@@ -252,7 +252,7 @@
           "GIVE": [
             {
               "op": "say",
-              "text": "The antenna array runs on electromagnetic waves, not generosity."
+              "text": "I wave at the antennas. They're receiving, not accepting."
             }
           ]
         }
@@ -270,55 +270,55 @@
           "LOOK": [
             {
               "op": "say",
-              "text": "Stars above, city lights below. The Milky Way stretches like an infinite ledger of light. Somewhere out there, someone is aping into a memecoin at 3 AM. Godspeed, degen. Godspeed."
+              "text": "Stars above, city lights below. Somewhere out there someone is buying a memecoin at 3 AM. Godspeed."
             }
           ],
           "USE": [
             {
               "op": "say",
-              "text": "I use my phone to take a picture of the stars. The camera can't capture what I see. Some things exist only in the moment. Like a good entry price."
+              "text": "I take a photo of the stars. My phone saves a black square. It's a very honest phone."
             }
           ],
           "TALK": [
             {
               "op": "say",
-              "text": "I whisper to the stars: 'When moon?' The stars say nothing. They've been holding their position for billions of years. The ultimate diamond hands."
+              "text": "I whisper to the stars: 'Seen Adrian?' They twinkle. Witnesses always twinkle when they don't want to talk."
             }
           ],
           "PICK": [
             {
               "op": "say",
-              "text": "I reach for a star. My hand grasps only cold night air. Like reaching for a green candle that already closed."
+              "text": "I reach for a star. I get a handful of cold air and a moth. The moths followed me up here."
             }
           ],
           "OPEN": [
             {
               "op": "say",
-              "text": "The sky is already open. The most permissionless system in existence."
+              "text": "The sky is already open. It's the one thing in this house without a lock."
             }
           ],
           "CLOSE": [
             {
               "op": "say",
-              "text": "I can't close the sky. It's the original open-source project."
+              "text": "I can't close the sky. I checked for a hatch. Old habit."
             }
           ],
           "PUSH": [
             {
               "op": "say",
-              "text": "I push my hand toward the sky. The wind pushes back. Nature's slippage."
+              "text": "I push at the sky. The wind pushes back harder. I let it win."
             }
           ],
           "PULL": [
             {
               "op": "say",
-              "text": "I try to pull the stars closer. Light-years of distance laugh at my attempt. Like trying to pull liquidity from an empty pool."
+              "text": "I try to pull the stars closer. Light-years politely decline."
             }
           ],
           "GIVE": [
             {
               "op": "say",
-              "text": "I give the night sky a moment of silence. For every portfolio that didn't make it. For every wallet drained at dawn. The stars blink in acknowledgment."
+              "text": "I give the night sky a moment of silence. It gives me one back. Nice night for it."
             }
           ]
         }
@@ -425,25 +425,25 @@
           "TALK": [
             {
               "op": "say",
-              "text": "I ask the weather vane: 'Bull or bear?' It creaks and points sideways. Crab market it is."
+              "text": "I ask the vane where Adrian went. It creaks and points nowhere. Same answer as everyone else."
             }
           ],
           "PICK": [
             {
               "op": "say",
-              "text": "The weather vane is mounted on a pole. I'd need tools to remove it. And a reason. Which I don't have. Yet."
+              "text": "It's bolted to a pole. I'd need tools and a reason. I have neither. Yet."
             }
           ],
           "OPEN": [
             {
               "op": "say",
-              "text": "The base of the weather vane has a small compartment. Empty. Someone already took whatever was hidden here."
+              "text": "A tiny compartment in the base. Empty. Somebody got here first. Story of my career."
             }
           ],
           "CLOSE": [
             {
               "op": "say",
-              "text": "I close the compartment. The weather vane spins in what I choose to interpret as approval."
+              "text": "I close the compartment. The vane squeaks. I choose to hear that as 'thank you'."
             }
           ],
           "PUSH": [
@@ -621,7 +621,7 @@
           "GIVE": [
             {
               "op": "say",
-              "text": "The weather vane doesn't accept bribes. It reports market sentiment as it sees it. Incorruptible. Unlike most analysts."
+              "text": "The vane doesn't take bribes. It only takes wind. Very principled for a piece of tin."
             }
           ]
         }
@@ -678,13 +678,13 @@
               "then": [
                 {
                   "op": "say",
-                  "text": "I shout toward where the light used to be. Nothing. Dark and silent."
+                  "text": "I shout toward where the light was. Darkness doesn't shout back. Good manners, at least."
                 }
               ],
               "else": [
                 {
                   "op": "say",
-                  "text": "I shout toward the light. The wind carries my voice away. But for a moment, the blinking seems to pause. Coincidence?"
+                  "text": "I shout toward the light. The blinking pauses. Then carries on. I've been ignored by a bulb."
                 }
               ]
             }
@@ -692,31 +692,31 @@
           "PICK": [
             {
               "op": "say",
-              "text": "It's not something I can pick up. It's a light source several floors below."
+              "text": "It's several floors down. My arms are average length. Disappointingly so."
             }
           ],
           "OPEN": [
             {
               "op": "say",
-              "text": "There's nothing to open here. The light comes from inside the building's foundation."
+              "text": "The light's coming from the foundations. Opening those is a job for the hatch, not me."
             }
           ],
           "CLOSE": [
             {
               "op": "say",
-              "text": "I can't close something that far away. And I'm not sure I'd want to."
+              "text": "Too far to close. And I want to know what's blinking down there."
             }
           ],
           "PUSH": [
             {
               "op": "say",
-              "text": "I lean over the edge toward the light. Vertigo hits. I step back."
+              "text": "I lean over the edge. My knees vote no. Unanimously."
             }
           ],
           "PULL": [
             {
               "op": "say",
-              "text": "I can't pull a light from several floors away. But it pulls my attention."
+              "text": "I can't pull it from up here. It's doing a good job of pulling me, though."
             }
           ],
           "GIVE": [
@@ -726,13 +726,13 @@
               "then": [
                 {
                   "op": "say",
-                  "text": "The light is off. Nothing to give to darkness."
+                  "text": "The light's off. Darkness doesn't take gifts. It takes keys."
                 }
               ],
               "else": [
                 {
                   "op": "say",
-                  "text": "The blinking light doesn't need anything from me. It just needs me to come find it."
+                  "text": "The light doesn't want anything. Except, apparently, a visit."
                 }
               ]
             }
@@ -752,55 +752,55 @@
           "LOOK": [
             {
               "op": "say",
-              "text": "The city glimmers below. Thousands of lights, each one a potential node operator, a degen, or just someone leaving the bathroom light on. The crypto never sleeps."
+              "text": "The city glimmers below. Thousands of lights. Most of them are people who forgot the bathroom."
             }
           ],
           "USE": [
             {
               "op": "say",
-              "text": "I use my phone to zoom in on the skyline. A building has a neon sign: 'EXCHANGES OPEN 24/7.' That's not a feature, that's a warning."
+              "text": "I zoom in on the skyline. A neon sign: 'EXCHANGES OPEN 24/7.' That's not a feature. That's a warning."
             }
           ],
           "TALK": [
             {
               "op": "say",
-              "text": "'Hey city! How's the mempool tonight?' A distant car horn honks. Close enough to a response."
+              "text": "'Hey, city! Seen a guy called Adrian?' A car horn honks. I'll take that as a no."
             }
           ],
           "PICK": [
             {
               "op": "say",
-              "text": "I can't pick up a city. Though some DAOs have tried to buy one."
+              "text": "I can't pick up a city. I can barely pick up after myself."
             }
           ],
           "OPEN": [
             {
               "op": "say",
-              "text": "The city is always open. Permissionless, 24/7, like every good blockchain."
+              "text": "The city's always open. That's its problem, according to my landlord."
             }
           ],
           "CLOSE": [
             {
               "op": "say",
-              "text": "Cities don't close. Not even on holidays. Validators don't take vacation."
+              "text": "Cities don't close. Pharmacies do. Usually right before I get there."
             }
           ],
           "PUSH": [
             {
               "op": "say",
-              "text": "I push the air toward the city. A breeze carries my gesture into the void."
+              "text": "I push the air toward the city. The city doesn't notice. Cities never do."
             }
           ],
           "PULL": [
             {
               "op": "say",
-              "text": "I beckon the city closer. It stays exactly where it is. Unlike token prices."
+              "text": "I beckon the city closer. It stays put. Stubborn, cities."
             }
           ],
           "GIVE": [
             {
               "op": "say",
-              "text": "The city takes enough already. Rent, taxes, gas fees... the original rug pull."
+              "text": "The city takes enough already. Rent, parking, my dignity."
             }
           ]
         }
@@ -1130,13 +1130,13 @@
           "TALK": [
             {
               "op": "say",
-              "text": "I knock on the hatch. The sound echoes down the shaft for a long time. That's... a very deep drop."
+              "text": "I knock on the hatch. The echo takes a long time to come back. A very long time."
             }
           ],
           "PICK": [
             {
               "op": "say",
-              "text": "The hatch is bolted to the roof. Industrial grade. I'd need a wrench, a crowbar, and a death wish."
+              "text": "Bolted to the roof. I'd need a wrench, a crowbar and worse judgement than I have."
             }
           ],
           "OPEN": [
@@ -1353,13 +1353,13 @@
           "PUSH": [
             {
               "op": "say",
-              "text": "I push the hatch. Solid metal, won't budge. Whatever's at the bottom of this shaft, Adrian didn't want casual visitors."
+              "text": "I push the hatch. Solid metal. Adrian doesn't do casual visitors."
             }
           ],
           "PULL": [
             {
               "op": "say",
-              "text": "I pull at the hatch edge. My fingers slip on smooth metal. This thing is engineered to stay shut."
+              "text": "I pull at the edge. My fingers slip. The hatch has done this before."
             }
           ],
           "GIVE": [
@@ -1383,55 +1383,55 @@
           "LOOK": [
             {
               "op": "say",
-              "text": "A concrete parapet runs along the roof edge. Low enough to lean on, high enough to prevent accidental portfolio reviews from the wrong angle."
+              "text": "A concrete parapet. Low enough to lean on. High enough to keep detectives on the roof. Mostly."
             }
           ],
           "USE": [
             {
               "op": "say",
-              "text": "I lean on the railing and survey the city below. Wind in my hair. Very dramatic. Very protagonist energy."
+              "text": "I lean on the railing and survey the city. Wind in my hair. I'd look great on a book cover."
             }
           ],
           "TALK": [
             {
               "op": "say",
-              "text": "'What have you seen from up here?' The concrete stays silent. It's seen bull runs and bear markets from the best seat in the house."
+              "text": "'What have you seen from up here?' The concrete keeps quiet. Best witness I've had all week."
             }
           ],
           "PICK": [
             {
               "op": "say",
-              "text": "I chip off a piece of concrete. It crumbles. Like my resolve during a flash crash."
+              "text": "I chip off a piece of concrete. It crumbles. I put the crumbs back. Nobody saw."
             }
           ],
           "OPEN": [
             {
               "op": "say",
-              "text": "Parapets don't open. They're the last line of defense between me and a very short flight."
+              "text": "Parapets don't open. That's the whole point of a parapet."
             }
           ],
           "CLOSE": [
             {
               "op": "say",
-              "text": "The parapet is always on duty. 24/7 fall prevention. Better uptime than most L2s."
+              "text": "Nothing to close. The parapet works nights. No breaks, no complaints. Penny would hire it."
             }
           ],
           "PUSH": [
             {
               "op": "say",
-              "text": "I push against the railing. Solid. Whoever built this understood the importance of not falling."
+              "text": "I push the railing. Solid. Whoever built this didn't want lawsuits."
             }
           ],
           "PULL": [
             {
               "op": "say",
-              "text": "I pull the railing toward me. A tiny crack appears. I stop immediately. Safety first, YOLO second."
+              "text": "I pull the railing. A tiny crack appears. I let go and pretend I was stretching."
             }
           ],
           "GIVE": [
             {
               "op": "say",
-              "text": "The parapet doesn't want anything. It just wants me to stay on this side of it. Fair enough."
+              "text": "The parapet doesn't want anything. Except me on this side of it. Fair."
             }
           ]
         }
@@ -1440,7 +1440,7 @@
         "id": "hs_roof_door",
         "useResponses": {
           "keycard": [
-            "No reader on the roof door. It's a door. I just use it."
+            "No reader on the roof door. It's just a door. I'd forgotten those exist."
           ]
         },
         "name": "Roof Door",
@@ -1454,7 +1454,7 @@
           "LOOK": [
             {
               "op": "say",
-              "text": "The door back down to the trading floor. A warm glow leaks from underneath."
+              "text": "The door back to the trading floor. Warm light leaks out underneath. Inside sounds nice right now."
             }
           ],
           "USE": [
@@ -1498,19 +1498,19 @@
           "TALK": [
             {
               "op": "say",
-              "text": "The door creaks in the wind. It misses being indoors."
+              "text": "The door creaks in the wind. It wants to go back inside. Same."
             }
           ],
           "PICK": [
             {
               "op": "say",
-              "text": "It's a door, not a doorstop."
+              "text": "I'm not taking a door. I've got a hatch to worry about."
             }
           ],
           "CLOSE": [
             {
               "op": "say",
-              "text": "It's already closed. The wind up here would slam it shut anyway."
+              "text": "It's closed. The wind would slam it anyway. The wind has a temper up here."
             }
           ],
           "PUSH": [
@@ -1535,13 +1535,13 @@
           "PULL": [
             {
               "op": "say",
-              "text": "I pull the door. It opens towards me, letting warm air rush out."
+              "text": "I pull the door. Warm air rushes out. The roof sighs with envy."
             }
           ],
           "GIVE": [
             {
               "op": "say",
-              "text": "Doors don't accept gifts. They accept keys. And sometimes kicks."
+              "text": "Doors don't take gifts. DOORIS taught me that the hard way."
             }
           ]
         }
@@ -1559,7 +1559,7 @@
           "LOOK": [
             {
               "op": "say",
-              "text": "A reinforced glass hatch set into the roof. Through it I can see the lobby floor below — polished tiles, dim emergency lighting. A maintenance ladder runs down the inside wall."
+              "text": "A glass hatch in the roof. Below: the lobby, dim and empty. A ladder runs down the inside."
             }
           ],
           "USE": [
@@ -1584,13 +1584,13 @@
           "TALK": [
             {
               "op": "say",
-              "text": "I call down through the hatch. My voice echoes off the lobby's marble floor. Nobody answers. Just the hum of the building."
+              "text": "I call down through the glass. Nobody answers. Penny would answer. Penny would file it."
             }
           ],
           "PICK": [
             {
               "op": "say",
-              "text": "The hatch is hinged to the roof frame. It lifts open, but it's not going anywhere."
+              "text": "It's hinged to the roof. It opens. It doesn't come with me."
             }
           ],
           "OPEN": [
@@ -1615,13 +1615,13 @@
           "CLOSE": [
             {
               "op": "say",
-              "text": "The hatch is already closed. The glass panels sit flush with the roof surface."
+              "text": "Already closed. Flush with the roof. Someone was proud of that."
             }
           ],
           "PUSH": [
             {
               "op": "say",
-              "text": "I push the hatch but it opens upward, not down. Wrong direction."
+              "text": "I push. It opens upward. I've been pushing the wrong way my whole life."
             }
           ],
           "PULL": [
@@ -1646,7 +1646,7 @@
           "GIVE": [
             {
               "op": "say",
-              "text": "The hatch doesn't need anything. It just needs a good pull to open."
+              "text": "The hatch doesn't want gifts. It wants a pull."
             }
           ]
         }

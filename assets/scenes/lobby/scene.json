@@ -68,13 +68,13 @@
           "LOOK": [
             {
               "op": "say",
-              "text": "Stairs leading to the upper floor. Elegantly designed with smart lighting."
+              "text": "Stairs to the upper floor. Every step has its own little light. Adrian never did anything halfway."
             }
           ],
           "USE": [
             {
               "op": "sayBrief",
-              "text": "Heading upstairs.",
+              "text": "Up I go.",
               "duration": 1000
             },
             {
@@ -90,37 +90,37 @@
           "TALK": [
             {
               "op": "say",
-              "text": "The stairs creak: 'Level up, anon...'"
+              "text": "'Anything up there I should know about?' The stairs creak. Noncommittal."
             }
           ],
           "PICK": [
             {
               "op": "say",
-              "text": "A small LED light on the railing. Cute but firmly attached."
+              "text": "A tiny LED on the railing. Cute. Bolted on. Cute things usually are."
             }
           ],
           "OPEN": [
             {
               "op": "say",
-              "text": "I notice a hidden compartment under one step. Empty though."
+              "text": "A hidden compartment under one step. Empty. Somebody hid nothing, very carefully."
             }
           ],
           "CLOSE": [
             {
               "op": "say",
-              "text": "The stairs are always open for access between floors."
+              "text": "Stairs don't close. That's their whole appeal."
             }
           ],
           "PUSH": [
             {
               "op": "say",
-              "text": "I push the handrail. Sturdy."
+              "text": "I push the handrail. Sturdy. The one thing in this house that supports me."
             }
           ],
           "PULL": [
             {
               "op": "say",
-              "text": "I pull the railing. A loose bolt falls."
+              "text": "I pull the railing. A bolt falls out. I put my hands in my pockets and walk away."
             }
           ],
           "GIVE": [
@@ -178,49 +178,49 @@
           "USE": [
             {
               "op": "say",
-              "text": "I have nothing to water it with. The plant droops judgmentally."
+              "text": "Nothing to water him with. He droops at me. It feels personal."
             }
           ],
           "TALK": [
             {
               "op": "say",
-              "text": "The plant hums photosynthetically. 'Water... me...'"
+              "text": "'How are you holding up?' The plant droops further. He only opens up to Penny."
             }
           ],
           "PICK": [
             {
               "op": "say",
-              "text": "I can't carry a plant this big."
+              "text": "He's taller than me and better rooted. I leave him be."
             }
           ],
           "OPEN": [
             {
               "op": "say",
-              "text": "I dig in the soil. Just dirt and roots."
+              "text": "I dig in the soil. Dirt. Roots. No clues. The plant looks violated."
             }
           ],
           "CLOSE": [
             {
               "op": "say",
-              "text": "I pat the soil back."
+              "text": "I pat the soil back. Sorry, big guy."
             }
           ],
           "PUSH": [
             {
               "op": "say",
-              "text": "I push the pot. It scrapes the floor."
+              "text": "I push the pot. It scrapes the floor. Penny's head turns like an owl's."
             }
           ],
           "PULL": [
             {
               "op": "say",
-              "text": "I pull a leaf. The plant recoils."
+              "text": "I tug a leaf. The plant recoils. So does Penny."
             }
           ],
           "GIVE": [
             {
               "op": "say",
-              "text": "The plant accepts water. I don't have any."
+              "text": "He takes water. Only water. I have none. We're both disappointed."
             }
           ]
         }
@@ -234,7 +234,7 @@
             "The door's job is opening. It's doing fine without my help."
           ],
           "keycard": [
-            "No card reader on this side. Adrian's security is all on the outside. Like a lot of people."
+            "No card reader on this side. Adrian's paranoia only faces outwards."
           ]
         },
         "name": "Main Entrance",
@@ -248,13 +248,13 @@
           "LOOK": [
             {
               "op": "say",
-              "text": "The front door from the inside. Through the frosted glass I can see the porch. The lock mechanism is impressively complex."
+              "text": "The front door, from the inside. DOORIS is quieter on this side. Probably still listening."
             }
           ],
           "USE": [
             {
               "op": "sayBrief",
-              "text": "Back to the entrance.",
+              "text": "Back out to the porch.",
               "duration": 1000
             },
             {
@@ -274,7 +274,7 @@
           "OPEN": [
             {
               "op": "sayBrief",
-              "text": "Back to the entrance.",
+              "text": "Back out to the porch.",
               "duration": 1000
             },
             {
@@ -294,7 +294,7 @@
           "TALK": [
             {
               "op": "say",
-              "text": "The door creaks. In door language, that means 'please oil me'."
+              "text": "'Thanks for nothing, DOORIS.' Silence. She only talks to the outside. Like a bouncer."
             }
           ],
           "PICK": [
@@ -306,13 +306,13 @@
           "CLOSE": [
             {
               "op": "say",
-              "text": "It's already closed."
+              "text": "It's already closed. DOORIS made very sure of that."
             }
           ],
           "PUSH": [
             {
               "op": "sayBrief",
-              "text": "Back to the entrance.",
+              "text": "Back out to the porch.",
               "duration": 1000
             },
             {
@@ -332,7 +332,7 @@
           "PULL": [
             {
               "op": "sayBrief",
-              "text": "Back to the entrance.",
+              "text": "Back out to the porch.",
               "duration": 1000
             },
             {
@@ -352,7 +352,7 @@
           "GIVE": [
             {
               "op": "say",
-              "text": "I have nothing to give a door."
+              "text": "Give the door something? It already got a PIN, an answer and a key out of me."
             }
           ]
         }
@@ -362,7 +362,7 @@
         "useResponses": {
           "_default": [
             "I'm not putting anything in Adrian's pockets. Penny would call it 'planting evidence'. She'd file it under 'planting'.",
-            "The coat doesn't need accessories. It needs its owner back.",
+            "The coat doesn't need accessories. It needs Adrian back. Same, coat. Same.",
             "I'm not stuffing that in Adrian's pocket. Penny counts the pockets. Twice a day."
           ],
           "keycard": [
@@ -702,7 +702,7 @@
           "PUSH": [
             {
               "op": "say",
-              "text": "I push the coat aside. Just the wall behind it."
+              "text": "I push the coat aside. Just wall. Walls never have secret doors when you need one."
             }
           ],
           "PULL": [
@@ -763,7 +763,7 @@
           "GIVE": [
             {
               "op": "say",
-              "text": "Nobody wants a coat full of dead exchange pens."
+              "text": "Give away Adrian's coat? Penny would have me escorted out. By the plant."
             }
           ]
         }
@@ -803,19 +803,19 @@
           "LOOK": [
             {
               "op": "say",
-              "text": "Five CRT monitors showing trading charts, terminal windows, and what appears to be a live blockchain explorer. The 90s hardware running 2020s defi. Retro-futurism at its finest."
+              "text": "Penny's desk. Five CRT monitors, a keyboard and a rubber stamp that just says 'NO'."
             }
           ],
           "USE": [
             {
               "op": "say",
-              "text": "I wiggle the mouse. All five screens wake up. One shows a yield farm dashboard. Another shows the mempool. The third... is that Minesweeper?"
+              "text": "I wiggle the mouse. Five screens wake up. One is Minesweeper. Penny is winning."
             }
           ],
           "TALK": [
             {
               "op": "say",
-              "text": "'Show me the money!' The monitors hum louder. A chart goes green for a second. Then red. Classic."
+              "text": "'Show me the money!' Penny, without looking up: 'So would I. Payroll's been closed for three weeks.'"
             },
             {
               "op": "setFlag",
@@ -832,31 +832,31 @@
           "OPEN": [
             {
               "op": "say",
-              "text": "I open a desk drawer. Floppy disks labeled 'SEED PHRASE BACKUP - DO NOT LOSE'. In a desk drawer. In a lobby. Adrian..."
+              "text": "I open a drawer. Forms. Forms for requesting forms. Penny's filing system has a filing system."
             }
           ],
           "CLOSE": [
             {
               "op": "say",
-              "text": "I close the drawer. Some secrets are better left undiscovered. For now."
+              "text": "I close the drawer before Penny opens an incident report."
             }
           ],
           "PUSH": [
             {
               "op": "say",
-              "text": "I push the desk. A CRT wobbles dangerously. The trading bot onscreen panics: 'EARTHQUAKE DETECTED — SELLING EVERYTHING!'"
+              "text": "I push the desk. A CRT wobbles. Penny catches it one-handed without looking. Terrifying."
             }
           ],
           "PULL": [
             {
               "op": "say",
-              "text": "I pull open the keyboard tray. Crumbs everywhere. The snack history of a true degen."
+              "text": "I pull out the keyboard tray. Crumbs, a stapler and a sticky note: 'FERNANDO: TUESDAYS'."
             }
           ],
           "GIVE": [
             {
               "op": "say",
-              "text": "The monitors don't accept deposits. Only the smart contracts do."
+              "text": "Nothing to leave on Penny's desk. Except fingerprints. She'd dust for them."
             }
           ]
         }
@@ -874,19 +874,19 @@
           "LOOK": [
             {
               "op": "say",
-              "text": "A vintage pendant lamp casting a warm cone of light. It flickers every few seconds. Proof-of-work lighting — uses way more energy than it should."
+              "text": "A vintage pendant lamp. It flickers every few seconds, like it's trying to tell me something. It isn't."
             }
           ],
           "USE": [
             {
               "op": "say",
-              "text": "I pull the chain. The light dims. I pull again. Bright. Dim. Bright. I'm basically a human light switch now."
+              "text": "I pull the chain. Dim. Bright. Dim. Penny is mentally filing a complaint."
             }
           ],
           "TALK": [
             {
               "op": "say",
-              "text": "The bulb buzzes. In Morse code, that translates to 'replace me, I'm dying.' Noted."
+              "text": "The bulb buzzes. Possibly Morse code. Probably just dying."
             }
           ],
           "PICK": [
@@ -910,19 +910,19 @@
           "PUSH": [
             {
               "op": "say",
-              "text": "I push the air beneath the lamp. The lamp is unaffected by my pathetic display."
+              "text": "I push the air under the lamp. The air wins."
             }
           ],
           "PULL": [
             {
               "op": "say",
-              "text": "I jump and grab the chain. The light swings wildly. Shadows dance on the walls like a bear market panic."
+              "text": "I jump and grab the chain. The lamp swings. Penny sighs the sigh of a pending form."
             }
           ],
           "GIVE": [
             {
               "op": "say",
-              "text": "I offer the lamp a new bulb. Oh wait, I don't have one. Just empty promises, like every roadmap."
+              "text": "I'd give the lamp a new bulb. I don't have one. I mostly have pockets."
             }
           ]
         }
@@ -940,13 +940,13 @@
           "LOOK": [
             {
               "op": "say",
-              "text": "Checkered brown and tan tiles. Classic. Like a chessboard where every move is 'buy high, sell low.'"
+              "text": "Checkered tiles. Brown, tan, brown, tan. Somebody here really likes order. I bet it's Penny."
             }
           ],
           "USE": [
             {
               "op": "say",
-              "text": "I tap-dance on the tiles. The acoustics are surprisingly good. Penny stares. Penny takes notes."
+              "text": "I tap-dance on the tiles. Great acoustics. Penny stares. Penny takes notes."
             }
           ],
           "TALK": [
@@ -958,7 +958,7 @@
           "PICK": [
             {
               "op": "say",
-              "text": "I try to pry up a tile. It's cemented. Immutable, like a good blockchain."
+              "text": "I try to pry up a tile. Cemented. Penny watches me like I'm the reason they cemented it."
             }
           ],
           "OPEN": [
@@ -976,7 +976,7 @@
           "PUSH": [
             {
               "op": "say",
-              "text": "I stomp on the floor. Solid. No hollow sounds. No secret passages. Yet."
+              "text": "I stomp on the floor. Solid. No hollow sound. No secret passage. Just a sore heel."
             }
           ],
           "PULL": [
@@ -1017,7 +1017,7 @@
                   "then": [
                     {
                       "op": "say",
-                      "text": "'BE REAL. BE ADRIAN.' — The original AdrianPunks manifesto. This poster is only visible to OG holders. You earned this view."
+                      "text": "'BE REAL. BE ADRIAN.' The AdrianPunks manifesto, in full. Holders see the whole poster. Lucky me."
                     },
                     {
                       "op": "ifFlag",
@@ -1046,7 +1046,7 @@
                       "then": [
                         {
                           "op": "say",
-                          "text": "'TO THE MOON!' — A motivational poster for AdrianZERO holders. The rocket has pixel-perfect exhaust flames. Nice touch."
+                          "text": "'TO THE MOON!' A rocket poster for AdrianZERO holders. Pixel-perfect exhaust. Somebody cared."
                         },
                         {
                           "op": "ifFlag",
@@ -1067,7 +1067,7 @@
                       "else": [
                         {
                           "op": "say",
-                          "text": "A torn poster on the wall. Whatever was here, someone ripped most of it off. Only holders get to see the real thing. Tough luck, anon."
+                          "text": "A torn poster. Most of it's gone. Holders see the real thing. I see a corner and a staple."
                         }
                       ]
                     }
@@ -1077,7 +1077,7 @@
               "else": [
                 {
                   "op": "say",
-                  "text": "A sad, torn poster. The good stuff was ripped off. Something tells me you need to connect a wallet to see what was here. Or maybe you just can't afford the view."
+                  "text": "A sad, torn poster. Connect a wallet and maybe it remembers what it used to be."
                 }
               ]
             }
@@ -1096,7 +1096,7 @@
                   "then": [
                     {
                       "op": "say",
-                      "text": "I touch the poster reverently. OG energy radiates from it. My AdrianPunk approves."
+                      "text": "I touch the poster reverently. My AdrianPunk approves. Penny doesn't."
                     },
                     {
                       "op": "ifFlag",
@@ -1125,7 +1125,7 @@
                       "then": [
                         {
                           "op": "say",
-                          "text": "The poster feels warm. Holder energy confirmed. But imagine how it would look with an AdrianPunk in your wallet..."
+                          "text": "The poster feels warm. With an AdrianPunk in your wallet, it'd feel downright cosy."
                         },
                         {
                           "op": "ifFlag",
@@ -1146,7 +1146,7 @@
                       "else": [
                         {
                           "op": "say",
-                          "text": "I try to peel back the torn corner. There's clearly art underneath, but it's holder-gated. Even posters have velvet ropes now."
+                          "text": "I peel back the torn corner. There's art under there, holders only. Even posters have bouncers now."
                         }
                       ]
                     }
@@ -1156,7 +1156,7 @@
               "else": [
                 {
                   "op": "say",
-                  "text": "I poke the torn poster. Nothing happens. This wall has more credentials than I do right now."
+                  "text": "I poke the torn poster. Nothing. This wall has more credentials than I do."
                 }
               ]
             }
@@ -1164,19 +1164,19 @@
           "TALK": [
             {
               "op": "say",
-              "text": "I whisper to the poster: 'Show me what you've got.' It remains torn and unimpressed. Posters are notoriously bad conversationalists."
+              "text": "'Show me what you've got.' The poster stays torn. Tough crowd."
             }
           ],
           "PICK": [
             {
               "op": "say",
-              "text": "The poster is glued to the wall. Not even a rug pull could separate them."
+              "text": "Glued to the wall. Adrian glues everything. The doormat, the poster. I'm checking my shoes."
             }
           ],
           "OPEN": [
             {
               "op": "say",
-              "text": "It's a poster, not an envelope. Although in Web3, anything can be an NFT. Even disappointment."
+              "text": "It's a poster, not an envelope. I've opened enough envelopes for one day."
             }
           ],
           "CLOSE": [

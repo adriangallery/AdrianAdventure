@@ -761,7 +761,7 @@ test('A3.4d: la trampilla VIP pide keycard y terminal_key y ahorra solo la velet
     // trampilla-vip-sin-keycard: con la pista y la terminal_key, sin keycard
     r = await run(verb, { flags: { vip_rug_hint: true }, items: ['terminal_key'] });
     assert.ok(!r.ctx.log.some((l) => l.startsWith('goto')), `${verb} sin keycard no baja`);
-    assert.ok(r.ctx.log.some((l) => /card reader wants Adrian's keycard/.test(l)), `${verb} dice que falta la keycard`);
+    assert.ok(r.ctx.log.some((l) => /waiting for Adrian's keycard/.test(l)), `${verb} dice que falta la keycard`);
     assert.equal(r.state.flags.basement_unlocked, undefined);
     assert.equal(r.state.flags.chapter_2_complete, undefined);
     // sin terminal_key

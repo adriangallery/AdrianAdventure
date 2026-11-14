@@ -72,13 +72,13 @@
           "USE": [
             {
               "op": "say",
-              "text": "I ring the bell on the desk. A hollow ding echoes through the empty reception. Nobody comes. Par for the course in healthcare AND crypto."
+              "text": "I ring the bell. Ding. Nobody comes. Somewhere, a form is being filled in about my ding."
             }
           ],
           "TALK": [
             {
               "op": "say",
-              "text": "I lean over the desk and whisper: 'Hello?' The echo comes back: 'NGMI...'"
+              "text": "I lean over the desk: 'Hello?' The echo answers. It also has no appointment."
             }
           ],
           "PICK": [
@@ -88,7 +88,7 @@
               "then": [
                 {
                   "op": "say",
-                  "text": "I already took the sign-in sheet. The desk looks naked without it."
+                  "text": "I already took the sign-in sheet. The desk looks underdressed without it."
                 }
               ],
               "else": [
@@ -112,19 +112,19 @@
           "OPEN": [
             {
               "op": "say",
-              "text": "I try the desk drawers. Locked. A small sign says: 'Patient confidentiality is our top priority. Also we lost the key.'"
+              "text": "The drawers are locked. A sign: 'Confidentiality is our top priority. Also we lost the key.'"
             }
           ],
           "CLOSE": [
             {
               "op": "say",
-              "text": "The drawers are already closed. Probably for the best."
+              "text": "The drawers are closed. And locked. Twice as private."
             }
           ],
           "PUSH": [
             {
               "op": "say",
-              "text": "I push the bell again. Ding. Still nobody. This place has worse response times than Ethereum mainnet on a mint day."
+              "text": "Ding. Ding. Ding. Still nobody. I'm the most attended-to bell in the building."
             }
           ],
           "PULL": [
@@ -136,7 +136,7 @@
           "GIVE": [
             {
               "op": "say",
-              "text": "The reception desk doesn't accept walk-in donations. Only scheduled appointments and insurance co-pays in ETH."
+              "text": "Leave things on reception? Penny taught me better. Unattended items get filed."
             }
           ]
         }
@@ -154,55 +154,55 @@
           "LOOK": [
             {
               "op": "say",
-              "text": "Motivational posters line the wall. 'ONE DAY AT A BLOCK.' 'SERENITY PRAYER: Grant me the serenity to accept the trades I cannot reverse, the courage to HODL the ones I can, and the wisdom to know the difference.' Powerful stuff."
+              "text": "Motivational posters. 'ONE DAY AT A BLOCK.' And the serenity prayer, edited for traders. Powerful stuff."
             }
           ],
           "USE": [
             {
               "op": "say",
-              "text": "I straighten one of the posters. Behind it, someone scratched into the wall: 'WAGMI was a lie.' Dark."
+              "text": "I straighten a poster. Behind it, scratched in the wall: 'Day 3. Still here.' Dark. Ish."
             }
           ],
           "TALK": [
             {
               "op": "say",
-              "text": "I read the posters aloud. 'THE 12 STEPS OF CRYPTO RECOVERY: Step 1 - Admit you are powerless over leverage.' I stop at Step 2. It just says 'There is no Step 2.'"
+              "text": "I read aloud: 'Step 1: admit you are powerless over leverage.' Step 2 just says 'See Step 1.'"
             }
           ],
           "PICK": [
             {
               "op": "say",
-              "text": "I try to peel a poster off. It's glued on tight. The clinic takes its motivational content seriously."
+              "text": "I try to peel a poster off. Glued tight. You can't take the motivation with you. Apparently."
             }
           ],
           "OPEN": [
             {
               "op": "say",
-              "text": "I look behind a poster. Just the wall. And the faint scent of broken dreams."
+              "text": "I look behind a poster. Just wall. And a moth. Of course there's a moth."
             }
           ],
           "CLOSE": [
             {
               "op": "say",
-              "text": "I smooth the poster back. 'KEEP CALM AND STOP MARKET BUYING.' Words to live by."
+              "text": "I smooth the poster back. 'KEEP CALM AND CLOSE THE APP.' I feel personally attacked."
             }
           ],
           "PUSH": [
             {
               "op": "say",
-              "text": "I push on the poster. The wall behind it is solid. Unlike most token whitepapers."
+              "text": "I push the poster. Solid wall. I knock twice anyway. Nobody knocks back."
             }
           ],
           "PULL": [
             {
               "op": "say",
-              "text": "I pull the corner of a poster. It tears slightly, revealing another poster underneath: 'BUY THE DIP.' Old habits die hard."
+              "text": "I lift a corner. Underneath, an older poster: 'YOU'VE GOT THIS.' Somebody didn't."
             }
           ],
           "GIVE": [
             {
               "op": "say",
-              "text": "The posters give ME motivation. I don't need to give them anything except my attention."
+              "text": "The posters give advice. They don't take it. Like most advice-givers."
             }
           ]
         }
@@ -220,55 +220,55 @@
           "LOOK": [
             {
               "op": "say",
-              "text": "Uncomfortable plastic chairs. Old magazines scattered on a side table: 'CoinDesk, March 2022: Everything is Fine', 'Degen Weekly: Top 10 Rugs of the Year', and a well-worn copy of 'Blockchain for Dummies' with all the pages torn out."
+              "text": "Plastic chairs, built to discourage hope. Magazines: 'CoinDesk, March 2022: Everything is Fine.' It was not fine."
             }
           ],
           "USE": [
             {
               "op": "say",
-              "text": "I sit down. The chair squeaks. I flip through 'CoinDesk March 2022'. Every headline aged like milk. Beautiful."
+              "text": "I sit. The chair squeaks a complaint. I flip a magazine. Every headline aged like milk."
             }
           ],
           "TALK": [
             {
               "op": "say",
-              "text": "I mutter to the empty chairs: 'So... come here often?' Silence. Toughest crowd since my last Twitter Space."
+              "text": "'So... come here often?' The empty chairs say nothing. They do come here often. They live here."
             }
           ],
           "PICK": [
             {
               "op": "say",
-              "text": "I check under the chair cushions. A crumpled receipt for 10,000 LUNA. Oh no."
+              "text": "I check under the cushions. A hair tie, a raisin, a crumpled 'Number 47'. Still waiting."
             }
           ],
           "OPEN": [
             {
               "op": "say",
-              "text": "I open one of the magazines. An article titled 'Why This Bull Market Will Never End' from November 2021. Narrator: It ended."
+              "text": "I open a magazine. 'Ten Signs You Need A Break.' I have eleven. I close it."
             }
           ],
           "CLOSE": [
             {
               "op": "say",
-              "text": "I close the magazine. Some articles are better left unfinished. Like most ICO roadmaps."
+              "text": "I close the magazine. Somebody did the crossword in pen. All wrong. Confidently."
             }
           ],
           "PUSH": [
             {
               "op": "say",
-              "text": "I push a chair aside. It scrapes the floor with a sound that could wake the dead. Or at least a sleeping night nurse."
+              "text": "I push a chair aside. The scrape could wake the dead. Or worse, Nurse Gwei."
             }
           ],
           "PULL": [
             {
               "op": "say",
-              "text": "I pull a chair closer. Might as well get comfortable. The wait times here are probably denominated in blocks."
+              "text": "I pull a chair closer. Might as well get comfy. The wait here is measured in seasons."
             }
           ],
           "GIVE": [
             {
               "op": "say",
-              "text": "The chairs have received enough. Mostly butts and bad news. Same as my portfolio."
+              "text": "The chairs have received enough. Mostly butts and bad news."
             }
           ]
         }
@@ -297,19 +297,19 @@
           "USE": [
             {
               "op": "say",
-              "text": "The cabinet is locked. I'd need a key to access these files. HIPAA compliance meets private key security."
+              "text": "Locked. I'd need a key. Or a doctor. Or a much worse plan."
             }
           ],
           "TALK": [
             {
               "op": "say",
-              "text": "I whisper to the cabinet: 'What secrets do you hold?' It says nothing. Better at keeping secrets than most Discord mods."
+              "text": "'What secrets do you hold?' The cabinet says nothing. It's better at confidentiality than Penny."
             }
           ],
           "PICK": [
             {
               "op": "say",
-              "text": "The cabinet weighs a ton. Full of records. And probably full of stories I'm not ready to hear."
+              "text": "It weighs a ton. Paper is heavy. Other people's problems are heavier."
             }
           ],
           "OPEN": [
@@ -321,7 +321,7 @@
           "CLOSE": [
             {
               "op": "say",
-              "text": "It's already closed. And locked. Fort Knox has nothing on this filing cabinet."
+              "text": "It's closed. It's locked. It's labelled CONFIDENTIAL. It's having the best day of its life."
             }
           ],
           "PUSH": [
@@ -350,7 +350,7 @@
               "else": [
                 {
                   "op": "say",
-                  "text": "I push the cabinet. It doesn't budge. It's either bolted down or full of every bad trade ever recorded."
+                  "text": "I push the cabinet. It doesn't budge. Bolted down, or very full of paperwork. Both, knowing clinics."
                 }
               ]
             }
@@ -385,7 +385,7 @@
           "GIVE": [
             {
               "op": "say",
-              "text": "The cabinet only accepts keys. And judging by the lock, very specific keys."
+              "text": "The cabinet takes keys. Very specific keys. It's a picky eater."
             }
           ]
         }
@@ -500,13 +500,13 @@
           "TALK": [
             {
               "op": "say",
-              "text": "I press my ear against the door. Faint beeping from the other side. Like a heart monitor. Or a liquidation alert."
+              "text": "I press my ear to the door. Faint beeping. A heart monitor. Hopefully not mine. Not yet."
             }
           ],
           "PICK": [
             {
               "op": "say",
-              "text": "I can't pick up a door. Especially one this reinforced. It's like trying to move a whale wallet."
+              "text": "I can't pick up a door. Especially one that's been to the gym."
             }
           ],
           "OPEN": [
@@ -583,25 +583,25 @@
           "CLOSE": [
             {
               "op": "say",
-              "text": "The door is already closed. And very much wants to stay that way."
+              "text": "Closed. Very closed. It has made its position clear."
             }
           ],
           "PUSH": [
             {
               "op": "say",
-              "text": "I push on the door. Solid steel. It laughs at my attempt. Not literally. That would be terrifying."
+              "text": "I push on the door. Solid steel. It doesn't laugh. That's worse, somehow."
             }
           ],
           "PULL": [
             {
               "op": "say",
-              "text": "I pull the handle. The card reader buzzes angrily. 'ACCESS DENIED.' Story of my DeFi career."
+              "text": "I pull the handle. The card reader buzzes: 'ACCESS DENIED.' It sounds like it practised."
             }
           ],
           "GIVE": [
             {
               "op": "say",
-              "text": "The door only accepts authorized keycards. Not bribes. This isn't a governance vote."
+              "text": "Bribing a door. A new low. Even for me. It only takes authorization."
             }
           ]
         }
@@ -624,43 +624,43 @@
           "LOOK": [
             {
               "op": "say",
-              "text": "The water cooler bubbles rhythmically. Someone taped a sign to it: 'This water is NOT tokenized. Do NOT try to fractionalize it. Management.'"
+              "text": "The water cooler bubbles. A taped sign: 'One cup per patient. We are counting. — Management.'"
             }
           ],
           "USE": [
             {
               "op": "say",
-              "text": "I pour myself a cup. Cold, refreshing, and completely free. A concept foreign to the crypto space."
+              "text": "I pour a cup. Cold, free, nobody asks for a form. The best thing in this clinic."
             }
           ],
           "TALK": [
             {
               "op": "say",
-              "text": "The water cooler gurgles. Classic water cooler talk. The original social protocol."
+              "text": "'Heard any gossip?' The cooler gurgles. That's a yes. It just won't say."
             }
           ],
           "PICK": [
             {
               "op": "say",
-              "text": "I grab a paper cup. It has the clinic's logo: a wallet with a band-aid on it."
+              "text": "I take a paper cup. Then I put it back. They're counting."
             }
           ],
           "OPEN": [
             {
               "op": "say",
-              "text": "I open the spigot. Water flows. No gas fees required."
+              "text": "I open the spigot. Water flows. Bubbles applaud."
             }
           ],
           "CLOSE": [
             {
               "op": "say",
-              "text": "I close the spigot. The cooler continues its eternal bubbling. Proof-of-hydration."
+              "text": "I close the spigot. The cooler keeps bubbling to itself. It's got a lot on its mind."
             }
           ],
           "PUSH": [
             {
               "op": "say",
-              "text": "I push the cold water button. A satisfying gurgle. If only yield farming was this straightforward."
+              "text": "I press the cold button. A satisfying glug. The only button here that does what it says."
             }
           ],
           "PULL": [
@@ -672,7 +672,7 @@
           "GIVE": [
             {
               "op": "say",
-              "text": "The water cooler provides. It doesn't receive. The purest form of decentralized hydration."
+              "text": "The water cooler gives. It doesn't take. A role model, honestly."
             }
           ]
         }
@@ -736,19 +736,19 @@
           "OPEN": [
             {
               "op": "say",
-              "text": "I flip the photo over. On the back: 'Grand Opening \u2014 The future of recovery starts here.' Someone crossed out 'future' and wrote 'end.'"
+              "text": "On the back: 'Grand Opening \u2014 The future of recovery starts here.' 'Future' is crossed out. 'End' written in."
             }
           ],
           "CLOSE": [
             {
               "op": "say",
-              "text": "I put the photo face-down. Some faces are better left scratched out. Especially in crypto."
+              "text": "I put the photo face-down. Now nobody's watching. Including the one with no face."
             }
           ],
           "PUSH": [
             {
               "op": "say",
-              "text": "I push the photo frame straight. It tilts back immediately. Even the decor here refuses to stay aligned."
+              "text": "I straighten the frame. It tilts back. It's not ready to be straight with me."
             }
           ],
           "PULL": [
@@ -760,7 +760,7 @@
           "GIVE": [
             {
               "op": "say",
-              "text": "The photo has already given me more questions than answers. The worst kind of airdrop."
+              "text": "The photo's given me enough. Questions, mostly. Not one answer."
             }
           ]
         }
@@ -874,7 +874,7 @@
           "PICK": [
             {
               "op": "say",
-              "text": "I consider stealing the doctor's coat. Then I remember the Hippocratic Oath probably covers theft of medical apparel."
+              "text": "Steal the doctor's coat? While he's in it? Even I have a line. It's faint, but it's there."
             }
           ],
           "OPEN": [
@@ -886,25 +886,25 @@
           "CLOSE": [
             {
               "op": "say",
-              "text": "I button up the coat. It looks better closed. Like a short position before earnings."
+              "text": "I'm not buttoning the doctor's coat. He'd ask how that makes me feel."
             }
           ],
           "PUSH": [
             {
               "op": "say",
-              "text": "I push the coat aside on its hook. It swings back. The coat has better rebalancing than my portfolio."
+              "text": "I nudge the coat. It swings back. Starched. It could stand up on its own."
             }
           ],
           "PULL": [
             {
               "op": "say",
-              "text": "I pull the coat toward me. It smells like antiseptic and regret. The official scent of crypto rehabilitation."
+              "text": "I sniff the coat. Antiseptic and regret. The official clinic perfume."
             }
           ],
           "GIVE": [
             {
               "op": "say",
-              "text": "I'm not giving anything to a coat. It already has more pockets than my wallet has tokens."
+              "text": "I'm not giving things to a coat. It already has more pockets than I have friends."
             }
           ]
         }
@@ -922,55 +922,55 @@
           "LOOK": [
             {
               "op": "say",
-              "text": "Flickering fluorescent tubes. One of them buzzes like a failing validator node. The harsh light makes everything look sickly, which is on-brand for a rehab clinic."
+              "text": "Flickering fluorescent tubes. One buzzes. The light makes everyone look ill. On-brand for a clinic."
             }
           ],
           "USE": [
             {
               "op": "say",
-              "text": "I flick the switch. Nothing changes. These lights have one mode: soul-crushing institutional glow."
+              "text": "I flick the switch. Nothing changes. These lights have one mode: waiting room."
             }
           ],
           "TALK": [
             {
               "op": "say",
-              "text": "I address the buzzing light: 'You sound like my GPU mining rig in 2021.' It flickers in solidarity."
+              "text": "'Are you okay?' The light buzzes. Flickers. It's not okay. Nobody here is."
             }
           ],
           "PICK": [
             {
               "op": "say",
-              "text": "I'm not tall enough to reach them. And even if I were, stealing lights from a rehab clinic is a new low. Even for a degen."
+              "text": "I can't reach them. And stealing light bulbs from a clinic? The moths would never forgive me."
             }
           ],
           "OPEN": [
             {
               "op": "say",
-              "text": "The light fixture is sealed shut. Tamper-proof, like a properly audited smart contract."
+              "text": "The fixture is sealed shut. Full of dead moths. A moth cemetery. Respect."
             }
           ],
           "CLOSE": [
             {
               "op": "say",
-              "text": "The lights don't have an off switch I can reach. Always on. Like the blockchain."
+              "text": "No switch I can reach. These lights are on a longer shift than the nurse."
             }
           ],
           "PUSH": [
             {
               "op": "say",
-              "text": "I push up toward the lights. My hands wave uselessly in the air. This is how I look trying to time the market."
+              "text": "I reach for the lights. My hands wave in the air like I just don't care. I do care. I'm short."
             }
           ],
           "PULL": [
             {
               "op": "say",
-              "text": "I jump and try to pull the fixture. I miss by a mile. My vertical is as weak as my exit strategy."
+              "text": "I jump for the fixture. I miss by a mile. I land loudly. Nobody comes. Typical."
             }
           ],
           "GIVE": [
             {
               "op": "say",
-              "text": "The lights don't need anything from me. They're already burning through electricity like an Ethereum PoW miner."
+              "text": "The lights don't need anything. Except a new tube. And an electrician. And sympathy."
             }
           ]
         }
@@ -993,13 +993,13 @@
           "LOOK": [
             {
               "op": "say",
-              "text": "A poster with a glowing red lightbulb. Below it reads: 'BRIGHT IDEAS START WITH UNPLUGGING.' The irony of a clinic for screen addicts using a lightbulb metaphor is not lost on me."
+              "text": "A red glowing lightbulb poster: 'BRIGHT IDEAS START WITH UNPLUGGING.' The lightbulb is plugged in."
             }
           ],
           "USE": [
             {
               "op": "say",
-              "text": "I tap the poster. The red glow is just a trick of the lighting. Or maybe the clinic is running on Optimism. The L2, not the emotion."
+              "text": "I tap the poster. The red glow is just the lighting. I'm still a little scared of it."
             }
           ],
           "TALK": [
@@ -1011,25 +1011,25 @@
           "PICK": [
             {
               "op": "say",
-              "text": "I try to peel it off. It's laminated AND glued. The clinic protects its motivational content like whales protect their wallets."
+              "text": "I try to peel it off. Laminated AND glued. Somebody here really loves this lightbulb."
             }
           ],
           "OPEN": [
             {
               "op": "say",
-              "text": "There's nothing behind it. Just a wall. Disappointing, like opening a mystery box NFT and getting a JPEG of a rock."
+              "text": "Nothing behind it. Just wall. I keep expecting secret safes. Movies lied to me."
             }
           ],
           "CLOSE": [
             {
               "op": "say",
-              "text": "I smooth the poster back flat. The red lightbulb glows ominously. Like a liquidation warning."
+              "text": "I smooth it flat. The red bulb keeps glowing. It doesn't blink. Very intense poster."
             }
           ],
           "PUSH": [
             {
               "op": "say",
-              "text": "I push the poster. The wall behind it is solid concrete. More reliable than any stablecoin."
+              "text": "I push the poster. Solid concrete. The most reliable thing in this building."
             }
           ],
           "PULL": [
@@ -1041,7 +1041,7 @@
           "GIVE": [
             {
               "op": "say",
-              "text": "I have nothing to offer a poster. My portfolio is flatter than this wall."
+              "text": "Give a poster something? It's already got an idea. Just the one, but it's bright."
             }
           ]
         }
@@ -1079,31 +1079,31 @@
           "TALK": [
             {
               "op": "say",
-              "text": "'Hey computer, show me the patient records.' It responds: 'INSUFFICIENT PERMISSIONS. Try being a doctor or at least a whale.' Rude."
+              "text": "'Show me the patient records.' The screen: 'INSUFFICIENT PERMISSIONS. Try being a doctor.' Rude."
             }
           ],
           "PICK": [
             {
               "op": "say",
-              "text": "I'm not stealing a whole computer. I'm a crypto detective, not a hardware wallet thief."
+              "text": "I'm not stealing a whole computer. It wouldn't fit in the coat. I checked."
             }
           ],
           "OPEN": [
             {
               "op": "say",
-              "text": "The computer case is screwed shut. Last person who opened it probably voided the warranty AND their position."
+              "text": "The case is screwed shut. A sticker: 'WARRANTY VOID IF OPENED.' Dated 1998."
             }
           ],
           "CLOSE": [
             {
               "op": "say",
-              "text": "I close the browser tab. It reopens immediately. Classic popup behavior. The computer is basically a DeFi protocol."
+              "text": "I close a window. It reopens. I close it again. It reopens. We do this a while."
             }
           ],
           "PUSH": [
             {
               "op": "say",
-              "text": "I push the monitor. The chart wobbles but the green line stays up. Bullish even under physical duress."
+              "text": "I nudge the monitor. The green line wobbles. Stays up. I'm not looking at it. I'm not."
             }
           ],
           "PULL": [
@@ -1115,7 +1115,7 @@
           "GIVE": [
             {
               "op": "say",
-              "text": "The computer runs on electricity, not donations. Unlike most crypto projects."
+              "text": "The computer wants nothing from me. Except a password. Which I don't have."
             }
           ]
         }
