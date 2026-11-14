@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import {
   lintProject, applyPolicy, parseStringArray, parseWhen, depthScaleDefects, depthScaleWalkDefects, depthChangeDefects, MAX_DEPTH_CHANGE, FIXED_SCALE_SCENES, PIXEL_RANGES, FAIL_MIN, FAIL_VERBS, bagDefects, itemDescIds, loadProject,
-  ambientDefects, overlayPropDefects, AMBIENT_KINDS, AMBIENT_MAX_COUNT, AMBIENT_MAX_PER_SCENE, AMBIENT_ACTIONS,
+  ambientDefects, overlayPropDefects, unretiredItems, ITEM_CHAPTER_SCENES, LAST_CHAPTER, AMBIENT_KINDS, AMBIENT_MAX_COUNT, AMBIENT_MAX_PER_SCENE, AMBIENT_ACTIONS,
 } from '../scripts/lint-scenes.mjs';
 
 /** Escena mínima válida: fondo, un área caminable de todo el suelo y el spawn dentro. */
@@ -713,4 +713,52 @@ test('regla (m) en lintProject: aviso por overlay sin hotspot debajo', () => {
   const m = only(lintProject(project([s])), 'm');
   assert.deepEqual(m.map((f) => f.id), ['lejos']);
   assert.equal(m[0].severity, 'warning');
+});
+
+// ── A9.7: regla (o), objetos que nunca se retiran ──
+
+test('regla (o): avisa del objeto que no se retira y deja de servir antes del último capítulo', () => {
+  const give = (id) => ({ PICK: [{ op: 'addItem', id }] });
+  // outside (cap. 1) da tres objetos; los tres se usan solo en lobby (cap. 2)
+  const outside = scene('outside', { regions: { hotspots: [hs('hs_a', give('plank')), hs('hs_b', give('bill')), hs('hs_c', give('pen')), hs('hs_d', give('note'))], triggers: [] } });
+  const lobby = scene('lobby', {
+    regions: { hotspots: [hs('hs_door', { USE: [{ op: 'ifHasItem', id: 'bill', then: [{ op: 'setFlag', flag: 'chapter_2_complete', value: true }, { op: 'removeItem', id: 'bill' }] }] })], triggers: [] },
+    combos: [{ items: ['plank', 'hs_door'], script: [] }],
+    npcs: [{ id: 'npc_x', dialogueTreeId: 't', itemDialogues: { note: { node: 'a' } } }],
+    dialogues: { t: { start: 'a', nodes: { a: { text: 'x', when: 'item:pen' } } } },
+  });
+  // pen también sirve en el último capítulo: no avisa
+  const epi = scene('epilogue_outside', { combos: [{ items: ['pen', 'hs_sign'], script: [] }] });
+  const o = only(lintProject(project([outside, lobby, epi])), 'o');
+  assert.deepEqual(o.map((f) => f.id).sort(), ['note', 'plank']);
+  assert.ok(o.every((f) => f.severity === 'warning'));
+  assert.match(o.find((f) => f.id === 'plank').message, /cap\. 2.*chapter_2_complete/);
+});
+
+test('regla (o): las respuestas de fallo no cuentan como uso; una escena sin capítulo no avisa; global.json retira', () => {
+  const outside = scene('outside', {
+    regions: { hotspots: [hs('hs_a', { PICK: [{ op: 'addItem', id: 'duck' }, { op: 'addItem', id: 'map' }, { op: 'addItem', id: 'odd' }] })], triggers: [] },
+    combos: [{ items: ['duck', 'hs_a'], script: [] }, { items: ['map', 'hs_a'], script: [] }],
+    npcs: [{ id: 'npc_y', giveResponses: { duck: 'No, gracias.' } }],
+  });
+  const limbo = scene('limbo', { combos: [{ items: ['odd', 'hs_z'], script: [] }] });
+  const proj = project([outside, limbo]);
+  proj.globalScripts = [{ scene: 'global', label: 'itemCombos[0]', ops: [{ op: 'removeItem', id: 'map' }] }];
+  assert.deepEqual(only(lintProject(proj), 'o').map((f) => f.id), ['duck']);
+  // la función pura también vale suelta
+  assert.deepEqual(unretiredItems({ outside }, [{ scene: 'outside', label: 'x', ops: [{ op: 'addItem', id: 'duck' }] }]).map((r) => [r.item, r.lastChapter]), [['duck', 1]]);
+});
+
+test('regla (o): ITEM_CHAPTER_SCENES coincide con CHAPTERS de src/systems/ChapterManager.ts', () => {
+  const text = readFileSync(new URL('../src/systems/ChapterManager.ts', import.meta.url), 'utf8');
+  const chapters = [...text.matchAll(/id:\s*(\d+),[\s\S]*?scenes:\s*\[([^\]]*)\]/g)].map((m) => [Number(m[1]), [...m[2].matchAll(/"([^"]+)"|'([^']+)'/g)].map((x) => x[1] ?? x[2])]);
+  assert.equal(chapters.length, LAST_CHAPTER);
+  for (const [id, scenes] of chapters) for (const sc of scenes) assert.ok(ITEM_CHAPTER_SCENES[id].includes(sc), `cap. ${id}: falta ${sc}`);
+});
+
+test('regla (o): el repo no tiene objetos sin retirar fuera de las excepciones', () => {
+  const root = new URL('..', import.meta.url).pathname;
+  const allow = JSON.parse(readFileSync(new URL('../qa/lint-scenes-allow.json', import.meta.url), 'utf8'));
+  const { findings } = applyPolicy(lintProject(loadProject(root)), { allow });
+  assert.deepEqual(findings.filter((f) => f.rule === 'o').map((f) => f.id), []);
 });
