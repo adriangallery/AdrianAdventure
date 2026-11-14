@@ -2388,10 +2388,6 @@ export class GameScene extends Phaser.Scene {
     }
   }
 
-  /**
-   * A2.8: escala de una NPC: la unidad de píxel de la escena × su artScale × la escala del fondo (redondeada a un
-   * entero de pantalla cuando se puede) × el factor de profundidad en la y de sus pies (src/systems/PixelScale.ts).
-   */
   /** P1: coloca y escala a Dex sentado como al jugador (unidad de píxel × escala del fondo × profundidad) */
   private placeSeatedDex(): void {
     const sd = this.seatedDex;
@@ -2403,6 +2399,10 @@ export class GameScene extends Phaser.Scene {
     }).scale);
   }
 
+  /**
+   * A2.8: escala de una NPC: la unidad de píxel de la escena × su artScale × la escala del fondo (redondeada a un
+   * entero de pantalla cuando se puede) × el factor de profundidad en la y de sus pies (src/systems/PixelScale.ts).
+   */
   private npcPixelScale(npc: NPC): number {
     return spriteScale({
       pixelScale: this.player.getPixelScale(),
