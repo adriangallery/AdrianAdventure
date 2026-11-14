@@ -71,9 +71,9 @@
     },
     {
       "scene": "rooftop",
-      "scale": "fixed", "scaleWhy": "azotea de frente, suelo poco hondo",
-      "reference": { "label": "antena parabólica (con su mástil)", "hotspot": "hs_satellite_dish", "kind": "furniture", "top": 16, "bottom": 78, "expected": [0.5, 0.85], "why": "no hay puerta dibujada (hs_roof_door no se ve en el fondo); parabólica de tejado de ~3 m con mástil: Dex 0,6×; el mástil está detrás de la zona andable" },
-      "positions": { "back": { "x": 55, "y": 79.5 }, "mid": { "x": 55, "y": 88 }, "front": { "x": 55, "y": 98 }, "frontL": { "x": 20, "y": 98 }, "ref": { "x": 30, "y": 90 } },
+      "scale": "fixed", "scaleWhy": "azotea de frente, suelo poco hondo (la zona andable es la franja delante de las trampillas)",
+      "reference": { "label": "puerta de la azotea", "hotspot": "hs_roof_door", "kind": "door", "top": 39.5, "bottom": 92 },
+      "positions": { "back": { "x": 55, "y": 79.5 }, "mid": { "x": 55, "y": 88 }, "front": { "x": 55, "y": 98 }, "frontL": { "x": 20, "y": 98 }, "ref": { "x": 87.5, "y": 97 } },
       "sameDepth": [["front", "frontL"]]
     },
     {

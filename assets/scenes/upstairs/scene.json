@@ -495,8 +495,8 @@
               "op": "fadeToScene",
               "sceneId": "rooftop",
               "spawn": {
-                "x": 80.3,
-                "y": 90.9
+                "x": 84,
+                "y": 96
               },
               "duration": 500
             }
@@ -515,8 +515,8 @@
               "op": "fadeToScene",
               "sceneId": "rooftop",
               "spawn": {
-                "x": 80.3,
-                "y": 90.9
+                "x": 84,
+                "y": 96
               },
               "duration": 500
             }
@@ -559,8 +559,8 @@
               "op": "fadeToScene",
               "sceneId": "rooftop",
               "spawn": {
-                "x": 80.3,
-                "y": 90.9
+                "x": 84,
+                "y": 96
               },
               "duration": 500
             }
