@@ -26,6 +26,8 @@ export function playStinger(scene: Phaser.Scene, kind: StingerKind): StingerEven
   const musicKey = mm?.currentMusicKey() ?? null;
   const { key, detune, ms } = stingerFor(kind, musicKey);
   const ok = sfx.play(key, { volume: STINGER_VOLUME, detune });
+  // A8.1: puzle resuelto → la música adaptativa pasa unos compases al estado `solved`
+  if (kind === 'puzzle') mm?.markSolved();
   if (ok && mm) {
     mm.setDuck('stinger', true);
     setTimeout(() => mm.setDuck('stinger', false), ms + 150);

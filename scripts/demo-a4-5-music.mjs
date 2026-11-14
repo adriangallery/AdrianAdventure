@@ -178,8 +178,8 @@ await open('lobby');
   err = await during('4) USE escotilla → rooftop: fundido cruzado retro-adventure → vista (Sol menor)', () => window.__demoRun(window.__qa.act('USE', 'hs_roof_hatch')));
   if (err) problems.push(`USE hs_roof_hatch: ${err}`);
   const t0 = Date.now();
-  while (Date.now() - t0 < 6000) {
-    const { a } = await capture('4) rooftop: las dos pistas se cruzan durante 4 s');
+  while (Date.now() - t0 < 9000) {
+    const { a } = await capture('4) rooftop: las dos pistas se cruzan (A8.1: en el punto de salida)');
     if (a?.music.fading && a.music.fading.gain > 0.002 && a.music.key === 'vista') {
       cross.frames++;
       cross.maxFadingGain = Math.max(cross.maxFadingGain, a.music.fading.gain);
@@ -188,7 +188,10 @@ await open('lobby');
   }
   const roof = (await capture('4) rooftop', { shot: false })).a;
   console.log(`fundido: ${cross.frames} fotogramas con las dos pistas · la vieja hasta ${cross.maxFadingGain} · la nueva desde ${cross.minNewGain} · ahora ${JSON.stringify(roof?.music)}`);
-  if (!cross.frames) problems.push('no se vio el fundido cruzado (ningún fotograma con fading y vista a la vez)');
+  // A8.1: con las dos pistas medidas ya no hay fundido de 4 s: el cambio espera a su punto de salida (en compás) y entra por
+  // un puente en la tonalidad de destino; vale cualquiera de los dos (demo a8-1-imuse para el detalle)
+  const planned = roof?.adaptive?.transitions.some((t) => t.from === 'retro-adventure' && t.to === 'vista' && !t.cancelled);
+  if (!cross.frames && !planned) problems.push('no se vio el fundido cruzado ni la transición planificada a vista');
   if (roof?.music.key !== 'vista') problems.push(`rooftop: música ${roof?.music.key}, se esperaba vista`);
   if (roof?.music.musicKey?.mode !== 'minor') problems.push(`vista debería ser menor (${JSON.stringify(roof?.music.musicKey)})`);
   await demo.still('4-crossfade', { clip: CLIP });

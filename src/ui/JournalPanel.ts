@@ -278,7 +278,10 @@ export class JournalPanel {
     }
     // A4.5: puzle resuelto (objetivo cumplido) o capítulo cerrado = stinger. La instantánea vive en el registry del juego, así
     // un objetivo que se cumple justo antes de cambiar de escena suena al entrar en la siguiente; la primera vez solo apunta
-    const snapshot: GoalSnapshot = { chapter, done: goalsView(chapterData(JOURNAL_CHAPTERS, chapter), world).filter((g) => g.done).length };
+    const goals = goalsView(chapterData(JOURNAL_CHAPTERS, chapter), world);
+    const snapshot: GoalSnapshot = { chapter, done: goals.filter((g) => g.done).length };
+    // A8.1: objetivos que faltan del capítulo (la música adaptativa sube la intensidad cerca del final)
+    this.scene.game.registry.set('musicGoalsLeft', goals.length - snapshot.done);
     const prev = this.scene.game.registry.get('stingerGoals') as GoalSnapshot | undefined;
     for (const kind of goalStingers(prev, snapshot)) playStinger(this.scene, kind);
     if (!prev || prev.chapter !== snapshot.chapter || prev.done !== snapshot.done) this.scene.game.registry.set('stingerGoals', snapshot);
