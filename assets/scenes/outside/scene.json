@@ -2235,7 +2235,9 @@
         "showWhenFlag": "pzbot_crashed",
         "useResponses": {
           "_default": [
-            "I'm not giving anything to a car. Last time I did that it was gas money and a whole paycheck."
+            "I'm not giving anything to a car. Last time I did that it was gas money and a whole paycheck.",
+          "The Lambo doesn't need it. The Lambo doesn't need anything. That's the whole point of a Lambo.",
+          "I'd rather not touch the paint with that. I can't afford the car, and I definitely can't afford the scratch."
           ]
         },
         "bounds": {

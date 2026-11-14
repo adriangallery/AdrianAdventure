@@ -13503,6 +13503,14 @@
   "cost": 15,
   "lufs_in": -23.3
  },
+ "player_id_rather_not_touch_the_paint_cc5e21e0": {
+  "sig": "60d64acc8bd40fb3",
+  "role": "player",
+  "voice": "Chris",
+  "model": "eleven_v4_turbo",
+  "cost": 24,
+  "lufs_in": -24.6
+ },
  "player_if_i_could_open_a_mountain_01dd48ce": {
   "sig": "3fb0af2dfaced4dc",
   "role": "player",
@@ -17878,6 +17886,14 @@
   "model": "eleven_v4_turbo",
   "cost": 18,
   "lufs_in": -23.8
+ },
+ "player_the_lambo_doesnt_need_it_the_4a909e5b": {
+  "sig": "d50c22f1e25156de",
+  "role": "player",
+  "voice": "Chris",
+  "model": "eleven_v4_turbo",
+  "cost": 21,
+  "lufs_in": -22.8
  },
  "player_the_lamp_doesnt_want_gifts_it_50dfabf4": {
   "sig": "c0800822816d9332",

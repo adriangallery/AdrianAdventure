@@ -1,8 +1,8 @@
 {
  "_doc": "A6.1: guion congelado de las voces (scripts/voices/script-lock.mjs). Una entrada por mp3 de assets/audio/voice; hash = sha256(rol + texto TTS). No editar a mano.",
  "total": {
-  "lines": 2585,
-  "chars": 199664
+  "lines": 2587,
+  "chars": 199866
  },
  "lines": [
   {
@@ -16886,6 +16886,16 @@
    "hash": "4d11ae89d04c90f0"
   },
   {
+   "key": "player_id_rather_not_touch_the_paint_cc5e21e0",
+   "speaker": "player",
+   "role": "player",
+   "category": "fallo",
+   "text": "I'd rather not touch the paint with that. I can't afford the car, and I definitely can't afford the scratch.",
+   "tts": "I'd rather not touch the paint with that. I can't afford the car, and I definitely can't afford the scratch.",
+   "chars": 108,
+   "hash": "f0dfb68dc48142d3"
+  },
+  {
    "key": "player_if_i_could_open_a_mountain_01dd48ce",
    "speaker": "player",
    "role": "player",
@@ -22344,6 +22354,16 @@
    "tts": "The label says: 'Liquidity Pool Recreation Committee — For authorized aping only.'",
    "chars": 82,
    "hash": "dc856906372b504d"
+  },
+  {
+   "key": "player_the_lambo_doesnt_need_it_the_4a909e5b",
+   "speaker": "player",
+   "role": "player",
+   "category": "fallo",
+   "text": "The Lambo doesn't need it. The Lambo doesn't need anything. That's the whole point of a Lambo.",
+   "tts": "The Lambo doesn't need it. The Lambo doesn't need anything. That's the whole point of a Lambo.",
+   "chars": 94,
+   "hash": "9968c50f044be499"
   },
   {
    "key": "player_the_lamp_doesnt_want_gifts_it_50dfabf4",
