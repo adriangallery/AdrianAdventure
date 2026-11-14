@@ -4,7 +4,8 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 
 const {
-  FootstepTracker, surfaceAt, stepSound, stepKey, STRIDE_ART_PX, MAX_STEP_JUMP_ART_PX, STEP_DETUNE_CENTS, STEP_VOLUME, STEP_VOLUME_A44, SURFACES,
+  FootstepTracker, surfaceAt, stepSound, stepKey, STRIDE_ART_PX, MAX_STEP_JUMP_ART_PX, STEP_DETUNE_CENTS, STEP_VOLUME, STEP_VOLUME_A44, SURFACES, STEP_VARIANTS,
+  OLD_STEP_VARIANTS, stepSetFrom, stepPreloadKeys,
 } = await import(process.env.FOOTSTEPS_PATH ?? '../src/systems/Footsteps.ts');
 
 test('surfaceAt: el rectángulo de surfaces manda sobre footstep; sin nada, muda', () => {
@@ -62,6 +63,58 @@ test('stepSound: clave por superficie y pie, desafino dentro del margen y volume
 test('todas las superficies tienen sus dos efectos en assets/audio/sfx', async () => {
   const { existsSync } = await import('node:fs');
   for (const s of SURFACES) {
-    for (const n of [1, 2]) assert.ok(existsSync(new URL(`../assets/audio/sfx/step_${s}_${n}.mp3`, import.meta.url)), `falta step_${s}_${n}.mp3`);
+    for (let n = 1; n <= STEP_VARIANTS; n++) assert.ok(existsSync(new URL(`../assets/audio/sfx/step_${s}_${n}.mp3`, import.meta.url)), `falta step_${s}_${n}.mp3`);
   }
+});
+
+test('A8.4: variantes de paso: el pie manda en la paridad y randomPick elige la pareja dentro de STEP_VARIANTS', () => {
+  assert.equal(stepKey('wood', 0, 1), 'step_wood_3');
+  assert.equal(stepKey('wood', 1, 1), 'step_wood_4');
+  assert.equal(STEP_VARIANTS % 2, 0, 'variantes por parejas (izquierdo/derecho)');
+  for (const r of [0, 0.3, 0.6, 0.999]) {
+    const n = Number(stepSound('tile', 0, 0.5, 1, r).key.split('_').pop());
+    assert.ok(n % 2 === 1 && n <= STEP_VARIANTS, `pie izquierdo → impar ≤ ${STEP_VARIANTS} (${n})`);
+  }
+  assert.equal(stepSound('tile', 1, 0.5).key, 'step_tile_2', 'sin randomPick, la primera pareja (A4.4)');
+});
+
+test('A8.4: con 4 variantes las dos parejas salen; randomPick reparte entre _1/_2 y _3/_4', () => {
+  assert.equal(STEP_VARIANTS, 4);
+  assert.equal(stepSound('wood', 0, 0.5, 1, 0.2).key, 'step_wood_1');
+  assert.equal(stepSound('wood', 0, 0.5, 1, 0.7).key, 'step_wood_3');
+  assert.equal(stepSound('wood', 1, 0.5, 1, 0.7).key, 'step_wood_4');
+});
+
+test('A8.4: ?steps=old vuelve a los sintetizados (_old_1/_old_2) con el mismo volumen; el resto, los nuevos', () => {
+  assert.equal(stepSetFrom('?steps=old'), 'old');
+  assert.equal(stepSetFrom('?qa=1&steps=old'), 'old');
+  assert.equal(stepSetFrom(''), 'new');
+  assert.equal(stepSetFrom('?steps=new'), 'new');
+  for (const r of [0, 0.7, 0.999]) {
+    assert.equal(stepSound('gravel', 0, 0.5, 1, r, 'old').key, 'step_gravel_old_1');
+    assert.equal(stepSound('gravel', 1, 0.5, 1, r, 'old').key, 'step_gravel_old_2');
+  }
+  assert.equal(stepSound('gravel', 1, 0, 1, 0.9, 'old').volume, stepSound('gravel', 1, 0, 1, 0.9).volume, 'mismo volumen «a mitad»');
+  assert.equal(stepPreloadKeys('old').length, SURFACES.length * OLD_STEP_VARIANTS);
+  assert.equal(stepPreloadKeys('new').length, SURFACES.length * STEP_VARIANTS);
+});
+
+test('A8.4: los pasos sintetizados de antes siguen en assets (step_<superficie>_old_1/2) y los nuevos están en sfxKeys', async () => {
+  const { existsSync, readFileSync } = await import('node:fs');
+  for (const k of stepPreloadKeys('old')) assert.ok(existsSync(new URL(`../assets/audio/sfx/${k}.mp3`, import.meta.url)), `falta ${k}.mp3`);
+  const preload = readFileSync(new URL('../src/scenes/PreloadScene.ts', import.meta.url), 'utf8');
+  for (const k of stepPreloadKeys('new')) assert.ok(preload.includes(`'${k}'`), `${k} no está en sfxKeys`);
+});
+
+test('A8.4: respaldo de efectos: variante nueva → primera pareja del mismo pie → sintetizado; ducking como la música', async () => {
+  const { sfxFallbacks, duckedVolume } = await import(process.env.SFX_FALLBACK_PATH ?? '../src/systems/sfxFallback.ts');
+  assert.deepEqual(sfxFallbacks('step_wood_3'), ['step_wood_1', 'step_wood_old_1']);
+  assert.deepEqual(sfxFallbacks('step_wood_4'), ['step_wood_2', 'step_wood_old_2']);
+  assert.deepEqual(sfxFallbacks('step_tile_2'), ['step_tile_old_2']);
+  assert.deepEqual(sfxFallbacks('step_tile_old_1'), ['step_tile_1']);
+  assert.deepEqual(sfxFallbacks('drawer_open'), ['item_use']);
+  assert.deepEqual(sfxFallbacks('door_creak'), []);
+  assert.equal(duckedVolume(0.21, [], 0.35), 0.21);
+  assert.equal(duckedVolume(0.21, ['voice'], 0.35), 0.074);
+  assert.equal(duckedVolume(0.7, ['voice', 'cinematic'], 0.35), 0.245);
 });

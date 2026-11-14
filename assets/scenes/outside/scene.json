@@ -3076,6 +3076,10 @@
                   "key": "nest_fall"
                 },
                 {
+                  "op": "playSound",
+                  "key": "magpie_chatter"
+                },
+                {
                   "op": "addItem",
                   "id": "note_half_b",
                   "name": "Note Half (..14)"

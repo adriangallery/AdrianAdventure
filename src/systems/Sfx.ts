@@ -7,6 +7,8 @@
  * una puerta pidió su crujido.
  */
 import type Phaser from 'phaser';
+import { DUCK_LEVEL } from '@/systems/Cinematics';
+import { sfxFallbacks, duckedVolume } from '@/systems/sfxFallback';
 
 export interface SfxOptions {
   volume?: number;
@@ -51,12 +53,16 @@ export class SfxPlayer {
 
   /** Toca un efecto si está en caché. Devuelve si sonó (o sonaría: en silencio Phaser está en mute). */
   play(key: string, opts: SfxOptions = {}): boolean {
-    const volume = opts.volume ?? 0.7;
+    // A8.4: el mismo ducking que la música (bajo la voz y en cinemática); el volumen de cada efecto no cambia
+    const mm = this.game.registry.get('musicManager') as { getDuckSources?: () => string[] } | undefined;
+    const volume = duckedVolume(opts.volume ?? 0.7, mm?.getDuckSources?.() ?? [], DUCK_LEVEL);
     const detune = opts.detune ?? 0;
-    const ok = this.game.cache.audio.has(key);
-    if (ok) {
+    // A8.4: si el mp3 nuevo no cargó, el respaldo (otra variante del mismo pie, el sintetizado…)
+    const playKey = this.game.cache.audio.has(key) ? key : sfxFallbacks(key).find((k) => this.game.cache.audio.has(k));
+    const ok = !!playKey;
+    if (playKey) {
       try {
-        this.game.sound.play(key, { volume, detune, rate: opts.rate ?? 1 });
+        this.game.sound.play(playKey, { volume, detune, rate: opts.rate ?? 1 });
       } catch {
         // Sin contexto de audio (navegador sin Web Audio): se apunta y se sigue
       }

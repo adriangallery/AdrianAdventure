@@ -10,6 +10,7 @@ import { ScenePrefetcher, ASSET_V as v } from '@/systems/ScenePrefetcher';
 import { FADE_FIRST_MS, FADE_SHORT_MS, sceneImageAssets, transitionMode, type TransitionMode } from '@/systems/ScenePrefetch';
 import { pickBgVariant, texturesToEvict, type BgVariant } from '@/systems/SceneTextures';
 import { gameUrlParams } from '@/config/debugParams';
+import { stepSetFrom, stepPreloadKeys } from '@/systems/Footsteps';
 import { GameScene } from '@/scenes/GameScene';
 import { DEX2D_ANIMS } from '@/data/dex2dFrames';
 import { DEXPAPEL_ANIMS } from '@/data/dexPapelFrames';
@@ -233,6 +234,10 @@ export class PreloadScene extends Phaser.Scene {
       'wallet_connect', 'npc_talk', 'save_game', 'typewriter',
       'step_wood_1', 'step_wood_2', 'step_gravel_1', 'step_gravel_2', 'step_concrete_1', 'step_concrete_2',
       'step_tile_1', 'step_tile_2', 'step_metal_1', 'step_metal_2', 'step_carpet_1', 'step_carpet_2', 'step_grass_1', 'step_grass_2',
+      // A8.4: segunda pareja de pasos (ElevenLabs) y los efectos nuevos (cajón, urracas)
+      'step_wood_3', 'step_wood_4', 'step_gravel_3', 'step_gravel_4', 'step_concrete_3', 'step_concrete_4',
+      'step_tile_3', 'step_tile_4', 'step_metal_3', 'step_metal_4', 'step_carpet_3', 'step_carpet_4', 'step_grass_3', 'step_grass_4',
+      'drawer_open', 'drawer_close', 'magpie_chatter',
       'door_creak', 'door_close', 'door_knock', 'hatch_metal', 'door_slide',
       'inv_open', 'inv_close', 'verb_select', 'journal_open', 'journal_close', 'journal_note', 'phone_ring', 'phone_pickup', 'phone_hangup',
       'duck_squeak', 'intercom_buzz', 'glass_break', 'paper_rustle', 'plank_pull', 'switch_flip', 'crt_on', 'floppy_insert',
@@ -243,6 +248,8 @@ export class PreloadScene extends Phaser.Scene {
       // A8.3b: stingers de evento grabados (src/systems/Stingers.ts → STINGER_GEN)
       'stinger_gen_puzzle_major', 'stinger_gen_chapter_major', 'stinger_gen_fail',
     ];
+    // A8.4: ?steps=old = los pasos sintetizados de A4.4 (solo se descargan si se piden)
+    if (stepSetFrom(window.location.search) === 'old') sfxKeys.push(...stepPreloadKeys('old'));
     for (const key of sfxKeys) {
       if (!this.cache.audio.has(key)) {
         this.load.audio(key, `assets/audio/sfx/${key}.mp3${v}`);
