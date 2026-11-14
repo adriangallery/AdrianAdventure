@@ -1,0 +1,33 @@
+{
+  "_doc": [
+    "A6.2 (plan SCUMM): reparto de voces de ElevenLabs. Lo lee scripts/voices/eleven-tts.mjs (A6.3) junto con qa/voices-script.lock.json.",
+    "roles: papel de reparto del lock (hablante de voices.json; `npc` se parte en apes_club, apes_bro y device). Cada uno: voz premade de la",
+    "biblioteca de la cuenta (voice_id), modelo, ajustes (voice_settings tal cual a la API) y posproceso opcional (filtro ffmpeg).",
+    "engine \"kokoro\" en un papel = no se toca: se queda con su clip Kokoro (voices.json). Cambiar voz, modelo, ajustes o filtro invalida la caché",
+    "de ese papel (scripts/voices/elevenlabs-done.json guarda la firma) y A6.3 lo regenera entero.",
+    "Las muestras del casting (misma frase real del guion por papel, 14-nov-2026) y el porqué de cada elección: docs/progreso/A6.2.md."
+  ],
+  "defaults": {
+    "model": "eleven_v4_turbo",
+    "voice_settings": { "stability": 0.5, "similarity_boost": 0.75, "speed": 1.0 },
+    "output_format": "mp3_44100_128",
+    "loudness_lufs": -26,
+    "credits_per_char": 0.225,
+    "credits_per_char_list": 0.5
+  },
+  "roles": {
+    "player":    { "name": "Chris",   "voice_id": "iP95p4xoKVk53GoZ742B", "character": "Dex Malone",          "voice_settings": { "speed": 1.0 } },
+    "nar":       { "name": "George",  "voice_id": "JBFqnCBsd6RMkjVDRZzb", "character": "Narrador",            "voice_settings": { "speed": 0.95 } },
+    "recep":     { "name": "Laura",   "voice_id": "FGY2WhTYpPnrIDTdsKH5", "character": "Penny (recepción)",   "voice_settings": { "speed": 1.05 } },
+    "dooris":    { "name": "Lily",    "voice_id": "pFZP5JQG7iQjIQuC4Bku", "character": "DOORIS",              "voice_settings": { "speed": 0.95 } },
+    "anon":      { "name": "Callum",  "voice_id": "N2lVS1w4EtoT3dr4eOWO", "character": "Anon (Adrian)",       "voice_settings": { "speed": 0.95 }, "ffmpeg_filter": "highpass=f=300,lowpass=f=3400" },
+    "gwei":      { "name": "Alice",   "voice_id": "Xb7hH8MSUJpSbSDYk0k2", "character": "Nurse Gwei",          "voice_settings": { "speed": 1.0 },  "ffmpeg_filter": "highpass=f=300,lowpass=f=3400" },
+    "satoshi":   { "name": "Bill",    "voice_id": "pqHfZKP75CvOlQylNhV4", "character": "Dr. Satoshi",         "voice_settings": { "speed": 0.9 } },
+    "chad":      { "name": "Adam",    "voice_id": "pNInz6obpgDQGcFmaJgB", "character": "Chad",                "voice_settings": { "speed": 1.05 } },
+    "bot":       { "name": "River",   "voice_id": "SAz9YHcvj6GT2YYXdXww", "character": "B.O.T.",              "voice_settings": { "speed": 1.0 } },
+    "apes_club": { "name": "Daniel",  "voice_id": "onwK4e9ZLuTAKqWW03F9", "character": "Monos de club (izq.)", "voice_settings": { "speed": 1.0 } },
+    "apes_bro":  { "name": "Harry",   "voice_id": "SOYHLrjzK2X1ezoPC6cr", "character": "Monos bro (dcha.)",   "voice_settings": { "speed": 1.05 } },
+    "device":    { "name": "Matilda", "voice_id": "XrExE9yKIg1WjnnlVkGX", "character": "Máquinas (Ledger, cajón ToS)", "voice_settings": { "speed": 1.0 } },
+    "pzbot":     { "name": "Chris",   "voice_id": "iP95p4xoKVk53GoZ742B", "character": "PZ-BOT (la voz de Dex, acelerada: pista del giro)", "voice_settings": { "speed": 1.2 }, "requires_role": "player" }
+  }
+}

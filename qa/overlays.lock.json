@@ -1,6 +1,10 @@
 {
   "_doc": "A9.16: sha256 del background.webp de la escena y del overlay con los que se validó cada conditionalOverlay. Si cambia el fondo, crop-overlays --check falla hasta revisar el overlay encima del fondo nuevo (o regenerarlo) y ejecutar node scripts/crop-overlays.mjs --update-lock.",
   "overlays": {
+    "basement/mouse_taken": {
+      "background": "7ba92507eb108052a4057bfb6ebb4841d547b5bc26096c475f39ce239416d57e",
+      "overlay": "ad25fd8a016d6ff861399cdb6867f7e30c2fbe05e4c10cfb01f04b63678094e6"
+    },
     "clinic_interior/no_photo": {
       "background": "29a91a812dd137f95ef4949f0a4c58a44ab8e758d79a695733a8c5a65962b8ae",
       "overlay": "d10264b8e44c3ee221ecfc15e35261260fb4070c27d936c36fd35b9f9c4821ef"
@@ -9,6 +13,10 @@
       "background": "e072eefcd06790358e9a0259dc0602a14494e9a10ace45c31e062909ddc0e6cd",
       "overlay": "ad60e29dffb26c322d522390f60104c86a2f53bf2e83145ad0abb03ea675c934",
       "aviso": "A9.16: lleva opaca la pared de detrás de la planta, casi igual al fondo (43231 px con Δ ≤ 12, 27,5 %). En la pared lisa del vestíbulo no se ve mancha; pendiente de dejar opaca solo la planta (y su sombra) si algún día se regenera."
+    },
+    "memelab/pepe_taken": {
+      "background": "331117e4b3e75dea21523adfe9e3b3a6a281c8c560e5274a487d90e4b9cd2e39",
+      "overlay": "fb8e26e4fe69408979c4dfa3115b4fd955d26d52961b5ed14cc79c693e15259d"
     },
     "outside/doormat_lump": {
       "background": "8b5d9e129e45bf31c8bd123f5ff59ab7b94a3f9858eecc34e323918943774599",

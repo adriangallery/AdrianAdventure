@@ -641,6 +641,7 @@
       },
       {
         "id": "hs_pizza_box",
+        "keepAfterPick": "La caja se queda con el resto de la pizza: solo te llevas una porción",
         "name": "Pizza Box",
         "bounds": {
           "x": 34.8,
@@ -757,6 +758,7 @@
       },
       {
         "id": "hs_energy_drink",
+        "hideWhen": ["has_energy_drink", "item:energy_drink"],
         "name": "Energy Drink",
         "bounds": {
           "x": 44.3,
@@ -874,6 +876,7 @@
       },
       {
         "id": "hs_paper_tray",
+        "keepAfterPick": "La bandeja se queda: el recibo iba entre los papeles (no dibujado aparte); el PICK de después lo dice («The tray is just sad printouts now»)",
         "name": "Paper Tray",
         "bounds": {
           "x": 44,
@@ -962,6 +965,7 @@
       },
       {
         "id": "hs_alphapack",
+        "keepAfterPick": "La caja ALPHA PACKS se queda y su LOOK lo dice («Empty now — I already took the ape costume»); el disfraz iba dentro",
         "name": "Alpha Pack",
         "bounds": {
           "x": 66.9,
@@ -1289,6 +1293,10 @@
             {
               "op": "say",
               "text": "Founder mode is already active. The mining rig hums contentedly."
+            },
+            {
+              "op": "showDashboard",
+              "mode": "founder"
             }
           ],
           "else": [
@@ -1314,8 +1322,8 @@
               "text": "An admin panel appears. Adrian's full ecosystem dashboard."
             },
             {
-              "op": "say",
-              "text": "The admin dashboard lights up. FloorEngine: 847 sweeps. TraitLab: 12,459 traits minted. SweepBot: running 24/7 for 403 days."
+              "op": "showDashboard",
+              "mode": "founder"
             },
             {
               "op": "say",
