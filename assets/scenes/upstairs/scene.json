@@ -57,7 +57,7 @@
     "monitor_left": {"bounds": {"x": 43.1, "y": 44.5, "w": 5.3, "h": 11.7}, "color": "green", "label": "TRADING DESK // LEFT"},
     "monitor_center": {"bounds": {"x": 49.85, "y": 43.1, "w": 6.0, "h": 13.1}, "color": "green", "label": "TRADING DESK // RIG-01"},
     "monitor_right": {"bounds": {"x": 57.15, "y": 44.5, "w": 5.3, "h": 11.7}, "color": "green", "label": "TRADING DESK // RIGHT"},
-    "drawer_lock": {"bounds": {"x": 50, "y": 57, "w": 4, "h": 3}, "color": "amber", "label": "DRAWER LOCK // TERMS OF SERVICE", "closeupOnly": true}
+    "drawer_lock": {"bounds": {"x": 59.9, "y": 70, "w": 3, "h": 3}, "color": "amber", "label": "DRAWER LOCK // TERMS OF SERVICE", "closeupOnly": true}
   },
   "regions": {
     "hotspots": [
@@ -153,24 +153,6 @@
               ]
             }
           ],
-          "CLOSE": [
-            {
-              "op": "ifFlag",
-              "flag": "found_terminal_key",
-              "then": [
-                {
-                  "op": "say",
-                  "text": "I close the drawer. It doesn't ask me to accept anything this time. Growth."
-                }
-              ],
-              "else": [
-                {
-                  "op": "say",
-                  "text": "Already closed. Closed and legally binding."
-                }
-              ]
-            }
-          ],
           "PUSH": [
             {
               "op": "say",
@@ -187,6 +169,122 @@
             {
               "op": "say",
               "text": "The desk doesn't need anything from me. It already got thirty-eight pages of my consent."
+            }
+          ]
+        }
+      },
+      {
+        "id": "hs_desk_drawer",
+        "keepAfterPick": "A3.3i: el cajón se queda en el escritorio; con found_terminal_key su overlay pasa de cerrado (desk_drawer_locked) a abierto (desk_drawer_open)",
+        "name": "Desk Drawer",
+        "useResponses": {
+          "terminal_key": [
+            "I put the key back on the desk. The desk doesn't want it back. Nobody wants anything back."
+          ]
+        },
+        "bounds": {
+          "x": 58.9,
+          "y": 68.3,
+          "w": 5,
+          "h": 17.7
+        },
+        "walkTo": {
+          "x": 61.4,
+          "y": 97
+        },
+        "scripts": {
+          "LOOK": [
+            {
+              "op": "ifFlag",
+              "flag": "found_terminal_key",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "The drawer's empty. Thirty-eight pages of Terms for one key. Worth it. Barely."
+                }
+              ],
+              "else": [
+                {
+                  "op": "say",
+                  "screen": "drawer_lock",
+                  "text": "Locked. The lock is a tiny screen: 'Accept the Terms to open'."
+                }
+              ]
+            }
+          ],
+          "USE": [
+            {
+              "op": "ifFlag",
+              "flag": "found_terminal_key",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "The drawer is empty. I already took the trading terminal key."
+                }
+              ],
+              "else": [
+                {
+                  "op": "dialogue",
+                  "npcId": "tos_drawer",
+                  "treeId": "tos_drawer"
+                }
+              ]
+            }
+          ],
+          "OPEN": [
+            {
+              "op": "ifFlag",
+              "flag": "found_terminal_key",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "The drawer is empty. I already took the trading terminal key."
+                }
+              ],
+              "else": [
+                {
+                  "op": "dialogue",
+                  "npcId": "tos_drawer",
+                  "treeId": "tos_drawer"
+                }
+              ]
+            }
+          ],
+          "PULL": [
+            {
+              "op": "ifFlag",
+              "flag": "found_terminal_key",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "The drawer is empty. I already took the trading terminal key."
+                }
+              ],
+              "else": [
+                {
+                  "op": "dialogue",
+                  "npcId": "tos_drawer",
+                  "treeId": "tos_drawer"
+                }
+              ]
+            }
+          ],
+          "CLOSE": [
+            {
+              "op": "ifFlag",
+              "flag": "found_terminal_key",
+              "then": [
+                {
+                  "op": "say",
+                  "text": "I close the drawer. It doesn't ask me to accept anything this time. Growth."
+                }
+              ],
+              "else": [
+                {
+                  "op": "say",
+                  "text": "Already closed. Closed and legally binding."
+                }
+              ]
             }
           ]
         }
@@ -1559,6 +1657,33 @@
       "flag": "has_energy_drink",
       "depth": 16,
       "invert": true
+    },
+    {
+      "id": "desk_drawer_locked",
+      "sprite": "overlay_drawer_locked",
+      "format": "webp",
+      "bounds": {
+        "x": 59.375,
+        "y": 69.4444,
+        "w": 4.2295,
+        "h": 4.9479
+      },
+      "flag": "found_terminal_key",
+      "invert": true,
+      "depth": 5
+    },
+    {
+      "id": "desk_drawer_open",
+      "sprite": "overlay_drawer_open",
+      "format": "webp",
+      "bounds": {
+        "x": 58.8901,
+        "y": 68.316,
+        "w": 5.0377,
+        "h": 8.8542
+      },
+      "flag": "found_terminal_key",
+      "depth": 5
     }
   ],
   "ambient": [

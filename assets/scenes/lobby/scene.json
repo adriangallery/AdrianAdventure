@@ -154,7 +154,7 @@
             "I tip the empty can over Fernando. Nothing comes out. He noticed. He's keeping score."
           ]
         },
-        "name": "Lobby Plant",
+        "name": "Lobby Plant (Fernando)",
         "bounds": {
           "x": 39.9,
           "y": 44,
@@ -798,7 +798,7 @@
             "I offer the desk a pen. It leaks a blue map of Japan on Penny's blotter. She hands it back with tongs."
           ]
         },
-        "name": "Monitor Desk",
+        "name": "Penny's Desk",
         "bounds": {
           "x": 3,
           "y": 22,
