@@ -1,0 +1,138 @@
+{
+  "$comment": "A8.2 parte 2. Lo lee scripts/audio/eleven-music.mjs. `muestra` = 1 min (A+B); `minimo` = bucle de 2 min con los MISMOS bloques y estilos, solo cambian las duraciones (compases enteros). Mismo modelo y semilla.",
+  "tema": "final",
+  "titulo": "Final / epílogo",
+  "escenas": [
+    "epilogue_outside",
+    "créditos"
+  ],
+  "pistaEquivalente": "epilogue",
+  "bpm": 85,
+  "tonalidad": "Do mayor",
+  "key": "C major",
+  "compas": "4/4",
+  "instrumentacion": [
+    "french horn (lead)",
+    "warm strings",
+    "oboe",
+    "harp",
+    "glockenspiel",
+    "timpani rolls (only in B)"
+  ],
+  "prompt": "Warm, triumphant and nostalgic ending theme for a 1990s point-and-click adventure game: the adventure is over, sunrise, credits roll. Heartfelt, singable french horn melody answered by oboe, warm strings, harp, glockenspiel, timpani rolls. High-quality General MIDI orchestral sound. 85 BPM, C major, 4/4. Instrumental only, seamless loop.",
+  "modelo": "music_v2_5",
+  "semilla": 8205,
+  "output_format": "mp3_44100_128",
+  "secciones": {
+    "A": {
+      "energia": "calm",
+      "descripcion": "calm: harp and soft strings, oboe plays the main melody tenderly, reflective and warm"
+    },
+    "B": {
+      "energia": "intense",
+      "descripcion": "more energy: french horn takes the melody over full strings and timpani rolls, glockenspiel sparkles, triumphant, cadence back to C major so it loops"
+    }
+  },
+  "partes": {
+    "muestra": {
+      "compases": [
+        11,
+        11
+      ],
+      "duraciones_ms": [
+        31059,
+        31059
+      ]
+    },
+    "minimo": {
+      "compases": [
+        21,
+        21
+      ],
+      "duraciones_ms": [
+        59294,
+        59294
+      ]
+    }
+  },
+  "composition_plan": {
+    "chunks": [
+      {
+        "text": "[A - calm]\n{calm: harp and soft strings, oboe plays the main melody tenderly, reflective and warm}",
+        "duration_ms": 31059,
+        "positive_styles": [
+          "1990s point-and-click adventure game music",
+          "high-quality General MIDI orchestral",
+          "instrumental",
+          "85 BPM",
+          "C major",
+          "4/4",
+          "memorable melody",
+          "loopable",
+          "french horn",
+          "warm strings",
+          "oboe",
+          "harp",
+          "glockenspiel",
+          "timpani rolls",
+          "calm"
+        ],
+        "negative_styles": [
+          "vocals",
+          "singing",
+          "voice",
+          "choir",
+          "lyrics",
+          "spoken word",
+          "rap",
+          "humming",
+          "modern EDM",
+          "dubstep",
+          "trap beat",
+          "heavy distortion",
+          "vinyl crackle",
+          "lo-fi hiss"
+        ],
+        "context_adherence": "high"
+      },
+      {
+        "text": "[B - more energy]\n{more energy: french horn takes the melody over full strings and timpani rolls, glockenspiel sparkles, triumphant, cadence back to C major so it loops}",
+        "duration_ms": 31059,
+        "positive_styles": [
+          "1990s point-and-click adventure game music",
+          "high-quality General MIDI orchestral",
+          "instrumental",
+          "85 BPM",
+          "C major",
+          "4/4",
+          "memorable melody",
+          "loopable",
+          "french horn",
+          "warm strings",
+          "oboe",
+          "harp",
+          "glockenspiel",
+          "timpani rolls",
+          "more energy"
+        ],
+        "negative_styles": [
+          "vocals",
+          "singing",
+          "voice",
+          "choir",
+          "lyrics",
+          "spoken word",
+          "rap",
+          "humming",
+          "modern EDM",
+          "dubstep",
+          "trap beat",
+          "heavy distortion",
+          "vinyl crackle",
+          "lo-fi hiss"
+        ],
+        "context_adherence": "high"
+      }
+    ]
+  }
+}
