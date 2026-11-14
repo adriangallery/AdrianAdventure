@@ -1153,6 +1153,7 @@
       "nodes": {
         "screen": {
           "speaker": "Drawer",
+          "screen": "drawer_lock",
           "text": "TERMS AND CONDITIONS. Thirty-eight pages. Accept the Terms to open.",
           "when": "!tos_read_1",
           "next": "screen_again"
