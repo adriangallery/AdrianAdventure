@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import {
   lintProject, applyPolicy, glowRectDefects, GLOW_RECT_MAX_FRACTION, parseStringArray, parseWhen, depthScaleDefects, depthScaleWalkDefects, depthChangeDefects, MAX_DEPTH_CHANGE, FIXED_SCALE_SCENES, PIXEL_RANGES, FAIL_MIN, FAIL_VERBS, bagDefects, itemDescIds, loadProject,
-  ambientDefects, overlayPropDefects, unretiredItems, ITEM_CHAPTER_SCENES, LAST_CHAPTER, AMBIENT_KINDS, AMBIENT_MAX_COUNT, AMBIENT_MAX_PER_SCENE, AMBIENT_ACTIONS,
+  ambientDefects, overlayPropDefects, pickedDefects, unretiredItems, ITEM_CHAPTER_SCENES, LAST_CHAPTER, AMBIENT_KINDS, AMBIENT_MAX_COUNT, AMBIENT_MAX_PER_SCENE, AMBIENT_ACTIONS,
 } from '../scripts/lint-scenes.mjs';
 
 /** Escena mínima válida: fondo, un área caminable de todo el suelo y el spawn dentro. */
@@ -790,8 +790,8 @@ test('A9.6: ninguna escena del juego tiene un glow rect mayor del 5 %', () => {
   assert.deepEqual(only(lintProject(p), 'n').map((f) => f.message), []);
 });
 
-// ── (p) pantallas (A2.19) ──
-test('A2.19 regla (p): say con screen a una pantalla que no existe = error; screens mal definidas = error', () => {
+// ── (q) pantallas (A2.19) ──
+test('A2.19 regla (q): say con screen a una pantalla que no existe = error; screens mal definidas = error', () => {
   const s = scene('room', {
     screens: {
       crt: { bounds: { x: 10, y: 10, w: 5, h: 5 }, color: 'green' },
@@ -808,7 +808,7 @@ test('A2.19 regla (p): say con screen a una pantalla que no existe = error; scre
       triggers: [],
     },
   });
-  const p = only(lintProject(project([s])), 'p');
+  const p = only(lintProject(project([s])), 'q');
   const errors = p.filter((f) => f.severity === 'error').map((f) => f.id).sort();
   assert.deepEqual(errors, ['monitor', 'rota', 'rota']);
   assert.equal(p.filter((f) => f.severity === 'warning').length, 1);
@@ -821,5 +821,49 @@ test('A2.19: SCREEN_COLORS del linter = los de ScreenText.ts; el juego no tiene 
   const names = [...block.matchAll(/^\s+(\w+): \{ fg/gm)].map((m) => m[1]);
   assert.deepEqual(names, SCREEN_COLORS);
   const proj = loadProject(new URL('..', import.meta.url).pathname);
-  assert.deepEqual(only(lintProject(proj), 'p').filter((f) => f.severity === 'error').map((f) => f.message), []);
+  assert.deepEqual(only(lintProject(proj), 'q').filter((f) => f.severity === 'error').map((f) => f.message), []);
+});
+
+// ── A3.11: lo que ya cogiste desaparece (regla p) ──
+const pickHs = (extra = {}) => ({
+  id: 'hs_mouse',
+  name: 'Old Mouse',
+  bounds: { x: 10, y: 10, w: 5, h: 5 },
+  scripts: { PICK: [{ op: 'ifFlag', flag: 'found_mouse', then: [], else: [{ op: 'addItem', id: 'mouse' }, { op: 'setFlag', flag: 'found_mouse', value: true }] }] },
+  ...extra,
+});
+
+test('A3.11 (p): un hotspot que da un objeto y no se oculta ni tiene excepción es error', () => {
+  const d = pickedDefects(pickHs());
+  assert.equal(d.length, 1);
+  assert.match(d[0], /no se oculta al cogerlo/);
+  assert.deepEqual(pickedDefects({ id: 'hs_x', scripts: { LOOK: [{ op: 'say', text: 'hi' }] } }), [], 'sin addItem no aplica');
+});
+
+test('A3.11 (p): oculto con su flag necesita overlay con esa flag o pickedNotDrawn', () => {
+  assert.match(pickedDefects(pickHs({ hideWhenFlag: 'found_mouse' }))[0], /no hay overlay/);
+  assert.deepEqual(pickedDefects(pickHs({ hideWhenFlag: 'found_mouse' }), [{ id: 'mouse_taken', flag: 'found_mouse' }]), []);
+  assert.deepEqual(pickedDefects(pickHs({ hideWhenFlag: 'found_mouse', pickedNotDrawn: 'el ratón no está dibujado aparte' })), []);
+  // la flag tiene que ponerla el propio hotspot
+  assert.match(pickedDefects(pickHs({ hideWhenFlag: 'otra' }), [{ id: 'o', flag: 'otra' }])[0], /ningún script de este hotspot pone esa flag/);
+  // hideWhen con la gramática when: vale la flag no negada
+  assert.deepEqual(pickedDefects(pickHs({ hideWhen: ['found_mouse', 'item:mouse'] }), [{ id: 'o', flag: 'found_mouse', invert: true }]), []);
+  assert.match(pickedDefects(pickHs({ hideWhen: 'found mouse' }))[0], /hideWhen mal escrito/);
+});
+
+test('A3.11 (p): keepAfterPick exige motivo', () => {
+  assert.deepEqual(pickedDefects(pickHs({ keepAfterPick: 'el buzón se queda: la carta iba dentro' })), []);
+  assert.match(pickedDefects(pickHs({ keepAfterPick: '' }))[0], /sin motivo/);
+});
+
+test('A3.11 (p): en las escenas reales todo hotspot con addItem se oculta o tiene excepción (salvo los pendientes de qa/lint-scenes-allow.json)', () => {
+  const root = new URL('..', import.meta.url).pathname;
+  const allow = JSON.parse(readFileSync(new URL('../qa/lint-scenes-allow.json', import.meta.url), 'utf8'));
+  const { findings } = applyPolicy(lintProject(loadProject(root)), { allow });
+  assert.deepEqual(findings.filter((f) => f.rule === 'p').map((f) => `${f.where}: ${f.message}`), []);
+  // el caso de Adrián (14-nov): el ratón del sótano se oculta y tiene su parche
+  const { scenes } = loadProject(root);
+  const mouse = scenes.basement.regions.hotspots.find((h) => h.id === 'hs_dead_mouse');
+  assert.equal(mouse.hideWhenFlag, 'found_broken_mouse');
+  assert.ok(scenes.basement.conditionalOverlays.some((co) => co.flag === 'found_broken_mouse' && !co.invert));
 });

@@ -59,6 +59,7 @@
     "hotspots": [
       {
         "id": "hs_main_computer",
+        "keepAfterPick": "El CRT se queda: la hoja impresa sale de la impresora (no está dibujada) y el disquete vuelve al bolsillo",
         "useResponses": {
           "_default": [
             "I look for somewhere to put it on the CRT. The CRT has no idea what that is.",
@@ -383,6 +384,7 @@
       },
       {
         "id": "hs_left_desk",
+        "keepAfterPick": "La mesa se queda: el disquete y el papel estaban debajo de los papeles/en el cajón (no dibujados); el PICK de después lo dice («Nothing left but receipts»)",
         "name": "Small Desk",
         "bounds": {
           "x": 47.8,
@@ -744,6 +746,7 @@
       },
       {
         "id": "hs_armchair",
+        "keepAfterPick": "El sillón se queda: la pegatina del mono aparece en el bolsillo al hablarle (secreto), no estaba dibujada",
         "name": "Old Armchair",
         "bounds": {
           "x": 39.7,
@@ -926,12 +929,14 @@
       },
       {
         "id": "hs_dead_mouse",
+        "hideWhenFlag": "found_broken_mouse",
+        "priority": 1,
         "name": "Old Mouse",
         "bounds": {
-          "x": 85,
-          "y": 58,
-          "w": 5,
-          "h": 12
+          "x": 61.6,
+          "y": 56.8,
+          "w": 2.4,
+          "h": 5.6
         },
         "scripts": {
           "LOOK": [
@@ -1763,6 +1768,21 @@
       "y": 78.2,
       "w": 11.2,
       "h": 11.1
+    }
+  ],
+  "conditionalOverlays": [
+    {
+      "id": "mouse_taken",
+      "sprite": "overlay_mouse_taken",
+      "format": "webp",
+      "bounds": {
+        "x": 61.7457,
+        "y": 57.2049,
+        "w": 2.0205,
+        "h": 5.0347
+      },
+      "flag": "found_broken_mouse",
+      "depth": 5
     }
   ],
   "onEnter": [

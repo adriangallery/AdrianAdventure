@@ -59,7 +59,21 @@
     "type": "anaglyph",
     "disableFlag": "memelab_clear_vision"
   },
-  "conditionalOverlays": [],
+  "conditionalOverlays": [
+    {
+      "id": "pepe_taken",
+      "sprite": "overlay_pepe_taken",
+      "format": "webp",
+      "bounds": {
+        "x": 78.7716,
+        "y": 51.7361,
+        "w": 3.7177,
+        "h": 5.3819
+      },
+      "flag": "found_pepememe",
+      "depth": 5
+    }
+  ],
   "screens": {
     "virus_screen": {"bounds": {"x": 23.8, "y": 46.4, "w": 4.6, "h": 12.0}, "color": "green", "label": "MEMELAB // VIRUS MONITOR"}
   },
@@ -435,6 +449,7 @@
       },
       {
         "id": "hs_pepememe",
+        "hideWhenFlag": "found_pepememe",
         "useResponses": {
           "pepememe": [
             "I put Pepe next to where Pepe was. Now there's a Pepe and the memory of a Pepe."

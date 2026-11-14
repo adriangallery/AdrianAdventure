@@ -781,6 +781,7 @@
       },
       {
         "id": "hs_adrian_note",
+        "hideWhenFlag": "found_adrian_note",
         "name": "Note on Table",
         "bounds": {
           "x": 64,
@@ -1077,6 +1078,7 @@
       },
       {
         "id": "hs_side_table",
+        "keepAfterPick": "La mesa auxiliar se queda con su vaso: el disquete de repuesto estaba debajo del vaso (no dibujado) y vuelve a salir si pierdes el primero",
         "name": "Metal Side Table",
         "bounds": {
           "x": 59.8,

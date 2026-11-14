@@ -126,6 +126,7 @@
       },
       {
         "id": "hs_server_rack_b",
+        "keepAfterPick": "El rack se queda: el chip quemado salía de dentro (no dibujado aparte)",
         "useResponses": {
           "burned_chip": [
             "I try to slot the burned chip back into the dead rack. They could be dead together. No. I need it."
@@ -219,6 +220,7 @@
       },
       {
         "id": "hs_terminal",
+        "keepAfterPick": "El terminal se queda: el log es una copia impresa de su pantalla",
         "useResponses": {
           "_default": [
             "The terminal only takes commands. That isn't a command.",
@@ -787,6 +789,7 @@
       },
       {
         "id": "hs_raised_floor",
+        "keepAfterPick": "El suelo técnico se queda: las gafas y el alargador estaban debajo de las baldosas; tiles_open/tile_lifted (flag tiles_opened) pintan el hueco",
         "useResponses": {
           "glasses_3d": [
             "I put the glasses back under the floor. No. Whoever hid them wanted them found. By me, apparently."

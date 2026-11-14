@@ -364,6 +364,7 @@
       },
       {
         "id": "hs_coat",
+        "keepAfterPick": "El abrigo de Penny se queda (se puede devolver el sobre): la tarjeta, el boli y el sobre iban en los bolsillos, no dibujados",
         "useResponses": {
           "_default": [
             "I'm not putting anything in Adrian's pockets. Penny would call it 'planting evidence'. She'd file it under 'planting'.",

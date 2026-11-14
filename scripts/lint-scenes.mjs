@@ -48,7 +48,13 @@
 //      junto a setFlag chapter_N_complete). No cuentan como uso las respuestas de fallo (useResponses/giveResponses),
 //      las combinaciones objeto + objeto de assets/config/global.json ni las menciones en src/ (descripciones). Un
 //      objeto con un uso en una escena sin capítulo no avisa (no se sabe cuándo deja de servir)
-//   p  pantallas (A2.19, src/systems/ScreenText.ts, ERROR): `screens.<id>` mal definida (bounds {x,y,w,h} en 0-100 con
+//   p  lo que ya cogiste desaparece (A3.11, ERROR): todo hotspot con un `addItem` en sus scripts necesita
+//      (1) ocultarse al cogerlo (`hideWhenFlag` o `hideWhen`, ver src/systems/HotspotVisibility.ts) con una flag que
+//      pone ese mismo hotspot, Y su overlay «sin objeto» (`conditionalOverlays[]` con esa misma flag; invertido si el
+//      objeto es el overlay) o `pickedNotDrawn: "<motivo>"` si el objeto no está dibujado aparte; o bien
+//      (2) `keepAfterPick: "<motivo>"`: el hotspot se queda a propósito (contenedor, mueble, fuente). `hideWhen` mal
+//      escrito también es error (pickedDefects)
+//   q  pantallas (A2.19, src/systems/ScreenText.ts, ERROR): `screens.<id>` mal definida (bounds {x,y,w,h} en 0-100 con
 //      ancho y alto > 0, color de SCREEN_COLORS) y `say`/`sayBrief` con `screen` a una pantalla que no está en la escena
 //      del script; `display`/`closeup` sin `screen` = aviso (no hacen nada)
 //
@@ -123,7 +129,8 @@ export const RULES = {
   m: 'props de puzle dibujados',
   n: 'cajas de luz',
   o: 'objetos que nunca se retiran',
-  p: 'pantallas',
+  p: 'lo cogido desaparece',
+  q: 'pantallas',
 };
 
 // A9.7: capítulo de cada escena para la regla (o). Copia de CHAPTERS[].scenes de src/systems/ChapterManager.ts
@@ -551,6 +558,43 @@ function walkBlocks(ops, base, fn, sayBefore = false) {
   });
 }
 
+/**
+ * A3.11 (regla p): defectos de un hotspot que da objetos (addItem) y no desaparece al cogerlos. `overlays` = los
+ * `conditionalOverlays` de su escena. Vacío si no da objetos o si está bien.
+ */
+export function pickedDefects(hs, overlays = []) {
+  const items = new Set();
+  const sets = new Set();
+  for (const ops of Object.values(hs.scripts ?? {})) {
+    walkOps(ops, '', (op) => {
+      if (op.op === 'addItem') items.add(op.id);
+      if (op.op === 'setFlag' && op.value !== false) sets.add(op.flag);
+    });
+  }
+  const out = [];
+  const { ok: conds, bad } = parseWhen(hs.hideWhen);
+  if (bad.length) out.push(`hideWhen mal escrito: ${bad.map(String).join(', ')}`);
+  if (!items.size) return out;
+  const what = [...items].join(', ');
+  const reason = (v) => typeof v === 'string' && v.trim().length >= 10;
+  if (hs.keepAfterPick !== undefined) {
+    if (!reason(hs.keepAfterPick)) out.push(`keepAfterPick sin motivo (da ${what}): explica por qué se queda`);
+    return out;
+  }
+  const hideFlags = [hs.hideWhenFlag, ...conds.filter((c) => c.kind === 'flag' && !c.negated).map((c) => c.name)].filter(Boolean);
+  if (!hideFlags.length) {
+    out.push(`da ${what} y no se oculta al cogerlo: falta hideWhenFlag/hideWhen con la flag «ya cogido» (o keepAfterPick con motivo)`);
+    return out;
+  }
+  if (!hideFlags.some((f) => sets.has(f))) out.push(`se oculta con ${hideFlags.join(' + ')}, pero ningún script de este hotspot pone esa flag`);
+  if (pickedNotDrawn(hs, reason)) return out;
+  if (!overlays.some((co) => hideFlags.includes(co.flag))) {
+    out.push(`se oculta con ${hideFlags.join(' + ')} pero no hay overlay «sin objeto» con esa flag (conditionalOverlays) ni pickedNotDrawn con motivo`);
+  }
+  return out;
+}
+const pickedNotDrawn = (hs, reason) => hs.pickedNotDrawn !== undefined && reason(hs.pickedNotDrawn);
+
 /** A2.6a: misma sintaxis que CONDITION_RE de src/systems/DialogueSystem.ts */
 export const CONDITION_RE = /^(!?)(?:(flag|item):)?([A-Za-z0-9_.-]+)$/;
 const conditionList = (when) => (when === undefined || when === null ? [] : Array.isArray(when) ? when : [when]);
@@ -713,6 +757,7 @@ export function lintProject(project) {
     for (const hs of s.regions?.hotspots ?? []) {
       note(reads, hs.hideWhenFlag, `${id}.${hs.id}.hideWhenFlag`);
       note(reads, hs.showWhenFlag, `${id}.${hs.id}.showWhenFlag`);
+      for (const cond of parseWhen(hs.hideWhen).ok) if (cond.kind === 'flag') note(reads, cond.name, `${id}.${hs.id}.hideWhen`);
     }
     for (const co of s.conditionalOverlays ?? []) note(reads, co.flag, `${id}.conditionalOverlays.${co.id}`);
     note(reads, s.cameraEffect?.disableFlag, `${id}.cameraEffect.disableFlag`);
@@ -1032,7 +1077,10 @@ export function lintProject(project) {
         const aContainsB = b.x >= a.x && b.y >= a.y && b.x + b.w <= a.x + a.w && b.y + b.h <= a.y + a.h;
         const bContainsA = a.x >= b.x && a.y >= b.y && a.x + a.w <= b.x + b.w && a.y + a.h <= b.y + b.h;
         const pair = `${A.id}+${B.id}`;
-        if (aContainsB) {
+        if (aContainsB && (B.priority ?? 0) > (A.priority ?? 0)) {
+          // A3.11: `priority` (SceneDataLoader.getHotspotAtPct): el de dentro gana aunque vaya después
+          push('g', 'warning', id, pair, `${id}.${pair}`, `${A.id} contiene a ${B.id}, que tiene más priority y se puede pulsar (revisa que sea intencionado)`);
+        } else if (aContainsB) {
           push('g', 'warning', id, pair, `${id}.${pair}`, `${A.id} contiene entero a ${B.id} y va antes en la lista: el clic nunca llega a ${B.id}`, { strong: true });
         } else if (bContainsA) {
           push('g', 'warning', id, pair, `${id}.${pair}`, `${B.id} contiene a ${A.id} (${A.id} va antes, así que se puede pulsar; revisa que sea intencionado)`, { strong: true });
@@ -1097,6 +1145,13 @@ export function lintProject(project) {
       for (const d of overlayPropDefects(co, s.regions?.hotspots ?? [], (f) => writes.has(f) || inCode(f))) {
         push('m', 'warning', id, co.id, `${id}.conditionalOverlays.${co.id}`, d);
       }
+    }
+  }
+
+  // ── (p) lo que ya cogiste desaparece (A3.11) ──
+  for (const [id, s] of Object.entries(scenes)) {
+    for (const hs of s.regions?.hotspots ?? []) {
+      for (const d of pickedDefects(hs, s.conditionalOverlays ?? [])) push('p', 'error', id, hs.id, `${id}.${hs.id}`, d);
     }
   }
 
@@ -1175,7 +1230,7 @@ export function lintProject(project) {
   // ── (p) pantallas (A2.19) ──
   for (const [id, s] of Object.entries(scenes)) {
     for (const [sid, def] of Object.entries(s.screens ?? {})) {
-      for (const m of screenDefErrors(sid, def)) push('p', 'error', id, sid, `${id}.screens.${sid}`, `pantalla: ${m}`);
+      for (const m of screenDefErrors(sid, def)) push('q', 'error', id, sid, `${id}.screens.${sid}`, `pantalla: ${m}`);
     }
   }
   for (const [id, s] of Object.entries(scenes)) {
@@ -1183,7 +1238,7 @@ export function lintProject(project) {
       for (const [nodeId, node] of Object.entries(tree?.nodes ?? {})) {
         if (node?.screen === undefined) continue;
         if (typeof node.screen !== 'string' || !Object.hasOwn(s.screens ?? {}, node.screen)) {
-          push('p', 'error', id, String(node.screen), `${id}.dialogues.${treeId}.${nodeId}`, `pantalla: «${String(node.screen)}» no está en screens de ${id}`);
+          push('q', 'error', id, String(node.screen), `${id}.dialogues.${treeId}.${nodeId}`, `pantalla: «${String(node.screen)}» no está en screens de ${id}`);
         }
       }
     }
@@ -1193,11 +1248,11 @@ export function lintProject(project) {
     walkOps(c.ops, `${c.scene}.${c.label}`, (op, p) => {
       if (op.op !== 'say' && op.op !== 'sayBrief') return;
       if (op.screen === undefined) {
-        if (op.display !== undefined || op.closeup !== undefined) push('p', 'warning', c.scene, 'screen', p, 'pantalla: `display`/`closeup` sin `screen` (no hacen nada)');
+        if (op.display !== undefined || op.closeup !== undefined) push('q', 'warning', c.scene, 'screen', p, 'pantalla: `display`/`closeup` sin `screen` (no hacen nada)');
         return;
       }
       if (typeof op.screen !== 'string' || !Object.hasOwn(screens, op.screen)) {
-        push('p', 'error', c.scene, String(op.screen), p, `pantalla: «${String(op.screen)}» no está en screens de ${c.scene}`);
+        push('q', 'error', c.scene, String(op.screen), p, `pantalla: «${String(op.screen)}» no está en screens de ${c.scene}`);
       }
     });
   }

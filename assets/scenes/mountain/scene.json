@@ -369,6 +369,7 @@
       },
       {
         "id": "hs_spring",
+        "keepAfterPick": "El manantial se queda: llenas una botella de agua",
         "useResponses": {
           "_default": [
             "I dip it in the spring. Now it's wet and cold. Like me, on this hike.",
