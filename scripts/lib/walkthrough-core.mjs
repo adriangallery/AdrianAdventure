@@ -156,7 +156,9 @@ export function checkAudio(want, st, before) {
   if (want.surface !== undefined && (a.footsteps?.surface ?? null) !== want.surface) f.push(`audio: superficie «${a.footsteps?.surface ?? null}», se esperaba «${want.surface}»`);
   if (want.footstepsMin !== undefined && (a.footsteps?.count ?? 0) < want.footstepsMin) f.push(`audio: ${a.footsteps?.count ?? 0} paso(s) en la escena, se esperaban al menos ${want.footstepsMin}`);
   const played = (key) => (a.sfx.counts[key] ?? 0) - (before?.audio?.sfx?.counts?.[key] ?? 0);
-  for (const key of want.sfxPlayed ?? []) if (played(key) <= 0) f.push(`audio: el efecto «${key}» no se pidió durante el paso (pedidos: ${Object.keys(a.sfx.counts).filter((k) => played(k) > 0).join(', ') || 'ninguno'})`);
+  // A8.3b: un stinger sintetizado (`stinger_x`) puede sonar en su versión grabada (`stinger_gen_x`): vale cualquiera de las dos.
+  const playedAny = (key) => played(key) + (key.startsWith('stinger_') && !key.startsWith('stinger_gen_') ? played(key.replace(/^stinger_/, 'stinger_gen_')) : 0);
+  for (const key of want.sfxPlayed ?? []) if (playedAny(key) <= 0) f.push(`audio: el efecto «${key}» no se pidió durante el paso (pedidos: ${Object.keys(a.sfx.counts).filter((k) => played(k) > 0).join(', ') || 'ninguno'})`);
   for (const key of want.sfxNotPlayed ?? []) if (played(key) > 0) f.push(`audio: el efecto «${key}» se pidió ${played(key)} vez/veces y no debía`);
   if (want.missing === false && a.sfx.missing.length) f.push(`audio: efectos pedidos que no estaban en caché: ${a.sfx.missing.join(', ')}`);
   if (want.muted !== undefined && a.muted !== want.muted) f.push(`audio: muted = ${a.muted}, se esperaba ${want.muted}`);

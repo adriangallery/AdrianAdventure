@@ -249,7 +249,8 @@
           ],
           "context_adherence": "high"
         }
-      ]
+      ],
+      "$comment_A8_3b": "A8.3b (14-nov 19:14-19:25): 3 reintentos sin el silencio inicial; se queda 8503 (Mi menor en los 4 niveles, n0 de 28 compases desde el compás 4). 8621: 1,4 s de silencio y tonalidad mezclada (n0 Mi mayor, n1-n2 Mi menor, n3 Re mayor). 8631: 1 compás de silencio y Mi mayor en los 4 (no pega con un tema de tensión). 8641: 0,48 s de silencio, n0 Mi menor y n1-n3 Mi mayor (no coherente). Los tres con «no silence, no fade-in» en el texto del bloque 0 y «silence» en negativos."
     }
   },
   "composition_plan": {

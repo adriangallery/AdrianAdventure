@@ -51,6 +51,47 @@ export function stingerFor(kind: StingerKind, musicKey: MusicKeyLike | null | un
   return { key, detune, ms };
 }
 
+/**
+ * A8.3b: stingers de EVENTO grabados (ElevenLabs, art/music/stingers/plan.json, cortados y normalizados a −15,5 LUFS,
+ * 192 kbps). Los sintetizados siguen siendo los puentes entre temas (MusicPlanner) y la reserva. `tonic`/`mode` son los
+ * MEDIDOS (analyze-music.mjs), no los pedidos; `mode: null` = sin tercera (vale para mayor y menor). No se integraron
+ * item (medido Si menor, ambiguo), puzzle_minor ni chapter_minor (salieron en Do mayor, no en La menor).
+ */
+export interface GenStinger {
+  ms: number;
+  tonic: number;
+  mode: 'major' | 'minor' | null;
+}
+export const STINGER_GEN: Record<string, GenStinger> = {
+  stinger_gen_puzzle_major: { ms: 4180, tonic: 7, mode: 'major' },
+  stinger_gen_chapter_major: { ms: 7262, tonic: 0, mode: 'major' },
+  stinger_gen_fail: { ms: 2873, tonic: 0, mode: null },
+};
+export const STINGER_GEN_KEYS = Object.keys(STINGER_GEN);
+/** Transposición máxima (semitonos) de un clip grabado: más allá cambia demasiado de velocidad y timbre (±12 %) */
+export const STINGER_GEN_MAX_SHIFT = 2;
+
+/**
+ * Clip de un EVENTO (objeto, puzle, capítulo, fallo): el grabado si lo hay y encaja con la tonalidad que suena (mismo modo
+ * y a ≤ STINGER_GEN_MAX_SHIFT semitonos) y no hay una voz hablando (duraría encima de la frase); si no, el sintetizado.
+ */
+export function eventStingerFor(
+  kind: StingerKind,
+  musicKey: MusicKeyLike | null | undefined,
+  opts: { voice?: boolean } = {},
+): { key: string; detune: number; ms: number } {
+  const synth = stingerFor(kind, musicKey);
+  if (opts.voice) return synth;
+  const genKey = synth.key.replace(/^stinger_/, 'stinger_gen_');
+  const gen = STINGER_GEN[genKey];
+  if (!gen) return synth;
+  if (musicKey && gen.mode && musicKey.mode !== gen.mode) return synth;
+  const semis = musicKey ? transposeSemitones(musicKey.tonic - gen.tonic) : 0;
+  if (Math.abs(semis) > STINGER_GEN_MAX_SHIFT) return synth;
+  const detune = semis * 100;
+  return { key: genKey, detune, ms: Math.round(gen.ms / Math.pow(2, detune / 1200)) };
+}
+
 export interface GoalSnapshot {
   chapter: number;
   /** Objetivos cumplidos del capítulo actual */
