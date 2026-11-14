@@ -768,6 +768,7 @@
       },
       {
         "id": "hs_trash_pile",
+        "keepAfterPick": "El montón de basura se queda: el pato estaba enterrado dentro; el PICK de después lo dice",
         "name": "Pile of Junk",
         "bounds": {
           "x": 0.7,

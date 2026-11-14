@@ -13,16 +13,20 @@ export class SceneDataLoader {
   getHotspots(): HotspotData[] { return this.data.regions.hotspots; }
   getTriggers(): TriggerData[] { return this.data.regions.triggers; }
 
-  /** Find hotspot at percentage coordinates (0-100) */
-  getHotspotAtPct(px: number, py: number): HotspotData | null {
+  /**
+   * Find hotspot at percentage coordinates (0-100). A3.11: con `isVisible`, los ocultos (lo ya cogido) no cuentan ni
+   * tapan al de debajo; gana el de mayor `priority` (por defecto 0) y, a igualdad, el primero de la lista.
+   */
+  getHotspotAtPct(px: number, py: number, isVisible: (hs: HotspotData) => boolean = () => true): HotspotData | null {
+    let best: HotspotData | null = null;
     for (const hs of this.data.regions.hotspots) {
       if (!hs.bounds) continue;
       const b = hs.bounds;
-      if (px >= b.x && px <= b.x + b.w && py >= b.y && py <= b.y + b.h) {
-        return hs;
+      if (px >= b.x && px <= b.x + b.w && py >= b.y && py <= b.y + b.h && isVisible(hs)) {
+        if (!best || (hs.priority ?? 0) > (best.priority ?? 0)) best = hs;
       }
     }
-    return null;
+    return best;
   }
 
   /**

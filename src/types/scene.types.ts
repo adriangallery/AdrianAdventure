@@ -309,6 +309,18 @@ export interface HotspotData {
   hideWhenFlag?: string;
   /** Hotspot only visible while this flag is set */
   showWhenFlag?: string;
+  /** A3.11: oculto si se cumplen TODAS estas condiciones (`flag`, `item:x`, `!…`; ver src/systems/HotspotVisibility.ts) */
+  hideWhen?: string | string[];
+  /** A3.11: si dos hotspots se solapan, gana el de mayor prioridad (por defecto 0; a igualdad, el primero de la lista) */
+  priority?: number;
+  /**
+   * A3.11: excepción a «lo que ya cogiste desaparece»: el hotspot da un objeto pero sigue en la escena a propósito
+   * (es un contenedor, un mueble o una fuente que se queda). Texto = motivo. El linter de escenas lo exige o la pareja
+   * ocultación + overlay.
+   */
+  keepAfterPick?: string;
+  /** A3.11: el hotspot se oculta al cogerlo, pero el objeto no está dibujado aparte en el fondo (no hay overlay). Motivo. */
+  pickedNotDrawn?: string;
   /** A2.2: punto (en %) al que anda el jugador antes de actuar; por defecto, el centro-abajo de `bounds` */
   walkTo?: { x: number; y: number };
   /** A2.2: orientación del jugador al llegar; por defecto, hacia el hotspot (ver src/systems/Facing.ts) */
