@@ -259,18 +259,6 @@
                   "id": "server_log"
                 },
                 {
-                  "op": "removeItem",
-                  "id": "ledger"
-                },
-                {
-                  "op": "removeItem",
-                  "id": "antenna"
-                },
-                {
-                  "op": "removeItem",
-                  "id": "server_log"
-                },
-                {
                   "op": "achievement",
                   "text": "Chapter 3 Complete: Below the Surface"
                 }
@@ -333,18 +321,6 @@
                     {
                       "op": "removeItem",
                       "id": "broken_mouse"
-                    },
-                    {
-                      "op": "removeItem",
-                      "id": "server_log"
-                    },
-                    {
-                      "op": "removeItem",
-                      "id": "ledger"
-                    },
-                    {
-                      "op": "removeItem",
-                      "id": "antenna"
                     },
                     {
                       "op": "removeItem",

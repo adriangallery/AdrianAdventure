@@ -960,18 +960,6 @@
                     {
                       "op": "removeItem",
                       "id": "mystery_envelope_opened"
-                    },
-                    {
-                      "op": "removeItem",
-                      "id": "vet_bill"
-                    },
-                    {
-                      "op": "removeItem",
-                      "id": "mystery_envelope"
-                    },
-                    {
-                      "op": "removeItem",
-                      "id": "mystery_envelope_opened"
                     }
                   ]
                 },
@@ -1020,18 +1008,6 @@
                                   "op": "setFlag",
                                   "flag": "chapter_2_complete",
                                   "value": true
-                                },
-                                {
-                                  "op": "removeItem",
-                                  "id": "vet_bill"
-                                },
-                                {
-                                  "op": "removeItem",
-                                  "id": "mystery_envelope"
-                                },
-                                {
-                                  "op": "removeItem",
-                                  "id": "mystery_envelope_opened"
                                 },
                                 {
                                   "op": "removeItem",
@@ -1213,18 +1189,6 @@
                     {
                       "op": "removeItem",
                       "id": "mystery_envelope_opened"
-                    },
-                    {
-                      "op": "removeItem",
-                      "id": "vet_bill"
-                    },
-                    {
-                      "op": "removeItem",
-                      "id": "mystery_envelope"
-                    },
-                    {
-                      "op": "removeItem",
-                      "id": "mystery_envelope_opened"
                     }
                   ]
                 },
@@ -1273,18 +1237,6 @@
                                   "op": "setFlag",
                                   "flag": "chapter_2_complete",
                                   "value": true
-                                },
-                                {
-                                  "op": "removeItem",
-                                  "id": "vet_bill"
-                                },
-                                {
-                                  "op": "removeItem",
-                                  "id": "mystery_envelope"
-                                },
-                                {
-                                  "op": "removeItem",
-                                  "id": "mystery_envelope_opened"
                                 },
                                 {
                                   "op": "removeItem",
@@ -1858,18 +1810,6 @@
                               "id": "mystery_envelope_opened"
                             },
                             {
-                              "op": "removeItem",
-                              "id": "vet_bill"
-                            },
-                            {
-                              "op": "removeItem",
-                              "id": "mystery_envelope"
-                            },
-                            {
-                              "op": "removeItem",
-                              "id": "mystery_envelope_opened"
-                            },
-                            {
                               "op": "achievement",
                               "text": "Chapter 2 Complete: The Receptionist"
                             }
@@ -2024,18 +1964,6 @@
                               "op": "setFlag",
                               "flag": "chapter_2_complete",
                               "value": true
-                            },
-                            {
-                              "op": "removeItem",
-                              "id": "vet_bill"
-                            },
-                            {
-                              "op": "removeItem",
-                              "id": "mystery_envelope"
-                            },
-                            {
-                              "op": "removeItem",
-                              "id": "mystery_envelope_opened"
                             },
                             {
                               "op": "removeItem",

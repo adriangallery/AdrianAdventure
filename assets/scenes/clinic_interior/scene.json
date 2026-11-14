@@ -1344,26 +1344,6 @@
         {
           "op": "removeItem",
           "id": "marked_map"
-        },
-        {
-          "op": "removeItem",
-          "id": "clinic_note"
-        },
-        {
-          "op": "removeItem",
-          "id": "energy_drink"
-        },
-        {
-          "op": "removeItem",
-          "id": "rubber_duck"
-        },
-        {
-          "op": "removeItem",
-          "id": "pepememe"
-        },
-        {
-          "op": "removeItem",
-          "id": "glasses_3d"
         }
       ],
       "onComplete_DISABLED": [
@@ -1477,26 +1457,6 @@
         {
           "op": "removeItem",
           "id": "marked_map"
-        },
-        {
-          "op": "removeItem",
-          "id": "clinic_note"
-        },
-        {
-          "op": "removeItem",
-          "id": "energy_drink"
-        },
-        {
-          "op": "removeItem",
-          "id": "rubber_duck"
-        },
-        {
-          "op": "removeItem",
-          "id": "pepememe"
-        },
-        {
-          "op": "removeItem",
-          "id": "glasses_3d"
         },
         {
           "op": "removeItem",
