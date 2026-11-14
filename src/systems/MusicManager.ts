@@ -44,6 +44,8 @@ const SOLVED_BARS = MUSIC_MAP.planner?.solvedBars ?? 4;
 const LOOKAHEAD_SEC = 0.35;
 const TICK_MS = 50;
 const KEEP_TRANSITIONS = 30;
+/** A8.3: segundos que tiene que durar el nivel pedido antes de programar el cambio (sin vaivenes por parpadeos del estado) */
+const LEVEL_SETTLE_SEC = 0.3;
 const NOTE_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
 const keyName = (k: MusicKey | null | undefined) => (k ? `${NOTE_NAMES[((k.tonic % 12) + 12) % 12]} ${k.mode}` : null);
 
@@ -652,6 +654,8 @@ export class MusicManager {
   }
 
   private wantLevel: number | null = null;
+  private wantTrack: string | null = null;
+  private wantSince = 0;
   private loadingLevel: string | null = null;
 
   /** A8.3: descarga un nivel del tema sin tocar lo que suena (nunca en silencio: AudioPolicy) */
@@ -671,6 +675,13 @@ export class MusicManager {
     const cur = levelOfTrack(MUSIC_MAP.themes, track.key);
     const want = this.wantedLevelTrack();
     if (!want || !cur) return;
+    // histéresis: el nivel pedido tiene que durar LEVEL_SETTLE_SEC (un parpadeo del estado no programa nada)
+    const now = this.context.currentTime;
+    if (want !== this.wantTrack) {
+      this.wantTrack = want;
+      this.wantSince = now;
+    }
+    if (now - this.wantSince < LEVEL_SETTLE_SEC) return;
     const sc = this.scheduled;
     if (sc) {
       // un cambio de escena pendiente manda; un cambio de nivel pendiente se respeta si va al nivel que toca

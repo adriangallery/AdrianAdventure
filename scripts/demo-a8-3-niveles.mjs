@@ -25,6 +25,7 @@ const problems = [];
 const notes = [];
 const CLIP = { x: 0, y: 0, width: 1280, height: 560 };
 const seenStates = new Set();
+const allTr = new Map();
 const layerPeaks = {};
 
 await demo.openScene('outside');
@@ -87,6 +88,8 @@ async function capture(label) {
     return q;
   }, label);
   if (m) {
+    // el registro de transiciones del motor es un anillo de 30: se acumula aquí para no perder las primeras
+    for (const t of m.transitions) allTr.set(`${t.requestedAt}|${t.to}`, t);
     seenStates.add(`${m.place}:${m.state}`);
     for (const [k, v] of Object.entries(m.layers)) layerPeaks[`${m.place}:${k}`] = Math.max(layerPeaks[`${m.place}:${k}`] ?? 0, v);
   }
@@ -188,7 +191,8 @@ await demo.end();
 const NOTE = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
 const semis = (t) => { const x = ((t % 12) + 12) % 12; return x <= 5 ? x : x - 12; };
 const sameSet = (a, b) => (a.mode === 'major' ? a.tonic : (a.tonic + 3) % 12) === (b.mode === 'major' ? b.tonic : (b.tonic + 3) % 12);
-const trs = final?.transitions ?? [];
+for (const t of final?.transitions ?? []) allTr.set(`${t.requestedAt}|${t.to}`, t);
+const trs = [...allTr.values()].sort((a, b) => a.requestedAt - b.requestedAt);
 writeFileSync(join(demo.dir, 'transitions.json'), JSON.stringify(trs, null, 2));
 console.log('transiciones (horas en s de AudioContext.currentTime):');
 for (const t of trs) {
