@@ -279,6 +279,10 @@
             {
               "op": "say",
               "text": "The clinic. Up the mountain path outside the lab. Time to go."
+            },
+            {
+              "op": "say",
+              "text": "I leave behind what I've already used up. Lighter pockets. Same heavy bags."
             }
           ],
           "else": [
@@ -347,6 +351,10 @@
                 {
                   "op": "say",
                   "text": "The clinic. Up the mountain path outside the lab. Time to go."
+                },
+                {
+                  "op": "say",
+                  "text": "I leave behind what I've already used up. Lighter pockets. Same heavy bags."
                 }
               ],
               "else": [

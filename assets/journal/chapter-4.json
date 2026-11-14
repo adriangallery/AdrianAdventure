@@ -30,6 +30,14 @@
   ],
   "notes": [
     {
+      "id": "n4_badge",
+      "text": "Badge available — connect a wallet to keep it (optional).",
+      "shownWhen": [
+        "chapter_4_complete",
+        "!wallet_connected"
+      ]
+    },
+    {
       "id": "n4_vault",
       "text": "The Ledger opened Adrian's vault on the CRT. There's a map to something called 'Patient Zero Clinic'.",
       "shownWhen": "computer_unlocked"

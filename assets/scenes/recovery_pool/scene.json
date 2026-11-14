@@ -1304,6 +1304,14 @@
               "next": "i3"
             },
             {
+              "text": "The Doc says you respect holders.",
+              "next": "vip_round",
+              "when": [
+                "satoshi_vip",
+                "!beat_chad"
+              ]
+            },
+            {
               "text": "What do I get if I win?",
               "next": "prize"
             },
@@ -1313,6 +1321,11 @@
               "exit": true
             }
           ]
+        },
+        "vip_round": {
+          "speaker": "Chad",
+          "text": "A holder? Respect, bro. We skip the warm-up. Final round, right now.",
+          "next": "i7"
         },
         "prize": {
           "speaker": "Chad",

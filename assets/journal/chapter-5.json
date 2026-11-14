@@ -20,7 +20,7 @@
       "id": "p5_door",
       "doneWhen": "chapter_5_intro_shown",
       "hints": [
-        "The doctor said yes. The door didn't.",
+        "The doctor said yes. The door didn't. The monitor in there reads wallets. Bring yours, or don't.",
         "Two locks. You have a key from Adrian's office.",
         "Bring the trading terminal key. Use the treatment door."
       ]

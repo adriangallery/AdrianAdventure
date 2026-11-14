@@ -25,6 +25,14 @@
   ],
   "notes": [
     {
+      "id": "n3_badge",
+      "text": "Badge available — connect a wallet to keep it (optional).",
+      "shownWhen": [
+        "chapter_3_complete",
+        "!wallet_connected"
+      ]
+    },
+    {
       "id": "n3_crt",
       "text": "Basement CRT: plug a metre short of the socket. Ledger PIN hint: 'my best friend's birthday. DDMM.'",
       "shownWhen": "basement_unlocked"

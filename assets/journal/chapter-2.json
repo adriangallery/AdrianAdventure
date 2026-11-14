@@ -8,6 +8,7 @@
     { "id": "g2_blink", "text": "Find out what's blinking down below.", "doneWhen": "chapter_2_complete" }
   ],
   "notes": [
+    { "id": "n2_badge", "text": "Badge available — connect a wallet to keep it (optional).", "shownWhen": ["chapter_2_complete", "!wallet_connected"] },
     { "id": "n2_penny", "text": "Penny guards Adrian's coat. She doesn't read other people's mail. Unless it's marked confidential.", "shownWhen": "penny_mail_hint" },
     { "id": "n2_keycard", "text": "Adrian's coat: an admin keycard with his face on it, and a Mt. Gox pen that won't stop leaking. Penny never saw a thing.", "shownWhen": "found_keycard" },
     { "id": "n2_receptionist", "text": "Penny panicked at 'Patient Zero'. 'Basement-level clearance.' Something downstairs keeps blinking. Noted. Underlined.", "shownWhen": "receptionist_mentioned_pz" },

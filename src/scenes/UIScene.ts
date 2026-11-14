@@ -509,8 +509,12 @@ export class UIScene extends Phaser.Scene {
   }
 
   /** A9.3: caja de la franja de logro visible (null si no hay) y logros en cola, para la demo. */
-  getAchievementStatus(): { rect: Rect | null; queued: number } {
-    return { rect: this.cinematicOverlay?.lastAchievementRect ?? null, queued: this.achievementQueue.length };
+  getAchievementStatus(): { rect: Rect | null; queued: number; textRects: Rect[] } {
+    return {
+      rect: this.cinematicOverlay?.lastAchievementRect ?? null,
+      queued: this.achievementQueue.length,
+      textRects: this.cinematicOverlay?.lastAchievementTextRects ?? [],
+    };
   }
 
   /** A2.9: el diario (GameScene lo abre y cierra con J/Esc; la API de QA lo lee). */
