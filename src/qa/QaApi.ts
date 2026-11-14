@@ -358,6 +358,13 @@ export function installQa(game: Phaser.Game): void {
   let dashboardHoldMs = 400;
   /** A2.19: seq de pantalla al empezar el último paso (lastScreens = las de después) */
   let screenSeqBase = 0;
+  /** seq de pantalla en la última lectura de state(): una línea que sale al lanzar la acción, ANTES de settle(), también cuenta para el paso */
+  let screenSeqSeen = 0;
+  const readScreens = (): ScreenQaState['log'] => {
+    const q = gs().getScreenQa();
+    screenSeqSeen = q.seq;
+    return q.log.filter((e) => e.seq > screenSeqBase);
+  };
   const note = (line: string) => {
     logTotal++;
     log.push(line);
@@ -436,7 +443,7 @@ export function installQa(game: Phaser.Game): void {
     const queue = [...choices];
     lastChoices = null;
     lastDashboard = null;
-    screenSeqBase = inGame() ? gs().getScreenQa().seq : 0;
+    screenSeqBase = inGame() ? Math.min(screenSeqSeen, gs().getScreenQa().seq) : 0;
     const t0 = Date.now();
     let calm = 0;
     while (calm < CALM_POLLS) {
@@ -603,7 +610,7 @@ export function installQa(game: Phaser.Game): void {
       dashboard: playing ? gs().getDashboardQa() : { open: false, phase: null, rows: [], status: null, tip: null },
       lastDashboard: lastDashboard ? { ...lastDashboard, rows: [...lastDashboard.rows] } : null,
       screen: playing ? gs().getScreenQa() : null,
-      lastScreens: playing ? gs().getScreenQa().log.filter((e) => e.seq > screenSeqBase) : [],
+      lastScreens: playing ? readScreens() : [],
       web3Mock: (() => { const m = getWeb3Mock(); return m === undefined ? 'off' : m === null ? 'none' : m.address; })(),
       log: [...log],
       logTotal,
