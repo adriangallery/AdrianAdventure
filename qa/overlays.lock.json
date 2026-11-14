@@ -77,6 +77,14 @@
       "background": "de558bc2c109c3dd939f3873492516bccd38c62f72d8c7e085fa8e1e996c8446",
       "overlay": "2757e7d072b6ec1cb92024d238d3d51ec15149ea4d2010d2d9bb5001b55da7dc"
     },
+    "upstairs/desk_drawer_locked": {
+      "background": "f6e9f3443f9bd425a3b83e8a7e7a1d342b7bed18a0e259cfa59fc3c39e3bdeed",
+      "overlay": "eb6c5c46f33588615e7fba5adef4bcd247b7154930f299892afe2040b66d199b"
+    },
+    "upstairs/desk_drawer_open": {
+      "background": "f6e9f3443f9bd425a3b83e8a7e7a1d342b7bed18a0e259cfa59fc3c39e3bdeed",
+      "overlay": "71f30cff2a1d2fef3f4dd6f9adc18c0a9d4f810d554ae0c071180236e5ec249c"
+    },
     "upstairs/no_energy_drink": {
       "background": "f6e9f3443f9bd425a3b83e8a7e7a1d342b7bed18a0e259cfa59fc3c39e3bdeed",
       "overlay": "ac1701a2614200e21c82d02e1b3e94f072f4ffb347cc8880e07f990b11d0c9f6"

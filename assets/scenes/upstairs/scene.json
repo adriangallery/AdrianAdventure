@@ -1529,6 +1529,33 @@
       "flag": "has_energy_drink",
       "depth": 16,
       "invert": true
+    },
+    {
+      "id": "desk_drawer_locked",
+      "sprite": "overlay_drawer_locked",
+      "format": "webp",
+      "bounds": {
+        "x": 59.375,
+        "y": 69.4444,
+        "w": 4.2295,
+        "h": 4.9479
+      },
+      "flag": "found_terminal_key",
+      "invert": true,
+      "depth": 5
+    },
+    {
+      "id": "desk_drawer_open",
+      "sprite": "overlay_drawer_open",
+      "format": "webp",
+      "bounds": {
+        "x": 58.8901,
+        "y": 68.316,
+        "w": 5.0377,
+        "h": 8.8542
+      },
+      "flag": "found_terminal_key",
+      "depth": 5
     }
   ],
   "ambient": [
