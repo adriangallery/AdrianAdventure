@@ -1012,6 +1012,13 @@
               "value": true
             },
             {
+              "op": "actorMove",
+              "actor": "player",
+              "x": 70,
+              "y": 93,
+              "wait": false
+            },
+            {
               "op": "cameraPan",
               "x": 78,
               "y": 28,
@@ -1021,6 +1028,12 @@
               "op": "say",
               "speaker": "Narrator",
               "text": "The X on the map led up a mountain. To a clinic."
+            },
+            {
+              "op": "actorMove",
+              "actor": "player",
+              "x": 70,
+              "y": 93
             },
             {
               "op": "cameraPan",
