@@ -103,6 +103,14 @@ test('fase 3: umbral de occlusion relativo a lo que la referencia puede tapar (g
   assert.equal(occ({ ...behind, cover: { hs_bush: 0 }, coverMax: { hs_bush: 0.01 } }), 0);
 });
 
+test('fase 3: las referencias declaradas excepción no siembran posiciones', () => {
+  const scene = { walkableAreas: [{ x: 0, y: 80, w: 100, h: 20 }] };
+  const box = { x: 40, y: 50, w: 10, h: 30 };
+  const ids = (refs) => sweepPoints(scene, { refs }).filter((p) => p.kind === 'ref').map((p) => p.id);
+  assert.equal(ids([{ id: 'a', box, baseY: 85 }]).length, 3);
+  assert.deepEqual(ids([{ id: 'a', box, baseY: 85, exception: 'dibujo sobredimensionado' }]), []);
+});
+
 test('base de fallos conocidos: solo cuentan los nuevos', () => {
   const pos = { kind: 'grid', id: 'g1', failures: [{ type: 'feet' }, { type: 'scale', ref: 'hs_door' }] };
   const results = [{ scene: 's', positions: [pos] }];

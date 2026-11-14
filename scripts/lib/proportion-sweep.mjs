@@ -76,7 +76,8 @@ export function sweepPoints(scene, refs, { step = 8, stepY = 3 } = {}) {
   }
   for (const n of scene.npcs || []) add(n.walkTo || nearestWalkable(scene, n.position.x, n.position.y), 'arrival', n.id);
   for (const r of refs?.refs || []) {
-    if (!r.box) continue;
+    // A2.17 fase 3: una referencia declarada `exception` es solo informativa: no siembra posiciones a su alrededor
+    if (!r.box || r.exception) continue;
     add(nearestWalkable(scene, r.box.x - 2, r.baseY), 'ref', `${r.id}:izq`);
     add(nearestWalkable(scene, r.box.x + r.box.w + 2, r.baseY), 'ref', `${r.id}:der`);
     add(nearestWalkable(scene, r.box.x + r.box.w / 2, r.baseY - 1), 'ref', `${r.id}:detrás`);
