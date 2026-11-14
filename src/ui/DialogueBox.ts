@@ -3,16 +3,19 @@ import { charDelayMs } from '@/systems/Settings';
 import { TWP, FONT, SPEECH_COLORS } from '@/config/theme';
 import type { SceneData } from '@/types/scene.types';
 import {
-  isAnchorOnScreen, placeSpeech, speakerKind, speechColor, speechFontSize, speechStroke, speechWrapWidth, TOP_UI_INSET,
-  type HeadAnchor, type SpeakerKind, type SpeechMode,
+  isAnchorOnScreen, placeCaption, placeSpeech, speakerKind, speechColor, speechFontSize, speechStroke, speechWrapWidth, TOP_UI_INSET,
+  type CaptionRect, type HeadAnchor, type SpeakerKind, type SpeechMode,
 } from './speechLayout';
 
 // Velocidad del texto: ver src/systems/Settings.ts (antes fija a 25 ms por carácter)
 
 /** A2.3: cabeza en pantalla de quien habla ('player' o nombre/id de la NPC); null si no está o no se ve. */
-/** A2.19: subtítulo discreto de una línea que ya sale en su pantalla */
-const DISCREET_SCALE = 0.8;
-const DISCREET_ALPHA = 0.78;
+/**
+ * A2.19: subtítulo discreto de una línea que ya sale en su pantalla. A2.19b: más pequeño (70 %, sin bajar de 9 px), más
+ * tenue, sin nombre y abajo (placeCaption: sin pisar la pantalla ni a Dex). Es apoyo de accesibilidad y de la voz.
+ */
+const DISCREET_SCALE = 0.7;
+const DISCREET_ALPHA = 0.62;
 
 export type SpeakerHeadProvider = (who: string) => (HeadAnchor & { id: string }) | null;
 
@@ -194,7 +197,8 @@ export class DialogueBox {
     const size = this.fontSize();
     this.text.setFontSize(`${size.body}px`).setStroke(TWP.DIALOGUE_STROKE, speechStroke(size.body)).setColor(color);
     this.text.setAlpha(this.discreet ? DISCREET_ALPHA : 1);
-    this.speakerText.setFontSize(`${size.speaker}px`).setText(kind !== 'player' ? speaker ?? '' : '');
+    // A2.19b: el discreto va sin nombre (la pantalla ya dice quién «habla»)
+    this.speakerText.setFontSize(`${size.speaker}px`).setText(kind !== 'player' && !this.discreet ? speaker ?? '' : '');
     this.current = { speaker: speaker ?? null, kind, who, color, mode: null, head: null, wrap: 0, narrow: 0, w: 0, h: 0 };
     this.layout();
   }
@@ -217,6 +221,10 @@ export class DialogueBox {
     const cur = this.current;
     if (!this.visible || !cur || this.destroyed || !this.text.active) return;
     const vp = { width: this.scene.scale.width, height: this.scene.scale.height };
+    if (this.discreet) {
+      this.layoutCaption(cur, vp);
+      return;
+    }
     const head = cur.who ? this.headOf?.(cur.who) ?? null : null;
 
     // Fuera de pantalla o sin cabeza: arriba-centro (con su ancho de wrap); se vuelve a medir solo si cambia
@@ -254,6 +262,23 @@ export class DialogueBox {
       this.speakerText.setVisible(false);
       this.text.setPosition(p.x, y);
     }
+  }
+
+  /** A2.19b: subtítulo discreto abajo (o arriba si abajo pisa la pantalla o a Dex), con el ancho de wrap de arriba-centro */
+  private layoutCaption(cur: Current, vp: { width: number; height: number }): void {
+    const wrap = speechWrapWidth(vp, 'top');
+    if (cur.wrap !== wrap) this.measure(wrap);
+    const band = (this.scene.registry.get('cinematicBand') as { top: number; bottom: number } | null | undefined) ?? null;
+    // En cinemática, en la franja inferior como todo subtítulo (ya no tapa la escena)
+    const panelH = (this.scene.registry.get('scummPanelHeight') as number | undefined) ?? 0;
+    const avoid = (this.scene.registry.get('screenCaptionAvoid') as CaptionRect[] | undefined) ?? [];
+    const p = band
+      ? placeSpeech({ head: null, vp, textW: cur.w, textH: cur.h, band })
+      : placeCaption({ vp, textW: cur.w, textH: cur.h, bottomInset: panelH, topInset: TOP_UI_INSET, avoid });
+    cur.mode = p.mode;
+    cur.head = null;
+    this.speakerText.setVisible(false);
+    this.text.setPosition(Math.round(p.x), Math.round(p.y));
   }
 
   /** A2.3 (QA): texto en pantalla y su colocación; null si no hay ninguno. */

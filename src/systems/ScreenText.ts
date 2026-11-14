@@ -45,14 +45,16 @@ export const CHAR_ASPECT = 1;
 export const LINE_HEIGHT = 1.35;
 /** Margen interior de la pantalla, en fracción del lado menor */
 export const SCREEN_PAD = 0.08;
-/** Letra mínima que se lee en el VIEWPORT (px CSS) en la pantalla de la escena; por debajo, primer plano */
-export const MIN_READABLE_PX = 7;
+/**
+ * Letra mínima que se lee en el VIEWPORT (px CSS) en la pantalla de la escena; por debajo, primer plano.
+ * A2.19b: 11 px efectivos (antes 7: en 390×844 el CRT del basement se tecleaba a 8 px y solo se leía por el subtítulo).
+ * Es la misma letra mínima del primer plano.
+ */
+export const MIN_READABLE_PX = 11;
 /** Letra máxima dentro de la pantalla (px de pantalla): un texto corto no se pinta gigante */
 export const MAX_SCREEN_PX = 14;
 /** Columnas mínimas para que el texto se lea en la caja (menos = una palabra por fila) */
 export const MIN_COLS = 10;
-/** Más filas que esto (maquetado a la letra mínima) = texto largo: primer plano */
-export const CLOSEUP_LINES = 3;
 /** Texto que se considera largo siempre (Términos, logs): primer plano */
 export const LONG_TEXT_CHARS = 220;
 
@@ -158,14 +160,28 @@ export function typedLength(lines: string[]): number {
   return lines.reduce((n, l) => n + l.length, 0) + Math.max(0, lines.length - 1);
 }
 
-export type CloseupReason = 'forced' | 'long' | 'small' | 'closeupOnly';
+export type CloseupReason = 'forced' | 'long' | 'small' | 'closeupOnly' | 'cropped';
+
+export interface ViewRect { x: number; y: number; w: number; h: number }
+
+/**
+ * A2.19b: ¿la caja de la pantalla (px del viewport) cabe ENTERA en lo que enseña la cámara (px del viewport)? `tol` px de
+ * margen por redondeo. Si no cabe, el texto tecleado dentro queda cortado: primer plano (`cropped`).
+ */
+export function screenFitsView(screen: ViewRect, view: ViewRect, tol = 1): boolean {
+  return screen.x >= view.x - tol && screen.y >= view.y - tol
+    && screen.x + screen.w <= view.x + view.w + tol && screen.y + screen.h <= view.y + view.h + tol;
+}
 
 /**
  * ¿Primer plano? `screenPx` = tamaño de la caja de la pantalla tal como se ve en el viewport (px CSS: caja del mundo ×
  * zoom de la cámara). Devuelve el motivo o null (se lee en la pantalla de la escena).
  * - forced: el script lo pide (`closeup: true`); closeupOnly: la pantalla no está en la escena (un móvil en la mano).
- * - long: más de LONG_TEXT_CHARS, o más de CLOSEUP_LINES filas a la letra mínima legible.
+ * - long: más de LONG_TEXT_CHARS, o más filas de las que caben en la caja a la letra mínima legible.
  * - small: a la letra mínima legible no caben MIN_COLS columnas ni 2 filas (390×844 con la pantalla del fondo diminuta).
+ * - cropped (A2.19b): la cámara corta la pantalla (no cabe entera en el viewport): el texto de dentro no se leería.
+ * A2.19b: con la letra mínima a 11 px, si el texto no cabe entero a 11 px (o más filas de las que caben) = `long`: así
+ * lo que se teclea en la escena nunca baja de 11 px efectivos (ScreenTextLayer usa la misma mínima).
  */
 export function closeupReason(input: {
   text: string;
@@ -173,9 +189,13 @@ export function closeupReason(input: {
   forced?: boolean;
   closeupOnly?: boolean;
   minReadablePx?: number;
+  /** A2.19b: la caja de la pantalla y lo que enseña la cámara, en px del viewport; si no cabe entera: `cropped` */
+  screenRect?: ViewRect;
+  view?: ViewRect;
 }): CloseupReason | null {
   if (input.forced) return 'forced';
   if (input.closeupOnly) return 'closeupOnly';
+  if (input.screenRect && input.view && !screenFitsView(input.screenRect, input.view)) return 'cropped';
   if (input.text.length > LONG_TEXT_CHARS) return 'long';
   const min = input.minReadablePx ?? MIN_READABLE_PX;
   const pad = Math.min(input.screenPx.w, input.screenPx.h) * SCREEN_PAD;
@@ -183,7 +203,7 @@ export function closeupReason(input: {
   const rows = Math.floor((input.screenPx.h - pad * 2) / (min * LINE_HEIGHT));
   if (cols < MIN_COLS || rows < 2) return 'small';
   const l = layoutScreen(input.text, input.screenPx, { minPx: min, maxPx: min });
-  if (l.lines.length > Math.max(CLOSEUP_LINES, l.rows)) return 'long';
+  if (l.overflow) return 'long';
   return null;
 }
 

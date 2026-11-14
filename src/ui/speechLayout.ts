@@ -17,7 +17,8 @@
  */
 
 /** A2.10: `band` = subtítulo en la franja inferior del letterbox (cinemática y quien habla no se ve). */
-export type SpeechMode = 'head' | 'top' | 'band';
+/** A2.19b: 'caption' = subtítulo discreto de una línea que ya se lee en la pantalla de la máquina */
+export type SpeechMode = 'head' | 'top' | 'band' | 'caption';
 
 /** Quién habla, resuelto a partir del `speaker` del texto. */
 export type SpeakerKind = 'player' | 'npc' | 'narrator';
@@ -269,4 +270,42 @@ export function speechColor(o: ColorOptions): string {
     if (own) return own;
   }
   return map.get(`_${o.kind}`) ?? o.fallback ?? '#f0e8d8';
+}
+
+/** A2.19b: rectángulo en px del viewport (pantalla de la máquina, cuerpo de Dex) */
+export interface CaptionRect { x: number; y: number; w: number; h: number }
+
+const overlapArea = (a: CaptionRect, b: CaptionRect): number => {
+  const w = Math.min(a.x + a.w, b.x + b.w) - Math.max(a.x, b.x);
+  const h = Math.min(a.y + a.h, b.y + b.h) - Math.max(a.y, b.y);
+  return w > 0 && h > 0 ? w * h : 0;
+};
+
+/**
+ * A2.19b: subtítulo discreto (la línea ya se teclea dentro de la pantalla de la máquina): abajo, justo encima del panel,
+ * centrado; si ahí pisa la pantalla o a Dex (`avoid`), arriba (bajo los botones); si pisa en los dos sitios, donde pise
+ * menos. Devuelve el borde superior del bloque y su centro horizontal.
+ */
+export function placeCaption(o: {
+  vp: Viewport;
+  textW: number;
+  textH: number;
+  bottomInset?: number;
+  topInset?: number;
+  avoid?: CaptionRect[];
+  margin?: number;
+}): SpeechPlacement {
+  const margin = o.margin ?? SPEECH_MARGIN;
+  const none = { left: false, right: false, top: false, bottom: false };
+  const x = o.vp.width / 2;
+  const bottomY = o.vp.height - (o.bottomInset ?? 0) - margin - o.textH;
+  const topYv = (o.topInset ?? 0) + margin;
+  const cost = (y: number) => {
+    const block = { x: x - o.textW / 2, y, w: o.textW, h: o.textH };
+    return (o.avoid ?? []).reduce((n, r) => n + overlapArea(block, r), 0);
+  };
+  const cb = cost(bottomY);
+  if (cb === 0) return { mode: 'caption', x, y: bottomY, clamped: none };
+  const ct = cost(topYv);
+  return { mode: 'caption', x, y: ct < cb ? topYv : bottomY, clamped: none };
 }
