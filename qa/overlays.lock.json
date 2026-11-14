@@ -1,6 +1,10 @@
 {
   "_doc": "A9.16: sha256 del background.webp de la escena y del overlay con los que se validó cada conditionalOverlay. Si cambia el fondo, crop-overlays --check falla hasta revisar el overlay encima del fondo nuevo (o regenerarlo) y ejecutar node scripts/crop-overlays.mjs --update-lock.",
   "overlays": {
+    "basement/mouse_taken": {
+      "background": "7ba92507eb108052a4057bfb6ebb4841d547b5bc26096c475f39ce239416d57e",
+      "overlay": "ad25fd8a016d6ff861399cdb6867f7e30c2fbe05e4c10cfb01f04b63678094e6"
+    },
     "clinic_interior/no_photo": {
       "background": "29a91a812dd137f95ef4949f0a4c58a44ab8e758d79a695733a8c5a65962b8ae",
       "overlay": "d10264b8e44c3ee221ecfc15e35261260fb4070c27d936c36fd35b9f9c4821ef"

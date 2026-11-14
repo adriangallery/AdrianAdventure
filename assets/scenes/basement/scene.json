@@ -911,12 +911,14 @@
       },
       {
         "id": "hs_dead_mouse",
+        "hideWhenFlag": "found_broken_mouse",
+        "priority": 1,
         "name": "Old Mouse",
         "bounds": {
-          "x": 85,
-          "y": 58,
-          "w": 5,
-          "h": 12
+          "x": 61.6,
+          "y": 56.8,
+          "w": 2.4,
+          "h": 5.6
         },
         "scripts": {
           "LOOK": [
@@ -1731,6 +1733,21 @@
       "y": 78.2,
       "w": 11.2,
       "h": 11.1
+    }
+  ],
+  "conditionalOverlays": [
+    {
+      "id": "mouse_taken",
+      "sprite": "overlay_mouse_taken",
+      "format": "webp",
+      "bounds": {
+        "x": 61.7457,
+        "y": 57.2049,
+        "w": 2.0205,
+        "h": 5.0347
+      },
+      "flag": "found_broken_mouse",
+      "depth": 5
     }
   ],
   "onEnter": [
