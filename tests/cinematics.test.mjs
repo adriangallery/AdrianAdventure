@@ -101,6 +101,46 @@ test('aperturas (A3.2): saltadas desde el principio dejan flags, Dex y la cámar
   assert.equal(C.TITLE_CARD_AUTO_MS > 0, true);
 });
 
+// A9.2: las entradas de los cap. 3, 4 y 5 son cinemáticas como las de A3.2. Saltadas desde el primer op dejan la flag
+// del capítulo y no mueven a Dex (sin actorMove: queda donde entró, vista entera o saltada). Ninguna op `narrative` en
+// las cuatro escenas; ≤ 2 frases habladas; tarjeta del capítulo; la copia del trigger (basement, mountain) es idéntica.
+test('entradas de los cap. 3–5 (A9.2): cinemáticas saltables al mismo estado, sin narrative', async () => {
+  const fs = await import('node:fs');
+  const scene = (id) => JSON.parse(fs.readFileSync(new URL(`../assets/scenes/${id}/scene.json`, import.meta.url), 'utf8'));
+  const hasNarrative = (v) => Array.isArray(v) ? v.some(hasNarrative)
+    : v && typeof v === 'object' ? v.op === 'narrative' || Object.values(v).some(hasNarrative) : false;
+  for (const id of ['basement', 'mountain', 'clinic_interior', 'treatment_room']) {
+    assert.ok(!hasNarrative(scene(id)), `${id}: sin op narrative`);
+  }
+  const cases = [
+    { id: 'basement', flag: 'chapter_3_intro_shown', chapter: 'CHAPTER 3', trigger: 'tr_chapter3_intro', pick: (ops) => ops },
+    { id: 'mountain', flag: 'chapter_4_intro_shown', chapter: 'CHAPTER 4', trigger: 'tr_chapter4_intro', pick: (ops) => ops[0].then },
+    { id: 'treatment_room', flag: 'chapter_5_intro_shown', chapter: 'CHAPTER 5', pick: (ops) => ops },
+  ];
+  for (const k of cases) {
+    const s = scene(k.id);
+    const first = s.onEnter[0];
+    assert.equal(first.op, 'ifFlag');
+    assert.equal(first.flag, k.flag);
+    const ops = k.pick(first.else);
+    assert.equal(C.cinematicModeOf(ops[0]), 'start', `${k.id}: empieza con cinematicStart`);
+    assert.equal(C.cinematicModeOf(ops.at(-1)), 'end', `${k.id}: acaba con cinematicEnd`);
+    assert.deepEqual(ops[1], { op: 'setFlag', flag: k.flag, value: true }, `${k.id}: la flag justo al abrir`);
+    const plan = C.planSkip(ops, () => undefined, 1);
+    assert.ok(plan.ended && !plan.stopped);
+    assert.deepEqual(plan.applied.filter((a) => a.op.op === 'setFlag').map((a) => a.op.flag), [k.flag]);
+    assert.ok(!ops.some((o) => o.op === 'actorMove' || o.op === 'actorTeleport'), `${k.id}: Dex queda donde entró`);
+    assert.ok(ops.filter((o) => o.op === 'say').length <= 2, `${k.id}: ≤ 2 frases`);
+    assert.equal(ops.filter((o) => o.op === 'titleCard' && o.chapter === k.chapter).length, 1, `${k.id}: tarjeta`);
+    if (k.trigger) {
+      const tr = s.regions.triggers.find((t) => t.id === k.trigger);
+      assert.deepEqual(tr.onEnter, s.onEnter, `${k.id}: ${k.trigger} repite el mismo guion`);
+    }
+  }
+  // La puerta de clinic_interior ya no enseña la tarjeta: la entrada del cap. 5 es el onEnter del treatment_room
+  assert.ok(!JSON.stringify(scene('clinic_interior')).includes('chapter_5_intro_shown'));
+});
+
 // ─── Letterbox ────────────────────────────────────────────────────────────────────────────────────────────
 
 test('letterboxBars: franja superior del 10 % (24–64 px) y la inferior tapa el panel', () => {
