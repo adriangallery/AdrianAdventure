@@ -97,6 +97,38 @@
       "baseY": 75,
       "source": "bounds del hotspot",
       "measured": false
+    },
+    {
+      "id": "hs_lambo",
+      "label": "lambo (superdeportivo de cuña, solo con pzbot_crashed)",
+      "realHeightM": 1.15,
+      "foreground": false,
+      "box": {
+        "x": 65.73,
+        "y": 72.66,
+        "w": 28.2,
+        "h": 19.53
+      },
+      "baseY": 92.2,
+      "source": "A3.12: caja del coche sin la sombra (overlay_lambo, scripts/make-lambo.mjs: techo y 837 px, ruedas en y 1062 px)",
+      "note": "A3.12: escala fija de outside; el arte mide ≈ 225 px de fondo de alto (≈ 0,85 m a 265 px/m frente a Dex), un poco bajo para 1,15 m: Adrián aprobó el arte así. Delante del coche no hay walk-behind: su huella (blockedAreas con when pzbot_crashed, y 90–93,6) deja a Dex siempre por delante."
+    },
+    {
+      "id": "carport_post",
+      "label": "poste delantero derecho de la cochera",
+      "realHeightM": 2.3,
+      "foreground": true,
+      "layer": "carport_post",
+      "box": {
+        "x": 84.6983,
+        "y": 47,
+        "w": 1.7241,
+        "h": 48.6632
+      },
+      "baseY": 95.7,
+      "source": "A3.12: caja = foregroundLayers.carport_post (rectángulo del fondo copiado a foreground.png por scripts/make-fg-layers.py); base medida a ojo (y 1102 px)",
+      "measured": false,
+      "note": "A3.12: con el lambo, Dex pasa entre el coche (huella hasta y 93,6) y la base del poste: pies por encima de 95,7 = el poste le tapa."
     }
   ]
 }
