@@ -627,7 +627,9 @@ export class MusicManager {
     const now = this.context.currentTime;
     this.cancelScheduled();
     const toGrid = MUSIC_MAP.tracks[newKey];
-    const sm = this.stateMusic();
+    // el estado que habrá en la escena nueva (la regla se evalúa ya, no en el siguiente tick): así entra directamente en la
+    // sección que toca y no salta otra vez dos compases después
+    const sm = MUSIC_MAP.states[resolveState(MUSIC_MAP.rules, this.musicContext()).state] ?? this.stateMusic();
     const sec = (forceSection ? toGrid.sections.find((s) => s.id === forceSection) : null) ?? sectionFor(toGrid, sm.section) ?? toGrid.sections[0] ?? null;
     const toBar = sec?.startBar ?? 0;
     const offset = barStartSec(toGrid, toBar);

@@ -224,7 +224,8 @@ export function ruleMatches(w: StateRuleWhen, ctx: MusicContext): boolean {
   if (w.flag !== undefined && !ctx.flags[w.flag]) return false;
   if (w.notFlag !== undefined && ctx.flags[w.notFlag]) return false;
   if (w.item !== undefined && !ctx.inventory.includes(w.item)) return false;
-  if (w.goalsLeftMax !== undefined && (ctx.goalsLeft === null || ctx.goalsLeft > w.goalsLeftMax)) return false;
+  // «cerca del final»: quedan entre 1 y N objetivos (0 = capítulo sin objetivos o ya cerrado: no cuenta)
+  if (w.goalsLeftMax !== undefined && (ctx.goalsLeft === null || ctx.goalsLeft < 1 || ctx.goalsLeft > w.goalsLeftMax)) return false;
   if (w.transient !== undefined && ctx.transient !== w.transient) return false;
   return true;
 }
@@ -239,10 +240,14 @@ export function resolveState(rules: readonly StateRule[], ctx: MusicContext): { 
   return best < 0 ? { state: DEFAULT_STATE, rule: -1 } : { state: rules[best].state, rule: best };
 }
 
+/** Una sección más de estos dB por debajo de la más fuerte es un final o un hueco, no una sección «tranquila» */
+export const CALM_FLOOR_DB = 8;
+
 /** Sección que pide un estado en una pista (por la energía medida); null = no hace falta saltar */
 export function sectionFor(grid: TrackGrid, pref: StateMusic['section']): MusicSection | null {
   if (pref === 'any' || grid.sections.length === 0) return null;
-  const sorted = [...grid.sections].sort((a, b) => a.energyDb - b.energyDb || a.startBar - b.startBar);
+  const top = Math.max(...grid.sections.map((s) => s.energyDb));
+  const sorted = grid.sections.filter((s) => s.energyDb >= top - CALM_FLOOR_DB).sort((a, b) => a.energyDb - b.energyDb || a.startBar - b.startBar);
   return pref === 'calm' ? sorted[0] : sorted[sorted.length - 1];
 }
 

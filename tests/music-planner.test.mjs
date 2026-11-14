@@ -104,6 +104,7 @@ test('resolveState: prioridades de la tabla de music-map.json', () => {
   assert.equal(P.resolveState(MAP.rules, ctx({ scene: 'clinic_interior', inventory: ['keycard'] })).state, 'tension');
   assert.equal(P.resolveState(MAP.rules, ctx({ goalsLeft: 1 })).state, 'chapterEnd');
   assert.equal(P.resolveState(MAP.rules, ctx({ goalsLeft: 3 })).state, 'explore');
+  assert.equal(P.resolveState(MAP.rules, ctx({ goalsLeft: 0 })).state, 'explore', 'capítulo sin objetivos pendientes: no es «cerca del final»');
   assert.equal(P.resolveState(MAP.rules, ctx({ transient: 'solved', dialogue: true })).state, 'solved');
   for (const r of MAP.rules) assert.ok(r.state in MAP.states, `estado ${r.state} definido`);
 });
@@ -112,7 +113,10 @@ test('sectionFor / needsSectionJump: calm = menos energía, intense = más; no s
   for (const [name, g] of TRACKS) {
     const calm = P.sectionFor(g, 'calm');
     const hot = P.sectionFor(g, 'intense');
-    assert.ok(g.sections.every((s) => calm.energyDb <= s.energyDb && hot.energyDb >= s.energyDb), name);
+    const top = Math.max(...g.sections.map((s) => s.energyDb));
+    assert.equal(hot.energyDb, top, `${name}: intense = la más fuerte`);
+    assert.ok(calm.energyDb >= top - P.CALM_FLOOR_DB, `${name}: calm no es un final casi en silencio`);
+    assert.ok(g.sections.filter((s) => s.energyDb >= top - P.CALM_FLOOR_DB).every((s) => calm.energyDb <= s.energyDb), name);
     assert.equal(P.sectionFor(g, 'any'), null);
     assert.equal(P.needsSectionJump(g, hot.startBar, 'intense'), null, `${name}: ya está en la intensa`);
   }
