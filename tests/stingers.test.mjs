@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
 
-const { stingerFor, goalStingers, transposeSemitones, isStingerKind, STINGER_KINDS, STINGER_SFX_KEYS, STINGER_MS } = await import(
+const { stingerFor, eventStingerFor, goalStingers, transposeSemitones, isStingerKind, STINGER_KINDS, STINGER_SFX_KEYS, STINGER_MS, STINGER_GEN, STINGER_GEN_KEYS, STINGER_GEN_MAX_SHIFT } = await import(
   process.env.STINGERS_PATH ?? '../src/systems/Stingers.ts'
 );
 const { MUSIC_KEYS } = await import(process.env.MUSIC_CONFIG_PATH ?? '../src/config/music.config.ts');
@@ -51,6 +51,51 @@ test('cada clip stinger_* existe, está en sfxKeys de PreloadScene y su duració
     assert.ok(preload.includes(`'${key}'`), `${key} no está en sfxKeys`);
     assert.ok(RECIPES[key], `${key} sin receta`);
     assert.equal(Math.round((RECIPES[key]().length / SAMPLE_RATE) * 1000), STINGER_MS[key], `${key}: STINGER_MS no cuadra con la receta`);
+  }
+});
+
+test('A8.3b eventStingerFor: el grabado solo si encaja (modo y ≤ 2 semitonos) y no hay voz; si no, el sintetizado', () => {
+  // sin música: el grabado tal cual
+  assert.deepEqual(eventStingerFor('chapter', null), { key: 'stinger_gen_chapter_major', detune: 0, ms: STINGER_GEN.stinger_gen_chapter_major.ms });
+  // Re mayor (dex, aventura): capítulo grabado en Do → +2
+  const d = eventStingerFor('chapter', { tonic: 2, mode: 'major' });
+  assert.equal(d.key, 'stinger_gen_chapter_major');
+  assert.equal(d.detune, 200);
+  assert.equal(d.ms, Math.round(STINGER_GEN.stinger_gen_chapter_major.ms / Math.pow(2, 200 / 1200)));
+  // Sol mayor (adrianlab, final): el capítulo en Do quedaría a −5 → sintetizado; el puzle grabado (medido en Sol) va tal cual
+  assert.equal(eventStingerFor('chapter', { tonic: 7, mode: 'major' }).key, 'stinger_chapter_major');
+  assert.deepEqual(eventStingerFor('puzzle', { tonic: 7, mode: 'major' }), { key: 'stinger_gen_puzzle_major', detune: 0, ms: STINGER_GEN.stinger_gen_puzzle_major.ms });
+  // Mi menor (sótano): no hay grabados en menor → sintetizados
+  assert.equal(eventStingerFor('puzzle', { tonic: 4, mode: 'minor' }).key, 'stinger_puzzle_minor');
+  assert.equal(eventStingerFor('chapter', { tonic: 4, mode: 'minor' }).key, 'stinger_chapter_minor');
+  // fallo sin tercera: vale en menor si está cerca (Re menor, +2), no en Mi (+4)
+  assert.equal(eventStingerFor('fail', { tonic: 2, mode: 'minor' }).key, 'stinger_gen_fail');
+  assert.equal(eventStingerFor('fail', { tonic: 4, mode: 'minor' }).key, 'stinger_fail');
+  // objeto: no hay grabado
+  assert.deepEqual(eventStingerFor('item', null), stingerFor('item', null));
+  // con una voz hablando: siempre el sintetizado (corto)
+  assert.deepEqual(eventStingerFor('chapter', null, { voice: true }), stingerFor('chapter', null));
+  for (const kind of STINGER_KINDS) {
+    for (let t = 0; t < 12; t++) for (const mode of ['major', 'minor']) {
+      const r = eventStingerFor(kind, { tonic: t, mode });
+      if (r.key.startsWith('stinger_gen_')) assert.ok(Math.abs(r.detune) <= STINGER_GEN_MAX_SHIFT * 100, `${kind} ${t} ${mode}`);
+    }
+  }
+});
+
+test('A8.3b: cada stinger grabado existe, está en sfxKeys, no es un puente y su duración cuadra con el mp3 (si hay ffprobe)', () => {
+  const preload = readFileSync(new URL('../src/scenes/PreloadScene.ts', import.meta.url), 'utf8');
+  const planner = readFileSync(new URL('../src/systems/MusicPlanner.ts', import.meta.url), 'utf8');
+  assert.ok(!planner.includes('stinger_gen_'), 'los puentes siguen siendo los sintetizados');
+  for (const key of STINGER_GEN_KEYS) {
+    assert.ok(!STINGER_SFX_KEYS.includes(key), `${key} no debe estar en STINGER_MS (receta sintetizada)`);
+    const file = new URL(`../assets/audio/sfx/${key}.mp3`, import.meta.url);
+    assert.ok(existsSync(file), `falta ${key}.mp3`);
+    assert.ok(preload.includes(`'${key}'`), `${key} no está en sfxKeys`);
+    const r = spawnSync('ffprobe', ['-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', file.pathname]);
+    if (r.error || r.status !== 0) continue;
+    const ms = Math.round(parseFloat(String(r.stdout)) * 1000);
+    assert.ok(Math.abs(ms - STINGER_GEN[key].ms) <= 60, `${key}: ${ms} ms en el mp3, ${STINGER_GEN[key].ms} declarados`);
   }
 });
 
