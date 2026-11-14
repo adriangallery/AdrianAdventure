@@ -45,6 +45,28 @@ async function walk(x, y) {
   }
 }
 
+/**
+ * Anda a (x, y) SIN clic: el borde de abajo de la escena queda bajo el panel de verbos en 844x390 y `__qa.walk`
+ * (que hace clic) lo rechaza. Comprueba que el punto es andable y queda bajo la base `baseY` del trozo, y manda a
+ * Dex con `player.walkToPct` (la misma ruta A* que un clic), grabando el paseo.
+ */
+async function walkBelow(scene, x, y, layerId) {
+  const chk = await page.evaluate(({ x, y, layerId }) => {
+    const defs = window.__game.registry.get('sceneData')?.foregroundLayers ?? [];
+    return { walkable: window.__qa.isWalkable(x, y), baseY: defs.find((d) => d.id === layerId)?.baseY ?? null };
+  }, { x, y, layerId });
+  if (!chk.walkable) problems.push(`${scene}: (${x}, ${y}) no es andable y no sirve para quedar delante de ${layerId}`);
+  if (chk.baseY == null || !(y > chk.baseY)) problems.push(`${scene}: (${x}, ${y}) no queda bajo la base de ${layerId} (${chk.baseY})`);
+  await page.evaluate((x, y) => { window.__game.scene.getScene('GameScene').player.walkToPct(x, y); }, x, y);
+  const t0 = Date.now();
+  await demo.sleep(150);
+  while (Date.now() - t0 < 25000) {
+    await demo.shot();
+    if (!(await page.evaluate(() => window.__game.scene.getScene('GameScene').player.isMoving()))) break;
+    await demo.sleep(150);
+  }
+}
+
 /** Comprueba que Dex queda detrás (`behind`) o delante (`front`) de cada trozo */
 async function expectAt(scene, label, expect) {
   await demo.sleep(500);
@@ -77,7 +99,7 @@ await walk(13, 96.5);
 await expectAt('outside', 'delante-arbusto', { bush_left: 'front' });
 await walk(22, 93);
 await expectAt('outside', 'detras-arbusto-porche', { bush_left: 'front', bush_right: 'behind' });
-await walk(24, 99);
+await walkBelow('outside', 24, 99, 'bush_right');
 await expectAt('outside', 'delante-de-todo', { bush_left: 'front', bush_right: 'front' });
 
 // 2) mountain: entre las rocas y la maleza, delante de todo y detrás de las rocas
@@ -88,7 +110,7 @@ await open('mountain');
 }
 await walk(91, 93);
 await expectAt('mountain', 'entre-rocas-y-maleza', { rocks_right: 'front', maleza: 'behind' });
-await walk(91, 98);
+await walkBelow('mountain', 91, 98, 'maleza');
 await expectAt('mountain', 'delante-de-todo', { rocks_right: 'front', maleza: 'front' });
 await walk(81, 88);
 await expectAt('mountain', 'detras-de-las-rocas', { rocks_right: 'behind', maleza: 'behind' });
