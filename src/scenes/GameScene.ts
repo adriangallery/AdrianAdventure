@@ -61,6 +61,9 @@ type TapHit =
   | { kind: 'npc'; npc: NPC }
   | { kind: 'scene'; pct: { x: number; y: number }; hotspot: HotspotData | null; rawHotspot: HotspotData | null };
 
+/** A2.17 fase 3: clave de la máscara de un trozo del primer plano (la misma que ScenePrefetch.sceneImageAssets) */
+const fgMaskKey = (sceneId: string, layerId: string) => `fgmask_${sceneId}_${layerId}`;
+
 /** A2.17 fase 2: caja en % → píxeles enteros de una textura de w×h */
 function pctRectToPx(b: { x: number; y: number; w: number; h: number }, w: number, h: number) {
   const x0 = Math.max(0, Math.round((b.x / 100) * w));
@@ -106,7 +109,7 @@ export class GameScene extends Phaser.Scene {
   private bg!: Phaser.GameObjects.Image;
   private fg?: Phaser.GameObjects.Image;
   /** A2.17 fase 2: trozos del primer plano con walk-behind (foregroundLayers), a la profundidad de su base */
-  private fgLayers: Phaser.GameObjects.Image[] = [];
+  private fgLayers: Array<{ img: Phaser.GameObjects.Image; bounds?: PctRect }> = [];
   private conditionalOverlays: Array<{ id: string; sprite: Phaser.GameObjects.Image; flag: string; invert?: boolean; bounds?: PctRect }> = [];
   /**
    * A1.4: visibilidad forzada por el op `flicker` (id del overlay → visible), por encima de la flag. Es solo
@@ -284,18 +287,30 @@ export class GameScene extends Phaser.Scene {
     this.fgLayers = [];
     const fgKey = `fg_${sceneId}`;
     if (this.textures.exists(fgKey)) {
-      const layers = (sceneData.foregroundLayers ?? []).filter((l) => l.bounds && Number.isFinite(l.baseY));
-      this.fg = this.add.image(0, 0, layers.length ? this.foregroundRest(fgKey, layers) : fgKey).setOrigin(0, 0);
+      // A2.17 fase 3: un trozo con `mask` sin su máscara cargada se ignora (sus píxeles se quedan en el primer plano)
+      const layers = (sceneData.foregroundLayers ?? []).filter((l) => l.bounds && Number.isFinite(l.baseY)
+        && (!l.mask || this.textures.exists(fgMaskKey(sceneId, l.id))));
+      this.fg = this.add.image(0, 0, layers.length ? this.foregroundRest(fgKey, sceneId, layers) : fgKey).setOrigin(0, 0);
       this.placeOverlay(this.fg);
       this.fg.setDepth(15);
-      // A2.17 fase 2: walk-behind por objeto: cada trozo, recortado de la misma textura, a la profundidad de su base
-      const src = this.textures.get(fgKey).getSourceImage() as { width: number; height: number };
+      // A2.17 fase 2: walk-behind por objeto: cada trozo, recortado de la misma textura, a la profundidad de su base.
+      // Fase 3: con `mask`, solo los píxeles de la máscara (textura canvas del tamaño de bounds).
+      const src = this.textures.get(fgKey).getSourceImage() as HTMLImageElement | HTMLCanvasElement;
+      for (const k of this.textures.getTextureKeys()) if (k.startsWith('fglayer_')) this.textures.remove(k);
       for (const l of layers) {
         const r = pctRectToPx(l.bounds, src.width, src.height);
-        const img = this.add.image(0, 0, fgKey).setOrigin(0, 0).setCrop(r.x, r.y, r.w, r.h);
-        this.placeOverlay(img);
+        let img: Phaser.GameObjects.Image;
+        let bounds: PctRect | undefined;
+        const piece = l.mask ? this.maskedForegroundPiece(src, r, `fglayer_${sceneId}_${l.id}`, fgMaskKey(sceneId, l.id)) : null;
+        if (piece) {
+          img = this.add.image(0, 0, piece).setOrigin(0, 0);
+          bounds = l.bounds;
+        } else {
+          img = this.add.image(0, 0, fgKey).setOrigin(0, 0).setCrop(r.x, r.y, r.w, r.h);
+        }
+        this.placeOverlay(img, bounds);
         img.setDepth(actorDepth(l.baseY));
-        this.fgLayers.push(img);
+        this.fgLayers.push({ img, bounds });
       }
     }
 
@@ -1175,7 +1190,7 @@ export class GameScene extends Phaser.Scene {
     // A5.1: fondo y primer plano como un overlay a tamaño de fondo (escala del fondo × mundo/textura)
     this.placeOverlay(this.bg);
     if (this.fg) this.placeOverlay(this.fg);
-    for (const l of this.fgLayers) this.placeOverlay(l);
+    for (const l of this.fgLayers) this.placeOverlay(l.img, l.bounds);
 
     this.player.onResize(this.coordSystem);
 
@@ -1215,7 +1230,7 @@ export class GameScene extends Phaser.Scene {
    * A2.17 fase 2: textura del primer plano SIN los trozos de `foregroundLayers` (borrados con clearRect), para que esos
    * trozos solo se dibujen una vez (a su profundidad). Se rehace en cada entrada; las de otras escenas se liberan.
    */
-  private foregroundRest(fgKey: string, layers: NonNullable<SceneData['foregroundLayers']>): string {
+  private foregroundRest(fgKey: string, sceneId: string, layers: NonNullable<SceneData['foregroundLayers']>): string {
     const key = `fgrest_${fgKey}`;
     for (const k of this.textures.getTextureKeys()) if (k.startsWith('fgrest_')) this.textures.remove(k);
     const src = this.textures.get(fgKey).getSourceImage() as HTMLImageElement | HTMLCanvasElement;
@@ -1225,9 +1240,36 @@ export class GameScene extends Phaser.Scene {
     ctx.drawImage(src, 0, 0);
     for (const l of layers) {
       const r = pctRectToPx(l.bounds, src.width, src.height);
-      ctx.clearRect(r.x, r.y, r.w, r.h);
+      if (!l.mask) {
+        ctx.clearRect(r.x, r.y, r.w, r.h);
+        continue;
+      }
+      // A2.17 fase 3: con máscara, solo se borran sus píxeles (el resto del rectángulo sigue a depth 15)
+      const mask = this.textures.get(fgMaskKey(sceneId, l.id)).getSourceImage() as HTMLImageElement | HTMLCanvasElement;
+      ctx.save();
+      ctx.globalCompositeOperation = 'destination-out';
+      ctx.drawImage(mask, r.x, r.y, r.w, r.h);
+      ctx.restore();
     }
     tex.refresh();
+    return key;
+  }
+
+  /**
+   * A2.17 fase 3: trozo del primer plano recortado a `r` (píxeles de la textura del primer plano) y enmascarado: los
+   * mismos píxeles que el resto del primer plano (la misma variante: sin costura ni halo) solo donde la máscara es opaca.
+   */
+  private maskedForegroundPiece(src: HTMLImageElement | HTMLCanvasElement, r: { x: number; y: number; w: number; h: number }, key: string, maskKey: string): string | null {
+    if (r.w <= 0 || r.h <= 0) return null;
+    const tex = this.textures.createCanvas(key, r.w, r.h);
+    if (!tex) return null;
+    const ctx = tex.getContext();
+    ctx.drawImage(src, r.x, r.y, r.w, r.h, 0, 0, r.w, r.h);
+    ctx.globalCompositeOperation = 'destination-in';
+    ctx.drawImage(this.textures.get(maskKey).getSourceImage() as HTMLImageElement | HTMLCanvasElement, 0, 0, r.w, r.h);
+    ctx.globalCompositeOperation = 'source-over';
+    tex.refresh();
+    tex.setFilter(Phaser.Textures.FilterMode.LINEAR);
     return key;
   }
 

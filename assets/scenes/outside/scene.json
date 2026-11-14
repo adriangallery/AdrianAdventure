@@ -3251,10 +3251,34 @@
   ],
   "blockedAreas": [
     {
-      "x": 9,
-      "y": 90.5,
-      "w": 16,
-      "h": 4
+      "x": 20.2,
+      "y": 95.6,
+      "w": 3.4,
+      "h": 1.8
+    }
+  ],
+  "foregroundLayers": [
+    {
+      "id": "bush_left",
+      "bounds": {
+        "x": 5.5,
+        "y": 71.5,
+        "w": 15.1,
+        "h": 22.5
+      },
+      "baseY": 93,
+      "mask": "fgmask_bush_left.webp"
+    },
+    {
+      "id": "bush_right",
+      "bounds": {
+        "x": 19.4,
+        "y": 80,
+        "w": 6.6,
+        "h": 18
+      },
+      "baseY": 97.3,
+      "mask": "fgmask_bush_right.webp"
     }
   ],
   "onEnter": [

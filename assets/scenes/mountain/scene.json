@@ -952,6 +952,17 @@
         "h": 40
       },
       "baseY": 89.5
+    },
+    {
+      "id": "maleza",
+      "bounds": {
+        "x": 82,
+        "y": 70,
+        "w": 18,
+        "h": 30
+      },
+      "baseY": 97,
+      "mask": "fgmask_maleza.webp"
     }
   ],
   "onEnter": [

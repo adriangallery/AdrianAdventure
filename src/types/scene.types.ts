@@ -74,7 +74,17 @@ export interface SceneData {
    * la y de los pies (actorDepth). Pies por debajo de la base (y mayor) = Dex delante; por encima = el trozo le tapa.
    * El resto del primer plano sigue a depth 15 (siempre delante).
    */
-  foregroundLayers?: Array<{ id: string; bounds: { x: number; y: number; w: number; h: number }; baseY: number }>;
+  foregroundLayers?: Array<{
+    id: string;
+    bounds: { x: number; y: number; w: number; h: number };
+    baseY: number;
+    /**
+     * A2.17 fase 3: máscara (fichero de la escena, WebP sin pérdida del tamaño de `bounds` en el maestro; la genera
+     * scripts/make-fg-layers.py): el trozo son solo los píxeles del primer plano donde es opaca, no el rectángulo entero
+     * (p. ej. la maleza delante de las rocas, o un arbusto junto a un seto que debe seguir delante).
+     */
+    mask?: string;
+  }>;
   npcs?: NPCData[];
   dialogues?: Record<string, DialogueTreeData>;
   /** Scripts that run automatically when the scene loads */
