@@ -65,7 +65,7 @@ export interface ScriptContext {
    * $ZERO, los AdrianZERO y los traits de la cartera, solo lecturas) y se resuelve al cerrarlo. Presentación pura: no
    * toca la partida (la recompensa la ponen los ops de estado que vengan detrás en el `then`).
    */
-  showDashboard?: () => Promise<void>;
+  showDashboard?: (mode?: 'holder' | 'founder') => Promise<void>;
   // Transaction toast
   showToast?: (status: 'pending' | 'success' | 'failed', message: string) => void;
   // Costume change
@@ -632,7 +632,8 @@ export class ScriptEngine {
 
       case 'showDashboard':
         // A3.10: { op: "showDashboard" } — panel del Mining Rig; el script sigue al cerrarlo (X, toque fuera, Esc)
-        if (this.ctx.showDashboard) await this.ctx.showDashboard();
+        // A9.13: { op: "showDashboard", mode: "founder" } — Founder Mode: cifras globales reales del Diamond (sin cartera)
+        if (this.ctx.showDashboard) await this.ctx.showDashboard(op.mode === 'founder' ? 'founder' : 'holder');
         else console.warn(`ScriptEngine: showDashboard sin panel en ${this.currentLabel || 'script'}`);
         break;
 

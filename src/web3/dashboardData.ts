@@ -84,3 +84,126 @@ export function dashboardStatus(d: DashboardData): string {
   if (d.errors.length >= 3) return 'NETWORK SULKING. Showing what the rig cached. Your $ZERO is fine. The Wi-Fi is not.';
   return `PARTIAL READ (${d.errors.join(', ')} failed). Showing the rest.`;
 }
+
+// ─── A9.13: Founder Mode (rig + Golden ZERO Token) con datos REALES del Diamond ──────────────────────────────────────
+// Antes, una frase con cifras inventadas («FloorEngine: 847 sweeps. TraitLab: 12,459 traits minted…»). Ahora el rig
+// enseña cifras globales leídas on-chain (no hace falta cartera: son vistas públicas). Lo que no se pudo leer sale como
+// «—», nunca un número de relleno. Funciones verificadas con eth_call contra Base el 14-nov-2026 (docs/progreso/A9.13.md).
+
+/** Cifras globales del ecosistema. null = no se pudo leer (red, corte de 8 s o la función no responde) */
+export interface FounderStats {
+  /** $ZERO en circulación: `totalSupply()` del Diamond (wei, 18 decimales) */
+  zeroSupplyWei: bigint | null;
+  /** Tope de $ZERO: `maxSupply()` del Diamond (wei) */
+  zeroMaxSupplyWei: bigint | null;
+  /** $ZERO quemado: `totalBurned()` del Diamond (wei) */
+  zeroBurnedWei: bigint | null;
+  /** $ZERO en staking: `totalStaked()` del Diamond (wei) */
+  zeroStakedWei: bigint | null;
+  /** AdrianZERO acuñados: `totalSupply()` del ERC721 */
+  adrianZeroSupply: number | null;
+  /** true si vienen de `__qa.mockWeb3` (solo ?qa=1) */
+  simulated: boolean;
+}
+
+/** Lo que se enseña cuando un dato no se pudo leer: nada que parezca una cifra */
+export const UNAVAILABLE = '—';
+
+/** wei → «53,456,172» (unidades enteras, sin decimales: es un panel de un vistazo) */
+export function formatZeroWhole(wei: bigint): string {
+  const whole = (wei < 0n ? -wei : wei) / 10n ** 18n;
+  return (wei < 0n ? '-' : '') + whole.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+}
+
+/** part/total en % con 1 decimal («18.5 %»); null si no se puede calcular */
+export function percentOf(part: bigint | null, total: bigint | null): string | null {
+  if (part === null || total === null || total <= 0n) return null;
+  const tenths = (part * 1000n) / total;
+  return `${tenths / 10n}.${tenths % 10n} %`;
+}
+
+function zeroRow(label: string, wei: bigint | null, extra?: string | null): DashboardRow {
+  if (wei === null) return { label, value: UNAVAILABLE, warn: true };
+  return { label, value: formatZeroWhole(wei) + (extra ? ` (${extra})` : '') };
+}
+
+/** Filas del panel de Founder Mode (orden fijo). Cada dato fallido sale como «—» en amarillo. */
+export function founderRows(s: FounderStats): DashboardRow[] {
+  const rows: DashboardRow[] = [];
+  rows.push(zeroRow('$ZERO supply', s.zeroSupplyWei));
+  rows.push(zeroRow('$ZERO max', s.zeroMaxSupplyWei));
+  rows.push(zeroRow('$ZERO burned', s.zeroBurnedWei, percentOf(s.zeroBurnedWei, s.zeroMaxSupplyWei) && `${percentOf(s.zeroBurnedWei, s.zeroMaxSupplyWei)} of max`));
+  rows.push(zeroRow('$ZERO staked', s.zeroStakedWei, percentOf(s.zeroStakedWei, s.zeroSupplyWei) && `${percentOf(s.zeroStakedWei, s.zeroSupplyWei)} of supply`));
+  rows.push(s.adrianZeroSupply === null
+    ? { label: 'AdrianZERO minted', value: UNAVAILABLE, warn: true }
+    : { label: 'AdrianZERO minted', value: s.adrianZeroSupply.toLocaleString('en-US') });
+  if (s.simulated) rows.push({ label: 'SOURCE', value: 'simulated (QA)' });
+  return rows;
+}
+
+/** Cuántas cifras de FounderStats no se pudieron leer */
+export function founderMissing(s: FounderStats): number {
+  return [s.zeroSupplyWei, s.zeroMaxSupplyWei, s.zeroBurnedWei, s.zeroStakedWei, s.adrianZeroSupply].filter((v) => v === null).length;
+}
+
+/** Pie del panel de Founder Mode: en vivo, parcial o sin red (texto de interfaz, sin voz) */
+export function founderStatus(s: FounderStats): string {
+  const missing = founderMissing(s);
+  if (missing === 0) return 'LIVE FROM BASE. Read-only. Adrian left the lights on.';
+  if (missing >= 5) return 'BASE UNREACHABLE. No numbers rather than made-up numbers. Try again later.';
+  return `PARTIAL READ (${missing} of 5 unavailable). The rest is live.`;
+}
+
+/** Cifras de QA para `__qa.mockWeb3` (redondas a propósito y marcadas «simulated»): nunca salen sin ?qa=1 */
+export function simulatedFounderStats(fail: boolean): FounderStats {
+  if (fail) return { zeroSupplyWei: null, zeroMaxSupplyWei: null, zeroBurnedWei: null, zeroStakedWei: null, adrianZeroSupply: null, simulated: true };
+  const e = 10n ** 18n;
+  return { zeroSupplyWei: 50_000_000n * e, zeroMaxSupplyWei: 100_000_000n * e, zeroBurnedWei: 20_000_000n * e, zeroStakedWei: 5_000_000n * e, adrianZeroSupply: 1000, simulated: true };
+}
+
+/** Una lectura on-chain de una cifra (inyectable: en el juego, `publicClient.readContract`; en los tests, lo que sea) */
+export type FounderReader = () => Promise<unknown>;
+export interface FounderReaders { supply: FounderReader; max: FounderReader; burned: FounderReader; staked: FounderReader; adrianZeroSupply: FounderReader }
+
+/** Corte por lectura (como el dashboard de A3.10) y vida de la caché de las cifras globales */
+export const FOUNDER_TIMEOUT_MS = 8000;
+export const FOUNDER_CACHE_MS = 5 * 60 * 1000;
+
+/** Caché de la última lectura COMPLETA (un fallo parcial no se guarda: se reintenta la próxima vez) */
+export interface FounderCache { at: number; stats: FounderStats | null }
+export function newFounderCache(): FounderCache { return { at: 0, stats: null }; }
+
+function cut<T>(p: Promise<T>, ms: number): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    const t = setTimeout(() => reject(new Error('timeout')), ms);
+    p.then((v) => { clearTimeout(t); resolve(v); }, (e: unknown) => { clearTimeout(t); reject(e); });
+  });
+}
+
+/**
+ * Lee las 5 cifras en paralelo, cada una con su corte. La que falla, tarda o no devuelve un entero queda en null.
+ * Nunca lanza. Pura (sin viem): src/web3/dashboard.ts le pasa las lecturas reales.
+ */
+export async function readFounderStats(
+  readers: FounderReaders,
+  cache: FounderCache,
+  opts: { now?: number; timeoutMs?: number } = {},
+): Promise<FounderStats> {
+  const now = opts.now ?? Date.now();
+  if (cache.stats && now - cache.at < FOUNDER_CACHE_MS) return cache.stats;
+  const ms = opts.timeoutMs ?? FOUNDER_TIMEOUT_MS;
+  const safe = (r: FounderReader) => cut(Promise.resolve().then(r), ms);
+  const res = await Promise.allSettled([safe(readers.supply), safe(readers.max), safe(readers.burned), safe(readers.staked), safe(readers.adrianZeroSupply)]);
+  const big = (r: PromiseSettledResult<unknown>): bigint | null => (r.status === 'fulfilled' && typeof r.value === 'bigint' && r.value >= 0n ? r.value : null);
+  const az = big(res[4]);
+  const stats: FounderStats = {
+    zeroSupplyWei: big(res[0]),
+    zeroMaxSupplyWei: big(res[1]),
+    zeroBurnedWei: big(res[2]),
+    zeroStakedWei: big(res[3]),
+    adrianZeroSupply: az === null ? null : Number(az),
+    simulated: false,
+  };
+  if (founderMissing(stats) === 0) { cache.at = now; cache.stats = stats; }
+  return stats;
+}

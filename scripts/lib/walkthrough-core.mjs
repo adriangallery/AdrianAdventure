@@ -108,7 +108,7 @@ export function check(expect, st, ctx = {}) {
  * A3.10: `expect.dashboard` contra `st.lastDashboard` (el dashboard del rig que salió en el paso, leído antes de cerrarlo):
  *  - `shown: false` = no salió; `shown: true` (o cualquier otra clave) = salió;
  *  - `phase` (loading | ready | error), `rows` (textos que tiene que contener alguna fila, sin mayúsculas), `tip` (true =
- *    lleva la nota del sysadmin).
+ *    lleva la nota del sysadmin). A9.13: `mode` (holder | founder) = qué panel salió (Founder Mode = `founder`).
  * Además exige que ya esté cerrado (`st.dashboard.open` false): el juego sigue.
  */
 export function checkDashboard(exp, st) {
@@ -120,6 +120,7 @@ export function checkDashboard(exp, st) {
     return f;
   }
   if (!d) return [...f, 'no salió el dashboard del rig'];
+  if (exp.mode && (d.mode ?? 'holder') !== exp.mode) f.push(`salió el dashboard «${d.mode ?? 'holder'}», se esperaba «${exp.mode}»`);
   if (exp.phase && d.phase !== exp.phase) f.push(`dashboard en «${d.phase}», se esperaba «${exp.phase}»`);
   for (const want of exp.rows ?? []) {
     if (!d.rows.some((r) => r.toLowerCase().includes(String(want).toLowerCase()))) f.push(`el dashboard no enseña «${want}» (filas: ${d.rows.join(' | ')})`);
