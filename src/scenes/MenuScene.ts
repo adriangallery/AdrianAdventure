@@ -9,6 +9,8 @@ import { iconSvg, setIconLabel } from '@/ui/icons';
 import { ACHIEVEMENTS } from '@/config/achievements.config';
 import { resolveEnsMany } from '@/web3/ens';
 import { bindShutdown } from './lifecycle';
+import { BRANDING } from '@/config/branding';
+import { formatPlayTime, isFinishedRun } from '@/systems/Ending';
 
 /** Fila del leaderboard de save.zerothetoken.com */
 interface LeaderboardPlayer {
@@ -92,7 +94,7 @@ export class MenuScene extends Phaser.Scene {
     // Subtitle — A1.7: el arte del título llega con los personajes hasta su borde inferior, así que el
     // subtítulo va DEBAJO del arte (nunca encima). Se crea primero para medir su alto real (con el
     // wordWrap puede ocupar dos líneas en vertical) y reservarle sitio antes de escalar la imagen.
-    const subtitle = this.add.text(width / 2, 0, 'A Point & Click Web3 Adventure on Base', {
+    const subtitle = this.add.text(width / 2, 0, BRANDING.tagline, {
       fontFamily: FONT.FAMILY,
       fontSize: `${subSize}px`,
       color: TWP.MENU_SUBTITLE,
@@ -486,7 +488,10 @@ export class MenuScene extends Phaser.Scene {
   }
 
   static continueDetail(c: ContinueCandidate | null): string {
-    return c ? `${c.sceneName} · ${MenuScene.timeAgo(c.timestamp)}` : '';
+    if (!c) return '';
+    // A9.4: partida terminada: «Continue» vuelve al epílogo (el camino de bajada repite el final); se dice en la portada
+    if (isFinishedRun(c.state)) return `THE END · ${formatPlayTime(c.state.playTimeMs)} · epilogue`;
+    return `${c.sceneName} · ${MenuScene.timeAgo(c.timestamp)}`;
   }
 
   static timeAgo(ts: number): string {
