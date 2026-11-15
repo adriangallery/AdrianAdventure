@@ -384,7 +384,12 @@ jobs:
           if [ "$EVENT" = pull_request ]; then
             list=$(node scripts/lib/demo.mjs list --changed HEAD^1)
           elif [ -n "$DEMOS" ]; then
-            list="$DEMOS"
+            # A9.17b: un nombre que no existe da aviso visible y no tumba las demás; solo si NINGUNO existe, rojo
+            # (no hay nada que grabar: es un error de tecleo y un verde lo escondería).
+            if list=$(node scripts/lib/demo-pick.mjs $DEMOS 2> demo-pick.err); then pick_rc=0; else pick_rc=$?; fi
+            cat demo-pick.err
+            sed -n 's/^::\(warning\|error\)::/- /p' demo-pick.err >> "$GITHUB_STEP_SUMMARY"
+            [ "$pick_rc" = 0 ] || exit "$pick_rc"
           else
             list=$(node scripts/lib/demo.mjs list)
           fi
