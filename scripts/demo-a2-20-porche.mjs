@@ -23,6 +23,7 @@ const VIEWPORTS = [
 const STOPS = ['hs_front_door', 'hs_keypad', 'hs_doormat', 'hs_porch_light', 'hs_main_window', 'hs_chimney', 'hs_bushes', 'hs_left_window', 'hs_fence', 'hs_front_door'];
 const MIN_FEET_Y = 90;
 const ARRIVE_TOL = 1.5;
+const DEX_HALF_W = 1.2;
 const TIMEOUT_MS = 25000;
 const HS = Object.fromEntries(SCENE.regions.hotspots.map((h) => [h.id, h]));
 const LAYERS = (SCENE.foregroundLayers ?? []).filter((l) => l.id.startsWith('bush_')); // el poste del carport tapa entero, no parte
@@ -49,7 +50,9 @@ const sample = () => page.evaluate(() => {
 
 /** ¿Algún trozo de primer plano con walk-behind tapa a Dex estando él detrás (pies por encima de su base)? */
 function behindLayer(s) {
-  const half = s.box ? s.box.w / 2 : 1.2;
+  // Medio ancho VISIBLE de Dex (A2.17: dexBox del barrido de proporción, 2,37 % de ancho); la caja del sprite (`box`)
+  // incluye el margen transparente del fotograma y solo se apunta
+  const half = DEX_HALF_W;
   return LAYERS.filter((l) => s.y < l.baseY && s.x + half > l.bounds.x && s.x - half < l.bounds.x + l.bounds.w && s.y > l.bounds.y).map((l) => l.id);
 }
 
