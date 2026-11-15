@@ -175,6 +175,21 @@ export const SHOTS = [
     name: '10-gerald', beat: 10, scene: 'recovery_pool', dur: 2500,
     setup: prep({ at: [46, 95] }),
   },
+  // ── 11 · clímax: planos muy cortos (el premontaje coge 0,6-0,7 s de cada uno) ──
+  { name: '11a-coger', beat: 11, scene: 'outside', dur: 2000, setup: prep({ at: [57, 92] }), timeline: [at(0, verb('hs_mailbox', 'OPEN'))] },
+  { name: '11b-puerta', beat: 11, scene: 'lobby', dur: 2000, setup: prep({ at: [80, 96] }), timeline: [at(0, verb('hs_frontdoor', 'OPEN'))] },
+  { name: '11c-escotilla', beat: 11, scene: 'upstairs', dur: 2000, setup: prep({ at: [31, 97] }), timeline: [at(0, verb('hs_roof_hatch', 'OPEN'))] },
+  {
+    name: '11d-pantalla', beat: 11, scene: 'basement', dur: 2000, setup: prep({ at: [50, 88] }),
+    timeline: [at(0, run([{ op: 'say', screen: 'crt', display: 'PATIENT ROSTER\nChronic Airdrop Dependency\nAcute Rug Pull Trauma\nTerminal FOMO', text: 'A patient roster. Chronic Airdrop Dependency... Acute Rug Pull Trauma... Terminal FOMO...' }]))],
+  },
+  { name: '11e-correr', beat: 11, scene: 'outside', dur: 1500, setup: prep({ at: [70, 97.5] }), timeline: [at(0, walk(30, 97.5))] },
+  { name: '11f-transicion', beat: 11, scene: 'basement', dur: 2000, setup: prep({ at: [14, 90] }), timeline: [at(0, verb('hs_stairs', 'USE'))] },
+  { name: '11g-coger2', beat: 11, scene: 'server_room', dur: 2000, setup: prep({ at: [40, 97] }), timeline: [at(0, verb('hs_raised_floor', 'PICK'))] },
+  { name: '11h-puerta2', beat: 11, scene: 'rooftop', dur: 2000, setup: prep({ at: [87.5, 97] }), timeline: [at(0, verb('hs_roof_door', 'OPEN'))] },
+  { name: '11i-cinematica', beat: 11, scene: 'rooftop', dur: 2000, setup: prep({ at: [38, 80] }), timeline: [at(0, verb('hs_lobbyhatch', 'USE'))] },
+  { name: '11j-correr2', beat: 11, scene: 'upstairs', dur: 1500, setup: prep({ at: [20, 97] }), timeline: [at(0, walk(60, 97))] },
+  { name: '11k-destello', beat: 11, scene: 'memelab', dur: 1500, setup: prep({ at: [30, 96] }) },
   // ── 13 · el Lambo ──
   {
     name: '13-lambo', beat: 13, scene: 'lobby', dur: 8000,
@@ -187,4 +202,11 @@ export const SHOTS = [
     name: '14-titulo', beat: 14, scene: null, dur: 5000,
     setup: async (page) => { await page.evaluate(() => window.__clock.realSleep(1500)); },
   },
+  // ── corte vertical 9:16 (viewport móvil de verdad) ──
 ];
+
+// Verticales: mismos planos, viewport 390×844 ×2,77 → 1080×2337 (se recorta a 1080×1920 en el montaje)
+for (const base of ['01-crt-escaped', '05a-dex-acera', '05c-dooris-87', '09b-chad-fud', '11c-escotilla', '13-lambo', '14-titulo']) {
+  const s = SHOTS.find((x) => x.name === base);
+  SHOTS.push({ ...s, name: `v${base}`, vertical: true });
+}

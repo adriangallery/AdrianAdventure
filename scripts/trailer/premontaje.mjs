@@ -42,7 +42,7 @@ export const EDL = [
   [10, [card('ONE DUCK.', 1000), clip('10-gerald', 1000, 500)]],
   [11, [clip('11a-coger', 600), clip('11b-puerta', 600), clip('11c-escotilla', 600), clip('11d-pantalla', 600),
     clip('11e-correr', 700), clip('11f-transicion', 700), clip('11g-coger2', 600), clip('11h-puerta2', 600),
-    clip('11i-cinematica', 700), clip('11j-correr2', 700), clip('11k-destello', 600), clip('11l-final', 1000)]],
+    clip('11i-cinematica', 700), clip('11j-correr2', 700), clip('11k-destello', 600), clip('13-lambo', 1000, 2500)]],
   [12, [card('ZERO EXCUSES.', 2000)]],
   [13, [clip('13-lambo', 6000, 300)]],
   [14, [clip('14-titulo', 4000, 500), card('PLAY FREE\nIN YOUR BROWSER', 2000), card('adventure.adrianzero.com', 2000)]],
