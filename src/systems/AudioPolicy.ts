@@ -30,6 +30,33 @@ export function musicToPreload(tracks: readonly string[], muted: boolean, isCach
   return tracks.filter((t) => !isCached(t));
 }
 
+/**
+ * A4.9 (iPhone): tras activar el sonido, un toque, la vuelta a la pestaña o un cambio de estado del AudioContext a
+ * «suspended»/«interrupted» (bloqueo de pantalla, llamada, cambio de app, Chrome de iOS) lo reanudan. Solo si el
+ * jugador activó el sonido en esta carga y no lo ha silenciado.
+ */
+export function shouldResumeOnGesture(state: string, unlockedThisSession: boolean, muted: boolean): boolean {
+  return unlockedThisSession && !muted && state !== 'running' && state !== 'closed';
+}
+
+/**
+ * A4.9: ¿mostrar el aviso tocable «Tap to enable sound»? Cuando, pasado un rato desde el gesto, el contexto sigue sin
+ * correr aunque el jugador pidió sonido (iOS no aceptó el desbloqueo, o lo interrumpió y no volvió solo).
+ */
+export function shouldShowSoundNotice(state: string, unlockedThisSession: boolean, muted: boolean): boolean {
+  return shouldResumeOnGesture(state, unlockedThisSession, muted);
+}
+
+/**
+ * A4.9: Phaser deja `sound.locked` a true hasta que SU propio desbloqueo (escuchadores en <body>) termina; si ese
+ * intento falla (en iOS un `resume()` lanzado en touchstart se rechaza y Phaser quita sus escuchadores sin volver a
+ * probar), la música esperaba el evento UNLOCKED para siempre. Manda el estado real del contexto: si corre, no está
+ * bloqueado.
+ */
+export function phaserStillLocked(phaserLocked: boolean, contextState: string): boolean {
+  return phaserLocked && contextState !== 'running';
+}
+
 /** Frases de la pantalla de carga: en silencio se quitan las que hablan de voces (no se carga ninguna). */
 export function loadingTipsFor(tips: readonly string[], muted: boolean): string[] {
   return muted ? tips.filter((t) => !/\bvoice/i.test(t)) : [...tips];

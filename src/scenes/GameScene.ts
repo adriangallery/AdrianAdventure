@@ -10,7 +10,7 @@ import { SaveLoadSystem } from '@/systems/SaveLoadSystem';
 import { migrateGameState } from '@/systems/SaveMigration';
 import { isValidRunId, newRunId } from '@/systems/SaveProgress';
 import { addPlayTime } from '@/systems/Ending';
-import { noteChapterMarks } from '@/systems/ChapterTiming';
+import { noteChapters, trackScene } from '@/systems/PlayStats';
 import { sendChapterSamples } from '@/systems/ChapterTelemetry';
 import type { MusicManager } from '@/systems/MusicManager';
 import { CinematicOverlay } from '@/ui/CinematicOverlay';
@@ -56,17 +56,28 @@ import { surfaceAt, stepSound, stepSetFrom } from '@/systems/Footsteps';
 import { sfxOf } from '@/systems/Sfx';
 import { isStingerKind } from '@/systems/Stingers';
 import { playStinger } from '@/systems/StingerPlayer';
-import { closeupReason, screenDisplayText, type CloseupReason } from '@/systems/ScreenText';
+import { closeupReason, screenDisplayText, screenFitsView, type CloseupReason, type ViewRect } from '@/systems/ScreenText';
 import { ScreenTextLayer, type ScreenLayerQa } from '@/ui/ScreenTextLayer';
 import { ScreenCloseup, type CloseupQaState } from '@/ui/ScreenCloseup';
 import { charDelayMs } from '@/systems/Settings';
 import type { ScreenSayRequest } from '@/systems/ScriptEngine';
 
+/** A2.19: una línea de pantalla (QA). A2.19b: `vp` = caja de la pantalla y vista de la cámara en px del viewport */
+export interface ScreenLogEntry {
+  id: string;
+  mode: 'screen' | 'closeup';
+  reason: CloseupReason | null;
+  display: string;
+  vp?: { screen: ViewRect; view: ViewRect; fits: boolean; zoom: number };
+}
+
+const roundRect = (r: ViewRect): ViewRect => ({ x: Math.round(r.x), y: Math.round(r.y), w: Math.round(r.w), h: Math.round(r.h) });
+
 /** A2.19 (QA): estado de las pantallas (`__qa.state().screen`) */
 export interface ScreenQaState {
   seq: number;
-  log: Array<{ seq: number; id: string; mode: 'screen' | 'closeup'; reason: CloseupReason | null; display: string }>;
-  last: { id: string; mode: 'screen' | 'closeup'; reason: CloseupReason | null; display: string } | null;
+  log: Array<{ seq: number } & ScreenLogEntry>;
+  last: ScreenLogEntry | null;
   inScene: ScreenLayerQa | null;
   closeup: CloseupQaState;
 }
@@ -114,9 +125,9 @@ export class GameScene extends Phaser.Scene {
   /** A2.19: texto dentro de las pantallas de la escena y su primer plano */
   private screenLayer: ScreenTextLayer | null = null;
   private screenCloseup: ScreenCloseup | null = null;
-  private lastScreen: { id: string; mode: 'screen' | 'closeup'; reason: CloseupReason | null; display: string } | null = null;
+  private lastScreen: ScreenLogEntry | null = null;
   /** A2.19 (QA): últimas líneas de pantalla (seq creciente para saber cuáles salieron en un paso) */
-  private screenLog: Array<{ seq: number; id: string; mode: 'screen' | 'closeup'; reason: CloseupReason | null; display: string }> = [];
+  private screenLog: Array<{ seq: number } & ScreenLogEntry> = [];
   private screenSeq = 0;
   /** A2.10: cinemáticas (cámara, franjas, actores, transiciones); uno por escena, se destruye en SHUTDOWN */
   private cinema?: CinematicDirector;
@@ -233,6 +244,7 @@ export class GameScene extends Phaser.Scene {
     // A1.4: red de seguridad; las cargas ya migran, pero cualquier estado que llegue al registry pasa por aquí
     this.gameState = migrateGameState((this.registry.get('gameState') as GameState) ?? createInitialState(sceneId));
     this.gameState.currentScene = sceneId;
+    trackScene(sceneId); // A9.17: última escena por si el jugador cierra aquí
     // A1.13: id de partida; a una partida vieja (sin id) se le pone uno al cargarla
     if (!isValidRunId(this.gameState.runId)) this.gameState.runId = newRunId(Date.now(), Math.random());
     if (!this.gameState.visited.includes(sceneId)) this.gameState.visited.push(sceneId);
@@ -633,7 +645,7 @@ export class GameScene extends Phaser.Scene {
     // A9.4: tiempo jugado (con tope por fotograma: una pestaña oculta o una pausa del navegador no suman)
     if (!this.isTrailer && this.gameState) this.gameState.playTimeMs = addPlayTime(this.gameState.playTimeMs, delta);
     // A9.14: al cerrar un capítulo, su duración (anónima) al save-server
-    if (!this.isTrailer && this.gameState) sendChapterSamples(noteChapterMarks(this.gameState));
+    if (!this.isTrailer && this.gameState) sendChapterSamples(noteChapters(this.gameState));
     this.refreshWalkObstacles();
     this.player.setAnimContext(this.playerAnimContext());
     this.player.update(time, delta);
@@ -2587,15 +2599,27 @@ export class GameScene extends Phaser.Scene {
     const a = this.coordSystem.pctToScreen(def.bounds.x, def.bounds.y);
     const b = this.coordSystem.pctToScreen(def.bounds.x + def.bounds.w, def.bounds.y + def.bounds.h);
     const rect = { x: a.x, y: a.y, w: b.x - a.x, h: b.y - a.y };
-    const zoom = this.cameras.main.zoom || 1;
+    const cam = this.cameras.main;
+    const zoom = cam.zoom || 1;
+    // A2.19b: la caja en px del viewport y lo que enseña la cámara (sin el panel SCUMM de abajo, que la tapa)
+    const { screenRect, view } = this.screenViewRects(rect);
     const reason = closeupReason({
       text: display,
       screenPx: { w: rect.w * zoom, h: rect.h * zoom },
       forced: req.closeup,
       closeupOnly: def.closeupOnly === true,
+      screenRect: def.closeupOnly ? undefined : screenRect,
+      view,
     });
     const instant = charDelayMs() === 0 || (req.briefMs !== undefined && req.briefMs <= 250);
-    this.lastScreen = { id: req.screen, mode: reason ? 'closeup' : 'screen', reason, display };
+    // A2.19b: el subtítulo discreto se coloca sin tapar la pantalla ni a Dex (UIScene → DialogueBox lo lee)
+    const head = this.speakerHead('player');
+    const dexRect = head ? { x: head.x - (head.footY - head.headY) * 0.3, y: head.headY, w: (head.footY - head.headY) * 0.6, h: head.footY - head.headY } : null;
+    this.registry.set('screenCaptionAvoid', reason ? [] : [screenRect, ...(dexRect ? [dexRect] : [])]);
+    this.lastScreen = {
+      id: req.screen, mode: reason ? 'closeup' : 'screen', reason, display,
+      vp: { screen: roundRect(screenRect), view: roundRect(view), fits: screenFitsView(screenRect, view), zoom: Math.round(zoom * 1000) / 1000 },
+    };
     this.screenLog.push({ seq: ++this.screenSeq, ...this.lastScreen });
     if (this.screenLog.length > 30) this.screenLog.shift();
     this.screenLayer ??= new ScreenTextLayer(this);
@@ -2632,6 +2656,25 @@ export class GameScene extends Phaser.Scene {
     ui.events.emit('advanceSay', req.text);
     await spoken;
     this.screenLayer?.linger();
+  }
+
+  /**
+   * A2.19b: caja de una pantalla (px del mundo) en px del viewport, y el rectángulo del viewport que enseña la cámara sin el
+   * panel SCUMM (en cinemática el panel no está).
+   */
+  private screenViewRects(rect: { x: number; y: number; w: number; h: number }): { screenRect: ViewRect; view: ViewRect } {
+    const cam = this.cameras.main;
+    const zoom = cam.zoom || 1;
+    const wv = cam.worldView;
+    const screenRect = { x: cam.x + (rect.x - wv.x) * zoom, y: cam.y + (rect.y - wv.y) * zoom, w: rect.w * zoom, h: rect.h * zoom };
+    const band = this.registry.get('cinematicBand') as { top: number; bottom: number } | null | undefined;
+    const panelH = band ? 0 : this.getEffectivePanelHeight();
+    const bottom = Math.min(cam.y + cam.height, this.scale.height - panelH);
+    const right = Math.min(cam.x + cam.width, this.scale.width);
+    const view = { x: Math.max(0, cam.x), y: Math.max(0, cam.y), w: 0, h: 0 };
+    view.w = Math.max(0, right - view.x);
+    view.h = Math.max(0, bottom - view.y);
+    return { screenRect, view };
   }
 
   /** A2.19 (QA): pantalla en uso, si se ve en la escena o en primer plano, y qué enseña */

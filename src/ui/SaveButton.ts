@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { playStatsEnabled, setPlayStatsEnabled } from '@/systems/PlayStats';
 import { TEXT_SPEEDS, TEXT_SPEED_LABEL, MUSIC_LEVEL_LABEL, getTextSpeed, setTextSpeed, getMusicLevel, setMusicLevel, musicVolumeFor, getVoiceLevel, setVoiceLevel, nextLevel } from '@/systems/Settings';
 import type { GameState } from '@/types/game.types';
 import { SaveLoadSystem } from '@/systems/SaveLoadSystem';
@@ -381,6 +382,19 @@ export class SaveButton {
       voiceBtn.dataset.setting = 'voices';
       modal.appendChild(voiceBtn);
     }
+
+    // A9.17: aviso de estadísticas anónimas con interruptor (apagado = no se manda nada)
+    const statsLabel = () => `Anonymous play stats: ${playStatsEnabled() ? 'On' : 'Off'}`;
+    const statsBtn: HTMLButtonElement = makeBtn(statsLabel(), true, () => {
+      setPlayStatsEnabled(!playStatsEnabled());
+      setIconLabel(statsBtn, 'gear', statsLabel(), 12);
+    }, '', 'gear');
+    statsBtn.dataset.setting = 'play-stats';
+    modal.appendChild(statsBtn);
+    const statsNote = document.createElement('div');
+    statsNote.textContent = 'Anonymous play stats help improve the game';
+    statsNote.style.cssText = 'font-size: 8px; line-height: 1.5; color: #8878a8; margin: 2px 4px 6px;';
+    modal.appendChild(statsNote);
 
     if (!isWallet || !address) return;
     const sep2 = document.createElement('hr');
