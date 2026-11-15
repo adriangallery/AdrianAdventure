@@ -48,6 +48,11 @@
     "hotspots": [
       {
         "id": "hs_front_door",
+        "walkTo": {
+          "x": 34.1,
+          "y": 91.5
+        },
+        "face": "back",
         "useResponses": {
           "_default": [
             "I try it on the door. The door has seen burglars with better ideas.",
@@ -309,6 +314,11 @@
       },
       {
         "id": "hs_porch_light",
+        "walkTo": {
+          "x": 36,
+          "y": 91.5
+        },
+        "face": "back",
         "keepAfterPick": "La lámpara se queda: la media nota estaba dentro; el overlay lamp_empty (flag porch_light_off) ya la pinta apagada y vacía",
         "useResponses": {
           "fence_plank": [
@@ -575,6 +585,11 @@
       },
       {
         "id": "hs_main_window",
+        "walkTo": {
+          "x": 28,
+          "y": 92
+        },
+        "face": "back",
         "name": "Main Window",
         "bounds": {
           "x": 25.6,
@@ -641,6 +656,11 @@
       },
       {
         "id": "hs_left_window",
+        "walkTo": {
+          "x": 17.4,
+          "y": 94
+        },
+        "face": "back",
         "name": "Side Window",
         "bounds": {
           "x": 16.1,
@@ -707,6 +727,11 @@
       },
       {
         "id": "hs_chimney",
+        "walkTo": {
+          "x": 44.5,
+          "y": 91.5
+        },
+        "face": "back",
         "useResponses": {
           "_default": [
             "I could throw it up the drainpipe. I'd miss, and then it'd be up there too.",
@@ -1175,6 +1200,11 @@
       },
       {
         "id": "hs_bushes",
+        "walkTo": {
+          "x": 12.5,
+          "y": 94.5
+        },
+        "face": "back",
         "name": "Bushes",
         "bounds": {
           "x": 13.2,
@@ -1283,6 +1313,11 @@
       },
       {
         "id": "hs_doormat",
+        "walkTo": {
+          "x": 35.8,
+          "y": 91.5
+        },
+        "face": "back",
         "useResponses": {
           "_default": [
             "I press it on the mat. The mat is glued down and unimpressed.",
@@ -2165,6 +2200,11 @@
       },
       {
         "id": "hs_roof",
+        "walkTo": {
+          "x": 36.5,
+          "y": 91.5
+        },
+        "face": "back",
         "name": "Roof",
         "bounds": {
           "x": 31.5,
@@ -2405,6 +2445,11 @@
       },
       {
         "id": "hs_keypad",
+        "walkTo": {
+          "x": 38.2,
+          "y": 91.5
+        },
+        "face": "back",
         "useResponses": {
           "_default": [
             "The keypad wants numbers. That isn't numbers.",
@@ -2909,6 +2954,11 @@
       },
       {
         "id": "hs_upper_windows",
+        "walkTo": {
+          "x": 30,
+          "y": 91.5
+        },
+        "face": "back",
         "name": "Upper Floor Windows",
         "bounds": {
           "x": 21,
@@ -3384,15 +3434,6 @@
     "music": "retro-adventure",
     "ambience": "crickets",
     "footstep": "gravel",
-    "surfaces": [
-      {
-        "x": 30.9,
-        "y": 82.5,
-        "w": 16.3,
-        "h": 8.6,
-        "footstep": "wood"
-      }
-    ],
     "sfx": {}
   },
   "transitions": {
@@ -3402,14 +3443,26 @@
     {
       "x": 0,
       "y": 91,
-      "w": 100,
+      "w": 4.3,
       "h": 9
     },
     {
-      "x": 30.9,
-      "y": 82.5,
-      "w": 16.3,
-      "h": 14.1
+      "x": 4.3,
+      "y": 93.2,
+      "w": 13.9,
+      "h": 6.8
+    },
+    {
+      "x": 18.2,
+      "y": 97.4,
+      "w": 9,
+      "h": 2.6
+    },
+    {
+      "x": 27.2,
+      "y": 91,
+      "w": 72.8,
+      "h": 9
     }
   ],
   "blockedAreas": [
