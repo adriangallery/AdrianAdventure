@@ -34,16 +34,16 @@ export const CLOCK_SRC = String.raw`(() => {
   // rAF
   let rafSeq = 0;
   const rafPending = new Map(); // id virtual -> cb
-  const rafReal = new Map();    // id virtual -> id real (modo libre)
+  const rafReal = new Map();    // id virtual -> { rid: id real, cb } (modo libre)
   window.requestAnimationFrame = (cb) => {
     const id = ++rafSeq;
     if (capture) rafPending.set(id, cb);
-    else rafReal.set(id, origRAF(() => { rafReal.delete(id); cb(now()); }));
+    else rafReal.set(id, { cb, rid: origRAF(() => { rafReal.delete(id); cb(now()); }) });
     return id;
   };
   window.cancelAnimationFrame = (id) => {
     rafPending.delete(id);
-    if (rafReal.has(id)) { origCAF(rafReal.get(id)); rafReal.delete(id); }
+    if (rafReal.has(id)) { origCAF(rafReal.get(id).rid); rafReal.delete(id); }
   };
 
   // Temporizadores
@@ -122,7 +122,7 @@ export const CLOCK_SRC = String.raw`(() => {
       capture = true;
       // Los temporizadores reales pendientes pasan al reloj virtual; los rAF reales pendientes, a la cola virtual
       for (const t of timers.values()) if (t.real != null) { origCT(t.real); t.real = null; }
-      for (const [id, rid] of rafReal) { origCAF(rid); rafReal.delete(id); }
+      for (const [id, r] of rafReal) { origCAF(r.rid); rafReal.delete(id); rafPending.set(id, r.cb); }
       audioLog.length = 0;
       audioT0 = vt;
     },
@@ -145,7 +145,7 @@ export const CLOCK_SRC = String.raw`(() => {
       for (const id of timers.keys()) arm(id);
       const cbs = [...rafPending.entries()];
       rafPending.clear();
-      for (const [id, cb] of cbs) rafReal.set(id, origRAF(() => { rafReal.delete(id); cb(now()); }));
+      for (const [id, cb] of cbs) rafReal.set(id, { cb, rid: origRAF(() => { rafReal.delete(id); cb(now()); }) });
     },
     hookSound,
     audio: () => audioLog.slice(),

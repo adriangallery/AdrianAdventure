@@ -133,11 +133,12 @@ export const SHOTS = [
       at(2600, [() => {
         const cp = window.__tr.ui().getChoicePanel();
         void cp.show([
-          { text: 'A broken clock is right twice a day. You\'re on a streak.' },
-          { text: 'Still more detail than your exit plan.' },
-          { text: 'At least mine float. Yours sank in a kiddie pool.' },
-          { text: 'Uh... no they\'re not?' },
-        ]);
+          'A broken clock is right twice a day. You\'re on a streak of zero.',
+          'Still more detail than your exit plan.',
+          'At least mine float. Yours sank in a kiddie pool.',
+          'Then today they\'ll hear you lose.',
+          'Uh... no they\'re not?',
+        ].map((text) => ({ text, enabled: true })));
       }]),
     ],
   },
