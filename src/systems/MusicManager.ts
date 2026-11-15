@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import { getMusicLevel, musicVolumeFor } from '@/systems/Settings';
-import { SFX_GAIN, masterLimiter } from '@/systems/AudioMix';
+import { SFX_GAIN, masterLimiter, type MasterChain } from '@/systems/AudioMix';
 import { MUTED_STORAGE_KEY, mutedFromStored, phaserStillLocked, shouldFetchAudio, shouldResumeOnGesture, shouldShowSoundNotice } from '@/systems/AudioPolicy';
 import { DUCK_FADE_MS, duckGainFor } from '@/systems/Cinematics';
 import {
@@ -142,8 +142,8 @@ export class MusicManager {
    */
   private duckGain: GainNode;
   private duckSources = new Set<string>();
-  /** A4.8: limitador maestro (salida de todo el audio del juego; las demos graban de aquí). null sin Web Audio */
-  private limiter: DynamicsCompressorNode | null = null;
+  /** A4.8/A4.8b: cadena maestra (entrada de todo el audio del juego; las demos graban de su salida). null sin Web Audio */
+  private limiter: MasterChain | null = null;
   private currentTrack: ManagedTrack | null = null;
   private fadingTrack: ManagedTrack | null = null;
   private currentKey: string | null = null;
@@ -163,7 +163,7 @@ export class MusicManager {
     this.limiter = limiter;
     // Master gain → duck gain (A2.10) → limitador (A4.8) → destination
     this.duckGain = this.context.createGain();
-    this.duckGain.connect(limiter ?? this.context.destination);
+    this.duckGain.connect(limiter?.input ?? this.context.destination);
     this.masterGain = this.context.createGain();
     this.masterGain.connect(this.duckGain);
     this.masterGain.gain.value = this.musicVolume;
@@ -215,7 +215,7 @@ export class MusicManager {
       const buf = this.context.createBuffer(1, 1, 22050);
       const src = this.context.createBufferSource();
       src.buffer = buf;
-      src.connect(this.limiter ?? this.context.destination);
+      src.connect(this.limiter?.input ?? this.context.destination);
       src.start(0);
     } catch { /* silent */ }
 
@@ -658,9 +658,9 @@ export class MusicManager {
     return this.unlockedThisSession;
   }
 
-  /** A4.8 (demos): nodo de salida de todo el audio (limitador maestro; sin él, la salida de la música) */
+  /** A4.8 (demos): nodo de salida de todo el audio (final de la cadena maestra; sin ella, la salida de la música) */
   outputNode(): AudioNode {
-    return this.limiter ?? this.duckGain;
+    return this.limiter?.output ?? this.duckGain;
   }
 
   /** A4.8 (QA): volumen de la música de los ajustes (sin silencio ni ducking) */

@@ -6,6 +6,9 @@
 //     personal_sign: nunca una transacción), pulsa «Connect wallet» y espera el panel → stats-390.png;
 //  4) lo mismo en 1280×800 → stats-1280.png; y comprueba que una wallet que no está en la lista se queda fuera (401).
 // Capturas en demo-out/a9-17-stats/ y copia en $SHOTS_DIR (por defecto /var/tmp/adv-a9-17 si existe).
+// A9.17b: contra una URL desplegada (BASE_URL que no es localhost/127.0.0.1) la página no acepta ?api= y habla con el
+// save-server REAL, donde la wallet de prueba no está en STATS_ADMINS: ahí solo se comprueba el RECHAZO (mensaje en la
+// página con una wallet fuera de la lista y 401 de /stats/summary sin sesión) y termina en verde sin exigir el panel.
 // Uso: BASE_URL=http://127.0.0.1:4173 node scripts/lib/demo.mjs run a9-17-stats
 import { createServer } from 'node:http';
 import { copyFileSync, existsSync, mkdtempSync, rmSync } from 'node:fs';
@@ -14,6 +17,7 @@ import { tmpdir } from 'node:os';
 import { verifyMessage } from 'viem';
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
 import { startDemo } from './lib/demo.mjs';
+import { isLocalBaseUrl } from './lib/demo-pick.mjs';
 import { createStatsStore, parseEvent } from '../save-server/stats.js';
 import { createStatsAuth } from '../save-server/stats-auth.js';
 import { createStatsRoutes } from '../save-server/stats-routes.js';
@@ -63,9 +67,15 @@ const server = createServer(async (req, res) => {
   res.writeHead(r?.status ?? 404, { ...cors, 'Content-Type': 'application/json' });
   res.end(JSON.stringify(r?.body ?? { error: 'Not found' }));
 });
-await new Promise((ok) => server.listen(0, '127.0.0.1', ok));
-const API = `http://127.0.0.1:${server.address().port}`;
-console.log(`save-server de /stats local en ${API} (admin de prueba ${admin.address})`);
+const LOCAL = isLocalBaseUrl(process.env.BASE_URL || 'http://127.0.0.1:4173');
+let API = 'https://save.zerothetoken.com';
+if (LOCAL) {
+  await new Promise((ok) => server.listen(0, '127.0.0.1', ok));
+  API = `http://127.0.0.1:${server.address().port}`;
+  console.log(`save-server de /stats local en ${API} (admin de prueba ${admin.address})`);
+} else {
+  console.log(`BASE_URL remota: /stats habla con ${API}; solo se comprueba el rechazo de una wallet fuera de STATS_ADMINS`);
+}
 
 const demo = await startDemo(import.meta.url, { fps: 3, width: 390, viewport: { width: 390, height: 844, deviceScaleFactor: 1, isMobile: true, hasTouch: true } });
 const { page } = demo;
@@ -127,9 +137,17 @@ async function signInAndShoot(label) {
 }
 
 try {
-  await signInAndShoot('stats-390');
-  await page.setViewport({ width: 1280, height: 800, deviceScaleFactor: 1 });
-  await signInAndShoot('stats-1280');
+  if (LOCAL) {
+    await signInAndShoot('stats-390');
+    await page.setViewport({ width: 1280, height: 800, deviceScaleFactor: 1 });
+    await signInAndShoot('stats-1280');
+  } else {
+    // Producción: la página sin ?api (no se acepta fuera de localhost) y ninguna wallet de prueba en la lista
+    await page.goto(`${demo.base}/stats/`, { waitUntil: 'networkidle0' });
+    const robots = await page.$eval('meta[name=robots]', (m) => m.content).catch(() => null);
+    check(robots === 'noindex,nofollow', 'producción: meta robots noindex,nofollow');
+    await demo.shot();
+  }
 
   // Wallet que no está en la lista: firma válida pero 401 y la página lo dice
   signer = stranger;
@@ -138,19 +156,20 @@ try {
   await page.click('#connect');
   await page.waitForFunction(() => document.body.dataset.error === '1' || document.body.dataset.ready === '1', { timeout: 30000 });
   const denied = await page.evaluate(() => ({ err: document.body.dataset.error === '1', dash: !document.getElementById('dash').hidden, text: document.getElementById('status').textContent }));
-  check(denied.err && !denied.dash, `wallet fuera de la lista: rechazada («${denied.text}»)`);
+  check(denied.err && !denied.dash && /not allowed/i.test(denied.text), `wallet fuera de la lista: rechazada («${denied.text}»)`);
+  for (let i = 0; i < 3; i++) await demo.shot();
   await demo.still('stats-denied');
   // Sin token → 401 directo al servidor
-  const r = await fetch(`${API}/stats/summary`);
+  const r = await fetch(`${API}/stats/summary`, { signal: AbortSignal.timeout(20000) });
   check(r.status === 401, `GET /stats/summary sin token → ${r.status}`);
 } catch (e) {
   problems.push(String(e?.stack || e));
   console.error(e);
 } finally {
-  server.close();
+  if (LOCAL) server.close();
   rmSync(dir, { recursive: true, force: true });
 }
 
 await demo.end();
 if (problems.length) await demo.fail(`A9.17: ${problems.length} problema(s):\n- ${problems.join('\n- ')}`);
-console.log('A9.17 OK');
+console.log(LOCAL ? 'A9.17 OK' : 'A9.17 OK (producción: solo rechazo)');
