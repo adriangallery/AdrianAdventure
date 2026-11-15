@@ -324,7 +324,7 @@ app.on(['GET', 'POST'], '/stats/*', async (c) => {
   const bodyText = c.req.method === 'POST' ? (await c.req.text()).slice(0, 4097) : '';
   const r = await statsRoutes({
     method: c.req.method, path: c.req.path, bodyText,
-    headers: { origin: c.req.header('origin'), authorization: c.req.header('authorization') },
+    headers: { origin: c.req.header('origin'), referer: c.req.header('referer'), authorization: c.req.header('authorization') },
     ip: c.req.header('cf-connecting-ip') || c.req.header('x-forwarded-for')?.split(',')[0]?.trim() || c.req.header('x-real-ip') || '?', // solo para el límite de ritmo: hasheada y en memoria, nunca a disco ni a logs
   });
   if (!r) return c.json({ error: 'Not found' }, 404);

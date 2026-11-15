@@ -1,3 +1,4 @@
+import { SAVE_API } from '@/config/saveApi';
 import { telemetryAllowed, noteChapterMarks, CHAPTER_COUNT, type ChapterSample } from '@/systems/ChapterTiming';
 
 /**
@@ -5,12 +6,12 @@ import { telemetryAllowed, noteChapterMarks, CHAPTER_COUNT, type ChapterSample }
  * QA/CI, `?qa=1`, navegador automatizado, desarrollo o localhost) y un interruptor en los ajustes (apagado = no se
  * manda nada, tampoco la duración de A9.14).
  *
- * Qué se manda (POST https://save.zerothetoken.com/stats/event, texto JSON): tipo de evento, un id de partida
+ * Qué se manda (POST /save-api/stats/event, mismo origen, texto JSON): tipo de evento, un id de partida
  * ALEATORIO guardado en localStorage (sin cookies ni huellas; el servidor lo guarda hasheado), capítulo/segundos/escena
  * si aplica, móvil o escritorio, familia genérica del navegador y si hay cartera conectada (booleano, NUNCA la
  * dirección). El servidor no guarda la IP.
  */
-const STATS_URL = 'https://save.zerothetoken.com/stats/event';
+const STATS_URL = `${SAVE_API}/stats/event`;
 export const STORE_PLAY_STATS = 'adrian_adventure_play_stats';
 const STORE_SID = 'adrian_adventure_stats_sid';
 

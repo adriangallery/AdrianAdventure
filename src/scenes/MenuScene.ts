@@ -11,9 +11,10 @@ import { ACHIEVEMENTS } from '@/config/achievements.config';
 import { resolveEnsMany } from '@/web3/ens';
 import { bindShutdown } from './lifecycle';
 import { BRANDING } from '@/config/branding';
+import { SAVE_API } from '@/config/saveApi';
 import { formatPlayTime, isFinishedRun } from '@/systems/Ending';
 
-/** Fila del leaderboard de save.zerothetoken.com */
+/** Fila del leaderboard del save-server (GET /save-api/leaderboard) */
 interface LeaderboardPlayer {
   /** A1.6: truncada por el servidor (`0x13fc…7f23`); un servidor (o caché) antiguo aún puede mandarla completa */
   address: string;
@@ -363,7 +364,7 @@ export class MenuScene extends Phaser.Scene {
 
     // Fetch leaderboard
     try {
-      const resp = await fetch('https://save.zerothetoken.com/leaderboard');
+      const resp = await fetch(`${SAVE_API}/leaderboard`);
       const data = await resp.json() as { players?: LeaderboardPlayer[]; total?: number };
       loading.remove();
 

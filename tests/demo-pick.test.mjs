@@ -8,7 +8,7 @@ test('isLocalBaseUrl: localhost y 127.0.0.1 son locales; lo desplegado no', () =
   assert.equal(isLocalBaseUrl('http://127.0.0.1:4173'), true);
   assert.equal(isLocalBaseUrl('http://localhost:3000/'), true);
   assert.equal(isLocalBaseUrl('http://[::1]:4173'), true);
-  assert.equal(isLocalBaseUrl('https://adventure.zerothetoken.com'), false);
+  assert.equal(isLocalBaseUrl('https://adventure.adrianzero.com'), false);
   assert.equal(isLocalBaseUrl('https://adventure.adrianzero.com/'), false);
   assert.equal(isLocalBaseUrl('https://127.0.0.1.evil.com'), false);
   assert.equal(isLocalBaseUrl('basura'), false);

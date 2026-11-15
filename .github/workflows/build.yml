@@ -17,7 +17,7 @@ on:
   workflow_dispatch:
     inputs:
       BASE_URL:
-        description: 'URL ya desplegada para smoke, walkthrough y demos (p. ej. https://adventure.zerothetoken.com). Vacío = compilar y probar el build.'
+        description: 'URL ya desplegada para smoke, walkthrough y demos (p. ej. https://adventure.adrianzero.com). Vacío = compilar y probar el build.'
         required: false
         default: ''
       DEMOS:

@@ -1,3 +1,4 @@
+import { SAVE_API } from '@/config/saveApi';
 import type { GameState } from '@/types/game.types';
 import { getWalletState, getSessionAuth } from './wallet';
 import { migrateSave } from '@/systems/SaveMigration';
@@ -6,7 +7,7 @@ import { autosavePlan, hasProgress } from '@/systems/SaveProgress';
 
 
 const WALLET_SAVE_PREFIX = 'adrian_adventure_wallet_';
-const SAVE_SERVER = 'https://save.zerothetoken.com';
+const SAVE_SERVER = SAVE_API;
 
 export interface WalletSave {
   state: GameState;

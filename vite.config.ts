@@ -80,6 +80,15 @@ function brandingPlugin(): Plugin {
   };
 }
 
+/**
+ * A9.18: el juego llama al save-server por `/save-api/<ruta>` (mismo origen; en producción lo sirve el proxy del mini).
+ * En `vite dev` y `vite preview` (smoke, walkthrough y demos del CI) esa ruta no existe y el fallback SPA devolvería
+ * index.html con 200: se reenvía al proxy de producción conservando la ruta, como antes se llamaba al save-server real.
+ */
+const SAVE_API_PROXY = {
+  '/save-api': { target: 'https://adventure.adrianzero.com', changeOrigin: true, secure: true },
+};
+
 const BUILD_HASH = Date.now().toString(36);
 
 /** Replace __BUILD__ in index.html, expose as define constant, and write version.txt */
@@ -108,6 +117,10 @@ export default defineConfig({
     port: 3000,
     open: true,
     host: true, // Expose on LAN (0.0.0.0)
+    proxy: SAVE_API_PROXY,
+  },
+  preview: {
+    proxy: SAVE_API_PROXY,
   },
   define: {
     __BUILD_HASH__: JSON.stringify(BUILD_HASH),

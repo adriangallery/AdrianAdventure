@@ -1,3 +1,4 @@
+import { SAVE_API } from '@/config/saveApi';
 import { connectWallet } from '@/web3/wallet';
 import { renderSummary, STATS_CSS, type StatsSummary } from './render';
 
@@ -14,7 +15,7 @@ function apiBase(): string {
   const p = new URLSearchParams(location.search).get('api');
   const local = /^(localhost|127\.0\.0\.1)$/.test(location.hostname);
   if (p && local && /^http:\/\/(localhost|127\.0\.0\.1):\d+$/.test(p)) return p;
-  return 'https://save.zerothetoken.com';
+  return SAVE_API; // A9.18: mismo origen (proxy /save-api del dominio del juego)
 }
 const API = apiBase();
 
