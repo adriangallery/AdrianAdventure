@@ -7,6 +7,10 @@
 //      (VOICE_BOOST × 1,0 / SFX_GAIN), sin depender de la música.
 // Graba la salida real (el limitador maestro, por donde pasa todo) con MediaRecorder dentro de la página → audio.webm, y
 // si hay ffmpeg monta a4-8-volumen.mp4 (fotogramas estirados a la duración del audio) y mide el audio grabado (ebur128).
+//   3) A4.8b, estrés: otra frase de Dex y, mientras habla, efectos de ElevenLabs a 0,7 sin ducking (como uno que
+//      arrancó justo antes de la voz) encima de la música: el peor caso para la cadena maestra.
+// A4.8b: la demo FALLA si el pico real (ebur128 true peak del audio grabado) pasa de −1 dBFS; apunta la sonoridad
+// integrada de la parte 0–2 (comparable con A4.8) y de toda la grabación.
 // Uso: BASE_URL=http://127.0.0.1:4173 node scripts/lib/demo.mjs run a4-8-volumen
 import { startDemo, sleep } from './lib/demo.mjs';
 import { writeFileSync, readdirSync } from 'node:fs';
@@ -73,7 +77,7 @@ const recording = await page.evaluate(() => {
     return String(e?.message || e);
   }
 });
-if (recording) notes.push(`audio sin grabar: ${recording}`);
+if (recording) problems.push(`audio sin grabar (sin él no se puede medir el pico real): ${recording}`);
 
 async function capture(label) {
   const r = await page.evaluate((label) => {
@@ -150,6 +154,37 @@ err = await during('2) LOOK puerta: Dex habla, la música baja', () => window.__
 });
 if (err) problems.push(`LOOK hs_front_door: ${err}`);
 for (let i = 0; i < 12; i++) seen.rmsMusic.push((await capture('2) la música vuelve')).rms);
+// marca del final de la parte comparable con A4.8 (segundos desde el inicio de la grabación)
+const tCompare = await page.evaluate(() => (window.__demoRec ? (performance.now() - window.__demoRec.t0) / 1000 : 0));
+
+// 3) A4.8b, estrés: voz + música + efectos nuevos (+6 dB del maestro) a la vez
+const STRESS_SFX = ['glass_break', 'thud', 'door_knock', 'item_pickup', 'coin_ping', 'door_slide'];
+const stress = { fired: [], voiceFrames: 0 };
+await page.evaluate(() => window.__demoRun(window.__qa.act('LOOK', 'hs_main_window')));
+{
+  const t0 = Date.now();
+  while (Date.now() - t0 < 15000 && !(await capture('3) estrés: esperando la voz')).speech) { /* espera */ }
+}
+for (const key of STRESS_SFX) {
+  const ok = await page.evaluate((key) => {
+    const g = window.__game;
+    if (!g.cache.audio.has(key)) return false;
+    try { g.sound.play(key, { volume: 0.7 }); return true; } catch { return false; }
+  }, key);
+  if (ok) stress.fired.push(key);
+  for (let i = 0; i < 2; i++) { if ((await capture(`3) estrés: ${key} sobre voz y música`)).speech) stress.voiceFrames++; }
+}
+{
+  const t0 = Date.now();
+  while (Date.now() - t0 < 30000 && !(await page.evaluate(() => window.__demoDone))) await capture('3) estrés: fin de la frase');
+  const e3 = await page.evaluate(() => window.__demoErr);
+  if (e3) problems.push(`LOOK hs_main_window: ${e3}`);
+}
+for (let i = 0; i < 6; i++) await capture('3) la música vuelve');
+notes.push(`estrés: efectos disparados sobre la voz: ${stress.fired.join(', ') || 'ninguno'} · ${stress.voiceFrames} fotogramas con voz`);
+if (stress.fired.length < 3) problems.push(`estrés: solo ${stress.fired.length} efectos en caché (${stress.fired.join(', ')})`);
+if (!stress.voiceFrames) problems.push('estrés: no sonó la voz durante los efectos');
+
 const fin = (await capture('fin')).a;
 console.log(`voz: ${seen.voiceFrames} fotogramas con ducking · ganancia mínima ${seen.minDuck} · volumen del clip ${seen.clip} (esperado ${fin?.mix?.voiceClipVolume})`);
 if (!seen.voiceFrames) problems.push('no se vio la música bajar bajo la voz');
@@ -160,7 +195,7 @@ const dbf = (v) => (v > 0 ? Math.round(20 * Math.log10(v) * 10) / 10 : -Infinity
 notes.push(`RMS de la salida (mediana): con voz ${dbf(med(seen.rmsVoice))} dBFS · música sola ${dbf(med(seen.rmsMusic))} dBFS`);
 const peak = await page.evaluate(() => window.__demoMeter?.peak ?? 0);
 notes.push(`pico visto en la salida: ${dbf(peak)} dBFS`);
-if (peak > 1.0) problems.push(`la salida pasó de 0 dBFS (pico ${peak})`);
+if (peak > 10 ** (-1 / 20)) problems.push(`la salida pasó de −1 dBFS en las muestras (pico ${dbf(peak)} dBFS)`);
 
 // audio
 let audioFile = null;
@@ -182,12 +217,24 @@ if (!recording) {
 }
 await demo.end();
 
+/** ebur128 del audio grabado (entero o hasta `until` s): integrado (LUFS) y pico real (dBFS) */
+function measure(file, until = 0) {
+  const af = `${until > 0 ? `atrim=0:${until.toFixed(2)},` : ''}ebur128=peak=true`;
+  const r = spawnSync('ffmpeg', ['-hide_banner', '-nostats', '-i', file, '-af', af, '-f', 'null', '-'], { encoding: 'utf8' });
+  const sum = String(r.stderr).split('Summary:').pop() ?? '';
+  const I = sum.match(/I:\s+(-?[\d.]+|-inf) LUFS/)?.[1];
+  const P = sum.match(/Peak:\s+(-?[\d.]+|-inf) dBFS/)?.[1];
+  return { I: I == null ? null : Number(I), P: P == null ? null : Number(P) };
+}
+const TRUE_PEAK_MAX = -1;
 if (audioFile && audioSec > 1) {
-  const lufs = spawnSync('ffmpeg', ['-hide_banner', '-nostats', '-i', audioFile, '-af', 'ebur128=peak=true', '-f', 'null', '-'], { encoding: 'utf8' });
-  const sum = String(lufs.stderr).split('Summary:').pop() ?? '';
-  const I = sum.match(/I:\s+(-?[\d.]+) LUFS/)?.[1];
-  const P = sum.match(/Peak:\s+(-?[\d.]+) dBFS/)?.[1];
-  notes.push(`audio grabado medido (ebur128): integrado ${I ?? '?'} LUFS · pico real ${P ?? '?'} dBFS`);
+  const part = tCompare > 1 ? measure(audioFile, tCompare) : null;
+  const all = measure(audioFile);
+  if (part) notes.push(`audio grabado medido (ebur128), partes 0–2 (${tCompare.toFixed(1)} s, comparable con A4.8): integrado ${part.I ?? '?'} LUFS · pico real ${part.P ?? '?'} dBFS`);
+  notes.push(`audio grabado medido (ebur128), todo con el estrés: integrado ${all.I ?? '?'} LUFS · pico real ${all.P ?? '?'} dBFS`);
+  if (all.P == null || !Number.isFinite(all.P)) problems.push('no se pudo medir el pico real del audio grabado');
+  else if (all.P > TRUE_PEAK_MAX) problems.push(`pico real ${all.P} dBFS > ${TRUE_PEAK_MAX} dBFS: la cadena maestra no sujeta`);
+  if (part?.I != null && (part.I < -17 || part.I > -11)) notes.push(`aviso: sonoridad de las partes 0–2 (${part.I} LUFS) lejos de −14`);
   const frames = readdirSync(join(demo.dir, 'frames')).filter((f) => f.endsWith('.png')).length;
   const fps = Math.max(1, frames / audioSec).toFixed(3);
   const r = spawnSync('ffmpeg', ['-y', '-loglevel', 'error', '-framerate', fps, '-i', join(demo.dir, 'frames', '%03d.png'), '-i', audioFile,
