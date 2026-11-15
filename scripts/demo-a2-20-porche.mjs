@@ -25,7 +25,7 @@ const MIN_FEET_Y = 90;
 const ARRIVE_TOL = 1.5;
 const TIMEOUT_MS = 25000;
 const HS = Object.fromEntries(SCENE.regions.hotspots.map((h) => [h.id, h]));
-const LAYERS = SCENE.foregroundLayers ?? [];
+const LAYERS = (SCENE.foregroundLayers ?? []).filter((l) => l.id.startsWith('bush_')); // el poste del carport tapa entero, no parte
 
 const demo = await startDemo(import.meta.url, { fps: 4, width: 640, viewport: VIEWPORTS[1] });
 const { page } = demo;
