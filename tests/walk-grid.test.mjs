@@ -281,3 +281,37 @@ test('outside (captura 12-nov): de junto al pilar del porche al carport, a la ac
     }
   }
 });
+
+// A2.20 (Adrián, 15-nov): Dex subía al porche (pies a la altura de la puerta, como si flotara) y salía PARTIDO entre
+// los arbustos (piernas tapadas, zapatillas asomando debajo). Ningún punto andable por encima de y 91 (el pie del
+// porche) ni detrás de un arbusto de primer plano con walk-behind (pies por encima de su base con la caja de Dex, ±1,2 %
+// en x, solapando la del trozo); las paradas de la ruta crítica, alcanzables desde la acera; tr_mountain se pisa.
+test('outside (A2.20): ni porche ni detrás de los arbustos; puerta, teclado, felpudo, lámpara, buzón, nido, tablón y arbustos alcanzables', () => {
+  const d = SCENES.outside;
+  const nav = navOf(d);
+  const HALF = 1.2;
+  const bad = [];
+  for (let x = 0; x <= 100; x += 0.25) {
+    for (let y = 60; y <= 100; y += 0.25) {
+      if (!nav.isWalkable(x, y)) continue;
+      if (y < 91) bad.push(`(${x}, ${y}) por encima del pie del porche`);
+      // Solo los arbustos: el poste del carport (A3.12) es una franja estrecha que llega al suelo y tapa entero, sin partir
+      for (const l of (d.foregroundLayers ?? []).filter((f) => f.id.startsWith('bush_'))) {
+        if (y < l.baseY && x + HALF > l.bounds.x && x - HALF < l.bounds.x + l.bounds.w) bad.push(`(${x}, ${y}) detrás de ${l.id}`);
+      }
+    }
+  }
+  assert.deepEqual(bad.slice(0, 10), []);
+  const hs = Object.fromEntries(d.regions.hotspots.map((h) => [h.id, h]));
+  const from = { x: 60, y: 95 };
+  for (const id of ['hs_front_door', 'hs_keypad', 'hs_doormat', 'hs_porch_light', 'hs_mailbox', 'hs_chimney', 'hs_fence', 'hs_bushes', 'hs_left_window', 'hs_main_window']) {
+    const w = hs[id].walkTo;
+    assert.ok(w, `${id}: walkTo explícito`);
+    assert.ok(nav.isWalkable(w.x, w.y), `${id}: walkTo ${fmt(w)} andable`);
+    const r = nav.findPath(from, w);
+    assert.ok(dist(r.goal, w) < 0.5, `${id}: desde la acera llega a ${fmt(r.goal)} y no a ${fmt(w)}`);
+  }
+  const mt = d.regions.triggers.find((t) => t.id === 'tr_mountain').bounds;
+  assert.ok(nav.isWalkable(mt.x + mt.w / 2, 95), 'tr_mountain se pisa');
+  assert.ok(dist(nav.findPath(from, { x: 1.5, y: 95 }).goal, { x: 1.5, y: 95 }) < 0.5, 'tr_mountain alcanzable desde la acera');
+});

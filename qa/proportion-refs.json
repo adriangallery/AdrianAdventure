@@ -58,7 +58,7 @@
       "scene": "outside",
       "scale": "fixed", "scaleWhy": "A2.13 (Adrián, 11-nov): la fachada y el porche apenas tienen profundidad; Dex mide lo mismo en la acera, junto al buzón, que en la puerta",
       "reference": { "label": "puerta de la casa", "hotspot": "hs_front_door", "kind": "door", "top": 52, "bottom": 75 },
-      "positions": { "back": { "x": 39, "y": 83.5 }, "mid": { "x": 40, "y": 90 }, "front": { "x": 60, "y": 98 }, "frontL": { "x": 10, "y": 98 }, "ref": { "x": 39, "y": 83.5 } },
+      "positions": { "back": { "x": 39, "y": 91.5 }, "mid": { "x": 40, "y": 95 }, "front": { "x": 60, "y": 98 }, "frontL": { "x": 10, "y": 98 }, "ref": { "x": 39, "y": 91.5 } },
       "sameDepth": [["front", "frontL"]],
       "exception": "A2.13: escala fija por decisión de Adrián (11-nov). Dex mide en el porche lo mismo que en la acera (40,2 % del fondo), 1,75× la puerta de la casa (23 %): en esta escena manda «no cambia de tamaño» sobre «Dex ≈ alto de la puerta» de A2.11. El cociente se sigue calculando y la demo de A2.13 exige el mismo alto en la acera y en la puerta"
     },
