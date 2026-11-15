@@ -92,9 +92,30 @@ test('mezcla: voz ≈ −14/−15 LUFS (antes del limitador) y la música bajo l
 
 test('mezcla: los efectos suben todos igual (SFX_GAIN en el maestro) y el limitador queda por debajo de 0 dBFS', () => {
   assert.equal(M.SFX_GAIN, 2);
-  assert.ok(M.MASTER_LIMIT_DB <= -2 && M.MASTER_LIMIT_DB >= -6);
-  assert.ok(M.MASTER_LIMIT.ratio >= 12 && M.MASTER_LIMIT.attack <= 0.005);
+  assert.ok(M.MASTER_LIMIT_DB <= -3 && M.MASTER_LIMIT_DB >= -8);
+  assert.ok(M.MASTER_LIMIT.ratio >= 12 && M.MASTER_LIMIT.attack <= 0.003);
   assert.equal(M.voiceClipVolume(1), Math.round((M.VOICE_BOOST / M.SFX_GAIN) * 1000) / 1000);
   assert.equal(M.voiceClipVolume(Number.NaN), M.voiceClipVolume(1));
   assert.equal(Math.round(M.toDb(M.fromDb(-9.1)) * 10) / 10, -9.1);
+});
+
+test('A4.8b: el recorte suave es la identidad por debajo del codo y nunca pasa de −1 dBFS', () => {
+  const { knee, ceiling, points } = M.SOFT_CLIP;
+  assert.ok(M.toDb(ceiling) <= -1.5, `techo ${M.toDb(ceiling).toFixed(2)} dBFS`);
+  assert.ok(knee < ceiling && M.toDb(knee) >= -7, `codo ${M.toDb(knee).toFixed(2)} dBFS (no aplastar la voz)`);
+  assert.ok(M.MASTER_TRIM_DB < 0 && M.MASTER_TRIM_DB >= -3);
+  const c = M.softClipCurve();
+  assert.equal(c.length, points);
+  const at = (x) => c[Math.round(((x + 1) / 2) * (points - 1))];
+  let max = 0;
+  for (let i = 1; i < c.length; i++) {
+    assert.ok(c[i] >= c[i - 1], 'monótona');
+    max = Math.max(max, Math.abs(c[i]));
+  }
+  assert.ok(max <= ceiling + 1e-6, `máximo ${max}`);
+  assert.ok(Math.abs(c[0] + c[c.length - 1]) < 1e-6, 'simétrica');
+  for (const x of [0, 0.1, -0.25, 0.45]) assert.ok(Math.abs(at(x) - x) < 1e-3, `identidad en ${x}: ${at(x)}`);
+  // continua en el codo y por encima sigue subiendo (no es un recorte duro)
+  assert.ok(at(0.6) > at(0.55) && at(0.55) > knee);
+  assert.ok(at(1) > ceiling - 0.05);
 });
