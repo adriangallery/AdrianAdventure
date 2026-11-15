@@ -1201,8 +1201,8 @@
       {
         "id": "hs_bushes",
         "walkTo": {
-          "x": 12.5,
-          "y": 94.5
+          "x": 18,
+          "y": 98
         },
         "face": "back",
         "name": "Bushes",

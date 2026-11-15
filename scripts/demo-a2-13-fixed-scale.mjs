@@ -23,7 +23,7 @@ const VIEWPORTS = [
   { label: '1280x720', width: 1280, height: 720, isMobile: false, hasTouch: true },
 ];
 const SIDEWALK = { x: 55, y: 93 }; // acera, junto al buzón (hs_mailbox walkTo 57, 92)
-const DOOR = { x: 34.5, y: 83.5 }; // porche, delante de la puerta (hs_front_door x 31,6-36,6)
+const DOOR = { x: 34.1, y: 91.5 }; // al pie del porche, delante de la puerta (A2.20: walkTo de hs_front_door; el porche ya no se pisa)
 const STAGE = { width: 1320, height: 800 };
 const TOL_PX = 1;
 const INSET = 0.6;

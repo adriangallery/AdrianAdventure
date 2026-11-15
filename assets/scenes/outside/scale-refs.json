@@ -49,7 +49,7 @@
       "baseY": 93,
       "source": "A2.17 fase 3: caja = foregroundLayers.bush_left de scene.json (máscara de scripts/make-fg-layers.py)",
       "measured": false,
-      "note": "A2.17 fase 3: el arbusto, pintado en el fondo, se copia tal cual a foreground.png y es un trozo con máscara y walk-behind (base 93, borde de abajo medido a ojo 92,5–93,4): pies por encima = le tapa las piernas. Sustituye al blockedAreas de la fase 2 (x 9–25, y 90,5–94,5)."
+      "note": "A2.17 fase 3: el arbusto, pintado en el fondo, se copia tal cual a foreground.png y es un trozo con máscara y walk-behind (base 93, borde de abajo medido a ojo 92,5–93,4): pies por encima = le tapa las piernas. Sustituye al blockedAreas de la fase 2 (x 9–25, y 90,5–94,5). A2.20: su borde de abajo va de 83,6 (x 5,5–10,8) a 93,1 y Dex quedaba PARTIDO con los pies en y 91–93 (piernas tapadas, zapatillas debajo): en x 4,3–18,2 la zona andable empieza en 93,2, siempre por delante de la base."
     },
     {
       "id": "bush_right",
@@ -66,7 +66,7 @@
       "baseY": 97.3,
       "source": "A2.17 fase 3: caja = foregroundLayers.bush_right de scene.json; base medida a ojo (borde de abajo 94,3–97,3)",
       "measured": false,
-      "note": "Trozo con máscara y walk-behind (base 97,3). Su pie (x 20,2–23,6, y 95,6–97,4) es un blockedAreas: Dex no se mete dentro del tronco."
+      "note": "Trozo con máscara y walk-behind (base 97,3). Su pie (x 20,2–23,6, y 95,6–97,4) es un blockedAreas: Dex no se mete dentro del tronco. A2.20: en los bordes (x 19,4–20,3 y 24,1–25,4) el borde de abajo sube a 92–94,4 y por detrás le partía igual: en x 18,2–27,2 la zona andable empieza en 97,4 (solo por delante)."
     },
     {
       "id": "hs_carport",
