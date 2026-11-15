@@ -1,22 +1,25 @@
 // A1.12 (plan SCUMM): ayudas de Chrome (puppeteer) para probar el panel de guardar/cargar en el smoke y en la demo.
-// La nube NUNCA es la real: `installCloudMock` sustituye `fetch` hacia save.zerothetoken.com por un servidor en memoria
+// La nube NUNCA es la real: `installCloudMock` sustituye `fetch` hacia /save-api (A9.18: proxy de mismo origen del
+// save-server, relativo o absoluto en el origen de la página) por un servidor en memoria
 // (persistido en localStorage para sobrevivir a la recarga) y la wallet se simula con `__qa.fakeWallet` (?qa=1).
 
 export const QA_ADDR = '0x00000000000000000000000000000000000a1120';
 const PANEL = '#save-load-panel';
 
-/** Antes de cargar la página: `fetch` a save.zerothetoken.com → servidor en memoria (exige firma como el real). */
+/** Antes de cargar la página: `fetch` a /save-api → servidor en memoria (exige firma como el real). */
 export async function installCloudMock(page) {
   await page.evaluateOnNewDocument(() => {
     const realFetch = window.fetch.bind(window);
-    const HOST = 'https://save.zerothetoken.com';
+    const PREFIX = '/save-api';
     window.fetch = async (input, init = {}) => {
-      const url = typeof input === 'string' ? input : input.url;
-      if (!url.startsWith(HOST)) return realFetch(input, init);
+      const raw = typeof input === 'string' ? input : input instanceof URL ? input.href : input.url;
+      let u;
+      try { u = new URL(raw, location.origin); } catch { return realFetch(input, init); }
+      if (u.origin !== location.origin || !(u.pathname === PREFIX || u.pathname.startsWith(`${PREFIX}/`))) return realFetch(input, init);
       const db = JSON.parse(localStorage.getItem('__qa_cloud') || '{}');
       const log = JSON.parse(localStorage.getItem('__qa_cloud_log') || '[]');
       const method = (init.method || 'GET').toUpperCase();
-      const path = new URL(url).pathname;
+      const path = u.pathname.slice(PREFIX.length) || '/';
       log.push(`${method} ${path}`);
       localStorage.setItem('__qa_cloud_log', JSON.stringify(log));
       const json = (status, body) => new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json' } });

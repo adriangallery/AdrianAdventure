@@ -68,7 +68,8 @@ const server = createServer(async (req, res) => {
   res.end(JSON.stringify(r?.body ?? { error: 'Not found' }));
 });
 const LOCAL = isLocalBaseUrl(process.env.BASE_URL || 'http://127.0.0.1:4173');
-let API = 'https://save.zerothetoken.com';
+// A9.18: contra una URL desplegada, el save-server por el proxy de mismo origen /save-api de esa misma URL
+let API = `${(process.env.BASE_URL || '').replace(/\/+$/, '')}/save-api`;
 if (LOCAL) {
   await new Promise((ok) => server.listen(0, '127.0.0.1', ok));
   API = `http://127.0.0.1:${server.address().port}`;

@@ -7,7 +7,7 @@ import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { verifyMessage } from 'viem';
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
-import { createStatsAuth, parseAdmins, loadSessionSecret, NONCE_TTL_MS, SESSION_TTL_MS } from '../save-server/stats-auth.js';
+import { createStatsAuth, parseAdmins, loadSessionSecret, domainFromRequest, DEFAULT_DOMAIN, NONCE_TTL_MS, SESSION_TTL_MS } from '../save-server/stats-auth.js';
 import { createStatsRoutes } from '../save-server/stats-routes.js';
 import { createStatsStore } from '../save-server/stats.js';
 
@@ -25,8 +25,8 @@ function setup() {
   });
   const store = createStatsStore({ dir, now: () => clock.t });
   const routes = createStatsRoutes({ store, auth });
-  const call = (method, path, { body, token } = {}) => routes({
-    method, path, bodyText: body ? JSON.stringify(body) : '', headers: token ? { authorization: `Bearer ${token}` } : {}, ip: '127.0.0.1',
+  const call = (method, path, { body, token, headers = {} } = {}) => routes({
+    method, path, bodyText: body ? JSON.stringify(body) : '', headers: { ...headers, ...(token ? { authorization: `Bearer ${token}` } : {}) }, ip: '127.0.0.1',
   });
   return { dir, clock, call, done: () => rmSync(dir, { recursive: true, force: true }) };
 }
@@ -121,3 +121,45 @@ test('ingestión: evento válido 200, basura 400, demasiado grande 413', async (
     assert.equal((await s.call('POST', '/stats/event', { body: { t: 'new_game', sid: 'abcdefgh12345678', pad: 'x'.repeat(600) } })).status, 413);
   } finally { s.done(); }
 });
+
+// A9.18: el cliente nuevo pide el nonce por /save-api (mismo origen: el GET no lleva Origin); el viejo en caché, cross-origin
+// a save.zerothetoken.com desde adventure.zerothetoken.com (con Origin). Los dos tienen que poder entrar.
+test('A9.18: domainFromRequest — Origin, si no Referer, si no el de por defecto (adventure.adrianzero.com)', () => {
+  assert.equal(DEFAULT_DOMAIN, 'adventure.adrianzero.com');
+  assert.equal(domainFromRequest({}), 'adventure.adrianzero.com');
+  assert.equal(domainFromRequest(), 'adventure.adrianzero.com');
+  assert.equal(domainFromRequest({ origin: 'https://adventure.adrianzero.com' }), 'adventure.adrianzero.com');
+  assert.equal(domainFromRequest({ origin: 'https://adventure.zerothetoken.com' }), 'adventure.zerothetoken.com');
+  assert.equal(domainFromRequest({ referer: 'https://adventure.zerothetoken.com/stats/' }), 'adventure.zerothetoken.com');
+  assert.equal(domainFromRequest({ referer: 'https://adventure.adrianzero.com/stats/?x=1' }), 'adventure.adrianzero.com');
+  assert.equal(domainFromRequest({ origin: 'http://localhost:4173' }), 'localhost:4173');
+  // un dominio ajeno no se cuela en el mensaje ni por Origin ni por Referer
+  assert.equal(domainFromRequest({ origin: 'https://evil.example', referer: 'https://evil.example/stats' }), 'adventure.adrianzero.com');
+  assert.equal(domainFromRequest({ origin: 'https://evil.example', referer: 'https://adventure.zerothetoken.com/stats/' }), 'adventure.zerothetoken.com');
+  assert.equal(domainFromRequest({ origin: 'null', referer: 'no es una url' }), 'adventure.adrianzero.com');
+});
+
+for (const [name, headers, domain] of [
+  ['/save-api de mismo origen, GET sin Origin ni Referer', {}, 'adventure.adrianzero.com'],
+  ['/save-api de mismo origen, GET sin Origin con Referer', { referer: 'https://adventure.adrianzero.com/stats/' }, 'adventure.adrianzero.com'],
+  ['/save-api en la vhost vieja, GET sin Origin con Referer', { referer: 'https://adventure.zerothetoken.com/stats/' }, 'adventure.zerothetoken.com'],
+  ['cliente viejo en caché (cross-origin con Origin)', { origin: 'https://adventure.zerothetoken.com' }, 'adventure.zerothetoken.com'],
+]) {
+  test(`A9.18: nonce → firma → login funciona — ${name}`, async () => {
+    const s = setup();
+    try {
+      const n = await s.call('GET', '/stats/nonce', { headers });
+      assert.equal(n.status, 200);
+      assert.ok(n.body.message.startsWith(`${domain} wants you to sign in`), n.body.message);
+      assert.match(n.body.message, /^URI: https:\/\/adventure\.adrianzero\.com\/stats$/m);
+      const signature = await admin.signMessage({ message: n.body.message });
+      // el POST de login puede llevar Origin (o no): el mensaje verificado es el guardado con el nonce
+      const l = await s.call('POST', '/stats/login', {
+        body: { address: admin.address, signature, nonce: n.body.nonce }, headers: { origin: 'https://adventure.adrianzero.com' },
+      });
+      assert.equal(l.status, 200, JSON.stringify(l.body));
+      const sum = await s.call('GET', '/stats/summary', { token: l.body.token });
+      assert.equal(sum.status, 200);
+    } finally { s.done(); }
+  });
+}

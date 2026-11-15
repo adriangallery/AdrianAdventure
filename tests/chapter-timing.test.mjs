@@ -50,7 +50,7 @@ test('duraciones absurdas no se mandan; estado roto no rompe', () => {
 });
 
 test('telemetryAllowed: nada desde QA, CI, dev, local ni tráiler', () => {
-  const base = { search: '', hostname: 'adventure.zerothetoken.com', isDev: false, webdriver: false };
+  const base = { search: '', hostname: 'adventure.adrianzero.com', isDev: false, webdriver: false };
   assert.equal(T.telemetryAllowed(base), true);
   assert.equal(T.telemetryAllowed({ ...base, search: '?qa=1' }), false);
   assert.equal(T.telemetryAllowed({ ...base, search: '?trailer' }), false);

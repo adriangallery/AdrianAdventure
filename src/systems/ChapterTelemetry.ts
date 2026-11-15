@@ -1,3 +1,4 @@
+import { SAVE_API } from '@/config/saveApi';
 import { telemetryAllowed, type ChapterSample } from '@/systems/ChapterTiming';
 import { playStatsEnabled } from '@/systems/PlayStats';
 
@@ -5,7 +6,7 @@ import { playStatsEnabled } from '@/systems/PlayStats';
  * A9.14: manda al save-server la duración de un capítulo, sin nada más (ni cartera, ni id de partida, ni escena).
  * Dispara y olvida: un fallo de red no molesta al jugador ni se reintenta.
  */
-const TELEMETRY_URL = 'https://save.zerothetoken.com/telemetry/chapter';
+const TELEMETRY_URL = `${SAVE_API}/telemetry/chapter`;
 
 let allowed: boolean | null = null;
 

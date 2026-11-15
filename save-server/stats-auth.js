@@ -10,7 +10,10 @@ import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 
 export const NONCE_TTL_MS = 5 * 60 * 1000;
 export const SESSION_TTL_MS = 12 * 60 * 60 * 1000;
-export const DEFAULT_DOMAIN = 'adventure.zerothetoken.com';
+// A9.18: el dominio del juego es adventure.adrianzero.com (el cliente llama por el proxy de mismo origen /save-api).
+// adventure.zerothetoken.com se sigue aceptando: la vhost se mantiene para enlaces viejos y clientes en caché.
+export const DEFAULT_DOMAIN = 'adventure.adrianzero.com';
+export const GAME_DOMAINS = ['adventure.adrianzero.com', 'adventure.zerothetoken.com'];
 const ADDR_RE = /^0x[0-9a-fA-F]{40}$/;
 const SIG_RE = /^0x[0-9a-fA-F]{130,}$/;
 
@@ -38,7 +41,7 @@ export function loginMessage({ domain, nonce, issuedAt }) {
     '',
     'This is only a signature: it is NOT a transaction and costs no gas.',
     '',
-    'URI: https://save.zerothetoken.com/stats',
+    'URI: https://adventure.adrianzero.com/stats',
     `Nonce: ${nonce}`,
     `Issued At: ${issuedAt}`,
   ].join('\n');
@@ -102,11 +105,22 @@ export function createStatsAuth({ admins = [], secret, verify, now = () => Date.
   return { issueNonce, login, checkToken };
 }
 
-/** Dominio que se pone en el mensaje según el Origin de la petición (solo los del juego; si no, el de por defecto). */
-export function domainFromOrigin(origin) {
+/** Host del juego de una URL (Origin o Referer) si es de los nuestros o local; si no, null. */
+function gameHost(url) {
+  if (!url) return null;
   try {
-    const h = new URL(String(origin)).host;
-    if (['adventure.zerothetoken.com', 'adventure.adrianzero.com'].includes(h) || /^(localhost|127\.0\.0\.1)(:\d+)?$/.test(h)) return h;
-  } catch { /* sin Origin */ }
-  return DEFAULT_DOMAIN;
+    const h = new URL(String(url)).host;
+    if (GAME_DOMAINS.includes(h) || /^(localhost|127\.0\.0\.1)(:\d+)?$/.test(h)) return h;
+  } catch { /* URL no válida */ }
+  return null;
+}
+
+/**
+ * A9.18: dominio del mensaje de /stats/nonce. Por /save-api (mismo origen) el GET del nonce NO lleva Origin: entonces
+ * se mira el Referer (la página /stats que lo pide); sin ninguno de los dos, el de por defecto. El cliente viejo en
+ * caché (cross-origin a save.zerothetoken.com) sí manda Origin. El mensaje lo construye el servidor y se guarda con el
+ * nonce: /stats/login verifica la firma contra ESE texto, así que el dominio elegido aquí nunca hace fallar el login.
+ */
+export function domainFromRequest({ origin, referer } = {}) {
+  return gameHost(origin) ?? gameHost(referer) ?? DEFAULT_DOMAIN;
 }

@@ -6,7 +6,7 @@
 //   GET  /stats/summary  agregados (Authorization: Bearer …; sin sesión válida, 401)
 import { createHash } from 'node:crypto';
 import { parseEvent, MAX_BODY_BYTES } from './stats.js';
-import { domainFromOrigin } from './stats-auth.js';
+import { domainFromRequest } from './stats-auth.js';
 
 /** Límite en memoria por clave (hash de la IP): `max` por ventana. No persiste ni registra nada. */
 export function createLimiter({ max = 120, windowMs = 60 * 60 * 1000, now = () => Date.now(), maxKeys = 10000 } = {}) {
@@ -45,7 +45,7 @@ export function createStatsRoutes({ store, auth, eventLimit = createLimiter(), l
     }
     if (method === 'GET' && path === '/stats/nonce') {
       if (!loginLimit(ipKey(ip))) return { status: 429, body: { error: 'Too many' } };
-      const { nonce, message, expiresAt } = auth.issueNonce(domainFromOrigin(h('origin')));
+      const { nonce, message, expiresAt } = auth.issueNonce(domainFromRequest({ origin: h('origin'), referer: h('referer') }));
       return { status: 200, body: { nonce, message, expiresAt } };
     }
     if (method === 'POST' && path === '/stats/login') {

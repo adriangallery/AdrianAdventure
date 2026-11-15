@@ -180,7 +180,7 @@ antigua punto por punto: `qa/OLD_QA_RECHECK.md`.
 ## Lanzarlo
 
 - En cada PR y en `main`: automático (build → walkthrough).
-- Contra producción: Actions → build → Run workflow → `BASE_URL=https://adventure.zerothetoken.com`. Lanza
+- Contra producción: Actions → build → Run workflow → `BASE_URL=https://adventure.adrianzero.com`. Lanza
   smoke y walkthrough (todas sus partes) sin compilar. La API solo existe si ese despliegue ya incluye A0.1.
 
 ### Jobs del CI (A0.6)
