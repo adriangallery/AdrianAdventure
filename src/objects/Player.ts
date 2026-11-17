@@ -16,6 +16,7 @@ import {
   paperVWalkIndex, paperWalkKey, parsePaperMode, type JawState, type PaperMode,
 } from '@/systems/PaperDex';
 import { DEXPAPEL_ANIMS } from '@/data/dexPapelFrames';
+import { parsePlMode, plKey, plWalkKey } from '@/systems/PlDex';
 
 const IDLE_FRAME_MS = 400;
 
@@ -143,6 +144,8 @@ export class Player extends Phaser.GameObjects.Sprite {
   private jawWanted = false;
   private voiceLevel: number | null = null;
   private paperArmPose: number | null = null;
+  // A2.21: prueba del andar «Dex PixelLab» (?dex=pl; src/systems/PlDex.ts). Solo cambia el andar
+  private pl = false;
 
   /**
    * A2.2: hacia dónde mira. 'front' = idle animado (Idle-1..4); el resto, un sprite quieto (ver facingTexture).
@@ -179,6 +182,7 @@ export class Player extends Phaser.GameObjects.Sprite {
     this.idleTicker = new IdleTicker(qa ? QA_IDLE_SEED : (Date.now() ^ Math.floor(Math.random() * 0x7fffffff)) >>> 0);
     // A2.16: prueba de estilo «Dex de papel» (también en producción)
     this.paper = typeof window !== 'undefined' ? parsePaperMode(window.location.search) : null;
+    this.pl = typeof window !== 'undefined' && parsePlMode(window.location.search);
     if (this.paper) {
       const spec = PAPER_SPECS[this.paper.intensity];
       const seed = qa ? QA_PAPER_SEED : (Date.now() ^ Math.floor(Math.random() * 0x7fffffff)) >>> 0;
@@ -542,6 +546,8 @@ export class Player extends Phaser.GameObjects.Sprite {
           ? paperWalkKey(dir, this.paper.intensity, this.walkClock)
           : rigKey(dir === 'up' ? 'walk_up' : 'walk_down', paperVWalkIndex(this.walkClock));
       }
+      // A2.21: andar «Dex PixelLab» (8 fotogramas × 4 direcciones); solo Dex sin disfraz y con el rig
+      if (this.pl && hasRig(this.spritePrefix, this.has) && this.has(plKey('right', 0))) wp.texture = plWalkKey(dir, this.walkClock);
       this.applyPose(wp, null);
     }
 
