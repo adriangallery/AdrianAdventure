@@ -5,9 +5,9 @@
  *
  * Lógica pura, sin Phaser ni imports (tests/pl-dex.test.mjs, en `npm run test:engine`).
  */
-export type PlDir = left | right | up | down;
-export const PL_PREFIX = dexpl;
-export const PL_DIRS: readonly PlDir[] = [left, right, up, down];
+export type PlDir = 'left' | 'right' | 'up' | 'down';
+export const PL_PREFIX = 'dexpl';
+export const PL_DIRS: readonly PlDir[] = ['left', 'right', 'up', 'down'];
 export const PL_WALK_FRAMES = 8;
 /**
  * De perfil: zancada medida en los fotogramas ≈ 40 px de arte por paso (2 pasos por ciclo); a 74 px/s (A2.12)
