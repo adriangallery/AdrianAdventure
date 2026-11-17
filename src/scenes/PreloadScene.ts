@@ -15,6 +15,7 @@ import { GameScene } from '@/scenes/GameScene';
 import { DEX2D_ANIMS } from '@/data/dex2dFrames';
 import { DEXPAPEL_ANIMS } from '@/data/dexPapelFrames';
 import { paperFiles, paperJawKey, parsePaperMode } from '@/systems/PaperDex';
+import { parsePlMode, plFiles, plKey } from '@/systems/PlDex';
 
 /** A2.7: medida del último cambio de escena (`__qa.state().lastTransition`) */
 export interface LastTransition {
@@ -143,6 +144,10 @@ export class PreloadScene extends Phaser.Scene {
     // A2.16: «Dex de papel» (?dex=papel): sus fotogramas y mandíbulas solo se descargan si se pide
     if (parsePaperMode(window.location.search) && !this.textures.exists(paperJawKey('front'))) {
       for (const f of paperFiles(DEXPAPEL_ANIMS)) this.load.image(f.key, `${f.url}${v}`);
+    }
+    // A2.21: andar «Dex PixelLab» (?dex=pl): solo se descarga si se pide
+    if (parsePlMode(window.location.search) && !this.textures.exists(plKey('right', 0))) {
+      for (const f of plFiles()) this.load.image(f.key, `${f.url}${v}`);
     }
     // A2.2: de espaldas (Player.face('back')); como las de perfil, la clave sigue el nombre del PNG. Aparte del bloque
     // de arriba porque TrailerScene carga las demás del personaje y no estas.
