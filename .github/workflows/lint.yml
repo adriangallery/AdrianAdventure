@@ -99,6 +99,46 @@ jobs:
             voice-coverage-report.md
           if-no-files-found: ignore
           retention-days: 30
+      # A9.23: voces nuevas sin ElevenLabs. voices.yml genera lo que falta con Kokoro, así que una frase nueva sonaría con
+      # otra voz y el CI saldría en verde. Guion congelado al día (script-lock --check) y lo pendiente con ElevenLabs
+      # (--dry-run: sin clave ni llamadas a la API). Si hay algo, aviso visible (::warning::) y en el resumen, sin fallar:
+      # generar gasta créditos y lo decide Adrián.
+      - name: Voces pendientes con ElevenLabs (A9.23)
+        if: ${{ !cancelled() }}
+        env:
+          ELEVENLABS_API_KEY: ''
+        run: |
+          set +e
+          {
+            echo "### Voces con ElevenLabs (A9.23)"
+          } >> "$GITHUB_STEP_SUMMARY"
+          lock_out=$(node scripts/voices/script-lock.mjs --check 2>&1); lock_rc=$?
+          echo "$lock_out"
+          if [ $lock_rc -ne 0 ]; then
+            echo "::warning title=Guion de voces desactualizado (A9.23)::qa/voices-script.lock.json no está al día: node scripts/voices/script-lock.mjs y commit; luego las voces nuevas con ElevenLabs"
+            echo "- ⚠️ \`qa/voices-script.lock.json\` no está al día: \`node scripts/voices/script-lock.mjs\` y commit." >> "$GITHUB_STEP_SUMMARY"
+          fi
+          dry=$(node scripts/voices/eleven-tts.mjs --dry-run 2>&1); dry_rc=$?
+          echo "$dry"
+          if [ $dry_rc -ne 0 ]; then
+            echo "::warning title=Dry-run de ElevenLabs falló (A9.23)::node scripts/voices/eleven-tts.mjs --dry-run salió con $dry_rc"
+            echo "- ⚠️ el \`--dry-run\` de ElevenLabs falló (rc $dry_rc), ver el log del paso." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          pending=$(printf '%s\n' "$dry" | awk -F'\t' '/^TOTAL pendiente/ {print $3}')
+          credits=$(printf '%s\n' "$dry" | awk -F'\t' '/^TOTAL pendiente/ {print $5}')
+          if [ -n "$pending" ] && [ "$pending" != "0" ]; then
+            echo "::warning title=Voces pendientes con ElevenLabs (A9.23)::$pending frase(s) sin voz de ElevenLabs (~$credits créditos): sonarán con Kokoro. Generar: node scripts/voices/eleven-tts.mjs --limite-creditos <n> (ver scripts/voices/eleven-tts.mjs)"
+            {
+              echo "- ⚠️ **$pending frase(s) pendientes** con ElevenLabs (~$credits créditos medidos): mientras tanto suenan con Kokoro."
+              echo "  Generar: \`node scripts/voices/eleven-tts.mjs --limite-creditos <n>\`"
+              echo '```'
+              printf '%s\n' "$dry"
+              echo '```'
+            } >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "- ✓ 0 frases pendientes con ElevenLabs (según el guion congelado)." >> "$GITHUB_STEP_SUMMARY"
+          fi
       # A2.7: ningún overlay de escena vuelve a ser del tamaño del fondo sin necesidad, ni en PNG, ni con un `bounds`
       # que no cuadra con su imagen (con sharp, mira los píxeles). Si falla: `npm run crop:overlays` y commit.
       - name: Overlays recortados (A2.7)
