@@ -59,7 +59,12 @@ const measure = () => page.evaluate(() => {
       const hits = g.input.hitTest({ x: (cx - r.left) / sx, y: (cy - r.top) / sy }, interactive, cam, []);
       hit = hits.map((h) => h.name);
     } catch (e) { hit = `error: ${e.message}`; }
-    return { ...b, topIsCanvas: top === g.canvas, topTag: top ? `${top.tagName}#${top.id}` : null, hit };
+    // Playwright WebKit a veces deja el bloque contenedor inicial (<html>) con la medida de antes tras setViewportSize
+    // (visto en CI: html 844x390 con ventana y lienzo ya en 390x844). Fuera de él elementFromPoint da <html> aunque el
+    // lienzo esté encima: ahí cuenta solo el input de Phaser, y se dice en el log.
+    const de = document.documentElement;
+    const outsideIcb = cx > de.clientWidth || cy > de.clientHeight;
+    return { ...b, topIsCanvas: top === g.canvas, outsideIcb, topTag: top ? `${top.tagName}#${top.id}` : null, hit };
   });
   const title = list.find((o) => o.name === 'menu-title');
   const subtitle = list.find((o) => o.name === 'menu-subtitle');
@@ -96,8 +101,9 @@ function check(m, tag) {
     if (m.subtitle && overlaps(m.buttons[i], m.subtitle)) fail(`${tag}: ${fmt(m.buttons[i])} pisa el subtítulo ${fmt(m.subtitle)}`);
   }
   for (const b of m.buttons) {
-    if (!b.topIsCanvas) fail(`${tag}: en el centro de ${b.name} (${Math.round(b.x + b.w / 2)},${Math.round(b.y + b.h / 2)}) manda ${b.topTag}, no el lienzo [${m.diag}]`);
-    else if (!Array.isArray(b.hit) || !b.hit.includes(b.name)) fail(`${tag}: el input de Phaser no da ${b.name} en su centro (${JSON.stringify(b.hit)})`);
+    if (!b.topIsCanvas && b.outsideIcb) console.log(`  · ${tag}: ${b.name} cae fuera del <html> que deja WebKit (${m.diag}): se mira solo el input de Phaser`);
+    if (!b.topIsCanvas && !b.outsideIcb) fail(`${tag}: en el centro de ${b.name} (${Math.round(b.x + b.w / 2)},${Math.round(b.y + b.h / 2)}) manda ${b.topTag}, no el lienzo [${m.diag}]`);
+    if ((b.topIsCanvas || b.outsideIcb) && (!Array.isArray(b.hit) || !b.hit.includes(b.name))) fail(`${tag}: el input de Phaser no da ${b.name} en su centro (${JSON.stringify(b.hit)})`);
   }
   if (failures.length === before) ok(`${tag}: título y ${m.buttons.length} botones dentro, sin solaparse y pulsables (${m.buttons.map((b) => b.name.replace('menu-btn-', '')).join(', ')})`);
 }
