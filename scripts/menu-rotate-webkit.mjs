@@ -1,8 +1,8 @@
 // A9.20 (plan SCUMM): la portada (MenuScene) se recoloca al girar el iPhone. Playwright WebKit con emulación de iPhone:
 // abre la portada en el viewport del job, la gira al contrario (390x844 ↔ 844x390) y la devuelve. Tras cada giro:
 //   - el lienzo mide lo mismo que la ventana,
-//   - el título, el subtítulo y todos los botones quedan enteros dentro del viewport,
-//   - los botones no se solapan entre sí ni con el subtítulo,
+//   - el título, el subtítulo y todos los botones (su texto visible) quedan enteros dentro del viewport,
+//   - los botones no se solapan entre sí ni con el subtítulo (texto visible, sin el margen táctil),
 //   - cada botón se puede tocar: en su centro el elemento de arriba es el lienzo y el input de Phaser da ese botón.
 // Además simula lo que hace iOS al girar (el ScaleManager se queda con la medida vieja): fuerza el tamaño de la
 // orientación anterior, lanza `orientationchange` y exige que la portada vuelva a medir la ventana sola.
@@ -38,9 +38,12 @@ const measure = () => page.evaluate(() => {
   const r = g.canvas.getBoundingClientRect();
   const sx = r.width / g.scale.width;
   const sy = r.height / g.scale.height;
+  // Caja visible: la de Phaser sin el padding táctil de los botones (A5.2, 16x14 px), que puede tocarse con el vecino
   const box = (o) => {
     const b = o.getBounds();
-    return { name: o.name, x: r.left + b.x * sx, y: r.top + b.y * sy, w: b.width * sx, h: b.height * sy };
+    const p = o.padding ?? {};
+    const l = p.left ?? 0, rt = p.right ?? 0, t = p.top ?? 0, bt = p.bottom ?? 0;
+    return { name: o.name, x: r.left + (b.x + l) * sx, y: r.top + (b.y + t) * sy, w: (b.width - l - rt) * sx, h: (b.height - t - bt) * sy };
   };
   const list = scene.children.list;
   const buttons = list.filter((o) => o.name?.startsWith('menu-btn-') && o.visible);
