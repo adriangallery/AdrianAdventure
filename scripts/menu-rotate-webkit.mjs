@@ -102,7 +102,19 @@ function check(m, tag) {
   if (failures.length === before) ok(`${tag}: título y ${m.buttons.length} botones dentro, sin solaparse y pulsables (${m.buttons.map((b) => b.name.replace('menu-btn-', '')).join(', ')})`);
 }
 
-const settle = () => page.waitForTimeout(900);
+// Tras cambiar el viewport, WebKit puede tardar en asentar el zoom y el lienzo en pantalla (al pasar de apaisado a
+// vertical): se espera (hasta 4 s) a que el lienzo ocupe la ventana con escala 1, como un jugador que toca tras girar.
+// Si no se asienta, las comprobaciones de abajo fallan con el diagnóstico.
+const settle = async () => {
+  await page.waitForTimeout(900);
+  await page.waitForFunction(() => {
+    const g = window.__game;
+    const r = g?.canvas?.getBoundingClientRect();
+    const vv = window.visualViewport;
+    return r && Math.abs(r.width - window.innerWidth) <= 1 && Math.abs(r.height - window.innerHeight) <= 1
+      && Math.abs(r.left) <= 1 && Math.abs(r.top) <= 1 && (!vv || Math.abs(vv.scale - 1) < 0.01);
+  }, null, { timeout: 4000, polling: 100 }).catch(() => {});
+};
 
 async function rotateTo(v) {
   await page.setViewportSize(v);
