@@ -100,3 +100,23 @@ test('createEnsCache: concurrencia acotada', async () => {
   assert.equal(max, 3);
   assert.equal(cache.size(), 10);
 });
+
+// A9.19: la cartera del smoke de la nube no sale en el leaderboard
+import { parseExcluded, excludedFromLeaderboard } from '../save-server/privacy.js';
+
+test('parseExcluded: comas o espacios, minúsculas, ignora lo que no es dirección', () => {
+  const s = parseExcluded(`${FULL}, nope 0x${'a'.repeat(40)}\n0x123`);
+  assert.deepEqual([...s].sort(), [FULL_LC, '0x' + 'a'.repeat(40)].sort());
+  assert.equal(parseExcluded(undefined).size, 0);
+  assert.equal(parseExcluded('').size, 0);
+});
+
+test('excludedFromLeaderboard: marca smoke o dirección en la lista; el resto cuenta', () => {
+  const normal = { address: FULL_LC, state: { flags: {} } };
+  assert.equal(excludedFromLeaderboard(normal), false);
+  assert.equal(excludedFromLeaderboard({ ...normal, state: { flags: {}, smoke: true } }), true);
+  assert.equal(excludedFromLeaderboard({ ...normal, state: { flags: {}, smoke: 'yes' } }), false);
+  assert.equal(excludedFromLeaderboard(normal, parseExcluded(FULL)), true);
+  assert.equal(excludedFromLeaderboard({ ...normal, address: FULL }, parseExcluded(FULL_LC)), true);
+  assert.equal(excludedFromLeaderboard(null), true);
+});

@@ -92,6 +92,29 @@ jobs:
           name: smoke-shots
           path: smoke-shots/
 
+  # A9.19: guardado FIRMADO de verdad en la nube de producción (guardar, leer, comparar y borrar por /save-api) con una
+  # cartera desechable cuya clave está en el secreto SMOKE_WALLET_KEY. Solo con BASE_URL (Run workflow contra un
+  # despliegue): en PR y en main no toca producción. Sin el secreto: aviso y verde. Ver docs/progreso/A9.19.md.
+  cloud-save:
+    if: ${{ inputs.BASE_URL }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci --ignore-scripts
+
+      - name: Guardado firmado real en la nube (A9.19)
+        run: node scripts/smoke-cloud-save.mjs
+        env:
+          BASE_URL: ${{ inputs.BASE_URL }}
+          SMOKE_WALLET_KEY: ${{ secrets.SMOKE_WALLET_KEY }}
+
   # A0.1: New Game → créditos con la API de QA y atajos de secuencia (qa/*.json); capturas por paso.
   # A0.6: en paralelo para no pasar de ~15 min de reloj (antes, todo en serie: ~36 min). Ruta crítica, atajos
   # repartidos en trozos (`--shard i/n`, reparto por índice que cubre cada ruta una sola vez, ver qa/README.md) y

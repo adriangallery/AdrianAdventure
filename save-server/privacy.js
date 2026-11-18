@@ -18,6 +18,31 @@ export function isFullAddress(addr) {
 }
 
 /**
+ * A9.19: direcciones que nunca salen en /leaderboard, de la variable LEADERBOARD_EXCLUDE del servidor (config del
+ * despliegue, no del repo): separadas por comas o espacios. Las que no son 0x + 40 hex se ignoran.
+ */
+export function parseExcluded(value) {
+  const out = new Set();
+  if (typeof value !== 'string') return out;
+  for (const part of value.split(/[\s,]+/)) {
+    if (FULL_ADDRESS.test(part)) out.add(part.toLowerCase());
+  }
+  return out;
+}
+
+/**
+ * A9.19: una partida no cuenta para /leaderboard si viene marcada como de prueba (`state.smoke === true`, la que
+ * escribe scripts/smoke-cloud-save.mjs) o si su dirección está en la lista de exclusión. Marcarse solo excluye
+ * la propia partida: no da nada a nadie.
+ */
+export function excludedFromLeaderboard(data, excluded = new Set()) {
+  if (!data || typeof data !== 'object') return true;
+  if (data.state && typeof data.state === 'object' && data.state.smoke === true) return true;
+  const addr = typeof data.address === 'string' ? data.address.toLowerCase() : '';
+  return excluded.has(addr);
+}
+
+/**
  * Fila pública del leaderboard a partir de la fila interna (que lleva `address` completa).
  * Lista blanca de campos: nada que no esté aquí sale del servidor. `ensLookup(addr)` → string | null | undefined.
  * Devuelve null si la dirección no es válida (la fila no se publica).
