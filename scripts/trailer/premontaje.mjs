@@ -22,6 +22,10 @@ const TMP = join(dirname(OUT), 'premontaje-tmp');
 const MARGIN = 1000;
 const W = 1920, H = 1080, FPS = 60;
 
+// La escena ocupa los 810 px de arriba del plano (debajo, la franja de la interfaz): se recorta y va centrada con bandas
+// iguales, como en montaje.mjs (que además quita la banda de las cinemáticas y amplía los planos de pantalla).
+const ESCENA_VF = `crop=iw:trunc(ih*3/8)*2:0:0,scale=${W}:808:flags=neighbor,pad=${W}:${H}:0:136:black`;
+
 const clip = (name, dur, from = 0) => ({ clip: name, dur, from });
 const card = (text, dur) => ({ card: text, dur });
 
@@ -82,7 +86,7 @@ function main() {
         const src = join(CLIPS, `${s.clip}.mp4`);
         if (existsSync(src)) {
           ff(['-ss', String((MARGIN + s.from) / 1000), '-t', String(s.dur / 1000), '-i', src,
-            '-vf', `scale=${W}:${H}:flags=neighbor,setsar=1,fps=${FPS}`, ...ENC, file]);
+            '-vf', `${ESCENA_VF},setsar=1,fps=${FPS}`, ...ENC, file]);
           report.push(`${(t / 1000).toFixed(1).padStart(5)} s  fila ${row}  ${s.clip}`);
         } else {
           textCard(file, `[FALTA] ${s.clip}`, s.dur, 'gray', 24);
@@ -117,7 +121,7 @@ function contacts() {
     const name = f.replace(/\.mp4$/, '');
     const isV = /^v/.test(name);
     ff(['-ss', String(mid), '-i', join(CLIPS, f), '-frames:v', '1', '-vf',
-      `scale=${isV ? '-1:360' : '640:-1'}:flags=neighbor,pad=640:400:(ow-iw)/2:0:black,drawtext=fontfile=${FONT}:text='${name}':fontcolor=white:fontsize=14:x=8:y=372`, png]);
+      `${isV ? 'scale=-1:360' : 'crop=iw:trunc(ih*3/8)*2:0:0,scale=640:-2'}:flags=neighbor,pad=640:400:(ow-iw)/2:0:black,drawtext=fontfile=${FONT}:text='${name}':fontcolor=white:fontsize=14:x=8:y=372`, png]);
     thumbs.push(png);
   }
   const r = spawnSync('magick', ['montage', ...thumbs, '-tile', '4x', '-geometry', '+4+4', '-background', '#222', CONTACTS], { stdio: 'inherit' });

@@ -17,7 +17,7 @@
 // Imagen: cada segmento de la EDL es un trozo de un plano (saltando su margen de 1 s; `from` = ms dentro del plano útil)
 // o un rótulo (Press Start 2P del repo, blanco sobre negro, entrada con golpe: destello blanco + sacudida). Opcional por
 // segmento: `kb: [z0, z1]` zoom lento tipo Ken Burns (escala por fotograma con neighbor + recorte centrado; factor
-// pequeño y solo en planos quietos), `fi`/`fo` fundidos a/desde negro en ms (por defecto 100 ms en los bordes de bloque).
+// pequeño y solo en planos quietos; `kx`/`ky` = hacia dónde, 0–1), `fi`/`fo` fundidos a/desde negro en ms (por defecto 100 ms en los bordes de bloque).
 // Sonido del juego: `sonidos: [regex…]` sobre la ruta del fichero de `clips/<plano>.audio.json` (t = ms desde el primer
 // fotograma del mp4); cada sonido cae en salida = inicio del segmento + (t − margen − from); `cola` = ms que puede sonar
 // pasado el corte (J/L-cut). Las voces del juego bajan la música 9 dB (rampa 150 ms / vuelta 300 ms).
@@ -51,6 +51,7 @@ const clip = (name, dur, from = 0, extra = {}) => ({ clip: name, dur, from, ...e
 const card = (text, dur, extra = {}) => ({ card: text, dur, ...extra });
 const VOZ = ['/voice/'];
 const SFX = ['/sfx/'];
+const DOORIS87 = ['/voice/dooris_voice_match_87']; // la línea 2 (factores) empieza antes del corte: solo la del 87 %
 
 /**
  * 80 s (tabla del guion). Igual que EDL de premontaje.mjs salvo (ver `--comprobar`, que lista las diferencias):
@@ -65,7 +66,7 @@ export const EDL80 = [
   [3, [clip('03-outside-intro', 6000, 1500, { fi: 250 })]],
   [4, [card('HE LEFT ONE MESSAGE.', 2000)]],
   [5, [clip('05a-dex-acera', 3000, 500), clip('05b-dex-idle', 2000, 4000, { kb: [1, 1.03] }),
-    clip('05c-dooris-87', 5000, 6900, { sonidos: VOZ, cola: 2000 })]],
+    clip('05c-dooris-87', 5000, 6900, { sonidos: DOORIS87, cola: 2000 })]],
   [6, [card('ONE DETECTIVE.\nZERO SOLVED CASES.', 2000)]],
   [7, [clip('07a-lobby-penny', 2000, 0, { sonidos: VOZ, cola: 1500 }), clip('07b-upstairs-rig', 2000, 500, { kb: [1, 1.04] }),
     clip('07c-rig-dashboard', 2000, 1500), clip('07d-cajon', 2000, 1000, { sonidos: VOZ, cola: 2000 }),
@@ -91,7 +92,7 @@ const PROTEGER80 = [[26000, 26700], [40000, 40700], [54000, 55000], [64000, 6600
 /** 30 s (cortes derivados): 1 (3 s) → DOORIS (6 s) → rótulos con 9 y 11 (14 s) → Lambo (3 s) → título + URL (4 s) */
 export const EDL30 = [
   [1, [clip('01-crt-escaped', 3000, 600, { fi: 400, sonidos: SFX })]],
-  [5, [clip('05c-dooris-87', 6000, 5900, { sonidos: VOZ, cola: 2000 })]],
+  [5, [clip('05c-dooris-87', 6000, 5900, { sonidos: DOORIS87, cola: 2000 })]],
   [8, [card('FIVE CHAPTERS.', 1500)]],
   [9, [clip('09a-pzbot-terminal', 1000, 1500), clip('09b-chad-fud', 1000, 3000), clip('09e-nurse-gwei', 1000, 1500),
     clip('09g-veleta', 1500, 1000)]],
@@ -121,10 +122,10 @@ const AUDIO30 = [
 
 /** Vertical 9:16 (planos v… grabados en viewport móvil 390×844 ×2,77 = 1080×2337; se recorta el alto a 1080×1920) */
 export const EDLV = [
-  [1, [clip('v01-crt-escaped', 2500, 600, { fi: 400, sonidos: SFX })]],
-  [5, [clip('v05a-dex-acera', 2000, 500), clip('v05c-dooris-87', 6000, 5900, { sonidos: VOZ, cola: 1500 })]],
-  [9, [clip('v09b-chad-fud', 500, 0), clip('v11c-escotilla', 500, 0), clip('v09b-chad-fud', 750, 3000),
-    clip('v13-lambo', 750, 2500), clip('v11c-escotilla', 750, 1000), clip('v13-lambo', 750, 4000, { fo: 0 })]],
+  [1, [clip('v01-crt-escaped', 2500, 600, { fi: 400, sonidos: SFX, ax: 0.68 })]],
+  [5, [clip('v05a-dex-acera', 2000, 500, { ax: 0.36 }), clip('v05c-dooris-87', 6000, 5900, { sonidos: DOORIS87, cola: 1500, ax: 0.5 })]],
+  [9, [clip('v09b-chad-fud', 500, 0, { ax: 0.78 }), clip('v11c-escotilla', 500, 0), clip('v09b-chad-fud', 750, 3000, { ax: 0.78 }),
+    clip('v13-lambo', 750, 2500, { ax: 0.62 }), clip('v11c-escotilla', 750, 1000), clip('v13-lambo', 750, 4000, { fo: 0, ax: 0.62 })]],
   [14, [clip('v14-titulo', 4000, 500, { fi: 150, kb: [1, 1.03] }), card('PLAY FREE\nIN YOUR\nBROWSER', 1500, { golpe: false, size: 44 }),
     card('adventure.\nadrianzero.com', 2000, { golpe: false, fo: 700, size: 44 })]],
 ];
@@ -142,9 +143,9 @@ const DUR_V = [20000, 25000];
 
 /** Miniaturas: plano, ms dentro del plano útil, título encima */
 export const THUMBS = [
-  { clip: '05c-dooris-87', ms: 9000, titulo: true },
-  { clip: '13-lambo', ms: 4000, titulo: true },
-  { clip: '09b-chad-fud', ms: 3500, titulo: false },
+  { clip: '05c-dooris-87', ms: 9000, titulo: true, ax: 0.5 },
+  { clip: '13-lambo', ms: 4000, titulo: true, ax: 0.62 },
+  { clip: '09b-chad-fud', ms: 3500, titulo: false, ax: 0.72 },
 ];
 const TITULO = 'ZEROadventure II';
 
@@ -198,11 +199,37 @@ function audioFile(key) {
   }
   return audioIndex.get(key) ?? audioIndex.get(key.replace(/^(sfx|amb|music|voice)_/, '')) ?? null;
 }
+/**
+ * Voces que la grabación NO registró: el audio.json de las tandas de nov-2026 trae los efectos pero ninguna voz (record.mjs
+ * no ve el canal de voces). Momento = margen 1 s + ms de la línea de tiempo del plano en shots.mjs, comprobado con la
+ * aparición del subtítulo en el mp4 (cambio de imagen en la zona del texto). Solo se usan si el audio.json no trae voces.
+ */
+const VOCES_A_MANO = {
+  '05c-dooris-87': [['dooris_hi_im_dooris_i_keep_adrian_8b28ca75', 1000],
+    ['dooris_threefactor_authentication_pin_security_question_hardware_7656b559', 4600],
+    ['dooris_voice_match_87_close_suspiciously_close_ffa08a51', 8600]],
+  '07a-lobby-penny': [['recep_you_have_a_very_refundable_face_4e8c3166', 1000]],
+  '09a-pzbot-terminal': [['pzbot_access_denied_owner_only_or_alpha_bea232c5', 1000]],
+  '09b-chad-fud': [['chad_your_bags_are_so_heavy_the_d004fb61', 1000]],
+  '13-lambo': [['player_wen_lambo_apparently_now_4d5f7b95', 4300]],
+};
 const jsonCache = new Map();
 function audioJson(name) {
   if (!jsonCache.has(name)) {
     const p = join(CLIPS, `${name}.audio.json`);
-    jsonCache.set(name, existsSync(p) ? JSON.parse(readFileSync(p, 'utf8')) : null);
+    const j = existsSync(p) ? JSON.parse(readFileSync(p, 'utf8')) : null;
+    if (j) {
+      // el arnés apunta cada sonido dos veces (el del juego y el directo): uno por fichero y momento
+      const vistos = new Set();
+      j.clips = (j.clips ?? []).filter((a) => { const k = `${a.file ?? a.key}@${Math.round(a.t / 50)}`; return !vistos.has(k) && vistos.add(k); });
+      if (!j.clips.some((a) => /\/voice\//.test(`/${a.file ?? ''}`)) && VOCES_A_MANO[name]) {
+        for (const [f, t] of VOCES_A_MANO[name]) j.clips.push({ key: f, t, loop: false, file: `assets/audio/voice/${f}.mp3`, aMano: true });
+      }
+      // en el juego, una línea nueva corta la voz de la anterior (el toque que pasa el texto)
+      const voces = j.clips.filter((a) => /\/voice\//.test(`/${a.file ?? ''}`)).sort((x, y) => x.t - y.t);
+      voces.forEach((a, i) => { if (voces[i + 1]) a.hasta = voces[i + 1].t; });
+    }
+    jsonCache.set(name, j);
   }
   return jsonCache.get(name);
 }
@@ -222,7 +249,7 @@ function gameSounds(seg, segStart, total, notes) {
     if (!seg.sonidos.some((re) => new RegExp(re).test(`/${rel}`))) continue;
     const file = join(ROOT, rel);
     if (!existsSync(file)) { notes.push(`${seg.clip}: no existe ${rel}`); continue; }
-    const sd = durMs(file);
+    const sd = Math.min(durMs(file), a.hasta ? a.hasta - a.t : Infinity);
     if (a.t >= we || a.t + sd <= ws) continue;
     const head = Math.max(0, ws - a.t);
     const at = segStart + Math.max(0, a.t - ws);
@@ -232,7 +259,7 @@ function gameSounds(seg, segStart, total, notes) {
     const cut = sd - head - len;
     const voz = /\/voice\//.test(`/${rel}`);
     res.push({ file, rel, at, start: head, len, kind: voz ? 'voz' : 'efecto', lufs: voz ? -16 : /lambo/.test(rel) ? -15 : -22,
-      fi: head ? 20 : 0, fo: cut > 0 ? 60 : 10 });
+      fi: head ? 20 : 0, fo: cut > 0 || a.hasta ? 60 : 10 });
     if (head > 60) notes.push(`${seg.clip}: ${rel.split('/').pop()} empieza ${head} ms antes del corte (se pierde la cabeza)`);
     if (cut > 150) notes.push(`${seg.clip}: ${rel.split('/').pop()} recortado ${cut} ms al final (en ${s3(at + len)} s)`);
   }
@@ -254,8 +281,10 @@ function comprobar() {
     let t = 0;
     const notes = [];
     const sounds = [];
-    for (const s of segsOf(v.edl)) {
+    for (const s0 of segsOf(v.edl)) {
+      const s = s0.clip ? { ...s0, clip: realClip(s0.clip) } : s0;
       if (s.clip) {
+        if (s.clip !== s0.clip) console.log(`  · ${s0.clip}: sin grabar, sale del 16:9 ${s.clip} (ventana 4:5, ax ${s.ax ?? 0.5})`);
         const sh = shot(s.clip);
         if (!sh) err(`${s.clip}: no está en shots.mjs`);
         else if (s.from + s.dur > sh.dur + MARGIN) err(`${s.clip}: from ${s.from} + ${s.dur} ms se sale del plano (${sh.dur} ms útiles + 1 s de margen)`);
@@ -321,17 +350,82 @@ function cardSeg(file, s, W, H, k) {
   ff(['-f', 'lavfi', '-i', `color=c=black:s=${W}x${H}:r=${FPS}`, '-vf', vf.join(','), '-frames:v', String(fr(s.dur)), ...ENC_TMP, file]);
 }
 
-/** Cadena de filtros de un plano: encuadre (16:9 o 9:16 recortado), Ken Burns opcional y fundidos */
-function clipChain(s, W, H, vertical, fade = true) {
-  const f = ['setpts=PTS-STARTPTS', `fps=${FPS}`];
-  if (vertical) f.push(`crop=iw:trunc(iw*16/9/2)*2:0:(ih-oh)*${s.cy ?? 0.5}`);
-  f.push(`scale=${W}:${H}:flags=neighbor`);
+// ─────────────────────────────── encuadre ───────────────────────────────
+// Los planos 16:9 son la pantalla del juego en 1920×1080: la ESCENA ocupa solo los 810 px de arriba (2,37:1) y debajo
+// queda la franja de la interfaz (negra, a veces con el subtítulo del narrador). El montaje recorta SIEMPRE a la escena
+// (la franja y su subtítulo fuera: los rótulos los pone el montaje) y la presenta:
+//  - 16:9: a todo el ancho, centrada en vertical con bandas de cine iguales (1920×810 + 135 px arriba y abajo);
+//  - vertical sacado de un plano 16:9 (si no hay plano `v…` grabado): ventana 4:5 de la escena centrada en la acción
+//    (`ax` = centro horizontal 0–1) a 1080×1350, centrada con bandas iguales (cabe el texto de diálogo, que en 9:16 a
+//    sangre se cortaría);
+//  - miniaturas: ventana 16:9 de la escena (1440×810) en `ax`, a pantalla completa.
+// Planos de pantalla (panel/terminal pequeño sobre la escena oscurecida): zoom fijo `z` hacia el panel (`cx`, `cy` =
+// centro dentro de la escena). Todo escalado con flags=neighbor.
+const ESCENA = 0.75; // 810 / 1080
+const PANTALLA = {
+  '07c-rig-dashboard': { z: 2, cx: 0.5, cy: 540 / 810 },
+  '07d-cajon': { z: 2, cx: 0.5, cy: 540 / 810 },
+  '09a-pzbot-terminal': { z: 2, cx: 0.5, cy: 540 / 810 },
+};
+const dimCache = new Map();
+function dims(file) {
+  if (!dimCache.has(file)) {
+    const r = spawnSync('ffprobe', ['-v', 'error', '-select_streams', 'v:0', '-show_entries', 'stream=width,height', '-of', 'csv=p=0', file], { encoding: 'utf8' });
+    const [w, h] = r.stdout.trim().split(',').map(Number);
+    dimCache.set(file, { w, h });
+  }
+  return dimCache.get(file);
+}
+/** Si falta el plano vertical `vX`, se saca del 16:9 `X` */
+const realClip = (n) => (existsSync(clipPath(n)) ? n : /^v/.test(n) && existsSync(clipPath(n.slice(1))) ? n.slice(1) : n);
+/** Las cinemáticas del juego (03-outside-intro, 13-lambo, …) ponen una banda negra de 64 px ENCIMA de la escena: se
+ *  detecta en el trozo que se usa (cropdetect) y se quita (la escena se amplía un poco para no cambiar las bandas). */
+const topCache = new Map();
+function sceneTop(s) {
+  const key = `${s.clip}@${s.from}+${s.dur}`;
+  if (!topCache.has(key)) {
+    const { h: ih } = dims(clipPath(s.clip));
+    const e = ff(['-ss', s3(MARGIN + (s.from ?? 0)), '-t', s3(Math.max(200, s.dur ?? 200)), '-i', clipPath(s.clip),
+      '-vf', 'cropdetect=limit=24:round=2:reset=0', '-f', 'null', '-'], { quiet: true });
+    const y = Number([...e.matchAll(/crop=\d+:\d+:\d+:(\d+)/g)].pop()?.[1] ?? 0);
+    const k = ih / 1080;
+    topCache.set(key, y >= 50 * k && y <= 80 * k ? y : 0);
+  }
+  return topCache.get(key);
+}
+/** crop de la escena (sin la franja de la interfaz) con la proporción PW:PH, zoom de pantalla y centro en la acción */
+function cropEscena(s, PW, PH) {
+  const { w: iw, h: ih } = dims(clipPath(s.clip));
+  const p = PANTALLA[s.clip] ?? {};
+  const Z = s.z ?? p.z ?? 1, cx = s.ax ?? p.cx ?? 0.5, cy = s.ey ?? p.cy ?? 0.5;
+  const top = sceneTop(s);
+  const sh = Math.round(ih * ESCENA) - top;
+  let ch = Math.floor(sh / Z / 2) * 2, cw = Math.round((ch * PW) / PH / 2) * 2;
+  if (cw > iw) { cw = iw; ch = Math.round((cw * PH) / PW / 2) * 2; }
+  const x = Math.max(0, Math.min(iw - cw, Math.round(iw * cx - cw / 2)));
+  const y = top + Math.max(0, Math.min(sh - ch, Math.round(sh * cy - ch / 2)));
+  return `crop=${cw}:${ch}:${x}:${y}`;
+}
+
+/** Cadena de filtros de un plano: encuadre (escena centrada con bandas, o 9:16 recortado), Ken Burns opcional y fundidos */
+export function clipChain(s, W, H, vertical, fade = true) {
+  const f = ['setpts=PTS-STARTPTS', `fps=${FPS}`]; // 30 y 60 fps de entrada → 60 fps exactos (los de 30, cada uno 2 veces)
+  const { w: iw, h: ih } = dims(clipPath(s.clip));
+  let PW = W, PH = H;
+  if (vertical && ih > iw) f.push(`crop=iw:trunc(iw*16/9/2)*2:0:(ih-oh)*${s.cy ?? 0.5}`); // plano v… grabado en móvil
+  else {
+    // bandas iguales y pares (yuv420p): alto de la imagen = H − 4·n
+    PH = H - 4 * Math.round((H - (vertical ? (W * 5) / 4 : H * ESCENA)) / 4);
+    f.push(cropEscena(s, PW, PH));
+  }
+  f.push(`scale=${PW}:${PH}:flags=neighbor`);
   if (s.kb) {
     const [z0, z1] = s.kb;
     const z = `(${z0}+${z1 - z0}*t/${s.dur / 1000})`;
-    f.push(`scale=w='trunc(${W}*${z}/2)*2':h='trunc(${H}*${z}/2)*2':eval=frame:flags=neighbor`,
-      `crop=${W}:${H}:(iw-${W})*${s.ax ?? 0.5}:(ih-${H})*${s.ay ?? 0.5}`);
+    f.push(`scale=w='trunc(${PW}*${z}/2)*2':h='trunc(${PH}*${z}/2)*2':eval=frame:flags=neighbor`,
+      `crop=${PW}:${PH}:(iw-${PW})*${s.kx ?? 0.5}:(ih-${PH})*${s.ky ?? 0.5}`);
   }
+  if (PH !== H) f.push(`pad=${W}:${H}:0:${(H - PH) / 2}:black`);
   if (fade) {
     const fi = s.fi ?? (s.first ? 100 : 0), fo = s.fo ?? (s.last ? 100 : 0);
     if (fi) f.push(`fade=t=in:st=0:d=${fi / 1000}`);
@@ -427,7 +521,7 @@ function render(ver) {
   const W = even(v.w * ESCALA), H = even(v.h * ESCALA), k = (v.vertical ? v.w : v.h) / (v.vertical ? 1080 : 1080) * ESCALA;
   const total = totalOf(v.edl);
   if (v.total != null && total !== v.total) throw new Error(`EDL de ${ver} suma ${total} ms, no ${v.total}`);
-  const segs = segsOf(v.edl);
+  const segs = segsOf(v.edl).map((s) => (s.clip ? { ...s, clip: realClip(s.clip) } : s));
   const faltan = [...new Set(segs.filter((s) => s.clip && !existsSync(clipPath(s.clip))).map((s) => s.clip))];
   if (faltan.length && !BORRADOR) {
     throw new Error(`faltan ${faltan.length} planos para ${ver}${v.vertical ? ' (verticales: record.mjs v)' : ''}: ${faltan.join(' ')} (o --borrador)`);
@@ -468,7 +562,13 @@ function render(ver) {
   ff(['-f', 'concat', '-safe', '0', '-i', list, '-i', wav, '-map', '0:v', '-map', '1:a',
     '-c:v', 'libx264', '-preset', ESCALA < 1 ? 'veryfast' : 'slow', '-crf', '16', '-pix_fmt', 'yuv420p', '-r', String(FPS),
     '-c:a', 'aac', '-b:a', '192k', '-ar', String(SR), '-t', s3(total), '-movflags', '+faststart', out]);
-  const lm = loudness(out);
+  let lm = loudness(out);
+  if (lm.tp > -1) { // el AAC sube el pico real por encima de lo que dejó el loudnorm: se baja solo el audio (vídeo copiado)
+    const tmp = join(TMP, 'pico.mp4');
+    ff(['-i', out, '-map', '0', '-c:v', 'copy', '-af', `volume=${(-1.2 - lm.tp).toFixed(2)}dB`, '-c:a', 'aac', '-b:a', '192k', '-ar', String(SR), '-movflags', '+faststart', tmp]);
+    ff(['-i', tmp, '-map', '0', '-c', 'copy', '-movflags', '+faststart', out]);
+    lm = loudness(out);
+  }
   const pr = spawnSync('ffprobe', ['-v', 'error', '-show_entries', 'format=duration:stream=codec_type,width,height,r_frame_rate,nb_frames', '-of', 'compact=p=0', out], { encoding: 'utf8' }).stdout.trim();
   console.log(`\n== ${ver}\n${report.join('\n')}`);
   for (const g of game) console.log(`  ♪ ${s3(g.at)}–${s3(g.at + g.len)} s  ${g.kind}  ${g.rel}`);
@@ -493,7 +593,7 @@ function thumbs() {
     if (!existsSync(clipPath(th.clip))) {
       ff(['-f', 'lavfi', '-i', `color=c=black:s=${W}x${H}`, '-frames:v', '1', '-vf', `drawtext=fontfile=${FONT}:text='FALTA ${th.clip}':fontcolor=gray:fontsize=${Math.round(24 * k)}:x=(w-text_w)/2:y=(h-text_h)/2${title}`, out]);
     } else {
-      ff(['-ss', s3(MARGIN + th.ms), '-i', clipPath(th.clip), '-frames:v', '1', '-vf', `scale=${W}:${H}:flags=neighbor,setsar=1${title}`, out]);
+      ff(['-ss', s3(MARGIN + th.ms), '-i', clipPath(th.clip), '-frames:v', '1', '-vf', `${cropEscena({ ...th, from: th.ms, dur: 200 }, W, H)},scale=${W}:${H}:flags=neighbor,setsar=1${title}`, out]);
     }
     console.log(`${out}  ← ${th.clip} @ ${th.ms} ms${th.titulo ? ' + título' : ''}`);
   });
