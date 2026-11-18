@@ -387,9 +387,13 @@ function sceneTop(s) {
     const { h: ih } = dims(clipPath(s.clip));
     const e = ff(['-ss', s3(MARGIN + (s.from ?? 0)), '-t', s3(Math.max(200, s.dur ?? 200)), '-i', clipPath(s.clip),
       '-vf', 'cropdetect=limit=24:round=2:reset=0', '-f', 'null', '-'], { quiet: true });
-    const y = Number([...e.matchAll(/crop=\d+:\d+:\d+:(\d+)/g)].pop()?.[1] ?? 0);
+    const { w: iw } = dims(clipPath(s.clip));
+    const m = [...e.matchAll(/crop=(\d+):\d+:(\d+):(\d+)/g)].pop();
+    const [cw, cx, y] = m ? [Number(m[1]), Number(m[2]), Number(m[3])] : [iw, 0, 0];
     const k = ih / 1080;
-    topCache.set(key, y >= 50 * k && y <= 80 * k ? y : 0);
+    // escena más estrecha que la ventana (09f-dr-satoshi: la cámara llega al borde y queda negro a un lado)
+    const lado = cw < iw * 0.97 && cw > iw * 0.8 ? [cx, cx + cw] : [0, iw];
+    topCache.set(key, { top: y >= 50 * k && y <= 80 * k ? y : 0, x0: lado[0], x1: lado[1] });
   }
   return topCache.get(key);
 }
@@ -398,11 +402,11 @@ function cropEscena(s, PW, PH) {
   const { w: iw, h: ih } = dims(clipPath(s.clip));
   const p = PANTALLA[s.clip] ?? {};
   const Z = s.z ?? p.z ?? 1, cx = s.ax ?? p.cx ?? 0.5, cy = s.ey ?? p.cy ?? 0.5;
-  const top = sceneTop(s);
-  const sh = Math.round(ih * ESCENA) - top;
+  const { top, x0, x1 } = sceneTop(s);
+  const sh = Math.round(ih * ESCENA) - top, sw = x1 - x0;
   let ch = Math.floor(sh / Z / 2) * 2, cw = Math.round((ch * PW) / PH / 2) * 2;
-  if (cw > iw) { cw = iw; ch = Math.round((cw * PH) / PW / 2) * 2; }
-  const x = Math.max(0, Math.min(iw - cw, Math.round(iw * cx - cw / 2)));
+  if (cw > sw) { cw = Math.floor(sw / 2) * 2; ch = Math.round((cw * PH) / PW / 2) * 2; }
+  const x = x0 + Math.max(0, Math.min(sw - cw, Math.round(sw * cx - cw / 2)));
   const y = top + Math.max(0, Math.min(sh - ch, Math.round(sh * cy - ch / 2)));
   return `crop=${cw}:${ch}:${x}:${y}`;
 }
