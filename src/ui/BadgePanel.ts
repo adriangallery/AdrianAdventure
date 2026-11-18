@@ -5,7 +5,9 @@ import { iconTexture } from './icons';
 import { ACHIEVEMENTS, type AchievementDef } from '@/config/achievements.config';
 import type { GameState } from '@/types/game.types';
 import { getWalletState } from '@/web3/wallet';
-import { mintAchievement, hasLabToken, type MintResult } from '@/web3/contracts';
+import {
+  mintAchievement, hasLabToken, type MintResult, ACHIEVEMENT_MINT_ENABLED, ACHIEVEMENT_MINT_SOON_TEXT,
+} from '@/web3/contracts';
 import type { Address } from 'viem';
 
 const OPENSEA_BASE = 'https://opensea.io/assets/base/0x90546848474fb3c9fda3fdad887969bb244e7e58';
@@ -18,6 +20,7 @@ export class BadgePanel {
   private container: Phaser.GameObjects.Container;
   private trophyBtn: Phaser.GameObjects.Container;
   private visible = false;
+  private soonNote?: Phaser.GameObjects.Text;
 
   constructor(scene: Phaser.Scene) {
     this.scene = scene;
@@ -190,8 +193,19 @@ export class BadgePanel {
           }
         });
 
-        // Mint button for earned
-        if (isEarned) {
+        // Mint button for earned. A9.24: con ACHIEVEMENT_MINT_ENABLED apagado sale «SOON» atenuado y tocarlo
+        // solo enseña una línea; no consulta la cartera ni llama a mintAchievement.
+        if (isEarned && !ACHIEVEMENT_MINT_ENABLED) {
+          const soonBtn = this.scene.add.text(x, y + 16, 'SOON', {
+            fontFamily: FONT.FAMILY, fontSize: `${Math.max(7, nameSize - 1)}px`, color: '#9890a8',
+            backgroundColor: '#1c1a28', padding: { x: 6, y: 2 },
+          }).setOrigin(0.5).setInteractive({ useHandCursor: false });
+          soonBtn.on('pointerdown', (p: Phaser.Input.Pointer) => {
+            p.event.stopPropagation();
+            this.showMintSoonNote();
+          });
+          this.container.add(soonBtn);
+        } else if (isEarned) {
           const mintBtn = this.scene.add.text(x, y + 16, 'MINT', {
             fontFamily: FONT.FAMILY, fontSize: `${Math.max(7, nameSize - 1)}px`, color: '#48d8e8',
             backgroundColor: '#0c1820', padding: { x: 6, y: 2 },
@@ -225,7 +239,26 @@ export class BadgePanel {
 
   isVisible(): boolean { return this.visible; }
 
+  /** A9.24: aviso corto al pie del panel al tocar «SOON» (se reemplaza si se toca otra vez). */
+  private showMintSoonNote(): void {
+    const { width, height } = this.scene.scale;
+    this.soonNote?.destroy();
+    const note = this.scene.add.text(width / 2, height - 24, ACHIEVEMENT_MINT_SOON_TEXT, {
+      fontFamily: FONT.FAMILY, fontSize: `${width < 800 ? 9 : 12}px`, color: '#e8ddf0',
+      backgroundColor: '#1c1a28', padding: { x: 8, y: 4 }, align: 'center',
+      wordWrap: { width: width - 32 },
+    }).setOrigin(0.5, 1);
+    this.soonNote = note;
+    this.container.add(note);
+    this.scene.time.delayedCall(2500, () => {
+      if (this.soonNote !== note) return;
+      this.soonNote = undefined;
+      note.destroy();
+    });
+  }
+
   private async mintBadge(badge: AchievementDef, btn: Phaser.GameObjects.Text): Promise<void> {
+    if (!ACHIEVEMENT_MINT_ENABLED) { this.showMintSoonNote(); return; }
     const { address, connected } = getWalletState();
     if (!connected || !address) {
       btn.setText('CONNECT WALLET');
