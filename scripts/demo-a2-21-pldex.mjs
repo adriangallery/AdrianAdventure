@@ -4,7 +4,7 @@
 //   1) outside: por la acera, de (60, 94) a (30, 94) = hacia la izquierda, y de vuelta = hacia la derecha (A2.20: el
 //      porche ya no se pisa; la zona andable de outside es y ≥ 91);
 //   2) lobby: de perfil (40, 92) y (55,5, 98), hacia el fondo (55,5, 85) y hacia la cámara (55,5, 98).
-// Cada captura (recorte de 400x440 centrado en Dex, con el rótulo «actual» / «PixelLab») lleva la hora del reloj de
+// Cada captura (recorte de 400x380 centrado en Dex, con el rótulo «actual» / «PixelLab») lleva la hora del reloj de
 // juego (suma de los delta de GameScene); al montar el GIF se emparejan por tramo y por ese reloj (un fotograma cada 125 ms de juego), así que las
 // dos mitades van a los mismos tiempos aunque las capturas de cada pasada caigan a ritmos distintos.
 // Además, en las dos variantes:
@@ -20,7 +20,7 @@ import { copyFileSync, mkdirSync, rmSync } from 'node:fs';
 import { join } from 'node:path';
 import { startDemo, sleep } from './lib/demo.mjs';
 
-const HALF = { width: 400, height: 440 };
+const HALF = { width: 400, height: 380 };
 const TICK_MS = 125; // un fotograma del GIF cada 125 ms de reloj de juego (GIF a 8 fps ≈ tiempo de juego)
 const demo = await startDemo(import.meta.url, { fps: 8, width: HALF.width * 2 + 4, viewport: { width: 1280, height: 720, isMobile: false, hasTouch: true } });
 const { page } = demo;
@@ -105,7 +105,7 @@ async function capture(v, label, path) {
     const w = Math.min(cw, vw);
     const h = Math.min(ch, vh);
     const x = Math.max(0, Math.min(vw - w, Math.round(px - w / 2)));
-    const y = Math.max(0, Math.min(vh - h, Math.round(py - h * 0.72)));
+    const y = Math.max(0, Math.min(vh - h, Math.round(py - h * 0.86)));
     let cap = document.getElementById('demo-cap');
     if (!cap) {
       cap = document.createElement('div');
@@ -207,6 +207,26 @@ async function nearestCheck(v) {
         if (n && (!best || bad / n < best.bad / best.n)) best = { bad, n, ox, oy };
       }
     }
+    // colores fuera de lo dibujado: píxeles de esos bloques cuyo color no está en la paleta del PNG (± 2). Con
+    // nearest solo puede salir un color del PNG aunque un bloque caiga desplazado (Dex respira, bota 1 px); con
+    // lineal saldrían mezclas
+    const pal = [];
+    for (let i = 0; i < info.data.length; i += 4) if (info.data[i + 3] === 255 && !pal.some((c) => c[0] === info.data[i] && c[1] === info.data[i + 1] && c[2] === info.data[i + 2])) pal.push([info.data[i], info.data[i + 1], info.data[i + 2]]);
+    let off = 0;
+    for (const [tx, ty] of interior) {
+      const sx = info.flipX ? info.w - 1 - tx : tx;
+      for (let yy = 0; yy < si; yy++) {
+        for (let xx = 0; xx < si; xx++) {
+          const X = pad + best.ox + sx * si + xx;
+          const Y = pad + best.oy + ty * si + yy;
+          if (X < 0 || Y < 0 || X >= im.width || Y >= im.height) continue;
+          const q = at(X, Y);
+          if (!pal.some((c) => Math.abs(q[0] - c[0]) <= 2 && Math.abs(q[1] - c[1]) <= 2 && Math.abs(q[2] - c[2]) <= 2)) off++;
+        }
+      }
+    }
+    best.offPalette = off;
+    best.palette = pal.length;
     res = { key: info.key, scale: Math.round(s * 1000) / 1000, integer: Math.abs(s - si) < 0.01, texels: interior.length, ...best, tinted: info.tinted, postFx: info.postFx };
   } catch (e) {
     res = { key: info.key, error: String(e?.message || e) };
@@ -216,12 +236,24 @@ async function nearestCheck(v) {
   return res;
 }
 
+/** Zancada de la escena actual: px de arte que avanza Dex por fotograma del ciclo (tramos de perfil) */
+async function strideOf(v, scene) {
+  const s = await stats();
+  const st = await page.evaluate(() => { const q = window.__qa.state().pixel; return q ? { pixelScale: q.pixelScale, playerScale: q.playerScale, depth: q.depth } : null; });
+  const perMs = s.dClock ? s.dArt / s.dClock : 0;
+  const perMsX = s.dClock ? s.dxArt / s.dClock : 0;
+  const r2 = (n) => Math.round(n * 100) / 100;
+  const out = { pxArtPerFrame: r2(perMs * v.frameMs), pxArtPerFrameX: r2(perMsX * v.frameMs), pxArtPerSecondOfClock: r2(perMs * 1000), frameMs: v.frameMs, clockMs: Math.round(s.dClock), pixel: st };
+  report[v.id].stride[scene] = out;
+  console.log(`${v.id} zancada ${scene}: ${out.pxArtPerFrame} px de arte por fotograma del ciclo (${v.frameMs} ms; solo horizontal ${out.pxArtPerFrameX}; ${out.pxArtPerSecondOfClock} px/s de reloj de andar en ${out.clockMs} ms; pixel ${JSON.stringify(st)})`);
+}
+
 // ── Grabación: las dos variantes, la misma ruta ──────────────────────────────────────────────────────────────
 const takes = {}; // takes[variante][tramo] = [{ path, t }]
 const report = {};
 for (const v of VARIANTS) {
   takes[v.id] = [];
-  report[v.id] = { stride: null, nearest: [] };
+  report[v.id] = { stride: {}, nearest: [] };
   const dir = join(raw, v.id);
   mkdirSync(dir, { recursive: true });
   let n = 0;
@@ -229,6 +261,7 @@ for (const v of VARIANTS) {
   for (let si = 0; si < ROUTE.length; si++) {
     const [sc, label, x, y, want] = ROUTE[si];
     if (sc !== scene) {
+      if (scene) await strideOf(v, scene);
       scene = sc;
       await open(sc, v);
       if (sc === 'outside') {
@@ -278,31 +311,30 @@ for (const v of VARIANTS) {
     if (v.id === 'pl' && s.tex.some((t) => /^dex2d_walk_/.test(t))) problems.push(`pl ${label}: se vio el andar dex2d con ?dex=pl`);
     if (s.scales.length !== 1) problems.push(`${v.id} ${label}: la escala cambió al andar (${s.scales.join('/')}) — A2.13`);
   }
+  await strideOf(v, scene);
   // nearest también en el actual (referencia), quieto en el lobby
   if (v.id === 'actual') report[v.id].nearest.push(await nearestCheck(v));
-  const s = await stats();
-  const perMs = s.dClock ? s.dArt / s.dClock : 0;
-  const perMsX = s.dClock ? s.dxArt / s.dClock : 0;
-  const r2 = (n) => Math.round(n * 100) / 100;
-  report[v.id].stride = { pxArtPerFrame: r2(perMs * v.frameMs), pxArtPerFrameX: r2(perMsX * v.frameMs), pxArtPerSecondOfClock: r2(perMs * 1000), frameMs: v.frameMs, clockMs: Math.round(s.dClock) };
-  console.log(`${v.id} zancada: ${report[v.id].stride.pxArtPerFrame} px de arte por fotograma del ciclo (${v.frameMs} ms; solo horizontal ${report[v.id].stride.pxArtPerFrameX}; ${report[v.id].stride.pxArtPerSecondOfClock} px/s de reloj de andar, ${report[v.id].stride.clockMs} ms medidos)`);
   for (const r of report[v.id].nearest) console.log(`${v.id} nearest: ${JSON.stringify(r)}`);
 }
 await demo.end();
 
 // Comprobaciones de zancada y nearest
-const st = report.pl.stride;
-if (!st.clockMs) problems.push('pl: no se pudo medir la zancada (sin tramos de perfil)');
-// el arte avanza 9,25–9,5 px por fotograma con el pie apoyado (docs/progreso/A2.21.md): fuera de 8–11 patinaría
-else if (st.pxArtPerFrame < 8 || st.pxArtPerFrame > 11) problems.push(`pl: ${st.pxArtPerFrame} px de arte por fotograma (el pie apoyado avanza 9,25–9,5): patina`);
+// el arte avanza 9,25–9,5 px por fotograma con el pie apoyado (docs/progreso/A2.21.md). Dex avanza algo más de los
+// 74 px/s de diseño en escenas cuya escala entera (A2.8) es menor que pixelScale × depth: igual en las dos variantes.
+// Solo se marca si se va claramente (fuera de 7–12)
+for (const [sc, st] of Object.entries(report.pl.stride)) {
+  if (!st.clockMs) problems.push(`pl ${sc}: no se pudo medir la zancada (sin tramos de perfil)`);
+  else if (st.pxArtPerFrame < 7 || st.pxArtPerFrame > 12) problems.push(`pl ${sc}: ${st.pxArtPerFrame} px de arte por fotograma (el pie apoyado avanza 9,25–9,5): patina`);
+}
 for (const [id, list] of Object.entries(report)) {
   if (!list.nearest.length) problems.push(`${id}: no se hizo la comprobación de nearest`);
   for (const r of list.nearest) {
     if (r.error) problems.push(`${id} nearest: ${r.error}`);
     else {
       if (!r.integer) problems.push(`${id} nearest: escala ${r.scale} no entera (A2.8)`);
-      // con lineal falla la mayoría de los píxeles de borde de bloque; se deja margen para algo delante de Dex
-      if (r.n && r.bad / r.n > 0.1) problems.push(`${id} nearest: ${r.bad} de ${r.n} píxeles (${Math.round((r.bad / r.n) * 100)} %) con color fuera de lo dibujado en ${r.key}`);
+      // `bad` (≠ su texel) es informativo: un bloque desplazado 1 px por la respiración o el bote ya cuenta; lo que
+      // delata el lineal son los colores que no están en el PNG
+      if (r.n && r.offPalette / r.n > 0.02) problems.push(`${id} nearest: ${r.offPalette} de ${r.n} píxeles (${Math.round((r.offPalette / r.n) * 1000) / 10} %) con color fuera de lo dibujado en ${r.key}`);
     }
   }
 }
