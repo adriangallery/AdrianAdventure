@@ -189,7 +189,8 @@ jobs:
       fail-fast: false
       matrix:
         # Para más trozos basta con alargar la lista: el total sale de strategy.job-total
-        shard: [1, 2, 3, 4]
+        # A9.25: 5 trozos; con la ruta del disfraz de mono (131 pasos) el trozo 4 de 4 pasaba de los 30 min (~280 pasos)
+        shard: [1, 2, 3, 4, 5]
     name: walkthrough-atajos (${{ matrix.shard }}/${{ strategy.job-total }})
     steps:
       - uses: actions/checkout@v4
