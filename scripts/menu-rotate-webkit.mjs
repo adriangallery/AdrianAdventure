@@ -63,7 +63,9 @@ const measure = () => page.evaluate(() => {
   });
   const title = list.find((o) => o.name === 'menu-title');
   const subtitle = list.find((o) => o.name === 'menu-subtitle');
+  const vv = window.visualViewport;
   return {
+    diag: `vv ${vv ? `${Math.round(vv.width)}x${Math.round(vv.height)} escala ${vv.scale} desplazado ${Math.round(vv.offsetLeft)},${Math.round(vv.offsetTop)}` : '—'}, scroll ${scrollX},${scrollY}, lienzo en pantalla ${Math.round(r.left)},${Math.round(r.top)} ${Math.round(r.width)}x${Math.round(r.height)}, html ${document.documentElement.clientWidth}x${document.documentElement.clientHeight}`,
     win: { w: window.innerWidth, h: window.innerHeight },
     scale: { w: g.scale.width, h: g.scale.height },
     buttons: btns,
@@ -78,6 +80,7 @@ const fmt = (b) => `${b.name} (${Math.round(b.x)},${Math.round(b.y)} ${Math.roun
 
 function check(m, tag) {
   const before = failures.length;
+  console.log(`  · ${tag}: ${m.diag}`);
   const { w: W, h: H } = m.win;
   if (Math.abs(m.scale.w - W) <= 1 && Math.abs(m.scale.h - H) <= 1) ok(`${tag}: lienzo ${m.scale.w}x${m.scale.h} = ventana`);
   else fail(`${tag}: lienzo ${m.scale.w}x${m.scale.h} ≠ ventana ${W}x${H} (la portada no volvió a medir)`);
@@ -93,7 +96,7 @@ function check(m, tag) {
     if (m.subtitle && overlaps(m.buttons[i], m.subtitle)) fail(`${tag}: ${fmt(m.buttons[i])} pisa el subtítulo ${fmt(m.subtitle)}`);
   }
   for (const b of m.buttons) {
-    if (!b.topIsCanvas) fail(`${tag}: en el centro de ${b.name} manda ${b.topTag}, no el lienzo`);
+    if (!b.topIsCanvas) fail(`${tag}: en el centro de ${b.name} (${Math.round(b.x + b.w / 2)},${Math.round(b.y + b.h / 2)}) manda ${b.topTag}, no el lienzo [${m.diag}]`);
     else if (!Array.isArray(b.hit) || !b.hit.includes(b.name)) fail(`${tag}: el input de Phaser no da ${b.name} en su centro (${JSON.stringify(b.hit)})`);
   }
   if (failures.length === before) ok(`${tag}: título y ${m.buttons.length} botones dentro, sin solaparse y pulsables (${m.buttons.map((b) => b.name.replace('menu-btn-', '')).join(', ')})`);
