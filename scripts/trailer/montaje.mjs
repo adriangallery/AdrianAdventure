@@ -99,7 +99,7 @@ export const EDL30 = [
   [11, [clip('11a-coger', 500), clip('11b-puerta', 500), clip('11c-escotilla', 500), clip('11d-pantalla', 500),
     clip('11e-correr', 500), clip('11i-cinematica', 500), clip('11k-destello', 500), clip('11h-puerta2', 500, 0, { fo: 0 })]],
   [12, [card('ZERO EXCUSES.', 2000)]],
-  [13, [clip('13-lambo', 3000, 300, { fi: 200, sonidos: [...VOZ, ...SFX], cola: 0 })]],
+  [13, [clip('13-lambo', 3000, 300, { fi: 200, sonidos: SFX, cola: 0 })]], // solo el motor: el narrador 5 entra en 25,2 s
   [14, [clip('14-titulo', 2000, 1000, { fi: 150 }), card('PLAY FREE\nadventure.adrianzero.com', 2000, { golpe: false, fo: 700, size: 32 })]],
 ];
 /** música-80s en tramos de compases (2 s a 120 BPM; la rejilla ya cae en segundos pares) + golpes + narrador 5 */
