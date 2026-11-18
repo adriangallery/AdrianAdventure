@@ -449,6 +449,24 @@ test('(h) diario válido: sin errores; avisa de la flag que nada pone; sus lectu
   assert.deepEqual(only(lintProject(project([journalScene()])), 'a').map((f) => f.id), ['set_flag']);
 });
 
+test('(a) A9.22: flags de music-map.json: las que nadie pone y el notFlag de una sala que solo se pone en otra', () => {
+  const room = scene('room', { regions: { hotspots: [hs('hs_bot', { USE: [{ op: 'setFlag', flag: 'bot_crashed', value: true }] })], triggers: [] } });
+  const later = scene('later', { regions: { hotspots: [hs('hs_bot2', { USE: [{ op: 'setFlag', flag: 'bot_off', value: true }] })], triggers: [] } });
+  const lint = (rules) => only(lintProject({ ...project([room, later]), musicRules: rules }), 'a');
+  // Bien: la sala apaga el peligro con la flag que pone ella misma; y `flag` (no notFlag) puesta en otra escena vale
+  const good = lint([{ state: 'danger', when: { scene: 'room', notFlag: 'bot_crashed' } }, { state: 'danger', when: { scene: 'later', flag: 'bot_crashed' } },
+    { state: 'x', when: { scene: 'z', flag: 'bot_off' } }]);
+  assert.deepEqual(good.map((f) => f.message), []);
+  // Mal: notFlag que solo pone otra escena (el caso server_room + pzbot_off) → aviso fuerte
+  const wrong = lint([{ state: 'danger', when: { scene: 'room', notFlag: 'bot_off' } }, { state: 'x', when: { scene: 'z', flag: 'bot_crashed' } }]);
+  const w = wrong.find((f) => f.where.includes('notFlag'));
+  assert.ok(w?.strong, JSON.stringify(wrong));
+  assert.match(w.message, /solo la pone later/);
+  // Mal: flag que no pone nadie
+  const ghost = lint([{ state: 'x', when: { scene: 'room', flag: 'nobody_sets' } }, { state: 'y', when: { flag: 'bot_crashed' } }, { state: 'z', when: { flag: 'bot_off' } }]);
+  assert.ok(ghost.some((f) => f.id === 'nobody_sets' && /se lee y nunca se pone/.test(f.message)), JSON.stringify(ghost));
+});
+
 test('(h) errores: JSON inválido, capítulo repetido, ids repetidos, condición mal escrita, hints que no son 3, journalNote a una nota que no existe', () => {
   const dup = goodJournal();
   const bad = {

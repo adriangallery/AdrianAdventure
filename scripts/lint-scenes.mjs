@@ -481,10 +481,17 @@ export function loadProject(root) {
       globalScripts = (readJson(globalFile).itemCombos ?? []).map((c, i) => ({ scene: 'global', label: `itemCombos[${i}](${c.item1}+${c.item2})`, ops: c.script ?? [] }));
     }
   } catch { /* global.json inválido: lo dirán otras comprobaciones */ }
+  // A9.22: reglas de la música adaptativa (assets/config/music-map.json): leen flags
+  const musicMapFile = path.join(root, 'assets', 'config', 'music-map.json');
+  let musicRules = [];
+  try {
+    if (fs.existsSync(musicMapFile)) musicRules = readJson(musicMapFile).rules ?? [];
+  } catch { /* music-map.json inválido: lo dice tests/music-planner.test.mjs */ }
   return {
     scenes,
     loadErrors,
     globalScripts,
+    musicRules,
     srcFiles,
     journal,
     failResponses,
@@ -784,6 +791,12 @@ export function lintProject(project) {
       if (op.op === 'ifFlag') note(reads, op.flag, p);
     });
   }
+  // A9.22: las reglas de music-map.json leen flags (`flag` y `notFlag`)
+  const musicRules = (project.musicRules ?? []).map((r, i) => ({ r, where: `music-map.rules[${i}](${r.state})` }));
+  for (const { r, where } of musicRules) {
+    note(reads, r.when?.flag, `${where}.when.flag`);
+    note(reads, r.when?.notFlag, `${where}.when.notFlag`);
+  }
   for (const [id, s] of Object.entries(scenes)) {
     for (const hs of s.regions?.hotspots ?? []) {
       note(reads, hs.hideWhenFlag, `${id}.${hs.id}.hideWhenFlag`);
@@ -813,6 +826,18 @@ export function lintProject(project) {
   for (const [flag, where] of reads) {
     if (writes.has(flag) || inCode(flag)) continue;
     push('a', 'warning', sceneOf(where[0]), flag, where[0], `flag «${flag}» se lee y nunca se pone (${where.join(', ')})`, { scenes: [...new Set(where.map(sceneOf))] });
+  }
+  // A9.22: una regla de música con `scene` y `notFlag` («este estado dura en esta sala hasta que pase X») cuyo X no lo
+  // pone ningún script de esas escenas: el estado no se apaga al resolver la sala (server_room con pzbot_off, que solo
+  // pone treatment_room en el cap. 5). Las flags que no pone nadie ya salen arriba como «se lee y nunca se pone».
+  for (const { r, where } of musicRules) {
+    const nf = r.when?.notFlag;
+    const sc = r.when?.scene;
+    if (typeof nf !== 'string' || sc === undefined || !writes.has(nf)) continue;
+    const ruleScenes = Array.isArray(sc) ? sc : [sc];
+    const setIn = [...new Set(writes.get(nf).map(sceneOf))];
+    if (setIn.some((x) => ruleScenes.includes(x))) continue;
+    push('a', 'warning', 'music-map', nf, `${where}.when.notFlag`, `music-map: el estado «${r.state}» de ${ruleScenes.join(', ')} se apaga con «${nf}», pero esa flag solo la pone ${setIn.join(', ')}: en la sala no se apaga nunca`, { strong: true });
   }
   for (const [flag, where] of writes) {
     if (reads.has(flag) || journal.flagReads.has(flag) || inCode(flag)) continue;
