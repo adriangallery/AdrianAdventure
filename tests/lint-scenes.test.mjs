@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import {
   lintProject, applyPolicy, glowRectDefects, GLOW_RECT_MAX_FRACTION, parseStringArray, parseWhen, depthScaleDefects, depthScaleWalkDefects, depthChangeDefects, MAX_DEPTH_CHANGE, FIXED_SCALE_SCENES, PIXEL_RANGES, FAIL_MIN, FAIL_VERBS, bagDefects, itemDescIds, loadProject,
-  ambientDefects, overlayPropDefects, pickedDefects, unretiredItems, ITEM_CHAPTER_SCENES, LAST_CHAPTER, AMBIENT_KINDS, AMBIENT_MAX_COUNT, AMBIENT_MAX_PER_SCENE, AMBIENT_ACTIONS,
+  ambientDefects, overlayPropDefects, ownZoneFraction, OWN_ZONE_MIN, pickedDefects, unretiredItems, ITEM_CHAPTER_SCENES, LAST_CHAPTER, AMBIENT_KINDS, AMBIENT_MAX_COUNT, AMBIENT_MAX_PER_SCENE, AMBIENT_ACTIONS,
 } from '../scripts/lint-scenes.mjs';
 
 /** Escena mínima válida: fondo, un área caminable de todo el suelo y el spawn dentro. */
@@ -242,6 +242,33 @@ test('(g) no salta si solo se tocan los bordes o las flags son complementarias',
   assert.deepEqual(only(lintProject(project([s])), 'g'), []);
 });
 
+test('(g) A9.21: aviso fuerte si un hotspot conserva < 50 % de su caja porque otros le ganan el clic', () => {
+  // Como hs_desk + hs_paper_tray de upstairs antes de A9.21: la mesa va antes y tapa el 87 % de la bandeja
+  const desk = hs('desk', {}, { bounds: { x: 41.7, y: 44.6, w: 20.9, h: 15.6 } });
+  const tray = hs('tray', {}, { bounds: { x: 44, y: 55, w: 6, h: 6 } });
+  const f = only(lintProject(project([scene('x', { regions: { hotspots: [desk, tray], triggers: [] } })])), 'g');
+  const zone = f.find((x) => x.id === 'tray');
+  assert.ok(zone?.strong, 'aviso fuerte de zona propia');
+  assert.match(zone.message, /conserva el 13% .*desk/);
+  assert.ok(Math.abs(ownZoneFraction([desk, tray], 1) - 0.8 / 6) < 1e-9);
+  assert.equal(ownZoneFraction([desk, tray], 0), 1, 'la primera no pierde nada');
+
+  // Con priority (la regla de SceneDataLoader.getHotspotAtPct) la bandeja gana: zona entera y sin aviso fuerte
+  const trayP = { ...tray, priority: 1 };
+  assert.equal(ownZoneFraction([desk, trayP], 1), 1);
+  assert.ok(ownZoneFraction([desk, trayP], 0) >= OWN_ZONE_MIN);
+  const g2 = only(lintProject(project([scene('x', { regions: { hotspots: [desk, trayP], triggers: [] } })])), 'g');
+  assert.ok(g2.every((x) => !x.strong), JSON.stringify(g2));
+  assert.match(g2[0].message, /manda tray \(priority\)/);
+
+  // Dos que le ganan a medias suman; uno de flag complementaria no cuenta
+  const t = hs('t', {}, { bounds: { x: 0, y: 0, w: 10, h: 10 }, showWhenFlag: 'k' });
+  const left = hs('l', {}, { bounds: { x: -5, y: 0, w: 8, h: 10 } });
+  const right = hs('r', {}, { bounds: { x: 6, y: 0, w: 8, h: 10 } });
+  const comp = hs('c', {}, { bounds: { x: 0, y: 0, w: 10, h: 10 }, hideWhenFlag: 'k' });
+  assert.ok(Math.abs(ownZoneFraction([left, right, comp, t], 3) - 0.3) < 1e-9);
+});
+
 // ── Política: excepciones, --scene, --strict ──
 test('excepciones con motivo silencian; sin motivo se ignoran; las que sobran se avisan', () => {
   const raw = [
@@ -420,6 +447,35 @@ test('(h) diario válido: sin errores; avisa de la flag que nada pone; sus lectu
   assert.deepEqual(only(all, 'a').map((f) => f.id), []);
   // Sin diario, sí lo sería
   assert.deepEqual(only(lintProject(project([journalScene()])), 'a').map((f) => f.id), ['set_flag']);
+});
+
+test('(h)/(a) A9.26: los setFlag de las combinaciones de global.json cuentan como sitio donde se pone la flag', () => {
+  const j = goodJournal();
+  j.goals.push({ id: 'g_map', text: 'Mark the map.', doneWhen: 'has_marked_map' });
+  const p = { ...project([journalScene()]), journal: [jfile(j)] };
+  assert.ok(only(lintProject(p), 'h').some((f) => f.id === 'has_marked_map'), 'sin global.json: aviso (h)');
+  p.globalScripts = [{ scene: 'global', label: 'itemCombos[0](printout+pen)', ops: [{ op: 'setFlag', flag: 'has_marked_map', value: true }] }];
+  const all = lintProject(p);
+  assert.ok(!only(all, 'h').some((f) => f.id === 'has_marked_map'), 'con global.json: sin aviso (h)');
+  assert.ok(!only(all, 'a').some((f) => f.id === 'has_marked_map'), 'y tampoco «se pone y nunca se lee»: la lee el diario');
+});
+
+test('(a) A9.22: flags de music-map.json: las que nadie pone y el notFlag de una sala que solo se pone en otra', () => {
+  const room = scene('room', { regions: { hotspots: [hs('hs_bot', { USE: [{ op: 'setFlag', flag: 'bot_crashed', value: true }] })], triggers: [] } });
+  const later = scene('later', { regions: { hotspots: [hs('hs_bot2', { USE: [{ op: 'setFlag', flag: 'bot_off', value: true }] })], triggers: [] } });
+  const lint = (rules) => only(lintProject({ ...project([room, later]), musicRules: rules }), 'a');
+  // Bien: la sala apaga el peligro con la flag que pone ella misma; y `flag` (no notFlag) puesta en otra escena vale
+  const good = lint([{ state: 'danger', when: { scene: 'room', notFlag: 'bot_crashed' } }, { state: 'danger', when: { scene: 'later', flag: 'bot_crashed' } },
+    { state: 'x', when: { scene: 'z', flag: 'bot_off' } }]);
+  assert.deepEqual(good.map((f) => f.message), []);
+  // Mal: notFlag que solo pone otra escena (el caso server_room + pzbot_off) → aviso fuerte
+  const wrong = lint([{ state: 'danger', when: { scene: 'room', notFlag: 'bot_off' } }, { state: 'x', when: { scene: 'z', flag: 'bot_crashed' } }]);
+  const w = wrong.find((f) => f.where.includes('notFlag'));
+  assert.ok(w?.strong, JSON.stringify(wrong));
+  assert.match(w.message, /solo la pone later/);
+  // Mal: flag que no pone nadie
+  const ghost = lint([{ state: 'x', when: { scene: 'room', flag: 'nobody_sets' } }, { state: 'y', when: { flag: 'bot_crashed' } }, { state: 'z', when: { flag: 'bot_off' } }]);
+  assert.ok(ghost.some((f) => f.id === 'nobody_sets' && /se lee y nunca se pone/.test(f.message)), JSON.stringify(ghost));
 });
 
 test('(h) errores: JSON inválido, capítulo repetido, ids repetidos, condición mal escrita, hints que no son 3, journalNote a una nota que no existe', () => {

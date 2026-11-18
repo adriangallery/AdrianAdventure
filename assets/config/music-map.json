@@ -36,7 +36,7 @@
       "priority": 40,
       "when": {
         "scene": "server_room",
-        "notFlag": "pzbot_off"
+        "notFlag": "pzbot_crashed"
       }
     },
     {
