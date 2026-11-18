@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import {
   lintProject, applyPolicy, glowRectDefects, GLOW_RECT_MAX_FRACTION, parseStringArray, parseWhen, depthScaleDefects, depthScaleWalkDefects, depthChangeDefects, MAX_DEPTH_CHANGE, FIXED_SCALE_SCENES, PIXEL_RANGES, FAIL_MIN, FAIL_VERBS, bagDefects, itemDescIds, loadProject,
-  ambientDefects, overlayPropDefects, pickedDefects, unretiredItems, ITEM_CHAPTER_SCENES, LAST_CHAPTER, AMBIENT_KINDS, AMBIENT_MAX_COUNT, AMBIENT_MAX_PER_SCENE, AMBIENT_ACTIONS,
+  ambientDefects, overlayPropDefects, ownZoneFraction, OWN_ZONE_MIN, pickedDefects, unretiredItems, ITEM_CHAPTER_SCENES, LAST_CHAPTER, AMBIENT_KINDS, AMBIENT_MAX_COUNT, AMBIENT_MAX_PER_SCENE, AMBIENT_ACTIONS,
 } from '../scripts/lint-scenes.mjs';
 
 /** Escena mínima válida: fondo, un área caminable de todo el suelo y el spawn dentro. */
@@ -240,6 +240,33 @@ test('(g) no salta si solo se tocan los bordes o las flags son complementarias',
     },
   });
   assert.deepEqual(only(lintProject(project([s])), 'g'), []);
+});
+
+test('(g) A9.21: aviso fuerte si un hotspot conserva < 50 % de su caja porque otros le ganan el clic', () => {
+  // Como hs_desk + hs_paper_tray de upstairs antes de A9.21: la mesa va antes y tapa el 87 % de la bandeja
+  const desk = hs('desk', {}, { bounds: { x: 41.7, y: 44.6, w: 20.9, h: 15.6 } });
+  const tray = hs('tray', {}, { bounds: { x: 44, y: 55, w: 6, h: 6 } });
+  const f = only(lintProject(project([scene('x', { regions: { hotspots: [desk, tray], triggers: [] } })])), 'g');
+  const zone = f.find((x) => x.id === 'tray');
+  assert.ok(zone?.strong, 'aviso fuerte de zona propia');
+  assert.match(zone.message, /conserva el 13% .*desk/);
+  assert.ok(Math.abs(ownZoneFraction([desk, tray], 1) - 0.8 / 6) < 1e-9);
+  assert.equal(ownZoneFraction([desk, tray], 0), 1, 'la primera no pierde nada');
+
+  // Con priority (la regla de SceneDataLoader.getHotspotAtPct) la bandeja gana: zona entera y sin aviso fuerte
+  const trayP = { ...tray, priority: 1 };
+  assert.equal(ownZoneFraction([desk, trayP], 1), 1);
+  assert.ok(ownZoneFraction([desk, trayP], 0) >= OWN_ZONE_MIN);
+  const g2 = only(lintProject(project([scene('x', { regions: { hotspots: [desk, trayP], triggers: [] } })])), 'g');
+  assert.ok(g2.every((x) => !x.strong), JSON.stringify(g2));
+  assert.match(g2[0].message, /manda tray \(priority\)/);
+
+  // Dos que le ganan a medias suman; uno de flag complementaria no cuenta
+  const t = hs('t', {}, { bounds: { x: 0, y: 0, w: 10, h: 10 }, showWhenFlag: 'k' });
+  const left = hs('l', {}, { bounds: { x: -5, y: 0, w: 8, h: 10 } });
+  const right = hs('r', {}, { bounds: { x: 6, y: 0, w: 8, h: 10 } });
+  const comp = hs('c', {}, { bounds: { x: 0, y: 0, w: 10, h: 10 }, hideWhenFlag: 'k' });
+  assert.ok(Math.abs(ownZoneFraction([left, right, comp, t], 3) - 0.3) < 1e-9);
 });
 
 // ── Política: excepciones, --scene, --strict ──
