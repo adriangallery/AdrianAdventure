@@ -80,11 +80,28 @@ export async function mintItem(params: MintParams): Promise<MintResult> {
 // ─── Achievements (via Diamond or separate ERC1155) ──────────
 
 /**
+ * A9.24 (plan SCUMM): interruptor ÚNICO del mint on-chain de logros. Apagado = el botón MINT del panel de logros
+ * sale como «SOON» y ni él ni el opcode `mintAchievement` de las escenas abren la cartera ni llaman a
+ * `purchaseItems`. Nadie ha comprobado aún que los ids 20001… (`tokenId` en src/config/achievements.config.ts)
+ * existan como artículos gratuitos de la ShopFacet del Diamond.
+ * Para ponerlo a `true` falta que Adrián confirme: (1) qué faceta acuña los logros (ShopFacet.purchaseItems con
+ * useFree, u otra), (2) que los ids 20001… están dados de alta en ella y en AdrianLAB, y (3) que son gratis.
+ * tests/achievement-mint-off.test.mjs falla si se enciende sin tocar el test a propósito.
+ */
+export const ACHIEVEMENT_MINT_ENABLED: boolean = false;
+
+/** Texto corto que ve el jugador al tocar «SOON». */
+export const ACHIEVEMENT_MINT_SOON_TEXT = 'Minting achievements on-chain is coming soon.';
+
+/**
  * Mint an achievement token.
  *
- * TODO: Define achievement token IDs range and which contract/facet mints them.
+ * TODO: Define achievement token IDs range and which contract/facet mints them (ver ACHIEVEMENT_MINT_ENABLED).
  */
 export async function mintAchievement(achievementId: number): Promise<MintResult> {
+  if (!ACHIEVEMENT_MINT_ENABLED) {
+    return { status: 'not-configured', error: ACHIEVEMENT_MINT_SOON_TEXT };
+  }
   if (!WEB3_WRITES_ENABLED) {
     return { status: 'not-configured', error: 'Minting is available on the web version only' };
   }
