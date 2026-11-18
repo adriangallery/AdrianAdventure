@@ -68,7 +68,7 @@ export const EDL80 = [
   [5, [clip('05a-dex-acera', 3000, 500), clip('05b-dex-idle', 2000, 4000, { kb: [1, 1.03] }),
     clip('05c-dooris-87', 5000, 6900, { sonidos: DOORIS87, cola: 2000 })]],
   [6, [card('ONE DETECTIVE.\nZERO SOLVED CASES.', 2000)]],
-  [7, [clip('07a-lobby-penny', 2000, 0, { sonidos: VOZ, cola: 1500 }), clip('07b-upstairs-rig', 4000, 500, { kb: [1, 1.08] }),
+  [7, [clip('07a-lobby-penny', 2000, 0, { sonidos: VOZ, cola: 1500 }), clip('07b-upstairs-rig', 4000, 0, { kb: [1, 1.08] }),
     /* 07c-rig-dashboard fuera: su panel enseña el PIN del Ledger (destripa un puzle) */ clip('07d-cajon', 2000, 1000, { sonidos: VOZ, cola: 2000 }),
     clip('07e-sotano', 2000, 500), clip('07f-server-room', 2000, 500)]],
   [8, [card('FIVE CHAPTERS.', 2000)]],
