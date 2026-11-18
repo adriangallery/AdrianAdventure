@@ -9,7 +9,7 @@
 // dos mitades van a los mismos tiempos aunque las capturas de cada pasada caigan a ritmos distintos.
 // Además, en las dos variantes:
 //   - zancada: muestreador rAF que mide el avance horizontal de Dex (px de arte) frente a su reloj de andar →
-//     px por fotograma del ciclo (PixelLab: 130 ms por fotograma; actual: 100 ms) — ver docs/progreso/A2.21.md;
+//     px por fotograma del ciclo (PixelLab: 120 ms por fotograma, PL_SIDE_FRAME_MS; actual: 100 ms) — ver docs/progreso/A2.21.md;
 //   - nearest: con el juego parado, compara cada píxel de pantalla del sprite con el texel de su PNG (solo texels
 //     interiores, sin borde con el fondo): con nearest y escala entera son idénticos; en lineal se mezclarían;
 //   - sin ?dex=pl no se carga ninguna textura dexpl_*; con ?dex=pl se cargan las 32 y se usan al andar.
@@ -30,7 +30,7 @@ const problems = [];
 
 const VARIANTS = [
   { id: 'actual', label: 'actual', query: '', side: /^dex2d_walk_(l|r)_\d$/, up: /^dex2d_walk_up_\d$/, down: /^dex2d_walk_down_\d$/, frameMs: 100 },
-  { id: 'pl', label: 'PixelLab', query: '&dex=pl', side: /^dexpl_walk_(left|right)_\d$/, up: /^dexpl_walk_up_\d$/, down: /^dexpl_walk_down_\d$/, frameMs: 130 },
+  { id: 'pl', label: 'PixelLab', query: '&dex=pl', side: /^dexpl_walk_(left|right)_\d$/, up: /^dexpl_walk_up_\d$/, down: /^dexpl_walk_down_\d$/, frameMs: 120 },
 ];
 // Tramos: [escena, etiqueta, x, y, qué texturas se esperan]
 const ROUTE = [
@@ -321,10 +321,10 @@ await demo.end();
 // Comprobaciones de zancada y nearest
 // el arte avanza 9,25–9,5 px por fotograma con el pie apoyado (docs/progreso/A2.21.md). Dex avanza algo más de los
 // 74 px/s de diseño en escenas cuya escala entera (A2.8) es menor que pixelScale × depth: igual en las dos variantes.
-// Solo se marca si se va claramente (fuera de 7–12)
+// Con 120 ms debe quedar en 8,75–10,25 (± 0,75 del pie)
 for (const [sc, st] of Object.entries(report.pl.stride)) {
   if (!st.clockMs) problems.push(`pl ${sc}: no se pudo medir la zancada (sin tramos de perfil)`);
-  else if (st.pxArtPerFrame < 7 || st.pxArtPerFrame > 12) problems.push(`pl ${sc}: ${st.pxArtPerFrame} px de arte por fotograma (el pie apoyado avanza 9,25–9,5): patina`);
+  else if (st.pxArtPerFrame < 8.75 || st.pxArtPerFrame > 10.25) problems.push(`pl ${sc}: ${st.pxArtPerFrame} px de arte por fotograma (el pie apoyado avanza 9,25–9,5): patina`);
 }
 for (const [id, list] of Object.entries(report)) {
   if (!list.nearest.length) problems.push(`${id}: no se hizo la comprobación de nearest`);
