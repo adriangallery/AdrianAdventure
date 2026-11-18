@@ -277,6 +277,10 @@ jobs:
         if: ${{ !cancelled() }}
         run: node scripts/audio-unlock-webkit.mjs
 
+      - name: Giro de la portada en WebKit ${{ matrix.viewport }} (A9.20, 390x844 ↔ 844x390)
+        if: ${{ !cancelled() }}
+        run: node scripts/menu-rotate-webkit.mjs
+
       - name: Capítulo 1 de la ruta crítica en WebKit ${{ matrix.viewport }}
         if: ${{ !cancelled() }}
         run: node scripts/walkthrough.mjs qa/walkthrough.json --only ruta-critica --until chapter:1
