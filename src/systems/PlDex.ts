@@ -10,10 +10,14 @@ export const PL_PREFIX = 'dexpl';
 export const PL_DIRS: readonly PlDir[] = ['left', 'right', 'up', 'down'];
 export const PL_WALK_FRAMES = 8;
 /**
- * De perfil: zancada medida en los fotogramas ≈ 40 px de arte por paso (2 pasos por ciclo); a 74 px/s (A2.12)
- * el ciclo dura ~1,08 s → 130 ms por fotograma para que no patine. Arriba/abajo: el mismo ciclo de 800 ms del rig.
+ * De perfil: en los PNG el pie apoyado retrocede 9,25–9,5 px de arte por fotograma (pasos de 37 y 38 px, 2 por
+ * ciclo). A2.21 (demo-a2-21-pldex): en el juego Dex avanza 78 px de arte/s en outside y 81 en lobby (más que los
+ * 74 de diseño de A2.12 por la escala entera de A2.8) → 120 ms por fotograma: 9,4–9,7 px, el pie no patina
+ * (con 130 ms eran 10,2–10,5 px). Arriba/abajo: el mismo ciclo de 800 ms del rig.
  */
-export const PL_SIDE_FRAME_MS = 130;
+export const PL_SIDE_FRAME_MS = 120;
+/** Lo que retrocede el pie apoyado en el arte de perfil, px de arte por fotograma (medido en walk_right/left_*.png) */
+export const PL_SIDE_STEP_ART_PX: readonly [number, number] = [9.25, 9.5];
 export const PL_VERT_FRAME_MS = 100;
 
 /** `?dex=pl` → true; cualquier otra cosa, false (el Dex de siempre) */

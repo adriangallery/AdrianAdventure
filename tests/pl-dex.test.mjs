@@ -2,7 +2,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { existsSync } from "node:fs";
-import { parsePlMode, plWalkKey, plFiles, PL_SIDE_FRAME_MS, PL_VERT_FRAME_MS } from "../src/systems/PlDex.ts";
+import { parsePlMode, plWalkKey, plFiles, PL_SIDE_FRAME_MS, PL_VERT_FRAME_MS, PL_SIDE_STEP_ART_PX } from "../src/systems/PlDex.ts";
 
 test("solo ?dex=pl activa la prueba", () => {
   assert.equal(parsePlMode("?dex=pl"), true);
@@ -22,4 +22,13 @@ test("los 32 PNG existen", () => {
   const files = plFiles();
   assert.equal(files.length, 32);
   for (const f of files) assert.ok(existsSync(new URL("../" + f.url, import.meta.url)), f.url);
+});
+
+test("de perfil no patina: avance por fotograma ≈ lo que retrocede el pie apoyado", () => {
+  // Velocidad real de Dex medida por demo-a2-21-pldex (px de arte por segundo de reloj de andar): outside 78, lobby 81
+  const [lo, hi] = PL_SIDE_STEP_ART_PX;
+  for (const pxPerS of [78, 81]) {
+    const perFrame = (pxPerS * PL_SIDE_FRAME_MS) / 1000;
+    assert.ok(perFrame >= lo - 0.5 && perFrame <= hi + 0.5, `${pxPerS} px/s × ${PL_SIDE_FRAME_MS} ms = ${perFrame} px por fotograma (pie: ${lo}–${hi})`);
+  }
 });
