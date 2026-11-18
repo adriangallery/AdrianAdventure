@@ -984,6 +984,7 @@
         "id": "hs_paper_tray",
         "keepAfterPick": "La bandeja se queda: el recibo iba entre los papeles (no dibujado aparte); el PICK de después lo dice («The tray is just sad printouts now»)",
         "name": "Paper Tray",
+        "priority": 1,
         "bounds": {
           "x": 44,
           "y": 55,

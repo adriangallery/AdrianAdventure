@@ -212,7 +212,8 @@ jobs:
       fail-fast: false
       matrix:
         # Para más trozos basta con alargar la lista: el total sale de strategy.job-total
-        shard: [1, 2, 3, 4]
+        # A9.25: 5 trozos; con la ruta del disfraz de mono (131 pasos) el trozo 4 de 4 pasaba de los 30 min (~280 pasos)
+        shard: [1, 2, 3, 4, 5]
     name: walkthrough-atajos (${{ matrix.shard }}/${{ strategy.job-total }})
     steps:
       - uses: actions/checkout@v4
@@ -299,6 +300,10 @@ jobs:
       - name: Sonido tras «Enable Sound» en WebKit ${{ matrix.viewport }} (A4.9, toque real)
         if: ${{ !cancelled() }}
         run: node scripts/audio-unlock-webkit.mjs
+
+      - name: Giro de la portada en WebKit ${{ matrix.viewport }} (A9.20, 390x844 ↔ 844x390)
+        if: ${{ !cancelled() }}
+        run: node scripts/menu-rotate-webkit.mjs
 
       - name: Capítulo 1 de la ruta crítica en WebKit ${{ matrix.viewport }}
         if: ${{ !cancelled() }}

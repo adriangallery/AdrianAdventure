@@ -4,14 +4,16 @@
 //   node scripts/lint-scenes.mjs [--strict] [--json] [--scene <id>] [--root <dir>] [--no-write]
 //
 // Recorre assets/scenes/<id>/scene.json y aplica estas reglas:
-//   a  flags que se leen y nunca se ponen, o que se ponen y nunca se leen
+//   a  flags que se leen y nunca se ponen, o que se ponen y nunca se leen (cuentan las escenas, las combinaciones de
+//      assets/config/global.json (A9.26) y las reglas de assets/config/music-map.json (A9.22))
 //   b  objetos que se consiguen (addItem) y no sirven para nada
 //   c  salidas (fadeToScene/gotoScene) en hotspots y triggers sin gate, para revisar a mano
 //   d  operaciones de estado después de un say/sayBrief en el mismo bloque
 //   e  spawns fuera de walkableAreas o dentro de blockedAreas (A2.1) (en la escena destino; ERROR desde A1.8, el aviso
 //      sin walkableAreas sigue siendo aviso)
 //   f  sprites, fondos, audio, escenas y diálogos referenciados que no existen (ERROR por defecto)
-//   g  hotspots solapados (aviso fuerte si uno que va antes en la lista tapa entero a otro)
+//   g  hotspots solapados (aviso fuerte si uno que va antes en la lista tapa entero a otro, o, A9.21, si un hotspot
+//      conserva < OWN_ZONE_MIN de su caja porque otros le ganan el clic: más priority o, a igualdad, antes en la lista)
 //   h  diario (A2.9, assets/journal/chapter-<n>.json): fichero inválido o mal formado y `journalNote` a una nota que no
 //      existe = ERROR; flags que el diario lee y nada pone, u objetos que lee y nada da = aviso
 //   i  densidad de píxel (A2.8, aviso): `scale` a mano en npcs[] o `player.playerScale` (lo sustituye la unidad de
@@ -480,10 +482,17 @@ export function loadProject(root) {
       globalScripts = (readJson(globalFile).itemCombos ?? []).map((c, i) => ({ scene: 'global', label: `itemCombos[${i}](${c.item1}+${c.item2})`, ops: c.script ?? [] }));
     }
   } catch { /* global.json inválido: lo dirán otras comprobaciones */ }
+  // A9.22: reglas de la música adaptativa (assets/config/music-map.json): leen flags
+  const musicMapFile = path.join(root, 'assets', 'config', 'music-map.json');
+  let musicRules = [];
+  try {
+    if (fs.existsSync(musicMapFile)) musicRules = readJson(musicMapFile).rules ?? [];
+  } catch { /* music-map.json inválido: lo dice tests/music-planner.test.mjs */ }
   return {
     scenes,
     loadErrors,
     globalScripts,
+    musicRules,
     srcFiles,
     journal,
     failResponses,
@@ -594,6 +603,36 @@ export function pickedDefects(hs, overlays = []) {
   return out;
 }
 const pickedNotDrawn = (hs, reason) => hs.pickedNotDrawn !== undefined && reason(hs.pickedNotDrawn);
+
+/** A9.21 (regla g): fracción mínima de su caja que un hotspot tiene que conservar para no dar aviso fuerte. */
+export const OWN_ZONE_MIN = 0.5;
+const complementaryHs = (A, B) => !!((A.hideWhenFlag && A.hideWhenFlag === B.showWhenFlag) || (A.showWhenFlag && A.showWhenFlag === B.hideWhenFlag));
+/** Misma regla que SceneDataLoader.getHotspotAtPct: gana el de más `priority` (0 por defecto) y, a igualdad, el primero. */
+export const beatsHotspot = (list, j, i) => (list[j].priority ?? 0) > (list[i].priority ?? 0) || ((list[j].priority ?? 0) === (list[i].priority ?? 0) && j < i);
+
+/**
+ * A9.21: fracción (0-1) de la caja de `list[i]` en la que el clic le llega a él, es decir, la que no tapan los hotspots
+ * que le ganan (beatsHotspot). Los de flags complementarias (nunca a la vez) no cuentan. Exacta: rejilla con los bordes.
+ */
+export function ownZoneFraction(list, i) {
+  const H = list[i];
+  const a = H.bounds;
+  if (!a || !(a.w > 0 && a.h > 0)) return 1;
+  const winners = list.filter((B, j) => j !== i && B.bounds && beatsHotspot(list, j, i) && !complementaryHs(H, B)).map((B) => B.bounds);
+  if (!winners.length) return 1;
+  const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
+  const xs = [...new Set([a.x, a.x + a.w, ...winners.flatMap((b) => [clamp(b.x, a.x, a.x + a.w), clamp(b.x + b.w, a.x, a.x + a.w)])])].sort((p, q) => p - q);
+  const ys = [...new Set([a.y, a.y + a.h, ...winners.flatMap((b) => [clamp(b.y, a.y, a.y + a.h), clamp(b.y + b.h, a.y, a.y + a.h)])])].sort((p, q) => p - q);
+  let covered = 0;
+  for (let xi = 0; xi + 1 < xs.length; xi++) {
+    for (let yi = 0; yi + 1 < ys.length; yi++) {
+      const cx = (xs[xi] + xs[xi + 1]) / 2;
+      const cy = (ys[yi] + ys[yi + 1]) / 2;
+      if (winners.some((b) => cx >= b.x && cx <= b.x + b.w && cy >= b.y && cy <= b.y + b.h)) covered += (xs[xi + 1] - xs[xi]) * (ys[yi + 1] - ys[yi]);
+    }
+  }
+  return Math.max(0, 1 - covered / (a.w * a.h));
+}
 
 /** A2.6a: misma sintaxis que CONDITION_RE de src/systems/DialogueSystem.ts */
 export const CONDITION_RE = /^(!?)(?:(flag|item):)?([A-Za-z0-9_.-]+)$/;
@@ -747,11 +786,18 @@ export function lintProject(project) {
     if (!map.has(flag)) map.set(flag, []);
     map.get(flag).push(where);
   };
-  for (const c of containers) {
+  // A9.26: las combinaciones objeto + objeto de global.json también ponen y leen flags (p. ej. has_marked_map)
+  for (const c of [...containers, ...(project.globalScripts ?? [])]) {
     walkOps(c.ops, `${c.scene}.${c.label}`, (op, p) => {
       if (op.op === 'setFlag') note(writes, op.flag, p);
       if (op.op === 'ifFlag') note(reads, op.flag, p);
     });
+  }
+  // A9.22: las reglas de music-map.json leen flags (`flag` y `notFlag`)
+  const musicRules = (project.musicRules ?? []).map((r, i) => ({ r, where: `music-map.rules[${i}](${r.state})` }));
+  for (const { r, where } of musicRules) {
+    note(reads, r.when?.flag, `${where}.when.flag`);
+    note(reads, r.when?.notFlag, `${where}.when.notFlag`);
   }
   for (const [id, s] of Object.entries(scenes)) {
     for (const hs of s.regions?.hotspots ?? []) {
@@ -782,6 +828,18 @@ export function lintProject(project) {
   for (const [flag, where] of reads) {
     if (writes.has(flag) || inCode(flag)) continue;
     push('a', 'warning', sceneOf(where[0]), flag, where[0], `flag «${flag}» se lee y nunca se pone (${where.join(', ')})`, { scenes: [...new Set(where.map(sceneOf))] });
+  }
+  // A9.22: una regla de música con `scene` y `notFlag` («este estado dura en esta sala hasta que pase X») cuyo X no lo
+  // pone ningún script de esas escenas: el estado no se apaga al resolver la sala (server_room con pzbot_off, que solo
+  // pone treatment_room en el cap. 5). Las flags que no pone nadie ya salen arriba como «se lee y nunca se pone».
+  for (const { r, where } of musicRules) {
+    const nf = r.when?.notFlag;
+    const sc = r.when?.scene;
+    if (typeof nf !== 'string' || sc === undefined || !writes.has(nf)) continue;
+    const ruleScenes = Array.isArray(sc) ? sc : [sc];
+    const setIn = [...new Set(writes.get(nf).map(sceneOf))];
+    if (setIn.some((x) => ruleScenes.includes(x))) continue;
+    push('a', 'warning', 'music-map', nf, `${where}.when.notFlag`, `music-map: el estado «${r.state}» de ${ruleScenes.join(', ')} se apaga con «${nf}», pero esa flag solo la pone ${setIn.join(', ')}: en la sala no se apaga nunca`, { strong: true });
   }
   for (const [flag, where] of writes) {
     if (reads.has(flag) || journal.flagReads.has(flag) || inCode(flag)) continue;
@@ -1063,6 +1121,7 @@ export function lintProject(project) {
   // ── (g) hotspots solapados ──
   for (const [id, s] of Object.entries(scenes)) {
     const hs = (s.regions?.hotspots ?? []).filter((h) => validRect(h.bounds));
+    const hiddenWhole = new Set();
     for (let i = 0; i < hs.length; i++) {
       for (let j = i + 1; j < hs.length; j++) {
         const A = hs[i], B = hs[j], a = A.bounds, b = B.bounds;
@@ -1081,13 +1140,26 @@ export function lintProject(project) {
           // A3.11: `priority` (SceneDataLoader.getHotspotAtPct): el de dentro gana aunque vaya después
           push('g', 'warning', id, pair, `${id}.${pair}`, `${A.id} contiene a ${B.id}, que tiene más priority y se puede pulsar (revisa que sea intencionado)`);
         } else if (aContainsB) {
+          hiddenWhole.add(B.id);
           push('g', 'warning', id, pair, `${id}.${pair}`, `${A.id} contiene entero a ${B.id} y va antes en la lista: el clic nunca llega a ${B.id}`, { strong: true });
         } else if (bContainsA) {
           push('g', 'warning', id, pair, `${id}.${pair}`, `${B.id} contiene a ${A.id} (${A.id} va antes, así que se puede pulsar; revisa que sea intencionado)`, { strong: true });
         } else {
-          push('g', 'warning', id, pair, `${id}.${pair}`, `${A.id} y ${B.id} se solapan (${pct}% del menor; manda ${A.id} en la zona común)`);
+          const boss = (B.priority ?? 0) > (A.priority ?? 0) ? `${B.id} (priority)` : A.id;
+          push('g', 'warning', id, pair, `${id}.${pair}`, `${A.id} y ${B.id} se solapan (${pct}% del menor; manda ${boss} en la zona común)`);
         }
       }
+    }
+    // A9.21: zona propia. Un hotspot del que otros (los que le ganan el clic) tapan más de la mitad casi no se puede pulsar
+    for (let i = 0; i < hs.length; i++) {
+      if (hiddenWhole.has(hs[i].id)) continue; // ya avisado: «el clic nunca llega»
+      const own = ownZoneFraction(hs, i);
+      if (own >= OWN_ZONE_MIN) continue;
+      const by = hs.filter((B, j) => j !== i && beatsHotspot(hs, j, i)).filter((B) => {
+        const a = hs[i].bounds, b = B.bounds;
+        return Math.min(a.x + a.w, b.x + b.w) > Math.max(a.x, b.x) && Math.min(a.y + a.h, b.y + b.h) > Math.max(a.y, b.y) && !complementaryHs(hs[i], B);
+      }).map((B) => B.id);
+      push('g', 'warning', id, hs[i].id, `${id}.${hs[i].id}.zona`, `${hs[i].id} solo conserva el ${Math.round(own * 100)}% de su caja: le ganan el clic ${by.join(', ')} (súbele priority, ponlo antes en la lista o recorta)`, { strong: true });
     }
   }
 

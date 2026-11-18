@@ -100,7 +100,9 @@ test('resolveState: prioridades de la tabla de music-map.json', () => {
   assert.equal(P.resolveState(MAP.rules, ctx({ scene: 'basement' })).state, 'tension');
   assert.equal(P.resolveState(MAP.rules, ctx({ scene: 'basement', dialogue: true })).state, 'dialogue', 'la conversación manda sobre la tensión');
   assert.equal(P.resolveState(MAP.rules, ctx({ scene: 'server_room' })).state, 'danger');
-  assert.equal(P.resolveState(MAP.rules, ctx({ scene: 'server_room', flags: { pzbot_off: true } })).state, 'explore');
+  // A9.22: en server_room PZ-BOT cae con pzbot_crashed (pzbot_off solo la pone treatment_room en el cap. 5)
+  assert.equal(P.resolveState(MAP.rules, ctx({ scene: 'server_room', flags: { pzbot_crashed: true } })).state, 'explore');
+  assert.equal(P.resolveState(MAP.rules, ctx({ scene: 'server_room', flags: { pzbot_off: true } })).state, 'danger', 'pzbot_off no apaga el peligro de server_room');
   assert.equal(P.resolveState(MAP.rules, ctx({ scene: 'clinic_interior', inventory: ['keycard'] })).state, 'tension');
   assert.equal(P.resolveState(MAP.rules, ctx({ goalsLeft: 1 })).state, 'chapterEnd');
   assert.equal(P.resolveState(MAP.rules, ctx({ goalsLeft: 3 })).state, 'explore');
