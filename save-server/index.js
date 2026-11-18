@@ -7,7 +7,7 @@ import { readFileSync, writeFileSync, existsSync, mkdirSync, readdirSync, unlink
 import { join } from 'path';
 import { appendFileSync } from 'fs';
 import { bodyLimit } from 'hono/body-limit';
-import { publicPlayer, createEnsCache } from './privacy.js';
+import { publicPlayer, createEnsCache, parseExcluded, excludedFromLeaderboard } from './privacy.js';
 import { parseSample, sampleLine, createRateLimiter, summarize, MAX_BODY_BYTES as TELEMETRY_MAX_BYTES } from './telemetry.js';
 import { normalizeAddress, parseSlot, checkSessionAuth, validateSaveBody, MAX_SAVE_BYTES } from './validate.js';
 import { createStatsStore } from './stats.js';
@@ -48,6 +48,9 @@ const ensCache = createEnsCache({
 });
 
 app.get('/', (c) => c.json({ status: 'ok', service: 'zeroadventure-save' }));
+
+// A9.19: partidas que no cuentan para /leaderboard (las del smoke del CI van marcadas con state.smoke y además se borran)
+const LEADERBOARD_EXCLUDED = parseExcluded(process.env.LEADERBOARD_EXCLUDE);
 
 // ─── Save file naming: {address}_slot{N}.json ───
 
@@ -146,6 +149,7 @@ app.get('/leaderboard', (c) => {
         const data = JSON.parse(readFileSync(join(DATA_DIR, file), 'utf-8'));
         const state = data.state;
         if (!state) continue;
+        if (excludedFromLeaderboard(data, LEADERBOARD_EXCLUDED)) continue;
 
         const addr = typeof data.address === 'string' ? data.address.toLowerCase() : '';
         const flags = state.flags ?? {};
