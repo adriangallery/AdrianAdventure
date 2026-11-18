@@ -251,8 +251,8 @@ for (const v of VARIANTS) {
       const path = join(dir, `${String(n++).padStart(4, '0')}.png`);
       const r = await capture(v, label, path);
       shots.push({ path, t: r.t - t0 });
-      if (!walked && v.id === 'pl' && want === 'side' && si === 2) {
-        // nearest: a mitad del primer tramo de perfil del lobby, con el sprite de andar puesto
+      if (!walked && !report[v.id].nearest.length && v.id === 'pl' && want === 'side' && (si === 2 || si === 3)) {
+        // nearest: a mitad de un tramo de perfil del lobby, con el sprite de andar puesto
         const tex = await page.evaluate(() => window.__qa.state().anim?.texture);
         if (tex && v.side.test(tex)) { walked = true; report[v.id].nearest.push(await nearestCheck(v)); }
       }
