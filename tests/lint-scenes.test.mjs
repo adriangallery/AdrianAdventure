@@ -449,6 +449,17 @@ test('(h) diario válido: sin errores; avisa de la flag que nada pone; sus lectu
   assert.deepEqual(only(lintProject(project([journalScene()])), 'a').map((f) => f.id), ['set_flag']);
 });
 
+test('(h)/(a) A9.26: los setFlag de las combinaciones de global.json cuentan como sitio donde se pone la flag', () => {
+  const j = goodJournal();
+  j.goals.push({ id: 'g_map', text: 'Mark the map.', doneWhen: 'has_marked_map' });
+  const p = { ...project([journalScene()]), journal: [jfile(j)] };
+  assert.ok(only(lintProject(p), 'h').some((f) => f.id === 'has_marked_map'), 'sin global.json: aviso (h)');
+  p.globalScripts = [{ scene: 'global', label: 'itemCombos[0](printout+pen)', ops: [{ op: 'setFlag', flag: 'has_marked_map', value: true }] }];
+  const all = lintProject(p);
+  assert.ok(!only(all, 'h').some((f) => f.id === 'has_marked_map'), 'con global.json: sin aviso (h)');
+  assert.ok(!only(all, 'a').some((f) => f.id === 'has_marked_map'), 'y tampoco «se pone y nunca se lee»: la lee el diario');
+});
+
 test('(a) A9.22: flags de music-map.json: las que nadie pone y el notFlag de una sala que solo se pone en otra', () => {
   const room = scene('room', { regions: { hotspots: [hs('hs_bot', { USE: [{ op: 'setFlag', flag: 'bot_crashed', value: true }] })], triggers: [] } });
   const later = scene('later', { regions: { hotspots: [hs('hs_bot2', { USE: [{ op: 'setFlag', flag: 'bot_off', value: true }] })], triggers: [] } });

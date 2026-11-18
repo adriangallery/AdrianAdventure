@@ -4,7 +4,8 @@
 //   node scripts/lint-scenes.mjs [--strict] [--json] [--scene <id>] [--root <dir>] [--no-write]
 //
 // Recorre assets/scenes/<id>/scene.json y aplica estas reglas:
-//   a  flags que se leen y nunca se ponen, o que se ponen y nunca se leen
+//   a  flags que se leen y nunca se ponen, o que se ponen y nunca se leen (cuentan las escenas, las combinaciones de
+//      assets/config/global.json (A9.26) y las reglas de assets/config/music-map.json (A9.22))
 //   b  objetos que se consiguen (addItem) y no sirven para nada
 //   c  salidas (fadeToScene/gotoScene) en hotspots y triggers sin gate, para revisar a mano
 //   d  operaciones de estado después de un say/sayBrief en el mismo bloque
@@ -785,7 +786,8 @@ export function lintProject(project) {
     if (!map.has(flag)) map.set(flag, []);
     map.get(flag).push(where);
   };
-  for (const c of containers) {
+  // A9.26: las combinaciones objeto + objeto de global.json también ponen y leen flags (p. ej. has_marked_map)
+  for (const c of [...containers, ...(project.globalScripts ?? [])]) {
     walkOps(c.ops, `${c.scene}.${c.label}`, (op, p) => {
       if (op.op === 'setFlag') note(writes, op.flag, p);
       if (op.op === 'ifFlag') note(reads, op.flag, p);
