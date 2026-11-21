@@ -155,7 +155,8 @@ const audit = (page) => page.evaluate(() => {
     const cam = gs.cameras.main;
     const sx = (gs.player.x - cam.scrollX) * cam.zoom;
     const sy = (gs.player.y - cam.scrollY) * cam.zoom;
-    out.dex = { sx: Math.round(sx), sy: Math.round(sy), inView: sx >= 0 && sx <= W && sy >= 0 && sy <= H - panelH + 1, moving: !!gs.player.isMoving?.() || !!window.__qa.state().path };
+    out.dex = { sx: Math.round(sx), sy: Math.round(sy), inView: sx >= 0 && sx <= W && sy >= 0 && sy <= H - panelH + 1, // «quieto» = Player.isMoving() (la `path` de QA es la última ruta y se queda puesta al parar: con ella nunca filtraba)
+    moving: !!gs.player.isMoving?.() };
   }
   return out;
 });
@@ -406,6 +407,16 @@ try {
     report.fps = { renderer: 'canvas', size: '390x844', cpuThrottle: 4, ...raf, gate: 50 };
     want(raf.median >= 50, `fps medianos con CPU x4 en 390x844 (canvas): ${raf.median} (${raf.frames} fotogramas en 4,5 s, máx ${raf.max} ms)`);
     await realTaps(page, '390x844');
+    // Móvil/diario también en vertical (en la ruta el paso del diario cae en horizontal tras el giro)
+    try {
+      await page.evaluate(() => window.__qa.openJournal('goals'));
+      await sleep(500);
+      await shot(page, '390x844', 'movil');
+      judge('390x844', 'móvil abierto', await audit(page), { strictPortrait: false });
+      await page.evaluate(() => window.__qa.closeJournal());
+    } catch (err) {
+      warnings.push(`[390x844] no se pudo abrir el móvil para la captura: ${String(err.message ?? err).split('\n')[0]}`);
+    }
     // Partida nueva desde una página recién cargada (como la pasada en horizontal)
     await page.reload({ waitUntil: 'domcontentloaded', timeout: 120_000 });
     await page.waitForFunction(() => !!window.__qa && !!window.__funtico?.metrics, { timeout: 120_000, polling: 250 });
