@@ -265,10 +265,11 @@ export class TriageScene extends Phaser.Scene {
       this.cardText.setText(`"${st.phrase ?? ''}"`);
       this.playVoice(st.voice ?? null);
     } else {
+      const rel = st as RelapseStation;
       this.cardTitle.setText('CHAD SAYS:');
-      this.cardText.setText(`"${st.fud}"`);
-      st.options.forEach((o, k) => this.options[k].setText(o.text).setEnabled(true));
-      this.playVoice(st.fudVoice);
+      this.cardText.setText(`"${rel.fud}"`);
+      rel.options.forEach((o, k) => this.options[k].setText(o.text).setEnabled(true));
+      this.playVoice(rel.fudVoice);
     }
     if (this.W) this.layout(this.W, this.H);
   }
