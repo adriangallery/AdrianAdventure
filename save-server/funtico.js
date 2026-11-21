@@ -154,11 +154,13 @@ const tokenHash = (auth) => createHash('sha256').update(auth).digest('hex');
  * @param {typeof fetch} [o.fetch]                       inyectable para tests
  * @param {string} [o.dataDir]                           directorio de datos del save-server; se usa <dataDir>/funtico
  * @param {Record<string,Function>} [o.validators]       'POST /User/complete-practice' → (payload, ctx) (F2.2)
+ * @param {Record<string,Function>} [o.local]            rutas propias del save-server (F2.2: 'POST /run/start'), con el
+ *                                                       jugador ya identificado: ({ userId, bodyText, now }) → { status, body }
  * @param {{warn:Function,error:Function}} [o.log]
  * @param {number} [o.timeoutMs]
  * @returns {(req:{method:string,path:string,search?:string,headers?:Record<string,string|undefined>,bodyText?:string}) => Promise<{status:number,body:string,contentType:string}>}
  */
-export function createFunticoRelay({ env = process.env, fetch: fetchImpl = globalThis.fetch, dataDir, validators = {}, log = console, timeoutMs = 10000, now = () => Date.now() } = {}) {
+export function createFunticoRelay({ env = process.env, fetch: fetchImpl = globalThis.fetch, dataDir, validators = {}, local = {}, log = console, timeoutMs = 10000, now = () => Date.now() } = {}) {
   const loaded = loadFunticoConfig(env);
   if (!loaded.enabled) {
     const off = async () => NOT_FOUND;
@@ -241,7 +243,8 @@ export function createFunticoRelay({ env = process.env, fetch: fetchImpl = globa
     try { r = await v(payload, ctx); } catch { log.error(`[funtico] el validador de ${routeKey} lanzó`); throw new Reject(500, 'Validation failed'); }
     if (r === undefined || r === true) return payload;
     if (r === false) throw bad('Rejected');
-    if (isObj(r) && r.ok === false) throw new Reject(Number.isInteger(r.status) && r.status >= 400 && r.status < 500 ? r.status : 400, typeof r.error === 'string' ? r.error : 'Rejected');
+    // 4xx (o 503: validador sin configurar, p. ej. F2.2 sin FUNTICO_SEED_SALT); cualquier otro estado → 400
+    if (isObj(r) && r.ok === false) throw new Reject(Number.isInteger(r.status) && ((r.status >= 400 && r.status < 500) || r.status === 503) ? r.status : 400, typeof r.error === 'string' ? r.error : 'Rejected');
     if (isObj(r) && r.ok === true) return r.payload === undefined ? payload : r.payload;
     throw new Reject(500, 'Validation failed');
   }
@@ -316,12 +319,22 @@ export function createFunticoRelay({ env = process.env, fetch: fetchImpl = globa
   const handle = async function handle({ method, path, search = '', headers = {}, bodyText = '' }) {
     const routeKey = `${String(method).toUpperCase()} ${path}`;
     const route = Object.hasOwn(ROUTES, routeKey) ? ROUTES[routeKey] : null;
-    if (!route) return NOT_FOUND;
+    // Rutas propias (F2.2): no salen a Funtico salvo para saber el UserId del token; nunca tapan una de la lista blanca.
+    const own = !route && Object.hasOwn(local, routeKey) && typeof local[routeKey] === 'function' ? local[routeKey] : null;
+    if (!route && !own) return NOT_FOUND;
     try {
       if (Buffer.byteLength(bodyText || '') > MAX_BODY_BYTES) return json(413, { error: 'Too large' });
       const rawAuth = headers.authorization ?? headers.Authorization;
       const auth = typeof rawAuth === 'string' && BEARER_RE.test(rawAuth) ? rawAuth : null;
       if (rawAuth && !auth) throw new Reject(401, 'Unauthorized');
+      if (own) {
+        if (!auth) throw new Reject(401, 'Unauthorized');
+        if (search && search !== '?') throw bad('Invalid query');
+        const userId = await userIdFor(auth);
+        let r;
+        try { r = await own({ userId, bodyText, now: now() }); } catch { log.error(`[funtico] la ruta propia ${routeKey} lanzó`); throw new Reject(500, 'Internal error'); }
+        return json(r.status, r.body);
+      }
       if (route.auth !== false && !auth) throw new Reject(401, 'Unauthorized');
       const qs = buildSearch(search, route.query);
 
