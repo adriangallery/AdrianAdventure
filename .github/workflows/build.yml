@@ -100,6 +100,25 @@ jobs:
           SHOTS: funtico-shots/${{ matrix.renderer }}
           RENDERER: ${{ matrix.renderer }}
 
+      # GIF de una carrera en vertical y otra en horizontal (para Adrián, por DROP). No es puerta: si falla, avisa.
+      - name: GIF de Triage (vertical y horizontal)
+        if: ${{ matrix.renderer == 'webgl' }}
+        continue-on-error: true
+        run: |
+          command -v ffmpeg >/dev/null || { sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg; }
+          bash scripts/funtico/triage-gif.sh
+          mkdir -p funtico-gif && cp funtico-gif-work/triage-*.gif funtico-gif/
+        env:
+          OUT: funtico-gif-work
+          RENDERER: webgl
+
+      - uses: actions/upload-artifact@v4
+        if: ${{ always() && matrix.renderer == 'webgl' }}
+        with:
+          name: funtico-triage-gif
+          path: funtico-gif/
+          if-no-files-found: ignore
+
       - uses: actions/upload-artifact@v4
         if: always()
         with:
