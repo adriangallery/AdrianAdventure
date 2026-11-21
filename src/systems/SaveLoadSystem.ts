@@ -3,6 +3,8 @@ import { migrateSave } from '@/systems/SaveMigration';
 import { saveForWallet, loadForWallet, hasWalletSave, cloudAutosave, type WalletSave } from '@/web3/wallet-save';
 import { SAVE_KEY, writeSlotVerified, readSlots, backupBeforeLoad, deleteSlotLocal, type SaveResult } from '@/systems/SaveSlots';
 import { autosavePlan, PREVIOUS_AUTOSAVE_SLOT } from '@/systems/SaveProgress';
+// F3.2a: el almacén de partidas es un gancho neutro (por defecto `localStorage`, como antes)
+import { saveStorage } from '@/platform/SaveStorage';
 
 /** Slots que cuentan como «hay partida» (0 = autoguardado, 1-2 = manuales; el 3 «Before load» no cuenta). */
 const MAX_SLOTS = 3;
@@ -39,7 +41,7 @@ export class SaveLoadSystem {
     const plan = autosavePlan(existing?.state, state);
     if (!plan.write) return false;
     if (plan.backupExisting && existing) {
-      const kept = writeSlotVerified(localStorage, PREVIOUS_AUTOSAVE_SLOT, existing.state, existing.sceneName, existing.timestamp);
+      const kept = writeSlotVerified(saveStorage(), PREVIOUS_AUTOSAVE_SLOT, existing.state, existing.sceneName, existing.timestamp);
       // Si no se pudo guardar la copia, no se pisa la partida anterior
       if (!kept.ok) { console.warn(`Previous autosave backup failed: ${kept.error}`); return false; }
     }
@@ -59,14 +61,14 @@ export class SaveLoadSystem {
    * guardado (antes no devolvía nada y el panel decía «saved» pasara lo que pasara).
    */
   saveToSlot(slotId: number, state: GameState, sceneName: string): SaveResult {
-    const res = writeSlotVerified(localStorage, slotId, state, sceneName, Date.now());
+    const res = writeSlotVerified(saveStorage(), slotId, state, sceneName, Date.now());
     if (!res.ok) console.warn(`Save slot ${slotId} failed: ${res.error}`);
     return res;
   }
 
   /** A1.12: copia de seguridad «Before load» de la partida actual antes de cargar otra. */
   backupBeforeLoad(state: GameState, sceneName: string): SaveResult {
-    return backupBeforeLoad(localStorage, state, sceneName, Date.now());
+    return backupBeforeLoad(saveStorage(), state, sceneName, Date.now());
   }
 
   /**
@@ -89,7 +91,7 @@ export class SaveLoadSystem {
    */
   getAllSlots(): Record<number, SaveSlot> {
     // A1.4: partidas de versiones anteriores (flags renombradas)
-    return readSlots(localStorage, (slot) => migrateSave(slot));
+    return readSlots(saveStorage(), (slot) => migrateSave(slot));
   }
 
   /**
@@ -108,7 +110,7 @@ export class SaveLoadSystem {
    * Delete a save slot.
    */
   deleteSlot(slotId: number): void {
-    deleteSlotLocal(localStorage, slotId);
+    deleteSlotLocal(saveStorage(), slotId);
   }
 
   /**
@@ -122,7 +124,7 @@ export class SaveLoadSystem {
    * Clear all saves.
    */
   clearAll(): void {
-    localStorage.removeItem(SAVE_KEY);
+    saveStorage().removeItem(SAVE_KEY);
   }
 
   // ─── Wallet-linked saves ──────────────────────────────────

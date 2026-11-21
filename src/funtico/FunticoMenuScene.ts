@@ -1,5 +1,5 @@
 /**
- * F1.2 (plan FUNTICO_ADVENTURE): menú del build Funtico. Título, TRIAGE (jugar), CAMPAIGN (próximamente), el nombre del
+ * F1.2 (plan FUNTICO_ADVENTURE): menú del build Funtico. Título, TRIAGE (jugar), CAMPAIGN (F3.2a: mapa), el nombre del
  * usuario del puente y un Hall of Fame corto (top 5). Se recoloca en caliente al girar o redimensionar.
  * El toque en TRIAGE es el gesto que desbloquea el audio.
  */
@@ -52,7 +52,7 @@ export class FunticoMenuScene extends Phaser.Scene {
     this.sub = txt(this, 'THE CLINIC IS OPEN', MIN_TEXT, C.lilacDim, 'center').setOrigin(0.5, 0);
     this.user = txt(this, '', MIN_TEXT, C.lilac, 'center').setOrigin(0.5, 0);
     this.triage = new Button(this, 'triage', 'TRIAGE', () => startTriage(this), { fill: 0x2a2450 });
-    this.campaign = new Button(this, 'campaign', 'CAMPAIGN\nCOMING SOON', () => undefined, { color: C.grey }).setEnabled(false);
+    this.campaign = new Button(this, 'campaign', 'CAMPAIGN', () => this.scene.start('CampaignMapScene'), { fill: 0x2a2450 });
     this.hofTitle = txt(this, 'HALL OF FAME', MIN_TEXT, C.yellow, 'center').setOrigin(0.5, 0);
     this.hof = txt(this, 'loading...', MIN_TEXT, C.white, 'left').setOrigin(0.5, 0);
     this.layout(this.scale.width, this.scale.height);
