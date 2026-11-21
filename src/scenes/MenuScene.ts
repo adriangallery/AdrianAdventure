@@ -13,6 +13,7 @@ import { bindShutdown } from './lifecycle';
 import { BRANDING } from '@/config/branding';
 import { SAVE_API } from '@/config/saveApi';
 import { formatPlayTime, isFinishedRun } from '@/systems/Ending';
+import { getLayoutProfile } from '@/platform/LayoutProfile';
 
 /** Fila del leaderboard del save-server (GET /save-api/leaderboard) */
 interface LeaderboardPlayer {
@@ -133,7 +134,9 @@ export class MenuScene extends Phaser.Scene {
     const btnSpacing = Math.max(btnSize * 2.5, 44);
     const btnCount = hasSave ? 3 : 2; // New Game + Leaderboard + optional Continue
     const subSize = Math.max(11, Math.min(14, Math.floor(refSize * 0.014)));
-    const rotateHintH = isPortrait ? 40 : 0;
+    // F3.2b: con un perfil que juega en vertical (apilado) no se pide girar; con el clásico, como siempre
+    const showRotateHint = isPortrait && getLayoutProfile().portraitSceneRatio === null;
+    const rotateHintH = showRotateHint ? 40 : 0;
 
     // Subtitle — A1.7: el arte del título llega con los personajes hasta su borde inferior, así que el
     // subtítulo va DEBAJO del arte (nunca encima). Se crea primero para medir su alto real (con el
@@ -245,7 +248,7 @@ export class MenuScene extends Phaser.Scene {
     this.createButton(width / 2, lbY, 'Leaderboard', btnSize, () => this.showLeaderboard());
 
     // Rotate hint in portrait
-    if (isPortrait) {
+    if (showRotateHint) {
       const hintSize = Math.max(11, Math.min(12, Math.floor(refSize * 0.012)));
       this.add.text(width / 2, height - 30, 'Rotate for best experience', {
         fontFamily: FONT.FAMILY,

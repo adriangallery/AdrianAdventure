@@ -144,6 +144,8 @@ export class ScummUI {
       fontSize: `${actionFontSize}px`,
       color: TWP.ACTION_LINE,
     }).setOrigin(0.5, 0);
+    // F3.2b: en vertical apilado la frase larga («Use Fence Plank with Chimney») baja a una segunda línea
+    if (this.stacked) this.actionLine.setWordWrapWidth(width - 16).setAlign('center').setLineSpacing(4);
     this.container.add(this.actionLine);
     this.updateActionLine();
 
@@ -178,7 +180,7 @@ export class ScummUI {
     const fontPx = Math.max(profile.portraitMinFontPx, Math.min(18, Math.floor(width * 0.038)));
     const padX = 8;
     const gap = 6;
-    const verbStartY = 6 + actionFontSize + 10;
+    const verbStartY = 6 + actionFontSize * 2 + 4 + 10; // dos líneas de frase
     const arrowColW = minTouch + 4;
     const slot = Math.max(minTouch + 4, Math.min(64, Math.floor((width - padX * 2 - arrowColW) / 6) - gap));
     const invCols = Math.max(1, Math.floor((width - padX * 2 - arrowColW + gap) / (slot + gap)));
@@ -421,6 +423,21 @@ export class ScummUI {
 
   toggle(): void {
     if (this.collapsed) this.expand(); else this.collapse();
+  }
+
+  /**
+   * F3.2b: alto que tendrá el panel con esta ventana (el mismo cálculo que build(), con el plegado guardado). GameScene
+   * lo usa con un LayoutProfile activo para recolocar la escena al girar sin esperar a que el panel se rehaga.
+   */
+  static expectedPanelHeight(width: number, height: number): number {
+    const stacked = stackedPanelHeight(width, height);
+    if (stacked !== null) return stacked;
+    const isMobile = height > width || Math.min(width, height) < 600;
+    if (isMobile && ScummUI.readCollapsed()) return COLLAPSED_HEIGHT;
+    const isLandscape = width > height;
+    const panelRatio = isMobile ? (isLandscape ? 0.28 : 0.18) : 0.25;
+    const minH = isMobile ? (isLandscape ? 120 : PORTRAIT_PANEL_MIN) : LAYOUT.PANEL_MIN_HEIGHT;
+    return Math.max(minH, Math.floor(height * panelRatio));
   }
 
   private static readCollapsed(): boolean {
