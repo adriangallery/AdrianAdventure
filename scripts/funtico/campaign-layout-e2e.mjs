@@ -266,14 +266,15 @@ const verbScreen = (page, verb) => page.evaluate((verb) => {
 }, verb);
 
 async function realTaps(page, size) {
-  const targets = ['hs_trees', 'hs_fence', 'hs_mailbox'];
+  // hs_fence no: su borde está pegado a tr_mountain (x 0-3 %), que cambia de escena
+  const targets = ['hs_mailbox', 'hs_trees', 'hs_bushes'];
   for (const id of targets) {
     let s = await hotspotScreen(page, id);
     const startedOff = s.x < 0 || s.x > s.W;
     // Si está fuera de cuadro, Dex anda hacia ese borde (toque real en la acera del borde) y la cámara le sigue
     for (let i = 0; i < 8 && (s.x < 30 || s.x > s.W - 30); i++) {
       const groundY = await page.evaluate(() => { const gs = window.__game.scene.getScene('GameScene'); return (gs.player.y - gs.cameras.main.scrollY) * gs.cameras.main.zoom; });
-      await tapAt(page, s.x < 0 ? 12 : s.W - 12, Math.min(s.viewH - 6, groundY - 4));
+      await tapAt(page, s.x < 0 ? 60 : s.W - 40, Math.min(s.viewH - 6, groundY - 4));
       await sleep(400);
       await waitIdle(page, 10_000);
       await sleep(900); // la cámara llega con lerp
