@@ -6,7 +6,9 @@ import tseslint from 'typescript-eslint';
 import globals from 'globals';
 
 export default tseslint.config(
-  { ignores: ['dist/**', 'node_modules/**', 'electron/**', 'steam-build/**', 'android/**', 'trailer/**', 'audiobook/**', 'save-server/**', 'scripts/**'] },
+  { ignores: ['dist/**', 'node_modules/**', 'electron/**', 'steam-build/**', 'android/**', 'trailer/**', 'audiobook/**', 'save-server/**', 'scripts/**',
+    // F0.2 (plan FUNTICO_ADVENTURE): SDK de Funtico vendorizado tal cual (ver su cabecera); no se lintea
+    'src/funtico/sdk/**'] },
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {
