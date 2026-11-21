@@ -28,7 +28,8 @@ export const CLASSIC_LAYOUT: Readonly<LayoutProfile> = Object.freeze({
 
 /** Perfil para móviles que se juegan en vertical y en horizontal, con giro en caliente. */
 export const STACKED_PORTRAIT_LAYOUT: Readonly<LayoutProfile> = Object.freeze({
-  portraitSceneRatio: 0.5,
+  // 0,56: en 390x844 la escena gana 50 px y el panel (372 px) se llena entero con verbos e inventario, sin hueco negro
+  portraitSceneRatio: 0.56,
   portraitMinFontPx: 14,
   portraitMinTouchPx: 44,
 });

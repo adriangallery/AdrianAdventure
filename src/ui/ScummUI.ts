@@ -182,12 +182,17 @@ export class ScummUI {
     const gap = 6;
     const verbStartY = 6 + actionFontSize * 2 + 4 + 10; // dos líneas de frase
     const arrowColW = minTouch + 4;
-    const slot = Math.max(minTouch + 4, Math.min(64, Math.floor((width - padX * 2 - arrowColW) / 6) - gap));
+    // Reparto del alto: verbos (filas de ~52 px) y el resto para el inventario (dos filas de casillas tan grandes como
+    // quepan con 5 columnas, 48–72 px); lo que sobre vuelve a las filas de verbos (≤ 64 px). Así no queda hueco negro.
+    const avail = this.fullPanelHeight - verbStartY - 8 - 10;
+    const slotW = Math.floor((width - padX * 2 - arrowColW + gap) / 5) - gap;
+    const slotH = Math.floor((avail - 52 * 3 - gap) / 2);
+    const slot = Math.max(minTouch + 4, Math.min(72, slotW, slotH));
     const invCols = Math.max(1, Math.floor((width - padX * 2 - arrowColW + gap) / (slot + gap)));
     const invH = slot * 2 + gap;
-    const avail = this.fullPanelHeight - verbStartY - 8 - invH - 10;
-    const rowH = Math.max(minTouch, Math.min(56, Math.floor(avail / 3)));
+    const rowH = Math.max(minTouch, Math.min(64, Math.floor((avail - invH) / 3)));
     const colW = Math.floor((width - padX * 2) / LAYOUT.VERB_COLS);
+    const cellPad = 3;
 
     PANEL_VERBS.forEach((verb, i) => {
       const col = i % LAYOUT.VERB_COLS;
@@ -195,6 +200,11 @@ export class ScummUI {
       const cellX = padX + col * colW;
       const cellY = verbStartY + row * rowH;
       const isActive = verb === this.selectedVerb;
+      // Celda con fondo y marco tenues (los de las casillas del inventario) para que se lea como botón
+      this.container.add(
+        this.scene.add.rectangle(cellX + colW / 2, cellY + rowH / 2, colW - cellPad * 2, rowH - cellPad * 2, TWP.INV_SLOT_BG, 0.9)
+          .setStrokeStyle(1, TWP.INV_SLOT_BORDER, 0.8),
+      );
       const text = this.scene.add.text(cellX + colW / 2, cellY + rowH / 2, VERB_LABELS[verb], {
         fontFamily: FONT.FAMILY,
         fontSize: `${fontPx}px`,
@@ -1005,6 +1015,18 @@ export class ScummUI {
     const rows = 2; // TWP always uses 2 rows
     const maxVisible = cols * rows;
     const visible = items.slice(this.invScrollOffset * cols, this.invScrollOffset * cols + maxVisible);
+
+    // F3.2b: en vertical apilado se ven las casillas vacías (marco tenue), para que el inventario no sea un hueco negro
+    if (this.stackedInv) {
+      for (let i = visible.length; i < maxVisible; i++) {
+        const x = (i % cols) * (slotSize + gap);
+        const y = Math.floor(i / cols) * (slotSize + gap);
+        this.invContainer.add(
+          this.scene.add.rectangle(x + slotSize / 2, y + slotSize / 2, slotSize, slotSize, TWP.INV_SLOT_BG, 0.5)
+            .setStrokeStyle(1, TWP.INV_SLOT_BORDER, 0.6),
+        );
+      }
+    }
 
     // Only render slots that have items (no empty placeholders — TWP style)
     visible.forEach((item, i) => {

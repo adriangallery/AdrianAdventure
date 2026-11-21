@@ -15,11 +15,11 @@ test('por defecto: perfil clásico, sin vertical apilado ni letra mínima en nin
   }
 });
 
-test('apilado: escena arriba con la mitad del alto en vertical; en horizontal, lo clásico', () => {
+test('apilado: escena arriba con el 56 % del alto en vertical; en horizontal, lo clásico', () => {
   setLayoutProfile(STACKED_PORTRAIT_LAYOUT);
   try {
     assert.equal(isStackedPortrait(390, 844), true);
-    assert.equal(stackedPanelHeight(390, 844), 844 - 422);
+    assert.equal(stackedPanelHeight(390, 844), 844 - 472); // floor(844 × 0,56) = 472
     assert.ok((844 - stackedPanelHeight(390, 844)) / 844 >= 0.38);
     assert.equal(stackedPanelHeight(844, 390), null);
     assert.equal(stackedPanelHeight(1280, 720), null);
