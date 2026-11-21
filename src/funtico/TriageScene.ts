@@ -55,6 +55,7 @@ export class TriageScene extends Phaser.Scene {
   private cardTitle!: Phaser.GameObjects.Text;
   private cardText!: Phaser.GameObjects.Text;
   private cropImg!: Phaser.GameObjects.Image;
+  private cropFg!: Phaser.GameObjects.Image;
   private cropFrame!: Phaser.GameObjects.Rectangle;
   private stripBack!: Phaser.GameObjects.Rectangle;
   private stripThumb!: Phaser.GameObjects.Rectangle;
@@ -147,6 +148,7 @@ export class TriageScene extends Phaser.Scene {
     this.cardTitle = txt(this, '', MIN_TEXT, C.yellow);
     this.cardText = txt(this, '', MIN_TEXT, C.white);
     this.cropImg = this.add.image(0, 0, this.bgKey(first.scene)).setOrigin(0.5, 0.5).setVisible(false);
+    this.cropFg = this.add.image(0, 0, this.bgKey(first.scene)).setOrigin(0.5, 0.5).setVisible(false);
     this.cropFrame = this.add.rectangle(0, 0, 10, 10).setOrigin(0.5, 0.5).setStrokeStyle(3, C.yellowN).setFillStyle(0, 0);
     this.stripBack = this.add.rectangle(0, 0, 10, 8, C.panel2N).setOrigin(0, 0);
     this.stripThumb = this.add.rectangle(0, 0, 10, 8, C.yellowN).setOrigin(0, 0);
@@ -226,22 +228,24 @@ export class TriageScene extends Phaser.Scene {
     return o;
   }
 
-  /** Recortes de SAMPLE (fondo + primer plano), en texturas propias escaladas nearest. */
+  /**
+   * Recortes de SAMPLE: un frame `crop-<i>` en la textura del fondo (y otro en la del primer plano, que se pinta encima).
+   * Sin RenderTexture: la imagen del recorte es la misma textura, escalada nearest (pixelArt).
+   */
   private buildCrops(): void {
     const k = this.texW / 3712;
     for (const st of this.model.run.stations) {
       if (st.kind !== 'sample' || !st.crop) continue;
-      const key = `tri-crop-${st.i}`;
-      if (this.textures.exists(key)) this.textures.remove(key);
       const cx = Math.round(st.crop.x * k);
       const cy = Math.round(st.crop.y * k);
-      const cw = Math.max(8, Math.round(st.crop.w * k));
-      const ch = Math.max(8, Math.round(st.crop.h * k));
-      const rt = this.make.renderTexture({ width: cw, height: ch }, false);
-      rt.draw(this.bgKey(st.scene), -cx, -cy);
-      if (FOREGROUND.has(st.scene)) rt.draw(`tri-fg-${st.scene}${this.variant}`, -cx, -cy);
-      rt.saveTexture(key);
-      this.textures.get(key).setFilter(Phaser.Textures.FilterMode.NEAREST);
+      const cw = Math.max(8, Math.min(this.texW - cx, Math.round(st.crop.w * k)));
+      const ch = Math.max(8, Math.min(this.texH - cy, Math.round(st.crop.h * k)));
+      const keys = [this.bgKey(st.scene), ...(FOREGROUND.has(st.scene) ? [`tri-fg-${st.scene}${this.variant}`] : [])];
+      for (const key of keys) {
+        if (!this.textures.exists(key)) continue;
+        const tex = this.textures.get(key);
+        if (!tex.has(`crop-${st.i}`)) tex.add(`crop-${st.i}`, 0, cx, cy, cw, ch);
+      }
     }
   }
 
@@ -259,7 +263,11 @@ export class TriageScene extends Phaser.Scene {
     if (st.kind === 'sample') {
       this.cardTitle.setText('FIND THIS SAMPLE');
       this.cardText.setText('');
-      this.cropImg.setTexture(`tri-crop-${st.i}`);
+      this.cropImg.setTexture(this.bgKey(st.scene), `crop-${st.i}`);
+      const fgKey2 = `tri-fg-${st.scene}${this.variant}`;
+      const hasFg = FOREGROUND.has(st.scene) && this.textures.exists(fgKey2);
+      if (hasFg) this.cropFg.setTexture(fgKey2, `crop-${st.i}`);
+      this.cropFg.setData('on', hasFg);
     } else if (st.kind === 'symptom') {
       this.cardTitle.setText('PATIENT SAYS:');
       this.cardText.setText(`"${st.phrase ?? ''}"`);
@@ -514,6 +522,7 @@ export class TriageScene extends Phaser.Scene {
     const relapse = st?.kind === 'relapse';
     this.options.forEach((b) => b.setVisible(relapse));
     this.cropImg.setVisible(st?.kind === 'sample');
+    this.cropFg.setVisible(st?.kind === 'sample' && this.cropFg.getData('on') === true);
     this.cropFrame.setVisible(st?.kind === 'sample');
     this.shade.setVisible(relapse);
     this.panelFrame.setVisible(!relapse);
@@ -605,6 +614,7 @@ export class TriageScene extends Phaser.Scene {
     if (st?.kind === 'sample') {
       const side = Math.max(48, Math.min(r.w - inner * 2, avail));
       this.cropImg.setDisplaySize(side, side).setPosition(Math.round(r.x + r.w / 2), Math.round(top + side / 2));
+      this.cropFg.setDisplaySize(side, side).setPosition(this.cropImg.x, this.cropImg.y);
       this.cropFrame.setPosition(this.cropImg.x, this.cropImg.y).setSize(side + 6, side + 6);
     } else if (st) {
       // La frase: la mayor fuente (≥ 14) que quepa en la tarjeta
