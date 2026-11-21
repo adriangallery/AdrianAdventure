@@ -11,13 +11,13 @@ import type { TriageModel } from './triage/TriageModel';
 import type { ScoreResult } from './triage/triage';
 import { Button, C, MIN_TEXT, REG, safeInsets, textBound, txt, type UiBound } from './ui';
 import { funticoHook } from './TriageScene';
-import { hofLines, startTriage } from './FunticoMenuScene';
+import { startTriage } from './FunticoMenuScene';
+import { addTriageRun } from './history';
 import { catalogId } from './triage/triage.js';
 import type { TriageCatalog } from './triage/triage';
 import catalog from './triage/catalog.json';
 import { gameEventsFor } from './triage/verifierEvents';
 
-type HofEntry = { rank: number; displayName: string; totalPoints: number; userId: number };
 
 /** Mensaje para el jugador si CompletePractice falla en live. `retry` = el envío no llegó (se puede reintentar). */
 export function submitErrorText(e: FunticoError): { text: string; retry: boolean } {
@@ -46,9 +46,9 @@ export class TriageResultScene extends Phaser.Scene {
   private hof!: Phaser.GameObjects.Text;
   private again!: Button;
   private menu!: Button;
-  private hofTop: HofEntry[] = [];
-  private hofMe: HofEntry | null = null;
-  private myId = -1;
+  /** F1.5: botón al Hall of Fame a pantalla completa (sustituye al top 5 incrustado). */
+  private hofBtn!: Button;
+  private recorded = false;
   private retrySend = false;
   private sendError: FunticoError | null = null;
   private submitted: { ok: boolean; rank: number | null; inHof: boolean; hof: Array<{ name: string; points: number; rank: number; me: boolean }> } | null = null;
@@ -61,10 +61,9 @@ export class TriageResultScene extends Phaser.Scene {
     this.model = data.model;
     this.result = data.model.result();
     this.submitted = null;
-    this.hofTop = [];
-    this.hofMe = null;
     this.retrySend = false;
     this.sendError = null;
+    this.recorded = false;
   }
 
   create(): void {
@@ -89,6 +88,8 @@ export class TriageResultScene extends Phaser.Scene {
       else startTriage(this);
     }, { fill: 0x2a2450 });
     this.menu = new Button(this, 'menu', 'MENU', () => this.scene.start('FunticoMenuScene'));
+    this.hofBtn = new Button(this, 'hall-of-fame', 'HALL OF FAME', () => this.scene.start('HallOfFameScene', { from: 'FunticoMenuScene' }));
+    this.hofBtn.setVisible(false);
     this.layout(this.scale.width, this.scale.height);
     this.scale.on(Phaser.Scale.Events.RESIZE, this.onResize, this);
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
@@ -142,19 +143,25 @@ export class TriageResultScene extends Phaser.Scene {
     const h = await bridge.getHallOfFame({ period: 'monthly', limit: 5, gameMode: 'practice' });
     if (!this.sys.isActive()) return;
     const me = u.ok ? u.value.UserId : -1;
+    // F1.5: historial local para «MY RESULTS» (una vez por carrera, aunque se reintente el envío)
+    if (!this.recorded) {
+      this.recorded = true;
+      try {
+        addTriageRun(localStorage, u.ok ? u.value.UserId : null, { score: this.result.score, at: Date.now(), completed: this.result.completed, hits: this.result.hits, misses: this.result.misses });
+      } catch { /* sin almacén */ }
+    }
     if (h.ok) {
       const top = h.value.leaderboard.slice(0, 5);
       const cur = h.value.currentPlayer ?? null;
-      this.myId = me;
-      this.hofTop = top;
-      this.hofMe = cur && !top.some((e) => e.userId === me) ? cur : null;
       this.submitted = {
         ok: sent.ok,
         rank: cur?.rank ?? null,
         inHof: !!cur && cur.totalPoints >= this.result.score,
         hof: [...top, ...(cur && !top.some((e) => e.userId === me) ? [cur] : [])].map((e) => ({ name: e.displayName, points: e.totalPoints, rank: e.rank, me: e.userId === me })),
       };
-      if (cur) this.hofTitle.setText(`HALL OF FAME - YOU: #${cur.rank}`);
+      this.hofTitle.setText(cur ? `YOU: #${cur.rank}` : 'HALL OF FAME');
+      this.hof.setText('');
+      this.hofBtn.setVisible(true);
     } else {
       this.hof.setText('Hall of Fame unavailable');
       this.submitted = { ok: sent.ok, rank: null, inHof: false, hof: [] };
@@ -191,6 +198,7 @@ export class TriageResultScene extends Phaser.Scene {
       this.breakdown.setPosition(cx, y); y += this.breakdown.height + 14;
       this.hofTitle.setPosition(cx, y); y += this.hofTitle.height + 8;
       this.hof.setPosition(cx, y);
+      this.hofBtn.place(cx - 120, y, 240, 44, base);
       const by = ay + ah - 12 - 52;
       this.again.place(cx - btnW - 6, by, btnW, 52, base);
       this.menu.place(cx + 6, by, btnW, 52, base);
@@ -208,18 +216,18 @@ export class TriageResultScene extends Phaser.Scene {
       this.breakdown.setPosition(rx, ry); ry += this.breakdown.height + 10;
       this.hofTitle.setPosition(rx, ry); ry += this.hofTitle.height + 6;
       this.hof.setPosition(rx, ry);
+      this.hofBtn.place(rx - 120, ry, 240, 44, base);
     }
   }
 
-  private renderHof(nameChars: number): void {
-    if (!this.hofTop.length && !this.hofMe) return;
-    let text = hofLines(this.hofTop, this.myId, nameChars);
-    if (this.hofMe) text += `\n  ...\n${hofLines([this.hofMe], this.myId, nameChars)}`;
-    this.hof.setText(text);
+  /** F1.5: el listado va en HallOfFameScene; aquí solo «YOU: #n» y el botón. */
+  private renderHof(_nameChars: number): void {
+    // sin listado incrustado
   }
 
   uiBounds(): UiBound[] {
     const out: UiBound[] = [this.again.bound(), this.menu.bound()];
+    if (this.hofBtn.bg.visible) out.push(this.hofBtn.bound());
     for (const [id, t] of [['head', this.head], ['score', this.big], ['stats', this.stats], ['breakdown', this.breakdown], ['hof-title', this.hofTitle], ['hof', this.hof]] as const) {
       if (t.text) out.push(textBound(id, t));
     }
