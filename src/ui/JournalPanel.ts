@@ -8,6 +8,7 @@ import { playStinger } from '@/systems/StingerPlayer';
 import type { GameState } from '@/types/game.types';
 import { CHAPTERS } from '@/systems/ChapterManager';
 import { JOURNAL_CHAPTERS, journalChapter, journalProgress, journalWorld } from '@/systems/JournalData';
+import { emitPlatform } from '@/platform/PlatformHooks';
 import {
   HINT_LEVELS, callAnon, chapterData, findNote, goalsView, markSeen, openPuzzleLevel, syncNotes, unseenIds,
   type AnonCall, type JournalProgress, type JournalWorld,
@@ -250,6 +251,8 @@ export class JournalPanel {
         const { call, progress } = callAnon(JOURNAL_CHAPTERS, journalChapter(state), journalWorld(state), journalProgress(state));
         this.save(progress);
         this.scene.registry.set('journalLastCall', call);
+        // F3.1: pista dada (desde el móvil)
+        emitPlatform('onHint', call.level, { level: call.level, puzzle: call.puzzle, chapter: call.chapter });
         this.calling = false;
         this.renderBody();
         sfxOf(this.scene)?.play('phone_pickup', { volume: 0.4 });

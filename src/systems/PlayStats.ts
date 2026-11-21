@@ -121,8 +121,9 @@ let completeSeen: boolean | null = null;
  * Sustituye a `noteChapterMarks` en el bucle de GameScene: devuelve lo mismo (las muestras de A9.14) y, si se acaba de
  * cerrar un capítulo, manda `chapter_complete` (con segundos si se midió entero) y `chapter_start` del siguiente; la
  * primera vez que se ve `game_complete` en esta carga (y no estaba ya al cargar), `game_complete`.
+ * F3.1: `onComplete(n)` se llama una vez por cada capítulo que se acaba de cerrar (aunque no se mande nada).
  */
-export function noteChapters(state: TrackedState): ChapterSample[] {
+export function noteChapters(state: TrackedState, onComplete?: (chapter: number) => void): ChapterSample[] {
   const had = !!state.chapterTimes;
   const before = had ? Object.keys(state.chapterTimes!.marks) : [];
   const samples = noteChapterMarks(state);
@@ -133,6 +134,8 @@ export function noteChapters(state: TrackedState): ChapterSample[] {
       const s = samples.find((x) => x.chapter === n)?.seconds;
       trackEvent('chapter_complete', s !== undefined ? { ch: n, s } : { ch: n });
       if (n < CHAPTER_COUNT) trackEvent('chapter_start', { ch: n + 1 });
+      // F3.1: aviso de fin de capítulo (GameScene lo pasa a los ganchos de plataforma)
+      onComplete?.(n);
     }
   }
   const done = !!flags.game_complete;
