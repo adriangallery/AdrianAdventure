@@ -68,6 +68,38 @@ jobs:
           test -f dist-funtico/version.txt || { echo "::error::falta dist-funtico/version.txt"; exit 1; }
           echo "dist-funtico/index.html → $js ($(wc -c < "dist-funtico/$js") bytes)"
 
+  # F1.2 (plan FUNTICO_ADVENTURE): Triage en el build Funtico. Juega carreras completas con semilla fija en 390x844 (con
+  # giro a 844x390 y vuelta), 844x390, 1280x720 y 1920x1080 con toques reales; bounds de UI, tamaños mínimos, sin red a
+  # Funtico; capturas como artefacto. Ver docs/progreso/F1.2.md.
+  funtico-triage:
+    needs: build
+    if: ${{ !cancelled() && needs.build.result == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Build Funtico con assets
+        run: npm run build:funtico
+
+      - name: Triage e2e (F1.2)
+        run: npm run test:funtico:e2e
+        env:
+          SHOTS: funtico-shots
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: funtico-triage-shots
+          path: funtico-shots/
+
   smoke:
     # V8: arranque, cada escena, cambio de escena y guardar/cargar en Chrome headless contra el build real
     needs: build
