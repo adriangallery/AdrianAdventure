@@ -10,6 +10,7 @@ import type { TriageCatalog } from './triage/triage';
 import catalog from './triage/catalog.json';
 import { Button, C, MIN_TEXT, REG, safeInsets, textBound, txt, type UiBound } from './ui';
 import { funticoHook } from './TriageScene';
+import { fitName } from './fitName';
 
 export function newSeed(): string {
   const fixed = new URLSearchParams(location.search).get('seed');
@@ -19,10 +20,18 @@ export function newSeed(): string {
   return `local-${a[0].toString(36)}${a[1].toString(36)}`;
 }
 
-/** Arranca una carrera de Triage (desde el menú o PLAY AGAIN). */
+/**
+ * Arranca una carrera de Triage (desde el menú o PLAY AGAIN). Simulado: semilla local (`?seed=` o aleatoria), sin
+ * red. Live (F2.2): TriageStartScene pide la carrera al servidor (`run/start`) antes de jugar.
+ */
 export function startTriage(scene: Phaser.Scene): void {
+  const bridge = scene.registry.get(REG.bridge) as FunticoBridge | undefined;
+  if (bridge?.mode === 'live') {
+    scene.scene.start('TriageStartScene');
+    return;
+  }
   const run = generateRun(newSeed(), catalog as unknown as TriageCatalog);
-  scene.scene.start('TriageScene', { run });
+  scene.scene.start('TriageScene', { run, runId: null });
 }
 
 export class FunticoMenuScene extends Phaser.Scene {
@@ -140,7 +149,8 @@ export class FunticoMenuScene extends Phaser.Scene {
 /** Líneas del Hall of Fame (posición, nombre recortado, puntos); el jugador marcado con «>». */
 export function hofLines(list: Array<{ rank: number; displayName: string; totalPoints: number; userId: number }>, me: number, nameChars = 12): string {
   return list.map((e) => {
-    const name = e.displayName.length > nameChars ? e.displayName.slice(0, nameChars - 1) + '.' : e.displayName;
+    const name = fitName(e.displayName, nameChars);
     return `${e.userId === me ? '>' : ' '}${String(e.rank).padStart(2)} ${name.padEnd(nameChars)} ${String(e.totalPoints).padStart(6)}`;
   }).join('\n');
 }
+

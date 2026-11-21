@@ -91,6 +91,8 @@ async function newPage(size) {
   page.on('request', (r) => {
     const u = new URL(r.url());
     if (/funtico/i.test(u.hostname)) fail(`[${label.v}] petición a dominio de Funtico: ${r.url()}`);
+    // F2.2: el simulado no habla con el relay (ni run/start ni nada de /save-api/funtico)
+    else if (u.pathname.startsWith('/save-api')) fail(`[${label.v}] petición al relay en modo simulado: ${u.pathname}`);
     else if (!r.url().startsWith(BASE) && !u.protocol.startsWith('data') && !u.protocol.startsWith('blob')) notes.push(`[${label.v}] petición externa: ${r.url()}`);
   });
   page.on('response', (r) => { if (r.url().startsWith(BASE) && r.status() >= 400) fail(`[${label.v}] ${r.status()} ${r.url().replace(BASE, '')}`); });

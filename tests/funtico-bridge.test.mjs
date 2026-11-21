@@ -468,3 +468,88 @@ test('live: los fallos vuelven como { ok: false, error } tipado y sin el token',
   assert.ok(!ar.error.message.includes(TOKEN));
   assert.equal((await af.getUser()).error.code, 'not_initialized');
 });
+
+// ── F2.2 (cliente): run/start y RunId del servidor ──
+
+/** fetch falso que apunta cada petición y responde lo que se le diga. */
+function fakeFetch(status, body) {
+  const calls = [];
+  const fn = async (url, init) => {
+    calls.push({ url, init });
+    if (status === 'throw') throw new TypeError('Failed to fetch');
+    return { ok: status >= 200 && status < 300, status, text: async () => (typeof body === 'string' ? body : JSON.stringify(body)) };
+  };
+  return Object.assign(fn, { calls });
+}
+const TICKET = {
+  runId: 'a'.repeat(32), seed: 'b'.repeat(64), serverTime: 1_800_000_000_000, v: 1,
+  catalog: '1:b57a5e29d8fa', catalogHash: 'c'.repeat(64), durationS: 180, expiresAt: 1_800_000_360_000,
+};
+
+async function liveBridge(fetch) {
+  const fake = fakeSdk();
+  fake.instance.getUserToken = () => 'game-jwt-1';
+  const bridge = B.createBridge({ search: `?token=${TOKEN}`, origin: 'https://funtico.example', storage: memStore(), sdkLoader: fake.loader, fetch });
+  await bridge.init();
+  return { bridge, fake };
+}
+
+test('F2.2 live: run/start pide la carrera al relay con el token de juego y cuerpo {}', async () => {
+  const fetch = fakeFetch(200, TICKET);
+  const { bridge } = await liveBridge(fetch);
+  const r = await bridge.startTriageRun();
+  assert.deepEqual(r, { ok: true, value: TICKET });
+  assert.equal(fetch.calls.length, 1);
+  const { url, init } = fetch.calls[0];
+  assert.equal(url, 'https://funtico.example/save-api/funtico/run/start');
+  assert.equal(init.method, 'POST');
+  assert.equal(init.headers.Authorization, 'Bearer game-jwt-1');
+  assert.equal(init.body, '{}');
+  assert.ok(!JSON.stringify(init).includes(TOKEN), 'el token de la URL no viaja en run/start');
+});
+
+test('F2.2 live: errores de run/start con estado y código del servidor; red → network', async () => {
+  const { bridge: b1 } = await liveBridge(fakeFetch(429, { error: 'too_many_open_runs' }));
+  const r1 = await b1.startTriageRun();
+  assert.equal(r1.ok, false);
+  assert.equal(r1.error.code, 'rejected');
+  assert.equal(r1.error.status, 429);
+  assert.equal(r1.error.serverCode, 'too_many_open_runs');
+  const r2 = await (await liveBridge(fakeFetch('throw'))).bridge.startTriageRun();
+  assert.equal(r2.error.code, 'network');
+  const r3 = await (await liveBridge(fakeFetch(503, { error: 'triage_unconfigured' }))).bridge.startTriageRun();
+  assert.equal(r3.error.code, 'network');
+  assert.equal(r3.error.serverCode, 'triage_unconfigured');
+  const r4 = await (await liveBridge(fakeFetch(200, { runId: 'x' }))).bridge.startTriageRun();
+  assert.equal(r4.error.code, 'rejected', 'respuesta 200 mal formada no se juega');
+});
+
+test('F2.2 live: CompletePractice manda la cabecera y los toques con el RunId del servidor', async () => {
+  const { bridge, fake } = await liveBridge(fakeFetch(200, TICKET));
+  let seenRunId = null;
+  fake.instance.CompletePractice = async function (score, opts) { seenRunId = this.practiceRunId; fake.calls.push(['CompletePractice', score, opts]); return true; };
+  const events = ['{"triage":1,"catalog":"1:b57a5e29d8fa"}', '{"t":900,"est":0,"obj":"o","x":1,"y":2}'];
+  const r = await bridge.completePractice(1234, { gameEvents: events, runId: TICKET.runId });
+  assert.deepEqual(r, { ok: true, value: true });
+  assert.equal(seenRunId, TICKET.runId, 'el RunId del envío es el de run/start');
+  const call = fake.calls.find((c) => c[0] === 'CompletePractice');
+  assert.deepEqual(call[2], { gameEvents: events });
+});
+
+test('F2.2 live: rechazo del relay en CompletePractice → serverCode', async () => {
+  const { bridge, fake } = await liveBridge(fakeFetch(200, TICKET));
+  fake.instance.CompletePractice = async () => { throw new Error('Failed to complete practice: {"error":"taps_too_fast"}'); };
+  const r = await bridge.completePractice(10, { gameEvents: ['x'], runId: TICKET.runId });
+  assert.equal(r.error.code, 'rejected');
+  assert.equal(r.error.serverCode, 'taps_too_fast');
+});
+
+test('F2.2 simulado: startTriageRun no toca la red (ni con fetch) y devuelve null', async () => {
+  const fetch = fakeFetch(200, TICKET);
+  const bridge = B.createBridge({ search: '?mock=1&token=abc', storage: memStore(), fetch, sdkLoader: () => { throw new Error('no'); } });
+  await bridge.init();
+  assert.deepEqual(await bridge.startTriageRun(), { ok: true, value: null });
+  assert.deepEqual(await bridge.completePractice(5, { gameEvents: ['a'], runId: 'r1' }), { ok: true, value: true });
+  bridge.recordEvent('{"t":1}');
+  assert.equal(fetch.calls.length, 0);
+});
