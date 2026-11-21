@@ -90,18 +90,26 @@ export class FunticoMenuScene extends Phaser.Scene {
     this.hof.setFontSize(base).setLineSpacing(Math.round(base * 0.6));
     const btnW = Math.min(aw - 32, portrait ? 360 : 380);
     if (portrait) {
+      // Centrado en vertical: se coloca una vez para medir y otra en su sitio. El Hall of Fame reserva sus 5 líneas
+      // para que el bloque no salte cuando llega.
       const cx = ax + aw / 2;
-      let y = ay + Math.max(24, ah * 0.07);
-      this.title.setPosition(cx, y);
-      y += this.title.height + 14;
-      this.sub.setPosition(cx, y);
-      y += this.sub.height + 28;
-      y += this.triage.place(cx - btnW / 2, y, btnW, 64, base + 4) + 14;
-      y += this.campaign.place(cx - btnW / 2, y, btnW, 56, base) + 24;
-      this.user.setPosition(cx, y);
-      y += this.user.height + 24;
-      this.hofTitle.setPosition(cx, y);
-      this.hof.setPosition(cx, y + this.hofTitle.height + 12);
+      const hofH = Math.max(this.hof.height, 5 * base + 4 * Math.round(base * 0.6));
+      const place = (top: number): number => {
+        let y = top;
+        this.title.setPosition(cx, y);
+        y += this.title.height + 14;
+        this.sub.setPosition(cx, y);
+        y += this.sub.height + 28;
+        y += this.triage.place(cx - btnW / 2, y, btnW, 64, base + 4) + 14;
+        y += this.campaign.place(cx - btnW / 2, y, btnW, 56, base) + 24;
+        this.user.setPosition(cx, y);
+        y += this.user.height + 24;
+        this.hofTitle.setPosition(cx, y);
+        this.hof.setPosition(cx, y + this.hofTitle.height + 12);
+        return y + this.hofTitle.height + 12 + hofH - top;
+      };
+      const total = place(ay);
+      place(ay + Math.max(24, Math.round((ah - total) / 2)));
     } else {
       const lx = ax + aw * 0.28;
       const rx = ax + aw * 0.72;

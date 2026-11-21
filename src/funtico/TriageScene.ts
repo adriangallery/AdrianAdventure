@@ -16,6 +16,11 @@ import { Button, C, MIN_TEXT, MIN_TOUCH, safeInsets, textBound, txt, type Rect, 
 /** Escenas con primer plano (foreground@*.webp) en assets/scenes/<id>/. */
 const FOREGROUND = new Set(['outside', 'lobby']);
 const RELAPSE_SCENE = 'recovery_pool';
+/** Variante de la que salen los recortes de SAMPLE (la ligera @1280 deja el recorte en bloques borrosos). */
+const CROP_VARIANT = '@2048';
+/** Frame de la imagen entera. Hay que pedirlo SIEMPRE al cambiar de textura: `Texture.add()` convierte el primer frame
+ *  añadido (un recorte) en el frame por defecto, y `setTexture(clave)` a secas pintaría solo ese recorte. */
+const BASE = '__BASE';
 const MUSIC_KEY = 'tri-music';
 const MUSIC_URL = 'assets/audio/music/clinical.mp3';
 const SFX_HIT = 'assets/audio/sfx/keypad_success.mp3';
@@ -104,9 +109,15 @@ export class TriageScene extends Phaser.Scene {
     const run = this.model.run;
     const ids = new Set<string>(Object.keys(run.scenes));
     ids.add(RELAPSE_SCENE);
-    for (const id of ids) {
-      this.load.image(`tri-bg-${id}${this.variant}`, `assets/scenes/${id}/background${this.variant}.webp`);
-      if (FOREGROUND.has(id)) this.load.image(`tri-fg-${id}${this.variant}`, `assets/scenes/${id}/foreground${this.variant}.webp`);
+    const variants = new Map<string, Set<string>>();
+    for (const id of ids) variants.set(id, new Set([this.variant]));
+    // Recortes de SAMPLE: siempre de @2048 (si la pantalla usa @1280, se carga además la @2048 de esa escena)
+    for (const st of run.stations) if (st.kind === 'sample') variants.get(st.scene)?.add(CROP_VARIANT);
+    for (const [id, vs] of variants) {
+      for (const v of vs) {
+        this.load.image(`tri-bg-${id}${v}`, `assets/scenes/${id}/background${v}.webp`);
+        if (FOREGROUND.has(id)) this.load.image(`tri-fg-${id}${v}`, `assets/scenes/${id}/foreground${v}.webp`);
+      }
     }
     for (const st of run.stations) {
       for (const v of voicesOf(st)) if (!this.cache.audio.exists(v)) this.load.audio(v, v);
@@ -132,8 +143,8 @@ export class TriageScene extends Phaser.Scene {
 
     // Mundo (cámara de escena)
     const first = this.model.run.stations[0];
-    this.bg = this.worldAdd(this.add.image(0, 0, this.bgKey(first.scene)).setOrigin(0, 0));
-    this.fg = this.worldAdd(this.add.image(0, 0, this.bgKey(first.scene)).setOrigin(0, 0).setVisible(false));
+    this.bg = this.worldAdd(this.add.image(0, 0, this.bgKey(first.scene), BASE).setOrigin(0, 0));
+    this.fg = this.worldAdd(this.add.image(0, 0, this.bgKey(first.scene), BASE).setOrigin(0, 0).setVisible(false));
 
     // UI
     this.shade = this.add.rectangle(0, 0, 10, 10, C.bgN, 0.72).setOrigin(0, 0);
@@ -149,8 +160,8 @@ export class TriageScene extends Phaser.Scene {
     this.cardBg = this.add.rectangle(0, 0, 10, 10, C.panelN, 0.94).setOrigin(0, 0).setStrokeStyle(2, C.borderN);
     this.cardTitle = txt(this, '', MIN_TEXT, C.yellow);
     this.cardText = txt(this, '', MIN_TEXT, C.white);
-    this.cropImg = this.add.image(0, 0, this.bgKey(first.scene)).setOrigin(0.5, 0.5).setVisible(false);
-    this.cropFg = this.add.image(0, 0, this.bgKey(first.scene)).setOrigin(0.5, 0.5).setVisible(false);
+    this.cropImg = this.add.image(0, 0, this.bgKey(first.scene), BASE).setOrigin(0.5, 0.5).setVisible(false);
+    this.cropFg = this.add.image(0, 0, this.bgKey(first.scene), BASE).setOrigin(0.5, 0.5).setVisible(false);
     this.cropFrame = this.add.rectangle(0, 0, 10, 10).setOrigin(0.5, 0.5).setStrokeStyle(3, C.yellowN).setFillStyle(0, 0);
     this.stripBack = this.add.rectangle(0, 0, 10, 8, C.panel2N).setOrigin(0, 0);
     this.stripThumb = this.add.rectangle(0, 0, 10, 8, C.yellowN).setOrigin(0, 0);
@@ -219,6 +230,10 @@ export class TriageScene extends Phaser.Scene {
     return `tri-bg-${scene}${this.variant}`;
   }
 
+  private fgKey(scene: string): string {
+    return `tri-fg-${scene}${this.variant}`;
+  }
+
   private worldAdd<T extends Phaser.GameObjects.GameObject>(o: T): T {
     this.worldObjs.add(o);
     this.uiCam?.ignore(o);
@@ -231,22 +246,25 @@ export class TriageScene extends Phaser.Scene {
   }
 
   /**
-   * Recortes de SAMPLE: un frame `crop-<i>` en la textura del fondo (y otro en la del primer plano, que se pinta encima).
-   * Sin RenderTexture: la imagen del recorte es la misma textura, escalada nearest (pixelArt).
+   * Recortes de SAMPLE: un frame (`cropFrameName`) en la textura @2048 del fondo (y otro en la del primer plano, que
+   * se pinta encima). Sin RenderTexture: la imagen del recorte es la misma textura, escalada nearest (pixelArt).
+   * `st.crop` va en % del mundo (como `bounds`), no en px del maestro: se pasa a px de la textura con su tamaño real.
+   * Ojo: añadir un frame cambia el frame por defecto de la textura (ver BASE).
    */
   private buildCrops(): void {
-    const k = this.texW / 3712;
     for (const st of this.model.run.stations) {
       if (st.kind !== 'sample' || !st.crop) continue;
-      const cx = Math.round(st.crop.x * k);
-      const cy = Math.round(st.crop.y * k);
-      const cw = Math.max(8, Math.min(this.texW - cx, Math.round(st.crop.w * k)));
-      const ch = Math.max(8, Math.min(this.texH - cy, Math.round(st.crop.h * k)));
-      const keys = [this.bgKey(st.scene), ...(FOREGROUND.has(st.scene) ? [`tri-fg-${st.scene}${this.variant}`] : [])];
+      const keys = [`tri-bg-${st.scene}${CROP_VARIANT}`, ...(FOREGROUND.has(st.scene) ? [`tri-fg-${st.scene}${CROP_VARIANT}`] : [])];
       for (const key of keys) {
         if (!this.textures.exists(key)) continue;
         const tex = this.textures.get(key);
-        if (!tex.has(`crop-${st.i}`)) tex.add(`crop-${st.i}`, 0, cx, cy, cw, ch);
+        if (tex.has(cropFrameName(st))) continue;
+        const src = tex.source[0];
+        const cx = Phaser.Math.Clamp(Math.round((st.crop.x / 100) * src.width), 0, src.width - 8);
+        const cy = Phaser.Math.Clamp(Math.round((st.crop.y / 100) * src.height), 0, src.height - 8);
+        const cw = Phaser.Math.Clamp(Math.round((st.crop.w / 100) * src.width), 8, src.width - cx);
+        const ch = Phaser.Math.Clamp(Math.round((st.crop.h / 100) * src.height), 8, src.height - cy);
+        tex.add(cropFrameName(st), 0, cx, cy, cw, ch);
       }
     }
   }
@@ -257,18 +275,18 @@ export class TriageScene extends Phaser.Scene {
     const st = this.model.run.stations[i];
     if (!st) return;
     const sceneId = st.kind === 'relapse' ? RELAPSE_SCENE : st.scene;
-    this.bg.setTexture(this.bgKey(sceneId));
-    const fgKey = `tri-fg-${sceneId}${this.variant}`;
+    this.bg.setTexture(this.bgKey(sceneId), BASE);
+    const fgKey = this.fgKey(sceneId);
     this.fg.setVisible(FOREGROUND.has(sceneId) && this.textures.exists(fgKey));
-    if (this.fg.visible) this.fg.setTexture(fgKey);
+    if (this.fg.visible) this.fg.setTexture(fgKey, BASE);
     this.velocity = 0;
     if (st.kind === 'sample') {
       this.cardTitle.setText('FIND THIS SAMPLE');
       this.cardText.setText('');
-      this.cropImg.setTexture(this.bgKey(st.scene), `crop-${st.i}`);
-      const fgKey2 = `tri-fg-${st.scene}${this.variant}`;
-      const hasFg = FOREGROUND.has(st.scene) && this.textures.exists(fgKey2);
-      if (hasFg) this.cropFg.setTexture(fgKey2, `crop-${st.i}`);
+      this.cropImg.setTexture(`tri-bg-${st.scene}${CROP_VARIANT}`, cropFrameName(st));
+      const fgKey2 = `tri-fg-${st.scene}${CROP_VARIANT}`;
+      const hasFg = FOREGROUND.has(st.scene) && this.textures.exists(fgKey2) && this.textures.get(fgKey2).has(cropFrameName(st));
+      if (hasFg) this.cropFg.setTexture(fgKey2, cropFrameName(st));
       this.cropFg.setData('on', hasFg);
     } else if (st.kind === 'symptom') {
       this.cardTitle.setText('PATIENT SAYS:');
@@ -739,6 +757,13 @@ export class TriageScene extends Phaser.Scene {
       fps() { return scene.fpsMedian(); },
     };
   }
+}
+
+/** Nombre del frame del recorte: por sus coordenadas (las texturas sobreviven a la escena y otra semilla, en la misma
+ *  estación, trae otro recorte). */
+function cropFrameName(st: SpotStation): string {
+  const c = st.crop;
+  return c ? `crop-${c.x}_${c.y}_${c.w}_${c.h}` : 'crop-none';
 }
 
 function voicesOf(st: Station): string[] {

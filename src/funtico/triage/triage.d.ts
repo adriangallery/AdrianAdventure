@@ -81,7 +81,7 @@ export interface SpotStation extends StationBase {
   name: string;
   bucket: Bucket;
   bounds: Box;
-  /** SAMPLE: recorte cuadrado (en píxeles) del fondo que se enseña. */
+  /** SAMPLE: recorte del fondo que se enseña, en % del mundo (cuadrado en píxeles del maestro). */
   crop?: Box;
   /** SYMPTOM: frase LOOK y ruta de su mp3 (null si no tiene voz). */
   phrase?: string;
