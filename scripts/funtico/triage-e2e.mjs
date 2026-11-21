@@ -67,7 +67,7 @@ async function newPage(size) {
   const ctx = await browser.createBrowserContext();
   const page = await ctx.newPage();
   const label = { v: size };
-  page.on('pageerror', (e) => fail(`[${label.v}] error de página: ${e.message}`));
+  page.on('pageerror', (e) => fail(`[${label.v}] error de página: ${(e.stack || e.message).slice(0, 900)}`));
   page.on('console', (m) => {
     if (m.type() !== 'error') return;
     const t = m.text();
@@ -183,8 +183,10 @@ async function playRun(size, { rotate = false, missOnce = false, fps = false, vi
   await shot(p, '1-menu');
   const tri = (await page.evaluate(() => window.__funtico.menu.uiBounds())).find((b) => b.id === 'triage');
   await press(p, tri.x + tri.w / 2, tri.y + tri.h / 2);
-  await page.waitForFunction(() => window.__funtico?.triage?.state()?.ready, { timeout: 60000, polling: 100 });
+  await page.waitForFunction(() => window.__funtico?.triage?.state()?.ready, { timeout: 60000, polling: 100 })
+    .catch(async (e) => { notes.push(`renderer ${await page.evaluate(() => window.__funtico.game.renderer.type)}`); throw e; });
   const run = await page.evaluate(() => window.__funtico.triage.run);
+  notes.push(`[${size}] renderer ${await page.evaluate(() => (window.__funtico.game.renderer.type === 2 ? 'WEBGL' : 'CANVAS'))}`);
   if (run.seed !== SEED) fail(`[${size}] semilla ${run.seed} ≠ ${SEED}`);
   const shotted = new Set();
   let rotated = false;
