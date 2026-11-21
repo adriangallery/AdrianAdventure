@@ -205,7 +205,7 @@ export class TriageScene extends Phaser.Scene {
     this.tStreak.setText(`x${m.multiplier.toFixed(m.multiplier * 10 % 1 === 0 ? 1 : 2)}`);
     this.tProgress.setText(`${Math.min(m.current + 1, m.run.stations.length)}/${m.run.stations.length}`);
     const f = m.speedFraction(t);
-    this.speedBar.width = Math.max(0, Math.round(this.speedBack.width * f));
+    this.speedBar.setSize(Math.max(0, Math.round(this.speedBack.width * f)), this.speedBack.height);
     this.speedBar.setFillStyle(f > 0.5 ? C.greenN : f > 0.2 ? C.yellowN : C.redN);
   }
 
@@ -370,7 +370,7 @@ export class TriageScene extends Phaser.Scene {
     this.sceneCam.setScroll(Math.round(max * this.model.pan * 100) / 100, 0);
     if (this.scrollable) {
       const tw = Math.max(16, Math.round(this.stripBack.width * (this.view.w / this.zoom) / this.texW));
-      this.stripThumb.width = tw;
+      this.stripThumb.setSize(tw, this.stripBack.height);
       this.stripThumb.x = Math.round(this.stripBack.x + (this.stripBack.width - tw) * this.model.pan);
     }
   }
