@@ -225,20 +225,28 @@ const rafMedian = (page, ms) => page.evaluate((dur) => new Promise((res) => {
   requestAnimationFrame(f);
 }), ms);
 
-/** Capturas cada GIF_EVERY_MS para el GIF (modo --gif). */
-function startFrames(page, dir) {
-  let on = true;
-  let n = 0;
-  const done = (async () => {
-    await mkdir(dir, { recursive: true });
-    while (on) {
-      const t0 = Date.now();
-      n++;
-      await page.screenshot({ path: path.join(dir, `f${String(n).padStart(4, '0')}.png`) }).catch(() => { n--; });
-      await sleep(Math.max(0, GIF_EVERY_MS - (Date.now() - t0)));
+/**
+ * Fotogramas para el GIF (modo --gif), sacados DENTRO de la página con `renderer.snapshot` de Phaser cada
+ * GIF_EVERY_MS: no se cruzan con los toques (las capturas periódicas con page.screenshot los dejaban sin efecto) y
+ * salen a ritmo fijo (el screencast de CDP perdía los primeros segundos de cada carrera).
+ */
+async function startFrames(page, dir) {
+  await mkdir(dir, { recursive: true });
+  await page.evaluate((every) => {
+    const g = window.__funtico.game;
+    const store = (window.__gifFrames = []);
+    window.__gifTimer = setInterval(() => {
+      if (store.length < 1200) g.renderer.snapshot((img) => { if (img && img.src) store.push(img.src); });
+    }, every);
+  }, GIF_EVERY_MS);
+  return async () => {
+    const total = await page.evaluate(() => { clearInterval(window.__gifTimer); return window.__gifFrames.length; });
+    for (let n = 0; n < total; n++) {
+      const url = await page.evaluate((k) => window.__gifFrames[k], n);
+      await writeFile(path.join(dir, `f${String(n + 1).padStart(4, '0')}.png`), Buffer.from(url.slice(url.indexOf(',') + 1), 'base64'));
     }
-  })();
-  return async () => { on = false; await done; return n; };
+    return total;
+  };
 }
 
 async function shot(p, name) {
@@ -277,7 +285,6 @@ async function playRun(size, { rotate = false, missOnce = false, fps = false, fr
   console.log(`\n== Carrera en ${size}${rotate ? ' (con giro)' : ''} ==`);
   const p = await newPage(size);
   const { page } = p;
-  const stopFrames = frames ? startFrames(page, frames) : null;
   await page.goto(`${BASE}/?mock=1&seed=${encodeURIComponent(SEED)}`, { waitUntil: 'load' });
   await page.waitForFunction(() => window.__funtico?.menu, { timeout: 30000 });
   await page.waitForFunction(() => window.__funtico.menu.uiBounds().some((b) => b.id === 'hof' && !/loading/.test(b.text)), { timeout: 10000 });
@@ -287,6 +294,8 @@ async function playRun(size, { rotate = false, missOnce = false, fps = false, fr
   await press(p, tri.x + tri.w / 2, tri.y + tri.h / 2);
   await page.waitForFunction(() => window.__funtico?.triage?.state()?.ready, { timeout: 60000, polling: 100 })
     .catch(async (e) => { notes.push(`renderer ${await page.evaluate(() => window.__funtico.game.renderer.type)}`); throw e; });
+  // El GIF empieza con la carrera ya lista: capturar durante la carga del menú y el arranque dejaba el toque de TRIAGE sin efecto
+  const stopFrames = frames ? await startFrames(page, frames) : null;
   const run = await page.evaluate(() => window.__funtico.triage.run);
   const got = await page.evaluate(() => (window.__funtico.game.renderer.type === 2 ? 'WEBGL' : 'CANVAS'));
   notes.push(`[${size}] renderer ${got}`);
