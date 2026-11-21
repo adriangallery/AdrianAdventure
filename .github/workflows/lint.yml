@@ -43,6 +43,8 @@ jobs:
         run: npm run test:walkthrough:unit
       - name: Pruebas de privacidad del leaderboard (A1.6)
         run: npm run test:server
+      - name: Pruebas del relay de Funtico en el save-server (F2.1)
+        run: npm run test:funtico-server
       - name: Pruebas del recorte de overlays (A2.7)
         run: npm run test:overlays
       - name: ESLint

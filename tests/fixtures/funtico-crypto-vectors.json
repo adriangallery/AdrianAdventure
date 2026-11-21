@@ -1,0 +1,177 @@
+{
+  "source": "src/funtico/sdk/FunticoPhaserSDK.ts CryptoHelper",
+  "encrypt": [
+    {
+      "key": "abcdefgh12345678",
+      "plain": "",
+      "cipher": "U/X16hJDeG3UDLpxY5NGlQ=="
+    },
+    {
+      "key": "abcdefgh12345678",
+      "plain": "hola",
+      "cipher": "vVn+YvKu4AUWPxxPrIfzaQ=="
+    },
+    {
+      "key": "abcdefgh12345678",
+      "plain": "0123456789abcdef",
+      "cipher": "ouf4sJwBnTocOqaiUO7qaNFTzfQTrWFGNGM1XfQ8QO8="
+    },
+    {
+      "key": "abcdefgh12345678",
+      "plain": "{\"Score\":1234,\"RunId\":\"run-1\",\"GameEvents\":[\"a\",\"b\"]}",
+      "cipher": "47zywSZKjuXYkHayQKgQGvTIufOfMpTQtGoHXPonh3SuPk3Z4r/LcHR2WxD4hfmuRJ+/9b/nXMho0GSupNF1Xg=="
+    },
+    {
+      "key": "abcdefgh12345678",
+      "plain": "ñandú · 漢字 · 🎮",
+      "cipher": "sGO/JitMwHXbUkKTCfnkAw/Jeozkj2lEp4wo3d/iRHQ="
+    },
+    {
+      "key": "qqqqqqqqwwwwwwwwwwwwwwwwwwwwwwww",
+      "plain": "",
+      "cipher": "txzHZvyEK6IZ3fFuIVR9fg=="
+    },
+    {
+      "key": "qqqqqqqqwwwwwwwwwwwwwwwwwwwwwwww",
+      "plain": "hola",
+      "cipher": "e3O7P47v3E9ZMuJ8df9dAA=="
+    },
+    {
+      "key": "qqqqqqqqwwwwwwwwwwwwwwwwwwwwwwww",
+      "plain": "0123456789abcdef",
+      "cipher": "kduSmyXsf6BiVdpHf6A6g/o+yQVAOWU3+U4rqBYJIm4="
+    },
+    {
+      "key": "qqqqqqqqwwwwwwwwwwwwwwwwwwwwwwww",
+      "plain": "{\"Score\":1234,\"RunId\":\"run-1\",\"GameEvents\":[\"a\",\"b\"]}",
+      "cipher": "kKO8clw8zE9ZXPk1jO/YjdSbk5Q7q82QAISnyD3h9+GcnA8AQP5GJBHWBHqnM3jRJ4hUcQUoiv+BQ4P2h6q0YQ=="
+    },
+    {
+      "key": "qqqqqqqqwwwwwwwwwwwwwwwwwwwwwwww",
+      "plain": "ñandú · 漢字 · 🎮",
+      "cipher": "VQ9NDzaI2Ka2bmXJbdKmjuLWQvs5N8CiNNsTMPgxwII="
+    },
+    {
+      "key": "short",
+      "plain": "",
+      "cipher": "UP1Bbg0Z/EfaZCY9pabjgA=="
+    },
+    {
+      "key": "short",
+      "plain": "hola",
+      "cipher": "rgTvA2BQMaejYWp8ZA2Mzg=="
+    },
+    {
+      "key": "short",
+      "plain": "0123456789abcdef",
+      "cipher": "IM+1Fz0upku6UwcuxazmnnThdFQgntM/78rPGbzgiUc="
+    },
+    {
+      "key": "short",
+      "plain": "{\"Score\":1234,\"RunId\":\"run-1\",\"GameEvents\":[\"a\",\"b\"]}",
+      "cipher": "f4zuh83mR7kSV2mixag6UtizqMBLROBP8Az9MK574Iukx0aCF+eslpRJAifEfKugxduxKblwLbrmhDqsCcYz3Q=="
+    },
+    {
+      "key": "short",
+      "plain": "ñandú · 漢字 · 🎮",
+      "cipher": "DxSZm/5msMQOAO7uWK3YW55ZW+lSsDP7o1S2TUC3/yk="
+    },
+    {
+      "key": "",
+      "plain": "",
+      "cipher": "7U0oSG1xkAP19+C7FpLU5w=="
+    },
+    {
+      "key": "",
+      "plain": "hola",
+      "cipher": "7tKtLsBq4lyOHWcp8RdHeg=="
+    },
+    {
+      "key": "",
+      "plain": "0123456789abcdef",
+      "cipher": "mPfniL0D8LnCAe3jKn2cMVPwBRey9ssyaS6aIj1Pa3U="
+    },
+    {
+      "key": "",
+      "plain": "{\"Score\":1234,\"RunId\":\"run-1\",\"GameEvents\":[\"a\",\"b\"]}",
+      "cipher": "PtBPGnF366rgCpsmygnu+jwQVHr3f/5/C4I9qPnF8W23vw+ccRFWUXyCvTg5vC+VkjbWx7ys/IHcyVOznmT2Hw=="
+    },
+    {
+      "key": "",
+      "plain": "ñandú · 漢字 · 🎮",
+      "cipher": "xTQIgyamVZthSCozpRood4MvcsG80XyTVbBKpGvb4Ts="
+    },
+    {
+      "key": "0000a1b2pppppppp",
+      "plain": "",
+      "cipher": "bCm89OV7LIndkdirnUJB/A=="
+    },
+    {
+      "key": "0000a1b2pppppppp",
+      "plain": "hola",
+      "cipher": "whkgrnsfrliXO2oLAA6wIw=="
+    },
+    {
+      "key": "0000a1b2pppppppp",
+      "plain": "0123456789abcdef",
+      "cipher": "hzuEA1dyAkPBEW27Ka8xuhK6Gfz0UaLoQlTqXanZ9wI="
+    },
+    {
+      "key": "0000a1b2pppppppp",
+      "plain": "{\"Score\":1234,\"RunId\":\"run-1\",\"GameEvents\":[\"a\",\"b\"]}",
+      "cipher": "N/hmRxktrWeVw+/Vw+9zfglnQNBdjPU55LWIPfzdaYhTDMWtIUWMwgW3HfK6tyKArQRIBD0y1EwHWF6yCMcOmw=="
+    },
+    {
+      "key": "0000a1b2pppppppp",
+      "plain": "ñandú · 漢字 · 🎮",
+      "cipher": "fJ49zsdB4yH1JJwnUn7ynPYozoKSsmz/JKDazZygqQU="
+    }
+  ],
+  "hmac": [
+    {
+      "key": "kkkkkkkkkkkkkkkkkkkkkkkk",
+      "message": "",
+      "hex": "01aa9b16dc8b10ec72c45be3b861e116825ad30326f184efb45988c7d431bf34"
+    },
+    {
+      "key": "kkkkkkkkkkkkkkkkkkkkkkkk",
+      "message": "hola",
+      "hex": "a879fb2a2fcd9e3a01e3ddadd4e433f7a3c15a8c9e1d5ad14fb77e41623280bf"
+    },
+    {
+      "key": "kkkkkkkkkkkkkkkkkkkkkkkk",
+      "message": "47zywSZKjuXYkHayQKgQGvTIufOfMpTQtGoHXPonh3SuPk3Z4r/LcHR2WxD4hfmuRJ+/9b/nXMho0GSupNF1Xg==",
+      "hex": "a171c5b545ebf8a97270644198151232b2e248fedbd1b251e934a03ab23e3746"
+    },
+    {
+      "key": "session-event-1",
+      "message": "",
+      "hex": "d9dc02ab2ed66c58c410fba88a31ceaf5e2806777b2e0d4b4d5fd514cc863dee"
+    },
+    {
+      "key": "session-event-1",
+      "message": "hola",
+      "hex": "e451b9671f7a20c9bd49b51eb88a175556c68002fbd230b41cee881506472c0d"
+    },
+    {
+      "key": "session-event-1",
+      "message": "47zywSZKjuXYkHayQKgQGvTIufOfMpTQtGoHXPonh3SuPk3Z4r/LcHR2WxD4hfmuRJ+/9b/nXMho0GSupNF1Xg==",
+      "hex": "88ab44d15cfe2baf5605c5a8a50cbbce39b5136d29119213d0a688c16ea816a5"
+    },
+    {
+      "key": "x",
+      "message": "",
+      "hex": "f27e6527d6b8408430a666b746070c307f542bb54ee7e6dcb303f3e52c0b09fb"
+    },
+    {
+      "key": "x",
+      "message": "hola",
+      "hex": "2ed157821ffddac1ce7d754b269170e73d93f2d7be658d251a2b6be4c036c993"
+    },
+    {
+      "key": "x",
+      "message": "47zywSZKjuXYkHayQKgQGvTIufOfMpTQtGoHXPonh3SuPk3Z4r/LcHR2WxD4hfmuRJ+/9b/nXMho0GSupNF1Xg==",
+      "hex": "051ce828c0a59e01d52b1c3baccc0ccd1ce1aa5767d05f43412172b69cebaf5b"
+    }
+  ]
+}

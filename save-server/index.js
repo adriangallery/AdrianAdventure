@@ -13,6 +13,7 @@ import { normalizeAddress, parseSlot, checkSessionAuth, validateSaveBody, MAX_SA
 import { createStatsStore } from './stats.js';
 import { createStatsAuth, parseAdmins, loadSessionSecret } from './stats-auth.js';
 import { createStatsRoutes } from './stats-routes.js';
+import { createFunticoRelay, MAX_BODY_BYTES as FUNTICO_MAX_BYTES } from './funtico.js';
 
 /**
  * A1.12: comprobación de la firma de sesión (inyectada en validate.js). Primero EOA en local (sin red); si no cuadra,
@@ -335,6 +336,27 @@ app.on(['GET', 'POST'], '/stats/*', async (c) => {
   c.header('Cache-Control', 'no-store');
   return c.json(r.body, r.status);
 });
+
+// ─── F2.1 (plan FUNTICO_ADVENTURE): relay hacia Funtico, APAGADO por defecto (FUNTICO_ENABLED). Ver docs/progreso/F2.1.md ───
+// Apagado: /funtico/* es 404 y no se lee ninguna otra variable ni se crea nada en el volumen. Mismo origen que el
+// build funtico (nginx /save-api → aquí), así que no abre CORS.
+const funticoRelay = createFunticoRelay({ env: process.env, dataDir: DATA_DIR });
+const funticoHandler = async (c) => {
+  if (!funticoRelay.enabled) return c.notFound();
+  const len = Number(c.req.header('content-length') || 0);
+  if (len > FUNTICO_MAX_BYTES) return c.json({ error: 'Too large' }, 413);
+  const bodyText = c.req.method === 'POST' ? (await c.req.text()).slice(0, FUNTICO_MAX_BYTES + 1) : '';
+  const r = await funticoRelay({
+    method: c.req.method,
+    path: c.req.path.slice('/funtico'.length),
+    search: new URL(c.req.url).search,
+    headers: { authorization: c.req.header('authorization') },
+    bodyText,
+  });
+  return c.body(r.body, r.status, { 'Content-Type': r.contentType, 'Cache-Control': 'no-store' });
+};
+app.on(['GET', 'POST'], '/funtico', funticoHandler);
+app.on(['GET', 'POST'], '/funtico/*', funticoHandler);
 
 const port = parseInt(process.env.PORT || '3001');
 console.log(`Save server listening on port ${port}`);
