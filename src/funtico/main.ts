@@ -1,7 +1,8 @@
 /**
  * F0.1 (plan FUNTICO_ADVENTURE): entrada del build Funtico (funtico/index.html, `vite build --mode funtico`).
  * F1.2: menú Funtico (FunticoMenuScene), Triage (TriageScene) y resultado (TriageResultScene), todos con
- * `Scale.RESIZE` y recolocación en caliente al girar o redimensionar. No importa nada de web3: IS_FUNTICO apaga
+ * `Scale.RESIZE` y recolocación en caliente al girar o redimensionar. F3.2a: mapa de Campaign (CampaignMapScene); cada
+ * expediente se juega en su página (campaign.html?chapter=N, src/funtico/campaignMain.ts). No importa nada de web3: IS_FUNTICO apaga
  * WEB3_ENABLED como en Steam.
  */
 import Phaser from 'phaser';
@@ -11,6 +12,7 @@ import { FunticoMenuScene } from './FunticoMenuScene';
 import { TriageScene, funticoHook } from './TriageScene';
 import { TriageResultScene } from './TriageResultScene';
 import { TriageStartScene } from './TriageStartScene';
+import { CampaignMapScene } from './campaign/CampaignMapScene';
 import { FONT, REG } from './ui';
 
 function start(): void {
@@ -25,7 +27,10 @@ function start(): void {
       height: '100%',
     },
     render: { pixelArt: true, antialias: false, roundPixels: true },
-    scene: [FunticoMenuScene, TriageStartScene, TriageScene, TriageResultScene],
+    // F3.2a: `?view=campaign` (vuelta desde un expediente) abre directamente el mapa de campaña
+    scene: new URLSearchParams(location.search).get('view') === 'campaign'
+      ? [CampaignMapScene, FunticoMenuScene, TriageStartScene, TriageScene, TriageResultScene]
+      : [FunticoMenuScene, TriageStartScene, TriageScene, TriageResultScene, CampaignMapScene],
   });
   game.registry.set('platform', { funtico: IS_FUNTICO, web3: WEB3_ENABLED });
   const bridge = createBridge();

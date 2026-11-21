@@ -12,50 +12,23 @@
 // inventario y flags son obligatorios (el resto de comprobaciones, de audio, píxeles, etc., las hace ya el walkthrough
 // normal y aquí solo se avisan).
 //
+// F3.2a: la página es la de un expediente (campaign.html?chapter=1, parte del build desplegado; ver
+// scripts/funtico/lib/campaign-route.mjs) y ya no hace falta FUNTICO_CAMPAIGN_HARNESS.
 // Uso (por turno-pesado):
-//   FUNTICO_CAMPAIGN_HARNESS=1 npx vite build --mode funtico && cp -r assets dist-funtico/
+//   npx vite build --mode funtico && cp -r assets dist-funtico/
 //   npx vite preview --mode funtico --outDir dist-funtico --host 127.0.0.1 --port 4175 --strictPort &
 //   BASE_URL=http://127.0.0.1:4175 node scripts/funtico/campaign-metrics-e2e.mjs
 // Sale con 0 si todo cuadra; deja un informe en campaign-metrics-e2e/report.json.
-import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { mkdirSync, writeFileSync } from 'node:fs';
 import { launchBrowser } from '../lib/browser.mjs';
-import { check, cutRoute, parseUntil } from '../lib/walkthrough-core.mjs';
+import { chapter1Route, playChapter1, IGNORE, FUNTICO_HOST } from './lib/campaign-route.mjs';
 
 const BASE = (process.env.BASE_URL || 'http://127.0.0.1:4175').replace(/\/+$/, '');
 const OUT = process.env.CAMPAIGN_E2E_OUT || 'campaign-metrics-e2e';
-const IGNORE = [/AudioContext/i, /autoplay/i, /WalletConnect/i, /ethereum/i, /favicon/i, /Failed to load resource/i];
 mkdirSync(OUT, { recursive: true });
 
-const file = JSON.parse(readFileSync('qa/walkthrough.json', 'utf-8'));
-const route = cutRoute((file.routes ?? file).find((r) => r.id === 'ruta-critica'), parseUntil('chapter:1'));
-if (!route?.steps?.length) { console.error('no hay ruta-critica en qa/walkthrough.json'); process.exit(2); }
+const route = chapter1Route();
 
-const callQa = (page, s) => page.evaluate(async (s) => {
-  const q = window.__qa;
-  switch (s.do) {
-    case 'newGame': return q.newGame();
-    case 'act': return q.act(s.verb, s.target, s.choices ?? [], s.holdTextMs ?? 0);
-    case 'use': return q.use(s.item, s.target, s.choices ?? []);
-    case 'give': return q.give(s.item, s.target, s.choices ?? []);
-    case 'pick': return q.pick(s.verb, s.item);
-    case 'combine': return q.combine(s.items[0], s.items[1]);
-    case 'talk': return q.talk(s.npc, s.choices ?? []);
-    case 'walk': return q.walk(s.x, s.y);
-    case 'dismissAll': return q.dismissAll();
-    case 'state': return q.state();
-    case 'key': return q.press(s.key, s.phase ?? 'press');
-    case 'click': return q.click(s.target, s.choices ?? []);
-    case 'rightclick': return q.rightClick(s.target, s.choices ?? []);
-    case 'doubleclick': return q.doubleClick(s.target);
-    case 'runScript': return q.runScript(s.ops, s.skipAfterMs !== undefined ? { skipAfterMs: s.skipAfterMs } : {});
-    case 'journal': return s.action === 'close' ? q.closeJournal() : q.openJournal(s.tab ?? 'goals');
-    case 'callAnon': return q.callAnon();
-    case 'mockWeb3': return q.mockWeb3(s.web3 === undefined ? null : s.web3);
-    default: throw new Error(`[qa:error] paso desconocido «${s.do}»`);
-  }
-}, s);
-
-const lastCall = (page) => page.evaluate(() => window.__game.registry.get('journalLastCall') ?? null);
 const metricsOf = (page) => page.evaluate(() => {
   const m = window.__funtico?.metrics;
   return m ? { chapter: m.chapter, ch1: m.metrics(1), ch2: m.metrics(2), json: m.toJSON() } : null;
@@ -87,44 +60,12 @@ try {
     if (msg.type() === 'warn' && /\[platform\]/.test(text)) problems.push(`gancho roto: ${text.slice(0, 200)}`);
   });
   // Nada sale hacia Funtico (el banco de pruebas no usa el SDK)
-  page.on('request', (req) => { if (/funtico\.(com|io|gg)/i.test(req.url())) problems.push(`petición a Funtico: ${req.url()}`); });
+  page.on('request', (req) => { if (FUNTICO_HOST.test(req.url())) problems.push(`petición a Funtico: ${req.url()}`); });
 
-  await page.goto(`${BASE}/campaign.html?qa=1`, { waitUntil: 'domcontentloaded', timeout: 90_000 });
-  await page.waitForFunction(() => !!window.__qa && !!window.__funtico?.metrics, { timeout: 90_000, polling: 250 });
-
-  let hints = 0;
-  let hintMax = 0;
-  let fails = 0;
-  let prevFail = null;
-  for (const [i, step] of route.steps.entries()) {
-    const label = `${i + 1}/${route.steps.length} ${step.do} ${step.verb ?? ''} ${step.target ?? step.item ?? step.npc ?? ''}`.trim();
-    let st;
-    try {
-      st = await callQa(page, step);
-    } catch (err) {
-      problems.push(`paso ${label}: ${String(err.message ?? err).split('\n')[0]}`);
-      break;
-    }
-    if (step.do === 'callAnon') {
-      const call = await lastCall(page);
-      if (call && call.level >= 1) { hints++; hintMax = Math.max(hintMax, call.level); }
-    }
-    const fr = st?.lastFailResponse ?? null;
-    const frKey = fr ? JSON.stringify(fr) : null;
-    if (frKey && frKey !== prevFail && fr.verb !== 'LOOK') fails++;
-    prevFail = frKey ?? prevFail;
-    // expect obligatorio: escena, inventario y flags; el resto, aviso
-    const e = step.expect ?? null;
-    if (e) {
-      const hard = check({ scene: e.scene, has: e.has, lacks: e.lacks, flags: e.flags, unsetFlags: e.unsetFlags }, st);
-      let soft = [];
-      try { soft = check(e, st, { pixelRefs: {} }).filter((x) => !hard.includes(x)); } catch (err) { soft = [`comprobación no aplicable aquí (${err.message})`]; }
-      for (const x of hard) problems.push(`paso ${label}: ${x}`);
-      for (const x of soft) warnings.push(`paso ${label}: ${x}`);
-    }
-    report.steps.push({ step: label, scene: st?.scene, actions: st?.actions });
-    if (problems.length) break;
-  }
+  // F3.2a: la página de un expediente (entra directa al capítulo; `newGame` de la ruta = esperar la primera escena)
+  await page.evaluateOnNewDocument(() => { try { localStorage.clear(); } catch { /* nada */ } });
+  await page.goto(`${BASE}/campaign.html?chapter=1&qa=1`, { waitUntil: 'domcontentloaded', timeout: 90_000 });
+  const { hints, hintMax, fails } = await playChapter1(page, route, problems, warnings, (s) => report.steps.push(s));
 
   const gs = await gameState(page);
   const m = await metricsOf(page);

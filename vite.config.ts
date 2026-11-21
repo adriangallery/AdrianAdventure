@@ -119,12 +119,11 @@ function buildHashPlugin(): Plugin {
 const FUNTICO_MODE = 'funtico';
 const FUNTICO_HTML = 'funtico/index.html';
 /**
- * F3.1: banco de pruebas de Campaign (el juego entero con el recolector de métricas instalado, para el e2e
- * `scripts/funtico/campaign-metrics-e2e.mjs`). Solo entra si se pide con FUNTICO_CAMPAIGN_HARNESS=1: el build que se
- * despliega no cambia. F3.2 lo sustituirá por la entrada de Campaign desde el menú.
+ * F3.1/F3.2a: página de un expediente de Campaign (`campaign.html?chapter=N`: el juego entero con el recolector de
+ * métricas y las claves de guardado de Campaign). F3.2a: entra siempre en el build funtico (se abre desde el mapa del
+ * menú); antes solo con FUNTICO_CAMPAIGN_HARNESS=1.
  */
-const FUNTICO_HARNESS_HTML = 'funtico/campaign.html';
-const funticoHarness = (): boolean => process.env.FUNTICO_CAMPAIGN_HARNESS === '1';
+const FUNTICO_CAMPAIGN_HTML = 'funtico/campaign.html';
 
 /**
  * Sube funtico/index.html a la raíz del outDir. Vite escribe las rutas del HTML relativas a su carpeta
@@ -154,8 +153,8 @@ function funticoRootHtmlPlugin(): Plugin {
         bundle[to] = html;
       };
       hoist(FUNTICO_HTML, 'index.html');
-      // F3.1: el banco de pruebas de Campaign, también en la raíz (el juego pide sus assets relativos a la página)
-      if (bundle[FUNTICO_HARNESS_HTML]) hoist(FUNTICO_HARNESS_HTML, 'campaign.html');
+      // F3.1/F3.2a: la página de Campaign, también en la raíz (el juego pide sus assets relativos a la página)
+      hoist(FUNTICO_CAMPAIGN_HTML, 'campaign.html');
     },
   };
 }
@@ -196,7 +195,7 @@ export default defineConfig(({ mode }) => {
         input: funtico
           ? {
             funtico: path.resolve(__dirname, FUNTICO_HTML),
-            ...(funticoHarness() ? { campaign: path.resolve(__dirname, FUNTICO_HARNESS_HTML) } : {}),
+            campaign: path.resolve(__dirname, FUNTICO_CAMPAIGN_HTML),
           }
           : {
             main: path.resolve(__dirname, 'index.html'),

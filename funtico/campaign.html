@@ -4,10 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="robots" content="noindex, nofollow">
-  <!-- F3.1 (plan FUNTICO_ADVENTURE): banco de pruebas de Campaign. El juego entero (src/main.ts) con el recolector de
-       métricas instalado antes de arrancar. Solo entra en dist-funtico con FUNTICO_CAMPAIGN_HARNESS=1 (vite.config.ts),
-       sale en la raíz como campaign.html y lo usa scripts/funtico/campaign-metrics-e2e.mjs. F3.2 lo sustituye. -->
-  <title>%GAME_NAME% · Campaign harness</title>
+  <!-- F3.2a (plan FUNTICO_ADVENTURE): página de un expediente de Campaign (`campaign.html?chapter=N`). El juego entero
+       con las claves de guardado de Campaign, el recolector de métricas y el resultado encima al cerrar el capítulo
+       (src/funtico/campaignMain.ts). Sale en la raíz de dist-funtico (vite.config.ts) y se despliega siempre. -->
+  <title>ZEROadventure · Campaign</title>
   <link rel="icon" type="image/png" href="./favicon.png">
   <style>
     @font-face {
@@ -31,6 +31,6 @@
 <body>
   <div id="loading"><p>Loading…</p></div>
   <div id="game-container"></div>
-  <script type="module" src="../src/funtico/campaignHarness.ts"></script>
+  <script type="module" src="../src/funtico/campaignMain.ts"></script>
 </body>
 </html>

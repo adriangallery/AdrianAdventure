@@ -554,8 +554,11 @@ jobs:
           path: demo-out/*/frames/
 
   # F3.1 (plan FUNTICO_ADVENTURE): ganchos de plataforma + recolector de métricas de Campaign. Juega el capítulo 1 con la
-  # ruta crítica del walkthrough en el build Funtico (banco de pruebas funtico/campaign.html, solo con
-  # FUNTICO_CAMPAIGN_HARNESS=1) y comprueba las métricas contra el estado del juego. Ver docs/progreso/F3.1.md.
+  # ruta crítica del walkthrough en el build Funtico (página de expediente campaign.html?chapter=1, F3.2a: parte del
+  # build desplegado, sin variable de entorno) y comprueba las métricas contra el estado del juego. Ver
+  # docs/progreso/F3.1.md. F3.2a: además, Campaign de punta a punta (menú → mapa → cap. 1 → resultado → mapa con el
+  # cap. 2 abierto → cap. 2 en su estado canónico), states.json al día, bounds y capturas en 4 tamaños
+  # (docs/progreso/F3.2a.md).
   funtico-campaign:
     needs: build
     if: ${{ !cancelled() && needs.build.result == 'success' }}
@@ -571,9 +574,9 @@ jobs:
 
       - run: npm ci
 
-      - name: Build Funtico con el banco de pruebas de Campaign
+      - name: Build Funtico (con la página de Campaign)
         run: |
-          FUNTICO_CAMPAIGN_HARNESS=1 npx vite build --mode funtico
+          npx vite build --mode funtico
           cp -r assets dist-funtico/
           test -f dist-funtico/campaign.html || { echo "::error::falta dist-funtico/campaign.html"; exit 1; }
 
@@ -588,8 +591,21 @@ jobs:
         env:
           BASE_URL: http://127.0.0.1:4175
 
+      - name: Campaign de punta a punta, estados canónicos y capturas (F3.2a)
+        if: ${{ !cancelled() }}
+        run: npm run test:funtico:campaign-flow
+        env:
+          BASE_URL: http://127.0.0.1:4175
+
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: funtico-campaign-metrics
           path: campaign-metrics-e2e/
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: funtico-campaign-screens
+          if-no-files-found: ignore
+          path: campaign-e2e/
