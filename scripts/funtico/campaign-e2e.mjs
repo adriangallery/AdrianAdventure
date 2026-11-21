@@ -15,7 +15,7 @@
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { launchBrowser } from '../lib/browser.mjs';
 import { chapter1Route, playChapter1, snapshotForStates, IGNORE, FUNTICO_HOST } from './lib/campaign-route.mjs';
-import { diffStates, statesFromSnapshot } from './lib/campaign-states.mjs';
+import { diffStates, serialize, statesFromSnapshot } from './lib/campaign-states.mjs';
 
 const BASE = (process.env.BASE_URL || 'http://127.0.0.1:4175').replace(/\/+$/, '');
 const OUT = process.env.CAMPAIGN_E2E_OUT || 'campaign-e2e';
@@ -111,7 +111,10 @@ try {
   if (!problems.length) {
     await page.waitForFunction(() => window.__funtico?.campaign?.state === 'result' && !!window.__funtico.campaign.result, { timeout: 60_000, polling: 250 });
     const snap = await snapshotForStates(page);
-    const d = diffStates(statesFromSnapshot(snap));
+    const gen = statesFromSnapshot(snap);
+    // Copia de lo generado (artefacto del CI): si states.json está desfasado, se puede versionar desde aquí
+    writeFileSync(`${OUT}/states.generated.json`, serialize(gen));
+    const d = diffStates(gen);
     if (d) problems.push(`${d}. Regenera con scripts/funtico/build-campaign-states.mjs`);
     await sleep(800); // el puente (mock) contesta
     const r = await page.evaluate(() => {
