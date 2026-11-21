@@ -60,6 +60,7 @@ export class TriageResultScene extends Phaser.Scene {
       this.scale.off(Phaser.Scale.Events.RESIZE, this.onResize, this);
       delete funticoHook().result;
     });
+    // eslint-disable-next-line @typescript-eslint/no-this-alias -- getters del gancho de pruebas
     const scene = this;
     funticoHook().result = {
       score: r.score,

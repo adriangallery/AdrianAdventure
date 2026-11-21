@@ -694,6 +694,7 @@ export class TriageScene extends Phaser.Scene {
   }
 
   private registerHook(): void {
+    // eslint-disable-next-line @typescript-eslint/no-this-alias -- getters del gancho de pruebas
     const scene = this;
     funticoHook().triage = {
       scene,
