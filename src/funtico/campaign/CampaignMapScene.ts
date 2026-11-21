@@ -187,8 +187,9 @@ export class CampaignMapScene extends Phaser.Scene {
       const place = (top: number): number => {
         let y = top;
         this.heading.setPosition(x, y);
-        this.total.setPosition(x + w - this.total.width, y + this.heading.height - this.total.height);
-        y += this.heading.height + gap * 2;
+        y += this.heading.height + gap;
+        this.total.setPosition(x, y);
+        y += this.total.height + gap * 2;
         for (const c of this.cards) y += this.placeCard(c, x, y, w, base) + gap;
         y += gap;
         this.extrasTitle.setPosition(x, y);

@@ -1,1 +1,114 @@
-{ "version": 1, "chapters": { "1": { "fresh": true, "scene": "outside" } } }
+{
+  "version": 1,
+  "note": "Generado por scripts/funtico/build-campaign-states.mjs (ruta-critica de qa/walkthrough.json hasta chapter:1). No editar a mano.",
+  "chapters": {
+    "1": {
+      "fresh": true,
+      "scene": "outside"
+    },
+    "2": {
+      "currentScene": "lobby",
+      "flags": {
+        "anon_call_1": true,
+        "chapter_1_complete": true,
+        "chapter_1_intro_shown": true,
+        "chapter_2_intro_shown": true,
+        "door_unlocked": true,
+        "dooris_key_ok": true,
+        "dooris_met": true,
+        "dooris_pin_ok": true,
+        "dooris_question_ok": true,
+        "found_code_note": true,
+        "found_envelope": true,
+        "found_ledger": true,
+        "found_note_half_a": true,
+        "found_note_half_b": true,
+        "found_vet_bill": true,
+        "has_code": true,
+        "has_plank": true,
+        "knows_gerald": true,
+        "nest_down": true,
+        "porch_light_off": true,
+        "premise_shown": true
+      },
+      "inventory": [
+        {
+          "fromNFT": false,
+          "icon": null,
+          "id": "ledger",
+          "name": "Adrian's Ledger"
+        },
+        {
+          "fromNFT": false,
+          "icon": null,
+          "id": "mystery_envelope",
+          "name": "Mystery Envelope"
+        },
+        {
+          "fromNFT": false,
+          "icon": null,
+          "id": "vet_bill",
+          "name": "Vet Bill"
+        }
+      ],
+      "visited": [
+        "lobby",
+        "outside"
+      ],
+      "firedTriggers": [],
+      "dialogueProgress": {
+        "_script": [
+          "dooris_auth"
+        ]
+      },
+      "dialogueUsed": {
+        "dooris_auth": [
+          "ask_hub:Satoshi.",
+          "ask_hub:[The name on the vet bill]"
+        ]
+      },
+      "journal": {
+        "calls": 7,
+        "hints": {
+          "p1_combine": 1,
+          "p1_door": 1,
+          "p1_lamp": 2,
+          "p1_mail": 1,
+          "p1_nest": 1,
+          "p1_question": 1
+        },
+        "notes": [
+          "n1_half_a",
+          "n1_half_b",
+          "n1_code",
+          "n1_dooris",
+          "n1_anon",
+          "n1_ledger",
+          "n1_envelope",
+          "n1_vet_bill",
+          "n1_badge"
+        ],
+        "seen": [
+          "n1_half_a",
+          "n1_half_b",
+          "g1_code",
+          "n1_code",
+          "n1_dooris",
+          "n1_anon",
+          "g1_mail",
+          "g1_porch",
+          "n1_ledger",
+          "n1_envelope",
+          "n1_vet_bill"
+        ]
+      },
+      "achievements": [
+        "ch1_complete"
+      ],
+      "spawn": {
+        "x": 86,
+        "y": 93
+      }
+    }
+  }
+}
