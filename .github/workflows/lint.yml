@@ -43,7 +43,7 @@ jobs:
         run: npm run test:walkthrough:unit
       - name: Pruebas de privacidad del leaderboard (A1.6)
         run: npm run test:server
-      - name: Pruebas del relay de Funtico en el save-server (F2.1)
+      - name: Pruebas del relay de Funtico y de Triage en el save-server (F2.1, F2.2)
         run: npm run test:funtico-server
       - name: Pruebas del recorte de overlays (A2.7)
         run: npm run test:overlays

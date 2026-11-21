@@ -14,6 +14,7 @@ import { createStatsStore } from './stats.js';
 import { createStatsAuth, parseAdmins, loadSessionSecret } from './stats-auth.js';
 import { createStatsRoutes } from './stats-routes.js';
 import { createFunticoRelay, MAX_BODY_BYTES as FUNTICO_MAX_BYTES } from './funtico.js';
+import { createTriageRuns } from './funtico-triage-runs.js';
 
 /**
  * A1.12: comprobación de la firma de sesión (inyectada en validate.js). Primero EOA en local (sin red); si no cuadra,
@@ -340,7 +341,10 @@ app.on(['GET', 'POST'], '/stats/*', async (c) => {
 // ─── F2.1 (plan FUNTICO_ADVENTURE): relay hacia Funtico, APAGADO por defecto (FUNTICO_ENABLED). Ver docs/progreso/F2.1.md ───
 // Apagado: /funtico/* es 404 y no se lee ninguna otra variable ni se crea nada en el volumen. Mismo origen que el
 // build funtico (nginx /save-api → aquí), así que no abre CORS.
-const funticoRelay = createFunticoRelay({ env: process.env, dataDir: DATA_DIR });
+// F2.2: Triage en servidor (run/start + validador de CompletePractice con puntuación recalculada). Apagado (sin
+// FUNTICO_ENABLED) no lee FUNTICO_SEED_SALT ni toca el volumen. Ver docs/progreso/F2.2.md.
+const funticoTriage = createTriageRuns({ env: process.env, dataDir: DATA_DIR });
+const funticoRelay = createFunticoRelay({ env: process.env, dataDir: DATA_DIR, validators: funticoTriage.validators, local: funticoTriage.local });
 const funticoHandler = async (c) => {
   if (!funticoRelay.enabled) return c.notFound();
   const len = Number(c.req.header('content-length') || 0);

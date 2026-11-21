@@ -1,0 +1,1067 @@
+{
+  "schema": 1,
+  "units": "percent-of-world",
+  "scenes": {
+    "outside": {
+      "world": {
+        "width": 3712,
+        "height": 1152
+      },
+      "background": "assets/scenes/outside/background.png"
+    },
+    "lobby": {
+      "world": {
+        "width": 3712,
+        "height": 1152
+      },
+      "background": "assets/scenes/lobby/background.png"
+    },
+    "rooftop": {
+      "world": {
+        "width": 3712,
+        "height": 1152
+      },
+      "background": "assets/scenes/rooftop/background.png"
+    }
+  },
+  "targets": [
+    {
+      "id": "outside:hs_front_door",
+      "scene": "outside",
+      "hotspot": "hs_front_door",
+      "name": "Front Door",
+      "bounds": {
+        "x": 31.6,
+        "y": 54.1,
+        "w": 5,
+        "h": 26.2
+      },
+      "look": [
+        "A solid wooden door with a keypad and a tiny speaker grille. Somebody put a lot of trust in that grille."
+      ],
+      "phrase": "A solid wooden door with a keypad and a tiny speaker grille. Somebody put a lot of trust in that grille.",
+      "voice": {
+        "key": "player_a_solid_wooden_door_with_a_31db5660",
+        "file": "assets/audio/voice/player_a_solid_wooden_door_with_a_31db5660.mp3"
+      },
+      "nameLeak": true,
+      "size": 0.2055,
+      "effective": 0.1233,
+      "similar": [
+        "outside:hs_chimney"
+      ],
+      "bucket": "hard"
+    },
+    {
+      "id": "outside:hs_porch_light",
+      "scene": "outside",
+      "hotspot": "hs_porch_light",
+      "name": "Porch Light",
+      "bounds": {
+        "x": 34.5,
+        "y": 45.4,
+        "w": 3,
+        "h": 8
+      },
+      "look": [
+        "Something's wedged behind the bracket. The bulb's been on for three weeks. I'm not touching that."
+      ],
+      "phrase": "Something's wedged behind the bracket. The bulb's been on for three weeks. I'm not touching that.",
+      "voice": {
+        "key": "player_somethings_wedged_behind_the_bracket_the_19bb162d",
+        "file": "assets/audio/voice/player_somethings_wedged_behind_the_bracket_the_19bb162d.mp3"
+      },
+      "nameLeak": false,
+      "size": 0.0879,
+      "effective": 0.0879,
+      "similar": [],
+      "bucket": "hard"
+    },
+    {
+      "id": "outside:hs_main_window",
+      "scene": "outside",
+      "hotspot": "hs_main_window",
+      "name": "Main Window",
+      "bounds": {
+        "x": 25.6,
+        "y": 51,
+        "w": 2.9,
+        "h": 21
+      },
+      "look": [
+        "Warm light inside. I can see monitor screens glowing — someone's been running code."
+      ],
+      "phrase": "Warm light inside. I can see monitor screens glowing — someone's been running code.",
+      "voice": {
+        "key": "player_warm_light_inside_i_can_cf640fec",
+        "file": "assets/audio/voice/player_warm_light_inside_i_can_cf640fec.mp3"
+      },
+      "nameLeak": false,
+      "size": 0.1401,
+      "effective": 0.084,
+      "similar": [
+        "outside:hs_left_window",
+        "outside:hs_upper_windows"
+      ],
+      "bucket": "hard"
+    },
+    {
+      "id": "outside:hs_left_window",
+      "scene": "outside",
+      "hotspot": "hs_left_window",
+      "name": "Side Window",
+      "bounds": {
+        "x": 16.1,
+        "y": 53.1,
+        "w": 2.6,
+        "h": 18.3
+      },
+      "look": [
+        "A small window glowing orange. Cozy inside... or maybe something's on fire."
+      ],
+      "phrase": "A small window glowing orange. Cozy inside... or maybe something's on fire.",
+      "voice": {
+        "key": "player_a_small_window_glowing_orange_bd614b81",
+        "file": "assets/audio/voice/player_a_small_window_glowing_orange_bd614b81.mp3"
+      },
+      "nameLeak": true,
+      "size": 0.1238,
+      "effective": 0.0743,
+      "similar": [
+        "outside:hs_main_window",
+        "outside:hs_upper_windows"
+      ],
+      "bucket": "hard"
+    },
+    {
+      "id": "outside:hs_chimney",
+      "scene": "outside",
+      "hotspot": "hs_chimney",
+      "name": "Chimney & Nest",
+      "bounds": {
+        "x": 41.9,
+        "y": 0.2,
+        "w": 5.3,
+        "h": 33.9
+      },
+      "look": [
+        "Magpies nesting in the drainpipe, way too high to reach. They steal anything shiny."
+      ],
+      "phrase": "Magpies nesting in the drainpipe, way too high to reach. They steal anything shiny.",
+      "voice": {
+        "key": "player_magpies_nesting_in_the_drainpipe_way_0a58d83c",
+        "file": "assets/audio/voice/player_magpies_nesting_in_the_drainpipe_way_0a58d83c.mp3"
+      },
+      "nameLeak": false,
+      "size": 0.2406,
+      "effective": 0.1444,
+      "similar": [
+        "outside:hs_front_door"
+      ],
+      "bucket": "hard"
+    },
+    {
+      "id": "outside:hs_mailbox",
+      "scene": "outside",
+      "hotspot": "hs_mailbox",
+      "name": "Mailbox",
+      "bounds": {
+        "x": 58.8,
+        "y": 67.6,
+        "w": 3.7,
+        "h": 11.3
+      },
+      "look": [
+        "A rusty mailbox overflowing with letters. Electric bills, mostly. Nobody's opened it in weeks."
+      ],
+      "phrase": "A rusty mailbox overflowing with letters. Electric bills, mostly. Nobody's opened it in weeks.",
+      "voice": {
+        "key": "player_a_rusty_mailbox_overflowing_with_letters_e3c46fe0",
+        "file": "assets/audio/voice/player_a_rusty_mailbox_overflowing_with_letters_e3c46fe0.mp3"
+      },
+      "nameLeak": true,
+      "size": 0.1161,
+      "effective": 0.1161,
+      "similar": [],
+      "bucket": "hard"
+    },
+    {
+      "id": "outside:hs_bushes",
+      "scene": "outside",
+      "hotspot": "hs_bushes",
+      "name": "Bushes",
+      "bounds": {
+        "x": 13.2,
+        "y": 74.1,
+        "w": 11.1,
+        "h": 23.5
+      },
+      "look": [
+        "Overgrown bushes. Adrian gardens like he answers email."
+      ],
+      "phrase": "Overgrown bushes. Adrian gardens like he answers email.",
+      "voice": {
+        "key": "player_overgrown_bushes_adrian_gardens_like_he_f06e5d8b",
+        "file": "assets/audio/voice/player_overgrown_bushes_adrian_gardens_like_he_f06e5d8b.mp3"
+      },
+      "nameLeak": true,
+      "size": 0.2899,
+      "effective": 0.2899,
+      "similar": [],
+      "bucket": "medium"
+    },
+    {
+      "id": "outside:hs_doormat",
+      "scene": "outside",
+      "hotspot": "hs_doormat",
+      "name": "Doormat",
+      "bounds": {
+        "x": 31.9,
+        "y": 81.6,
+        "w": 7.7,
+        "h": 5.3
+      },
+      "look": [
+        "HODL. Glued down. Something lumpy underneath."
+      ],
+      "phrase": "HODL. Glued down. Something lumpy underneath.",
+      "voice": {
+        "key": "player_hodl_glued_down_something_lumpy_underneath_a2eeb43c",
+        "file": "assets/audio/voice/player_hodl_glued_down_something_lumpy_underneath_a2eeb43c.mp3"
+      },
+      "nameLeak": false,
+      "size": 0.1147,
+      "effective": 0.0688,
+      "similar": [
+        "outside:hs_path"
+      ],
+      "bucket": "hard"
+    },
+    {
+      "id": "outside:hs_path",
+      "scene": "outside",
+      "hotspot": "hs_path",
+      "name": "Sidewalk",
+      "bounds": {
+        "x": 43.9,
+        "y": 88.1,
+        "w": 9.5,
+        "h": 5
+      },
+      "look": [
+        "Concrete path to the door. Twenty paces. I counted. Detective habit."
+      ],
+      "phrase": "Concrete path to the door. Twenty paces. I counted. Detective habit.",
+      "voice": {
+        "key": "player_concrete_path_to_the_door_twenty_d5fce06f",
+        "file": "assets/audio/voice/player_concrete_path_to_the_door_twenty_d5fce06f.mp3"
+      },
+      "nameLeak": false,
+      "size": 0.1237,
+      "effective": 0.0742,
+      "similar": [
+        "outside:hs_doormat"
+      ],
+      "bucket": "hard"
+    },
+    {
+      "id": "outside:hs_power_pole",
+      "scene": "outside",
+      "hotspot": "hs_power_pole",
+      "name": "Power Pole",
+      "bounds": {
+        "x": 55.7,
+        "y": 6.9,
+        "w": 3,
+        "h": 60
+      },
+      "look": [
+        "A power pole, humming. Somebody's paying Adrian's electric bill. Not Adrian."
+      ],
+      "phrase": "A power pole, humming. Somebody's paying Adrian's electric bill. Not Adrian.",
+      "voice": {
+        "key": "player_a_power_pole_humming_somebodys_paying_ddacad6c",
+        "file": "assets/audio/voice/player_a_power_pole_humming_somebodys_paying_ddacad6c.mp3"
+      },
+      "nameLeak": true,
+      "size": 0.2408,
+      "effective": 0.2408,
+      "similar": [],
+      "bucket": "medium"
+    },
+    {
+      "id": "outside:hs_trees",
+      "scene": "outside",
+      "hotspot": "hs_trees",
+      "name": "Trees",
+      "bounds": {
+        "x": 91.6,
+        "y": 17.4,
+        "w": 8.2,
+        "h": 55
+      },
+      "look": [
+        "Dense trees. Very dark between them. Good place to hide. ...If you were hiding."
+      ],
+      "phrase": "Dense trees. Very dark between them. Good place to hide. ...If you were hiding.",
+      "voice": {
+        "key": "player_dense_trees_very_dark_between_them_f673a9ad",
+        "file": "assets/audio/voice/player_dense_trees_very_dark_between_them_f673a9ad.mp3"
+      },
+      "nameLeak": true,
+      "size": 0.3812,
+      "effective": 0.3812,
+      "similar": [],
+      "bucket": "easy"
+    },
+    {
+      "id": "outside:hs_roof",
+      "scene": "outside",
+      "hotspot": "hs_roof",
+      "name": "Roof",
+      "bounds": {
+        "x": 31.5,
+        "y": 0,
+        "w": 10,
+        "h": 7.6
+      },
+      "look": [
+        "Red-brown tiles. A few missing, like teeth. This house has seen things."
+      ],
+      "phrase": "Red-brown tiles. A few missing, like teeth. This house has seen things.",
+      "voice": {
+        "key": "player_redbrown_tiles_a_few_missing_like_c8e801d9",
+        "file": "assets/audio/voice/player_redbrown_tiles_a_few_missing_like_c8e801d9.mp3"
+      },
+      "nameLeak": false,
+      "size": 0.1565,
+      "effective": 0.1565,
+      "similar": [],
+      "bucket": "hard"
+    },
+    {
+      "id": "outside:hs_carport",
+      "scene": "outside",
+      "hotspot": "hs_carport",
+      "name": "Carport",
+      "bounds": {
+        "x": 69.3,
+        "y": 57.4,
+        "w": 15,
+        "h": 30
+      },
+      "look": [
+        "Empty carport. The oil stains are three weeks old. So is the hurry."
+      ],
+      "phrase": "Empty carport. The oil stains are three weeks old. So is the hurry.",
+      "voice": {
+        "key": "player_empty_carport_the_oil_stains_are_5a9640a2",
+        "file": "assets/audio/voice/player_empty_carport_the_oil_stains_are_5a9640a2.mp3"
+      },
+      "nameLeak": true,
+      "size": 0.3808,
+      "effective": 0.3808,
+      "similar": [],
+      "bucket": "easy"
+    },
+    {
+      "id": "outside:hs_keypad",
+      "scene": "outside",
+      "hotspot": "hs_keypad",
+      "name": "Keypad",
+      "bounds": {
+        "x": 37.3,
+        "y": 61.1,
+        "w": 1.9,
+        "h": 9
+      },
+      "look": [
+        "A keypad, a speaker grille and three tiny LEDs. All red. That's two more LEDs than a door needs."
+      ],
+      "phrase": "A keypad, a speaker grille and three tiny LEDs. All red. That's two more LEDs than a door needs.",
+      "voice": {
+        "key": "player_a_keypad_a_speaker_grille_and_2d12790e",
+        "file": "assets/audio/voice/player_a_keypad_a_speaker_grille_and_2d12790e.mp3"
+      },
+      "nameLeak": true,
+      "size": 0.0742,
+      "effective": 0.0742,
+      "similar": [],
+      "bucket": "hard"
+    },
+    {
+      "id": "outside:hs_sunset_sky",
+      "scene": "outside",
+      "hotspot": "hs_sunset_sky",
+      "name": "Sunset Sky",
+      "bounds": {
+        "x": 0,
+        "y": 0,
+        "w": 30,
+        "h": 10
+      },
+      "look": [
+        "A blazing pink and orange sunset. Lovely. I'm not seeing a chart in it. ...Okay, a small one."
+      ],
+      "phrase": "A blazing pink and orange sunset. Lovely. I'm not seeing a chart in it. ...Okay, a small one.",
+      "voice": {
+        "key": "player_a_blazing_pink_and_orange_sunset_32dbdba4",
+        "file": "assets/audio/voice/player_a_blazing_pink_and_orange_sunset_32dbdba4.mp3"
+      },
+      "nameLeak": true,
+      "size": 0.3109,
+      "effective": 0.3109,
+      "similar": [],
+      "bucket": "easy"
+    },
+    {
+      "id": "outside:hs_fence",
+      "scene": "outside",
+      "hotspot": "hs_fence",
+      "name": "Wooden Fence",
+      "bounds": {
+        "x": 0,
+        "y": 45,
+        "w": 5,
+        "h": 30
+      },
+      "look": [
+        "A weathered wooden fence. One plank hangs on by a single nail. It's basically asking."
+      ],
+      "phrase": "A weathered wooden fence. One plank hangs on by a single nail. It's basically asking.",
+      "voice": {
+        "key": "player_a_weathered_wooden_fence_one_plank_9c8e8c16",
+        "file": "assets/audio/voice/player_a_weathered_wooden_fence_one_plank_9c8e8c16.mp3"
+      },
+      "nameLeak": true,
+      "size": 0.2198,
+      "effective": 0.2198,
+      "similar": [],
+      "bucket": "medium"
+    },
+    {
+      "id": "outside:hs_upper_windows",
+      "scene": "outside",
+      "hotspot": "hs_upper_windows",
+      "name": "Upper Floor Windows",
+      "bounds": {
+        "x": 21,
+        "y": 18,
+        "w": 18,
+        "h": 20
+      },
+      "look": [
+        "Four windows glow upstairs. Monitors, lots of them. Somebody worked late. For three weeks."
+      ],
+      "phrase": "Four windows glow upstairs. Monitors, lots of them. Somebody worked late. For three weeks.",
+      "voice": {
+        "key": "player_four_windows_glow_upstairs_monitors_lots_f9a2c31c",
+        "file": "assets/audio/voice/player_four_windows_glow_upstairs_monitors_lots_f9a2c31c.mp3"
+      },
+      "nameLeak": true,
+      "size": 0.3406,
+      "effective": 0.2044,
+      "similar": [
+        "outside:hs_main_window",
+        "outside:hs_left_window"
+      ],
+      "bucket": "medium"
+    },
+    {
+      "id": "lobby:hs_stairs_up",
+      "scene": "lobby",
+      "hotspot": "hs_stairs_up",
+      "name": "Stairs to Upstairs",
+      "bounds": {
+        "x": 65.5,
+        "y": 2.6,
+        "w": 19.7,
+        "h": 33.5
+      },
+      "look": [
+        "Stairs to the upper floor. Every step has its own little light. Adrian never did anything halfway."
+      ],
+      "phrase": "Stairs to the upper floor. Every step has its own little light. Adrian never did anything halfway.",
+      "voice": {
+        "key": "player_stairs_to_the_upper_floor_every_797bcc38",
+        "file": "assets/audio/voice/player_stairs_to_the_upper_floor_every_797bcc38.mp3"
+      },
+      "nameLeak": true,
+      "size": 0.4611,
+      "effective": 0.4611,
+      "similar": [],
+      "bucket": "easy"
+    },
+    {
+      "id": "lobby:hs_plant",
+      "scene": "lobby",
+      "hotspot": "hs_plant",
+      "name": "Lobby Plant (Fernando)",
+      "bounds": {
+        "x": 39.9,
+        "y": 44,
+        "w": 5,
+        "h": 20
+      },
+      "look": [
+        "A tall plant in a ceramic pot. It looks thirsty. Really thirsty."
+      ],
+      "phrase": "A tall plant in a ceramic pot. It looks thirsty. Really thirsty.",
+      "voice": {
+        "key": "player_a_tall_plant_in_a_174573a1",
+        "file": "assets/audio/voice/player_a_tall_plant_in_a_174573a1.mp3"
+      },
+      "nameLeak": true,
+      "size": 0.1795,
+      "effective": 0.1077,
+      "similar": [
+        "lobby:hs_poster"
+      ],
+      "bucket": "hard"
+    },
+    {
+      "id": "lobby:hs_frontdoor",
+      "scene": "lobby",
+      "hotspot": "hs_frontdoor",
+      "name": "Main Entrance",
+      "bounds": {
+        "x": 90.5,
+        "y": 22.2,
+        "w": 6.2,
+        "h": 68.2
+      },
+      "look": [
+        "The front door, from the inside. DOORIS is quieter on this side. Probably still listening."
+      ],
+      "phrase": "The front door, from the inside. DOORIS is quieter on this side. Probably still listening.",
+      "voice": {
+        "key": "player_the_front_door_from_the_inside_7dba4815",
+        "file": "assets/audio/voice/player_the_front_door_from_the_inside_7dba4815.mp3"
+      },
+      "nameLeak": false,
+      "size": 0.3691,
+      "effective": 0.3691,
+      "similar": [],
+      "bucket": "easy"
+    },
+    {
+      "id": "lobby:hs_coat",
+      "scene": "lobby",
+      "hotspot": "hs_coat",
+      "name": "Wool Coat",
+      "bounds": {
+        "x": 53.3,
+        "y": 32.4,
+        "w": 4.8,
+        "h": 36.1
+      },
+      "look": [
+        "Adrian's wool coat, on the rack. Something card-shaped in the breast pocket."
+      ],
+      "phrase": "Adrian's wool coat, on the rack. Something card-shaped in the breast pocket.",
+      "voice": {
+        "key": "player_adrians_wool_coat_on_the_rack_e9e09323",
+        "file": "assets/audio/voice/player_adrians_wool_coat_on_the_rack_e9e09323.mp3"
+      },
+      "nameLeak": true,
+      "size": 0.2363,
+      "effective": 0.2363,
+      "similar": [],
+      "bucket": "medium"
+    },
+    {
+      "id": "lobby:hs_monitor_desk",
+      "scene": "lobby",
+      "hotspot": "hs_monitor_desk",
+      "name": "Penny's Desk",
+      "bounds": {
+        "x": 3,
+        "y": 22,
+        "w": 33,
+        "h": 42
+      },
+      "look": [
+        "Penny's desk. Five CRT monitors, a keyboard and a rubber stamp that just says 'NO'."
+      ],
+      "phrase": "Penny's desk. Five CRT monitors, a keyboard and a rubber stamp that just says 'NO'.",
+      "voice": {
+        "key": "player_pennys_desk_five_crt_monitors_a_102c0fc5",
+        "file": "assets/audio/voice/player_pennys_desk_five_crt_monitors_a_102c0fc5.mp3"
+      },
+      "nameLeak": true,
+      "size": 0.6683,
+      "effective": 0.6683,
+      "similar": [],
+      "bucket": "easy"
+    },
+    {
+      "id": "lobby:hs_ceiling_light",
+      "scene": "lobby",
+      "hotspot": "hs_ceiling_light",
+      "name": "Ceiling Light",
+      "bounds": {
+        "x": 47,
+        "y": 5,
+        "w": 6,
+        "h": 15
+      },
+      "look": [
+        "A vintage pendant lamp. It flickers every few seconds, like it's trying to tell me something. It isn't."
+      ],
+      "phrase": "A vintage pendant lamp. It flickers every few seconds, like it's trying to tell me something. It isn't.",
+      "voice": {
+        "key": "player_a_vintage_pendant_lamp_it_flickers_7b1b0061",
+        "file": "assets/audio/voice/player_a_vintage_pendant_lamp_it_flickers_7b1b0061.mp3"
+      },
+      "nameLeak": false,
+      "size": 0.1703,
+      "effective": 0.1703,
+      "similar": [],
+      "bucket": "medium"
+    },
+    {
+      "id": "lobby:hs_floor_tiles",
+      "scene": "lobby",
+      "hotspot": "hs_floor_tiles",
+      "name": "Checkered Floor",
+      "bounds": {
+        "x": 10,
+        "y": 84,
+        "w": 75,
+        "h": 10
+      },
+      "look": [
+        "Checkered tiles. Brown, tan, brown, tan. Somebody here really likes order. I bet it's Penny."
+      ],
+      "phrase": "Checkered tiles. Brown, tan, brown, tan. Somebody here really likes order. I bet it's Penny.",
+      "voice": {
+        "key": "player_checkered_tiles_brown_tan_brown_tan_32bd1cef",
+        "file": "assets/audio/voice/player_checkered_tiles_brown_tan_brown_tan_32bd1cef.mp3"
+      },
+      "nameLeak": true,
+      "size": 0.4916,
+      "effective": 0.4916,
+      "similar": [],
+      "bucket": "easy"
+    },
+    {
+      "id": "lobby:hs_poster",
+      "scene": "lobby",
+      "hotspot": "hs_poster",
+      "name": "Wall Poster",
+      "bounds": {
+        "x": 46.7,
+        "y": 27,
+        "w": 4.3,
+        "h": 20.5
+      },
+      "look": [
+        "A sad, torn poster. Connect a wallet and maybe it remembers what it used to be."
+      ],
+      "phrase": "A sad, torn poster. Connect a wallet and maybe it remembers what it used to be.",
+      "voice": {
+        "key": "player_a_sad_torn_poster_connect_a_1f2405d6",
+        "file": "assets/audio/voice/player_a_sad_torn_poster_connect_a_1f2405d6.mp3"
+      },
+      "nameLeak": true,
+      "size": 0.1685,
+      "effective": 0.1011,
+      "similar": [
+        "lobby:hs_plant"
+      ],
+      "bucket": "hard"
+    },
+    {
+      "id": "rooftop:hs_satellite_dish",
+      "scene": "rooftop",
+      "hotspot": "hs_satellite_dish",
+      "name": "Satellite Dish",
+      "bounds": {
+        "x": 27.5,
+        "y": 0.5,
+        "w": 16,
+        "h": 62
+      },
+      "look": [
+        "A three-metre bowl of rainwater. The best-funded birdbath in the city.",
+        "It also runs a full Base node via satellite. Adrian's birdbath has better uptime than I do."
+      ],
+      "phrase": "A three-metre bowl of rainwater. The best-funded birdbath in the city.",
+      "voice": {
+        "key": "player_a_threemetre_bowl_of_rainwater_the_06857275",
+        "file": "assets/audio/voice/player_a_threemetre_bowl_of_rainwater_the_06857275.mp3"
+      },
+      "nameLeak": false,
+      "size": 0.5654,
+      "effective": 0.3392,
+      "similar": [
+        "rooftop:hs_weather_vane"
+      ],
+      "bucket": "easy"
+    },
+    {
+      "id": "rooftop:hs_antenna_array",
+      "scene": "rooftop",
+      "hotspot": "hs_antenna_array",
+      "name": "Antenna Array",
+      "bounds": {
+        "x": 17.8,
+        "y": 19.5,
+        "w": 9.7,
+        "h": 59.5
+      },
+      "look": [
+        "A cluster of antennas. Most are bolted tight, but one looks loose. It wobbles like it's had a few."
+      ],
+      "phrase": "A cluster of antennas. Most are bolted tight, but one looks loose. It wobbles like it's had a few.",
+      "voice": {
+        "key": "player_a_cluster_of_antennas_most_are_f2b9c4e4",
+        "file": "assets/audio/voice/player_a_cluster_of_antennas_most_are_f2b9c4e4.mp3"
+      },
+      "nameLeak": true,
+      "size": 0.4312,
+      "effective": 0.4312,
+      "similar": [],
+      "bucket": "easy"
+    },
+    {
+      "id": "rooftop:hs_night_sky",
+      "scene": "rooftop",
+      "hotspot": "hs_night_sky",
+      "name": "Night Sky",
+      "bounds": {
+        "x": 44,
+        "y": 0,
+        "w": 21,
+        "h": 22
+      },
+      "look": [
+        "Stars above, city lights below. Somewhere out there someone is buying a memecoin at 3 AM. Godspeed."
+      ],
+      "phrase": "Stars above, city lights below. Somewhere out there someone is buying a memecoin at 3 AM. Godspeed.",
+      "voice": {
+        "key": "player_stars_above_city_lights_below_somewhere_fb0c6102",
+        "file": "assets/audio/voice/player_stars_above_city_lights_below_somewhere_fb0c6102.mp3"
+      },
+      "nameLeak": false,
+      "size": 0.3858,
+      "effective": 0.2315,
+      "similar": [
+        "rooftop:hs_roof_access_panel"
+      ],
+      "bucket": "medium"
+    },
+    {
+      "id": "rooftop:hs_weather_vane",
+      "scene": "rooftop",
+      "hotspot": "hs_weather_vane",
+      "name": "Weather Vane",
+      "bounds": {
+        "x": 65.5,
+        "y": 5.5,
+        "w": 13,
+        "h": 55.5
+      },
+      "look": [
+        "A weather vane shaped like the Bitcoin logo. A cable runs from its base to the service hatch.",
+        "Rusted solid. It needs grease. A lot of grease."
+      ],
+      "phrase": "Rusted solid. It needs grease. A lot of grease.",
+      "voice": {
+        "key": "player_rusted_solid_it_needs_grease_a_a7ac08e3",
+        "file": "assets/audio/voice/player_rusted_solid_it_needs_grease_a_a7ac08e3.mp3"
+      },
+      "nameLeak": false,
+      "size": 0.4822,
+      "effective": 0.2893,
+      "similar": [
+        "rooftop:hs_satellite_dish"
+      ],
+      "bucket": "medium"
+    },
+    {
+      "id": "rooftop:hs_basement_light",
+      "scene": "rooftop",
+      "hotspot": "hs_basement_light",
+      "name": "Blinking Light Below",
+      "bounds": {
+        "x": 77.9,
+        "y": 62.3,
+        "w": 3.8,
+        "h": 7.5
+      },
+      "look": [
+        "A light blinks rhythmically from below the building. The basement. Something is still running down there. It seems connected to the weather vane's circuit.",
+        "That blinking is a server heartbeat. The service hatch goes down there. Of course it does."
+      ],
+      "phrase": "A light blinks rhythmically from below the building. The basement. Something is still running down there. It seems connected to the weather vane's circuit.",
+      "voice": {
+        "key": "player_a_light_blinks_rhythmically_from_85f74610",
+        "file": "assets/audio/voice/player_a_light_blinks_rhythmically_from_85f74610.mp3"
+      },
+      "nameLeak": true,
+      "size": 0.0958,
+      "effective": 0.0958,
+      "similar": [],
+      "bucket": "hard"
+    },
+    {
+      "id": "rooftop:hs_city_skyline",
+      "scene": "rooftop",
+      "hotspot": "hs_city_skyline",
+      "name": "City Skyline",
+      "bounds": {
+        "x": 0,
+        "y": 42,
+        "w": 17.5,
+        "h": 14
+      },
+      "look": [
+        "The city glimmers below. Thousands of lights. Most of them are people who forgot the bathroom."
+      ],
+      "phrase": "The city glimmers below. Thousands of lights. Most of them are people who forgot the bathroom.",
+      "voice": {
+        "key": "player_the_city_glimmers_below_thousands_of_12f035cb",
+        "file": "assets/audio/voice/player_the_city_glimmers_below_thousands_of_12f035cb.mp3"
+      },
+      "nameLeak": true,
+      "size": 0.281,
+      "effective": 0.1686,
+      "similar": [
+        "rooftop:hs_lobbyhatch"
+      ],
+      "bucket": "hard"
+    },
+    {
+      "id": "rooftop:hs_roof_access_panel",
+      "scene": "rooftop",
+      "hotspot": "hs_roof_access_panel",
+      "name": "Roof Service Hatch",
+      "bounds": {
+        "x": 56.8,
+        "y": 63,
+        "w": 19,
+        "h": 17
+      },
+      "look": [
+        "Three locks: a card reader, a keyhole, and something mechanical underneath. Adrian trusts nobody.",
+        "All three are shut. Obviously."
+      ],
+      "phrase": "Three locks: a card reader, a keyhole, and something mechanical underneath. Adrian trusts nobody.",
+      "voice": {
+        "key": "player_three_locks_a_card_reader_a_05abc130",
+        "file": "assets/audio/voice/player_three_locks_a_card_reader_a_05abc130.mp3"
+      },
+      "nameLeak": false,
+      "size": 0.3226,
+      "effective": 0.1936,
+      "similar": [
+        "rooftop:hs_night_sky",
+        "rooftop:hs_lobbyhatch"
+      ],
+      "bucket": "medium"
+    },
+    {
+      "id": "rooftop:hs_parapet",
+      "scene": "rooftop",
+      "hotspot": "hs_parapet",
+      "name": "Roof Railing",
+      "bounds": {
+        "x": 43.5,
+        "y": 50,
+        "w": 21.5,
+        "h": 8.5
+      },
+      "look": [
+        "A concrete parapet. Low enough to lean on. High enough to keep detectives on the roof. Mostly."
+      ],
+      "phrase": "A concrete parapet. Low enough to lean on. High enough to keep detectives on the roof. Mostly.",
+      "voice": {
+        "key": "player_a_concrete_parapet_low_enough_to_72c3e711",
+        "file": "assets/audio/voice/player_a_concrete_parapet_low_enough_to_72c3e711.mp3"
+      },
+      "nameLeak": false,
+      "size": 0.2427,
+      "effective": 0.2427,
+      "similar": [],
+      "bucket": "medium"
+    },
+    {
+      "id": "rooftop:hs_roof_door",
+      "scene": "rooftop",
+      "hotspot": "hs_roof_door",
+      "name": "Roof Door",
+      "bounds": {
+        "x": 90,
+        "y": 38,
+        "w": 6.5,
+        "h": 58
+      },
+      "look": [
+        "The door back to the trading floor. Warm light leaks out underneath. Inside sounds nice right now."
+      ],
+      "phrase": "The door back to the trading floor. Warm light leaks out underneath. Inside sounds nice right now.",
+      "voice": {
+        "key": "player_the_door_back_to_the_trading_bd03e5f5",
+        "file": "assets/audio/voice/player_the_door_back_to_the_trading_bd03e5f5.mp3"
+      },
+      "nameLeak": true,
+      "size": 0.3485,
+      "effective": 0.3485,
+      "similar": [],
+      "bucket": "easy"
+    },
+    {
+      "id": "rooftop:hs_lobbyhatch",
+      "scene": "rooftop",
+      "hotspot": "hs_lobbyhatch",
+      "name": "Lobby Hatch",
+      "bounds": {
+        "x": 28.5,
+        "y": 63,
+        "w": 19.5,
+        "h": 15
+      },
+      "look": [
+        "A glass hatch in the roof. Below: the lobby, dim and empty. A ladder runs down the inside."
+      ],
+      "phrase": "A glass hatch in the roof. Below: the lobby, dim and empty. A ladder runs down the inside.",
+      "voice": {
+        "key": "player_a_glass_hatch_in_the_roof_19b2df76",
+        "file": "assets/audio/voice/player_a_glass_hatch_in_the_roof_19b2df76.mp3"
+      },
+      "nameLeak": true,
+      "size": 0.307,
+      "effective": 0.1842,
+      "similar": [
+        "rooftop:hs_city_skyline",
+        "rooftop:hs_roof_access_panel"
+      ],
+      "bucket": "medium"
+    }
+  ],
+  "relapse": {
+    "scene": "recovery_pool",
+    "tree": "chad_fud",
+    "rounds": [
+      {
+        "id": "i3",
+        "fud": "You bought the top so hard, they named it after you.",
+        "fudVoice": {
+          "key": "chad_you_bought_the_top_so_hard_e7e199f5",
+          "file": "assets/audio/voice/chad_you_bought_the_top_so_hard_e7e199f5.mp3"
+        },
+        "options": [
+          {
+            "text": "I can tell. They left the receipts floating in the pool.",
+            "learn": "fud_r6",
+            "voice": null
+          },
+          {
+            "text": "Then today they'll hear you lose.",
+            "learn": "fud_r4",
+            "voice": {
+              "key": "npc_then_today_theyll_hear_you_lose_c4ecde06",
+              "file": "assets/audio/voice/npc_then_today_theyll_hear_you_lose_c4ecde06.mp3"
+            }
+          },
+          {
+            "text": "A broken clock is right twice a day. You're on a streak of zero.",
+            "learn": "fud_r2",
+            "voice": {
+              "key": "npc_a_broken_clock_is_right_twice_63cdb38c",
+              "file": "assets/audio/voice/npc_a_broken_clock_is_right_twice_63cdb38c.mp3"
+            }
+          },
+          {
+            "text": "And you sold the bottom so often, they gave you a loyalty card.",
+            "learn": "fud_r3",
+            "voice": {
+              "key": "npc_and_you_sold_the_bottom_so_ed376d77",
+              "file": "assets/audio/voice/npc_and_you_sold_the_bottom_so_ed376d77.mp3"
+            }
+          }
+        ],
+        "correct": 3
+      },
+      {
+        "id": "i1",
+        "fud": "Your bags are so heavy, the lifeguard filed a complaint.",
+        "fudVoice": {
+          "key": "chad_your_bags_are_so_heavy_the_d004fb61",
+          "file": "assets/audio/voice/chad_your_bags_are_so_heavy_the_d004fb61.mp3"
+        },
+        "options": [
+          {
+            "text": "A broken clock is right twice a day. You're on a streak of zero.",
+            "learn": "fud_r2",
+            "voice": {
+              "key": "npc_a_broken_clock_is_right_twice_63cdb38c",
+              "file": "assets/audio/voice/npc_a_broken_clock_is_right_twice_63cdb38c.mp3"
+            }
+          },
+          {
+            "text": "Still more detail than your exit plan.",
+            "learn": "fud_r5",
+            "voice": null
+          },
+          {
+            "text": "At least mine float. Yours sank in a kiddie pool.",
+            "learn": "fud_r1",
+            "voice": {
+              "key": "npc_at_least_mine_float_yours_sank_90d3ef2d",
+              "file": "assets/audio/voice/npc_at_least_mine_float_yours_sank_90d3ef2d.mp3"
+            }
+          },
+          {
+            "text": "Then today they'll hear you lose.",
+            "learn": "fud_r4",
+            "voice": {
+              "key": "npc_then_today_theyll_hear_you_lose_c4ecde06",
+              "file": "assets/audio/voice/npc_then_today_theyll_hear_you_lose_c4ecde06.mp3"
+            }
+          }
+        ],
+        "correct": 2
+      },
+      {
+        "id": "i5",
+        "fud": "Your roadmap is a napkin with a frowny face on it.",
+        "fudVoice": {
+          "key": "chad_your_roadmap_is_a_napkin_with_b206229d",
+          "file": "assets/audio/voice/chad_your_roadmap_is_a_napkin_with_b206229d.mp3"
+        },
+        "options": [
+          {
+            "text": "Still more detail than your exit plan.",
+            "learn": "fud_r5",
+            "voice": null
+          },
+          {
+            "text": "And you sold the bottom so often, they gave you a loyalty card.",
+            "learn": "fud_r3",
+            "voice": {
+              "key": "npc_and_you_sold_the_bottom_so_ed376d77",
+              "file": "assets/audio/voice/npc_and_you_sold_the_bottom_so_ed376d77.mp3"
+            }
+          },
+          {
+            "text": "At least mine float. Yours sank in a kiddie pool.",
+            "learn": "fud_r1",
+            "voice": {
+              "key": "npc_at_least_mine_float_yours_sank_90d3ef2d",
+              "file": "assets/audio/voice/npc_at_least_mine_float_yours_sank_90d3ef2d.mp3"
+            }
+          },
+          {
+            "text": "I can tell. They left the receipts floating in the pool.",
+            "learn": "fud_r6",
+            "voice": null
+          }
+        ],
+        "correct": 0
+      }
+    ]
+  },
+  "hash": "b57a5e29d8fa4f6cbca49e40afe6363f538feeda0ac0bd0176b7dd80e6c4d6c9"
+}
