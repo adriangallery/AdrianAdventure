@@ -83,12 +83,16 @@ try {
   page.on('request', (req) => { if (FUNTICO_HOST.test(req.url())) problems.push(`petición a Funtico: ${req.url()}`); });
 
   // 1. Menú (almacenamiento limpio) → CAMPAIGN → mapa
-  await page.goto(`${BASE}/index.html?mock=1&qa=1`, { waitUntil: 'domcontentloaded', timeout: 90_000 });
+  await page.goto(`${BASE}/index.html?mock=1&qa=1&howto=0`, { waitUntil: 'domcontentloaded', timeout: 90_000 });
   await page.evaluate(() => localStorage.clear());
-  await page.goto(`${BASE}/index.html?mock=1&qa=1`, { waitUntil: 'domcontentloaded', timeout: 90_000 });
+  await page.goto(`${BASE}/index.html?mock=1&qa=1&howto=0`, { waitUntil: 'domcontentloaded', timeout: 90_000 });
   await page.waitForFunction(() => !!window.__funtico?.menu, { timeout: 60_000, polling: 200 });
   await sleep(500);
-  await tap(page, menuBounds, 'campaign');
+  // F1.5: lobby → tarjeta CAMPAIGN → PLAY
+  await tap(page, menuBounds, 'card-campaign');
+  await page.waitForFunction(() => window.__funtico.menu.selected() === 'campaign', { timeout: 5000 });
+  await sleep(300);
+  await tap(page, menuBounds, 'play');
   await page.waitForFunction(() => window.__funtico?.campaign?.map?.ready() === true, { timeout: 30_000, polling: 200 });
   const before = await page.evaluate(() => window.__funtico.campaign.map.cases());
   report.steps.push({ step: 'mapa inicial', cases: before });

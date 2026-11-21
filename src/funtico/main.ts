@@ -1,6 +1,6 @@
 /**
  * F0.1 (plan FUNTICO_ADVENTURE): entrada del build Funtico (funtico/index.html, `vite build --mode funtico`).
- * F1.2: menú Funtico (FunticoMenuScene), Triage (TriageScene) y resultado (TriageResultScene), todos con
+ * F1.2: menú Funtico (F1.5: lobby, lobby/LobbyScene.ts), Triage (TriageScene) y resultado (TriageResultScene), todos con
  * `Scale.RESIZE` y recolocación en caliente al girar o redimensionar. F3.2a: mapa de Campaign (CampaignMapScene); cada
  * expediente se juega en su página (campaign.html?chapter=N, src/funtico/campaignMain.ts). No importa nada de web3: IS_FUNTICO apaga
  * WEB3_ENABLED como en Steam.
@@ -8,12 +8,20 @@
 import Phaser from 'phaser';
 import { IS_FUNTICO, WEB3_ENABLED } from '@/config/platform';
 import { createBridge } from './FunticoBridge';
-import { FunticoMenuScene } from './FunticoMenuScene';
+import { LobbyScene } from './lobby/LobbyScene';
+import { HallOfFameScene } from './lobby/HallOfFameScene';
+import { MyResultsScene } from './lobby/MyResultsScene';
+import { HowToPlayScene } from './lobby/HowToPlayScene';
+import { SettingsScene } from './lobby/SettingsScene';
+import { getSfxVolume, onSettingsChange } from './settings';
 import { TriageScene, funticoHook } from './TriageScene';
 import { TriageResultScene } from './TriageResultScene';
 import { TriageStartScene } from './TriageStartScene';
 import { CampaignMapScene } from './campaign/CampaignMapScene';
 import { FONT, REG } from './ui';
+
+/** F1.5: pantallas del lobby (Hall of Fame, Mis resultados, How to play, Ajustes). */
+const LOBBY_SCREENS = [HallOfFameScene, MyResultsScene, HowToPlayScene, SettingsScene];
 
 function start(): void {
   const game = new Phaser.Game({
@@ -29,9 +37,12 @@ function start(): void {
     render: { pixelArt: true, antialias: false, roundPixels: true },
     // F3.2a: `?view=campaign` (vuelta desde un expediente) abre directamente el mapa de campaña
     scene: new URLSearchParams(location.search).get('view') === 'campaign'
-      ? [CampaignMapScene, FunticoMenuScene, TriageStartScene, TriageScene, TriageResultScene]
-      : [FunticoMenuScene, TriageStartScene, TriageScene, TriageResultScene, CampaignMapScene],
+      ? [CampaignMapScene, LobbyScene, TriageStartScene, TriageScene, TriageResultScene, ...LOBBY_SCREENS]
+      : [LobbyScene, TriageStartScene, TriageScene, TriageResultScene, CampaignMapScene, ...LOBBY_SCREENS],
   });
+  // F1.5: volumen de sonido de los ajustes (la música iMUSE de Triage se engancha a getMusicVolume al juntar con F1.4)
+  game.sound.volume = getSfxVolume();
+  onSettingsChange((st) => { game.sound.volume = st.sfx; });
   game.registry.set('platform', { funtico: IS_FUNTICO, web3: WEB3_ENABLED });
   const bridge = createBridge();
   game.registry.set(REG.bridge, bridge);

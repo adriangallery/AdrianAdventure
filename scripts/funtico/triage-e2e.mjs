@@ -3,6 +3,7 @@
 //  - Juega carreras completas con ?mock=1&seed=e2e-f1.2 en 390x844 (girando a mitad: 390x844 → 844x390 → 390x844),
 //    844x390, 1280x720 y 1920x1080; comprueba que el giro no pierde estación, toques, puntuación ni reloj.
 //  - Al final: puntuación en pantalla = scoreRun(run, taps) y el Hall of Fame simulado la contiene.
+//  - F1.5: el menú es el lobby (tarjeta TRIAGE + PLAY; `?howto=0`).
 //  - En cada pantalla (menú, SAMPLE, SYMPTOM, RELAPSE, resultado): uiBounds() dentro del viewport; en los dos tamaños
 //    móviles, interactivos ≥ 44 px CSS y textos ≥ 14 px CSS. Sin errores de consola y sin peticiones a dominios de Funtico.
 //  - Píxeles: en SAMPLE y SYMPTOM, el panel de escena NO es negro/uniforme (desviación de luminancia y nº de colores) y
@@ -285,12 +286,17 @@ async function playRun(size, { rotate = false, missOnce = false, fps = false, fr
   console.log(`\n== Carrera en ${size}${rotate ? ' (con giro)' : ''} ==`);
   const p = await newPage(size);
   const { page } = p;
-  await page.goto(`${BASE}/?mock=1&seed=${encodeURIComponent(SEED)}`, { waitUntil: 'load' });
+  // F1.5: lobby (`howto=0`: sin el How to play automático de la primera vez); se elige la tarjeta TRIAGE y PLAY
+  await page.goto(`${BASE}/?mock=1&howto=0&seed=${encodeURIComponent(SEED)}`, { waitUntil: 'load' });
   await page.waitForFunction(() => window.__funtico?.menu, { timeout: 30000 });
-  await page.waitForFunction(() => window.__funtico.menu.uiBounds().some((b) => b.id === 'hof' && !/loading/.test(b.text)), { timeout: 10000 });
+  await page.waitForFunction(() => window.__funtico.menu.uiBounds().some((b) => b.id === 'bar-user'), { timeout: 10000 });
   noteMin(size, await checkBounds(p, 'menú', () => window.__funtico.menu.uiBounds()));
   await shot(p, '1-menu');
-  const tri = (await page.evaluate(() => window.__funtico.menu.uiBounds())).find((b) => b.id === 'triage');
+  const card = (await page.evaluate(() => window.__funtico.menu.uiBounds())).find((b) => b.id === 'card-triage');
+  await press(p, card.x + card.w / 2, card.y + card.h / 2);
+  await page.waitForFunction(() => window.__funtico.menu.selected() === 'triage', { timeout: 5000 });
+  await sleep(250);
+  const tri = (await page.evaluate(() => window.__funtico.menu.uiBounds())).find((b) => b.id === 'play');
   await press(p, tri.x + tri.w / 2, tri.y + tri.h / 2);
   await page.waitForFunction(() => window.__funtico?.triage?.state()?.ready, { timeout: 60000, polling: 100 })
     .catch(async (e) => { notes.push(`renderer ${await page.evaluate(() => window.__funtico.game.renderer.type)}`); throw e; });

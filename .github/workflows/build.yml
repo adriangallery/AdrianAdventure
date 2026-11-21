@@ -125,6 +125,36 @@ jobs:
           name: funtico-triage-shots-${{ matrix.renderer }}
           path: funtico-shots/
 
+  funtico-lobby:
+    # F1.5: e2e del lobby (How to play, Hall of Fame, Mis resultados, Ajustes, tarjeta + PLAY) en 4 tamaños + giro
+    needs: build
+    if: ${{ !cancelled() && needs.build.result == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Build Funtico con assets
+        run: npm run build:funtico
+
+      - name: Lobby e2e (F1.5)
+        run: npm run test:funtico:lobby-e2e
+        env:
+          SHOTS: funtico-lobby-shots
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: funtico-lobby-shots
+          path: funtico-lobby-shots/
+
   smoke:
     # V8: arranque, cada escena, cambio de escena y guardar/cargar en Chrome headless contra el build real
     needs: build
