@@ -76,7 +76,7 @@ export class TriageResultScene extends Phaser.Scene {
   create(): void {
     const r = this.result;
     this.good = isGoodResult({ hits: r.hits, stations: this.model.run.stations.length });
-    this.shownAt = this.time.now;
+    this.shownAt = performance.now();
     this.startAudio();
     const n = this.model.run.stations.length;
     this.head = txt(this, r.completed ? 'SHIFT COMPLETE' : 'TIME\'S UP, DOCTOR', MIN_TEXT, C.lilac, 'center').setOrigin(0.5, 0);
@@ -123,8 +123,9 @@ export class TriageResultScene extends Phaser.Scene {
     void this.submit();
   }
 
-  update(time: number): void {
-    TriageAudio.peek(this.game)?.setMusic(musicFor({ phase: 'result', good: this.good, resultMs: time - this.shownAt }));
+  update(): void {
+    // performance.now(): el reloj de la escena (this.time.now) empieza en 0 la primera vez y saltaba el triunfo
+    TriageAudio.peek(this.game)?.setMusic(musicFor({ phase: 'result', good: this.good, resultMs: performance.now() - this.shownAt }));
   }
 
   /** F1.4: triunfo (o calma) en compás y una voz corta ya doblada según el resultado, con ducking. */

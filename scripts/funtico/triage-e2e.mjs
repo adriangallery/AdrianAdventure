@@ -527,8 +527,15 @@ async function playRun(size, { rotate = false, missOnce = false, fps = false, fr
   if (audio) {
     const good = await page.evaluate(() => window.__funtico.result.good);
     const want = good ? 'triunfo' : 'calma';
-    const w = await waitAudio(page, (a) => a.theme === RACE_THEME && a.levelName === want);
-    (w.ok ? ok : fail)(`[${size}] resultado (${good ? 'buena' : 'mala'} puntuación): ${lv(w.a)} (esperado ${RACE_THEME}/${want})`);
+    // El triunfo dura 16 s y luego vuelve a la calma: se mira lo pedido al entrar en el resultado (historial)
+    const w = await waitAudio(page, (a) => a.history.some((h) => h.theme === RACE_THEME && h.name === want && h.t >= (a.history.find((x) => x.theme === RELAPSE_THEME)?.t ?? 0)));
+    const ent = w.a?.history.filter((h) => h.theme === RACE_THEME && h.name === want).pop();
+    (w.ok ? ok : fail)(`[${size}] resultado (${good ? 'buena' : 'mala'} puntuación): pide ${ent ? `${ent.theme}/${ent.name}` : lv(w.a)} (esperado ${RACE_THEME}/${want})`);
+    if (good) {
+      const tri = (w.a?.history ?? []).filter((h) => h.name === 'triunfo');
+      const after = (w.a?.history ?? []).find((h) => tri[0] && h.t > tri[0].t);
+      (!after || after.t - tri[0].t >= 15000 ? ok : fail)(`[${size}] el triunfo dura ≥ 15 s antes de la calma (${after ? after.t - tri[0].t : 'sigue'} ms)`);
+    }
     const a = w.a ?? (await audioState(page));
     const seq = (a?.history ?? []).map((h) => `${h.theme}/${h.name}`);
     const order = [`${RACE_THEME}/calma`, `${RACE_THEME}/activo`, `${RACE_THEME}/tension`, `${RACE_THEME}/${want}`];
