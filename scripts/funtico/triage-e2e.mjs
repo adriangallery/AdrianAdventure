@@ -226,36 +226,26 @@ const rafMedian = (page, ms) => page.evaluate((dur) => new Promise((res) => {
 }), ms);
 
 /**
- * Fotogramas para el GIF (modo --gif) con el screencast de CDP: no bloquea la página ni se cruza con los toques
- * (las capturas periódicas con page.screenshot dejaban toques y arrastres sin efecto). El screencast solo manda
- * fotograma cuando la pantalla cambia: al parar se rellena a ritmo fijo (uno cada GIF_EVERY_MS) repitiendo el último.
+ * Fotogramas para el GIF (modo --gif), sacados DENTRO de la página con `renderer.snapshot` de Phaser cada
+ * GIF_EVERY_MS: no se cruzan con los toques (las capturas periódicas con page.screenshot los dejaban sin efecto) y
+ * salen a ritmo fijo (el screencast de CDP perdía los primeros segundos de cada carrera).
  */
 async function startFrames(page, dir) {
   await mkdir(dir, { recursive: true });
-  const cdp = await page.createCDPSession();
-  const got = [];
-  let last = -Infinity;
-  const t0 = Date.now();
-  cdp.on('Page.screencastFrame', (f) => {
-    cdp.send('Page.screencastFrameAck', { sessionId: f.sessionId }).catch(() => undefined);
-    const t = Date.now() - t0;
-    if (t - last < GIF_EVERY_MS * 0.8) return;
-    last = t;
-    got.push({ t, data: f.data });
-  });
-  await cdp.send('Page.startScreencast', { format: 'png', everyNthFrame: 1 });
+  await page.evaluate((every) => {
+    const g = window.__funtico.game;
+    const store = (window.__gifFrames = []);
+    window.__gifTimer = setInterval(() => {
+      if (store.length < 1200) g.renderer.snapshot((img) => { if (img && img.src) store.push(img.src); });
+    }, every);
+  }, GIF_EVERY_MS);
   return async () => {
-    const end = Date.now() - t0;
-    await cdp.send('Page.stopScreencast').catch(() => undefined);
-    await cdp.detach().catch(() => undefined);
-    let n = 0;
-    let k = 0;
-    for (let t = 0; t <= end && got.length; t += GIF_EVERY_MS) {
-      while (k + 1 < got.length && got[k + 1].t <= t) k++;
-      n++;
-      await writeFile(path.join(dir, `f${String(n).padStart(4, '0')}.png`), Buffer.from(got[k].data, 'base64'));
+    const total = await page.evaluate(() => { clearInterval(window.__gifTimer); return window.__gifFrames.length; });
+    for (let n = 0; n < total; n++) {
+      const url = await page.evaluate((k) => window.__gifFrames[k], n);
+      await writeFile(path.join(dir, `f${String(n + 1).padStart(4, '0')}.png`), Buffer.from(url.slice(url.indexOf(',') + 1), 'base64'));
     }
-    return n;
+    return total;
   };
 }
 
