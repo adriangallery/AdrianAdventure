@@ -1,6 +1,8 @@
 // F3.2b (plan FUNTICO_ADVENTURE): la aventura (Campaign) en el build funtico se juega en vertical y en horizontal, con
-// giro en caliente y sin perder estado. Contra `campaign.html?qa=1` (banco de F3.1, que activa el LayoutProfile
-// `STACKED_PORTRAIT_LAYOUT`), renderer CANVAS (Chrome sin WebGL, como triage-e2e):
+// giro en caliente y sin perder estado. Contra `campaign.html?chapter=1&qa=1` (la página de expediente de F3.2a,
+// src/funtico/campaignMain.ts, que activa el LayoutProfile `STACKED_PORTRAIT_LAYOUT`; entra directa al capítulo, sin
+// MenuScene: el paso `newGame` de la ruta lo resuelve el `callQa` compartido de lib/campaign-route.mjs), renderer CANVAS
+// (Chrome sin WebGL, como triage-e2e):
 //   1. Juega el capítulo 1 (ruta crítica de qa/walkthrough.json cortada en chapter:1) en 390x844 con tres giros
 //      (vertical→horizontal en mitad de la ruta; horizontal→vertical→horizontal→vertical con un texto abierto) y
 //      comprueba tras cada giro: escena, flags, inventario, posición de Dex, texto abierto y reloj que sigue. Antes de la
@@ -13,7 +15,7 @@
 //   4. fps: mediana por rAF con CPU x4 en 390x844 ≥ 50 (canvas); fotograma más largo durante un giro ≤ 250 ms (CPU x1).
 //   5. Sin errores de consola ni de página.
 // Uso (por turno-pesado):
-//   FUNTICO_CAMPAIGN_HARNESS=1 npx vite build --mode funtico && cp -r assets dist-funtico/
+//   npx vite build --mode funtico && cp -r assets dist-funtico/
 //   npx vite preview --mode funtico --outDir dist-funtico --host 127.0.0.1 --port 4175 --strictPort &
 //   BASE_URL=http://127.0.0.1:4175 node scripts/funtico/campaign-layout-e2e.mjs
 // Variables: OUT (por defecto campaign-layout-e2e/), ONLY=portrait,landscape,desktop (fases a correr).
@@ -21,6 +23,7 @@ import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { launchBrowser } from '../lib/browser.mjs';
 import { check, cutRoute, parseUntil } from '../lib/walkthrough-core.mjs';
+import { callQa } from './lib/campaign-route.mjs';
 
 const BASE = (process.env.BASE_URL || 'http://127.0.0.1:4175').replace(/\/+$/, '');
 const OUT = process.env.OUT || 'campaign-layout-e2e';
@@ -45,31 +48,6 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const parse = (s) => { const [w, h] = s.split('x').map(Number); return { width: w, height: h }; };
 const MOBILE = new Set(['390x844', '844x390']);
 const vp = (s) => ({ ...parse(s), deviceScaleFactor: MOBILE.has(s) ? 2 : 1, isMobile: MOBILE.has(s), hasTouch: MOBILE.has(s) });
-
-const callQa = (page, s) => page.evaluate(async (s) => {
-  const q = window.__qa;
-  switch (s.do) {
-    case 'newGame': return q.newGame();
-    case 'act': return q.act(s.verb, s.target, s.choices ?? [], s.holdTextMs ?? 0);
-    case 'use': return q.use(s.item, s.target, s.choices ?? []);
-    case 'give': return q.give(s.item, s.target, s.choices ?? []);
-    case 'pick': return q.pick(s.verb, s.item);
-    case 'combine': return q.combine(s.items[0], s.items[1]);
-    case 'talk': return q.talk(s.npc, s.choices ?? []);
-    case 'walk': return q.walk(s.x, s.y);
-    case 'dismissAll': return q.dismissAll();
-    case 'state': return q.state();
-    case 'key': return q.press(s.key, s.phase ?? 'press');
-    case 'click': return q.click(s.target, s.choices ?? []);
-    case 'rightclick': return q.rightClick(s.target, s.choices ?? []);
-    case 'doubleclick': return q.doubleClick(s.target);
-    case 'runScript': return q.runScript(s.ops, s.skipAfterMs !== undefined ? { skipAfterMs: s.skipAfterMs } : {});
-    case 'journal': return s.action === 'close' ? q.closeJournal() : q.openJournal(s.tab ?? 'goals');
-    case 'callAnon': return q.callAnon();
-    case 'mockWeb3': return q.mockWeb3(s.web3 === undefined ? null : s.web3);
-    default: throw new Error(`[qa:error] paso desconocido «${s.do}»`);
-  }
-}, s);
 
 /** Estado que no debe cambiar con un giro (y el reloj, que debe seguir). */
 const snap = (page) => page.evaluate(() => {
@@ -192,6 +170,9 @@ async function waitIdle(page, ms = 8000) {
   await page.waitForFunction(() => { const s = window.__qa.state(); return !s.path && !s.walkTarget; }, { timeout: ms, polling: 100 }).catch(() => {});
 }
 
+const PAGE = () => `${BASE}/campaign.html?chapter=1&qa=1`;
+const waitQa = (page) => page.waitForFunction(() => !!window.__qa && !!window.__funtico?.metrics, { timeout: 120_000, polling: 250 });
+
 async function newPage(browser, size) {
   const ctx = await browser.createBrowserContext();
   const page = await ctx.newPage();
@@ -202,8 +183,8 @@ async function newPage(browser, size) {
   });
   page.on('request', (req) => { if (/funtico\.(com|io|gg)/i.test(req.url())) fail(`petición a Funtico: ${req.url()}`); });
   await page.setViewport(vp(size));
-  await page.goto(`${BASE}/campaign.html?qa=1`, { waitUntil: 'domcontentloaded', timeout: 120_000 });
-  await page.waitForFunction(() => !!window.__qa && !!window.__funtico?.metrics, { timeout: 120_000, polling: 250 });
+  await page.goto(PAGE(), { waitUntil: 'domcontentloaded', timeout: 120_000 });
+  await waitQa(page);
   const r = await page.evaluate(() => (window.__game.renderer.type === 2 ? 'WEBGL' : 'CANVAS'));
   want(r === 'CANVAS', `[${size}] renderer ${r}`);
   return { page, ctx };
@@ -417,10 +398,10 @@ try {
     } catch (err) {
       warnings.push(`[390x844] no se pudo abrir el móvil para la captura: ${String(err.message ?? err).split('\n')[0]}`);
     }
-    // Partida nueva desde una página recién cargada (como la pasada en horizontal)
-    await page.reload({ waitUntil: 'domcontentloaded', timeout: 120_000 });
-    await page.waitForFunction(() => !!window.__qa && !!window.__funtico?.metrics, { timeout: 120_000, polling: 250 });
-    // La ruta entera (su newGame empieza partida nueva tras los toques reales)
+    // La ruta entera desde el estado canónico: abrir el expediente otra vez (recargar) descarta lo que movieron los
+    // toques reales; el `newGame` de la ruta espera a la primera escena y deja correr la apertura
+    await page.goto(PAGE(), { waitUntil: 'domcontentloaded', timeout: 120_000 });
+    await waitQa(page);
     report.passes.portrait = await playChapter(page, '390x844', { rotations: true });
     await ctx.close();
   }

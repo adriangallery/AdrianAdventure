@@ -6,7 +6,10 @@
  *     `setSaveStorage`); nunca `adrian_adventure_save`;
  *   - el recolector de métricas (F3.1) y su copia periódica en `…_ch<N>_metrics` (para F3.3);
  *   - CampaignEntryScene en lugar de MenuScene (se entra directo al capítulo) y, al cerrar el capítulo, el juego en
- *     pausa y CampaignResultScene encima.
+ *     pausa y CampaignResultScene encima;
+ *   - F3.2b: el perfil de layout apilado (`STACKED_PORTRAIT_LAYOUT`): en vertical escena arriba y panel apilado debajo,
+ *     en horizontal el layout SCUMM de siempre, con giro en caliente. El juego normal (src/main.ts) sigue con
+ *     `CLASSIC_LAYOUT` porque nunca llama a `setLayoutProfile`.
  * Con `?qa=1` monta la API de QA del walkthrough (como src/main.ts).
  */
 import Phaser from 'phaser';
@@ -17,6 +20,7 @@ import { GameScene } from '@/scenes/GameScene';
 import { UIScene } from '@/scenes/UIScene';
 import { setSaveStorage } from '@/platform/SaveStorage';
 import { setPlatformHooks, type PlatformHooks } from '@/platform/PlatformHooks';
+import { setLayoutProfile, STACKED_PORTRAIT_LAYOUT } from '@/platform/LayoutProfile';
 import { createBridge } from './FunticoBridge';
 import { installCampaignMetrics } from './installCampaignMetrics';
 import type { CampaignMetrics } from './CampaignMetrics';
@@ -49,6 +53,7 @@ async function start(): Promise<void> {
   setSaveStorage(saveStore);
   const metricsKey = campaignKey(userId, `ch${chapter}_metrics`);
   localStorage.removeItem(metricsKey);
+  setLayoutProfile(STACKED_PORTRAIT_LAYOUT); // F3.2b: vertical apilado y giro en caliente (antes de crear el juego)
   const metrics = installCampaignMetrics({ chapter });
   // Intento en el puente (mock: sin red). Si falla, se juega igual.
   void bridge.startCampaignLevel(`chapter_${chapter}`);
