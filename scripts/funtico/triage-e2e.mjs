@@ -234,7 +234,8 @@ function startFrames(page, dir) {
     while (on) {
       const t0 = Date.now();
       n++;
-      await page.screenshot({ path: path.join(dir, `f${String(n).padStart(4, '0')}.png`) }).catch(() => { n--; });
+      // captureBeyondViewport: false → la captura no cambia el tamaño de la ventana (un RESIZE por fotograma pisaba los toques)
+      await page.screenshot({ path: path.join(dir, `f${String(n).padStart(4, '0')}.png`), captureBeyondViewport: false }).catch(() => { n--; });
       await sleep(Math.max(0, GIF_EVERY_MS - (Date.now() - t0)));
     }
   })();
@@ -277,7 +278,6 @@ async function playRun(size, { rotate = false, missOnce = false, fps = false, fr
   console.log(`\n== Carrera en ${size}${rotate ? ' (con giro)' : ''} ==`);
   const p = await newPage(size);
   const { page } = p;
-  const stopFrames = frames ? startFrames(page, frames) : null;
   await page.goto(`${BASE}/?mock=1&seed=${encodeURIComponent(SEED)}`, { waitUntil: 'load' });
   await page.waitForFunction(() => window.__funtico?.menu, { timeout: 30000 });
   await page.waitForFunction(() => window.__funtico.menu.uiBounds().some((b) => b.id === 'hof' && !/loading/.test(b.text)), { timeout: 10000 });
@@ -287,6 +287,8 @@ async function playRun(size, { rotate = false, missOnce = false, fps = false, fr
   await press(p, tri.x + tri.w / 2, tri.y + tri.h / 2);
   await page.waitForFunction(() => window.__funtico?.triage?.state()?.ready, { timeout: 60000, polling: 100 })
     .catch(async (e) => { notes.push(`renderer ${await page.evaluate(() => window.__funtico.game.renderer.type)}`); throw e; });
+  // El GIF empieza con la carrera ya lista: capturar durante la carga del menú y el arranque dejaba el toque de TRIAGE sin efecto
+  const stopFrames = frames ? startFrames(page, frames) : null;
   const run = await page.evaluate(() => window.__funtico.triage.run);
   const got = await page.evaluate(() => (window.__funtico.game.renderer.type === 2 ? 'WEBGL' : 'CANVAS'));
   notes.push(`[${size}] renderer ${got}`);
