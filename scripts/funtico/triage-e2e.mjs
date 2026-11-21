@@ -14,6 +14,11 @@
 // webgl: WebGL por software con ANGLE + SwiftShader; falla si Phaser no arranca con el renderer pedido),
 // GIF_DIR (o --gif: /var/tmp/funtico/f1-2/gif/frames): una captura cada ~250 ms de la carrera vertical y de la
 // horizontal, sin giro, en GIF_DIR/<tamaño>/f0001.png… (las monta scripts/funtico/triage-gif.sh).
+// F1.4 (audio, en la carrera de 390x844): lee `__funtico.triage.audio` y comprueba las transiciones del iMUSE con la
+// semilla fija: calma al empezar → activo tras el primer acierto → tema de recovery_pool (clinica) en RELAPSE → tensión
+// en los últimos 30 s (el reloj se adelanta con `warp`, solo en simulado) → triunfo en el resultado; ducking bajo las
+// voces; el giro no reinicia la música; con SND/OFF la salida (RMS de la cadena maestra) es silencio.
+// VIDEO=/ruta/triage.webm: graba la carrera de 390x844 CON SONIDO (MediaRecorder: canvas + salida del WebAudio).
 import http from 'node:http';
 import { readFile, mkdir, writeFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
@@ -28,8 +33,11 @@ const SHOTS = process.env.SHOTS || `/var/tmp/funtico/f1-2/shots/${RENDERER}`;
 const SEED = process.env.SEED || 'e2e-f1.2';
 const GIF_DIR = process.env.GIF_DIR || (process.argv.includes('--gif') ? '/var/tmp/funtico/f1-2/gif/frames' : '');
 const GIF_EVERY_MS = 250;
+const VIDEO = process.env.VIDEO || '';
+const RACE_THEME = 'adrianlab';
+const RELAPSE_THEME = 'clinica';
 const MOBILE = new Set(['390x844', '844x390']);
-const SIZES = (process.env.ONLY || (GIF_DIR ? '390x844,844x390' : '390x844,844x390,1280x720,1920x1080')).split(',');
+const SIZES = (process.env.ONLY || (GIF_DIR ? '390x844,844x390' : VIDEO ? '390x844' : '390x844,844x390,1280x720,1920x1080')).split(',');
 /** Umbrales de píxeles (medidos por px CSS). Panel negro: desv. 0 y 1 color; recorte borroso de antes: ~0,02 de cambio. */
 const PIX = { sceneStd: 10, sceneColors: 64, cropStd: 8, cropColors: 48, cropChange: 0.08 };
 const SHOT_SIZES = new Set(['390x844', '844x390', '1920x1080']);
@@ -249,6 +257,64 @@ async function startFrames(page, dir) {
   };
 }
 
+const audioState = (page) => page.evaluate(() => window.__funtico?.triage?.audio ?? window.__funtico?.result?.audio ?? null);
+
+/** Espera (polling en Node: no se cruza con los toques) a que el audio cumpla `pred`; devuelve el último estado. */
+async function waitAudio(page, pred, ms = 8000) {
+  const end = Date.now() + ms;
+  let a = null;
+  while (Date.now() < end) {
+    a = await audioState(page);
+    if (a && pred(a)) return { ok: true, a };
+    await sleep(100);
+  }
+  return { ok: false, a };
+}
+
+const lv = (a) => (a ? `${a.theme}/${a.levelName}` : 'null');
+
+/** Grabación con sonido en la página: vídeo del canvas + la salida de la cadena maestra del WebAudio. */
+async function startVideo(page) {
+  return page.evaluate(() => {
+    const canvas = window.__funtico.game.canvas;
+    const v = canvas.captureStream(30);
+    const a = window.__funtico.triage.audioStream();
+    const stream = new MediaStream([...v.getVideoTracks(), ...a.getAudioTracks()]);
+    const type = ['video/webm;codecs=vp8,opus', 'video/webm;codecs=vp9,opus', 'video/webm'].find((t) => MediaRecorder.isTypeSupported(t));
+    const rec = new MediaRecorder(stream, { mimeType: type, videoBitsPerSecond: 2_500_000, audioBitsPerSecond: 128_000 });
+    window.__vid = { rec, chunks: [], type };
+    rec.ondataavailable = (e) => { if (e.data.size) window.__vid.chunks.push(e.data); };
+    rec.start(1000);
+    return { type, audioTracks: a.getAudioTracks().length };
+  });
+}
+
+async function stopVideo(page, file) {
+  const size = await page.evaluate(() => new Promise((res) => {
+    const v = window.__vid;
+    v.rec.onstop = async () => {
+      const blob = new Blob(v.chunks, { type: v.type });
+      v.buf = new Uint8Array(await blob.arrayBuffer());
+      res(v.buf.length);
+    };
+    v.rec.stop();
+  }));
+  const parts = [];
+  const STEP = 1 << 20;
+  for (let o = 0; o < size; o += STEP) {
+    const b64 = await page.evaluate((from, n) => {
+      const sub = window.__vid.buf.subarray(from, from + n);
+      let bin = '';
+      for (let i = 0; i < sub.length; i += 0x8000) bin += String.fromCharCode(...sub.subarray(i, i + 0x8000));
+      return btoa(bin);
+    }, o, STEP);
+    parts.push(Buffer.from(b64, 'base64'));
+  }
+  await mkdir(path.dirname(file), { recursive: true });
+  await writeFile(file, Buffer.concat(parts));
+  return size;
+}
+
 async function shot(p, name) {
   if (!SHOT_SIZES.has(p.label.v)) return;
   await p.page.screenshot({ path: path.join(SHOTS, `${p.label.v}-${name}.png`) });
@@ -281,7 +347,7 @@ async function bringIntoView(p, xPct, yPct) {
   return p.page.evaluate((x, y) => window.__funtico.triage.worldToScreen(x, y), xPct, yPct);
 }
 
-async function playRun(size, { rotate = false, missOnce = false, fps = false, frames = '' } = {}) {
+async function playRun(size, { rotate = false, missOnce = false, fps = false, frames = '', audio = false, video = '' } = {}) {
   console.log(`\n== Carrera en ${size}${rotate ? ' (con giro)' : ''} ==`);
   const p = await newPage(size);
   const { page } = p;
@@ -303,6 +369,18 @@ async function playRun(size, { rotate = false, missOnce = false, fps = false, fr
   if (run.seed !== SEED) fail(`[${size}] semilla ${run.seed} ≠ ${SEED}`);
   const shotted = new Set();
   let rotated = false;
+  const vid = video ? await startVideo(page) : null;
+  if (vid) notes.push(`[${size}] vídeo: ${vid.type}, ${vid.audioTracks} pista(s) de audio`);
+  // F1.4: estación en la que se adelanta el reloj a los últimos 25 s (la última que no es RELAPSE)
+  let warpAt = -1;
+  for (let k = run.stations.length - 1; k >= 0; k--) if (run.stations[k].kind !== 'relapse') { warpAt = k; break; }
+  const seen = { relapse: false, tension: false, rotateKeep: null, muteChecked: false };
+  if (audio) {
+    const w = await waitAudio(page, (a) => a.theme === RACE_THEME && a.levelName === 'calma');
+    (w.ok ? ok : fail)(`[${size}] audio al empezar: ${lv(w.a)} (pedido ${RACE_THEME}/calma)`);
+    const pl = await waitAudio(page, (a) => a.playing === `${RACE_THEME}-n0`, 15000);
+    (pl.ok ? ok : fail)(`[${size}] MusicManager toca ${pl.a?.playing ?? 'nada'} (esperado ${RACE_THEME}-n0)`);
+  }
 
   for (let i = 0; i < run.stations.length; i++) {
     let s = await waitStation(page, i);
@@ -332,9 +410,46 @@ async function playRun(size, { rotate = false, missOnce = false, fps = false, fr
       // La vista vuelve a la estación con la escena centrada para tocar
       s = await state(page);
     }
+    if (audio && st.kind === 'relapse' && !seen.relapse) {
+      const w = await waitAudio(page, (a) => a.theme === RELAPSE_THEME && a.levelName === 'tension');
+      seen.relapse = w.ok;
+      (w.ok ? ok : fail)(`[${size}] RELAPSE: ${lv(w.a)} (esperado ${RELAPSE_THEME}/tension, el tema de recovery_pool)`);
+      const sw = await waitAudio(page, (a) => a.playing === `${RELAPSE_THEME}-n2` || a.scheduled === `${RELAPSE_THEME}-n2`, 6000);
+      (sw.ok ? ok : (m) => { notes.push(m); console.log(`  NOTE ${m}`); })(`[${size}] RELAPSE: cambio en compás programado/sonando (${sw.a?.scheduled ?? sw.a?.playing})`);
+    }
+    if (audio && i === 2 && st.kind !== 'relapse' && !seen.muteChecked && !video) {
+      // SND/OFF: la salida de la cadena maestra calla (RMS ≈ 0) y se vuelve a activar
+      seen.muteChecked = true;
+      const before = await page.evaluate(() => window.__funtico.triage.audioRms());
+      const mb = (await page.evaluate(() => window.__funtico.triage.uiBounds())).find((b) => b.id === 'mute');
+      await press(p, mb.x + mb.w / 2, mb.y + mb.h / 2);
+      const m = await waitAudio(page, (a) => a.muted, 3000);
+      (m.ok ? ok : fail)(`[${size}] SND/OFF: audio.muted = ${m.a?.muted}`);
+      await sleep(700);
+      let peak = 0;
+      for (let k = 0; k < 6; k++) { peak = Math.max(peak, await page.evaluate(() => window.__funtico.triage.audioRms())); await sleep(80); }
+      (peak < 1e-4 ? ok : fail)(`[${size}] con SND/OFF no suena: RMS ${peak.toExponential(2)} (antes ${before.toExponential(2)})`);
+      const stored = await page.evaluate(() => localStorage.getItem('adrian_adventure_funtico_muted'));
+      (stored === '1' ? ok : fail)(`[${size}] silencio guardado en adrian_adventure_funtico_muted (${stored})`);
+      await press(p, mb.x + mb.w / 2, mb.y + mb.h / 2);
+      const u = await waitAudio(page, (a) => !a.muted, 3000);
+      (u.ok ? ok : fail)(`[${size}] SND de nuevo: audio.muted = ${u.a?.muted}`);
+      s = await state(page);
+    }
+    if (audio && i === warpAt && !seen.tension) {
+      const cur = await state(page);
+      const by = Math.max(0, cur.remainingMs - 25000);
+      const did = await page.evaluate((ms) => window.__funtico.triage.warp(ms), by);
+      (did ? ok : fail)(`[${size}] reloj adelantado ${by} ms (simulado) para llegar a los últimos 30 s`);
+      const w = await waitAudio(page, (a) => a.theme === RACE_THEME && a.levelName === 'tension');
+      seen.tension = w.ok;
+      (w.ok ? ok : fail)(`[${size}] últimos 30 s: ${lv(w.a)} (esperado ${RACE_THEME}/tension)`);
+      s = await state(page);
+    }
     if (rotate && !rotated && i === 3) {
       rotated = true;
       const a = await state(page);
+      if (audio) seen.rotateKeep = await audioState(page);
       const tA = Date.now();
       await page.setViewport(vp('844x390', true));
       p.label.v = '844x390';
@@ -346,6 +461,12 @@ async function playRun(size, { rotate = false, missOnce = false, fps = false, fr
       const dClock = a.remainingMs - b.remainingMs;
       (b.orientation === 'landscape' ? ok : fail)(`orientación tras girar: ${b.orientation}`);
       (dClock >= 0 && dClock <= wall + 400 ? ok : fail)(`reloj sigue tras el giro: −${dClock} ms en ${wall} ms de reloj de pared`);
+      if (audio) {
+        const x = seen.rotateKeep;
+        const y = await audioState(page);
+        const keep = x && y && y.history.length >= x.history.length && y.history[0].t === x.history[0].t && (y.playing === x.playing || y.playing === x.scheduled || !!y.scheduled);
+        (keep ? ok : fail)(`giro: la música sigue (${x?.playing} → ${y?.playing}, historial ${x?.history.length} → ${y?.history.length})`);
+      }
       noteMin('844x390', await checkBounds(p, `${st.kind} (girado)`, () => window.__funtico.triage.uiBounds()));
       await shot(p, `rot-${st.kind}`);
       if (st.kind !== 'relapse') await checkPixels(p, `${st.kind} (girado)`);
@@ -384,6 +505,10 @@ async function playRun(size, { rotate = false, missOnce = false, fps = false, fr
     }
     await page.waitForFunction((n) => { const x = window.__funtico?.triage?.state(); return !x || x.finished || x.index > n; }, { timeout: 5000, polling: 50 }, i)
       .catch(async () => fail(`[${p.label.v}] estación ${i} (${st.kind}) no se cerró con el toque: ${JSON.stringify(await state(page))}`));
+    if (audio && i === 0) {
+      const w = await waitAudio(page, (a) => a.theme === RACE_THEME && (a.levelName === 'activo' || a.levelName === 'tension') || a.theme === RELAPSE_THEME);
+      (w.ok ? ok : fail)(`[${size}] tras el primer acierto: ${lv(w.a)} (esperado ${RACE_THEME}/activo)`);
+    }
   }
 
   await page.waitForFunction(() => window.__funtico?.result?.submitted, { timeout: 15000 });
@@ -399,6 +524,26 @@ async function playRun(size, { rotate = false, missOnce = false, fps = false, fr
   (mine && mine.points === expected.score ? ok : fail)(`[${size}] Hall of Fame simulado con la marca: ${mine ? `#${mine.rank} ${mine.points}` : 'no está'}`);
   noteMin(p.label.v, await checkBounds(p, 'resultado', () => window.__funtico.result.uiBounds()));
   await shot(p, '5-result');
+  if (audio) {
+    const good = await page.evaluate(() => window.__funtico.result.good);
+    const want = good ? 'triunfo' : 'calma';
+    const w = await waitAudio(page, (a) => a.theme === RACE_THEME && a.levelName === want);
+    (w.ok ? ok : fail)(`[${size}] resultado (${good ? 'buena' : 'mala'} puntuación): ${lv(w.a)} (esperado ${RACE_THEME}/${want})`);
+    const a = w.a ?? (await audioState(page));
+    const seq = (a?.history ?? []).map((h) => `${h.theme}/${h.name}`);
+    const order = [`${RACE_THEME}/calma`, `${RACE_THEME}/activo`, `${RACE_THEME}/tension`, `${RACE_THEME}/${want}`];
+    let k = 0;
+    for (const x of seq) if (x === order[k]) k++;
+    const hasRelapse = !run.stations.some((x) => x.kind === 'relapse') || seq.includes(`${RELAPSE_THEME}/tension`);
+    (k === order.length && hasRelapse ? ok : fail)(`[${size}] transiciones del iMUSE en orden: ${seq.join(' → ')}`);
+    (a && a.duckCount >= 1 && a.voices.length >= 1 ? ok : fail)(`[${size}] ducking bajo las voces: ${a?.duckCount} veces (${a?.voices.map((v) => v.key.slice(0, 24)).join(', ')})`);
+    notes.push(`[${size}] audio: ${seq.join(' → ')}; stingers ${a?.stingers.length}; voces ${a?.voices.length}; suena ${a?.playing}`);
+    if (video) await sleep(7000);
+  }
+  if (video) {
+    const bytes = await stopVideo(page, video);
+    (bytes > 50_000 ? ok : fail)(`[${size}] vídeo con sonido: ${video} (${Math.round(bytes / 1024)} KB)`);
+  }
   if (stopFrames) notes.push(`[${size}] GIF: ${await stopFrames()} fotogramas en ${frames}`);
   await p.ctx.close();
   return expected;
@@ -408,10 +553,12 @@ try {
   for (const size of SIZES) {
     const portrait = size === '390x844';
     await playRun(size, {
-      rotate: portrait && !GIF_DIR,
+      rotate: portrait && !GIF_DIR && !VIDEO,
       missOnce: true,
-      fps: portrait && !GIF_DIR,
+      fps: portrait && !GIF_DIR && !VIDEO,
       frames: GIF_DIR && MOBILE.has(size) ? path.join(GIF_DIR, size) : '',
+      audio: portrait && !GIF_DIR,
+      video: portrait ? VIDEO : '',
     });
   }
 } catch (e) {

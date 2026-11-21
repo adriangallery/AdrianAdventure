@@ -11,6 +11,7 @@ import catalog from './triage/catalog.json';
 import { Button, C, MIN_TEXT, REG, safeInsets, textBound, txt, type UiBound } from './ui';
 import { funticoHook } from './TriageScene';
 import { fitName } from './fitName';
+import { TriageAudio } from './triage/TriageAudio';
 
 export function newSeed(): string {
   const fixed = new URLSearchParams(location.search).get('seed');
@@ -48,6 +49,8 @@ export class FunticoMenuScene extends Phaser.Scene {
   }
 
   create(): void {
+    // F1.4: fuera de Triage, sin música (no crea el audio si aún no existe: nada suena antes del primer gesto)
+    TriageAudio.peek(this.game)?.setMusic(null);
     this.title = txt(this, 'ZEROadventure', 32, C.yellow, 'center').setOrigin(0.5, 0);
     this.sub = txt(this, 'THE CLINIC IS OPEN', MIN_TEXT, C.lilacDim, 'center').setOrigin(0.5, 0);
     this.user = txt(this, '', MIN_TEXT, C.lilac, 'center').setOrigin(0.5, 0);

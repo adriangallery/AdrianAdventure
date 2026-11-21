@@ -16,6 +16,8 @@ import { catalogId } from './triage/triage.js';
 import type { TriageCatalog } from './triage/triage';
 import catalog from './triage/catalog.json';
 import { gameEventsFor } from './triage/verifierEvents';
+import { TriageAudio, VOICE_BAD, VOICE_GOOD, voiceUrl } from './triage/TriageAudio';
+import { isGoodResult, musicFor } from './triage/triageMusic.js';
 
 type HofEntry = { rank: number; displayName: string; totalPoints: number; userId: number };
 
@@ -51,6 +53,10 @@ export class TriageResultScene extends Phaser.Scene {
   private myId = -1;
   private retrySend = false;
   private sendError: FunticoError | null = null;
+  /** F1.4: buen resultado (triunfo) y desde cuándo se enseña (para volver a la calma tras el triunfo) */
+  private good = false;
+  private shownAt = 0;
+  private voice: Phaser.Sound.BaseSound | null = null;
   private submitted: { ok: boolean; rank: number | null; inHof: boolean; hof: Array<{ name: string; points: number; rank: number; me: boolean }> } | null = null;
 
   constructor() {
@@ -68,8 +74,10 @@ export class TriageResultScene extends Phaser.Scene {
   }
 
   create(): void {
-    this.sound.stopByKey('tri-music');
     const r = this.result;
+    this.good = isGoodResult({ hits: r.hits, stations: this.model.run.stations.length });
+    this.shownAt = this.time.now;
+    this.startAudio();
     const n = this.model.run.stations.length;
     this.head = txt(this, r.completed ? 'SHIFT COMPLETE' : 'TIME\'S UP, DOCTOR', MIN_TEXT, C.lilac, 'center').setOrigin(0.5, 0);
     this.big = txt(this, String(r.score), 40, C.yellow, 'center').setOrigin(0.5, 0);
@@ -93,6 +101,8 @@ export class TriageResultScene extends Phaser.Scene {
     this.scale.on(Phaser.Scale.Events.RESIZE, this.onResize, this);
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
       this.scale.off(Phaser.Scale.Events.RESIZE, this.onResize, this);
+      this.voice?.stop();
+      TriageAudio.peek(this.game)?.voiceEnded();
       delete funticoHook().result;
     });
     // eslint-disable-next-line @typescript-eslint/no-this-alias -- getters del gancho de pruebas
@@ -106,9 +116,40 @@ export class TriageResultScene extends Phaser.Scene {
       get submitted() { return scene.submitted; },
       get sendError() { return scene.sendError; },
       runId: this.model.runId,
+      good: this.good,
+      get audio() { return TriageAudio.peek(scene.game)?.state() ?? null; },
       uiBounds: () => this.uiBounds(),
     };
     void this.submit();
+  }
+
+  update(time: number): void {
+    TriageAudio.peek(this.game)?.setMusic(musicFor({ phase: 'result', good: this.good, resultMs: time - this.shownAt }));
+  }
+
+  /** F1.4: triunfo (o calma) en compás y una voz corta ya doblada según el resultado, con ducking. */
+  private startAudio(): void {
+    const audio = TriageAudio.peek(this.game);
+    if (!audio) return;
+    audio.setMusic(musicFor({ phase: 'result', good: this.good, resultMs: 0 }));
+    if (audio.isMuted()) return;
+    const key = this.good ? VOICE_GOOD : VOICE_BAD;
+    const play = () => {
+      if (!this.sys.isActive() || !this.cache.audio.exists(key) || audio.isMuted()) return;
+      try {
+        const v = this.sound.add(key, { volume: 0.9 });
+        this.voice = v;
+        const done = () => { if (this.voice === v) { this.voice = null; audio.voiceEnded(); v.destroy(); } };
+        v.once('complete', done);
+        v.once('stop', done);
+        audio.voiceStarted(key);
+        v.play();
+      } catch { /* sin audio */ }
+    };
+    if (this.cache.audio.exists(key)) { this.time.delayedCall(600, play); return; }
+    this.load.audio(key, voiceUrl(key));
+    this.load.once(`filecomplete-audio-${key}`, () => this.time.delayedCall(300, play));
+    this.load.start();
   }
 
   private async submit(): Promise<void> {
