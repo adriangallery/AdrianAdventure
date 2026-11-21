@@ -23,6 +23,7 @@ const VIEWPORTS = [[390, 844], [844, 390], [1280, 720], [1920, 1080]];
 mkdirSync(OUT, { recursive: true });
 
 const problems = [];
+const lateProblems = [];
 const warnings = [];
 const report = { base: BASE, steps: [], bounds: {}, result: null, map: null, ok: false };
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -115,7 +116,8 @@ try {
     // Copia de lo generado (artefacto del CI): si states.json está desfasado, se puede versionar desde aquí
     writeFileSync(`${OUT}/states.generated.json`, serialize(gen));
     const d = diffStates(gen);
-    if (d) problems.push(`${d}. Regenera con scripts/funtico/build-campaign-states.mjs`);
+    // no corta el recorrido: se apunta al final (así salen igual las capturas del mapa)
+    if (d) lateProblems.push(`${d}. Regenera con scripts/funtico/build-campaign-states.mjs (o copia campaign-e2e/states.generated.json)`);
     await sleep(800); // el puente (mock) contesta
     const r = await page.evaluate(() => {
       const c = window.__funtico.campaign;
@@ -161,6 +163,7 @@ try {
     if (s2.metricsChapter !== 2) problems.push(`el recolector mide el capítulo ${s2.metricsChapter}`);
     await page.screenshot({ path: `${OUT}/chapter2-start.png` });
   }
+  problems.push(...lateProblems);
   report.ok = problems.length === 0;
   exitCode = report.ok ? 0 : 1;
 } catch (err) {
