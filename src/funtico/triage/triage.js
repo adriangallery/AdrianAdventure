@@ -189,7 +189,7 @@ export function scoreRun(run, taps) {
     if (!isTap(e) || e.t < openedAt || e.t > duration || e.est !== cur) continue;
     const st = stations[cur];
     const ps = perStation[cur];
-    let closed = false;
+    let closed;
     if (isHit(st, e)) {
       const elapsed = e.t - openedAt;
       const speed = speedPoints(elapsed, st.graceMs, rules);
