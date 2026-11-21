@@ -586,9 +586,9 @@ export class TriageScene extends Phaser.Scene {
     if (mode === 'row') {
       const rowH = r.h - bar - 8;
       const cy = r.y + Math.round(rowH / 2) + 2;
-      this.muteBtn.place(r.x + r.w - pad - MIN_TOUCH - 4, r.y + 2, MIN_TOUCH + 4, MIN_TOUCH);
+      this.muteBtn.place(r.x + r.w - pad - MIN_TOUCH - 20, r.y + 2, MIN_TOUCH + 20, MIN_TOUCH);
       const left = r.x + pad;
-      const right = r.x + r.w - pad - MIN_TOUCH - 4 - pad;
+      const right = r.x + r.w - pad - MIN_TOUCH - 20 - pad;
       this.tTimer.setOrigin(0, 0.5).setPosition(left, cy);
       this.tProgress.setOrigin(0, 0.5).setPosition(left + this.tTimer.width + px * 1.2, cy);
       this.tStreak.setOrigin(0, 0.5).setPosition(this.tProgress.x + Math.max(this.tProgress.width, px * 3) + px * 1.2, cy);
@@ -596,9 +596,9 @@ export class TriageScene extends Phaser.Scene {
       this.speedBack.setPosition(r.x + pad, r.y + r.h - bar - 4).setSize(r.w - pad * 2, bar);
     } else {
       const row = MIN_TOUCH;
-      this.muteBtn.place(r.x + r.w - MIN_TOUCH - 4, r.y + 2, MIN_TOUCH + 4, MIN_TOUCH);
+      this.muteBtn.place(r.x + r.w - MIN_TOUCH - 20, r.y + 2, MIN_TOUCH + 20, MIN_TOUCH);
       this.tTimer.setOrigin(0, 0.5).setPosition(r.x + 6, r.y + row / 2 + 2);
-      this.tScore.setOrigin(1, 0.5).setPosition(r.x + r.w - MIN_TOUCH - 14, r.y + row / 2 + 2);
+      this.tScore.setOrigin(1, 0.5).setPosition(r.x + r.w - MIN_TOUCH - 30, r.y + row / 2 + 2);
       this.tProgress.setOrigin(0, 0.5).setPosition(r.x + 6, r.y + row * 1.5 + 2);
       this.tStreak.setOrigin(1, 0.5).setPosition(r.x + r.w - 6, r.y + row * 1.5 + 2);
       this.speedBack.setPosition(r.x + 6, r.y + r.h - bar - 4).setSize(r.w - 12, bar);
