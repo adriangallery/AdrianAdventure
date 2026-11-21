@@ -1,5 +1,6 @@
 node_modules/
 dist/
+dist-funtico/
 .env
 .DS_Store
 *.local

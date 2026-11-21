@@ -52,6 +52,22 @@ jobs:
       - name: Vite build (sin copiar assets)
         run: npx vite build
 
+      # F0.1 (plan FUNTICO_ADVENTURE), condición dura: el build normal no lleva la cadena «funtico»
+      - name: Build normal sin «funtico» (F0.1)
+        run: npm run check:no-funtico
+
+      # F0.1: el build Funtico (entrada funtico/) sale con su index.html en la raíz de dist-funtico/
+      - name: Build Funtico (F0.1)
+        run: |
+          npx vite build --mode funtico
+          test -f dist-funtico/index.html || { echo "::error::falta dist-funtico/index.html"; ls -R dist-funtico | head -50; exit 1; }
+          test ! -e dist-funtico/funtico || { echo "::error::dist-funtico/funtico/ no debería existir"; exit 1; }
+          js=$(grep -oE 'src="\./assets/funtico-[^"]+\.js"' dist-funtico/index.html | head -n 1 | sed -E 's/^src="\.\/(.*)"$/\1/')
+          [ -n "$js" ] && [ -f "dist-funtico/$js" ] || { echo "::error::dist-funtico/index.html no referencia el bundle de la entrada funtico"; cat dist-funtico/index.html; exit 1; }
+          grep -qi funtico "dist-funtico/$js" || { echo "::error::$js no es el bundle de funtico"; exit 1; }
+          test -f dist-funtico/version.txt || { echo "::error::falta dist-funtico/version.txt"; exit 1; }
+          echo "dist-funtico/index.html → $js ($(wc -c < "dist-funtico/$js") bytes)"
+
   smoke:
     # V8: arranque, cada escena, cambio de escena y guardar/cargar en Chrome headless contra el build real
     needs: build

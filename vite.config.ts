@@ -93,48 +93,101 @@ const BUILD_HASH = Date.now().toString(36);
 
 /** Replace __BUILD__ in index.html, expose as define constant, and write version.txt */
 function buildHashPlugin(): Plugin {
+  // F0.1: version.txt va al outDir de la build (dist/ en la normal, dist-funtico/ con --mode funtico)
+  let outDir = path.resolve(__dirname, 'dist');
   return {
     name: 'build-hash',
+    configResolved(config) {
+      outDir = path.resolve(config.root, config.build.outDir);
+    },
     transformIndexHtml(html) {
       return html.replace('__BUILD__', BUILD_HASH);
     },
     writeBundle() {
-      // Write version.txt to dist so the cache buster can fetch it
-      const distPath = path.resolve(__dirname, 'dist', 'version.txt');
+      // Write version.txt to the outDir so the cache buster can fetch it
+      const distPath = path.join(outDir, 'version.txt');
       fs.writeFileSync(distPath, BUILD_HASH + '\n', 'utf-8');
     },
   };
 }
 
-export default defineConfig({
-  plugins: [brandingPlugin(), editorSavePlugin(), buildHashPlugin(), previewCacheHeadersPlugin()],
-  resolve: {
-    alias: {
-      '@': path.resolve(__dirname, './src'),
+/**
+ * F0.1 (plan FUNTICO_ADVENTURE): build aparte para Funtico, `vite build --mode funtico` → dist-funtico/. Su entrada es
+ * funtico/index.html (index.html y src/main.ts no cambian); nginx la sirve en `/`, así que el HTML sale en la raíz
+ * del outDir (`dist-funtico/index.html`, no `dist-funtico/funtico/index.html`).
+ */
+const FUNTICO_MODE = 'funtico';
+const FUNTICO_HTML = 'funtico/index.html';
+
+/**
+ * Sube funtico/index.html a la raíz del outDir. Vite escribe las rutas del HTML relativas a su carpeta
+ * (`../assets/…` con base './'); al subirlo un nivel pasan a `./assets/…`. En `vite --mode funtico` sirve
+ * esa entrada en `/` (el juego pide sus assets relativos a la página).
+ */
+function funticoRootHtmlPlugin(): Plugin {
+  return {
+    name: 'funtico-root-html',
+    enforce: 'post',
+    configureServer(server) {
+      server.middlewares.use((req, _res, next) => {
+        const [p, q] = (req.url ?? '').split('?');
+        if (p === '/' || p === '/index.html') req.url = '/' + FUNTICO_HTML + (q !== undefined ? '?' + q : '');
+        next();
+      });
     },
-  },
-  server: {
-    port: 3000,
-    open: true,
-    host: true, // Expose on LAN (0.0.0.0)
-    proxy: SAVE_API_PROXY,
-  },
-  preview: {
-    proxy: SAVE_API_PROXY,
-  },
-  define: {
-    __BUILD_HASH__: JSON.stringify(BUILD_HASH),
-  },
-  base: './',
-  build: {
-    outDir: 'dist',
-    sourcemap: true,
-    // A9.17: /stats es una entrada aparte (su JS no entra en el bundle del juego)
-    rollupOptions: {
-      input: {
-        main: path.resolve(__dirname, 'index.html'),
-        stats: path.resolve(__dirname, 'stats/index.html'),
+    generateBundle(_options, bundle) {
+      const html = bundle[FUNTICO_HTML];
+      if (!html || html.type !== 'asset') this.error(`no se ha generado ${FUNTICO_HTML}`);
+      if (bundle['index.html']) this.error('ya hay un index.html en la raíz del build');
+      const src = typeof html.source === 'string' ? html.source : Buffer.from(html.source).toString('utf-8');
+      html.source = src.replace(/(\s(?:src|href)=["'])\.\.\//g, '$1./');
+      html.fileName = 'index.html';
+      delete bundle[FUNTICO_HTML];
+      bundle['index.html'] = html;
+    },
+  };
+}
+
+export default defineConfig(({ mode }) => {
+  const funtico = mode === FUNTICO_MODE;
+  return {
+    plugins: [
+      brandingPlugin(), editorSavePlugin(), buildHashPlugin(), previewCacheHeadersPlugin(),
+      ...(funtico ? [funticoRootHtmlPlugin()] : []),
+    ],
+    resolve: {
+      alias: {
+        '@': path.resolve(__dirname, './src'),
       },
     },
-  },
+    server: {
+      port: 3000,
+      open: true,
+      host: true, // Expose on LAN (0.0.0.0)
+      proxy: SAVE_API_PROXY,
+    },
+    preview: {
+      proxy: SAVE_API_PROXY,
+    },
+    define: {
+      __BUILD_HASH__: JSON.stringify(BUILD_HASH),
+      // F0.1: IS_FUNTICO de src/config/platform.ts. En el build normal se sustituye por `false` y las ramas se van.
+      __IS_FUNTICO__: JSON.stringify(funtico),
+    },
+    base: './',
+    build: {
+      outDir: funtico ? 'dist-funtico' : 'dist',
+      sourcemap: true,
+      // A9.17: /stats es una entrada aparte (su JS no entra en el bundle del juego)
+      // F0.1: el build funtico solo tiene su propia entrada (sin el juego normal ni /stats)
+      rollupOptions: {
+        input: funtico
+          ? { funtico: path.resolve(__dirname, FUNTICO_HTML) }
+          : {
+            main: path.resolve(__dirname, 'index.html'),
+            stats: path.resolve(__dirname, 'stats/index.html'),
+          },
+      },
+    },
+  };
 });
