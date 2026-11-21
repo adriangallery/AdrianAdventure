@@ -309,3 +309,41 @@ export function placeCaption(o: {
   const ct = cost(topYv);
   return { mode: 'caption', x, y: ct < cb ? topYv : bottomY, clamped: none };
 }
+
+/** F3.2b: zona visible de la escena (px de pantalla) donde tiene que caber el bloque de texto entero. */
+export interface SpeechArea { left: number; top: number; right: number; bottom: number }
+
+/**
+ * F3.2b: zona de la escena para el texto: la pantalla menos márgenes, la franja de arriba (`topInset`), el panel de
+ * abajo (`bottomInset`) y las franjas de cinemática. Solo la usa el perfil apilado (con el clásico no se llama).
+ */
+export function speechArea(vp: Viewport, o: { bottomInset?: number; topInset?: number; band?: { top: number; bottom: number } | null; margin?: number } = {}): SpeechArea {
+  const margin = o.margin ?? SPEECH_MARGIN;
+  const band = o.band && o.band.bottom > 0 ? o.band : null;
+  return {
+    left: margin,
+    right: vp.width - margin,
+    top: Math.max(band?.top ?? 0, o.topInset ?? 0) + margin,
+    bottom: vp.height - Math.max(o.bottomInset ?? 0, band?.bottom ?? 0) - margin,
+  };
+}
+
+/** F3.2b: ancho de wrap más ancho posible (toda la pantalla menos los márgenes), para que un texto largo quepa de alto. */
+export function fullSpeechWrap(vp: Viewport, margin = SPEECH_MARGIN): number {
+  return Math.max(1, Math.floor(vp.width - margin * 2));
+}
+
+/**
+ * F3.2b: mete el bloque (origen 0.5, 0: `x` centro, `y` borde superior) dentro de `area` por los cuatro lados. Si es
+ * más ancho que la zona, va centrado; si es más alto, pegado arriba. `fits` = cabe entero (si no, quien llama debe
+ * ensanchar el wrap y volver a medir).
+ */
+export function fitSpeechBlock(o: { x: number; y: number; textW: number; textH: number; area: SpeechArea }): { x: number; y: number; fits: boolean } {
+  const { area } = o;
+  const aw = area.right - area.left;
+  const ah = area.bottom - area.top;
+  const half = o.textW / 2;
+  const x = o.textW >= aw ? (area.left + area.right) / 2 : clamp(o.x, area.left + half, area.right - half);
+  const y = o.textH >= ah ? area.top : clamp(o.y, area.top, area.bottom - o.textH);
+  return { x, y, fits: o.textW <= aw && o.textH <= ah };
+}

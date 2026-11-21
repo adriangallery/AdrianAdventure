@@ -1,9 +1,10 @@
 import Phaser from 'phaser';
 import { charDelayMs } from '@/systems/Settings';
+import { getLayoutProfile, mobileMinFontPx } from '@/platform/LayoutProfile';
 import { TWP, FONT, SPEECH_COLORS } from '@/config/theme';
 import type { SceneData } from '@/types/scene.types';
 import {
-  isAnchorOnScreen, placeCaption, placeSpeech, speakerKind, speechColor, speechFontSize, speechStroke, speechWrapWidth, TOP_UI_INSET,
+  fitSpeechBlock, fullSpeechWrap, isAnchorOnScreen, placeCaption, speechArea, placeSpeech, speakerKind, speechColor, speechFontSize, speechStroke, speechWrapWidth, TOP_UI_INSET,
   type CaptionRect, type HeadAnchor, type SpeakerKind, type SpeechMode,
 } from './speechLayout';
 
@@ -49,6 +50,8 @@ interface Current {
   wrap: number;
   /** A7.2: wrap más estrecho que pidió `placeSpeech` para poner el bloque a un lado (se queda para este mensaje) */
   narrow: number;
+  /** F3.2b (solo perfil apilado): wrap ensanchado para que el bloque quepa de alto en la escena; 0 = no */
+  wide: number;
   w: number;
   h: number;
 }
@@ -199,7 +202,7 @@ export class DialogueBox {
     this.text.setAlpha(this.discreet ? DISCREET_ALPHA : 1);
     // A2.19b: el discreto va sin nombre (la pantalla ya dice quién «habla»)
     this.speakerText.setFontSize(`${size.speaker}px`).setText(kind !== 'player' && !this.discreet ? speaker ?? '' : '');
-    this.current = { speaker: speaker ?? null, kind, who, color, mode: null, head: null, wrap: 0, narrow: 0, w: 0, h: 0 };
+    this.current = { speaker: speaker ?? null, kind, who, color, mode: null, head: null, wrap: 0, narrow: 0, wide: 0, w: 0, h: 0 };
     this.layout();
   }
 
@@ -230,7 +233,7 @@ export class DialogueBox {
     // Fuera de pantalla o sin cabeza: arriba-centro (con su ancho de wrap); se vuelve a medir solo si cambia
     const anchor = isAnchorOnScreen(head, vp) ? head : null;
     const base = speechWrapWidth(vp, anchor ? 'head' : 'top');
-    const wrap = anchor && cur.narrow > 0 ? Math.min(base, cur.narrow) : base;
+    const wrap = cur.wide > 0 ? cur.wide : anchor && cur.narrow > 0 ? Math.min(base, cur.narrow) : base;
     if (cur.wrap !== wrap) this.measure(wrap);
     // A2.10: en cinemática el panel está oculto bajo la franja inferior, que es la banda de subtítulos
     const band = (this.scene.registry.get('cinematicBand') as { top: number; bottom: number } | null | undefined) ?? null;
@@ -244,6 +247,20 @@ export class DialogueBox {
       cur.narrow = p.wantWrap;
       this.measure(p.wantWrap);
       p = place();
+    }
+    // F3.2b: con el perfil apilado, el bloque entero siempre dentro de la zona visible de la escena (con el clásico no entra)
+    if (getLayoutProfile().portraitSceneRatio !== null) {
+      const area = speechArea(vp, { bottomInset: panelH, band, topInset: topInset + (p.mode === 'head' ? 0 : nameH) });
+      let fit = fitSpeechBlock({ x: p.x, y: p.y, textW: cur.w, textH: cur.h, area });
+      const full = fullSpeechWrap(vp);
+      if (!fit.fits && cur.wrap < full) {
+        cur.wide = full;
+        cur.narrow = 0;
+        this.measure(full);
+        p = place();
+        fit = fitSpeechBlock({ x: p.x, y: p.y, textW: cur.w, textH: cur.h, area });
+      }
+      p = { ...p, x: fit.x, y: fit.y };
     }
 
     cur.mode = p.mode;
@@ -381,7 +398,13 @@ export class DialogueBox {
 
   /** A2.19: tamaño del subtítulo; el discreto, un 80 % (sin bajar de 9 px) */
   private fontSize(): { body: number; speaker: number } {
-    const size = speechFontSize(this.scene.scale);
+    let size = speechFontSize(this.scene.scale);
+    // F3.2b: con un perfil de maquetación que lo pida, letra mínima en móvil (con el clásico, null: lo de siempre)
+    const min = mobileMinFontPx(this.scene.scale.width, this.scene.scale.height);
+    if (min !== null) {
+      size = { body: Math.max(min, size.body), speaker: Math.max(min, size.speaker) };
+      if (this.discreet) return size;
+    }
     if (!this.discreet) return size;
     return { body: Math.max(9, Math.round(size.body * DISCREET_SCALE)), speaker: Math.max(9, Math.round(size.speaker * DISCREET_SCALE)) };
   }
@@ -424,6 +447,11 @@ export class DialogueBox {
     this.text.setFontSize(`${size.body}px`).setStroke(TWP.DIALOGUE_STROKE, speechStroke(size.body));
     this.speakerText.setFontSize(`${size.speaker}px`);
     cur.wrap = 0;
+    // F3.2b: con el perfil apilado, tras girar se vuelve a decidir el wrap desde cero (el estrecho/ancho era de la otra ventana)
+    if (getLayoutProfile().portraitSceneRatio !== null) {
+      cur.narrow = 0;
+      cur.wide = 0;
+    }
     this.layout();
   }
 

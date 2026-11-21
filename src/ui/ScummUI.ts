@@ -10,6 +10,7 @@ import { VERB_KEYS } from '@/systems/DesktopControls';
 import { failResponses } from '@/systems/FailResponsesData';
 import { MIN_TOUCH_PX } from './touchTarget';
 import { sfxOf } from '@/systems/Sfx';
+import { getLayoutProfile, isStackedPortrait, stackedPanelHeight } from '@/platform/LayoutProfile';
 import { tapItem, isPending, sentenceText, selectVerb as sentenceSelectVerb } from '@/systems/Sentence';
 
 export const SCUMM_PANEL_MIN_HEIGHT: number = LAYOUT.PANEL_MIN_HEIGHT;
@@ -60,6 +61,12 @@ export class ScummUI {
   /** A5.2: x donde empieza la rejilla del inventario (para que no se salga de la pantalla) */
   private invStartX = 0;
   private handleBar: Phaser.GameObjects.Container | null = null;
+  /**
+   * F3.2b: vertical apilado (solo con un LayoutProfile que lo pida; con el clásico siempre es false): escena arriba,
+   * panel grande debajo con verbos a todo el ancho e inventario de dos filas, sin plegar.
+   */
+  private stacked = false;
+  private stackedInv: { slot: number; cols: number; gap: number } | null = null;
 
   constructor(scene: Phaser.Scene) {
     this.scene = scene;
@@ -94,6 +101,12 @@ export class ScummUI {
     this.handleBar = null;
 
     const { width, height } = this.scene.scale;
+    const prevPanelHeight = this.panelHeight;
+    const profile = getLayoutProfile();
+    this.stacked = isStackedPortrait(width, height, profile);
+    this.stackedInv = null;
+    // F3.2b: en vertical apilado el panel no se pliega (el estado guardado no se toca: vale para horizontal)
+    const collapsedNow = this.collapsed && !this.stacked;
 
     // Panel height — compact on mobile, standard on desktop
     const isLandscape = width > height;
@@ -101,10 +114,12 @@ export class ScummUI {
       ? (isLandscape ? 0.28 : 0.18)
       : 0.25;
     const minH = this.isMobile ? (isLandscape ? 120 : PORTRAIT_PANEL_MIN) : LAYOUT.PANEL_MIN_HEIGHT;
-    this.fullPanelHeight = Math.max(minH, Math.floor(height * panelRatio));
+    this.fullPanelHeight = this.stacked
+      ? (stackedPanelHeight(width, height, profile) as number)
+      : Math.max(minH, Math.floor(height * panelRatio));
 
     // Effective height depends on collapsed state
-    this.panelHeight = (this.isMobile && this.collapsed) ? COLLAPSED_HEIGHT : this.fullPanelHeight;
+    this.panelHeight = (this.isMobile && collapsedNow) ? COLLAPSED_HEIGHT : this.fullPanelHeight;
 
     const panelY = height - this.panelHeight;
     this.container.setPosition(0, panelY);
@@ -118,27 +133,123 @@ export class ScummUI {
     // ─── Font sizing — TWP verbs are BIG, use larger ref on portrait phones ───
     const refDim = this.isMobile && !isLandscape ? Math.max(width, height * 0.5) : width;
     const verbFontSize = Math.max(14, Math.min(26, Math.floor(refDim * 0.022)));
-    const actionFontSize = Math.max(12, Math.min(20, Math.floor(refDim * 0.018)));
+    const actionFontSize = this.stacked
+      ? Math.max(profile.portraitMinFontPx, Math.min(18, Math.floor(width * 0.038)))
+      : Math.max(12, Math.min(20, Math.floor(refDim * 0.018)));
 
     // ─── Action / sentence line — top of panel ───
-    const actionY = (this.isMobile && this.collapsed) ? (COLLAPSED_HEIGHT / 2 - actionFontSize / 2) : 6;
+    const actionY = (this.isMobile && collapsedNow) ? (COLLAPSED_HEIGHT / 2 - actionFontSize / 2) : 6;
     this.actionLine = this.scene.add.text(width / 2, actionY, '', {
       fontFamily: FONT.FAMILY,
       fontSize: `${actionFontSize}px`,
       color: TWP.ACTION_LINE,
     }).setOrigin(0.5, 0);
+    // F3.2b: en vertical apilado la frase larga («Use Fence Plank with Chimney») baja a una segunda línea
+    if (this.stacked) this.actionLine.setWordWrapWidth(width - 16).setAlign('center').setLineSpacing(4);
     this.container.add(this.actionLine);
     this.updateActionLine();
 
-    // Mobile: collapsed toggle handle
-    if (this.isMobile) {
-      this.buildHandle(width);
+    if (this.stacked) {
+      this.buildStackedContent(width, actionFontSize);
+    } else {
+      // Mobile: collapsed toggle handle
+      if (this.isMobile) {
+        this.buildHandle(width);
+      }
+
+      // Content area (verbs + inventory) — hidden when collapsed
+      if (!this.collapsed || !this.isMobile) {
+        this.buildContent(width, verbFontSize, actionFontSize);
+      }
     }
 
-    // Content area (verbs + inventory) — hidden when collapsed
-    if (!this.collapsed || !this.isMobile) {
-      this.buildContent(width, verbFontSize, actionFontSize);
+    // F3.2b: con un perfil de maquetación, si el panel cambia de alto al girar se avisa a GameScene para que recoloque
+    // la escena con el alto bueno (con el clásico no se emite nada nuevo: el comportamiento de siempre)
+    if (profile.portraitSceneRatio !== null && prevPanelHeight !== this.panelHeight) {
+      this.scene.events.emit('panel:toggled');
     }
+  }
+
+  /**
+   * F3.2b: panel del vertical apilado. Línea de acción arriba; verbos 3×3 a todo el ancho (celdas enteras tocables,
+   * filas ≥ zona táctil mínima); debajo, inventario de dos filas con flechas a la derecha.
+   */
+  private buildStackedContent(width: number, actionFontSize: number): void {
+    const profile = getLayoutProfile();
+    const minTouch = Math.max(MIN_TOUCH_PX, profile.portraitMinTouchPx);
+    const fontPx = Math.max(profile.portraitMinFontPx, Math.min(18, Math.floor(width * 0.038)));
+    const padX = 8;
+    const gap = 6;
+    const verbStartY = 6 + actionFontSize * 2 + 4 + 10; // dos líneas de frase
+    const arrowColW = minTouch + 4;
+    // Reparto del alto: verbos (filas de ~52 px) y el resto para el inventario (dos filas de casillas tan grandes como
+    // quepan con 5 columnas, 48–72 px); lo que sobre vuelve a las filas de verbos (≤ 64 px). Así no queda hueco negro.
+    const avail = this.fullPanelHeight - verbStartY - 8 - 10;
+    const slotW = Math.floor((width - padX * 2 - arrowColW + gap) / 5) - gap;
+    const slotH = Math.floor((avail - 52 * 3 - gap) / 2);
+    const slot = Math.max(minTouch + 4, Math.min(72, slotW, slotH));
+    const invCols = Math.max(1, Math.floor((width - padX * 2 - arrowColW + gap) / (slot + gap)));
+    const invH = slot * 2 + gap;
+    const rowH = Math.max(minTouch, Math.min(64, Math.floor((avail - invH) / 3)));
+    const colW = Math.floor((width - padX * 2) / LAYOUT.VERB_COLS);
+    const cellPad = 3;
+
+    PANEL_VERBS.forEach((verb, i) => {
+      const col = i % LAYOUT.VERB_COLS;
+      const row = Math.floor(i / LAYOUT.VERB_COLS);
+      const cellX = padX + col * colW;
+      const cellY = verbStartY + row * rowH;
+      const isActive = verb === this.selectedVerb;
+      // Celda con fondo y marco tenues (los de las casillas del inventario) para que se lea como botón
+      this.container.add(
+        this.scene.add.rectangle(cellX + colW / 2, cellY + rowH / 2, colW - cellPad * 2, rowH - cellPad * 2, TWP.INV_SLOT_BG, 0.9)
+          .setStrokeStyle(1, TWP.INV_SLOT_BORDER, 0.8),
+      );
+      const text = this.scene.add.text(cellX + colW / 2, cellY + rowH / 2, VERB_LABELS[verb], {
+        fontFamily: FONT.FAMILY,
+        fontSize: `${fontPx}px`,
+        color: isActive ? TWP.VERB_ACTIVE : TWP.VERB_NORMAL,
+      }).setPadding(2, 3).setOrigin(0.5);
+      // Zona táctil = la celda entera (relativa a la esquina del texto)
+      const left = text.width / 2 - colW / 2;
+      const top = text.height / 2 - rowH / 2;
+      text.setInteractive({
+        hitArea: new Phaser.Geom.Rectangle(left, top, colW, rowH),
+        hitAreaCallback: Phaser.Geom.Rectangle.Contains,
+        useHandCursor: true,
+      });
+      text.on('pointerover', () => { if (verb !== this.selectedVerb) text.setColor(TWP.VERB_HOVER); });
+      text.on('pointerout', () => { if (verb !== this.selectedVerb) text.setColor(TWP.VERB_NORMAL); });
+      text.on('pointerdown', () => this.selectVerb(verb));
+      this.verbTexts.set(verb, text);
+      this.container.add(text);
+    });
+
+    const invY = verbStartY + rowH * 3 + 8;
+    const arrowX = width - padX - arrowColW;
+    const arrowFont = Math.max(profile.portraitMinFontPx, 16);
+    const mkArrow = (label: string, y: number, onTap: () => void): void => {
+      const t = this.scene.add.text(arrowX + arrowColW / 2, y + slot / 2, label, {
+        fontFamily: FONT.FAMILY, fontSize: `${arrowFont}px`, color: TWP.INV_ARROW,
+      }).setOrigin(0.5);
+      t.setInteractive({
+        hitArea: new Phaser.Geom.Rectangle(t.width / 2 - arrowColW / 2, t.height / 2 - slot / 2, arrowColW, slot),
+        hitAreaCallback: Phaser.Geom.Rectangle.Contains,
+        useHandCursor: true,
+      });
+      t.on('pointerover', () => t.setColor(TWP.INV_ARROW_HOVER));
+      t.on('pointerout', () => t.setColor(TWP.INV_ARROW));
+      t.on('pointerdown', onTap);
+      this.container.add(t);
+    };
+    mkArrow('\u25B2', invY, () => { if (this.invScrollOffset > 0) { this.invScrollOffset--; this.renderInventory(); } });
+    mkArrow('\u25BC', invY + slot + gap, () => { this.invScrollOffset++; this.renderInventory(); });
+
+    this.stackedInv = { slot, cols: invCols, gap };
+    this.invStartX = padX;
+    this.invContainer = this.scene.add.container(padX, invY);
+    this.container.add(this.invContainer);
+    this.renderInventory();
   }
 
   private buildHandle(width: number): void {
@@ -324,6 +435,21 @@ export class ScummUI {
     if (this.collapsed) this.expand(); else this.collapse();
   }
 
+  /**
+   * F3.2b: alto que tendrá el panel con esta ventana (el mismo cálculo que build(), con el plegado guardado). GameScene
+   * lo usa con un LayoutProfile activo para recolocar la escena al girar sin esperar a que el panel se rehaga.
+   */
+  static expectedPanelHeight(width: number, height: number): number {
+    const stacked = stackedPanelHeight(width, height);
+    if (stacked !== null) return stacked;
+    const isMobile = height > width || Math.min(width, height) < 600;
+    if (isMobile && ScummUI.readCollapsed()) return COLLAPSED_HEIGHT;
+    const isLandscape = width > height;
+    const panelRatio = isMobile ? (isLandscape ? 0.28 : 0.18) : 0.25;
+    const minH = isMobile ? (isLandscape ? 120 : PORTRAIT_PANEL_MIN) : LAYOUT.PANEL_MIN_HEIGHT;
+    return Math.max(minH, Math.floor(height * panelRatio));
+  }
+
   private static readCollapsed(): boolean {
     try { return localStorage.getItem('adrian_adventure_panel_collapsed') === '1'; } catch { return false; }
   }
@@ -368,7 +494,7 @@ export class ScummUI {
   }
 
   collapse(): void {
-    if (!this.isMobile || this.collapsed) return;
+    if (!this.isMobile || this.collapsed || this.stacked) return;
     this.collapsed = true;
     ScummUI.writeCollapsed(true);
     sfxOf(this.scene)?.play('inv_close', { volume: 0.4 });
@@ -376,7 +502,7 @@ export class ScummUI {
   }
 
   expand(): void {
-    if (!this.isMobile || !this.collapsed) return;
+    if (!this.isMobile || !this.collapsed || this.stacked) return;
     this.collapsed = false;
     ScummUI.writeCollapsed(false);
     sfxOf(this.scene)?.play('inv_open', { volume: 0.4 });
@@ -877,17 +1003,30 @@ export class ScummUI {
     const { width } = this.scene.scale;
 
     // TWP-style: exactly 2 rows of square icon tiles, no text labels
-    let slotSize = Math.max(44, Math.min(64, Math.floor(width * 0.05)));
-    const gap = 4;
+    let slotSize = this.stackedInv ? this.stackedInv.slot : Math.max(44, Math.min(64, Math.floor(width * 0.05)));
+    const gap = this.stackedInv ? this.stackedInv.gap : 4;
     const availableW = width * 0.40;
     // A5.2: en un iPhone vertical las dos columnas se salían 3-6 px por la derecha: se ajustan al hueco que queda
     // (casillas de 40 px como mínimo, la zona táctil que exige el CI)
     const room = width - this.invStartX - 2;
-    if (room < slotSize * 2 + gap) slotSize = Math.max(40, Math.floor((room - gap) / 2));
-    const cols = Math.max(1, Math.min(Math.max(2, Math.floor(availableW / (slotSize + gap))), Math.floor((room + gap) / (slotSize + gap))));
+    if (!this.stackedInv && room < slotSize * 2 + gap) slotSize = Math.max(40, Math.floor((room - gap) / 2));
+    const cols = this.stackedInv ? this.stackedInv.cols
+      : Math.max(1, Math.min(Math.max(2, Math.floor(availableW / (slotSize + gap))), Math.floor((room + gap) / (slotSize + gap))));
     const rows = 2; // TWP always uses 2 rows
     const maxVisible = cols * rows;
     const visible = items.slice(this.invScrollOffset * cols, this.invScrollOffset * cols + maxVisible);
+
+    // F3.2b: en vertical apilado se ven las casillas vacías (marco tenue), para que el inventario no sea un hueco negro
+    if (this.stackedInv) {
+      for (let i = visible.length; i < maxVisible; i++) {
+        const x = (i % cols) * (slotSize + gap);
+        const y = Math.floor(i / cols) * (slotSize + gap);
+        this.invContainer.add(
+          this.scene.add.rectangle(x + slotSize / 2, y + slotSize / 2, slotSize, slotSize, TWP.INV_SLOT_BG, 0.5)
+            .setStrokeStyle(1, TWP.INV_SLOT_BORDER, 0.6),
+        );
+      }
+    }
 
     // Only render slots that have items (no empty placeholders — TWP style)
     visible.forEach((item, i) => {
