@@ -142,7 +142,7 @@ export class LobbyScene extends Phaser.Scene {
       this.play.place(ax, playY, aw, playH, 24);
       const dotsY = playY - 30;
       const cardH = Math.max(160, dotsY - 14 - y);
-      this.cardW = Math.min(Math.round(aw * 0.74), Math.round(cardH * 0.68), 340);
+      this.cardW = Math.min(Math.round(aw * 0.7), Math.round(cardH * 0.68), 340);
       this.band = { y, h: cardH };
       this.cards.forEach((c) => { c.y = y; c.h = cardH; c.w = this.cardW; });
       this.dots.forEach((d, i) => d.setPosition(Math.round(width / 2 - 14 + i * 20), dotsY).setSize(10, 10).setVisible(true));
