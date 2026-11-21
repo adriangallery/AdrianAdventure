@@ -116,8 +116,10 @@ export class TriageScene extends Phaser.Scene {
     const w = this.scale.gameSize.width;
     const h = this.scale.gameSize.height;
     const label = this.add.text(w / 2, h / 2, 'PREPPING THE WARD...', { fontFamily: '"Press Start 2P", monospace', fontSize: '14px', color: C.yellow }).setOrigin(0.5);
-    this.load.on('progress', (p: number) => label.setText(`PREPPING THE WARD... ${Math.round(p * 100)}%`));
-    this.load.once('complete', () => label.destroy());
+    // Se quita al acabar: la música reutiliza el loader después y el texto ya no existe
+    const onProgress = (p: number) => label.setText(`PREPPING THE WARD... ${Math.round(p * 100)}%`);
+    this.load.on('progress', onProgress);
+    this.load.once('complete', () => { this.load.off('progress', onProgress); label.destroy(); });
   }
 
   create(): void {
