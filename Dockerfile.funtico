@@ -1,0 +1,26 @@
+# F0.1 (plan FUNTICO_ADVENTURE): build Funtico de AdrianAdventure (app Dokku `zeroadventure-funtico`, F0.3).
+#
+# Igual que el Dockerfile del juego normal, pero compila la entrada funtico/ (`npm run build:funtico` =
+# tsc && vite build --mode funtico && cp -r assets dist-funtico/) y nginx sirve dist-funtico/ con
+# nginx.funtico.conf. Sin los ARG de Alchemy/WalletConnect: el build Funtico no lleva web3 (IS_FUNTICO).
+# El Dockerfile normal NO cambia.
+
+FROM node:22-alpine AS builder
+WORKDIR /app
+
+COPY package.json package-lock.json ./
+RUN npm ci
+
+COPY tsconfig.json vite.config.ts index.html ./
+COPY funtico ./funtico
+COPY src ./src
+COPY assets ./assets
+COPY public ./public
+
+RUN npm run build:funtico
+
+FROM nginx:alpine AS runner
+COPY --from=builder /app/dist-funtico /usr/share/nginx/html
+COPY nginx.funtico.conf /etc/nginx/conf.d/default.conf
+
+EXPOSE 80
