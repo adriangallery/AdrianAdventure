@@ -35,6 +35,8 @@ export class TriageModel {
   score: ScoreResult;
   /** ms en que terminó (todas cerradas o se acabó el tiempo); null mientras sigue. */
   finishedAt: number | null = null;
+  /** F2.2: `runId` del servidor (`run/start`) en live; null en simulado (semilla local). */
+  runId: string | null = null;
 
   private readonly clock: () => number;
 

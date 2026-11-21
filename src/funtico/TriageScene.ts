@@ -11,7 +11,12 @@
 import Phaser from 'phaser';
 import { TriageModel, type TapOutcome } from './triage/TriageModel';
 import type { RelapseStation, SpotStation, Station, TriageRun } from './triage/triage';
-import { Button, C, MIN_TEXT, MIN_TOUCH, safeInsets, textBound, txt, type Rect, type UiBound } from './ui';
+import { Button, C, MIN_TEXT, MIN_TOUCH, REG, safeInsets, textBound, txt, type Rect, type UiBound } from './ui';
+import type { FunticoBridge } from './FunticoBridge';
+import { catalogId } from './triage/triage.js';
+import type { TriageCatalog } from './triage/triage';
+import catalog from './triage/catalog.json';
+import { EventQueue, endEvent, startEvent, tapEvent } from './triage/verifierEvents';
 
 /** Escenas con primer plano (foreground@*.webp) en assets/scenes/<id>/. */
 const FOREGROUND = new Set(['outside', 'lobby']);
@@ -30,8 +35,11 @@ const MUTE_KEY = 'adrian_adventure_funtico_muted';
 const TAP_SLOP = 10;
 /** Pausa de la vista entre estaciones (ms): el modelo ya abrió la siguiente; es < minReactionMs (300). */
 const SWAP_MS = 280;
+/** Horizontal: la escena va entera si así ocupa al menos esta fracción del alto del panel (si no, llena el alto). */
+const FIT_WHOLE = 0.85;
 
-export interface TriageSceneData { run: TriageRun }
+/** `runId`: el de `run/start` en live (F2.2); null en simulado. */
+export interface TriageSceneData { run: TriageRun; runId?: string | null }
 
 type Orientation = 'portrait' | 'landscape';
 
@@ -69,6 +77,7 @@ export class TriageScene extends Phaser.Scene {
 
   /** Estación que pinta la vista (puede ir SWAP_MS por detrás del modelo). */
   private shown = -1;
+  private events4v: EventQueue | null = null;
   private locked = false;
   private ending = false;
   private orientation: Orientation = 'portrait';
@@ -89,6 +98,7 @@ export class TriageScene extends Phaser.Scene {
 
   init(data: TriageSceneData): void {
     this.model = new TriageModel(data.run);
+    this.model.runId = data.runId ?? null;
     this.shown = -1;
     this.locked = false;
     this.ending = false;
@@ -135,7 +145,13 @@ export class TriageScene extends Phaser.Scene {
 
   create(): void {
     // El reloj empieza cuando todo está cargado: se rehace el modelo con la misma carrera
+    const runId = this.model.runId;
     this.model = new TriageModel(this.model.run);
+    this.model.runId = runId;
+    // F2.4: eventos para el Verifier por RecordEvent_Client (simulado: a memoria), en cola fuera del toque
+    const bridge = this.registry.get(REG.bridge) as FunticoBridge | undefined;
+    this.events4v = new EventQueue((line) => bridge?.recordEvent(line));
+    this.events4v.push(startEvent({ runId, catalog: catalogId(catalog as unknown as TriageCatalog), stations: this.model.run.stations.length, durationMs: this.model.run.durationMs }));
     this.sound.mute = readMuted();
     this.sceneCam = this.cameras.main;
     this.sceneCam.setOrigin(0, 0).setBackgroundColor(C.bg);
@@ -424,6 +440,7 @@ export class TriageScene extends Phaser.Scene {
     if (this.locked || this.ending || !st || st.kind === 'relapse' || this.model.current !== this.shown) return null;
     const out = this.model.tapWorld(xPct, yPct);
     if (out.kind === 'ignored') return out;
+    this.events4v?.push(tapEvent(out.event, out.kind === 'hit'));
     const spot = st as SpotStation;
     if (out.kind === 'hit') {
       this.sfx(SFX_HIT);
@@ -449,6 +466,7 @@ export class TriageScene extends Phaser.Scene {
     if (this.locked || this.ending || !st || st.kind !== 'relapse' || this.model.current !== this.shown) return null;
     const out = this.model.pickOption(i);
     if (out.kind === 'ignored') return out;
+    this.events4v?.push(tapEvent(out.event, out.kind === 'hit'));
     const rel = st as RelapseStation;
     this.options.forEach((b) => b.setEnabled(false));
     this.options[rel.correct].bg.setFillStyle(0x1f5a30);
@@ -481,6 +499,9 @@ export class TriageScene extends Phaser.Scene {
     if (this.ending) return;
     this.ending = true;
     this.currentVoice?.stop();
+    const r = this.model.result();
+    this.events4v?.push(endEvent({ t: this.model.finishedAt ?? this.model.now(), score: r.score, hits: r.hits, misses: r.misses, completed: r.completed }));
+    this.events4v?.flush();
     this.time.delayedCall(250, () => this.scene.start('TriageResultScene', { model: this.model }));
   }
 
@@ -499,7 +520,7 @@ export class TriageScene extends Phaser.Scene {
     this.tweens.add({ targets: c, alpha: 0, duration: 450, onComplete: () => c.destroy() });
   }
 
-  /** Al 3.er fallo, en vertical, centra el objetivo revelado. */
+  /** Al 3.er fallo, si la escena se desplaza (vertical u horizontal), centra el objetivo revelado. */
   private revealPan(st: SpotStation): void {
     if (!this.scrollable) return;
     const max = this.maxScroll();
@@ -562,24 +583,31 @@ export class TriageScene extends Phaser.Scene {
       const cardY = stripY + 8 + pad;
       this.layoutCard({ x: area.x + pad, y: cardY, w: area.w - pad * 2, h: area.y + area.h - pad - cardY }, px, st);
     } else {
-      // Escena a la izquierda (≈70 %), columna de estación a la derecha (HUD + tarjeta)
+      // Escena a la izquierda (≈70 %), columna de estación a la derecha (HUD + tarjeta). La escena llena el alto
+      // (menos la franja de posición) y se desplaza como en vertical, salvo que entera a lo ancho ya casi lo llene.
       const sw = Math.round(area.w * 0.7);
-      this.panel = { x: area.x, y: area.y, w: sw, h: area.h };
+      const stripH = 8;
+      this.panel = { x: area.x, y: area.y, w: sw, h: area.h - stripH - 4 };
       this.fitScene(false);
+      const stripY = this.view.y + this.view.h + 4;
+      this.stripBack.setPosition(this.view.x + pad, stripY).setSize(this.view.w - pad * 2, stripH).setVisible(this.scrollable);
+      this.stripThumb.setPosition(this.view.x + pad, stripY).setSize(16, stripH).setVisible(this.scrollable);
       const col: Rect = { x: area.x + sw + pad, y: area.y + pad, w: area.w - sw - pad * 2, h: area.h - pad * 2 };
       const hud: Rect = { x: col.x, y: col.y, w: col.w, h: MIN_TOUCH * 2 + 16 };
       this.layoutHud(hud, px, 0, 'grid');
-      this.stripBack.setVisible(false);
-      this.stripThumb.setVisible(false);
       this.layoutCard({ x: col.x, y: hud.y + hud.h + pad, w: col.w, h: col.y + col.h - (hud.y + hud.h + pad) }, px, st);
     }
     this.applyScroll();
   }
 
-  /** Coloca la cámara de escena: vertical = alto del panel y desplazable; horizontal = cabe entera a lo ancho. */
+  /**
+   * Coloca la cámara de escena: llena el alto del panel (zoom = alto del panel / alto de la textura) y se desplaza en
+   * horizontal. En horizontal, si la escena entera a lo ancho ya ocupa ≥ FIT_WHOLE del alto del panel, va entera.
+   */
   private fitScene(portrait: boolean): void {
     const p = this.panel;
-    if (portrait) {
+    const whole = Math.min(p.w / this.texW, p.h / this.texH);
+    if (portrait || this.texH * whole < p.h * FIT_WHOLE) {
       this.zoom = p.h / this.texH;
       const visW = Math.min(p.w, this.texW * this.zoom);
       this.view = { x: p.x + Math.round((p.w - visW) / 2), y: p.y, w: Math.round(visW), h: p.h };

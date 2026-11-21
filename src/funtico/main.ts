@@ -10,6 +10,7 @@ import { createBridge } from './FunticoBridge';
 import { FunticoMenuScene } from './FunticoMenuScene';
 import { TriageScene, funticoHook } from './TriageScene';
 import { TriageResultScene } from './TriageResultScene';
+import { TriageStartScene } from './TriageStartScene';
 import { FONT, REG } from './ui';
 
 function start(): void {
@@ -24,7 +25,7 @@ function start(): void {
       height: '100%',
     },
     render: { pixelArt: true, antialias: false, roundPixels: true },
-    scene: [FunticoMenuScene, TriageScene, TriageResultScene],
+    scene: [FunticoMenuScene, TriageStartScene, TriageScene, TriageResultScene],
   });
   game.registry.set('platform', { funtico: IS_FUNTICO, web3: WEB3_ENABLED });
   const bridge = createBridge();

@@ -1,14 +1,37 @@
 /**
  * F1.2 (plan FUNTICO_ADVENTURE): resultado de Triage. `scoreRun` con el registro de toques, envío por el puente
  * (`CompletePractice`, simulado en modo mock) y Hall of Fame con la posición del jugador. PLAY AGAIN y MENU.
+ * F2.2 (cliente): en live el envío lleva `RunId` = el de `run/start` y `GameEvents` = cabecera + toques
+ * (`gameEventsFor`). La puntuación que se enseña es la de `scoreRun` local, la misma función que recalcula el servidor
+ * (el SDK no devuelve el cuerpo de la respuesta). Si el envío falla: mensaje claro; RETRY SEND solo si no llegó (red).
  */
 import Phaser from 'phaser';
-import type { FunticoBridge } from './FunticoBridge';
+import type { FunticoBridge, FunticoError } from './FunticoBridge';
 import type { TriageModel } from './triage/TriageModel';
 import type { ScoreResult } from './triage/triage';
 import { Button, C, MIN_TEXT, REG, safeInsets, textBound, txt, type UiBound } from './ui';
 import { funticoHook } from './TriageScene';
 import { hofLines, startTriage } from './FunticoMenuScene';
+import { catalogId } from './triage/triage.js';
+import type { TriageCatalog } from './triage/triage';
+import catalog from './triage/catalog.json';
+import { gameEventsFor } from './triage/verifierEvents';
+
+type HofEntry = { rank: number; displayName: string; totalPoints: number; userId: number };
+
+/** Mensaje para el jugador si CompletePractice falla en live. `retry` = el envío no llegó (se puede reintentar). */
+export function submitErrorText(e: FunticoError): { text: string; retry: boolean } {
+  if (e.code === 'network' && !e.serverCode) return { text: 'RESULT NOT SENT: NO CONNECTION.', retry: true };
+  switch (e.serverCode) {
+    case 'run_expired': return { text: 'SHIFT EXPIRED: RESULT NOT COUNTED.', retry: false };
+    case 'run_closed': return { text: 'SHIFT ALREADY CLOSED: NOT COUNTED.', retry: false };
+    case 'catalog_mismatch': return { text: 'OUTDATED VERSION: RELOAD THE PAGE.', retry: false };
+    case 'triage_unconfigured': return { text: 'RANKING OFFLINE: RESULT NOT COUNTED.', retry: false };
+    default: break;
+  }
+  if (e.serverCode) return { text: `RUN NOT ACCEPTED (${e.serverCode}).`, retry: false };
+  return { text: 'RESULT NOT SENT. TRY ANOTHER SHIFT.', retry: false };
+}
 
 const KIND: Record<string, string> = { sample: 'SAMPLE', symptom: 'SYMPTOM', relapse: 'RELAPSE' };
 
@@ -23,6 +46,11 @@ export class TriageResultScene extends Phaser.Scene {
   private hof!: Phaser.GameObjects.Text;
   private again!: Button;
   private menu!: Button;
+  private hofTop: HofEntry[] = [];
+  private hofMe: HofEntry | null = null;
+  private myId = -1;
+  private retrySend = false;
+  private sendError: FunticoError | null = null;
   private submitted: { ok: boolean; rank: number | null; inHof: boolean; hof: Array<{ name: string; points: number; rank: number; me: boolean }> } | null = null;
 
   constructor() {
@@ -33,6 +61,10 @@ export class TriageResultScene extends Phaser.Scene {
     this.model = data.model;
     this.result = data.model.result();
     this.submitted = null;
+    this.hofTop = [];
+    this.hofMe = null;
+    this.retrySend = false;
+    this.sendError = null;
   }
 
   create(): void {
@@ -52,7 +84,10 @@ export class TriageResultScene extends Phaser.Scene {
     }).join('\n'), MIN_TEXT, C.lilac, 'left').setOrigin(0.5, 0);
     this.hofTitle = txt(this, 'HALL OF FAME', MIN_TEXT, C.yellow, 'center').setOrigin(0.5, 0);
     this.hof = txt(this, 'sending...', MIN_TEXT, C.white, 'left').setOrigin(0.5, 0);
-    this.again = new Button(this, 'play-again', 'PLAY AGAIN', () => startTriage(this), { fill: 0x2a2450 });
+    this.again = new Button(this, 'play-again', 'PLAY AGAIN', () => {
+      if (this.retrySend) void this.submit();
+      else startTriage(this);
+    }, { fill: 0x2a2450 });
     this.menu = new Button(this, 'menu', 'MENU', () => this.scene.start('FunticoMenuScene'));
     this.layout(this.scale.width, this.scale.height);
     this.scale.on(Phaser.Scale.Events.RESIZE, this.onResize, this);
@@ -69,6 +104,8 @@ export class TriageResultScene extends Phaser.Scene {
       run: this.model.run,
       get shownScore() { return Number(scene.big.text); },
       get submitted() { return scene.submitted; },
+      get sendError() { return scene.sendError; },
+      runId: this.model.runId,
       uiBounds: () => this.uiBounds(),
     };
     void this.submit();
@@ -77,9 +114,30 @@ export class TriageResultScene extends Phaser.Scene {
   private async submit(): Promise<void> {
     const bridge = this.registry.get(REG.bridge) as FunticoBridge | undefined;
     if (!bridge) return;
+    this.retrySend = false;
+    this.again.setText('PLAY AGAIN');
+    this.hofTitle.setText('HALL OF FAME');
+    this.hof.setText('sending...');
     await bridge.init();
-    const events = this.model.taps.map((e) => JSON.stringify(e));
-    const sent = await bridge.completePractice(this.result.score, { gameEvents: events });
+    const live = bridge.mode === 'live';
+    const runId = this.model.runId;
+    const events = gameEventsFor(catalogId(catalog as unknown as TriageCatalog), this.model.taps);
+    const sent = live && !runId
+      ? { ok: false as const, error: { code: 'invalid' as const, message: 'live run without server runId' } }
+      : await bridge.completePractice(this.result.score, runId ? { gameEvents: events, runId } : { gameEvents: events });
+    if (!sent.ok && live) {
+      if (!this.sys.isActive()) return;
+      const why = submitErrorText(sent.error);
+      this.sendError = sent.error;
+      this.retrySend = why.retry;
+      this.again.setText(why.retry ? 'RETRY SEND' : 'PLAY AGAIN');
+      this.hofTitle.setText(why.text);
+      this.hof.setText('');
+      this.submitted = { ok: false, rank: null, inHof: false, hof: [] };
+      this.layout(this.scale.width, this.scale.height);
+      return;
+    }
+    this.sendError = null;
     const u = await bridge.getUser();
     const h = await bridge.getHallOfFame({ period: 'monthly', limit: 5, gameMode: 'practice' });
     if (!this.sys.isActive()) return;
@@ -87,9 +145,9 @@ export class TriageResultScene extends Phaser.Scene {
     if (h.ok) {
       const top = h.value.leaderboard.slice(0, 5);
       const cur = h.value.currentPlayer ?? null;
-      let text = hofLines(top, me, 10);
-      if (cur && !top.some((e) => e.userId === me)) text += `\n  ...\n${hofLines([cur], me, 10)}`;
-      this.hof.setText(text);
+      this.myId = me;
+      this.hofTop = top;
+      this.hofMe = cur && !top.some((e) => e.userId === me) ? cur : null;
       this.submitted = {
         ok: sent.ok,
         rank: cur?.rank ?? null,
@@ -118,6 +176,10 @@ export class TriageResultScene extends Phaser.Scene {
     const portrait = height > width;
     const base = Phaser.Math.Clamp(Math.round(Math.min(width, height) / 50), MIN_TEXT, 20);
     for (const t of [this.head, this.stats, this.breakdown, this.hofTitle, this.hof]) t.setFontSize(base).setLineSpacing(Math.round(base * 0.45));
+    // Hall of Fame: el nombre cabe en el ancho disponible (fuente monoespaciada: 1 carácter ≈ 1 px de fuente)
+    const hofW = portrait ? aw - 16 : aw * 0.56 - 16;
+    this.renderHof(Phaser.Math.Clamp(Math.floor(hofW / base) - 11, 6, 18));
+    this.hofTitle.setWordWrapWidth(hofW);
     this.big.setFontSize(Phaser.Math.Clamp(Math.round(Math.min(width, height) / 12), 28, 72));
     const btnW = Math.min(portrait ? (aw - 40) / 2 : 220, 260);
     if (portrait) {
@@ -147,6 +209,13 @@ export class TriageResultScene extends Phaser.Scene {
       this.hofTitle.setPosition(rx, ry); ry += this.hofTitle.height + 6;
       this.hof.setPosition(rx, ry);
     }
+  }
+
+  private renderHof(nameChars: number): void {
+    if (!this.hofTop.length && !this.hofMe) return;
+    let text = hofLines(this.hofTop, this.myId, nameChars);
+    if (this.hofMe) text += `\n  ...\n${hofLines([this.hofMe], this.myId, nameChars)}`;
+    this.hof.setText(text);
   }
 
   uiBounds(): UiBound[] {

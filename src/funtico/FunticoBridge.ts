@@ -59,6 +59,10 @@ export interface FunticoError {
   message: string;
   /** `CampaignError.Code` del SDK (p. ej. 'LevelLocked', 'CompletionTooFast'). */
   campaignCode?: string;
+  /** Estado HTTP de nuestro relay cuando lo hay (run/start, o el rechazo de CompletePractice). */
+  status?: number;
+  /** Código estable del cuerpo `{"error":"<código>"}` del save-server (F2.2: `run_closed`, `taps_too_fast`…). */
+  serverCode?: string;
 }
 
 export type FunticoResult<T> = { ok: true; value: T } | { ok: false; error: FunticoError };
@@ -78,7 +82,28 @@ export interface FunticoUser {
  */
 export interface PracticeOptions extends CompletePracticeOptions {
   sessionId?: string;
+  /**
+   * F2.2: `runId` que dio `POST /run/start`. En live se usa como `RunId` del envío (el SDK no lo deja elegir: se
+   * fija su id interno de carrera antes de llamar a `CompletePractice`); en simulado se guarda con la marca.
+   */
+  runId?: string;
 }
+
+/** Respuesta 200 de `POST <apiBaseUrl>/run/start` (F2.2, save-server). */
+export interface TriageRunTicket {
+  runId: string;
+  seed: string;
+  serverTime: number;
+  v: number;
+  catalog: string;
+  catalogHash: string;
+  durationS: number;
+  expiresAt: number;
+}
+
+/** Lo mínimo de `fetch` que usa el puente (los tests lo falsean). */
+export type FetchLike = (url: string, init: { method: string; headers: Record<string, string>; body: string }) =>
+  Promise<{ ok: boolean; status: number; text(): Promise<string> }>;
 
 /** Parámetros de `GetHallOfFame(mode, page, limit, gameMode)` como literales (el puente no carga los enums). */
 export interface HallOfFameQuery {
@@ -111,6 +136,8 @@ export interface FunticoPlatform {
   getUser(useCache?: boolean): Promise<FunticoUser>;
   /** `CompletePractice(score, options)`. */
   completePractice(score: number, options?: PracticeOptions): Promise<boolean>;
+  /** F2.2: carrera de Triage del servidor (live: `POST /run/start`); simulado: null (semilla local, sin red). */
+  startTriageRun(): Promise<TriageRunTicket | null>;
   /** `GetHallOfFame(mode, page, limit, gameMode)`. */
   getHallOfFame(query?: HallOfFameQuery): Promise<HallOfFameResponse>;
   /** `CreateSession_Client(json, gameType, eventId, saveSessionId)`. */
@@ -145,6 +172,8 @@ export interface FunticoBridge {
   init(): Promise<FunticoResult<FunticoMode>>;
   getUser(useCache?: boolean): Promise<FunticoResult<FunticoUser>>;
   completePractice(score: number, options?: PracticeOptions): Promise<FunticoResult<boolean>>;
+  /** F2.2: live → `POST <apiBaseUrl>/run/start` (semilla del servidor); simulado → `null` sin tocar la red. */
+  startTriageRun(): Promise<FunticoResult<TriageRunTicket | null>>;
   getHallOfFame(query?: HallOfFameQuery): Promise<FunticoResult<HallOfFameResponse>>;
   createSession(json: string, gameType: FunticoGameType, eventId: string, saveSessionId: string): Promise<FunticoResult<SavedSessionResponse>>;
   updateSession(json: string): Promise<FunticoResult<boolean>>;
@@ -188,6 +217,8 @@ export interface CreateBridgeOptions {
   apiBaseUrl?: string;
   /** Clave pública del juego (X-User-Key). No es secreta; hasta tener la de staging, un relleno. */
   publicGameKey?: string;
+  /** `fetch` para `run/start` (solo live). Por defecto el global. */
+  fetch?: FetchLike;
 }
 
 // ───────────────────────────── Constantes ─────────────────────────────
@@ -277,6 +308,7 @@ interface MockRun {
   score: number;
   at: number;
   sessionId?: string;
+  runId?: string;
   events: number;
 }
 
@@ -397,10 +429,16 @@ export class MockPlatform implements FunticoPlatform {
     const events = options.gameEvents ?? this.events;
     const run: MockRun = { score: Math.trunc(score), at: this.now(), events: events.length };
     if (options.sessionId) run.sessionId = options.sessionId;
+    if (options.runId) run.runId = options.runId;
     runs.push(run);
     this.store.setJSON('practice_runs', runs.slice(-MAX_RUNS));
     this.events = []; // como el SDK: un resultado entregado limpia el registro
     return true;
+  }
+
+  /** Simulado: no hay carrera del servidor; la escena usa su semilla local. Cero peticiones. */
+  async startTriageRun(): Promise<TriageRunTicket | null> {
+    return null;
   }
 
   async getHallOfFame(query: HallOfFameQuery = {}): Promise<HallOfFameResponse> {
@@ -695,6 +733,7 @@ export interface LivePlatformOptions {
   env: FunticoEnv;
   apiBaseUrl: string;
   publicGameKey: string;
+  fetch?: FetchLike;
 }
 
 type SdkInstance = FunticoSdkModule['FunticoSDK']['Instance'];
@@ -745,10 +784,45 @@ export class LivePlatform implements FunticoPlatform {
   }
 
   async completePractice(score: number, options: PracticeOptions = {}): Promise<boolean> {
+    const sdk = this.s();
     const sdkOptions: CompletePracticeOptions = {};
     if (options.collected) sdkOptions.collected = options.collected;
     if (options.gameEvents) sdkOptions.gameEvents = options.gameEvents;
-    return this.s().CompletePractice(score, sdkOptions);
+    // El SDK no deja elegir el RunId: reutiliza su id interno (`practiceRunId`) si ya hay uno. Se fija al del servidor.
+    if (options.runId) (sdk as unknown as { practiceRunId: string | null }).practiceRunId = options.runId;
+    return sdk.CompletePractice(score, sdkOptions);
+  }
+
+  /**
+   * F2.2: `POST <apiBaseUrl>/run/start` con el token de juego del SDK (el mismo `Authorization` que usa el SDK con el
+   * relay). Cuerpo `{}`. Respuesta 200 = `TriageRunTicket`; si no, `rejected` con `status`/`serverCode`.
+   */
+  async startTriageRun(): Promise<TriageRunTicket> {
+    const sdk = this.s();
+    const jwt = sdk.getUserToken();
+    if (!jwt) throw new BridgeFailure('not_initialized', 'Funtico session token missing. Call init() first.');
+    const doFetch = this.options.fetch ?? (globalThis.fetch as unknown as FetchLike | undefined);
+    if (!doFetch) throw new BridgeFailure('network', 'fetch is not available');
+    let res: Awaited<ReturnType<FetchLike>>;
+    try {
+      res = await doFetch(`${this.options.apiBaseUrl}/run/start`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${jwt}`, 'Content-Type': 'application/json' },
+        body: '{}',
+      });
+    } catch (e) {
+      throw new BridgeFailure('network', `run/start failed: ${messageOf(e)}`);
+    }
+    let text = '';
+    try { text = await res.text(); } catch { /* cuerpo ilegible: abajo */ }
+    let body: unknown = null;
+    try { body = JSON.parse(text); } catch { /* abajo */ }
+    if (!res.ok) {
+      const code = serverCodeOf(text) ?? undefined;
+      throw new BridgeFailure(res.status >= 500 ? 'network' : 'rejected', `run/start ${res.status}${code ? `: ${code}` : ''}`, res.status, code);
+    }
+    if (!isTicket(body)) throw new BridgeFailure('rejected', 'run/start: malformed response', res.status);
+    return body;
   }
 
   async getHallOfFame(query: HallOfFameQuery = {}): Promise<HallOfFameResponse> {
@@ -814,11 +888,30 @@ export class LivePlatform implements FunticoPlatform {
 /** Error con código ya decidido (lo lanzan las plataformas; el puente lo traduce tal cual). */
 class BridgeFailure extends Error {
   readonly code: FunticoErrorCode;
-  constructor(code: FunticoErrorCode, message: string) {
+  readonly status?: number;
+  readonly serverCode?: string;
+  constructor(code: FunticoErrorCode, message: string, status?: number, serverCode?: string) {
     super(message);
     this.name = 'BridgeFailure';
     this.code = code;
+    if (status !== undefined) this.status = status;
+    if (serverCode !== undefined) this.serverCode = serverCode;
   }
+}
+
+/** Código `{"error":"<código>"}` del save-server dentro de un texto (cuerpo o mensaje de error del SDK). */
+export function serverCodeOf(text: string): string | null {
+  const m = /"error"\s*:\s*"([A-Za-z0-9_]{1,64})"/.exec(text);
+  return m ? m[1] : null;
+}
+
+function isTicket(b: unknown): b is TriageRunTicket {
+  const o = b as Record<string, unknown> | null;
+  return !!o && typeof o === 'object' &&
+    typeof o.runId === 'string' && /^[0-9a-f]{32}$/.test(o.runId) &&
+    typeof o.seed === 'string' && /^[0-9a-f]{64}$/.test(o.seed) &&
+    typeof o.catalog === 'string' && typeof o.catalogHash === 'string' &&
+    Number.isFinite(o.serverTime) && Number.isFinite(o.v) && Number.isFinite(o.durationS) && Number.isFinite(o.expiresAt);
 }
 
 function messageOf(e: unknown): string {
@@ -829,13 +922,19 @@ function messageOf(e: unknown): string {
 function toError(e: unknown, token: string): FunticoError {
   let message = messageOf(e);
   if (token) message = message.split(token).join('[token]'); // el token nunca sale en un mensaje
-  if (e instanceof BridgeFailure) return { code: e.code, message };
+  if (e instanceof BridgeFailure) {
+    const out: FunticoError = { code: e.code, message };
+    if (e.status !== undefined) out.status = e.status;
+    if (e.serverCode !== undefined) out.serverCode = e.serverCode;
+    return out;
+  }
   const err = e as { name?: unknown; Code?: unknown } | null;
   if (err && err.name === 'CampaignError') {
     return { code: 'campaign', message, campaignCode: typeof err.Code === 'string' ? err.Code : 'Unknown' };
   }
   if (e instanceof TypeError) return { code: 'network', message }; // fetch: «Failed to fetch» y similares
-  return { code: 'rejected', message };
+  const serverCode = serverCodeOf(message); // «Failed to complete practice: {"error":"run_closed"}»
+  return serverCode ? { code: 'rejected', message, serverCode } : { code: 'rejected', message };
 }
 
 function validScore(score: number): boolean {
@@ -917,6 +1016,7 @@ export function wrapPlatform(platform: FunticoPlatform, token = ''): FunticoBrid
       }
       return call(() => platform.completePractice(score, options));
     },
+    startTriageRun: () => call(() => platform.startTriageRun()),
     getHallOfFame: (query) => call(() => platform.getHallOfFame(query)),
     createSession: (json, gameType, eventId, saveSessionId) => call(() => platform.createSession(json, gameType, eventId, saveSessionId)),
     updateSession: (json) => call(() => platform.updateSession(json)),
@@ -955,6 +1055,7 @@ export function createBridge(options: CreateBridgeOptions = {}): FunticoBridge {
     env: options.env ?? 'staging',
     apiBaseUrl: options.apiBaseUrl ?? `${origin}/save-api/funtico`,
     publicGameKey: options.publicGameKey ?? FUNTICO_PUBLIC_PLACEHOLDER,
+    fetch: options.fetch,
   });
   return wrapPlatform(live, token);
 }
