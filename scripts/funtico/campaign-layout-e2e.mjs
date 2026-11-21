@@ -161,7 +161,9 @@ const audit = (page) => page.evaluate(() => {
 });
 
 function judge(size, where, a, { strictPortrait }) {
-  const inVp = (r) => r.x >= -1 && r.y >= -1 && r.x + r.w <= a.W + 1 && r.y + r.h <= a.H + 1;
+  // Tolerancia de 3 px: la zona táctil de 44×44 de los botones de arriba (A5.2, touchTarget) sobresale 2 px del borde
+  // superior sin que se vea nada fuera (es la caja de toque, no el dibujo)
+  const inVp = (r) => r.x >= -3 && r.y >= -3 && r.x + r.w <= a.W + 3 && r.y + r.h <= a.H + 3;
   const outs = a.interactive.filter((r) => !inVp(r)).map((r) => `${r.what} (${Math.round(r.x)},${Math.round(r.y)} ${Math.round(r.w)}x${Math.round(r.h)})`);
   const htmlOuts = a.html.filter((r) => !inVp(r)).map((r) => r.what);
   want(outs.length === 0 && htmlOuts.length === 0, `[${size}] ${where}: interactivos dentro del viewport${outs.length + htmlOuts.length ? `: fuera ${[...outs, ...htmlOuts].join('; ')}` : ''}`);
@@ -272,9 +274,10 @@ async function realTaps(page, size) {
     let s = await hotspotScreen(page, id);
     const startedOff = s.x < 0 || s.x > s.W;
     // Si está fuera de cuadro, Dex anda hacia ese borde (toque real en la acera del borde) y la cámara le sigue
-    for (let i = 0; i < 8 && (s.x < 30 || s.x > s.W - 30); i++) {
-      const groundY = await page.evaluate(() => { const gs = window.__game.scene.getScene('GameScene'); return (gs.player.y - gs.cameras.main.scrollY) * gs.cameras.main.zoom; });
-      await tapAt(page, s.x < 0 ? 60 : s.W - 40, Math.min(s.viewH - 6, groundY - 4));
+    for (let i = 0; i < 16 && (s.x < 30 || s.x > s.W - 30); i++) {
+      const g0 = await page.evaluate(() => { const gs = window.__game.scene.getScene('GameScene'); const c = gs.cameras.main; return { y: (gs.player.y - c.scrollY) * c.zoom, scrollX: c.scrollX }; });
+      // A la izquierda, sin acercarse a tr_mountain (x 0-3 % del fondo) cuando la cámara ya está en el borde
+      await tapAt(page, s.x < 0 ? (g0.scrollX > 80 ? 24 : 70) : s.W - 24, Math.min(s.viewH - 6, g0.y - 4));
       await sleep(400);
       await waitIdle(page, 10_000);
       await sleep(900); // la cámara llega con lerp
@@ -403,6 +406,9 @@ try {
     report.fps = { renderer: 'canvas', size: '390x844', cpuThrottle: 4, ...raf, gate: 50 };
     want(raf.median >= 50, `fps medianos con CPU x4 en 390x844 (canvas): ${raf.median} (${raf.frames} fotogramas en 4,5 s, máx ${raf.max} ms)`);
     await realTaps(page, '390x844');
+    // Partida nueva desde una página recién cargada (como la pasada en horizontal)
+    await page.reload({ waitUntil: 'domcontentloaded', timeout: 120_000 });
+    await page.waitForFunction(() => !!window.__qa && !!window.__funtico?.metrics, { timeout: 120_000, polling: 250 });
     // La ruta entera (su newGame empieza partida nueva tras los toques reales)
     report.passes.portrait = await playChapter(page, '390x844', { rotations: true });
     await ctx.close();
