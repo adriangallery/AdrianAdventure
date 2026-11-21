@@ -263,10 +263,10 @@ export function createFunticoRelay({ env = process.env, fetch: fetchImpl = globa
       if (!isObj(body) || !onlyKeys(body, ['AttemptId', 'EncryptedData', 'Hash']) || typeof body.EncryptedData !== 'string') throw bad();
       if (typeof body.AttemptId !== 'string' || !ID_RE.test(body.AttemptId)) throw bad('Invalid AttemptId');
       if (!verifyHmac(body.EncryptedData, signKey(cfg.padKey), body.Hash)) throw bad('Bad signature');
-      if (!auth) throw new Reject(401, 'Unauthorized');
+      const userId = await userIdFor(auth);
       const payload = parseJson(decryptOr400(body.EncryptedData, attemptKey(body.AttemptId, cfg.padKey)));
       checkCampaignPayload(payload, body.AttemptId);
-      const out = await runValidator(routeKey, payload, { route: routeKey, now: now() });
+      const out = await runValidator(routeKey, payload, { route: routeKey, userId, now: now() });
       checkCampaignPayload(out, body.AttemptId);
       const EncryptedData = encrypt(JSON.stringify(out), attemptKey(body.AttemptId, cfg.privateKey));
       return { AttemptId: body.AttemptId, EncryptedData, Hash: hmacSha256(EncryptedData, signKey(cfg.privateKey)) };
