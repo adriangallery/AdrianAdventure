@@ -627,9 +627,12 @@ export class MusicManager {
     this.crossfadeTo(newTrack, variation, duration);
   }
 
-  toggleMute(): boolean {
+  /** `persist = false`: no guarda el silencio en `adrian_adventure_muted` (front-ends con su propio ajuste). Por defecto, igual que siempre. */
+  toggleMute(persist = true): boolean {
     this.muted = !this.muted;
-    try { localStorage.setItem(MUTED_STORAGE_KEY, String(this.muted)); } catch { /* el ajuste dura la sesión */ }
+    if (persist) {
+      try { localStorage.setItem(MUTED_STORAGE_KEY, String(this.muted)); } catch { /* el ajuste dura la sesión */ }
+    }
 
     // Use direct value assignment instead of linearRamp — iOS Safari
     // often fails to execute Web Audio automation ramps when the
@@ -651,6 +654,19 @@ export class MusicManager {
 
   isMuted(): boolean {
     return this.muted;
+  }
+
+  /** Fija el silencio sin guardarlo en el ajuste del juego (para front-ends con su propio ajuste guardado). */
+  setMuted(muted: boolean): void {
+    if (muted !== this.muted) this.toggleMute(false);
+  }
+
+  /**
+   * Gancho neutro: tema y nivel fijados desde fuera en vez de la tabla de estados y la escena (null = lo de siempre).
+   * El juego no lo usa nunca; con él, el cambio de nivel o de tema sigue siendo el planificado en compás (updateLevel).
+   */
+  setLevelOverride(override: { theme: string; level: number } | null): void {
+    this.levelOverride = override;
   }
 
   /** Whether unlockFromGesture() has been called in this page load. */
@@ -805,6 +821,13 @@ export class MusicManager {
 
   /** A8.3: pista del nivel que pide el estado ahora en el tema de la escena (null = la escena no tiene tema) */
   private wantedLevelTrack(): string | null {
+    const ov = this.levelOverride;
+    if (ov) {
+      const t = MUSIC_MAP.themes?.[ov.theme];
+      if (!t) return null;
+      this.wantLevel = ov.level;
+      return levelTrack(t, ov.level, (k) => !!MUSIC_MAP.tracks[k])?.track ?? null;
+    }
     const scene = (this.game.registry.get('currentSceneId') as string | undefined) ?? null;
     const theme = themeForScene(MUSIC_MAP.themes, scene);
     if (!theme || !MUSIC_MAP.themes) return null;
@@ -814,6 +837,7 @@ export class MusicManager {
   }
 
   private wantLevel: number | null = null;
+  private levelOverride: { theme: string; level: number } | null = null;
   private wantTrack: string | null = null;
   private wantSince = 0;
   private loadingLevel: string | null = null;

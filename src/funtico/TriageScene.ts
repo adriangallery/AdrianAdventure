@@ -17,6 +17,8 @@ import { catalogId } from './triage/triage.js';
 import type { TriageCatalog } from './triage/triage';
 import catalog from './triage/catalog.json';
 import { EventQueue, endEvent, startEvent, tapEvent } from './triage/verifierEvents';
+import { STINGER_CLIPS, TriageAudio, VOICE_START, readMuted, voiceUrl } from './triage/TriageAudio';
+import { musicFor } from './triage/triageMusic.js';
 
 /** Escenas con primer plano (foreground@*.webp) en assets/scenes/<id>/. */
 const FOREGROUND = new Set(['outside', 'lobby']);
@@ -26,11 +28,8 @@ const CROP_VARIANT = '@2048';
 /** Frame de la imagen entera. Hay que pedirlo SIEMPRE al cambiar de textura: `Texture.add()` convierte el primer frame
  *  añadido (un recorte) en el frame por defecto, y `setTexture(clave)` a secas pintaría solo ese recorte. */
 const BASE = '__BASE';
-const MUSIC_KEY = 'tri-music';
-const MUSIC_URL = 'assets/audio/music/clinical.mp3';
 const SFX_HIT = 'assets/audio/sfx/keypad_success.mp3';
 const SFX_MISS = 'assets/audio/sfx/keypad_fail.mp3';
-const MUTE_KEY = 'adrian_adventure_funtico_muted';
 /** Movimiento máximo (px CSS) para que un toque cuente como toque y no como arrastre. */
 const TAP_SLOP = 10;
 /** Pausa de la vista entre estaciones (ms): el modelo ya abrió la siguiente; es < minReactionMs (300). */
@@ -99,6 +98,10 @@ export class TriageScene extends Phaser.Scene {
   private velocity = 0;
   private frameMs: number[] = [];
   private currentVoice: Phaser.Sound.BaseSound | null = null;
+  /** F1.4: música (iMUSE del juego), ducking, stingers y voces */
+  private audio!: TriageAudio;
+  /** F1.4 (QA, solo simulado): adelanto del reloj de la carrera para llegar a los últimos segundos en el e2e */
+  private clockSkew = 0;
 
   constructor() {
     super('TriageScene');
@@ -115,6 +118,7 @@ export class TriageScene extends Phaser.Scene {
     this.frameMs = [];
     this.velocity = 0;
     this.drag = null;
+    this.clockSkew = 0;
     // Variante ligera según la pantalla (px físicos del lado mayor)
     const dpr = window.devicePixelRatio || 1;
     const big = Math.max(window.innerWidth, window.innerHeight) * dpr;
@@ -142,6 +146,11 @@ export class TriageScene extends Phaser.Scene {
     }
     if (!this.cache.audio.exists(SFX_HIT)) this.load.audio(SFX_HIT, SFX_HIT);
     if (!this.cache.audio.exists(SFX_MISS)) this.load.audio(SFX_MISS, SFX_MISS);
+    // F1.4: stingers del juego (pequeños) y la voz del arranque; nada de esto en silencio
+    if (!readMuted()) {
+      for (const k of STINGER_CLIPS) if (!this.cache.audio.exists(k)) this.load.audio(k, `assets/audio/sfx/${k}.mp3`);
+      if (!this.cache.audio.exists(VOICE_START)) this.load.audio(VOICE_START, voiceUrl(VOICE_START));
+    }
     const w = this.scale.gameSize.width;
     const h = this.scale.gameSize.height;
     const label = this.add.text(w / 2, h / 2, 'PREPPING THE WARD...', { fontFamily: '"Press Start 2P", monospace', fontSize: '14px', color: C.yellow }).setOrigin(0.5);
@@ -154,13 +163,14 @@ export class TriageScene extends Phaser.Scene {
   create(): void {
     // El reloj empieza cuando todo está cargado: se rehace el modelo con la misma carrera
     const runId = this.model.runId;
-    this.model = new TriageModel(this.model.run);
+    this.model = new TriageModel(this.model.run, () => performance.now() + this.clockSkew);
     this.model.runId = runId;
     // F2.4: eventos para el Verifier por RecordEvent_Client (simulado: a memoria), en cola fuera del toque
     const bridge = this.registry.get(REG.bridge) as FunticoBridge | undefined;
     this.events4v = new EventQueue((line) => bridge?.recordEvent(line));
     this.events4v.push(startEvent({ runId, catalog: catalogId(catalog as unknown as TriageCatalog), stations: this.model.run.stations.length, durationMs: this.model.run.durationMs }));
-    this.sound.mute = readMuted();
+    this.audio = TriageAudio.for(this.game);
+    this.audio.setMuted(readMuted());
     this.sceneCam = this.cameras.main;
     this.sceneCam.setOrigin(0, 0).setBackgroundColor(C.bg);
     this.uiCam = this.cameras.add(0, 0, this.scale.width, this.scale.height, false, 'ui');
@@ -180,7 +190,7 @@ export class TriageScene extends Phaser.Scene {
     this.tScore = txt(this, '0', MIN_TEXT, C.white, 'right');
     this.speedBack = this.add.rectangle(0, 0, 10, 6, C.panel2N).setOrigin(0, 0);
     this.speedBar = this.add.rectangle(0, 0, 10, 6, C.greenN).setOrigin(0, 0);
-    this.muteBtn = new Button(this, 'mute', this.sound.mute ? 'OFF' : 'SND', () => this.toggleMute());
+    this.muteBtn = new Button(this, 'mute', this.audio.isMuted() ? 'OFF' : 'SND', () => this.toggleMute());
     this.cardBg = this.add.rectangle(0, 0, 10, 10, C.panelN, 0.94).setOrigin(0, 0).setStrokeStyle(2, C.borderN);
     this.cardTitle = txt(this, '', MIN_TEXT, C.yellow);
     this.cardText = txt(this, '', MIN_TEXT, C.white);
@@ -204,6 +214,7 @@ export class TriageScene extends Phaser.Scene {
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
       this.scale.off(Phaser.Scale.Events.RESIZE, this.onResize, this);
       this.currentVoice?.stop();
+      this.audio.voiceEnded();
       const hook = funticoHook();
       if (hook.triage?.scene === this) delete hook.triage;
     });
@@ -226,6 +237,7 @@ export class TriageScene extends Phaser.Scene {
       this.finish();
       return;
     }
+    this.updateMusic(t);
     // Inercia del desplazamiento
     if (!this.drag && Math.abs(this.velocity) > 0.01 && this.scrollable) {
       this.scrollBy(-this.velocity * delta);
@@ -328,38 +340,55 @@ export class TriageScene extends Phaser.Scene {
   }
 
   private toggleMute(): void {
-    this.sound.mute = !this.sound.mute;
-    this.muteBtn.setText(this.sound.mute ? 'OFF' : 'SND');
-    try { localStorage.setItem(MUTE_KEY, this.sound.mute ? '1' : '0'); } catch { /* sin storage */ }
+    const m = !this.audio.isMuted();
+    this.audio.setMuted(m);
+    this.muteBtn.setText(m ? 'OFF' : 'SND');
+    // Al activar el sonido a mitad de carrera: lo que no se descargó en silencio
+    if (!m) this.audio.prefetch(this, this.model.run.stations.some((s) => s.kind === 'relapse'));
   }
 
+  /** Voz con ducking: la música baja mientras suena (y vuelve al acabar o al cortarla). */
   private playVoice(key: string | null): void {
     this.currentVoice?.stop();
     this.currentVoice = null;
-    if (!key || !this.cache.audio.exists(key)) return;
+    this.audio.voiceEnded();
+    if (!key || !this.cache.audio.exists(key) || this.audio.isMuted()) return;
     try {
-      this.currentVoice = this.sound.add(key, { volume: 0.9 });
-      this.currentVoice.once('complete', () => { this.currentVoice?.destroy(); this.currentVoice = null; });
-      this.currentVoice.play();
+      const v = this.sound.add(key, { volume: 0.9 });
+      this.currentVoice = v;
+      const done = () => {
+        if (this.currentVoice !== v) return;
+        this.currentVoice = null;
+        this.audio.voiceEnded();
+        v.destroy();
+      };
+      v.once('complete', done);
+      v.once('stop', done);
+      this.audio.voiceStarted(key);
+      v.play();
     } catch { /* sin audio */ }
+  }
+
+  /** F1.4: tema y nivel según la estación que se ve, el reloj y la racha (triageMusic.js). */
+  private updateMusic(t: number): void {
+    const m = this.model;
+    const st = m.run.stations[this.shown];
+    this.audio.setMusic(musicFor({ phase: st?.kind === 'relapse' ? 'relapse' : 'race', remainingMs: m.remainingMs(t), streak: m.streak, hits: m.score.hits }));
   }
 
   private sfx(key: string): void {
     if (this.cache.audio.exists(key)) this.sound.play(key, { volume: 0.5 });
   }
 
-  /** Música del juego a volumen bajo; se carga sin bloquear el inicio. */
+  /**
+   * F1.4: música del juego (iMUSE: MusicManager) en vez del bucle suelto; el primer nivel se descarga sin bloquear el
+   * inicio y el resto en segundo plano. Voz del arranque si la primera estación no habla.
+   */
   private startMusic(): void {
-    const play = () => {
-      if (!this.sys.isActive()) return;
-      const existing = this.sound.get(MUSIC_KEY);
-      if (existing?.isPlaying) return;
-      this.sound.add(MUSIC_KEY, { loop: true, volume: 0.18 }).play();
-    };
-    if (this.cache.audio.exists(MUSIC_KEY)) { play(); return; }
-    this.load.audio(MUSIC_KEY, MUSIC_URL);
-    this.load.once('complete', play);
-    this.load.start();
+    this.updateMusic(this.model.now());
+    this.time.delayedCall(1500, () => { if (this.sys.isActive()) this.audio.prefetch(this, this.model.run.stations.some((s) => s.kind === 'relapse')); });
+    const first = this.model.run.stations[0];
+    if (first?.kind === 'sample') this.time.delayedCall(500, () => { if (this.sys.isActive() && this.shown === 0) this.playVoice(VOICE_START); });
   }
 
   // ───────────────────────────── Entrada ─────────────────────────────
@@ -453,6 +482,7 @@ export class TriageScene extends Phaser.Scene {
     const spot = st as SpotStation;
     if (out.kind === 'hit') {
       this.sfx(SFX_HIT);
+      this.audio.stinger(this, 'item');
       this.flashBounds(spot, C.greenN);
       this.floatText(sx, sy, `+${out.points}`, C.green);
       this.advance();
@@ -462,6 +492,7 @@ export class TriageScene extends Phaser.Scene {
       this.floatText(sx, sy, `-${out.penalty}`, C.red);
       this.sceneCam.shake(140, 0.006);
       if (out.closed) {
+        this.audio.stinger(this, 'fail');
         this.flashBounds(spot, C.yellowN);
         this.revealPan(spot);
         this.advance(SWAP_MS + 300);
@@ -481,10 +512,10 @@ export class TriageScene extends Phaser.Scene {
     this.options[rel.correct].bg.setFillStyle(0x1f5a30);
     const b = this.options[i].bg;
     if (out.kind === 'hit') {
-      this.sfx(SFX_HIT);
+      this.audio.stinger(this, 'puzzle');
       this.floatText(b.x + b.width / 2, b.y, `+${out.points}`, C.green);
     } else {
-      this.sfx(SFX_MISS);
+      this.audio.stinger(this, 'fail');
       b.setFillStyle(0x6a1f28);
       this.floatText(b.x + b.width / 2, b.y, `-${out.penalty}`, C.red);
     }
@@ -809,6 +840,17 @@ export class TriageScene extends Phaser.Scene {
       worldToScreen(xPct: number, yPct: number) { return scene.worldToScreen(xPct, yPct); },
       uiBounds() { return scene.uiBounds(); },
       fps() { return scene.fpsMedian(); },
+      /** F1.4: estado del audio (tema/nivel pedidos, pista que suena, ducking, silencio, historial) */
+      get audio() { return scene.audio.state(); },
+      audioRms() { return scene.audio.rms(); },
+      audioStream() { return scene.audio.audioStream(); },
+      /** F1.4 (QA): adelanta el reloj de la carrera `ms` (solo en simulado: en live no hace nada). */
+      warp(ms: number) {
+        const bridge = scene.registry.get(REG.bridge) as FunticoBridge | undefined;
+        if (bridge?.mode !== 'mock') return false;
+        scene.clockSkew += Math.max(0, ms);
+        return true;
+      },
     };
   }
 }
@@ -823,10 +865,6 @@ function cropFrameName(st: SpotStation): string {
 function voicesOf(st: Station): string[] {
   if (st.kind === 'relapse') return [st.fudVoice, ...st.options.map((o) => o.voice)].filter((v): v is string => !!v);
   return st.voice ? [st.voice] : [];
-}
-
-function readMuted(): boolean {
-  try { return localStorage.getItem(MUTE_KEY) === '1'; } catch { return false; }
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
