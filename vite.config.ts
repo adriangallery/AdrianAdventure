@@ -118,6 +118,13 @@ function buildHashPlugin(): Plugin {
  */
 const FUNTICO_MODE = 'funtico';
 const FUNTICO_HTML = 'funtico/index.html';
+/**
+ * F3.1: banco de pruebas de Campaign (el juego entero con el recolector de métricas instalado, para el e2e
+ * `scripts/funtico/campaign-metrics-e2e.mjs`). Solo entra si se pide con FUNTICO_CAMPAIGN_HARNESS=1: el build que se
+ * despliega no cambia. F3.2 lo sustituirá por la entrada de Campaign desde el menú.
+ */
+const FUNTICO_HARNESS_HTML = 'funtico/campaign.html';
+const funticoHarness = (): boolean => process.env.FUNTICO_CAMPAIGN_HARNESS === '1';
 
 /**
  * Sube funtico/index.html a la raíz del outDir. Vite escribe las rutas del HTML relativas a su carpeta
@@ -136,14 +143,19 @@ function funticoRootHtmlPlugin(): Plugin {
       });
     },
     generateBundle(_options, bundle) {
-      const html = bundle[FUNTICO_HTML];
-      if (!html || html.type !== 'asset') this.error(`no se ha generado ${FUNTICO_HTML}`);
-      if (bundle['index.html']) this.error('ya hay un index.html en la raíz del build');
-      const src = typeof html.source === 'string' ? html.source : Buffer.from(html.source).toString('utf-8');
-      html.source = src.replace(/(\s(?:src|href)=["'])\.\.\//g, '$1./');
-      html.fileName = 'index.html';
-      delete bundle[FUNTICO_HTML];
-      bundle['index.html'] = html;
+      const hoist = (from: string, to: string) => {
+        const html = bundle[from];
+        if (!html || html.type !== 'asset') this.error(`no se ha generado ${from}`);
+        if (bundle[to]) this.error(`ya hay un ${to} en la raíz del build`);
+        const src = typeof html.source === 'string' ? html.source : Buffer.from(html.source).toString('utf-8');
+        html.source = src.replace(/(\s(?:src|href)=["'])\.\.\//g, '$1./');
+        html.fileName = to;
+        delete bundle[from];
+        bundle[to] = html;
+      };
+      hoist(FUNTICO_HTML, 'index.html');
+      // F3.1: el banco de pruebas de Campaign, también en la raíz (el juego pide sus assets relativos a la página)
+      if (bundle[FUNTICO_HARNESS_HTML]) hoist(FUNTICO_HARNESS_HTML, 'campaign.html');
     },
   };
 }
@@ -182,7 +194,10 @@ export default defineConfig(({ mode }) => {
       // F0.1: el build funtico solo tiene su propia entrada (sin el juego normal ni /stats)
       rollupOptions: {
         input: funtico
-          ? { funtico: path.resolve(__dirname, FUNTICO_HTML) }
+          ? {
+            funtico: path.resolve(__dirname, FUNTICO_HTML),
+            ...(funticoHarness() ? { campaign: path.resolve(__dirname, FUNTICO_HARNESS_HTML) } : {}),
+          }
           : {
             main: path.resolve(__dirname, 'index.html'),
             stats: path.resolve(__dirname, 'stats/index.html'),
