@@ -70,7 +70,7 @@ export class HallOfFameScene extends Screen {
   create(): void {
     this.loaded = false;
     this.you = null;
-    this.tabs = new Tabs(this, 'tab', ['GLOBAL', 'MONTHLY'], (i) => { this.period = i; void this.load(); }, this.period);
+    this.tabs = new Tabs(this, 'tab', ['GLOBAL', 'MONTHLY'], (i) => { this.period = i; void this.fetchHof(); }, this.period);
     this.youLbl = txt(this, 'YOU', 16, C.lilac);
     this.topLbl = txt(this, 'TOP', 16, C.lilac);
     this.status = txt(this, 'loading...', MIN_TEXT, C.lilacDim);
@@ -79,10 +79,10 @@ export class HallOfFameScene extends Screen {
     this.setupScreen('hof', 'HALL OF FAME');
     const hook = (window as unknown as { __funtico: Record<string, unknown> }).__funtico.screen as Record<string, unknown>;
     Object.assign(hook, { loaded: () => this.loaded, period: () => PERIODS[this.period], rows: () => this.list.rows.length });
-    void this.load();
+    void this.fetchHof();
   }
 
-  private async load(): Promise<void> {
+  private async fetchHof(): Promise<void> {
     const n = ++this.req;
     this.loaded = false;
     this.status.setText('loading...').setVisible(true);
