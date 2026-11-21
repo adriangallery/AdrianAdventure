@@ -225,21 +225,38 @@ const rafMedian = (page, ms) => page.evaluate((dur) => new Promise((res) => {
   requestAnimationFrame(f);
 }), ms);
 
-/** Capturas cada GIF_EVERY_MS para el GIF (modo --gif). */
-function startFrames(page, dir) {
-  let on = true;
-  let n = 0;
-  const done = (async () => {
-    await mkdir(dir, { recursive: true });
-    while (on) {
-      const t0 = Date.now();
+/**
+ * Fotogramas para el GIF (modo --gif) con el screencast de CDP: no bloquea la página ni se cruza con los toques
+ * (las capturas periódicas con page.screenshot dejaban toques y arrastres sin efecto). El screencast solo manda
+ * fotograma cuando la pantalla cambia: al parar se rellena a ritmo fijo (uno cada GIF_EVERY_MS) repitiendo el último.
+ */
+async function startFrames(page, dir) {
+  await mkdir(dir, { recursive: true });
+  const cdp = await page.createCDPSession();
+  const got = [];
+  let last = -Infinity;
+  const t0 = Date.now();
+  cdp.on('Page.screencastFrame', (f) => {
+    cdp.send('Page.screencastFrameAck', { sessionId: f.sessionId }).catch(() => undefined);
+    const t = Date.now() - t0;
+    if (t - last < GIF_EVERY_MS * 0.8) return;
+    last = t;
+    got.push({ t, data: f.data });
+  });
+  await cdp.send('Page.startScreencast', { format: 'png', everyNthFrame: 1 });
+  return async () => {
+    const end = Date.now() - t0;
+    await cdp.send('Page.stopScreencast').catch(() => undefined);
+    await cdp.detach().catch(() => undefined);
+    let n = 0;
+    let k = 0;
+    for (let t = 0; t <= end && got.length; t += GIF_EVERY_MS) {
+      while (k + 1 < got.length && got[k + 1].t <= t) k++;
       n++;
-      // captureBeyondViewport: false → la captura no cambia el tamaño de la ventana (un RESIZE por fotograma pisaba los toques)
-      await page.screenshot({ path: path.join(dir, `f${String(n).padStart(4, '0')}.png`), captureBeyondViewport: false }).catch(() => { n--; });
-      await sleep(Math.max(0, GIF_EVERY_MS - (Date.now() - t0)));
+      await writeFile(path.join(dir, `f${String(n).padStart(4, '0')}.png`), Buffer.from(got[k].data, 'base64'));
     }
-  })();
-  return async () => { on = false; await done; return n; };
+    return n;
+  };
 }
 
 async function shot(p, name) {
@@ -288,7 +305,7 @@ async function playRun(size, { rotate = false, missOnce = false, fps = false, fr
   await page.waitForFunction(() => window.__funtico?.triage?.state()?.ready, { timeout: 60000, polling: 100 })
     .catch(async (e) => { notes.push(`renderer ${await page.evaluate(() => window.__funtico.game.renderer.type)}`); throw e; });
   // El GIF empieza con la carrera ya lista: capturar durante la carga del menú y el arranque dejaba el toque de TRIAGE sin efecto
-  const stopFrames = frames ? startFrames(page, frames) : null;
+  const stopFrames = frames ? await startFrames(page, frames) : null;
   const run = await page.evaluate(() => window.__funtico.triage.run);
   const got = await page.evaluate(() => (window.__funtico.game.renderer.type === 2 ? 'WEBGL' : 'CANVAS'));
   notes.push(`[${size}] renderer ${got}`);
