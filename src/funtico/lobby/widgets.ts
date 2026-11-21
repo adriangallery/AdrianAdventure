@@ -88,7 +88,7 @@ export class TopBar {
   private userName = '';
   bottom = 0;
 
-  constructor(private scene: Phaser.Scene, opts: { onBack?: () => void; here: string }) {
+  constructor(scene: Phaser.Scene, opts: { onBack?: () => void; here: string }) {
     const go = (key: string) => () => { if (key !== opts.here) scene.scene.start(key, { from: opts.here }); };
     if (opts.onBack) this.back = new IconButton(scene, 'bar-back', 'back', opts.onBack);
     else {

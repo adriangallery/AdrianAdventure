@@ -76,7 +76,7 @@ export class ScrollList {
   private scroll = 0;
   private dragY: number | null = null;
   private start = 0;
-  constructor(private scene: Phaser.Scene, public rowH: number, public gap = 8) {
+  constructor(scene: Phaser.Scene, public rowH: number, public gap = 8) {
     scene.input.on('pointerdown', (p: Phaser.Input.Pointer) => { if (this.inside(p)) { this.dragY = p.y; this.start = this.scroll; } });
     scene.input.on('pointermove', (p: Phaser.Input.Pointer) => {
       if (this.dragY === null || !p.isDown) return;
@@ -92,7 +92,6 @@ export class ScrollList {
   }
 
   setRows(rows: Row[]): void {
-    for (const r of this.rows) r.setVisible(false);
     this.rows = rows;
     this.scroll = 0;
     this.render();
