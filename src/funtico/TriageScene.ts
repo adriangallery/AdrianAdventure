@@ -43,6 +43,11 @@ export interface TriageSceneData { run: TriageRun; runId?: string | null }
 
 type Orientation = 'portrait' | 'landscape';
 
+/** Por debajo de esto un RESIZE es un tamaño de paso (no hay pantalla tan pequeña): no se recoloca. */
+const MIN_LAYOUT = 120;
+/** Ancho mínimo de ajuste de línea (Phaser lanza si no cabe ni un carácter). */
+const MIN_WRAP = 48;
+
 export class TriageScene extends Phaser.Scene {
   model!: TriageModel;
   private variant: '@1280' | '@2048' = '@2048';
@@ -82,6 +87,9 @@ export class TriageScene extends Phaser.Scene {
   private ending = false;
   private orientation: Orientation = 'portrait';
   private W = 0;
+  /** Último tamaño colocado con éxito (−1 = hay que recolocar). */
+  private laidW = -1;
+  private laidH = -1;
   private H = 0;
   private panel: Rect = { x: 0, y: 0, w: 0, h: 0 };
   private view: Rect = { x: 0, y: 0, w: 0, h: 0 };
@@ -201,7 +209,7 @@ export class TriageScene extends Phaser.Scene {
     });
 
     this.showStation(0);
-    this.layout(this.scale.width, this.scale.height);
+    this.safeLayout(this.scale.width, this.scale.height);
     this.startMusic();
     this.registerHook();
   }
@@ -211,6 +219,7 @@ export class TriageScene extends Phaser.Scene {
   update(_time: number, delta: number): void {
     this.frameMs.push(delta);
     if (this.frameMs.length > 240) this.frameMs.shift();
+    if (this.laidW !== this.scale.width || this.laidH !== this.scale.height) this.safeLayout(this.scale.width, this.scale.height);
     if (this.ending) return;
     const t = this.model.now();
     if (this.model.tick(t)) {
@@ -538,7 +547,24 @@ export class TriageScene extends Phaser.Scene {
   // ───────────────────────────── Layout ─────────────────────────────
 
   private onResize(size: Phaser.Structs.Size): void {
-    this.layout(size.width, size.height);
+    this.safeLayout(size.width, size.height);
+  }
+
+  /**
+   * Recoloca sin dejar que un tamaño de paso (un RESIZE con la ventana a medio girar, de pocos px) rompa la escena:
+   * los tamaños diminutos se saltan y, si `layout` falla, `update()` lo reintenta cuando el tamaño real no coincide
+   * con el último colocado (visto en el CI: «wordWrapWidth < a single character» dejaba el panel en negro).
+   */
+  private safeLayout(width: number, height: number): void {
+    if (!(width >= MIN_LAYOUT && height >= MIN_LAYOUT)) return;
+    try {
+      this.layout(width, height);
+      this.laidW = width;
+      this.laidH = height;
+    } catch (err) {
+      this.laidW = -1;
+      console.warn('[triage] layout', err);
+    }
   }
 
   private basePx(): number {
@@ -655,7 +681,7 @@ export class TriageScene extends Phaser.Scene {
   private layoutCard(r: Rect, px: number, st: Station | undefined): void {
     this.cardBg.setVisible(true).setPosition(r.x, r.y).setSize(r.w, Math.max(10, r.h));
     const inner = 10;
-    this.cardTitle.setOrigin(0, 0).setWordWrapWidth(r.w - inner * 2, true).setPosition(r.x + inner, r.y + inner).setVisible(true);
+    this.cardTitle.setOrigin(0, 0).setWordWrapWidth(Math.max(MIN_WRAP, r.w - inner * 2), true).setPosition(r.x + inner, r.y + inner).setVisible(true);
     const top = this.cardTitle.y + this.cardTitle.height + inner;
     const avail = r.y + r.h - inner - top;
     this.cardText.setVisible(false);
@@ -668,10 +694,10 @@ export class TriageScene extends Phaser.Scene {
       // La frase: la mayor fuente (≥ 14) que quepa en la tarjeta
       let f = Math.max(MIN_TEXT, px + 2);
       for (; f > MIN_TEXT; f--) {
-        this.cardText.setFontSize(f).setLineSpacing(Math.round(f * 0.5)).setWordWrapWidth(r.w - inner * 2, true);
+        this.cardText.setFontSize(f).setLineSpacing(Math.round(f * 0.5)).setWordWrapWidth(Math.max(MIN_WRAP, r.w - inner * 2), true);
         if (this.cardText.height <= avail) break;
       }
-      this.cardText.setFontSize(f).setLineSpacing(Math.round(f * 0.5)).setWordWrapWidth(r.w - inner * 2, true);
+      this.cardText.setFontSize(f).setLineSpacing(Math.round(f * 0.5)).setWordWrapWidth(Math.max(MIN_WRAP, r.w - inner * 2), true);
       this.cardText.setOrigin(0, 0).setPosition(r.x + inner, top).setVisible(true).setColor(C.white);
     }
   }
@@ -697,7 +723,7 @@ export class TriageScene extends Phaser.Scene {
     const gap = 8;
     const measure = (font: number): number => {
       this.cardTitle.setFontSize(font);
-      this.cardText.setFontSize(font).setLineSpacing(Math.round(font * 0.45)).setWordWrapWidth(colW - 20, true);
+      this.cardText.setFontSize(font).setLineSpacing(Math.round(font * 0.45)).setWordWrapWidth(Math.max(MIN_WRAP, colW - 20), true);
       let h = this.cardTitle.height + 6 + this.cardText.height + 12 + 20;
       for (const b of this.options) h += b.place(x, 0, colW, MIN_TOUCH, font) + gap;
       return h;
