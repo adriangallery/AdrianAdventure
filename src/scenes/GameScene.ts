@@ -12,6 +12,7 @@ import { isValidRunId, newRunId } from '@/systems/SaveProgress';
 import { addPlayTime } from '@/systems/Ending';
 import { noteChapters, trackScene } from '@/systems/PlayStats';
 import { sendChapterSamples } from '@/systems/ChapterTelemetry';
+import { emitPlatform } from '@/platform/PlatformHooks';
 import type { MusicManager } from '@/systems/MusicManager';
 import { CinematicOverlay } from '@/ui/CinematicOverlay';
 import { Web3VisualSystem } from '@/systems/Web3VisualSystem';
@@ -306,7 +307,11 @@ export class GameScene extends Phaser.Scene {
     this.blockedKey = null;
     this.refreshWalkObstacles(sceneData);
     // A2.15: «no puedo» = Dex se encoge de hombros con cada respuesta de fallo (el texto sale a la vez, sin esperar)
-    failResponses.onFail = () => this.player?.shrug();
+    // F3.1: y cada fallo, a la plataforma (después del gesto, que no cambia)
+    failResponses.onFail = (r) => {
+      this.player?.shrug();
+      emitPlatform('onFail', { kind: r.kind, verb: r.verb, target: r.target });
+    };
 
     // Hide player for closeup/cinematic scenes
     if (sceneData.player.hidePlayer) {
@@ -643,9 +648,14 @@ export class GameScene extends Phaser.Scene {
 
   update(time: number, delta: number): void {
     // A9.4: tiempo jugado (con tope por fotograma: una pestaña oculta o una pausa del navegador no suman)
-    if (!this.isTrailer && this.gameState) this.gameState.playTimeMs = addPlayTime(this.gameState.playTimeMs, delta);
-    // A9.14: al cerrar un capítulo, su duración (anónima) al save-server
-    if (!this.isTrailer && this.gameState) sendChapterSamples(noteChapters(this.gameState));
+    if (!this.isTrailer && this.gameState) {
+      const prevPlay = this.gameState.playTimeMs ?? 0;
+      this.gameState.playTimeMs = addPlayTime(this.gameState.playTimeMs, delta);
+      // F3.1: el mismo tiempo de juego, a la plataforma (por defecto nadie escucha)
+      emitPlatform('onPlayTime', this.gameState.playTimeMs - prevPlay);
+    }
+    // A9.14: al cerrar un capítulo, su duración (anónima) al save-server. F3.1: y el aviso de fin de capítulo
+    if (!this.isTrailer && this.gameState) sendChapterSamples(noteChapters(this.gameState, (n) => emitPlatform('onChapterComplete', n)));
     this.refreshWalkObstacles();
     this.player.setAnimContext(this.playerAnimContext());
     this.player.update(time, delta);
@@ -1049,7 +1059,9 @@ export class GameScene extends Phaser.Scene {
    * Con punto de llegada, anda hasta él y al llegar (player:arrived) se gira y ejecuta `run`. Sin él (LOOK, ya está
    * allí, sin bounds o en otra isla), se para si andaba, se gira y ejecuta al momento.
    */
-  private approachAndRun(id: string, verb: Verb, plan: Approach, run: () => void): void {
+  private approachAndRun(id: string, verb: Verb, plan: Approach, act: () => void): void {
+    // F3.1: la acción cuenta al ejecutarse (el mismo punto que qaActions), no al tocar
+    const run = () => { emitPlatform('onAction', { verb, target: id }); act(); };
     this.lastApproach = { target: id, verb, walkTo: plan.walkTo ? { ...plan.walkTo } : null, face: plan.face };
     if (plan.walkTo) {
       this.pending = { face: plan.face, run, verb, aim: plan.aim ? { ...plan.aim } : null };
@@ -1851,6 +1863,8 @@ export class GameScene extends Phaser.Scene {
    * lanzó el op `dialogue` de un script que sigue esperando. `where` = `<treeId>.<nodeId>`.
    */
   runDialogueScripts(ops: import('@/types/scene.types').ScriptOp[], where: string): Promise<void> {
+    // F3.1: el nodo `lose` de un árbol (duelo de FUD con Chad, PZ-BOT) = duelo perdido
+    if (where.endsWith('.lose')) emitPlatform('onFail', { kind: 'duel', target: where.slice(0, -'.lose'.length) });
     return this.dialogueScripts.run(ops, where);
   }
 
@@ -1977,6 +1991,8 @@ export class GameScene extends Phaser.Scene {
           if (!this.gameState.achievements.includes(achDef.id)) {
             this.gameState.achievements.push(achDef.id);
             this.registry.set('gameState', this.gameState);
+            // F3.1: logro opcional (ni de capítulo ni de holder) conseguido por primera vez
+            if (achDef.category === 'explorer' || achDef.category === 'secret') emitPlatform('onOptional', achDef.id);
           }
         }
         sfxOf(this)?.play('achievement', { volume: 0.6 });
@@ -2058,6 +2074,8 @@ export class GameScene extends Phaser.Scene {
         this.gameState = { ...this.gameState, journal: progress };
         this.registry.set('gameState', this.gameState);
         this.registry.set('journalLastCall', call);
+        // F3.1: pista dada (op callAnon)
+        emitPlatform('onHint', call.level, { level: call.level, puzzle: call.puzzle, chapter: call.chapter });
         // A4.4: Dex descuelga (el tono de llamada es cosa del móvil, JournalPanel.callAnon)
         sfxOf(this)?.play('phone_pickup', { volume: 0.4 });
         await new Promise<void>((resolve) => {
