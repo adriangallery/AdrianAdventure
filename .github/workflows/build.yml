@@ -119,6 +119,25 @@ jobs:
           path: funtico-gif/
           if-no-files-found: ignore
 
+      # F1.4: vídeo CON SONIDO de una carrera en vertical (MediaRecorder: canvas + salida del WebAudio). No es puerta.
+      - name: Vídeo con sonido de Triage
+        if: ${{ matrix.renderer == 'canvas' }}
+        continue-on-error: true
+        run: |
+          command -v ffmpeg >/dev/null || { sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg; }
+          bash scripts/funtico/triage-video.sh
+          mkdir -p funtico-video && cp funtico-video-work/triage-390x844.* funtico-video/
+        env:
+          OUT: funtico-video-work
+          RENDERER: canvas
+
+      - uses: actions/upload-artifact@v4
+        if: ${{ always() && matrix.renderer == 'canvas' }}
+        with:
+          name: funtico-triage-video
+          path: funtico-video/
+          if-no-files-found: ignore
+
       - uses: actions/upload-artifact@v4
         if: always()
         with:
