@@ -5,10 +5,15 @@
 //  - Al final: puntuación en pantalla = scoreRun(run, taps) y el Hall of Fame simulado la contiene.
 //  - En cada pantalla (menú, SAMPLE, SYMPTOM, RELAPSE, resultado): uiBounds() dentro del viewport; en los dos tamaños
 //    móviles, interactivos ≥ 44 px CSS y textos ≥ 14 px CSS. Sin errores de consola y sin peticiones a dominios de Funtico.
-//  - fps medianos con CPU ×4 (CDP) en 390x844. Capturas en $SHOTS (por defecto /var/tmp/funtico/f1-2/shots).
+//  - Píxeles: en SAMPLE y SYMPTOM, el panel de escena NO es negro/uniforme (desviación de luminancia y nº de colores) y
+//    el recorte de SAMPLE tiene detalle (además, tasa de cambio entre píxeles vecinos: los bloques borrosos no pasan).
+//  - fps medianos con CPU ×4 (CDP) en 390x844 (rAF en la página y la mediana del juego). Capturas en $SHOTS (por
+//    defecto /var/tmp/funtico/f1-2/shots/<renderer>).
 // Uso: npm run build:funtico && node scripts/funtico/triage-e2e.mjs   (o BASE_URL=http://… para no servir dist-funtico)
-// Variables: SHOTS, SEED, ONLY=390x844,844x390 (tamaños a jugar), VIDEO_DIR (graba la carrera vertical y la horizontal
-// con page.screencast, para el GIF; necesita ffmpeg).
+// Variables: SHOTS, SEED, ONLY=390x844,844x390 (tamaños a jugar), RENDERER=canvas|webgl (canvas: sin WebGL en Chrome;
+// webgl: WebGL por software con ANGLE + SwiftShader; falla si Phaser no arranca con el renderer pedido),
+// GIF_DIR (o --gif: /var/tmp/funtico/f1-2/gif/frames): una captura cada ~250 ms de la carrera vertical y de la
+// horizontal, sin giro, en GIF_DIR/<tamaño>/f0001.png… (las monta scripts/funtico/triage-gif.sh).
 import http from 'node:http';
 import { readFile, mkdir, writeFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
@@ -17,11 +22,16 @@ import puppeteer from 'puppeteer';
 import { scoreRun, validateTaps } from '../../src/funtico/triage/triage.js';
 
 const ROOT = path.resolve('dist-funtico');
-const SHOTS = process.env.SHOTS || '/var/tmp/funtico/f1-2/shots';
+const RENDERER = (process.env.RENDERER || 'canvas').toLowerCase();
+if (!['canvas', 'webgl'].includes(RENDERER)) { console.error(`RENDERER=${RENDERER}: usa canvas o webgl`); process.exit(2); }
+const SHOTS = process.env.SHOTS || `/var/tmp/funtico/f1-2/shots/${RENDERER}`;
 const SEED = process.env.SEED || 'e2e-f1.2';
-const VIDEO_DIR = process.env.VIDEO_DIR || '';
+const GIF_DIR = process.env.GIF_DIR || (process.argv.includes('--gif') ? '/var/tmp/funtico/f1-2/gif/frames' : '');
+const GIF_EVERY_MS = 250;
 const MOBILE = new Set(['390x844', '844x390']);
-const SIZES = (process.env.ONLY || '390x844,844x390,1280x720,1920x1080').split(',');
+const SIZES = (process.env.ONLY || (GIF_DIR ? '390x844,844x390' : '390x844,844x390,1280x720,1920x1080')).split(',');
+/** Umbrales de píxeles (medidos por px CSS). Panel negro: desv. 0 y 1 color; recorte borroso de antes: ~0,02 de cambio. */
+const PIX = { sceneStd: 10, sceneColors: 64, cropStd: 8, cropColors: 48, cropChange: 0.08 };
 const SHOT_SIZES = new Set(['390x844', '844x390', '1920x1080']);
 const IGNORE = [/AudioContext/i, /autoplay/i, /favicon/i, /play\(\) request/i];
 
@@ -52,11 +62,15 @@ if (!BASE) {
   BASE = `http://127.0.0.1:${server.address().port}`;
 }
 await mkdir(SHOTS, { recursive: true });
-console.log(`Triage e2e contra ${BASE} (semilla ${SEED}); capturas en ${SHOTS}`);
+console.log(`Triage e2e contra ${BASE} (semilla ${SEED}, renderer ${RENDERER}); capturas en ${SHOTS}`);
 
+// canvas: Chrome sin APIs 3D (Phaser.AUTO cae a CANVAS, como en un móvil sin WebGL); webgl: WebGL por software
+const GL_ARGS = RENDERER === 'webgl'
+  ? ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--enable-webgl', '--ignore-gpu-blocklist']
+  : ['--disable-3d-apis', '--disable-webgl'];
 const browser = await puppeteer.launch({
   headless: true,
-  args: ['--no-sandbox', '--use-gl=swiftshader', '--enable-webgl', '--ignore-gpu-blocklist', '--autoplay-policy=no-user-gesture-required'],
+  args: ['--no-sandbox', ...GL_ARGS, '--autoplay-policy=no-user-gesture-required'],
 });
 
 const parse = (s) => { const [w, h] = s.split('x').map(Number); return { width: w, height: h }; };
@@ -136,6 +150,95 @@ function noteMin(size, r) {
   m.minFont = Math.min(m.minFont, r.minFont);
 }
 
+/**
+ * Estadísticas de píxeles de una región (px CSS) de la pantalla, muestreando 1 px por px CSS: desviación típica de la
+ * luminancia, nº de colores distintos y fracción de vecinos horizontales que cambian (detalle frente a bloques).
+ */
+async function regionStats(p, r, inset = 6) {
+  const { width, height } = parse(p.label.v);
+  const x = Math.max(0, Math.round(r.x + inset));
+  const y = Math.max(0, Math.round(r.y + inset));
+  const clip = { x, y, width: Math.max(8, Math.min(width - x, Math.round(r.w - inset * 2))), height: Math.max(8, Math.min(height - y, Math.round(r.h - inset * 2))) };
+  const b64 = await p.page.screenshot({ clip, encoding: 'base64' });
+  const dpr = p.mobile ? 2 : 1;
+  return p.page.evaluate(async (data, step) => {
+    const img = new Image();
+    img.src = `data:image/png;base64,${data}`;
+    await img.decode();
+    const c = document.createElement('canvas');
+    c.width = img.width;
+    c.height = img.height;
+    const g = c.getContext('2d');
+    g.drawImage(img, 0, 0);
+    const d = g.getImageData(0, 0, c.width, c.height).data;
+    let n = 0, sum = 0, sum2 = 0, pairs = 0, changes = 0;
+    const colors = new Set();
+    for (let yy = 0; yy < c.height; yy += step) {
+      let prev = -1;
+      for (let xx = 0; xx < c.width; xx += step) {
+        const i = (yy * c.width + xx) * 4;
+        const L = 0.2126 * d[i] + 0.7152 * d[i + 1] + 0.0722 * d[i + 2];
+        n++; sum += L; sum2 += L * L;
+        colors.add((d[i] << 16) | (d[i + 1] << 8) | d[i + 2]);
+        if (prev >= 0) { pairs++; if (Math.abs(L - prev) > 4) changes++; }
+        prev = L;
+      }
+    }
+    const mean = sum / n;
+    return { std: Math.round(Math.sqrt(Math.max(0, sum2 / n - mean * mean)) * 10) / 10, colors: colors.size, change: Math.round((changes / Math.max(1, pairs)) * 1000) / 1000, w: c.width, h: c.height };
+  }, b64, dpr);
+}
+
+const pixels = [];
+/** El panel de escena no es negro/uniforme y, en SAMPLE, el recorte tiene detalle. */
+async function checkPixels(p, where) {
+  const size = p.label.v;
+  const list = await p.page.evaluate(() => window.__funtico.triage.uiBounds());
+  const scene = list.find((b) => b.id === 'scene');
+  const crop = list.find((b) => b.id === 'crop');
+  if (scene) {
+    const s = await regionStats(p, scene);
+    pixels.push({ size, where, region: 'scene', ...s });
+    (s.std >= PIX.sceneStd && s.colors >= PIX.sceneColors ? ok : fail)(`[${size}] ${where}: panel de escena con imagen (desv. ${s.std} ≥ ${PIX.sceneStd}, ${s.colors} colores ≥ ${PIX.sceneColors})`);
+  } else fail(`[${size}] ${where}: sin «scene» en uiBounds`);
+  if (where.startsWith('sample')) {
+    if (!crop) { fail(`[${size}] ${where}: sin «crop» en uiBounds`); return; }
+    const c = await regionStats(p, crop, 4);
+    pixels.push({ size, where, region: 'crop', ...c });
+    (c.std >= PIX.cropStd && c.colors >= PIX.cropColors && c.change >= PIX.cropChange ? ok : fail)(`[${size}] ${where}: recorte con detalle (desv. ${c.std} ≥ ${PIX.cropStd}, ${c.colors} colores ≥ ${PIX.cropColors}, cambio ${c.change} ≥ ${PIX.cropChange})`);
+  }
+}
+
+/** Mediana de fps por requestAnimationFrame durante `ms` (en la página). */
+const rafMedian = (page, ms) => page.evaluate((dur) => new Promise((res) => {
+  const t = [];
+  let last = performance.now();
+  const end = last + dur;
+  const f = (now) => {
+    t.push(now - last);
+    last = now;
+    if (now < end) requestAnimationFrame(f);
+    else { t.sort((a, b) => a - b); res({ median: Math.round((10000 / t[Math.floor(t.length / 2)])) / 10, frames: t.length }); }
+  };
+  requestAnimationFrame(f);
+}), ms);
+
+/** Capturas cada GIF_EVERY_MS para el GIF (modo --gif). */
+function startFrames(page, dir) {
+  let on = true;
+  let n = 0;
+  const done = (async () => {
+    await mkdir(dir, { recursive: true });
+    while (on) {
+      const t0 = Date.now();
+      n++;
+      await page.screenshot({ path: path.join(dir, `f${String(n).padStart(4, '0')}.png`) }).catch(() => { n--; });
+      await sleep(Math.max(0, GIF_EVERY_MS - (Date.now() - t0)));
+    }
+  })();
+  return async () => { on = false; await done; return n; };
+}
+
 async function shot(p, name) {
   if (!SHOT_SIZES.has(p.label.v)) return;
   await p.page.screenshot({ path: path.join(SHOTS, `${p.label.v}-${name}.png`) });
@@ -168,14 +271,11 @@ async function bringIntoView(p, xPct, yPct) {
   return p.page.evaluate((x, y) => window.__funtico.triage.worldToScreen(x, y), xPct, yPct);
 }
 
-async function playRun(size, { rotate = false, missOnce = false, fps = false, video = '' } = {}) {
+async function playRun(size, { rotate = false, missOnce = false, fps = false, frames = '' } = {}) {
   console.log(`\n== Carrera en ${size}${rotate ? ' (con giro)' : ''} ==`);
   const p = await newPage(size);
   const { page } = p;
-  let rec = null;
-  if (video) {
-    try { rec = await page.screencast({ path: video }); } catch (e) { notes.push(`sin vídeo (${e.message})`); }
-  }
+  const stopFrames = frames ? startFrames(page, frames) : null;
   await page.goto(`${BASE}/?mock=1&seed=${encodeURIComponent(SEED)}`, { waitUntil: 'load' });
   await page.waitForFunction(() => window.__funtico?.menu, { timeout: 30000 });
   await page.waitForFunction(() => window.__funtico.menu.uiBounds().some((b) => b.id === 'hof' && !/loading/.test(b.text)), { timeout: 10000 });
@@ -186,7 +286,9 @@ async function playRun(size, { rotate = false, missOnce = false, fps = false, vi
   await page.waitForFunction(() => window.__funtico?.triage?.state()?.ready, { timeout: 60000, polling: 100 })
     .catch(async (e) => { notes.push(`renderer ${await page.evaluate(() => window.__funtico.game.renderer.type)}`); throw e; });
   const run = await page.evaluate(() => window.__funtico.triage.run);
-  notes.push(`[${size}] renderer ${await page.evaluate(() => (window.__funtico.game.renderer.type === 2 ? 'WEBGL' : 'CANVAS'))}`);
+  const got = await page.evaluate(() => (window.__funtico.game.renderer.type === 2 ? 'WEBGL' : 'CANVAS'));
+  notes.push(`[${size}] renderer ${got}`);
+  (got === RENDERER.toUpperCase() ? ok : fail)(`[${size}] renderer ${got} (pedido ${RENDERER})`);
   if (run.seed !== SEED) fail(`[${size}] semilla ${run.seed} ≠ ${SEED}`);
   const shotted = new Set();
   let rotated = false;
@@ -201,16 +303,23 @@ async function playRun(size, { rotate = false, missOnce = false, fps = false, vi
       noteMin(size, await checkBounds(p, st.kind, () => window.__funtico.triage.uiBounds()));
       await shot(p, `${{ sample: 2, symptom: 3, relapse: 4 }[st.kind]}-${st.kind}`);
     }
+    if (st.kind !== 'relapse' && !shotted.has(`px-${st.kind}`)) {
+      shotted.add(`px-${st.kind}`);
+      await checkPixels(p, st.kind);
+    }
     if (fps && i === 1) {
       const cdp = await page.createCDPSession();
       await cdp.send('Emulation.setCPUThrottlingRate', { rate: 4 });
       const v = s.view;
+      const rafP = rafMedian(page, 4500);
       if (s.scrollable) { await dragX(p, v.x + v.w * 0.8, v.x + v.w * 0.3, v.y + v.h / 2); await sleep(300); await dragX(p, v.x + v.w * 0.3, v.x + v.w * 0.8, v.y + v.h / 2); }
-      await sleep(4000);
+      const raf = await rafP;
       const f = await page.evaluate(() => window.__funtico.triage.fps());
       await cdp.send('Emulation.setCPUThrottlingRate', { rate: 1 });
-      minima.fps = f;
-      (f >= 50 ? ok : (m) => { notes.push(m); console.log(`  NOTE ${m}`); })(`fps medianos con CPU x4 en ${size}: ${f}`);
+      minima.fps = { renderer: RENDERER, size, cpuThrottle: 4, medianRaf: raf.median, rafFrames: raf.frames, medianGame: f, gate: 50 };
+      (raf.median >= 50 ? ok : (m) => { notes.push(m); console.log(`  NOTE ${m}`); })(`fps medianos con CPU x4 en ${size} (${RENDERER}): rAF ${raf.median} (${raf.frames} fotogramas en 4,5 s), juego ${f}; puerta ≥ 50`);
+      // La vista vuelve a la estación con la escena centrada para tocar
+      s = await state(page);
     }
     if (rotate && !rotated && i === 3) {
       rotated = true;
@@ -228,6 +337,7 @@ async function playRun(size, { rotate = false, missOnce = false, fps = false, vi
       (dClock >= 0 && dClock <= wall + 400 ? ok : fail)(`reloj sigue tras el giro: −${dClock} ms en ${wall} ms de reloj de pared`);
       noteMin('844x390', await checkBounds(p, `${st.kind} (girado)`, () => window.__funtico.triage.uiBounds()));
       await shot(p, `rot-${st.kind}`);
+      if (st.kind !== 'relapse') await checkPixels(p, `${st.kind} (girado)`);
       // Se juega esta estación en horizontal y se vuelve a vertical en la siguiente
       s = b;
     }
@@ -278,7 +388,7 @@ async function playRun(size, { rotate = false, missOnce = false, fps = false, vi
   (mine && mine.points === expected.score ? ok : fail)(`[${size}] Hall of Fame simulado con la marca: ${mine ? `#${mine.rank} ${mine.points}` : 'no está'}`);
   noteMin(p.label.v, await checkBounds(p, 'resultado', () => window.__funtico.result.uiBounds()));
   await shot(p, '5-result');
-  if (rec) await rec.stop();
+  if (stopFrames) notes.push(`[${size}] GIF: ${await stopFrames()} fotogramas en ${frames}`);
   await p.ctx.close();
   return expected;
 }
@@ -287,10 +397,10 @@ try {
   for (const size of SIZES) {
     const portrait = size === '390x844';
     await playRun(size, {
-      rotate: portrait,
+      rotate: portrait && !GIF_DIR,
       missOnce: true,
-      fps: portrait,
-      video: VIDEO_DIR && (size === '390x844' || size === '844x390') ? path.join(VIDEO_DIR, `triage-${size}.webm`) : '',
+      fps: portrait && !GIF_DIR,
+      frames: GIF_DIR && MOBILE.has(size) ? path.join(GIF_DIR, size) : '',
     });
   }
 } catch (e) {
@@ -300,7 +410,7 @@ try {
   server?.close();
 }
 
-const summary = { failures, notes: [...new Set(notes)], minima, sizes: SIZES, seed: SEED };
+const summary = { renderer: RENDERER, failures, notes: [...new Set(notes)], minima, fps: minima.fps ?? null, pixels, thresholds: PIX, sizes: SIZES, seed: SEED };
 await writeFile(path.join(SHOTS, 'triage-e2e.json'), JSON.stringify(summary, null, 2));
 console.log('\nMínimos medidos (px CSS):', JSON.stringify(minima));
 if (summary.notes.length) console.log('Notas:\n  ' + summary.notes.join('\n  '));

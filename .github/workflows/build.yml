@@ -72,10 +72,15 @@ jobs:
   # giro a 844x390 y vuelta), 844x390, 1280x720 y 1920x1080 con toques reales; bounds de UI, tamaños mínimos, sin red a
   # Funtico; capturas como artefacto. Ver docs/progreso/F1.2.md.
   funtico-triage:
+    # F1.2: e2e de Triage con los dos renderers (canvas = móvil sin WebGL; webgl = WebGL por software, SwiftShader)
     needs: build
     if: ${{ !cancelled() && needs.build.result == 'success' }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        renderer: [canvas, webgl]
     steps:
       - uses: actions/checkout@v4
 
@@ -92,12 +97,13 @@ jobs:
       - name: Triage e2e (F1.2)
         run: npm run test:funtico:e2e
         env:
-          SHOTS: funtico-shots
+          SHOTS: funtico-shots/${{ matrix.renderer }}
+          RENDERER: ${{ matrix.renderer }}
 
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: funtico-triage-shots
+          name: funtico-triage-shots-${{ matrix.renderer }}
           path: funtico-shots/
 
   smoke:
