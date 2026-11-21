@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { charDelayMs } from '@/systems/Settings';
+import { mobileMinFontPx } from '@/platform/LayoutProfile';
 import { TWP, FONT, SPEECH_COLORS } from '@/config/theme';
 import type { SceneData } from '@/types/scene.types';
 import {
@@ -381,7 +382,13 @@ export class DialogueBox {
 
   /** A2.19: tamaño del subtítulo; el discreto, un 80 % (sin bajar de 9 px) */
   private fontSize(): { body: number; speaker: number } {
-    const size = speechFontSize(this.scene.scale);
+    let size = speechFontSize(this.scene.scale);
+    // F3.2b: con un perfil de maquetación que lo pida, letra mínima en móvil (con el clásico, null: lo de siempre)
+    const min = mobileMinFontPx(this.scene.scale.width, this.scene.scale.height);
+    if (min !== null) {
+      size = { body: Math.max(min, size.body), speaker: Math.max(min, size.speaker) };
+      if (this.discreet) return size;
+    }
     if (!this.discreet) return size;
     return { body: Math.max(9, Math.round(size.body * DISCREET_SCALE)), speaker: Math.max(9, Math.round(size.speaker * DISCREET_SCALE)) };
   }

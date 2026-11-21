@@ -37,6 +37,8 @@ export interface ChoiceLayoutInput {
   height: number;
   /** Alto del panel SCUMM (verbos + inventario) que las opciones tapan. */
   panelH: number;
+  /** F3.2b: letra mínima (px) que pide el perfil de maquetación; sin ella, la de siempre. */
+  minFontSize?: number;
   /** Texto de cada opción, ya con su prefijo, en su orden. */
   texts: string[];
   /** Medidor de texto; por defecto, estimación para Press Start 2P (cada carácter mide 1 em). */
@@ -127,7 +129,7 @@ function arrange(input: ChoiceLayoutInput, columns: 1 | 2, fontSize: number, pad
 /** Coloca todas las opciones a la vez (sin páginas). Ver la cabecera del archivo. */
 export function layoutChoices(input: ChoiceLayoutInput): ChoiceLayout {
   const { width, height, panelH } = input;
-  const fontSize = choiceFontSize(width);
+  const fontSize = Math.max(input.minFontSize ?? 0, choiceFontSize(width));
   const padX = Math.max(12, Math.round(width * 0.03));
   const padY = Math.max(4, Math.min(10, Math.round(panelH * 0.05)));
   const maxH = Math.min(height, maxChoiceHeight(width, height, panelH));

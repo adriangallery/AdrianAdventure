@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { TWP, FONT } from '@/config/theme';
+import { mobileMinFontPx } from '@/platform/LayoutProfile';
 import { layoutChoices, clampScroll, scrollToShow, CHOICE_LINE_SPACING, PREFIX_ENABLED, PREFIX_LOCKED, type ChoiceLayout } from './choiceLayout';
 
 /** A2.6: opción tal como llega de DialogueSystem (`used` = ya elegida: gris, pero se puede volver a elegir) */
@@ -103,7 +104,7 @@ export class ChoicePanel {
       probe.setText(t);
       return probe.height;
     };
-    const L = layoutChoices({ width, height, panelH, texts, measure });
+    const L = layoutChoices({ width, height, panelH, texts, measure, minFontSize: mobileMinFontPx(width, height) ?? undefined });
     probe.destroy();
     this.layout = L;
     this.scrollY = clampScroll(this.scrollY, L);

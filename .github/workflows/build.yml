@@ -563,7 +563,7 @@ jobs:
     needs: build
     if: ${{ !cancelled() && needs.build.result == 'success' }}
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 50
     steps:
       - uses: actions/checkout@v4
 
@@ -609,3 +609,15 @@ jobs:
           name: funtico-campaign-screens
           if-no-files-found: ignore
           path: campaign-e2e/
+
+      - name: Campaign en vertical y horizontal con giros (F3.2b)
+        if: ${{ !cancelled() }}
+        run: npm run test:funtico:layout-e2e
+        env:
+          BASE_URL: http://127.0.0.1:4175
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: funtico-campaign-layout
+          path: campaign-layout-e2e/

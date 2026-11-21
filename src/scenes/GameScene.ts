@@ -62,6 +62,7 @@ import { ScreenTextLayer, type ScreenLayerQa } from '@/ui/ScreenTextLayer';
 import { ScreenCloseup, type CloseupQaState } from '@/ui/ScreenCloseup';
 import { charDelayMs } from '@/systems/Settings';
 import type { ScreenSayRequest } from '@/systems/ScriptEngine';
+import { stackedPanelHeight } from '@/platform/LayoutProfile';
 
 /** A2.19: una línea de pantalla (QA). A2.19b: `vp` = caja de la pantalla y vista de la cámara en px del viewport */
 export interface ScreenLogEntry {
@@ -1807,6 +1808,10 @@ export class GameScene extends Phaser.Scene {
   }
 
   private getEffectivePanelHeight(): number {
+    // F3.2b: en vertical apilado (solo con un LayoutProfile que lo pida) el alto sale de la ventana, no del valor
+    // guardado (que al girar es el de la orientación anterior hasta que el panel se rehace)
+    const stacked = stackedPanelHeight(this.scale.width, this.scale.height);
+    if (stacked !== null) return stacked;
     const stored = this.registry.get('scummPanelHeight') as number | undefined;
     if (stored !== undefined) return stored;
     return this.computePanelHeight();
@@ -1819,6 +1824,8 @@ export class GameScene extends Phaser.Scene {
 
   /** Alto del panel SCUMM para un viewport (A5.1: PreloadScene lo usa para elegir la variante de fondo antes de que exista la escena) */
   static panelHeightFor(width: number, height: number): number {
+    const stacked = stackedPanelHeight(width, height); // F3.2b: null con el perfil clásico
+    if (stacked !== null) return stacked;
     const isMobile = height > width || Math.min(width, height) < 600;
     const isLandscape = width > height;
     const panelRatio = isMobile ? (isLandscape ? 0.22 : 0.15) : 0.25;
